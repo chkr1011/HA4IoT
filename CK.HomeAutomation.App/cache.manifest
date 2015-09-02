@@ -1,0 +1,21 @@
+CACHE MANIFEST
+# Version 1.0.32
+
+CACHE:
+
+index.html
+App.js
+Style.css
+Configuration.js
+
+Scripts/jquery-2.1.4.min.js
+Scripts/bootstrap.min.js
+Scripts/angular.min.js
+
+Content/bootstrap.min.css
+Content/bootstrap-theme.min.css
+
+Images/*
+
+NETWORK:
+*
