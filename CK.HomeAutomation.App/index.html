@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+<html manifest="cache.manifest">
+<head>
+    <meta charset="utf-8">
+
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!--<link rel="apple-touch-icon" href="touch-icon-iphone.png"/>
+    <link rel="apple-touch-icon" sizes="76x76" href="touch-icon-ipad.png"/>-->
+    <link rel="apple-touch-icon" sizes="120x120" href="touch-icon-iphone-retina.png" />
+    <link rel="stylesheet" href="Style.css">
+    <!--<link rel="apple-touch-icon" sizes="152x152" href="touch-icon-ipad-retina.png"/>-->
+
+    <title>CK.HomeAutomation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+</head>
+
+<body style="background: #286090;" ng-app="app" ng-controller="HomeAutomationController as haCtrl">
+
+    <script type="text/ng-template" id="temperatureSensorTemplate">
+        <h4>{{(actuator.state.value | number:1) + '°C' }}</h4>
+    </script>
+
+    <script type="text/ng-template" id="humiditySensorTemplate">
+        <h5>{{(actuator.state.value | number:1) + '%' }} <span ng-class="{'text-danger':actuator.state.value>=70,'text-warning':actuator.state.value>=60,'text-success':actuator.state.value<=60}" class="glyphicon glyphicon-tint"></span></h5>
+    </script>
+
+    <script type="text/ng-template" id="toggleTemplate">
+        <button class="btn btn-primary" style="min-width: 60px;" ng-class="{'btn-danger': actuator.state.stateBool==true}" ng-click="toggleState(actuator)">
+            <span ng-if="actuator.state.stateBool==true">An</span>
+            <span ng-if="actuator.state.stateBool==false">Aus</span>
+        </button>
+    </script>
+
+    <script type="text/ng-template" id="motionDetectorTemplate">
+        <span class="glyphicon glyphicon-record text-danger" ng-if="actuator.state.state==true" style="margin-right: 10px"></span>
+        <button class="btn btn-primary" style="min-width: 60px;" ng-class="{'btn-success': actuator.state.isEnabled==true}" ng-click="toggleIsEnabled(actuator)">
+            <span ng-if="actuator.state.isEnabled==true">Aktiv</span>
+            <span ng-if="actuator.state.isEnabled==false">Aus</span>
+        </button>
+    </script>
+
+    <script type="text/ng-template" id="rollerShutterTemplate">
+        <div class="btn-group" role="group">
+            <button class="btn btn-primary" ng-class="{'btn-danger': actuator.state.state=='MovingUp'}" ng-click="setState(actuator, 'MovingUp')">
+                <span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span>
+            </button>
+            <button class="btn btn-primary" ng-class="{'btn-danger': actuator.state.state=='Stopped'}" ng-click="setState(actuator, 'Stopped')">
+                <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+            </button>
+            <button class="btn btn-primary" ng-class="{'btn-danger': actuator.state.state=='MovingDown'}" ng-click="setState(actuator, 'MovingDown')">
+                <span class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></span>
+            </button>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="stateMachineTemplate">
+        <div ng-class="{'btn-group-vertical': actuator.displayVertical==true,'btn-group': actuator.displayVertical==false}">
+            <button class="btn btn-primary" ng-repeat="state in actuator.states" ng-class="{'btn-danger': actuator.state.state==state.value}" ng-click="setState(actuator, state.value)">
+                {{state.caption}}
+            </button>
+        </div>
+    </script>
+
+    <div ng-hide="haCtrl.isReady==true">
+        <div class="loadingIndicator">
+            <div class="loadingAnimation"></div>
+            <h3 class="loadingTitle">
+                Home Automation
+                <br />
+                <br />
+                <span class="loadingMessage">Lade Räume...</span>
+            </h3>
+        </div>
+    </div>
+
+    <div class="hidden" id="content">
+        <div class="panel panel-default" id="{{ room.id }}" ng-repeat="room in haCtrl.rooms | orderBy:'caption'">
+            <div class="panel-heading" ng-click="haCtrl.setActiveRoom(room.id)">
+                <h4 class="panel-title">
+                    <a role="button">
+                        {{room.caption}}
+                    </a>
+                </h4>
+            </div>
+            <table class="table table-striped" ng-show="haCtrl.activeRoom==room.id">
+                <tr ng-repeat="actuator in room.actuators | orderBy:['sortValue', 'caption']">
+                    <td style="vertical-align: middle;">
+                        <span><img class="icon" ng-src="Images/{{actuator.image}}.png" />{{actuator.caption}}</span>
+                    </td>
+                    <td style="text-align: right;" ng-include="actuator.template"></td>
+                </tr>
+            </table>
+        </div>
+
+        <nav class="navbar navbar-inverse">
+            <span class="navbar-text">
+                <span class="glyphicon glyphicon-signal" ng-class="{'text-danger': haCtrl.errorMessage!='', 'text-success': haCtrl.errorMessage===''}" aria-hidden="true"></span>
+                <span class="text-danger">{{ haCtrl.errorMessage }}</span>
+                <span style="margin-left: 10px;">Version: {{ haCtrl.version }}</span>
+                <a href="#" style="margin-left: 10px;">
+                    <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+                </a>
+            </span>
+        </nav>
+    </div>
+
+    <link rel="stylesheet" href="Content/bootstrap.min.css" />
+    <link rel="stylesheet" href="Content/bootstrap-theme.min.css">
+
+    <style type="text/css">
+        body {
+            padding-bottom: 70px;
+        }
+    </style>
+
+    <script type="text/javascript" src="Scripts/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript" src="Scripts/angular.min.js"></script>
+
+    <script type="text/javascript">
+        controllerAddress = null;
+        actuatorConfigurationResolver = null;
+        friendlyNameLookup = [];
+
+        history.replaceState(null, null, window.location.pathname);
+    </script>
+
+    <script type="text/javascript" src="Configuration.js"></script>
+    <script type="text/javascript" src="App.js"></script>
+
+</body>
+</html>
