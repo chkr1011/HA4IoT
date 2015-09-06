@@ -9,7 +9,7 @@ namespace CK.HomeAutomation.Hardware.CCTools
         public HSREL8(string id, int address, I2CBus i2cBus, INotificationHandler notificationHandler)
             : base(id, new MAX7311Driver(address, i2cBus), notificationHandler)
         {
-            SetState(new byte[] { 0x00, 0x00 });
+            SetState(new byte[] { 0x00, 255 });
             CommitChanges(true);
         }
 
