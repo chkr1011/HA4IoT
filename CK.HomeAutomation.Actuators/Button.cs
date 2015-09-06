@@ -10,7 +10,7 @@ namespace CK.HomeAutomation.Actuators
     public class Button : BaseButton
     {
         private readonly Stopwatch _stopwatch = new Stopwatch();
-        private readonly TimeSpan _timeoutForLongAction = TimeSpan.FromSeconds(2);
+        private readonly TimeSpan _timeoutForLongAction = TimeSpan.FromSeconds(1.5);
 
         public Button(string id, IBinaryInput input, HttpRequestController httpApiController, INotificationHandler notificationHandler, HomeAutomationTimer timer)
             : base(id, httpApiController, notificationHandler)

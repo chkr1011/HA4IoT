@@ -1,6 +1,8 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Windows.Data.Json;
+using Windows.Storage;
 using Windows.Web.Http;
 using CK.HomeAutomation.Core;
 using CK.HomeAutomation.Networking;
@@ -26,17 +28,18 @@ namespace CK.HomeAutomation.Actuators
             _notificationHandler = notificationHandler;
             _weatherDataSourceUrl = new Uri(string.Format("http://api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}&units=metric", lat, lon));
 
-            httpApiController.Handle(HttpMethod.Get, "weatherStation").Using(c => c.Response.Result = GetStatusAsJSON());
-            httpApiController.Handle(HttpMethod.Put, "weatherStation").WithRequiredJsonBody().Using(c => SetStatusFromJSON(c.Request));
+            httpApiController.Handle(HttpMethod.Get, "weatherStation").Using(c => c.Response.Result = ApiGet());
+            httpApiController.Handle(HttpMethod.Post, "weatherStation").WithRequiredJsonBody().Using(c => ApiPost(c.Request));
 
-            timer.Every(TimeSpan.FromMinutes(5)).Do(Update);
+            LoadPersistedValues();
+            timer.Every(TimeSpan.FromMinutes(2.5)).Do(Update);
         }
 
         public Daylight Daylight => new Daylight(_sunrise, _sunset);
         public float Temperature { get; private set; }
         public float Humidity { get; private set; }
 
-        public JsonObject GetStatusAsJSON()
+        public JsonObject ApiGet()
         {
             var result = new JsonObject();
             result.SetNamedValue("temperature", JsonValue.CreateNumberValue(Temperature));
@@ -56,24 +59,30 @@ namespace CK.HomeAutomation.Actuators
             try
             {
                 var json = await FetchWeatherData();
+                string filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "WeatherStationValues.json");
+                File.WriteAllText(filename, json.Stringify());
 
-                var sys = json["sys"].GetObject();
-                var sunriseValue = sys["sunrise"].GetNumber();
-                var sunsetValue = sys["sunset"].GetNumber();
-
-                _sunrise = UnixTimeStampToDateTime(sunriseValue).TimeOfDay;
-                _sunset = UnixTimeStampToDateTime(sunsetValue).TimeOfDay;
-
-                var main = json["main"].GetObject();
-                Temperature = (float)main["temp"].GetNumber();
-                Humidity = (float)main["humidity"].GetNumber();
-
+                Update(json);
                 _lastFetched = DateTime.Now;
             }
             catch (Exception exception)
             {
                 _notificationHandler.PublishFrom(this, NotificationType.Warning, "Could not fetch weather information. " + exception.Message);
             }
+        }
+
+        private void Update(JsonObject data)
+        {
+            var sys = data["sys"].GetObject();
+            var sunriseValue = sys["sunrise"].GetNumber();
+            var sunsetValue = sys["sunset"].GetNumber();
+
+            _sunrise = UnixTimeStampToDateTime(sunriseValue).TimeOfDay;
+            _sunset = UnixTimeStampToDateTime(sunsetValue).TimeOfDay;
+
+            var main = data["main"].GetObject();
+            Temperature = (float)main["temp"].GetNumber();
+            Humidity = (float)main["humidity"].GetNumber();
         }
 
         private async Task<JsonObject> FetchWeatherData()
@@ -92,7 +101,7 @@ namespace CK.HomeAutomation.Actuators
             return buffer.AddSeconds(unixTimeStamp).ToLocalTime();
         }
 
-        private void SetStatusFromJSON(HttpRequest request)
+        private void ApiPost(HttpRequest request)
         {
             Temperature = (float) request.JsonBody.GetNamedNumber("temperature");
             Humidity = (float) request.JsonBody.GetNamedNumber("humidity");
@@ -100,6 +109,18 @@ namespace CK.HomeAutomation.Actuators
             _sunset = TimeSpan.Parse(request.JsonBody.GetNamedString("sunset"));
 
             _lastFetched = DateTime.Now;
+        }
+
+        private void LoadPersistedValues()
+        {
+            string filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "WeatherStationValues.json");
+            if (!File.Exists(filename))
+            {
+                return;
+            }
+
+            var values = JsonObject.Parse(File.ReadAllText(filename));
+            Update(values);
         }
     }
 }

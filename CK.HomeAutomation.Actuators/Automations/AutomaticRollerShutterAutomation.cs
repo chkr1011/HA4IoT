@@ -71,10 +71,10 @@ namespace CK.HomeAutomation.Actuators.Automations
             }
 
             daylightNow = daylightNow.Move(SunriseDiff, SunsetDiff);
-
-            TimeSpan time = DateTime.Now.TimeOfDay;
-            if (time > daylightNow.Sunrise && time < daylightNow.Sunset)
+            var timeRangeChecker = new TimeRangeChecker();
+            if (timeRangeChecker.IsTimeInRange(daylightNow.Sunrise, daylightNow.Sunset))
             {
+                TimeSpan time = DateTime.Now.TimeOfDay;
                 if (DoNotOpenBefore.HasValue && DoNotOpenBefore.Value > time)
                 {
                     return;
@@ -125,8 +125,7 @@ namespace CK.HomeAutomation.Actuators.Automations
 
         public AutomaticRollerShutterAutomation WithCloseIfOutsideTemperatureIsGreaterThan(float maxOutsideTemperature)
         {
-            // TODO: Check!
-            //_maxOutsideTemperature = maxOutsideTemperature;
+            _maxOutsideTemperature = maxOutsideTemperature;
             return this;
         }
     }

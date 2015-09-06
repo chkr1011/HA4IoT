@@ -72,12 +72,12 @@ namespace CK.HomeAutomation.Actuators
 
             if (WeatherStation != null)
             {
-                result.SetNamedValue("weatherStation", WeatherStation.GetStatusAsJSON());
+                result.SetNamedValue("weatherStation", WeatherStation.ApiGet());
             }
 
             if (_healthMonitor != null)
             {
-                result.SetNamedValue("health", _healthMonitor.GetStatusAsJSON());
+                result.SetNamedValue("health", _healthMonitor.ApiGet());
             }
 
             string jsonText = result.Stringify();
