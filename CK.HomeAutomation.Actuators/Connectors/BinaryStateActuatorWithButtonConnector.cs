@@ -9,7 +9,7 @@ namespace CK.HomeAutomation.Actuators.Connectors
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
             if (button == null) throw new ArgumentNullException(nameof(button));
 
-            button.PressedShort += (s, e) => actuator.Toggle(true);
+            button.PressedShort += (s, e) => actuator.Toggle();
 
             return actuator;
         }

@@ -63,6 +63,13 @@ namespace CK.HomeAutomation.Actuators.Automations
             }
 
             Daylight daylightNow = _weatherStation.Daylight;
+
+            bool daylightInformationIsAvailable = daylightNow.Sunrise == TimeSpan.Zero || daylightNow.Sunset == TimeSpan.Zero;
+            if (!daylightInformationIsAvailable)
+            {
+                return;
+            }
+
             daylightNow = daylightNow.Move(SunriseDiff, SunsetDiff);
 
             TimeSpan time = DateTime.Now.TimeOfDay;

@@ -32,6 +32,11 @@ namespace CK.HomeAutomation.Controller.Rooms
             ButtonWindowUpper,
             ButtonWindowLower,
 
+            ButtonBedLeftInner,
+            ButtonBedLeftOuter,
+            ButtonBedRightInner,
+            ButtonBedRightOuter,
+
             RollerShutterButtonsUpper,
             RollerShutterButtonsLower,
             RollerShutterLeft,
@@ -47,6 +52,7 @@ namespace CK.HomeAutomation.Controller.Rooms
             var hsrel5 = ccToolsFactory.CreateHSREL5(Device.BedroomHSREL5, 38);
             var hsrel8 = ccToolsFactory.CreateHSREL8(Device.BedroomHSREL8, 21);
             var input5 = ioBoardManager.GetInputBoard(Device.Input5);
+            var input4 = ioBoardManager.GetInputBoard(Device.Input4);
 
             var bedroom = home.AddRoom(Room.Bedroom)
                 .WithTemperatureSensor(Bedroom.TemperatureSensor, 8, sensorBridgeDriver)
@@ -60,12 +66,16 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithSocket(Bedroom.SocketWall, hsrel5.GetOutput(2))
                 .WithSocket(Bedroom.SocketWallEdge, hsrel5.GetOutput(3))
                 .WithSocket(Bedroom.SocketBedLeft, hsrel8.GetOutput(7))
-                //.WithSocket(Bedroom.SocketBedRight, hsrel5.GetOutput(3))
+                .WithSocket(Bedroom.SocketBedRight, hsrel8.GetOutput(9))
                 .WithLamp(Bedroom.LampBedLeft, hsrel5.GetOutput(4))
                 .WithLamp(Bedroom.LampBedRight, hsrel8.GetOutput(8).WithInvertedState())
                 .WithButton(Bedroom.ButtonDoor, input5.GetInput(11))
                 .WithButton(Bedroom.ButtonWindowUpper, input5.GetInput(10))
                 .WithButton(Bedroom.ButtonWindowLower, input5.GetInput(13))
+                .WithButton(Bedroom.ButtonBedLeftInner, input4.GetInput(2))
+                .WithButton(Bedroom.ButtonBedLeftOuter, input4.GetInput(0))
+                .WithButton(Bedroom.ButtonBedRightInner, input4.GetInput(1))
+                .WithButton(Bedroom.ButtonBedRightOuter, input4.GetInput(3))
                 .WithRollerShutter(Bedroom.RollerShutterLeft, hsrel8.GetOutput(6), hsrel8.GetOutput(5), TimeSpan.FromSeconds(22))
                 .WithRollerShutter(Bedroom.RollerShutterRight, hsrel8.GetOutput(3), hsrel8.GetOutput(4), TimeSpan.FromSeconds(22))
                 .WithRollerShutterButtons(Bedroom.RollerShutterButtonsUpper, input5.GetInput(6), input5.GetInput(7))
@@ -108,6 +118,16 @@ namespace CK.HomeAutomation.Controller.Rooms
             fan.AddState("3").WithHighPort(fanPort1).WithHighPort(fanPort2).WithHighPort(fanPort3);
             fan.TurnOff();
             fan.ConnectMoveNextWith(bedroom.Button(Bedroom.ButtonWindowLower));
+
+            bedroom.Button(Bedroom.ButtonBedLeftInner).WithShortAction(() => bedroom.Lamp(Bedroom.LampBedLeft).Toggle());
+            bedroom.Button(Bedroom.ButtonBedLeftInner).WithLongAction(() => bedroom.BinaryStateOutput(Bedroom.CombinedCeilingLights).Toggle());
+            bedroom.Button(Bedroom.ButtonBedLeftOuter).WithShortAction(() => bedroom.StateMachine(Bedroom.Fan).ApplyNextState());
+            bedroom.Button(Bedroom.ButtonBedLeftOuter).WithLongAction(() => bedroom.StateMachine(Bedroom.Fan).TurnOff());
+
+            bedroom.Button(Bedroom.ButtonBedRightInner).WithShortAction(() => bedroom.Lamp(Bedroom.LampBedRight).Toggle());
+            bedroom.Button(Bedroom.ButtonBedRightInner).WithLongAction(() => bedroom.BinaryStateOutput(Bedroom.CombinedCeilingLights).Toggle());
+            bedroom.Button(Bedroom.ButtonBedRightOuter).WithShortAction(() => bedroom.StateMachine(Bedroom.Fan).ApplyNextState());
+            bedroom.Button(Bedroom.ButtonBedRightOuter).WithLongAction(() => bedroom.StateMachine(Bedroom.Fan).TurnOff());
         }
     }
 }

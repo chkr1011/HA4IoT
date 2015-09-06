@@ -136,7 +136,7 @@ namespace CK.HomeAutomation.Controller.Cellar
                 .WithActuator(garden.Lamp(Garden.LampParkingLot3));
 
             garden.SetupAlwaysOn()
-                .WithActuator(garden.BinaryStateOutputActuator(Garden.CombinedParkingLotLamps))
+                .WithActuator(garden.BinaryStateOutput(Garden.CombinedParkingLotLamps))
                 .WithOnlyAtNightRange(home.WeatherStation)
                 .WithOffBetweenRange(TimeSpan.FromHours(22).Add(TimeSpan.FromMinutes(30)), TimeSpan.FromHours(5));
 

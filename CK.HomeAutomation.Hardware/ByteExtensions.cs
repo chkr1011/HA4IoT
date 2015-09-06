@@ -56,73 +56,73 @@ namespace CK.HomeAutomation.Hardware
             bytes[byteOffset] = SetBit(bytes[byteOffset], bitOffset, state);
         }
 
-        ////public static byte[] Parse(string source)
-        ////{
-        ////    if (source == null) return null;
-        ////    if (source.Length == 0) return new byte[0];
+        public static byte[] Parse(string source)
+        {
+            if (source == null) return null;
+            if (source.Length == 0) return new byte[0];
 
-        ////    string[] bytes = source.Split(',');
-        ////    var buffer = new byte[bytes.Length];
+            string[] bytes = source.Split(',');
+            var buffer = new byte[bytes.Length];
 
-        ////    for (int i = 0; i < bytes.Length; i++)
-        ////    {
-        ////        buffer[i] = byte.Parse(bytes[i]);
-        ////    }
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                buffer[i] = byte.Parse(bytes[i]);
+            }
 
-        ////    return buffer;
-        ////}
+            return buffer;
+        }
 
-        ////public static string ToString(byte[] value)
-        ////{
-        ////    if (value == null)
-        ////    {
-        ////        return null;
-        ////    }
+        public static string ToString(byte[] value)
+        {
+            if (value == null)
+            {
+                return null;
+            }
 
-        ////    // The handline of short byte arrays is implemented directly to improve performance.
-        ////    switch (value.Length)
-        ////    {
-        ////        case 0:
-        ////            {
-        ////                return string.Empty;
-        ////            }
+            // The handline of short byte arrays is implemented directly to improve performance.
+            switch (value.Length)
+            {
+                case 0:
+                    {
+                        return string.Empty;
+                    }
 
-        ////        case 1:
-        ////            {
-        ////                return value[0].ToString();
-        ////            }
+                case 1:
+                    {
+                        return value[0].ToString();
+                    }
 
-        ////        case 2:
-        ////            {
-        ////                return value[0] + "," + value[1];
-        ////            }
+                case 2:
+                    {
+                        return value[0] + "," + value[1];
+                    }
 
-        ////        case 3:
-        ////            {
-        ////                return value[0] + "," + value[1] + "," + value[2];
-        ////            }
+                case 3:
+                    {
+                        return value[0] + "," + value[1] + "," + value[2];
+                    }
 
-        ////        case 4:
-        ////            {
-        ////              return value[0] + "," + value[1] + "," + value[2] + "," + value[3];
-        ////            }
+                case 4:
+                    {
+                        return value[0] + "," + value[1] + "," + value[2] + "," + value[3];
+                    }
 
-        ////        default:
-        ////            {
-        ////                var stringBuilder = new System.Text.StringBuilder();
-        ////                for (int i = 0; i < value.Length; i++)
-        ////                {
-        ////                    if (i != 0)
-        ////                    {
-        ////                        stringBuilder.Append(',');
-        ////                    }
+                default:
+                    {
+                        var stringBuilder = new System.Text.StringBuilder();
+                        for (int i = 0; i < value.Length; i++)
+                        {
+                            if (i != 0)
+                            {
+                                stringBuilder.Append(',');
+                            }
 
-        ////                    stringBuilder.Append(value[i].ToString());
-        ////                }
+                            stringBuilder.Append(value[i].ToString());
+                        }
 
-        ////                return stringBuilder.ToString();
-        ////            }
-        ////    }
-        ////}
+                        return stringBuilder.ToString();
+                    }
+            }
+        }
     }
 }

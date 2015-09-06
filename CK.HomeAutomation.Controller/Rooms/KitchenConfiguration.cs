@@ -69,7 +69,7 @@ namespace CK.HomeAutomation.Controller.Rooms
 
             kitchen.SetupAutomaticTurnOnAction()
                 .WithMotionDetector(kitchen.MotionDetector(Kitchen.MotionDetector))
-                .WithTarget(kitchen.BinaryStateOutputActuator(Kitchen.CombinedAutomaticLights))
+                .WithTarget(kitchen.BinaryStateOutput(Kitchen.CombinedAutomaticLights))
                 .WithOnlyAtNightTimeRange(home.WeatherStation);
         }
     }

@@ -56,7 +56,7 @@ namespace CK.HomeAutomation.Controller.Rooms
             floor.SetupAutomaticTurnOnAction()
                 .WithMotionDetector(floor.MotionDetector(Floor.StairwayMotionDetector))
                 .WithButton(floor.Button(Floor.ButtonStairway))
-                .WithTarget(floor.BinaryStateOutputActuator(Floor.CombinedStairwayLamp))
+                .WithTarget(floor.BinaryStateOutput(Floor.CombinedStairwayLamp))
                 .WithOnlyAtNightTimeRange(home.WeatherStation)
                 .WithOnDuration(TimeSpan.FromSeconds(30));
 
@@ -70,7 +70,7 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithButton(floor.Button(Floor.ButtonLowerFloorUpper))
                 .WithButton(floor.Button(Floor.ButtonLowerFloorAtBathroom))
                 .WithButton(floor.Button(Floor.ButtonLowerFloorAtKitchen))
-                .WithTarget(floor.BinaryStateOutputActuator(Floor.CombinedLamps))
+                .WithTarget(floor.BinaryStateOutput(Floor.CombinedLamps))
                 .WithOnlyAtNightTimeRange(home.WeatherStation)
                 .WithOnDuration(TimeSpan.FromSeconds(20));
 
@@ -84,7 +84,7 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithMotionDetector(floor.MotionDetector(Floor.StairsLowerMotionDetector))
                 .WithMotionDetector(floor.MotionDetector(Floor.StairsUpperMotionDetector))
                 .WithButton(floor.Button(Floor.ButtonStairsUpper))
-                .WithTarget(floor.BinaryStateOutputActuator(Floor.CombinedLampStairsCeiling))
+                .WithTarget(floor.BinaryStateOutput(Floor.CombinedLampStairsCeiling))
                 .WithOnDuration(TimeSpan.FromSeconds(20));
 
             floor.SetupAlwaysOn()
