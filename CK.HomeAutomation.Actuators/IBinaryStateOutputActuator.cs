@@ -12,6 +12,6 @@ namespace CK.HomeAutomation.Actuators
 
         void SetState(BinaryActuatorState state, bool commit = true);
 
-        void Toggle(bool commit);
+        void Toggle(bool commit = true);
     }
 }
