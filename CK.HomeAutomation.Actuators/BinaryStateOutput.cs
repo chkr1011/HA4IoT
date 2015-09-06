@@ -23,6 +23,11 @@ namespace CK.HomeAutomation.Actuators
 
         public BinaryActuatorState State => _output.Read() == BinaryState.High ? BinaryActuatorState.On : BinaryActuatorState.Off;
 
+        public void TurnOff(bool commit = true)
+        {
+            SetState(BinaryActuatorState.Off, commit);
+        }
+
         public void SetState(BinaryActuatorState state, bool commit = true)
         {
             SetStateInternal(state, commit, false);

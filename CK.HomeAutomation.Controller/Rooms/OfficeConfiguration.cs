@@ -1,6 +1,7 @@
 ﻿using CK.HomeAutomation.Actuators;
 using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.Drivers;
+using CK.HomeAutomation.Hardware.RemoteSwitch;
 
 namespace CK.HomeAutomation.Controller.Rooms
 {
@@ -28,6 +29,7 @@ namespace CK.HomeAutomation.Controller.Rooms
             SocketRearRight,
             SocketRearLeft,
             SocketRearLeftEdge,
+            RemoteSocketDesk,
 
             ButtonUpperLeft,
             ButtonUpperRight,
@@ -40,7 +42,7 @@ namespace CK.HomeAutomation.Controller.Rooms
             CombinedCeilingLightsOther
         }
 
-        public void Setup(Home home, IOBoardManager ioBoardManager, CCToolsFactory ccToolsFactory, TemperatureAndHumiditySensorBridgeDriver sensorBridgeDriver)
+        public void Setup(Home home, IOBoardManager ioBoardManager, CCToolsFactory ccToolsFactory, TemperatureAndHumiditySensorBridgeDriver sensorBridgeDriver, RemoteSwitchController remoteSwitchController)
         {
             var hsrel8 = ccToolsFactory.CreateHSREL8(Device.OfficeHSREL8, 20);
             var hspe8 = ccToolsFactory.CreateHSPE8OutputOnly(Device.UpperFloorAndOfficeHSPE8, 37);
@@ -69,6 +71,8 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithButton(Office.ButtonLowerLeft, input5.GetInput(1))
                 .WithButton(Office.ButtonLowerRight, input4.GetInput(14))
                 .WithButton(Office.ButtonUpperRight, input4.GetInput(15));
+
+            office.WithSocket(Office.RemoteSocketDesk, remoteSwitchController.GetOutput(0));
 
             var lightsCouchOnly = office.CombineActuators(Office.CombinedCeilingLightsCouchOnly)
                 .WithActuator(office.Actuator<Lamp>(Office.LightCeilingRearRight));

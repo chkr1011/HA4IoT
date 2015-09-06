@@ -92,11 +92,17 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .ConnectToggleWith(bedroom.Button(Bedroom.ButtonDoor))
                 .ConnectToggleWith(bedroom.Button(Bedroom.ButtonWindowUpper));
 
+            bedroom.Button(Bedroom.ButtonDoor).WithLongAction(() =>
+            {
+                bedroom.Lamp(Bedroom.LampBedLeft).TurnOff();
+                bedroom.Lamp(Bedroom.LampBedRight).TurnOff();
+            });
+
             bedroom.SetupAutomaticRollerShutters()
                 .WithRollerShutter(bedroom.RollerShutter(Bedroom.RollerShutterLeft))
                 .WithRollerShutter(bedroom.RollerShutter(Bedroom.RollerShutterRight))
                 .WithDoNotOpenBefore(TimeSpan.FromHours(7).Add(TimeSpan.FromMinutes(15)))
-                .WithCloseIfOutsideTemperatureIsGreaterThan(28);
+                .WithCloseIfOutsideTemperatureIsGreaterThan(30);
 
             bedroom.SetupAutomaticTurnOnAction()
                 .WithMotionDetector(bedroom.MotionDetector(Bedroom.MotionDetector))

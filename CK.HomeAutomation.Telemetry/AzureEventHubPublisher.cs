@@ -106,7 +106,7 @@ namespace CK.HomeAutomation.Telemetry
                     HttpResponseMessage result = await client.PostAsync(_uri, content);
                     if (result.IsSuccessStatusCode)
                     {
-                        NotificationHandler.PublishFrom(this, NotificationType.Verbose, "Event with data {0} published successfully.", content.ToString());
+                        NotificationHandler.PublishFrom(this, NotificationType.Verbose, "Event published successfully.");
                     }
                     else
                     {

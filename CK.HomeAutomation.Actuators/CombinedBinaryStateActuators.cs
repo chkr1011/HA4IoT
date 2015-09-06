@@ -43,6 +43,11 @@ namespace CK.HomeAutomation.Actuators
             SetState(_actuators.First().State == BinaryActuatorState.On ? BinaryActuatorState.Off : BinaryActuatorState.On, commit);
         }
 
+        public void TurnOff(bool commit = true)
+        {
+            SetState(BinaryActuatorState.Off, commit);
+        }
+
         public CombinedBinaryStateActuators WithActuator(IBinaryStateOutputActuator actuator)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));

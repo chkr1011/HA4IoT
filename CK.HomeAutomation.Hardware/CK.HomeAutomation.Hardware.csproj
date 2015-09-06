@@ -114,6 +114,10 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Drivers\RemoteSwitchBridgeDriver.cs" />
+    <Compile Include="RemoteSwitch\RemoteSwitchCode.cs" />
+    <Compile Include="RemoteSwitch\RemoteSwitchController.cs" />
+    <Compile Include="RemoteSwitch\RemoteSwitchPort.cs" />
     <Compile Include="CCTools\CCToolsFactory.cs" />
     <Compile Include="CCTools\HSPE16OutputOnly.cs" />
     <Compile Include="CCTools\HSREL5.cs" />

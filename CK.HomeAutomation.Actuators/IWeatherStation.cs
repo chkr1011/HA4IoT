@@ -7,6 +7,6 @@ namespace CK.HomeAutomation.Actuators
         Daylight Daylight { get; }
         float Temperature { get; }
         float Humidity { get; }
-        JsonObject GetStatusAsJSON();
+        JsonObject ApiGet();
     }
 }

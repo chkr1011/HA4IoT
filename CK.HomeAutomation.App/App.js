@@ -45,6 +45,7 @@ function setupController() {
         "$scope", function ($scope) {
             var c = this;
 
+            c.sensors = [];
             c.activeRoom = "";
             c.errorMessage = "";
             c.version = "-";
@@ -60,6 +61,10 @@ function setupController() {
                         for (var i = room.actuators.length - 1; i >= 0; i--) {
                             var actuator = room.actuators[i];
                             configureActuator(room, actuator, i);
+
+                            if (actuator.type === "TemperatureSensor" || actuator.type === "HumiditySensor") {
+                                c.sensors.push(actuator);
+                            }
                         }
                     });
 
