@@ -10,8 +10,8 @@ namespace CK.HomeAutomation.Actuators
     {
         private readonly List<IBinaryStateOutputActuator> _actuators = new List<IBinaryStateOutputActuator>();
 
-        public CombinedBinaryStateActuators(string id, HttpRequestController httpRequestController, INotificationHandler notificationHandler) : base(
-                id, httpRequestController, notificationHandler)
+        public CombinedBinaryStateActuators(string id, HttpRequestController httpApiController, INotificationHandler notificationHandler) : base(
+                id, httpApiController, notificationHandler)
         {
         }
 

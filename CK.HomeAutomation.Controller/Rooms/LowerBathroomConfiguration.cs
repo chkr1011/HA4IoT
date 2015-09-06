@@ -43,7 +43,7 @@ namespace CK.HomeAutomation.Controller.Rooms
 
             bathroom.SetupAutomaticTurnOnAction()
                 .WithMotionDetector(bathroom.MotionDetector(LowerBathroom.MotionDetector))
-                .WithTarget(bathroom.BinaryStateOutputActuator(LowerBathroom.CombinedLights));
+                .WithTarget(bathroom.BinaryStateOutput(LowerBathroom.CombinedLights));
         }
     }
 }

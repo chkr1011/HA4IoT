@@ -180,7 +180,7 @@ namespace CK.HomeAutomation.Actuators
             return (TActuator)actuator;
         }
 
-        public IBinaryStateOutputActuator BinaryStateOutputActuator(Enum id)
+        public IBinaryStateOutputActuator BinaryStateOutput(Enum id)
         {
             return (IBinaryStateOutputActuator)Actuator<BaseActuator>(id);
         }
