@@ -95,22 +95,24 @@ namespace CK.HomeAutomation.Hardware.CCTools
         {
             lock (_syncRoot)
             {
-                // TODO: Consider add PeekState() which will read the state but will now fire events. This can be done using another method.
+                // TODO: Consider add PeekState() which will read the state but will not fire events. This can be done using another method.
                 // TODO: This will ensure that every state is read before time consuming actions (triggered by events) will be executed.
 
-                byte[] currentState = _portExpanderDriver.Read();
-                if (currentState.SequenceEqual(_committedState))
+                byte[] newState = _portExpanderDriver.Read();
+                if (newState.SequenceEqual(_committedState))
                 {
                     return;
                 }
 
                 byte[] oldState = GetState();
                 
-                Array.Copy(currentState, _state, _state.Length);
-                Array.Copy(currentState, _committedState, _committedState.Length);
+                Array.Copy(newState, _state, _state.Length);
+                Array.Copy(newState, _committedState, _committedState.Length);
 
-                _notificationHandler.PublishFrom(this, NotificationType.Verbose, "'{0}' fetched different state.", Id);
-                StateChanged?.Invoke(this, new IOBoardStateChangedEventArgs(oldState, currentState));
+                _notificationHandler.PublishFrom(this, NotificationType.Verbose, "'{0}' fetched different state (Old/New: {1}/{2}).", Id,
+                    ByteExtensions.ToString(oldState), ByteExtensions.ToString(newState));
+
+                StateChanged?.Invoke(this, new IOBoardStateChangedEventArgs(oldState, newState));
             }
         }
 
