@@ -21,7 +21,7 @@ INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) V
 INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'UpperBathroom.Fan', '2', 13)
 
 INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'Bedroom.LightCeilingWindow', 'On', 10.5) --3x 3.5
-INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'Bedroom.LightCeilingWall', 'On', 10.5) --3x 3.5
+INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'Bedroom.LightCeilingWall', 'On', 7) --2x 3.5
 INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'Bedroom.LightCeiling', 'On', 10.5) --3x 3.5
 
 INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'ChildrensRoom.LightCeilingMiddle', 'On', 15) --3x 5
@@ -40,6 +40,7 @@ INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) V
 INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'Floor.StairwayLampCeiling', 'On', 60)
 
 INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'LivingRoom.LampCouch', 'On', 15) --3x 5.0
+INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'LivingRoom.SocketWallRightEdgeRight', 'On', 37)
 INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'LivingRoom.LampDiningTable', 'On', 10.1) -- 3 + 1.3 + 1.5 + 1.3 + 3
 
 INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'Kitchen.LightCeilingMiddle', 'On', 22) -- 2x 11
