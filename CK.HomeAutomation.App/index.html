@@ -96,6 +96,27 @@
             </table>
         </div>
 
+        <div class="panel panel-default" id="sensors">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a role="button">Sensoren</a>
+                </h4>
+            </div>
+            <table class="table table-striped">
+                <thead>
+                <tr><th>Sensor</th><th>Wert</th></tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="actuator in haCtrl.sensors | orderBy:['id']">
+                        <td style="vertical-align: middle;">
+                            <span><img class="icon" ng-src="Images/{{actuator.image}}.png" />{{actuator.id}}</span>
+                        </td>
+                        <td style="text-align: right;">{{actuator.state.value | number:2}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
         <nav class="navbar navbar-inverse">
             <span class="navbar-text">
                 <span class="glyphicon glyphicon-signal" ng-class="{'text-danger': haCtrl.errorMessage!='', 'text-success': haCtrl.errorMessage===''}" aria-hidden="true"></span>
