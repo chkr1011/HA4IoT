@@ -45,7 +45,8 @@ namespace CK.HomeAutomation.Hardware.Drivers
 
         private void FetchValues(int id)
         {
-            byte[] writeBuffer = { (byte)id };
+            // The first byte is the action (set sensor index), the second the index of the sensor.
+            byte[] writeBuffer = { 1, (byte)id };
             byte[] readBuffer = new byte[8];
 
             // TODO: Repeatet start conditions are not(!) working with the Pi2 and the Arduino Nano (maybe the Arduino Wire library hack is the problem here).
