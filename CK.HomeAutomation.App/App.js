@@ -1,21 +1,5 @@
 setupController();
 
-function extendActuator(actuator) {
-    if (actuatorExtender == null) {
-        return;
-    }
-
-    actuatorExtender(actuator);
-}
-
-function extendRoom(room) {
-    if (roomExtender == null) {
-        return;
-    }
-
-    roomExtender(room);
-}
-
 function getFriendlyName(key) {
 
     var result = key;
@@ -45,30 +29,39 @@ function setupController() {
         "$scope", function ($scope) {
             var c = this;
 
+            c.appConfiguration = appConfiguration;
             c.sensors = [];
+            c.rollerShutters = [];
             c.activeRoom = "";
             c.errorMessage = "";
             c.version = "-";
+            c.rooms = [];
             getVersion(function (version) { c.version = version });
 
             c.generateRooms = function () {
-                getJSON(c, "http://" + controllerAddress + "/api/configuration", function (data) {
+                getJSON(c, "http://" + c.appConfiguration.controllerAddress + "/api/configuration", function (data) {
 
                     $.each(data, function (roomIndex, room) {
 
-                        room.caption = getFriendlyName(room.id);
+                        configureRoom(room);
 
-                        for (var i = room.actuators.length - 1; i >= 0; i--) {
-                            var actuator = room.actuators[i];
-                            configureActuator(room, actuator, i);
+                        if (!room.hide) {
+                            for (var i = room.actuators.length - 1; i >= 0; i--) {
+                                var actuator = room.actuators[i];
 
-                            if (actuator.type === "TemperatureSensor" || actuator.type === "HumiditySensor") {
-                                c.sensors.push(actuator);
+                                configureActuator(room, actuator, i);
+
+                                if (actuator.type === "TemperatureSensor" || actuator.type === "HumiditySensor") {
+                                    c.sensors.push(actuator);
+                                }
+                                else if (actuator.type === "RollerShutter") {
+                                    c.rollerShutters.push(actuator);
+                                }
                             }
+
+                            c.rooms.push(room);
                         }
                     });
-
-                    c.rooms = data;
 
                     $scope.$apply(function () {
                         $scope.msgs = c.rooms;
@@ -97,7 +90,7 @@ function setupController() {
             }
 
             c.pollStatus = function () {
-                getJSON(c, "http://" + controllerAddress + "/api/status", function (data) {
+                getJSON(c, "http://" + c.appConfiguration.controllerAddress + "/api/status", function (data) {
 
                     $.each(data, function (id, state) {
                         c.updateStatus(id, state);
@@ -108,7 +101,7 @@ function setupController() {
                     });
                 });
 
-                setTimeout(function () { c.pollStatus(); }, pollInterval);
+                setTimeout(function () { c.pollStatus(); }, c.appConfiguration.pollInterval);
             };
 
             $scope.toggleState = function (actuator) {
@@ -131,8 +124,7 @@ function setupController() {
             };
 
             $scope.setState = function (actuator, newState) {
-                actuator.state.state = newState;
-                invokeActuator(actuator.id, { state: newState });
+                invokeActuator(actuator.id, { state: newState }, function () { actuator.state.state = newState; });
             };
 
             c.updateStatus = function (id, state) {
@@ -153,10 +145,20 @@ function setupController() {
     ]);
 }
 
+function configureRoom(room) {
+    room.caption = getFriendlyName(room.id);
+    room.sortValue = 0;
+    room.hide = false;
+
+    appConfiguration.roomExtender(room);
+}
+
 function configureActuator(room, actuator, i) {
     actuator.caption = getFriendlyName(actuator.id);
-    actuator.image = actuator.type;
     actuator.sortValue = 0;
+    actuator.hide = false;
+    actuator.image = actuator.type;
+    
     actuator.state = {};
     actuator.displayVertical = false;
 
@@ -176,6 +178,7 @@ function configureActuator(room, actuator, i) {
 
         case "RollerShutter":
             {
+                actuator.caption = getFriendlyName("RollerShutter");
                 actuator.template = "rollerShutterTemplate";
                 actuator.sortValue = -4;
                 break;
@@ -227,7 +230,7 @@ function configureActuator(room, actuator, i) {
             }
     }
 
-    extendActuator(actuator);
+    appConfiguration.actuatorExtender(actuator);
 }
 
 function getJSON(controller, url, callback) {
@@ -252,7 +255,7 @@ function invokeActuator(id, request, successCallback) {
     $.ajax(
         {
             method: "POST",
-            url: "http://" + controllerAddress + "/api/actuator/" + id + "?body=" + JSON.stringify(request),
+            url: "http://" + appConfiguration.controllerAddress + "/api/actuator/" + id + "?body=" + JSON.stringify(request),
             crossDomain: true,
             timeout: 2500
         }).success(function () {

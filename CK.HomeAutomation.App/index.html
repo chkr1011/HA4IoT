@@ -44,7 +44,14 @@
     </script>
 
     <script type="text/ng-template" id="rollerShutterTemplate">
+
         <div class="btn-group" role="group">
+
+            <div class="progress">
+                <div class="progress-bar progress-bar-default" ng-class="{'active progress-bar-striped' : actuator.state.state!='Stopped', 'progress-bar-success' : actuator.state.position > (15467-3000)}" ng-style="{width: ((actuator.state.position / (15467))*100) + '%'}">
+                </div>
+            </div>
+
             <button class="btn btn-primary" ng-class="{'btn-danger': actuator.state.state=='MovingUp'}" ng-click="setState(actuator, 'MovingUp')">
                 <span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span>
             </button>
@@ -55,6 +62,47 @@
                 <span class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></span>
             </button>
         </div>
+
+    </script>
+
+    <script type="text/ng-template" id="sensorsOverviewTemplate">
+        <div class="panel panel-success row" id="sensors">
+            <div class="panel-heading" ng-click="haCtrl.showSensorsOverview=!haCtrl.showSensorsOverview">
+                <h1 class="panel-title pointer">Sensoren</h1>
+            </div>
+            <table class="table table-striped" ng-show="haCtrl.showSensorsOverview==true">
+                <thead>
+                    <tr>
+                        <th>Sensor</th>
+                        <th>Wert</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="actuator in haCtrl.sensors | orderBy:['id']">
+                        <td style="vertical-align: middle;">
+                            <span><img class="icon" ng-src="Images/{{actuator.image}}.png" />{{actuator.id}}</span>
+                        </td>
+                        <td class="rightTextAligned" ng-include="actuator.template"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="rollerShuttersOverviewTemplate">
+        <div class="row panel panel-success" ng-click="haCtrl.showRollerShuttersOverview=!haCtrl.showRollerShuttersOverview">
+            <div class="panel-heading">
+                <h1 class="panel-title pointer">Rolladen</h1>
+            </div>
+            <table class="table table-striped" ng-show="haCtrl.showRollerShuttersOverview==true">
+                <tr ng-repeat="actuator in haCtrl.rollerShutters | orderBy:['id']">
+                    <td style="vertical-align: middle;">
+                        <span><img class="icon" ng-src="Images/{{actuator.image}}.png" />{{actuator.id}}</span>
+                    </td>
+                    <td style="text-align: right;" ng-include="actuator.template"></td>
+                </tr>
+            </table>
+        </div>
     </script>
 
     <script type="text/ng-template" id="stateMachineTemplate">
@@ -63,6 +111,35 @@
                 {{state.caption}}
             </button>
         </div>
+    </script>
+
+    <script type="text/ng-template" id="roomsOverviewTemplate">
+        <div class="row panel panel-default" ng-class="{'panel-primary': haCtrl.activeRoom==room.id}" id="{{room.id}}" ng-repeat="room in haCtrl.rooms | orderBy:['sortValue', 'caption']">
+            <div class="panel-heading" ng-click="haCtrl.setActiveRoom(room.id)">
+                <h1 class="panel-title pointer">{{room.caption}}</h1>
+            </div>
+            <table class="table table-striped" ng-show="haCtrl.activeRoom==room.id">
+                <tr ng-repeat="actuator in room.actuators | orderBy:['sortValue', 'caption']">
+                    <td style="vertical-align: middle;">
+                        <span><img class="icon" ng-src="Images/{{actuator.image}}.png" />{{actuator.caption}}</span>
+                    </td>
+                    <td style="text-align: right;" ng-include="actuator.template"></td>
+                </tr>
+            </table>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="bottomBar">
+        <nav class="row navbar navbar-inverse">
+            <span class="navbar-text" style="vertical-align: middle; margin: 10px;">
+                <span class="glyphicon glyphicon-signal" ng-class="{'text-danger': haCtrl.errorMessage!='', 'text-success': haCtrl.errorMessage===''}" aria-hidden="true"></span>
+                <span class="text-danger">{{haCtrl.errorMessage}}</span>
+                <span style="margin-left: 10px;">Version: {{haCtrl.version}}</span>
+                <a href="#" style="margin-left: 10px;">
+                    <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+                </a>
+            </span>
+        </nav>
     </script>
 
     <div ng-hide="haCtrl.isReady==true">
@@ -77,56 +154,11 @@
         </div>
     </div>
 
-    <div class="hidden" id="content">
-        <div class="panel panel-default" id="{{ room.id }}" ng-repeat="room in haCtrl.rooms | orderBy:'caption'">
-            <div class="panel-heading" ng-click="haCtrl.setActiveRoom(room.id)">
-                <h4 class="panel-title">
-                    <a role="button">
-                        {{room.caption}}
-                    </a>
-                </h4>
-            </div>
-            <table class="table table-striped" ng-show="haCtrl.activeRoom==room.id">
-                <tr ng-repeat="actuator in room.actuators | orderBy:['sortValue', 'caption']">
-                    <td style="vertical-align: middle;">
-                        <span><img class="icon" ng-src="Images/{{actuator.image}}.png" />{{actuator.caption}}</span>
-                    </td>
-                    <td style="text-align: right;" ng-include="actuator.template"></td>
-                </tr>
-            </table>
-        </div>
-
-        <div class="panel panel-default" id="sensors">
-            <div class="panel-heading">
-                <h4 class="panel-title">
-                    <a role="button">Sensoren</a>
-                </h4>
-            </div>
-            <table class="table table-striped">
-                <thead>
-                <tr><th>Sensor</th><th>Wert</th></tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="actuator in haCtrl.sensors | orderBy:['id']">
-                        <td style="vertical-align: middle;">
-                            <span><img class="icon" ng-src="Images/{{actuator.image}}.png" />{{actuator.id}}</span>
-                        </td>
-                        <td style="text-align: right;">{{actuator.state.value | number:2}}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <nav class="navbar navbar-inverse">
-            <span class="navbar-text">
-                <span class="glyphicon glyphicon-signal" ng-class="{'text-danger': haCtrl.errorMessage!='', 'text-success': haCtrl.errorMessage===''}" aria-hidden="true"></span>
-                <span class="text-danger">{{ haCtrl.errorMessage }}</span>
-                <span style="margin-left: 10px;">Version: {{ haCtrl.version }}</span>
-                <a href="#" style="margin-left: 10px;">
-                    <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
-                </a>
-            </span>
-        </nav>
+    <div class="hidden container-fluid" id="content">
+        <div ng-include="'roomsOverviewTemplate'"></div>
+        <div ng-show="haCtrl.appConfiguration.showSensorsOverview" ng-include="'sensorsOverviewTemplate'"></div>
+        <div ng-show="haCtrl.appConfiguration.showRollerShuttersOverview" ng-include="'rollerShuttersOverviewTemplate'"></div>
+        <div ng-show="haCtrl.appConfiguration.showRollerShuttersOverview" ng-include="'bottomBar'"></div>
     </div>
 
     <link rel="stylesheet" href="Content/bootstrap.min.css" />
@@ -136,6 +168,14 @@
         body {
             padding-bottom: 70px;
         }
+
+        .panel {
+            margin-bottom: 0;
+        }
+
+        * {
+            border-radius: 0 !important;
+        }
     </style>
 
     <script type="text/javascript" src="Scripts/jquery-2.1.4.min.js"></script>
@@ -143,6 +183,7 @@
     <script type="text/javascript" src="Scripts/angular.min.js"></script>
 
     <script type="text/javascript">
+        appConfiguration = {};
         controllerAddress = null;
         actuatorConfigurationResolver = null;
         friendlyNameLookup = [];

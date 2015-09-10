@@ -82,6 +82,7 @@
     <Content Include="Images\Spotlight.png" />
     <Content Include="Images\TemperatureSensor.png" />
     <Content Include="Images\WaterPump.png" />
+    <Content Include="Images\Wifi.png" />
     <Content Include="Images\Window.png" />
     <Content Include="packages.config" />
     <Content Include=".htaccess" />
