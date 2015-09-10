@@ -45,8 +45,12 @@ namespace CK.HomeAutomation.Networking
                 }
 
                 relativeUrl = relativeUrl.Substring(index + controllerName.Length).Replace("/", "\\").Replace("%20", " ");
+                string filename = rootDirectory + relativeUrl;
 
-                c.Response.Body.Append(File.ReadAllText(Path.Combine(rootDirectory, relativeUrl)));
+                var mimeTypeProvider = new MimeTypeProvider();
+                c.Response.MimeType = mimeTypeProvider.GetMimeTypeOfFile(filename);
+
+                c.Response.Body.Append(File.ReadAllText(filename));
             });
         }
     }

@@ -8,5 +8,6 @@ namespace CK.HomeAutomation.Networking
         public HttpStatusCode StatusCode { get; set; } = HttpStatusCode.OK;
         public StringBuilder Body { get; } = new StringBuilder();
         public JsonObject Result { get; set; }
+        public string MimeType { get; set; }
     }
 }

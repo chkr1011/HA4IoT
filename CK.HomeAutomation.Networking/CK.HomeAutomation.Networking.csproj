@@ -124,6 +124,7 @@
     <Compile Include="HttpResponse.cs" />
     <Compile Include="HttpStatusCode.cs" />
     <Compile Include="HttpServer.cs" />
+    <Compile Include="MimeTypeProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestReceivedEventArgs.cs" />
     <Compile Include="StatusDescriptionProvider.cs" />
