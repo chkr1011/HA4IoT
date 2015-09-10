@@ -23,6 +23,9 @@ INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) V
 INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'Bedroom.LightCeilingWindow', 'On', 10.5) --3x 3.5
 INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'Bedroom.LightCeilingWall', 'On', 7) --2x 3.5
 INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'Bedroom.LightCeiling', 'On', 10.5) --3x 3.5
+INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'Bedroom.Fan', '1', 32)
+INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'Bedroom.Fan', '2', 40)
+INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'Bedroom.Fan', '3', 58)
 
 INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'ChildrensRoom.LightCeilingMiddle', 'On', 15) --3x 5
 INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'ReadingRoom.LightCeilingMiddle', 'On', 15) --3x 5
@@ -59,4 +62,6 @@ INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) V
 INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'Floor.LampStairsCeiling1', 'On', 3.5)
 INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'Floor.LampStairsCeiling2', 'On', 3.5)
 INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'Floor.LampStairsCeiling3', 'On', 3.5)
+INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'Floor.LampStairsCeiling4', 'On', 3.5)
+
 INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'Floor.LampStairsCeiling4', 'On', 3.5)
