@@ -1,6 +1,4 @@
-﻿using CK.HomeAutomation.Core;
-
-namespace CK.HomeAutomation.Hardware
+﻿namespace CK.HomeAutomation.Hardware
 {
     public interface IOutputController
     {

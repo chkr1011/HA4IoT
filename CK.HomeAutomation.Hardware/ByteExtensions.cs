@@ -2,7 +2,7 @@ using System;
 
 namespace CK.HomeAutomation.Hardware
 {
-    internal static class ByteExtensions
+    public static class ByteExtensions
     {
         public static bool GetBit(this byte @byte, int index)
         {

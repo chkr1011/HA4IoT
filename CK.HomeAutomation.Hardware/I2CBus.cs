@@ -9,9 +9,9 @@ namespace CK.HomeAutomation.Hardware
 {
     public class I2CBus
     {
-        private readonly INotificationHandler _notificationHandler;
         private readonly Dictionary<int, I2cDevice> _deviceCache = new Dictionary<int, I2cDevice>();
         private readonly string _i2CBusId;
+        private readonly INotificationHandler _notificationHandler;
         private readonly object _syncRoot = new object();
 
         public I2CBus(INotificationHandler notificationHandler)
