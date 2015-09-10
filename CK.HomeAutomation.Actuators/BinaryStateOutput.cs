@@ -1,6 +1,6 @@
 ﻿using System;
 using Windows.Data.Json;
-using CK.HomeAutomation.Core;
+using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Networking;
 using CK.HomeAutomation.Notifications;
 
@@ -19,7 +19,7 @@ namespace CK.HomeAutomation.Actuators
             SetStateInternal(BinaryActuatorState.Off, true, true);
         }
 
-        public event EventHandler StateChanged; 
+        public event EventHandler StateChanged;
 
         public BinaryActuatorState State => _output.Read() == BinaryState.High ? BinaryActuatorState.On : BinaryActuatorState.Off;
 
@@ -68,7 +68,6 @@ namespace CK.HomeAutomation.Actuators
 
             context.Response["state"] = JsonValue.CreateStringValue(State.ToString());
             context.Response["stateBool"] = JsonValue.CreateBooleanValue(isOn);
-
             base.ApiGet(context);
         }
 

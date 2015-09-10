@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CK.HomeAutomation.Core;
+using CK.HomeAutomation.Core.Timer;
 
 namespace CK.HomeAutomation.Actuators.Automations
 {
     public class AlwaysOnAutomation
     {
         private readonly List<IBinaryStateOutputActuator> _actuators = new List<IBinaryStateOutputActuator>();
-        private readonly List<Tuple<TimeSpan, TimeSpan>> _offTimeRanges = new List<Tuple<TimeSpan, TimeSpan>>(); 
+        private readonly List<Tuple<TimeSpan, TimeSpan>> _offTimeRanges = new List<Tuple<TimeSpan, TimeSpan>>();
 
         private Func<TimeSpan> _from;
         private Func<TimeSpan> _until;

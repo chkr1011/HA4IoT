@@ -17,8 +17,6 @@ namespace CK.HomeAutomation.Actuators
         {
         }
 
-        public event EventHandler<StateMachineStateChangedEventArgs> StateChanged;
-        
         public string State => States[_index].Id;
 
         public List<StateMachineState> States { get; } = new List<StateMachineState>();
@@ -27,6 +25,8 @@ namespace CK.HomeAutomation.Actuators
         {
             get { return States.Any(s => s.Id.Equals(BinaryActuatorState.Off.ToString(), StringComparison.OrdinalIgnoreCase)); }
         }
+
+        public event EventHandler<StateMachineStateChangedEventArgs> StateChanged;
 
         public StateMachineState AddOffState()
         {

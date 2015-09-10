@@ -14,6 +14,8 @@ namespace CK.HomeAutomation.Telemetry
             NotificationHandler = notificationHandler;
         }
 
+        protected INotificationHandler NotificationHandler { get; }
+
         public void ConnectActuators(Home home)
         {
             if (home == null) throw new ArgumentNullException(nameof(home));
@@ -71,8 +73,6 @@ namespace CK.HomeAutomation.Telemetry
                 }
             }
         }
-
-        protected INotificationHandler NotificationHandler { get; }
 
         protected virtual void OnMotionDetected(MotionDetector motionDetector)
         {

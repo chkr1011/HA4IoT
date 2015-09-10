@@ -1,34 +1,18 @@
 ﻿using System;
 using CK.HomeAutomation.Actuators;
 using CK.HomeAutomation.Actuators.Automations;
-using CK.HomeAutomation.Core;
+using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Hardware.CCTools;
-using CK.HomeAutomation.Hardware.Drivers;
+using CK.HomeAutomation.Hardware.DHT22;
 
 namespace CK.HomeAutomation.Controller.Rooms
 {
     internal class UpperBathroomConfiguration
     {
-        private enum UpperBathroom
+        public void Setup(Home home, CCToolsBoardController ccToolsController, DHT22Reader sensorBridgeDriver)
         {
-            TemperatureSensor,
-            HumiditySensor,
-            MotionDetector,
-
-            LightCeilingDoor,
-            LightCeilingEdge,
-            LightCeilingMirrorCabinet,
-            LampMirrorCabinet,
-
-            Fan,
-
-            CombinedCeilingLights
-        }
-
-        public void Setup(Home home, IOBoardManager ioBoardManager, CCToolsFactory ccToolsFactory, TemperatureAndHumiditySensorBridgeDriver sensorBridgeDriver)
-        {
-            var hsrel5 = ccToolsFactory.CreateHSREL5(Device.UpperBathroomHSREL5, 61);
-            var input5 = ioBoardManager.GetInputBoard(Device.Input5);
+            var hsrel5 = ccToolsController.CreateHSREL5(Device.UpperBathroomHSREL5, 61);
+            var input5 = ccToolsController.GetInputBoard(Device.Input5);
 
             var bathroom = home.AddRoom(Room.UpperBathroom)
                 .WithTemperatureSensor(UpperBathroom.TemperatureSensor, 7, sensorBridgeDriver)
@@ -64,6 +48,22 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithFastDuration(TimeSpan.FromMinutes(12))
                 .WithMotionDetector(bathroom.MotionDetector(UpperBathroom.MotionDetector))
                 .WithActuator(fan);
+        }
+
+        private enum UpperBathroom
+        {
+            TemperatureSensor,
+            HumiditySensor,
+            MotionDetector,
+
+            LightCeilingDoor,
+            LightCeilingEdge,
+            LightCeilingMirrorCabinet,
+            LampMirrorCabinet,
+
+            Fan,
+
+            CombinedCeilingLights
         }
     }
 }

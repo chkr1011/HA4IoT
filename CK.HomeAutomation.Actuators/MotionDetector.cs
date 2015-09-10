@@ -1,6 +1,7 @@
 ﻿using System;
 using Windows.Data.Json;
-using CK.HomeAutomation.Core;
+using CK.HomeAutomation.Core.Timer;
+using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Networking;
 using CK.HomeAutomation.Notifications;
 
@@ -8,8 +9,8 @@ namespace CK.HomeAutomation.Actuators
 {
     public class MotionDetector : BaseActuator
     {
-        private bool _isMotionDetected;
         private TimedAction _autoEnableAction;
+        private bool _isMotionDetected;
 
         public MotionDetector(string id, IBinaryInput input, HomeAutomationTimer timer, HttpRequestController httpApiController, INotificationHandler notificationHandler)
             : base(id, httpApiController, notificationHandler)

@@ -20,7 +20,7 @@ namespace CK.HomeAutomation.TraceViewer
             _udpClient.EnableBroadcast = true;
         }
 
-        public event EventHandler<ControllerNotificationReceivedEventArguments> NotificationReceived; 
+        public event EventHandler<ControllerNotificationReceivedEventArguments> NotificationReceived;
 
         public void Start()
         {

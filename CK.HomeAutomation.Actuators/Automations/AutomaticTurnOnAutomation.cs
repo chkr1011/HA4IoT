@@ -1,16 +1,18 @@
 ﻿using System;
-using CK.HomeAutomation.Core;
+using System.Collections.Generic;
+using CK.HomeAutomation.Core.Timer;
 
 namespace CK.HomeAutomation.Actuators.Automations
 {
     public class AutomaticTurnOnAutomation
     {
+        private readonly List<RollerShutter> _rollerShutters = new List<RollerShutter>();
         private readonly HomeAutomationTimer _timer;
 
         private IBinaryStateOutputActuator _actuator;
-        private TimedAction _timeout;
         private TimeSpan _duration = TimeSpan.FromMinutes(1);
         private Func<TimeSpan> _from;
+        private TimedAction _timeout;
         private Func<TimeSpan> _until;
 
         public AutomaticTurnOnAutomation(HomeAutomationTimer timer)
@@ -67,13 +69,22 @@ namespace CK.HomeAutomation.Actuators.Automations
             return this;
         }
 
-        public AutomaticTurnOnAutomation WithTimeRange(Func<TimeSpan> from, Func<TimeSpan> until)
+        public AutomaticTurnOnAutomation WithEnabledInTimeRange(Func<TimeSpan> from, Func<TimeSpan> until)
         {
             if (@from == null) throw new ArgumentNullException(nameof(@from));
             if (until == null) throw new ArgumentNullException(nameof(until));
 
             _from = from;
             _until = until;
+
+            return this;
+        }
+
+        public AutomaticTurnOnAutomation WithEnabledIfRollerShutterIsClosed(RollerShutter rollerShutter)
+        {
+            if (rollerShutter == null) throw new ArgumentNullException(nameof(rollerShutter));
+            
+            _rollerShutters.Add(rollerShutter);
 
             return this;
         }
@@ -107,13 +118,30 @@ namespace CK.HomeAutomation.Actuators.Automations
 
         private void SetState(bool checkTimeRange, BinaryActuatorState state)
         {
-            if (checkTimeRange && !TimeRangeIsMatching())
+            bool isEnabled = true;
+
+            if (checkTimeRange)
             {
-                return;
+                if (!TimeRangeIsMatching())
+                {
+                    isEnabled = false;
+                }
             }
 
-            StopTimeout();
-            _actuator?.SetState(state);
+            foreach (var rollerShutter in _rollerShutters)
+            {
+                if (rollerShutter.IsClosed)
+                {
+                    isEnabled = true;
+                    break;
+                }
+            }
+
+            if (isEnabled)
+            {
+                StopTimeout();
+                _actuator?.SetState(state);
+            }
         }
 
         private bool TimeRangeIsMatching()

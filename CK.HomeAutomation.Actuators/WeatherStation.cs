@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Storage;
 using Windows.Web.Http;
-using CK.HomeAutomation.Core;
+using CK.HomeAutomation.Core.Timer;
 using CK.HomeAutomation.Networking;
 using CK.HomeAutomation.Notifications;
 using HttpMethod = CK.HomeAutomation.Networking.HttpMethod;

@@ -5,6 +5,7 @@ using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using Windows.Storage.Streams;
 using CK.HomeAutomation.Core;
+using CK.HomeAutomation.Core.Timer;
 using CK.HomeAutomation.Networking;
 using CK.HomeAutomation.Notifications;
 
@@ -12,8 +13,8 @@ namespace CK.HomeAutomation.Actuators
 {
     public class Home
     {
-        private readonly Dictionary<Enum, Room> _rooms = new Dictionary<Enum, Room>();
         private readonly HealthMonitor _healthMonitor;
+        private readonly Dictionary<Enum, Room> _rooms = new Dictionary<Enum, Room>();
 
         public Home(HomeAutomationTimer timer, HealthMonitor healthMonitor, IWeatherStation weatherStation, HttpRequestController httpApiController, INotificationHandler notificationHandler)
         {

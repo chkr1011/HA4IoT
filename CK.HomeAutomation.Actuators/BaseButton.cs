@@ -13,13 +13,13 @@ namespace CK.HomeAutomation.Actuators
             Handler = notificationHandler;
         }
 
-        public event EventHandler PressedShort;
-        public event EventHandler PressedLong;
-
         protected List<Action> ShortActions { get; } = new List<Action>();
         protected List<Action> LongActions { get; } = new List<Action>();
 
         protected INotificationHandler Handler { get; }
+
+        public event EventHandler PressedShort;
+        public event EventHandler PressedLong;
 
         public BaseButton WithShortAction(Action action)
         {

@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using CK.HomeAutomation.Core;
+using CK.HomeAutomation.Hardware;
 
 namespace CK.HomeAutomation.Actuators
 {
     public class StateMachineState
     {
-        private readonly StateMachine _stateMachine;
-        private readonly List<Tuple<IBinaryOutput, BinaryState>> _outputs = new List<Tuple<IBinaryOutput, BinaryState>>();
         private readonly List<Tuple<IBinaryStateOutputActuator, BinaryActuatorState>> _actuators = new List<Tuple<IBinaryStateOutputActuator, BinaryActuatorState>>();
+        private readonly List<Tuple<IBinaryOutput, BinaryState>> _outputs = new List<Tuple<IBinaryOutput, BinaryState>>();
+        private readonly StateMachine _stateMachine;
 
         public StateMachineState(string id, StateMachine stateMachine)
         {

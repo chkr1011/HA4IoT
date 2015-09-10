@@ -21,8 +21,6 @@ namespace CK.HomeAutomation.Actuators
             ExposeToApi(httpApiController);
         }
 
-        public event EventHandler IsEnabledChanged;
-
         public string Id { get; }
 
         public bool IsEnabled
@@ -45,6 +43,8 @@ namespace CK.HomeAutomation.Actuators
         }
 
         protected INotificationHandler NotificationHandler { get; }
+
+        public event EventHandler IsEnabledChanged;
 
         protected virtual void ApiPost(ApiRequestContext context)
         {

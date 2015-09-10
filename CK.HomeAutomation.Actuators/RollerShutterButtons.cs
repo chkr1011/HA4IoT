@@ -1,5 +1,6 @@
 ﻿using System;
-using CK.HomeAutomation.Core;
+using CK.HomeAutomation.Core.Timer;
+using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Networking;
 using CK.HomeAutomation.Notifications;
 

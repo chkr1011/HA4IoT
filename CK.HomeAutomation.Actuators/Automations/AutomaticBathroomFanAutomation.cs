@@ -1,5 +1,5 @@
 ﻿using System;
-using CK.HomeAutomation.Core;
+using CK.HomeAutomation.Core.Timer;
 
 namespace CK.HomeAutomation.Actuators.Automations
 {
@@ -7,9 +7,9 @@ namespace CK.HomeAutomation.Actuators.Automations
     {
         private readonly HomeAutomationTimer _timer;
         private StateMachine _actuator;
-        private TimedAction _timeout;
-        private TimeSpan _slowDuration;
         private TimeSpan _fastDuration;
+        private TimeSpan _slowDuration;
+        private TimedAction _timeout;
 
         public AutomaticBathroomFanAutomation(HomeAutomationTimer timer)
         {

@@ -1,5 +1,5 @@
 ﻿using System;
-using CK.HomeAutomation.Hardware.Drivers;
+using CK.HomeAutomation.Hardware.DHT22;
 using CK.HomeAutomation.Networking;
 using CK.HomeAutomation.Notifications;
 
@@ -7,13 +7,13 @@ namespace CK.HomeAutomation.Actuators
 {
     public class HumiditySensor : BaseSensor
     {
-        public HumiditySensor(string id, int sensorId, TemperatureAndHumiditySensorBridgeDriver driver,
+        public HumiditySensor(string id, int sensorId, DHT22Reader dht22Reader,
             HttpRequestController httpApiController, INotificationHandler notificationHandler)
             : base(id, httpApiController, notificationHandler)
         {
-            if (driver == null) throw new ArgumentNullException(nameof(driver));
+            if (dht22Reader == null) throw new ArgumentNullException(nameof(dht22Reader));
 
-            driver.ValuesUpdated += (s, e) => UpdateValue(driver.GetHumidity(sensorId));
+            dht22Reader.ValuesUpdated += (s, e) => UpdateValue(dht22Reader.GetHumidity(sensorId));
         }
     }
 }

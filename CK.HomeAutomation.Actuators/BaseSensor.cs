@@ -12,9 +12,9 @@ namespace CK.HomeAutomation.Actuators
         {
         }
 
-        public event EventHandler ValueChanged;
-
         public float Value { get; private set; }
+
+        public event EventHandler ValueChanged;
 
         public override void ApiGet(ApiRequestContext context)
         {

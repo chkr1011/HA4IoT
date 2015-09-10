@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using CK.HomeAutomation.Core;
+using CK.HomeAutomation.Core.Timer;
 
 namespace CK.HomeAutomation.Actuators.Automations
 {
     public class AutomaticRollerShutterAutomation
     {
-        private readonly IWeatherStation _weatherStation;
         private readonly List<RollerShutter> _rollerShutters = new List<RollerShutter>();
+        private readonly IWeatherStation _weatherStation;
+
+        private float? _maxOutsideTemperature;
+        private bool _maxOutsideTemperatureApplied;
 
         private bool _sunriseApplied;
         private bool _sunsetApplied;
-        private bool _maxOutsideTemperatureApplied;
-
-        private float? _maxOutsideTemperature;
 
         public AutomaticRollerShutterAutomation(HomeAutomationTimer timer, IWeatherStation weatherStation)
         {

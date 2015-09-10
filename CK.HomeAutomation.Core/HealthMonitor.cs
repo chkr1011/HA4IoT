@@ -2,22 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using Windows.Data.Json;
+using CK.HomeAutomation.Core.Timer;
+using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Networking;
 
 namespace CK.HomeAutomation.Core
 {
     public class HealthMonitor
     {
-        private readonly Timeout _ledTimeout = new Timeout();
         private readonly List<int> _durations = new List<int>(100);
-        private readonly IBinaryOutput _statusLed;
+        private readonly Timeout _ledTimeout = new Timeout();
         private readonly DateTime _startedDate = DateTime.Now;
+        private readonly IBinaryOutput _statusLed;
+        private float? _averageTimerDuration;
 
         private bool _ledState;
+        private float? _maxTimerDuration;
 
         private float? _minTimerDuration;
-        private float? _maxTimerDuration;
-        private float? _averageTimerDuration;
 
         public HealthMonitor(IBinaryOutput statusLed, HomeAutomationTimer timer, HttpRequestController httpApiController)
         {

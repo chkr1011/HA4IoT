@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using CK.HomeAutomation.Core;
+using CK.HomeAutomation.Core.Timer;
+using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Networking;
 using CK.HomeAutomation.Notifications;
 

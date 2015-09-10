@@ -17,11 +17,11 @@ namespace CK.HomeAutomation.Actuators.Connectors
 
         private static void HandleBlindButtonPressedEvent(RollerShutter rollerShutter, RollerShutterButtonDirection direction)
         {
-            if (direction == RollerShutterButtonDirection.Up && rollerShutter.Status == RollerShutterStatus.MovingUp)
+            if (direction == RollerShutterButtonDirection.Up && rollerShutter.State == RollerShutterState.MovingUp)
             {
                 rollerShutter.Stop();
             }
-            else if (direction == RollerShutterButtonDirection.Down && rollerShutter.Status == RollerShutterStatus.MovingDown)
+            else if (direction == RollerShutterButtonDirection.Down && rollerShutter.State == RollerShutterState.MovingDown)
             {
                 rollerShutter.Stop();
             }

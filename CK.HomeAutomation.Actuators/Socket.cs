@@ -1,5 +1,4 @@
-﻿using CK.HomeAutomation.Core;
-using CK.HomeAutomation.Hardware;
+﻿using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Networking;
 using CK.HomeAutomation.Notifications;
 

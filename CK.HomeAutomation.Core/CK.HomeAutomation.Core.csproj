@@ -114,19 +114,20 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BinaryState.cs" />
-    <Compile Include="BinaryStateChangedEventArgs.cs" />
+    <Compile Include="BaseController.cs" />
     <Compile Include="HealthMonitor.cs" />
-    <Compile Include="IBinaryInput.cs" />
-    <Compile Include="IBinaryOutput.cs" />
-    <Compile Include="TimedAction.cs" />
-    <Compile Include="Timeout.cs" />
-    <Compile Include="HomeAutomationTimer.cs" />
+    <Compile Include="Timer\TimedAction.cs" />
+    <Compile Include="Timer\Timeout.cs" />
+    <Compile Include="Timer\HomeAutomationTimer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TimerTickEventArgs.cs" />
+    <Compile Include="Timer\TimerTickEventArgs.cs" />
     <Content Include="Properties\CK.HomeAutomation.Core.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CK.HomeAutomation.Hardware\CK.HomeAutomation.Hardware.csproj">
+      <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
+      <Name>CK.HomeAutomation.Hardware</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CK.HomeAutomation.Networking\CK.HomeAutomation.Networking.csproj">
       <Project>{d4e0a3f9-6521-4aee-815a-e2a60323fb63}</Project>
       <Name>CK.HomeAutomation.Networking</Name>

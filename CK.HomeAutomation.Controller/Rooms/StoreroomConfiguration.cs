@@ -1,28 +1,19 @@
 ﻿using System;
 using CK.HomeAutomation.Actuators;
 using CK.HomeAutomation.Hardware.CCTools;
-using CK.HomeAutomation.Hardware.Drivers;
+using CK.HomeAutomation.Hardware.DHT22;
 
 namespace CK.HomeAutomation.Controller.Rooms
 {
     internal class StoreroomConfiguration
     {
-        private enum Storeroom
+        public void Setup(Home home, CCToolsBoardController ccToolsController, DHT22Reader dht22Reader)
         {
-            MotionDetector,
-            LightCeiling,
+            var hsrel8LowerHeatingValves = ccToolsController.CreateHSREL8(Device.LowerHeatingValvesHSREL8, 16);
+            var hsrel5UpperHeatingValves = ccToolsController.CreateHSREL5(Device.UpperHeatingValvesHSREL5, 56);
 
-            CatLitterBoxFan,
-            CirculatingPump
-        }
-
-        public void Setup(Home home, IOBoardManager ioBoardManager, CCToolsFactory ccToolsFactory, TemperatureAndHumiditySensorBridgeDriver sensorBridgeDriver)
-        {
-            var hsrel8LowerHeatingValves = ccToolsFactory.CreateHSREL8(Device.LowerHeatingValvesHSREL8, 16);
-            var hsrel5UpperHeatingValves = ccToolsFactory.CreateHSREL5(Device.UpperHeatingValvesHSREL5, 56);
-
-            var hsrel5Stairway = ioBoardManager.GetOutputBoard(Device.StairwayHSREL5);
-            var input3 = ioBoardManager.GetInputBoard(Device.Input3);
+            var hsrel5Stairway = ccToolsController.GetOutputBoard(Device.StairwayHSREL5);
+            var input3 = ccToolsController.GetInputBoard(Device.Input3);
 
             var storeroom = home.AddRoom(Room.Storeroom)
                 .WithMotionDetector(Storeroom.MotionDetector, input3.GetInput(12))
@@ -41,6 +32,15 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithTarget(storeroom.Socket(Storeroom.CirculatingPump))
                 .WithOnDuration(TimeSpan.FromMinutes(1))
                 .WithOnlyAtDayTimeRange(home.WeatherStation);
+        }
+
+        private enum Storeroom
+        {
+            MotionDetector,
+            LightCeiling,
+
+            CatLitterBoxFan,
+            CirculatingPump
         }
     }
 }
