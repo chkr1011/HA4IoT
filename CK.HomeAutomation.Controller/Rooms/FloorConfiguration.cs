@@ -57,7 +57,7 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithActuator(floor.Lamp(Floor.StairwayLampCeiling))
                 .WithActuator(floor.Lamp(Floor.StairwayLampWall));
 
-            floor.SetupAutomaticTurnOnAction()
+            floor.SetupAutomaticTurnOnAndOffAction()
                 .WithMotionDetector(floor.MotionDetector(Floor.StairwayMotionDetector))
                 .WithButtonPressedShort(floor.Button(Floor.ButtonStairway))
                 .WithTarget(floor.BinaryStateOutput(Floor.CombinedStairwayLamp))
@@ -69,7 +69,7 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithActuator(floor.Lamp(Floor.Lamp2))
                 .WithActuator(floor.Lamp(Floor.Lamp3));
 
-            floor.SetupAutomaticTurnOnAction()
+            floor.SetupAutomaticTurnOnAndOffAction()
                 .WithMotionDetector(floor.MotionDetector(Floor.LowerFloorMotionDetector))
                 .WithButtonPressedShort(floor.Button(Floor.ButtonLowerFloorUpper))
                 .WithButtonPressedShort(floor.Button(Floor.ButtonLowerFloorAtBathroom))
@@ -85,7 +85,7 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithActuator(floor.Lamp(Floor.LampStairsCeiling4))
                 .WithEnabledAnimations();
 
-            floor.SetupAutomaticTurnOnAction()
+            floor.SetupAutomaticTurnOnAndOffAction()
                 .WithMotionDetector(floor.MotionDetector(Floor.StairsLowerMotionDetector))
                 .WithMotionDetector(floor.MotionDetector(Floor.StairsUpperMotionDetector))
                 .WithButtonPressedShort(floor.Button(Floor.ButtonStairsUpper))

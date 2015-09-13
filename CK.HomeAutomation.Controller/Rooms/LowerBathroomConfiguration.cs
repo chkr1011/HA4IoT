@@ -44,7 +44,7 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithActuator(bathroom.Lamp(LowerBathroom.LightCeilingWindow))
                 .WithActuator(bathroom.Lamp(LowerBathroom.LampMirror));
 
-            bathroom.SetupAutomaticTurnOnAction()
+            bathroom.SetupAutomaticTurnOnAndOffAction()
                 .WithMotionDetector(bathroom.MotionDetector(LowerBathroom.MotionDetector))
                 .WithTarget(bathroom.BinaryStateOutput(LowerBathroom.CombinedLights));
         }

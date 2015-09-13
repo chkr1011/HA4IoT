@@ -70,7 +70,7 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithActuator(kitchen.Lamp(Kitchen.LightCeilingDoor))
                 .WithActuator(kitchen.Lamp(Kitchen.LightCeilingWindow));
 
-            kitchen.SetupAutomaticTurnOnAction()
+            kitchen.SetupAutomaticTurnOnAndOffAction()
                 .WithMotionDetector(kitchen.MotionDetector(Kitchen.MotionDetector))
                 .WithTarget(kitchen.BinaryStateOutput(Kitchen.CombinedAutomaticLights))
                 .WithOnAtNightTimeRange(home.WeatherStation);

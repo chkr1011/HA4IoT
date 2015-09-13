@@ -18,6 +18,8 @@ namespace CK.HomeAutomation.Actuators.Automations
         public AutomaticTurnOnAndOffAutomation(IHomeAutomationTimer timer)
         {
             _timer = timer;
+
+            WithOnDuration(TimeSpan.FromMinutes(1));
         }
 
         public AutomaticTurnOnAndOffAutomation WithMotionDetector(MotionDetector motionDetector)
@@ -123,8 +125,11 @@ namespace CK.HomeAutomation.Actuators.Automations
         private void StartTimeout()
         {
             _turnOffTimeout?.Cancel();
-            _turnOffTimeout = _timer.In(_duration).Do(() => _actuator.TurnOff());
-            _isOn = false;
+            _turnOffTimeout = _timer.In(_duration).Do(() =>
+            {
+                _actuator.TurnOff();
+                _isOn = false;
+            });
         }
     }
 }

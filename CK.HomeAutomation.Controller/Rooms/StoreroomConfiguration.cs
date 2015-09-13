@@ -21,13 +21,13 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithLamp(Storeroom.LightCeiling, hsrel5Stairway.GetOutput(7).WithInvertedState())
                 .WithSocket(Storeroom.CatLitterBoxFan, hsrel8LowerHeatingValves.GetOutput(15));
 
-            storeroom.SetupAutomaticTurnOnAction()
+            storeroom.SetupAutomaticTurnOnAndOffAction()
                 .WithMotionDetector(storeroom.MotionDetector(Storeroom.MotionDetector))
                 .WithTarget(storeroom.Lamp(Storeroom.LightCeiling));
 
             storeroom.WithSocket(Storeroom.CirculatingPump, hsrel5UpperHeatingValves.GetOutput(3));
 
-            storeroom.SetupAutomaticTurnOnAction()
+            storeroom.SetupAutomaticTurnOnAndOffAction()
                 .WithMotionDetector(home.Room(Room.Kitchen).MotionDetector(KitchenConfiguration.Kitchen.MotionDetector))
                 .WithMotionDetector(home.Room(Room.LowerBathroom).MotionDetector(LowerBathroomConfiguration.LowerBathroom.MotionDetector))
                 .WithTarget(storeroom.Socket(Storeroom.CirculatingPump))

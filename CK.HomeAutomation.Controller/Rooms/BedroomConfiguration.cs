@@ -69,7 +69,7 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithDoNotOpenBefore(TimeSpan.FromHours(7).Add(TimeSpan.FromMinutes(15)))
                 .WithCloseIfOutsideTemperatureIsGreaterThan(28);
 
-            bedroom.SetupAutomaticTurnOnAction()
+            bedroom.SetupAutomaticTurnOnAndOffAction()
                 .WithMotionDetector(bedroom.MotionDetector(Bedroom.MotionDetector))
                 .WithTarget(bedroom.Actuator<BinaryStateOutput>(Bedroom.LightCeiling))
                 .WithOnDuration(TimeSpan.FromSeconds(15))

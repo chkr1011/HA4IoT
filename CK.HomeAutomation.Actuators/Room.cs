@@ -116,7 +116,7 @@ namespace CK.HomeAutomation.Actuators
             return new AutomaticRollerShutterAutomation(_home.Timer, _home.WeatherStation);
         }
 
-        public AutomaticTurnOnAndOffAutomation SetupAutomaticTurnOnAction()
+        public AutomaticTurnOnAndOffAutomation SetupAutomaticTurnOnAndOffAction()
         {
             return new AutomaticTurnOnAndOffAutomation(_home.Timer);
         }
