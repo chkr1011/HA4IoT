@@ -10,7 +10,6 @@ namespace CK.HomeAutomation.Actuators
     public class MotionDetector : BaseActuator
     {
         private TimedAction _autoEnableAction;
-        private bool _isMotionDetected;
 
         public MotionDetector(string id, IBinaryInput input, IHomeAutomationTimer timer, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
             : base(id, httpApiController, notificationHandler)
