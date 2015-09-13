@@ -91,7 +91,7 @@
 
 body {
     background: #286090;
-    margin: 0px;
+    margin: 0;
 }
 
 .hidden { display: none; }
@@ -114,12 +114,16 @@ body {
     font-size: 10pt;
 }
 
+.pointer {
+    cursor: pointer;
+}
+
 .loadingAnimation {
     animation: rotate 1s infinite linear;
     border-bottom: 7px solid white;
     border-left: 7px solid gray;
-    border-radius: 100%;
-    border-right: 7px solid white;
+    border-radius: 100% !important;
+    border-right: 7px solid gray;
 
     border-top: 7px solid white;
     box-sizing: border-box;

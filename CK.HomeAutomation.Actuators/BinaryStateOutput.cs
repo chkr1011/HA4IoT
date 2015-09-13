@@ -1,16 +1,16 @@
 ﻿using System;
 using Windows.Data.Json;
-using CK.HomeAutomation.Core;
+using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Networking;
 using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Actuators
 {
-    public abstract class BinaryStateOutput : BaseActuator, IBinaryStateOutputActuator
+    public class BinaryStateOutput : BaseActuator, IBinaryStateOutputActuator
     {
         private readonly IBinaryOutput _output;
 
-        protected BinaryStateOutput(string id, IBinaryOutput output, HttpRequestController httpRequestController,
+        public BinaryStateOutput(string id, IBinaryOutput output, IHttpRequestController httpRequestController,
             INotificationHandler notificationHandler) : base(id, httpRequestController, notificationHandler)
         {
             if (output == null) throw new ArgumentNullException(nameof(output));
@@ -19,13 +19,18 @@ namespace CK.HomeAutomation.Actuators
             SetStateInternal(BinaryActuatorState.Off, true, true);
         }
 
-        public event EventHandler StateChanged; 
+        public event EventHandler<BinaryActuatorStateChangedEventArgs> StateChanged;
 
         public BinaryActuatorState State => _output.Read() == BinaryState.High ? BinaryActuatorState.On : BinaryActuatorState.Off;
 
         public void TurnOff(bool commit = true)
         {
             SetState(BinaryActuatorState.Off, commit);
+        }
+
+        public void TurnOn(bool commit = true)
+        {
+            SetState(BinaryActuatorState.On, commit);
         }
 
         public void SetState(BinaryActuatorState state, bool commit = true)
@@ -68,20 +73,20 @@ namespace CK.HomeAutomation.Actuators
 
             context.Response["state"] = JsonValue.CreateStringValue(State.ToString());
             context.Response["stateBool"] = JsonValue.CreateBooleanValue(isOn);
-
             base.ApiGet(context);
         }
 
-        private void SetStateInternal(BinaryActuatorState state, bool commit, bool forceEvents)
+        private void SetStateInternal(BinaryActuatorState newState, bool commit, bool forceEvents)
         {
-            bool stateHasChanged = state != State;
+            BinaryActuatorState oldState = State;
+            bool stateHasChanged = newState != oldState;
 
-            _output.Write(state == BinaryActuatorState.On ? BinaryState.High : BinaryState.Low, commit);
+            _output.Write(newState == BinaryActuatorState.On ? BinaryState.High : BinaryState.Low, commit);
 
             if (forceEvents || stateHasChanged)
             {
                 NotificationHandler.PublishFrom(this, NotificationType.Verbose, "'{0}' set to '{1}'.", Id, State);
-                StateChanged?.Invoke(this, EventArgs.Empty);
+                StateChanged?.Invoke(this, new BinaryActuatorStateChangedEventArgs(oldState, newState));
             }
         }
     }

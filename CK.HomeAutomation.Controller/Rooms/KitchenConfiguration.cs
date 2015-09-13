@@ -2,7 +2,8 @@
 using CK.HomeAutomation.Actuators;
 using CK.HomeAutomation.Actuators.Connectors;
 using CK.HomeAutomation.Hardware.CCTools;
-using CK.HomeAutomation.Hardware.Drivers;
+using CK.HomeAutomation.Hardware.DHT22;
+using CK.HomeAutomation.Hardware.GenericIOBoard;
 
 namespace CK.HomeAutomation.Controller.Rooms
 {
@@ -32,17 +33,19 @@ namespace CK.HomeAutomation.Controller.Rooms
             SocketKitchenette
         }
 
-        public void Setup(Home home, IOBoardManager ioBoardManager, CCToolsFactory ccToolsFactory, TemperatureAndHumiditySensorBridgeDriver sensorBridgeDriver)
+        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Reader sensorBridgeDriver)
         {
-            var hsrel5 = ccToolsFactory.CreateHSREL5(Device.KitchenHSREL5, 58);
-            var hspe8 = ccToolsFactory.CreateHSPE8OutputOnly(Device.KitchenHSPE8, 39);
+            var hsrel5 = ccToolsController.CreateHSREL5(Device.KitchenHSREL5, 58);
+            var hspe8 = ccToolsController.CreateHSPE8OutputOnly(Device.KitchenHSPE8, 39);
 
             var input1 = ioBoardManager.GetInputBoard(Device.Input1);
             var input2 = ioBoardManager.GetInputBoard(Device.Input2);
 
+            const int SensorID = 1;
+
             var kitchen = home.AddRoom(Room.Kitchen)
-                .WithTemperatureSensor(Kitchen.TemperatureSensor, 1, sensorBridgeDriver)
-                .WithHumiditySensor(Kitchen.HumiditySensor, 1, sensorBridgeDriver)
+                .WithTemperatureSensor(Kitchen.TemperatureSensor, SensorID, sensorBridgeDriver)
+                .WithHumiditySensor(Kitchen.HumiditySensor, SensorID, sensorBridgeDriver)
                 .WithMotionDetector(Kitchen.MotionDetector, input1.GetInput(8))
                 .WithLamp(Kitchen.LightCeilingMiddle, hsrel5.GetOutput(5).WithInvertedState())
                 .WithLamp(Kitchen.LightCeilingWindow, hsrel5.GetOutput(6).WithInvertedState())
@@ -51,7 +54,7 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithLamp(Kitchen.LightCeilingPassageInner, hspe8.GetOutput(1).WithInvertedState())
                 .WithLamp(Kitchen.LightCeilingPassageOuter, hspe8.GetOutput(2).WithInvertedState())
                 .WithSocket(Kitchen.SocketWall, hsrel5.GetOutput(2))
-                .WithRollerShutter(Kitchen.RollerShutter, hsrel5.GetOutput(4), hsrel5.GetOutput(3), RollerShutter.DefaultMaxMovingDuration)
+                .WithRollerShutter(Kitchen.RollerShutter, hsrel5.GetOutput(4), hsrel5.GetOutput(3), RollerShutter.DefaultMaxMovingDuration, 15467)
                 .WithButton(Kitchen.ButtonKitchenette, input1.GetInput(11))
                 .WithButton(Kitchen.ButtonPassage, input1.GetInput(9))
                 .WithRollerShutterButtons(Kitchen.RollerShutterButtons, input2.GetInput(15), input2.GetInput(14));
@@ -70,7 +73,7 @@ namespace CK.HomeAutomation.Controller.Rooms
             kitchen.SetupAutomaticTurnOnAction()
                 .WithMotionDetector(kitchen.MotionDetector(Kitchen.MotionDetector))
                 .WithTarget(kitchen.BinaryStateOutput(Kitchen.CombinedAutomaticLights))
-                .WithOnlyAtNightTimeRange(home.WeatherStation);
+                .WithOnAtNightTimeRange(home.WeatherStation);
         }
     }
 }

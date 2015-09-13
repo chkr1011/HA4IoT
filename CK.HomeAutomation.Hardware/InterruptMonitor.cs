@@ -1,28 +1,23 @@
 ﻿using System;
-using Windows.Devices.Gpio;
 
 namespace CK.HomeAutomation.Hardware
 {
     public class InterruptMonitor
     {
-        private readonly GpioPin _pin;
+        private readonly IBinaryInput _pin;
 
-        public InterruptMonitor(GpioPin pin, Core.HomeAutomationTimer timer)
+        public InterruptMonitor(IBinaryInput pin)
         {
             if (pin == null) throw new ArgumentNullException(nameof(pin));
-            if (timer == null) throw new ArgumentNullException(nameof(timer));
 
             _pin = pin;
-            _pin.SetDriveMode(GpioPinDriveMode.Input);
-
-            timer.Tick += CheckInterrupt;
         }
 
         public event EventHandler InterruptDetected;
 
-        private void CheckInterrupt(object sender, Core.TimerTickEventArgs e)
+        public void Poll()
         {
-            if (_pin.Read() == GpioPinValue.Low)
+            if (_pin.Read() == BinaryState.Low)
             {
                 InterruptDetected?.Invoke(this, EventArgs.Empty);
             }

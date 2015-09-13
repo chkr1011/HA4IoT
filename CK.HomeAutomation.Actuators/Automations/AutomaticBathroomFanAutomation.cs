@@ -1,17 +1,17 @@
 ﻿using System;
-using CK.HomeAutomation.Core;
+using CK.HomeAutomation.Core.Timer;
 
 namespace CK.HomeAutomation.Actuators.Automations
 {
     public class AutomaticBathroomFanAutomation
     {
-        private readonly HomeAutomationTimer _timer;
+        private readonly IHomeAutomationTimer _timer;
         private StateMachine _actuator;
-        private TimedAction _timeout;
-        private TimeSpan _slowDuration;
         private TimeSpan _fastDuration;
+        private TimeSpan _slowDuration;
+        private TimedAction _timeout;
 
-        public AutomaticBathroomFanAutomation(HomeAutomationTimer timer)
+        public AutomaticBathroomFanAutomation(IHomeAutomationTimer timer)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
 

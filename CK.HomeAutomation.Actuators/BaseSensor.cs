@@ -7,14 +7,14 @@ namespace CK.HomeAutomation.Actuators
 {
     public abstract class BaseSensor : BaseActuator
     {
-        protected BaseSensor(string id, HttpRequestController httpApiController, INotificationHandler notificationHandler)
+        protected BaseSensor(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
             : base(id, httpApiController, notificationHandler)
         {
         }
 
-        public event EventHandler ValueChanged;
-
         public float Value { get; private set; }
+
+        public event EventHandler ValueChanged;
 
         public override void ApiGet(ApiRequestContext context)
         {

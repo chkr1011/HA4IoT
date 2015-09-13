@@ -11,12 +11,12 @@ namespace CK.HomeAutomation.Notifications
     public class NotificationHandler : INotificationHandler
     {
         private readonly bool _isDebuggerAttached = Debugger.IsAttached;
-
-        private readonly object _syncRoot = new object();
+        private readonly List<NotificationItem> _items = new List<NotificationItem>();
 
         private readonly DatagramSocket _socket;
+
+        private readonly object _syncRoot = new object();
         private readonly DataWriter _writer;
-        private readonly List<NotificationItem> _items = new List<NotificationItem>();
 
         public NotificationHandler()
         {
@@ -27,6 +27,30 @@ namespace CK.HomeAutomation.Notifications
             _writer = new DataWriter(streamReader);
 
             SendAsync();
+        }
+
+        public void Publish(NotificationType type, string text, params object[] parameters)
+        {
+            text = string.Format(text, parameters);
+            PrintNotification(type, text);
+
+            lock (_syncRoot)
+            {
+                _items.Add(new NotificationItem(type, text));
+            }
+        }
+
+        public void PublishFrom<TSender>(TSender sender, NotificationType type, string message, params object[] parameters) where TSender : class
+        {
+            if (sender == null)
+            {
+                Publish(type, message, parameters);
+            }
+            else
+            {
+                string senderText = sender.GetType().Name;
+                Publish(type, senderText + ": " + message, parameters);
+            }
         }
 
         private async void SendAsync()
@@ -57,36 +81,6 @@ namespace CK.HomeAutomation.Notifications
                 }
 
                 await Task.Delay(100);
-            }
-        }
-
-        public void Publish(NotificationType type, string text, params object[] parameters)
-        {
-            text = string.Format(text, parameters);
-
-            PrintNotification(type, text);
-
-            lock (_syncRoot)
-            {
-                _items.Add(new NotificationItem(type, text));
-            }
-        }
-
-        public void PublishFrom<TSender>(TSender sender, NotificationType type, string message, params object[] parameters) where TSender : class
-        {
-            string senderText = null;
-            if (sender != null)
-            {
-                senderText = sender.GetType().Name;
-            }
-
-            if (senderText == null)
-            {
-                Publish(type, message, parameters);
-            }
-            else
-            {
-                Publish(type, senderText + ": " + message, parameters);
             }
         }
 

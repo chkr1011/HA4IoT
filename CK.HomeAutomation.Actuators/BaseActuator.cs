@@ -9,7 +9,7 @@ namespace CK.HomeAutomation.Actuators
     {
         private bool _isEnabled = true;
 
-        protected BaseActuator(string id, HttpRequestController httpApiController, INotificationHandler notificationHandler)
+        protected BaseActuator(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
@@ -20,8 +20,6 @@ namespace CK.HomeAutomation.Actuators
             
             ExposeToApi(httpApiController);
         }
-
-        public event EventHandler IsEnabledChanged;
 
         public string Id { get; }
 
@@ -46,6 +44,8 @@ namespace CK.HomeAutomation.Actuators
 
         protected INotificationHandler NotificationHandler { get; }
 
+        public event EventHandler IsEnabledChanged;
+
         protected virtual void ApiPost(ApiRequestContext context)
         {
             if (context.Request.ContainsKey("isEnabled"))
@@ -60,7 +60,7 @@ namespace CK.HomeAutomation.Actuators
             context.Response.SetNamedValue("isEnabled", JsonValue.CreateBooleanValue(IsEnabled));
         }
 
-        private void ExposeToApi(HttpRequestController httpApiController)
+        private void ExposeToApi(IHttpRequestController httpApiController)
         {
             httpApiController.Handle(HttpMethod.Post, "actuator")
                 .WithSegment(Id)

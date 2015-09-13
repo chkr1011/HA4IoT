@@ -1,51 +1,17 @@
 ﻿using CK.HomeAutomation.Actuators;
 using CK.HomeAutomation.Hardware.CCTools;
-using CK.HomeAutomation.Hardware.Drivers;
+using CK.HomeAutomation.Hardware.DHT22;
+using CK.HomeAutomation.Hardware.GenericIOBoard;
 using CK.HomeAutomation.Hardware.RemoteSwitch;
 
 namespace CK.HomeAutomation.Controller.Rooms
 {
     internal class OfficeConfiguration
     {
-        private enum Office
+        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Reader sensorBridgeDriver, RemoteSwitchController remoteSwitchController)
         {
-            TemperatureSensor,
-            HumiditySensor,
-            MotionDetector,
-
-            LightCeilingFrontLeft,
-            LightCeilingFrontMiddle,
-            LightCeilingFrontRight,
-            LightCeilingMiddleLeft,
-            LightCeilingMiddleMiddle,
-            LightCeilingMiddleRight,
-            LightCeilingRearLeft,
-            LightCeilingRearRight,
-
-            SocketFrontLeft,
-            SocketFrontRight,
-            SocketWindowLeft,
-            SocketWindowRight,
-            SocketRearRight,
-            SocketRearLeft,
-            SocketRearLeftEdge,
-            RemoteSocketDesk,
-
-            ButtonUpperLeft,
-            ButtonUpperRight,
-            ButtonLowerLeft,
-            ButtonLowerRight,
-
-            CombinedCeilingLights,
-            CombinedCeilingLightsCouchOnly,
-            CombinedCeilingLightsDeskOnly,
-            CombinedCeilingLightsOther
-        }
-
-        public void Setup(Home home, IOBoardManager ioBoardManager, CCToolsFactory ccToolsFactory, TemperatureAndHumiditySensorBridgeDriver sensorBridgeDriver, RemoteSwitchController remoteSwitchController)
-        {
-            var hsrel8 = ccToolsFactory.CreateHSREL8(Device.OfficeHSREL8, 20);
-            var hspe8 = ccToolsFactory.CreateHSPE8OutputOnly(Device.UpperFloorAndOfficeHSPE8, 37);
+            var hsrel8 = ccToolsController.CreateHSREL8(Device.OfficeHSREL8, 20);
+            var hspe8 = ccToolsController.CreateHSPE8OutputOnly(Device.UpperFloorAndOfficeHSPE8, 37);
             var input4 = ioBoardManager.GetInputBoard(Device.Input4);
             var input5 = ioBoardManager.GetInputBoard(Device.Input5);
 
@@ -96,7 +62,7 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithActuator(lightsCouchOnly, BinaryActuatorState.Off)
                 .WithActuator(lightsOther, BinaryActuatorState.Off);
 
-            light.AddState(BinaryActuatorState.On.ToString())
+            light.AddOnState()
                 .WithActuator(lightsDeskOnly, BinaryActuatorState.On)
                 .WithActuator(lightsCouchOnly, BinaryActuatorState.On)
                 .WithActuator(lightsOther, BinaryActuatorState.On).
@@ -113,6 +79,41 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithActuator(lightsCouchOnly, BinaryActuatorState.On)
                 .WithActuator(lightsOther, BinaryActuatorState.Off)
                 .ConnectApplyStateWith(office.Actuator<Button>(Office.ButtonLowerRight));
+        }
+
+        private enum Office
+        {
+            TemperatureSensor,
+            HumiditySensor,
+            MotionDetector,
+
+            LightCeilingFrontLeft,
+            LightCeilingFrontMiddle,
+            LightCeilingFrontRight,
+            LightCeilingMiddleLeft,
+            LightCeilingMiddleMiddle,
+            LightCeilingMiddleRight,
+            LightCeilingRearLeft,
+            LightCeilingRearRight,
+
+            SocketFrontLeft,
+            SocketFrontRight,
+            SocketWindowLeft,
+            SocketWindowRight,
+            SocketRearRight,
+            SocketRearLeft,
+            SocketRearLeftEdge,
+            RemoteSocketDesk,
+
+            ButtonUpperLeft,
+            ButtonUpperRight,
+            ButtonLowerLeft,
+            ButtonLowerRight,
+
+            CombinedCeilingLights,
+            CombinedCeilingLightsCouchOnly,
+            CombinedCeilingLightsDeskOnly,
+            CombinedCeilingLightsOther
         }
     }
 }

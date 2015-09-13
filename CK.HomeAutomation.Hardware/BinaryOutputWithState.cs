@@ -1,5 +1,4 @@
 ﻿using System;
-using CK.HomeAutomation.Core;
 
 namespace CK.HomeAutomation.Hardware
 {

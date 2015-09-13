@@ -1,7 +1,8 @@
 ﻿using CK.HomeAutomation.Actuators;
 using CK.HomeAutomation.Actuators.Connectors;
 using CK.HomeAutomation.Hardware.CCTools;
-using CK.HomeAutomation.Hardware.Drivers;
+using CK.HomeAutomation.Hardware.DHT22;
+using CK.HomeAutomation.Hardware.GenericIOBoard;
 
 namespace CK.HomeAutomation.Controller.Rooms
 {
@@ -30,17 +31,19 @@ namespace CK.HomeAutomation.Controller.Rooms
             ButtonPassage,
         }
 
-        public void Setup(Home home, IOBoardManager ioBoardManager, CCToolsFactory ccToolsFactory, TemperatureAndHumiditySensorBridgeDriver sensorBridgeDriver)
+        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Reader sensorBridgeDriver)
         {
-            var hsrel8 = ccToolsFactory.CreateHSREL8(Device.LivingRoomHSREL8, 18);
-            var hsrel5 = ccToolsFactory.CreateHSREL5(Device.LivingRoomHSREL5, 57);
+            var hsrel8 = ccToolsController.CreateHSREL8(Device.LivingRoomHSREL8, 18);
+            var hsrel5 = ccToolsController.CreateHSREL5(Device.LivingRoomHSREL5, 57);
             
             var input0 = ioBoardManager.GetInputBoard(Device.Input0);
             var input1 = ioBoardManager.GetInputBoard(Device.Input1);
 
+            const int SensorID = 0;
+
             var livingRoom = home.AddRoom(Room.LivingRoom)
-                .WithTemperatureSensor(LivingRoom.TemperatureSensor, 0, sensorBridgeDriver)
-                .WithHumiditySensor(LivingRoom.HumiditySensor, 0, sensorBridgeDriver)
+                .WithTemperatureSensor(LivingRoom.TemperatureSensor, SensorID, sensorBridgeDriver)
+                .WithHumiditySensor(LivingRoom.HumiditySensor, SensorID, sensorBridgeDriver)
                 .WithLamp(LivingRoom.LampCouch, hsrel8.GetOutput(8).WithInvertedState())
                 .WithLamp(LivingRoom.LampDiningTable, hsrel8.GetOutput(9).WithInvertedState())
                 .WithSocket(LivingRoom.SocketWindowLeftLower, hsrel8.GetOutput(1))

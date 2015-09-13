@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using Windows.Data.Json;
 using CK.HomeAutomation.Actuators.Automations;
-using CK.HomeAutomation.Core;
-using CK.HomeAutomation.Hardware.Drivers;
+using CK.HomeAutomation.Hardware;
+using CK.HomeAutomation.Hardware.DHT22;
 using CK.HomeAutomation.Networking;
 
 namespace CK.HomeAutomation.Actuators
@@ -11,7 +11,7 @@ namespace CK.HomeAutomation.Actuators
     public class Room
     {
         private readonly Home _home;
-        private readonly List<BaseActuator> _ownActuators = new List<BaseActuator>(); 
+        private readonly List<BaseActuator> _ownActuators = new List<BaseActuator>();
 
         public Room(Home home, string id)
         {
@@ -54,12 +54,12 @@ namespace CK.HomeAutomation.Actuators
         }
 
         public Room WithRollerShutter(Enum id, IBinaryOutput powerOutput, IBinaryOutput directionOutput,
-            TimeSpan autoOffTimeout)
+            TimeSpan autoOffTimeout, int maxPosition)
         {
             if (powerOutput == null) throw new ArgumentNullException(nameof(powerOutput));
             if (directionOutput == null) throw new ArgumentNullException(nameof(directionOutput));
 
-            return WithActuator(id, new RollerShutter(GenerateID(id), powerOutput, directionOutput, autoOffTimeout, _home.HttpApiController, _home.NotificationHandler, _home.Timer));
+            return WithActuator(id, new RollerShutter(GenerateID(id), powerOutput, directionOutput, autoOffTimeout, maxPosition, _home.HttpApiController, _home.NotificationHandler, _home.Timer));
         }
 
         public Room WithButton(Enum id, IBinaryInput input)
@@ -77,21 +77,21 @@ namespace CK.HomeAutomation.Actuators
             return WithActuator(id, new RollerShutterButtons(GenerateID(id), upInput, downInput, _home.HttpApiController, _home.NotificationHandler, _home.Timer));
         }
 
-        public Room WithHumiditySensor(Enum id, int sensorId, TemperatureAndHumiditySensorBridgeDriver driver)
+        public Room WithHumiditySensor(Enum id, int sensorId, DHT22Reader sensorReader)
         {
-            if (driver == null) throw new ArgumentNullException(nameof(driver));
+            if (sensorReader == null) throw new ArgumentNullException(nameof(sensorReader));
 
             return WithActuator(id,
-                new HumiditySensor(GenerateID(id), sensorId, driver, _home.HttpApiController,
+                new HumiditySensor(GenerateID(id), sensorId, sensorReader, _home.HttpApiController,
                     _home.NotificationHandler));
         }
 
-        public Room WithTemperatureSensor(Enum id, int sensorId, TemperatureAndHumiditySensorBridgeDriver driver)
+        public Room WithTemperatureSensor(Enum id, int sensorId, DHT22Reader sensorReader)
         {
-            if (driver == null) throw new ArgumentNullException(nameof(driver));
+            if (sensorReader == null) throw new ArgumentNullException(nameof(sensorReader));
 
             return WithActuator(id,
-                new TemperatureSensor(GenerateID(id), sensorId, driver, _home.HttpApiController,
+                new TemperatureSensor(GenerateID(id), sensorId, sensorReader, _home.HttpApiController,
                     _home.NotificationHandler));
         }
 
@@ -105,7 +105,7 @@ namespace CK.HomeAutomation.Actuators
         public CombinedBinaryStateActuators CombineActuators(Enum id)
         {
             var actuator = new CombinedBinaryStateActuators(GenerateID(id), _home.HttpApiController,
-                _home.NotificationHandler);
+                _home.NotificationHandler, _home.Timer);
 
             WithActuator(id, actuator);
             return actuator;
@@ -116,14 +116,14 @@ namespace CK.HomeAutomation.Actuators
             return new AutomaticRollerShutterAutomation(_home.Timer, _home.WeatherStation);
         }
 
-        public AutomaticTurnOnAutomation SetupAutomaticTurnOnAction()
+        public AutomaticTurnOnAndOffAutomation SetupAutomaticTurnOnAction()
         {
-            return new AutomaticTurnOnAutomation(_home.Timer);
+            return new AutomaticTurnOnAndOffAutomation(_home.Timer);
         }
 
-        public AlwaysOnAutomation SetupAlwaysOn()
+        public AutomaticConditionalOnAutomation SetupAlwaysOn()
         {
-            return new AlwaysOnAutomation(_home.Timer);
+            return new AutomaticConditionalOnAutomation(_home.Timer);
         }
 
         public JsonObject GetStatusAsJSON()

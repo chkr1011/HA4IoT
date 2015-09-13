@@ -11,9 +11,9 @@ namespace CK.HomeAutomation.Networking
         private readonly List<string> _lines = new List<string>();
         private readonly string _request;
         private string _body;
-        private string _query;
         private string _httpVersion;
         private HttpMethod _method;
+        private string _query;
         private string _uri;
 
         public HttpRequestParser(string request)

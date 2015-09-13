@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CK.HomeAutomation.Networking
 {
-    public class HttpRequestController
+    public class HttpRequestController : IHttpRequestController
     {
         private readonly string _baseUri;
         private readonly List<HttpRequestDispatcherAction> _handlers = new List<HttpRequestDispatcherAction>();

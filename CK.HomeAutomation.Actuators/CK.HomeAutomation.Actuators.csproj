@@ -114,15 +114,26 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Animations\Animation.cs" />
+    <Compile Include="Animations\DirectionAnimation.cs" />
+    <Compile Include="Animations\Frame.cs" />
     <Compile Include="ApiRequestContext.cs" />
+    <Compile Include="Automations\Automation.cs" />
     <Compile Include="BaseButton.cs" />
     <Compile Include="BaseSensor.cs" />
+    <Compile Include="BinaryActuatorStateChangedEventArgs.cs" />
     <Compile Include="ButtonPressedDuration.cs" />
+    <Compile Include="Conditions\Condition.cs" />
+    <Compile Include="Conditions\ConditionRelation.cs" />
+    <Compile Include="Conditions\ConditionState.cs" />
+    <Compile Include="Conditions\ConditionsValidator.cs" />
+    <Compile Include="Conditions\RelatedCondition.cs" />
+    <Compile Include="Conditions\Specialized\TimeRangeCondition.cs" />
     <Compile Include="Connectors\BinaryStateActuatorWithButtonConnector.cs" />
     <Compile Include="Connectors\StateMachineWithButtonConnector.cs" />
-    <Compile Include="Automations\AlwaysOnAutomation.cs" />
+    <Compile Include="Automations\AutomaticConditionalOnAutomation.cs" />
     <Compile Include="Automations\AutomaticBathroomFanAutomation.cs" />
-    <Compile Include="Automations\AutomaticTurnOnAutomation.cs" />
+    <Compile Include="Automations\AutomaticTurnOnAndOffAutomation.cs" />
     <Compile Include="Automations\AutomaticRollerShutterAutomation.cs" />
     <Compile Include="BaseActuator.cs" />
     <Compile Include="BinaryActuatorState.cs" />
@@ -136,7 +147,7 @@
     <Compile Include="RollerShutter.cs" />
     <Compile Include="RollerShutterButtonDirection.cs" />
     <Compile Include="RollerShutterButtons.cs" />
-    <Compile Include="RollerShutterStatus.cs" />
+    <Compile Include="RollerShutterState.cs" />
     <Compile Include="Button.cs" />
     <Compile Include="CombinedBinaryStateActuators.cs" />
     <Compile Include="Daylight.cs" />
@@ -160,6 +171,10 @@
     <ProjectReference Include="..\CK.HomeAutomation.Core\CK.HomeAutomation.Core.csproj">
       <Project>{2bbef090-4fee-4fb7-9cf1-f6597f2c53ea}</Project>
       <Name>CK.HomeAutomation.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CK.HomeAutomation.Hardware.DHT22\CK.HomeAutomation.Hardware.DHT22.csproj">
+      <Project>{C838FE97-95A5-4D11-8F4E-19257B1D062A}</Project>
+      <Name>CK.HomeAutomation.Hardware.DHT22</Name>
     </ProjectReference>
     <ProjectReference Include="..\CK.HomeAutomation.Hardware\CK.HomeAutomation.Hardware.csproj">
       <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>

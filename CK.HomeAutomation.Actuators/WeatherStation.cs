@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Storage;
 using Windows.Web.Http;
-using CK.HomeAutomation.Core;
+using CK.HomeAutomation.Core.Timer;
 using CK.HomeAutomation.Networking;
 using CK.HomeAutomation.Notifications;
 using HttpMethod = CK.HomeAutomation.Networking.HttpMethod;
@@ -19,7 +19,7 @@ namespace CK.HomeAutomation.Actuators
         private TimeSpan _sunrise;
         private TimeSpan _sunset;
 
-        public WeatherStation(double lat, double lon, HomeAutomationTimer timer, HttpRequestController httpApiController, INotificationHandler notificationHandler)
+        public WeatherStation(double lat, double lon, IHomeAutomationTimer timer, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
             if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));

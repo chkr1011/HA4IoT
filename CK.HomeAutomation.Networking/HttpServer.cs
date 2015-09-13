@@ -6,6 +6,7 @@ using Windows.Data.Json;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 using Buffer = Windows.Storage.Streams.Buffer;
+using UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding;
 
 namespace CK.HomeAutomation.Networking
 {
@@ -75,8 +76,9 @@ namespace CK.HomeAutomation.Networking
 
             using (var dataWriter = new DataWriter(client.OutputStream))
             {
-                dataWriter.WriteString("HTTP/1.1 " + (int) response.StatusCode + " " + statusDescription +
-                                       Environment.NewLine);
+                dataWriter.UnicodeEncoding = UnicodeEncoding.Utf8;
+                dataWriter.WriteString("HTTP/1.1 ");
+                dataWriter.WriteString((int) response.StatusCode + " " + statusDescription + Environment.NewLine);
 
                 dataWriter.WriteString("Access-Control-Allow-Origin: *" + Environment.NewLine);
                 dataWriter.WriteString("Connection: close" + Environment.NewLine);
@@ -95,12 +97,14 @@ namespace CK.HomeAutomation.Networking
                 else
                 {
                     content = response.Body.ToString();
-                    dataWriter.WriteString("Content-Type: text/html" + Environment.NewLine);
+                    dataWriter.WriteString("Content-Type: " + response.MimeType + Environment.NewLine);
                 }
 
                 dataWriter.WriteString("Content-Length: " + content.Length + Environment.NewLine);
-                
                 dataWriter.WriteString(Environment.NewLine);
+
+                await dataWriter.StoreAsync();
+
                 dataWriter.WriteString(content);
 
                 await dataWriter.StoreAsync();

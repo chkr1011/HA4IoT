@@ -4,23 +4,13 @@ using Windows.Web.Http;
 using Windows.Web.Http.Headers;
 using CK.HomeAutomation.Actuators;
 using CK.HomeAutomation.Notifications;
-using HttpClient = Windows.Web.Http.HttpClient;
-using HttpResponseMessage = Windows.Web.Http.HttpResponseMessage;
 
 namespace CK.HomeAutomation.Telemetry
 {
     public class AzureEventHubPublisher : ActuatorMonitor
     {
-        private readonly Uri _uri;
         private readonly string _sasToken;
-
-        private enum EventType
-        {
-            OutputActuatorStateChanged,
-            SensorValueChanged,
-            ButtonPressed,
-            MotionDetected,
-        }
+        private readonly Uri _uri;
 
         public AzureEventHubPublisher(string eventHubNamespace, string eventHubName, string sasToken, INotificationHandler notificationHandler) : base(notificationHandler)
         {
@@ -136,6 +126,14 @@ namespace CK.HomeAutomation.Telemetry
             content.Headers.ContentType.CharSet = "utf-8";
 
             return content;
+        }
+
+        private enum EventType
+        {
+            OutputActuatorStateChanged,
+            SensorValueChanged,
+            ButtonPressed,
+            MotionDetected,
         }
     }
 }

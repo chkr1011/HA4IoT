@@ -12,13 +12,11 @@ namespace CK.HomeAutomation.Actuators
         private int _index;
         private bool _turnOffIfStateIsAppliedTwice;
 
-        public StateMachine(string id, HttpRequestController httpApiController, INotificationHandler notificationHandler)
+        public StateMachine(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
             : base(id, httpApiController, notificationHandler)
         {
         }
 
-        public event EventHandler<StateMachineStateChangedEventArgs> StateChanged;
-        
         public string State => States[_index].Id;
 
         public List<StateMachineState> States { get; } = new List<StateMachineState>();
@@ -28,9 +26,16 @@ namespace CK.HomeAutomation.Actuators
             get { return States.Any(s => s.Id.Equals(BinaryActuatorState.Off.ToString(), StringComparison.OrdinalIgnoreCase)); }
         }
 
+        public event EventHandler<StateMachineStateChangedEventArgs> StateChanged;
+
         public StateMachineState AddOffState()
         {
             return AddState(BinaryActuatorState.Off.ToString());
+        }
+
+        public StateMachineState AddOnState()
+        {
+            return AddState(BinaryActuatorState.On.ToString());
         }
 
         public StateMachineState AddState(string id)

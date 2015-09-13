@@ -4,7 +4,7 @@ namespace CK.HomeAutomation.Actuators
 {
     public interface IBinaryStateOutputActuator
     {
-        event EventHandler StateChanged; 
+        event EventHandler<BinaryActuatorStateChangedEventArgs> StateChanged;
 
         string Id { get; }
 
@@ -15,5 +15,7 @@ namespace CK.HomeAutomation.Actuators
         void Toggle(bool commit = true);
 
         void TurnOff(bool commit = true);
+
+        void TurnOn(bool commit = true);
     }
 }

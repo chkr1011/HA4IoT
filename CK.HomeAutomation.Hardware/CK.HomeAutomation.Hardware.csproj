@@ -114,34 +114,22 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Drivers\RemoteSwitchBridgeDriver.cs" />
-    <Compile Include="RemoteSwitch\RemoteSwitchCode.cs" />
-    <Compile Include="RemoteSwitch\RemoteSwitchController.cs" />
-    <Compile Include="RemoteSwitch\RemoteSwitchPort.cs" />
-    <Compile Include="CCTools\CCToolsFactory.cs" />
-    <Compile Include="CCTools\HSPE16OutputOnly.cs" />
-    <Compile Include="CCTools\HSREL5.cs" />
-    <Compile Include="CCTools\HSREL8.cs" />
-    <Compile Include="CCTools\HSPE16InputOnly.cs" />
-    <Compile Include="CCTools\HSPE8.cs" />
-    <Compile Include="ByteExtensions.cs" />
-    <Compile Include="CCTools\HSRT16.cs" />
-    <Compile Include="CCTools\IOBoardManager.cs" />
     <Compile Include="BinaryOutputWithState.cs" />
-    <Compile Include="Drivers\MAX7311Driver.cs" />
-    <Compile Include="Drivers\PCF8574Driver.cs" />
-    <Compile Include="Pi2\Pi2Port.cs" />
-    <Compile Include="I2CBus.cs" />
+    <Compile Include="BinaryState.cs" />
+    <Compile Include="BinaryStateChangedEventArgs.cs" />
+    <Compile Include="ByteExtensions.cs" />
+    <Compile Include="DummyInputPort.cs" />
+    <Compile Include="DummyOutputPort.cs" />
+    <Compile Include="DummyPort.cs" />
+    <Compile Include="I2cBusAccessor.cs" />
+    <Compile Include="IBinaryInput.cs" />
+    <Compile Include="IBinaryOutput.cs" />
     <Compile Include="IDeviceDriver.cs" />
-    <Compile Include="CCTools\IOBoardController.cs" />
-    <Compile Include="CCTools\IOBoardPort.cs" />
-    <Compile Include="CCTools\IOBoardStateChangedEventArgs.cs" />
+    <Compile Include="II2cBusAccessor.cs" />
     <Compile Include="IInputController.cs" />
     <Compile Include="InterruptMonitor.cs" />
     <Compile Include="IOutputController.cs" />
-    <Compile Include="Pi2\Pi2PortManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Drivers\TemperatureAndHumiditySensorBridgeDriver.cs" />
     <Content Include="Properties\CK.HomeAutomation.Hardware.rd.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -150,10 +138,6 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CK.HomeAutomation.Core\CK.HomeAutomation.Core.csproj">
-      <Project>{2bbef090-4fee-4fb7-9cf1-f6597f2c53ea}</Project>
-      <Name>CK.HomeAutomation.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\CK.HomeAutomation.Networking\CK.HomeAutomation.Networking.csproj">
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
       <Name>CK.HomeAutomation.Networking</Name>

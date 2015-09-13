@@ -16,7 +16,7 @@ namespace CK.HomeAutomation.TraceViewer
             Type = type;
             Message = message;
         }
-        
+
         public DateTime Timestamp { get; }
 
         public IPAddress RemoteAddress { get; }
