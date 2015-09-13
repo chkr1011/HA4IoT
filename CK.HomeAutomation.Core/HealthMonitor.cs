@@ -21,7 +21,7 @@ namespace CK.HomeAutomation.Core
 
         private float? _minTimerDuration;
 
-        public HealthMonitor(IBinaryOutput statusLed, HomeAutomationTimer timer, HttpRequestController httpApiController)
+        public HealthMonitor(IBinaryOutput statusLed, IHomeAutomationTimer timer, IHttpRequestController httpApiController)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
             if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));

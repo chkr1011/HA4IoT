@@ -5,9 +5,8 @@ using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Core.Timer
 {
-    public class HomeAutomationTimer
+    public class HomeAutomationTimer : IHomeAutomationTimer
     {
-        private readonly int _minIntervalDuration = 50;
         private readonly INotificationHandler _notificationHandler;
         private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
 
@@ -20,6 +19,8 @@ namespace CK.HomeAutomation.Core.Timer
 
         public event EventHandler<TimerTickEventArgs> Tick;
 
+        public TimeSpan CurrentTime => DateTime.Now.TimeOfDay;
+
         public TimedAction In(TimeSpan dueTime)
         {
             return new TimedAction(dueTime, TimeSpan.Zero, this);
@@ -27,19 +28,14 @@ namespace CK.HomeAutomation.Core.Timer
 
         public TimedAction Every(TimeSpan interval)
         {
-            return new TimedAction(interval, interval, this);
+            return new TimedAction(TimeSpan.FromMilliseconds(1), interval, this);
         }
 
         public void Run()
         {
             while (true)
             {
-                int elapsedMilliseconds = (int)_stopwatch.ElapsedMilliseconds;
-                if (elapsedMilliseconds < _minIntervalDuration)
-                {
-                    SpinWait.SpinUntil(() => _stopwatch.ElapsedMilliseconds >= 50);
-                    continue;
-                }
+                SpinWait.SpinUntil(() => _stopwatch.ElapsedMilliseconds >= 50);
 
                 TimeSpan elapsedTime = _stopwatch.Elapsed;
                 _stopwatch.Restart();

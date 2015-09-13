@@ -7,6 +7,7 @@ namespace CK.HomeAutomation.Actuators.Automations
     public class AutomaticRollerShutterAutomation
     {
         private readonly List<RollerShutter> _rollerShutters = new List<RollerShutter>();
+        private readonly IHomeAutomationTimer _timer;
         private readonly IWeatherStation _weatherStation;
 
         private float? _maxOutsideTemperature;
@@ -15,10 +16,12 @@ namespace CK.HomeAutomation.Actuators.Automations
         private bool _sunriseApplied;
         private bool _sunsetApplied;
 
-        public AutomaticRollerShutterAutomation(HomeAutomationTimer timer, IWeatherStation weatherStation)
+        public AutomaticRollerShutterAutomation(IHomeAutomationTimer timer, IWeatherStation weatherStation)
         {
+            if (timer == null) throw new ArgumentNullException(nameof(timer));
             if (weatherStation == null) throw new ArgumentNullException(nameof(weatherStation));
 
+            _timer = timer;
             _weatherStation = weatherStation;
             
             SunriseDiff = TimeSpan.FromMinutes(-30);
@@ -72,7 +75,7 @@ namespace CK.HomeAutomation.Actuators.Automations
 
             daylightNow = daylightNow.Move(SunriseDiff, SunsetDiff);
             var timeRangeChecker = new TimeRangeChecker();
-            if (timeRangeChecker.IsTimeInRange(daylightNow.Sunrise, daylightNow.Sunset))
+            if (timeRangeChecker.IsTimeInRange(_timer.CurrentTime, daylightNow.Sunrise, daylightNow.Sunset))
             {
                 TimeSpan time = DateTime.Now.TimeOfDay;
                 if (DoNotOpenBefore.HasValue && DoNotOpenBefore.Value > time)

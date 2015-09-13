@@ -16,7 +16,7 @@ namespace CK.HomeAutomation.Actuators
         private readonly HealthMonitor _healthMonitor;
         private readonly Dictionary<Enum, Room> _rooms = new Dictionary<Enum, Room>();
 
-        public Home(HomeAutomationTimer timer, HealthMonitor healthMonitor, IWeatherStation weatherStation, HttpRequestController httpApiController, INotificationHandler notificationHandler)
+        public Home(IHomeAutomationTimer timer, HealthMonitor healthMonitor, IWeatherStation weatherStation, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
             if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
@@ -32,9 +32,9 @@ namespace CK.HomeAutomation.Actuators
             httpApiController.Handle(HttpMethod.Get, "status").Using(c => c.Response.Result = GetStatusAsJSON());
         }
 
-        public HomeAutomationTimer Timer { get; }
+        public IHomeAutomationTimer Timer { get; }
 
-        public HttpRequestController HttpApiController { get; }
+        public IHttpRequestController HttpApiController { get; }
 
         public INotificationHandler NotificationHandler { get; }
 

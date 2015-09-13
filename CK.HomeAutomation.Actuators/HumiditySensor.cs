@@ -8,7 +8,7 @@ namespace CK.HomeAutomation.Actuators
     public class HumiditySensor : BaseSensor
     {
         public HumiditySensor(string id, int sensorId, DHT22Reader dht22Reader,
-            HttpRequestController httpApiController, INotificationHandler notificationHandler)
+            IHttpRequestController httpApiController, INotificationHandler notificationHandler)
             : base(id, httpApiController, notificationHandler)
         {
             if (dht22Reader == null) throw new ArgumentNullException(nameof(dht22Reader));

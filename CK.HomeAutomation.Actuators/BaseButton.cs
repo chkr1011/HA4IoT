@@ -7,16 +7,13 @@ namespace CK.HomeAutomation.Actuators
 {
     public abstract class BaseButton : BaseActuator, IButton
     {
-        protected BaseButton(string id, HttpRequestController httpApiController, INotificationHandler notificationHandler)
+        protected BaseButton(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
             : base(id, httpApiController, notificationHandler)
         {
-            Handler = notificationHandler;
         }
 
         protected List<Action> ShortActions { get; } = new List<Action>();
         protected List<Action> LongActions { get; } = new List<Action>();
-
-        protected INotificationHandler Handler { get; }
 
         public event EventHandler PressedShort;
         public event EventHandler PressedLong;
@@ -48,18 +45,18 @@ namespace CK.HomeAutomation.Actuators
 
         protected void InvokeShortAction()
         {
-            Handler.PublishFrom(this, NotificationType.Info, "'{0}' was pressed short.", Id);
+            NotificationHandler.PublishFrom(this, NotificationType.Info, "'{0}' was pressed short.", Id);
 
-            ShortActions.ForEach(a => a.Invoke());
             PressedShort?.Invoke(this, EventArgs.Empty);
+            ShortActions.ForEach(a => a.Invoke());
         }
 
         protected void InvokeLongAction()
         {
-            Handler.PublishFrom(this, NotificationType.Info, "'{0}' was pressed long.", Id);
+            NotificationHandler.PublishFrom(this, NotificationType.Info, "'{0}' was pressed long.", Id);
 
-            LongActions.ForEach(a => a.Invoke());
             PressedLong?.Invoke(this, EventArgs.Empty);
+            LongActions.ForEach(a => a.Invoke());
         }
     }
 }

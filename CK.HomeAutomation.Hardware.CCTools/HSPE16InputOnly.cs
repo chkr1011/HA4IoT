@@ -1,10 +1,11 @@
-﻿using CK.HomeAutomation.Notifications;
+﻿using CK.HomeAutomation.Hardware.GenericIOBoard;
+using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Hardware.CCTools
 {
     public class HSPE16InputOnly : IOBoardController, IInputController
     {
-        public HSPE16InputOnly(string id, int address, I2CBus i2cBus, INotificationHandler notificationHandler)
+        public HSPE16InputOnly(string id, int address, II2cBusAccessor i2cBus, INotificationHandler notificationHandler)
             : base(id, new MAX7311Driver(address, i2cBus), notificationHandler)
         {
             byte[] setupAsInputs = {0x06, 0xFF, 0xFF};

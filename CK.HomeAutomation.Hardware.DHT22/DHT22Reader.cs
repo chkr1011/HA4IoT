@@ -7,10 +7,10 @@ namespace CK.HomeAutomation.Hardware.DHT22
     {
         private readonly int _bridgeAddress;
         private readonly float[] _humidities = new float[10];
-        private readonly I2CBus _i2CBus;
+        private readonly II2cBusAccessor _i2CBus;
         private readonly float[] _temperatures = new float[10];
 
-        public DHT22Reader(int address, HomeAutomationTimer timer, I2CBus i2CBus)
+        public DHT22Reader(int address, IHomeAutomationTimer timer, II2cBusAccessor i2CBus)
         {
             if (i2CBus == null) throw new ArgumentNullException(nameof(i2CBus));
             

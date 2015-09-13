@@ -7,6 +7,7 @@ using CK.HomeAutomation.Actuators.Connectors;
 using CK.HomeAutomation.Core;
 using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Hardware.CCTools;
+using CK.HomeAutomation.Hardware.GenericIOBoard;
 using CK.HomeAutomation.Hardware.Pi2;
 using CK.HomeAutomation.Notifications;
 
@@ -51,9 +52,10 @@ namespace CK.HomeAutomation.Controller.Cellar
             var healthMonitor = new HealthMonitor(pi2PortController.GetOutput(22).WithInvertedState(), Timer, HttpApiController);
 
             WeatherStation weatherStation = CreateWeatherStation();
-            var i2CBus = new I2CBus(NotificationHandler);
+            var i2CBus = new I2cBusAccessor(NotificationHandler);
 
-            var ccToolsFactory = new CCToolsBoardController(i2CBus, HttpApiController, NotificationHandler);
+            var ioBoardManager = new IOBoardManager(HttpApiController, NotificationHandler);
+            var ccToolsFactory = new CCToolsBoardController(i2CBus, ioBoardManager, HttpApiController, NotificationHandler);
             var hsrt16 = ccToolsFactory.CreateHSRT16(Device.CellarHSRT16, 32);
 
             var home = new Home(Timer, healthMonitor, weatherStation, HttpApiController, NotificationHandler);
@@ -144,8 +146,6 @@ namespace CK.HomeAutomation.Controller.Cellar
                 .WithActuator(garden.Lamp(Garden.LampParkingLot2)) // Mitte
                 .WithActuator(garden.Lamp(Garden.LampParkingLot3));
 
-            // This will turn on the lamps at the parking lot every day starting from sunset until sunrise at the next day.
-            // The lamps are always off beween 22:30 and 05:00.
             garden.SetupAlwaysOn()
                 .WithActuator(garden.BinaryStateOutput(Garden.CombinedParkingLotLamps))
                 .WithOnlyAtNightRange(home.WeatherStation)

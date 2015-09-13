@@ -19,7 +19,7 @@ namespace CK.HomeAutomation.Actuators
         private TimeSpan _sunrise;
         private TimeSpan _sunset;
 
-        public WeatherStation(double lat, double lon, HomeAutomationTimer timer, HttpRequestController httpApiController, INotificationHandler notificationHandler)
+        public WeatherStation(double lat, double lon, IHomeAutomationTimer timer, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
             if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));

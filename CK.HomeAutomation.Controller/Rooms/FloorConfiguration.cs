@@ -1,21 +1,23 @@
 ﻿using System;
 using CK.HomeAutomation.Actuators;
+using CK.HomeAutomation.Actuators.Animations;
 using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.DHT22;
+using CK.HomeAutomation.Hardware.GenericIOBoard;
 
 namespace CK.HomeAutomation.Controller.Rooms
 {
     internal class FloorConfiguration
     {
-        public void Setup(Home home, CCToolsBoardController ccToolsController, DHT22Reader dht22Reader)
+        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Reader dht22Reader)
         {
             var hsrel5Stairway = ccToolsController.CreateHSREL5(Device.StairwayHSREL5, 60);
-            var hspe8UpperFloor = ccToolsController.GetOutputBoard(Device.UpperFloorAndOfficeHSPE8);
+            var hspe8UpperFloor = ioBoardManager.GetOutputBoard(Device.UpperFloorAndOfficeHSPE8);
             var hspe16_FloorAndLowerBathroom = ccToolsController.CreateHSPE16OutputOnly(Device.LowerFloorAndLowerBathroomHSPE16, 17);
 
-            var input1 = ccToolsController.GetInputBoard(Device.Input1);
-            var input2 = ccToolsController.GetInputBoard(Device.Input2);
-            var input4 = ccToolsController.GetInputBoard(Device.Input4);
+            var input1 = ioBoardManager.GetInputBoard(Device.Input1);
+            var input2 = ioBoardManager.GetInputBoard(Device.Input2);
+            var input4 = ioBoardManager.GetInputBoard(Device.Input4);
 
             const int SensorID = 4;
 
@@ -55,11 +57,11 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithActuator(floor.Lamp(Floor.StairwayLampCeiling))
                 .WithActuator(floor.Lamp(Floor.StairwayLampWall));
 
-            floor.SetupAutomaticTurnOnAction()
+            floor.SetupAutomaticTurnOnAndOffAction()
                 .WithMotionDetector(floor.MotionDetector(Floor.StairwayMotionDetector))
-                .WithButton(floor.Button(Floor.ButtonStairway))
+                .WithButtonPressedShort(floor.Button(Floor.ButtonStairway))
                 .WithTarget(floor.BinaryStateOutput(Floor.CombinedStairwayLamp))
-                .WithOnlyAtNightTimeRange(home.WeatherStation)
+                .WithOnAtNightTimeRange(home.WeatherStation)
                 .WithOnDuration(TimeSpan.FromSeconds(30));
 
             floor.CombineActuators(Floor.CombinedLamps)
@@ -67,27 +69,28 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithActuator(floor.Lamp(Floor.Lamp2))
                 .WithActuator(floor.Lamp(Floor.Lamp3));
 
-            floor.SetupAutomaticTurnOnAction()
+            floor.SetupAutomaticTurnOnAndOffAction()
                 .WithMotionDetector(floor.MotionDetector(Floor.LowerFloorMotionDetector))
-                .WithButton(floor.Button(Floor.ButtonLowerFloorUpper))
-                .WithButton(floor.Button(Floor.ButtonLowerFloorAtBathroom))
-                .WithButton(floor.Button(Floor.ButtonLowerFloorAtKitchen))
+                .WithButtonPressedShort(floor.Button(Floor.ButtonLowerFloorUpper))
+                .WithButtonPressedShort(floor.Button(Floor.ButtonLowerFloorAtBathroom))
+                .WithButtonPressedShort(floor.Button(Floor.ButtonLowerFloorAtKitchen))
                 .WithTarget(floor.BinaryStateOutput(Floor.CombinedLamps))
-                .WithOnlyAtNightTimeRange(home.WeatherStation)
+                .WithOnAtNightTimeRange(home.WeatherStation)
                 .WithOnDuration(TimeSpan.FromSeconds(20));
 
             floor.CombineActuators(Floor.CombinedLampStairsCeiling)
                 .WithActuator(floor.Lamp(Floor.LampStairsCeiling1))
                 .WithActuator(floor.Lamp(Floor.LampStairsCeiling2))
                 .WithActuator(floor.Lamp(Floor.LampStairsCeiling3))
-                .WithActuator(floor.Lamp(Floor.LampStairsCeiling4));
+                .WithActuator(floor.Lamp(Floor.LampStairsCeiling4))
+                .WithEnabledAnimations();
 
-            floor.SetupAutomaticTurnOnAction()
+            floor.SetupAutomaticTurnOnAndOffAction()
                 .WithMotionDetector(floor.MotionDetector(Floor.StairsLowerMotionDetector))
                 .WithMotionDetector(floor.MotionDetector(Floor.StairsUpperMotionDetector))
-                .WithButton(floor.Button(Floor.ButtonStairsUpper))
+                .WithButtonPressedShort(floor.Button(Floor.ButtonStairsUpper))
                 .WithTarget(floor.BinaryStateOutput(Floor.CombinedLampStairsCeiling))
-                .WithOnDuration(TimeSpan.FromSeconds(20));
+                .WithOnDuration(TimeSpan.FromSeconds(10));
 
             floor.SetupAlwaysOn()
                 .WithActuator(floor.Lamp(Floor.LampStairs1))

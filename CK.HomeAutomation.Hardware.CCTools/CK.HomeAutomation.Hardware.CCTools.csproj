@@ -120,10 +120,6 @@
     <Compile Include="HSREL5.cs" />
     <Compile Include="HSREL8.cs" />
     <Compile Include="HSRT16.cs" />
-    <Compile Include="IOBoardController.cs" />
-    <Compile Include="IOBoardManager.cs" />
-    <Compile Include="IOBoardPort.cs" />
-    <Compile Include="IOBoardStateChangedEventArgs.cs" />
     <Compile Include="MAX7311Driver.cs" />
     <Compile Include="PCF8574Driver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -133,6 +129,10 @@
     <ProjectReference Include="..\CK.HomeAutomation.Core\CK.HomeAutomation.Core.csproj">
       <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
       <Name>CK.HomeAutomation.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CK.HomeAutomation.Hardware.GenericIOBoard\CK.HomeAutomation.Hardware.GenericIOBoard.csproj">
+      <Project>{74BECF44-F00B-40F1-9220-06C4C7F2220F}</Project>
+      <Name>CK.HomeAutomation.Hardware.GenericIOBoard</Name>
     </ProjectReference>
     <ProjectReference Include="..\CK.HomeAutomation.Hardware\CK.HomeAutomation.Hardware.csproj">
       <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>

@@ -147,7 +147,7 @@ function setupController() {
 
 function configureRoom(room) {
     room.caption = getFriendlyName(room.id);
-    room.sortValue = 0;
+    room.sortValue = -1;
     room.hide = false;
 
     appConfiguration.roomExtender(room);

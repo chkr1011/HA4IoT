@@ -3,6 +3,7 @@ using CK.HomeAutomation.Actuators;
 using CK.HomeAutomation.Actuators.Connectors;
 using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.DHT22;
+using CK.HomeAutomation.Hardware.GenericIOBoard;
 
 namespace CK.HomeAutomation.Controller.Rooms
 {
@@ -32,13 +33,13 @@ namespace CK.HomeAutomation.Controller.Rooms
             SocketKitchenette
         }
 
-        public void Setup(Home home, CCToolsBoardController ccToolsController, DHT22Reader sensorBridgeDriver)
+        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Reader sensorBridgeDriver)
         {
             var hsrel5 = ccToolsController.CreateHSREL5(Device.KitchenHSREL5, 58);
             var hspe8 = ccToolsController.CreateHSPE8OutputOnly(Device.KitchenHSPE8, 39);
 
-            var input1 = ccToolsController.GetInputBoard(Device.Input1);
-            var input2 = ccToolsController.GetInputBoard(Device.Input2);
+            var input1 = ioBoardManager.GetInputBoard(Device.Input1);
+            var input2 = ioBoardManager.GetInputBoard(Device.Input2);
 
             const int SensorID = 1;
 
@@ -69,10 +70,10 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithActuator(kitchen.Lamp(Kitchen.LightCeilingDoor))
                 .WithActuator(kitchen.Lamp(Kitchen.LightCeilingWindow));
 
-            kitchen.SetupAutomaticTurnOnAction()
+            kitchen.SetupAutomaticTurnOnAndOffAction()
                 .WithMotionDetector(kitchen.MotionDetector(Kitchen.MotionDetector))
                 .WithTarget(kitchen.BinaryStateOutput(Kitchen.CombinedAutomaticLights))
-                .WithOnlyAtNightTimeRange(home.WeatherStation);
+                .WithOnAtNightTimeRange(home.WeatherStation);
         }
     }
 }

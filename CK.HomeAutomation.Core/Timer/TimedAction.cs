@@ -5,11 +5,11 @@ namespace CK.HomeAutomation.Core.Timer
     public class TimedAction
     {
         private readonly TimeSpan _interval;
-        private readonly HomeAutomationTimer _timer;
+        private readonly IHomeAutomationTimer _timer;
         private Action _action;
         private TimeSpan _timeout;
 
-        public TimedAction(TimeSpan dueTime, TimeSpan interval, HomeAutomationTimer timer)
+        public TimedAction(TimeSpan dueTime, TimeSpan interval, IHomeAutomationTimer timer)
         {
             _timeout = dueTime;
             _interval = interval;

@@ -1,10 +1,11 @@
-﻿using CK.HomeAutomation.Notifications;
+﻿using CK.HomeAutomation.Hardware.GenericIOBoard;
+using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Hardware.CCTools
 {
     public class HSREL5 : IOBoardController, IOutputController
     {
-        public HSREL5(string id, int address, I2CBus bus, INotificationHandler notificationHandler)
+        public HSREL5(string id, int address, II2cBusAccessor bus, INotificationHandler notificationHandler)
             : base(id, new PCF8574Driver(address, bus), notificationHandler)
         {
             // Ensure that all relays are off by default. The first 5 ports are hardware inverted! The other ports are not inverted but the

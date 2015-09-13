@@ -1,4 +1,5 @@
 ﻿using System;
+using CK.HomeAutomation.Hardware.GenericIOBoard;
 using CK.HomeAutomation.Networking;
 using CK.HomeAutomation.Notifications;
 
@@ -6,19 +7,20 @@ namespace CK.HomeAutomation.Hardware.CCTools
 {
     public class CCToolsBoardController
     {
-        private readonly I2CBus _i2CBus;
+        private readonly II2cBusAccessor _i2CBus;
         private readonly IOBoardManager _ioBoardManager;
         private readonly INotificationHandler _notificationHandler;
 
-        public CCToolsBoardController(I2CBus i2CBus, HttpRequestController httpApiController, INotificationHandler notificationHandler)
+        public CCToolsBoardController(II2cBusAccessor i2CBus, IOBoardManager ioBoardManager, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
         {
             if (i2CBus == null) throw new ArgumentNullException(nameof(i2CBus));
+            if (ioBoardManager == null) throw new ArgumentNullException(nameof(ioBoardManager));
             if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
 
             _i2CBus = i2CBus;
             _notificationHandler = notificationHandler;
 
-            _ioBoardManager = new IOBoardManager(httpApiController, notificationHandler);
+            _ioBoardManager = ioBoardManager;
         }
 
         public HSPE16InputOnly CreateHSPE16InputOnly(Enum id, int address)
@@ -67,21 +69,6 @@ namespace CK.HomeAutomation.Hardware.CCTools
             _ioBoardManager.Add(id, device);
 
             return device;
-        }
-
-        public void PollInputBoardStates()
-        {
-            _ioBoardManager.PollInputBoardStates();
-        }
-
-        public IInputController GetInputBoard(Enum id)
-        {
-            return _ioBoardManager.GetInputBoard(id);
-        }
-
-        public IOutputController GetOutputBoard(Enum id)
-        {
-            return _ioBoardManager.GetOutputBoard(id);
         }
     }
 }

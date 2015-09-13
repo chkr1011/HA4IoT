@@ -3,17 +3,18 @@ using CK.HomeAutomation.Actuators;
 using CK.HomeAutomation.Actuators.Connectors;
 using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.DHT22;
+using CK.HomeAutomation.Hardware.GenericIOBoard;
 
 namespace CK.HomeAutomation.Controller.Rooms
 {
     internal class BedroomConfiguration
     {
-        public void Setup(Home home, CCToolsBoardController ccToolsController, DHT22Reader dht22Reader)
+        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Reader dht22Reader)
         {
             var hsrel5 = ccToolsController.CreateHSREL5(Device.BedroomHSREL5, 38);
             var hsrel8 = ccToolsController.CreateHSREL8(Device.BedroomHSREL8, 21);
-            var input5 = ccToolsController.GetInputBoard(Device.Input5);
-            var input4 = ccToolsController.GetInputBoard(Device.Input4);
+            var input5 = ioBoardManager.GetInputBoard(Device.Input5);
+            var input4 = ioBoardManager.GetInputBoard(Device.Input4);
 
             const int SensorID = 8;
 
@@ -68,15 +69,13 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithDoNotOpenBefore(TimeSpan.FromHours(7).Add(TimeSpan.FromMinutes(15)))
                 .WithCloseIfOutsideTemperatureIsGreaterThan(28);
 
-            bedroom.SetupAutomaticTurnOnAction()
+            bedroom.SetupAutomaticTurnOnAndOffAction()
                 .WithMotionDetector(bedroom.MotionDetector(Bedroom.MotionDetector))
                 .WithTarget(bedroom.Actuator<BinaryStateOutput>(Bedroom.LightCeiling))
                 .WithOnDuration(TimeSpan.FromSeconds(15))
-                .WithEnabledIfRollerShutterIsClosed(bedroom.RollerShutter(Bedroom.RollerShutterLeft))
-                .WithEnabledIfRollerShutterIsClosed(bedroom.RollerShutter(Bedroom.RollerShutterRight))
-                .WithEnabledInTimeRange(() => home.WeatherStation.Daylight.Sunset.Subtract(TimeSpan.FromHours(1)),
-                    () => home.WeatherStation.Daylight.Sunrise.Add(TimeSpan.FromHours(1)));
-
+                .WithOnIfAllRollerShuttersClosed(bedroom.RollerShutter(Bedroom.RollerShutterLeft), bedroom.RollerShutter(Bedroom.RollerShutterRight))
+                .WithOnAtNightTimeRange(home.WeatherStation);
+               
             var fanPort1 = hsrel8.GetOutput(0);
             var fanPort2 = hsrel8.GetOutput(1);
             var fanPort3 = hsrel8.GetOutput(2);

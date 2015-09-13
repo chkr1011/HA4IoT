@@ -4,11 +4,11 @@ namespace CK.HomeAutomation.Hardware
 {
     public class BinaryStateChangedEventArgs : EventArgs
     {
-        public BinaryStateChangedEventArgs(BinaryState state)
+        public BinaryStateChangedEventArgs(BinaryState newState)
         {
-            State = state;
+            NewState = newState;
         }
 
-        public BinaryState State { get; }
+        public BinaryState NewState { get; }
     }
 }

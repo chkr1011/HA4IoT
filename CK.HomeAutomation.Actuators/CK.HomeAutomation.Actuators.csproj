@@ -114,15 +114,26 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Animations\Animation.cs" />
+    <Compile Include="Animations\DirectionAnimation.cs" />
+    <Compile Include="Animations\Frame.cs" />
     <Compile Include="ApiRequestContext.cs" />
+    <Compile Include="Automations\Automation.cs" />
     <Compile Include="BaseButton.cs" />
     <Compile Include="BaseSensor.cs" />
+    <Compile Include="BinaryActuatorStateChangedEventArgs.cs" />
     <Compile Include="ButtonPressedDuration.cs" />
+    <Compile Include="Conditions\Condition.cs" />
+    <Compile Include="Conditions\ConditionRelation.cs" />
+    <Compile Include="Conditions\ConditionState.cs" />
+    <Compile Include="Conditions\ConditionsValidator.cs" />
+    <Compile Include="Conditions\RelatedCondition.cs" />
+    <Compile Include="Conditions\Specialized\TimeRangeCondition.cs" />
     <Compile Include="Connectors\BinaryStateActuatorWithButtonConnector.cs" />
     <Compile Include="Connectors\StateMachineWithButtonConnector.cs" />
-    <Compile Include="Automations\AlwaysOnAutomation.cs" />
+    <Compile Include="Automations\AutomaticConditionalOnAutomation.cs" />
     <Compile Include="Automations\AutomaticBathroomFanAutomation.cs" />
-    <Compile Include="Automations\AutomaticTurnOnAutomation.cs" />
+    <Compile Include="Automations\AutomaticTurnOnAndOffAutomation.cs" />
     <Compile Include="Automations\AutomaticRollerShutterAutomation.cs" />
     <Compile Include="BaseActuator.cs" />
     <Compile Include="BinaryActuatorState.cs" />

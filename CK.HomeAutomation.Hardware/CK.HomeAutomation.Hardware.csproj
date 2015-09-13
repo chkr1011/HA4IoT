@@ -118,11 +118,14 @@
     <Compile Include="BinaryState.cs" />
     <Compile Include="BinaryStateChangedEventArgs.cs" />
     <Compile Include="ByteExtensions.cs" />
+    <Compile Include="DummyInputPort.cs" />
+    <Compile Include="DummyOutputPort.cs" />
     <Compile Include="DummyPort.cs" />
-    <Compile Include="I2CBus.cs" />
+    <Compile Include="I2cBusAccessor.cs" />
     <Compile Include="IBinaryInput.cs" />
     <Compile Include="IBinaryOutput.cs" />
     <Compile Include="IDeviceDriver.cs" />
+    <Compile Include="II2cBusAccessor.cs" />
     <Compile Include="IInputController.cs" />
     <Compile Include="InterruptMonitor.cs" />
     <Compile Include="IOutputController.cs" />

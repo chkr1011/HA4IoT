@@ -32,7 +32,6 @@ namespace CK.HomeAutomation.Notifications
         public void Publish(NotificationType type, string text, params object[] parameters)
         {
             text = string.Format(text, parameters);
-
             PrintNotification(type, text);
 
             lock (_syncRoot)
@@ -43,18 +42,13 @@ namespace CK.HomeAutomation.Notifications
 
         public void PublishFrom<TSender>(TSender sender, NotificationType type, string message, params object[] parameters) where TSender : class
         {
-            string senderText = null;
-            if (sender != null)
-            {
-                senderText = sender.GetType().Name;
-            }
-
-            if (senderText == null)
+            if (sender == null)
             {
                 Publish(type, message, parameters);
             }
             else
             {
+                string senderText = sender.GetType().Name;
                 Publish(type, senderText + ": " + message, parameters);
             }
         }

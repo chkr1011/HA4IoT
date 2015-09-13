@@ -9,9 +9,9 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch
         private readonly Dictionary<int, RemoteSwitchOutputPort> _ports = new Dictionary<int, RemoteSwitchOutputPort>();
         private readonly RemoteSwitchSender _sender;
         private readonly object _syncRoot = new object();
-        private readonly HomeAutomationTimer _timer;
+        private readonly IHomeAutomationTimer _timer;
 
-        public RemoteSwitchController(RemoteSwitchSender sender, HomeAutomationTimer timer)
+        public RemoteSwitchController(RemoteSwitchSender sender, IHomeAutomationTimer timer)
         {
             if (sender == null) throw new ArgumentNullException(nameof(sender));
             if (timer == null) throw new ArgumentNullException(nameof(timer));

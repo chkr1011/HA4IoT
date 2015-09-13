@@ -1,6 +1,13 @@
-﻿appConfiguration.controllerAddress = "192.168.1.15";
+﻿// The IP address of the Pi2.
+appConfiguration.controllerAddress = "192.168.1.15";
+
+// The interval which should be used to poll the current state from the Pi2.
 appConfiguration.pollInterval = 250;
+
+// Indicates whether the overview of all sensor should be shown.
 appConfiguration.showSensorsOverview = true;
+
+// Indicates whether the overview of all roller shutters should be shown.
 appConfiguration.showRollerShuttersOverview = true;
 
 // Supported values for an actuator configuration:
@@ -56,6 +63,19 @@ appConfiguration.actuatorExtender = function (actuator) {
 };
 
 appConfiguration.roomExtender = function (room) {
+    switch (room.id) {
+        case "Bedroom":
+            {
+                room.sortValue = 1;
+                break;
+            }
+
+        case "Office":
+            {
+                room.sortValue = 2;
+                break;
+            }
+    }
 }
 
 friendlyNameLookup = [

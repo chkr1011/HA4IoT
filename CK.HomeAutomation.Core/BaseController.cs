@@ -14,8 +14,8 @@ namespace CK.HomeAutomation.Core
         private HttpServer _httpServer;
 
         protected INotificationHandler NotificationHandler { get; private set; }
-        protected HttpRequestController HttpApiController { get; private set; }
-        protected HomeAutomationTimer Timer { get; private set; }
+        protected IHttpRequestController HttpApiController { get; private set; }
+        protected IHomeAutomationTimer Timer { get; private set; }
 
         public void RunAsync(IBackgroundTaskInstance taskInstance)
         {

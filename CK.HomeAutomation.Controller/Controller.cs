@@ -8,6 +8,7 @@ using CK.HomeAutomation.Core;
 using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.DHT22;
+using CK.HomeAutomation.Hardware.GenericIOBoard;
 using CK.HomeAutomation.Hardware.Pi2;
 using CK.HomeAutomation.Hardware.RemoteSwitch;
 using CK.HomeAutomation.Notifications;
@@ -22,35 +23,37 @@ namespace CK.HomeAutomation.Controller
             var pi2PortController = new Pi2PortController();
             var healthMonitor = new HealthMonitor(pi2PortController.GetOutput(22).WithInvertedState(), Timer, HttpApiController);
 
-            var i2CBus = new I2CBus(NotificationHandler);
+            var i2CBus = new I2cBusAccessor(NotificationHandler);
 
             WeatherStation weatherStation = CreateWeatherStation();
 
             var sensorBridgeDriver = new DHT22Reader(50, Timer, i2CBus);
 
-            var ccToolsController = new CCToolsBoardController(i2CBus, HttpApiController, NotificationHandler);
-            ccToolsController.CreateHSPE16InputOnly(Device.Input0, 42);
-            ccToolsController.CreateHSPE16InputOnly(Device.Input1, 43);
-            ccToolsController.CreateHSPE16InputOnly(Device.Input2, 47);
-            ccToolsController.CreateHSPE16InputOnly(Device.Input3, 45);
-            ccToolsController.CreateHSPE16InputOnly(Device.Input4, 46);
-            ccToolsController.CreateHSPE16InputOnly(Device.Input5, 44);
+            var ioBoardManager = new IOBoardManager(HttpApiController, NotificationHandler);
+            var ccToolsBoardController = new CCToolsBoardController(i2CBus, ioBoardManager, HttpApiController, NotificationHandler);
+
+            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input0, 42);
+            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input1, 43);
+            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input2, 47);
+            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input3, 45);
+            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input4, 46);
+            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input5, 44);
 
             var remoteSwitchController = new RemoteSwitchController(new RemoteSwitchSender(i2CBus, 50), Timer);
             remoteSwitchController.Register(0, new RemoteSwitchCode(21, 24), new RemoteSwitchCode(20, 24));
 
             var home = new Home(Timer, healthMonitor, weatherStation, HttpApiController, NotificationHandler);
 
-            new BedroomConfiguration().Setup(home, ccToolsController, sensorBridgeDriver);
-            new OfficeConfiguration().Setup(home, ccToolsController, sensorBridgeDriver, remoteSwitchController);
-            new UpperBathroomConfiguration().Setup(home, ccToolsController, sensorBridgeDriver);
-            new ReadingRoomConfiguration().Setup(home, ccToolsController, sensorBridgeDriver);
-            new ChildrensRoomRoomConfiguration().Setup(home, ccToolsController, sensorBridgeDriver);
-            new KitchenConfiguration().Setup(home, ccToolsController, sensorBridgeDriver);
-            new FloorConfiguration().Setup(home, ccToolsController, sensorBridgeDriver);
-            new LowerBathroomConfiguration().Setup(home, ccToolsController, sensorBridgeDriver);
-            new StoreroomConfiguration().Setup(home, ccToolsController, sensorBridgeDriver);
-            new LivingRoomConfiguration().Setup(home, ccToolsController, sensorBridgeDriver);
+            new BedroomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
+            new OfficeConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver, remoteSwitchController);
+            new UpperBathroomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
+            new ReadingRoomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
+            new ChildrensRoomRoomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
+            new KitchenConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
+            new FloorConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
+            new LowerBathroomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
+            new StoreroomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
+            new LivingRoomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
             home.PublishStatisticsNotification();
 
             AttachAzureEventHubPublisher(home);
@@ -60,7 +63,7 @@ namespace CK.HomeAutomation.Controller
 
             var ioBoardsInterruptMonitor = new InterruptMonitor(pi2PortController.GetInput(4));
             Timer.Tick += (s, e) => ioBoardsInterruptMonitor.Poll();
-            ioBoardsInterruptMonitor.InterruptDetected += (s, e) => ccToolsController.PollInputBoardStates();
+            ioBoardsInterruptMonitor.InterruptDetected += (s, e) => ioBoardManager.PollInputBoardStates();
         }
 
         private void AttachAzureEventHubPublisher(Home home)

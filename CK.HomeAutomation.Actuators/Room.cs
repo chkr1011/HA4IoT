@@ -105,7 +105,7 @@ namespace CK.HomeAutomation.Actuators
         public CombinedBinaryStateActuators CombineActuators(Enum id)
         {
             var actuator = new CombinedBinaryStateActuators(GenerateID(id), _home.HttpApiController,
-                _home.NotificationHandler);
+                _home.NotificationHandler, _home.Timer);
 
             WithActuator(id, actuator);
             return actuator;
@@ -116,14 +116,14 @@ namespace CK.HomeAutomation.Actuators
             return new AutomaticRollerShutterAutomation(_home.Timer, _home.WeatherStation);
         }
 
-        public AutomaticTurnOnAutomation SetupAutomaticTurnOnAction()
+        public AutomaticTurnOnAndOffAutomation SetupAutomaticTurnOnAndOffAction()
         {
-            return new AutomaticTurnOnAutomation(_home.Timer);
+            return new AutomaticTurnOnAndOffAutomation(_home.Timer);
         }
 
-        public AlwaysOnAutomation SetupAlwaysOn()
+        public AutomaticConditionalOnAutomation SetupAlwaysOn()
         {
-            return new AlwaysOnAutomation(_home.Timer);
+            return new AutomaticConditionalOnAutomation(_home.Timer);
         }
 
         public JsonObject GetStatusAsJSON()

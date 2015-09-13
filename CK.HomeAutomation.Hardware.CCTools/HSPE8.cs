@@ -1,10 +1,11 @@
-﻿using CK.HomeAutomation.Notifications;
+﻿using CK.HomeAutomation.Hardware.GenericIOBoard;
+using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Hardware.CCTools
 {
     public class HSPE8 : IOBoardController, IOutputController
     {
-        public HSPE8(string id, int address, I2CBus bus, INotificationHandler notificationHandler)
+        public HSPE8(string id, int address, II2cBusAccessor bus, INotificationHandler notificationHandler)
             : base(id, new PCF8574Driver(address, bus), notificationHandler)
         {
             FetchState();

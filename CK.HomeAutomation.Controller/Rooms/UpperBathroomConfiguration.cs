@@ -4,15 +4,16 @@ using CK.HomeAutomation.Actuators.Automations;
 using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.DHT22;
+using CK.HomeAutomation.Hardware.GenericIOBoard;
 
 namespace CK.HomeAutomation.Controller.Rooms
 {
     internal class UpperBathroomConfiguration
     {
-        public void Setup(Home home, CCToolsBoardController ccToolsController, DHT22Reader sensorBridgeDriver)
+        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Reader sensorBridgeDriver)
         {
             var hsrel5 = ccToolsController.CreateHSREL5(Device.UpperBathroomHSREL5, 61);
-            var input5 = ccToolsController.GetInputBoard(Device.Input5);
+            var input5 = ioBoardManager.GetInputBoard(Device.Input5);
 
             var bathroom = home.AddRoom(Room.UpperBathroom)
                 .WithTemperatureSensor(UpperBathroom.TemperatureSensor, 7, sensorBridgeDriver)
@@ -30,7 +31,7 @@ namespace CK.HomeAutomation.Controller.Rooms
                     .WithActuator(bathroom.Lamp(UpperBathroom.LightCeilingMirrorCabinet))
                     .WithActuator(bathroom.Lamp(UpperBathroom.LampMirrorCabinet));
 
-            bathroom.SetupAutomaticTurnOnAction()
+            bathroom.SetupAutomaticTurnOnAndOffAction()
                 .WithMotionDetector(bathroom.MotionDetector(UpperBathroom.MotionDetector))
                 .WithTarget(combinedLights)
                 .WithOnDuration(TimeSpan.FromMinutes(8));

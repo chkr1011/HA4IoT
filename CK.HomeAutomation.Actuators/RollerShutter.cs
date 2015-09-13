@@ -16,7 +16,7 @@ namespace CK.HomeAutomation.Actuators
         private readonly int _maxPosition;
         private readonly Stopwatch _movingDuration = new Stopwatch();
         private readonly IBinaryOutput _powerGpioPin;
-        private readonly HomeAutomationTimer _timer;
+        private readonly IHomeAutomationTimer _timer;
 
         private TimedAction _autoOffTimer;
         private int _position;
@@ -27,9 +27,9 @@ namespace CK.HomeAutomation.Actuators
             IBinaryOutput directionOutput, 
             TimeSpan autoOffTimeout,
             int maxPosition,
-            HttpRequestController httpApiController,
+            IHttpRequestController httpApiController,
             INotificationHandler notificationHandler, 
-            HomeAutomationTimer timer)
+            IHomeAutomationTimer timer)
             : base(id, httpApiController, notificationHandler)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));

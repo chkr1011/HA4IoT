@@ -1,6 +1,7 @@
 ﻿using CK.HomeAutomation.Actuators;
 using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.DHT22;
+using CK.HomeAutomation.Hardware.GenericIOBoard;
 
 namespace CK.HomeAutomation.Controller.Rooms
 {
@@ -21,10 +22,10 @@ namespace CK.HomeAutomation.Controller.Rooms
             LampMirror,
         }
 
-        public void Setup(Home home, CCToolsBoardController ccToolsController, DHT22Reader sensorBridgeDriver)
+        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Reader sensorBridgeDriver)
         {
-            var hspe16_FloorAndLowerBathroom = ccToolsController.GetOutputBoard(Device.LowerFloorAndLowerBathroomHSPE16);
-            var input3 = ccToolsController.GetInputBoard(Device.Input3);
+            var hspe16_FloorAndLowerBathroom = ioBoardManager.GetOutputBoard(Device.LowerFloorAndLowerBathroomHSPE16);
+            var input3 = ioBoardManager.GetInputBoard(Device.Input3);
 
             const int SensorID = 5;
 
@@ -43,7 +44,7 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithActuator(bathroom.Lamp(LowerBathroom.LightCeilingWindow))
                 .WithActuator(bathroom.Lamp(LowerBathroom.LampMirror));
 
-            bathroom.SetupAutomaticTurnOnAction()
+            bathroom.SetupAutomaticTurnOnAndOffAction()
                 .WithMotionDetector(bathroom.MotionDetector(LowerBathroom.MotionDetector))
                 .WithTarget(bathroom.BinaryStateOutput(LowerBathroom.CombinedLights));
         }

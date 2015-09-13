@@ -5,9 +5,9 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch
     public class RemoteSwitchSender
     {
         private readonly int _address;
-        private readonly I2CBus _i2CBus;
+        private readonly II2cBusAccessor _i2CBus;
 
-        public RemoteSwitchSender(I2CBus i2CBus, int address)
+        public RemoteSwitchSender(II2cBusAccessor i2CBus, int address)
         {
             if (i2CBus == null) throw new ArgumentNullException(nameof(i2CBus));
 

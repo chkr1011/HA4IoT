@@ -2,28 +2,29 @@
 
 namespace CK.HomeAutomation.Hardware
 {
-    public class DummyPort : IBinaryInput, IBinaryOutput
+    public class DummyPort
     {
         private readonly object _syncRoot = new object();
         private BinaryState _state = BinaryState.Low;
         private bool _stateIsInverted;
 
-        public BinaryState FakeState
-        {
-            get
-            {
-                lock (_syncRoot)
-                {
-                    return _state;
-                }
-            }
-        }
-
         public event EventHandler<BinaryStateChangedEventArgs> StateChanged;
 
-        public void FireStateChangedEvent()
+        public BinaryState GetInternalState()
         {
-            StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(Read()));
+            lock (_syncRoot)
+            {
+                return _state;
+            }
+        }
+        
+        public void SetInternalState(BinaryState newState)
+        {
+            lock (_syncRoot)
+            {
+                _state = newState;
+                StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(Read()));
+            }
         }
 
         public void Write(BinaryState state, bool commit = true)
@@ -41,14 +42,8 @@ namespace CK.HomeAutomation.Hardware
                 return CoerceState(_state);
             }
         }
-
-        IBinaryOutput IBinaryOutput.WithInvertedState()
-        {
-            _stateIsInverted = true;
-            return this;
-        }
-
-        IBinaryInput IBinaryInput.WithInvertedState()
+        
+        public DummyPort WithInvertedState()
         {
             _stateIsInverted = true;
             return this;

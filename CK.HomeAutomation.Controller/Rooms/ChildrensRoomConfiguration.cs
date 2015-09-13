@@ -2,15 +2,16 @@
 using CK.HomeAutomation.Actuators.Connectors;
 using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.DHT22;
+using CK.HomeAutomation.Hardware.GenericIOBoard;
 
 namespace CK.HomeAutomation.Controller.Rooms
 {
     internal class ChildrensRoomRoomConfiguration
     {
-        public void Setup(Home home, CCToolsBoardController ccToolsController, DHT22Reader sensorBridgeDriver)
+        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Reader sensorBridgeDriver)
         {
             var hsrel5 = ccToolsController.CreateHSREL5(Device.ChildrensRoomHSREL5, 63);
-            var input0 = ccToolsController.GetInputBoard(Device.Input0);
+            var input0 = ioBoardManager.GetInputBoard(Device.Input0);
 
             const int SensorID = 3;
 

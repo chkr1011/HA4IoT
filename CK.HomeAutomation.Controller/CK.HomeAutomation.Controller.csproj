@@ -75,7 +75,7 @@
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <NoWarn>;2008</NoWarn>
     <DebugType>full</DebugType>
-    <PlatformTarget>ARM</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
@@ -145,6 +145,10 @@
     <ProjectReference Include="..\CK.HomeAutomation.Hardware.DHT22\CK.HomeAutomation.Hardware.DHT22.csproj">
       <Project>{C838FE97-95A5-4D11-8F4E-19257B1D062A}</Project>
       <Name>CK.HomeAutomation.Hardware.DHT22</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CK.HomeAutomation.Hardware.GenericIOBoard\CK.HomeAutomation.Hardware.GenericIOBoard.csproj">
+      <Project>{74BECF44-F00B-40F1-9220-06C4C7F2220F}</Project>
+      <Name>CK.HomeAutomation.Hardware.GenericIOBoard</Name>
     </ProjectReference>
     <ProjectReference Include="..\CK.HomeAutomation.Hardware.Pi2\CK.HomeAutomation.Hardware.Pi2.csproj">
       <Project>{39819B8F-40F8-418A-AD3A-92A8C8D63268}</Project>

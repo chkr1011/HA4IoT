@@ -13,7 +13,7 @@ namespace CK.HomeAutomation.Actuators
         private readonly Stopwatch _stopwatch = new Stopwatch();
         private readonly TimeSpan _timeoutForLongAction = TimeSpan.FromSeconds(1.5);
 
-        public Button(string id, IBinaryInput input, HttpRequestController httpApiController, INotificationHandler notificationHandler, HomeAutomationTimer timer)
+        public Button(string id, IBinaryInput input, IHttpRequestController httpApiController, INotificationHandler notificationHandler, IHomeAutomationTimer timer)
             : base(id, httpApiController, notificationHandler)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
@@ -28,7 +28,7 @@ namespace CK.HomeAutomation.Actuators
                     return;
                 }
 
-                if (e.State == BinaryState.High)
+                if (e.NewState == BinaryState.High)
                 {
                     if (!LongActions.Any())
                     {

@@ -115,6 +115,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HttpContext.cs" />
+    <Compile Include="IHttpRequestController.cs" />
     <Compile Include="HttpRequestController.cs" />
     <Compile Include="HttpMethod.cs" />
     <Compile Include="HttpRequest.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="HttpResponse.cs" />
     <Compile Include="HttpStatusCode.cs" />
     <Compile Include="HttpServer.cs" />
+    <Compile Include="IHttpRequestDispatcher.cs" />
     <Compile Include="MimeTypeProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestReceivedEventArgs.cs" />

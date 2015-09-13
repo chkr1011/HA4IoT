@@ -4,10 +4,10 @@ namespace CK.HomeAutomation.Hardware.CCTools
 {
     public class MAX7311Driver : IDeviceDriver
     {
-        private readonly I2CBus _i2CBus;
+        private readonly II2cBusAccessor _i2CBus;
         private readonly int _i2CDeviceAddress;
 
-        public MAX7311Driver(int i2cDeviceAddress, I2CBus i2cBus)
+        public MAX7311Driver(int i2cDeviceAddress, II2cBusAccessor i2cBus)
         {
             if (i2cBus == null) throw new ArgumentNullException(nameof(i2cBus));
 
