@@ -5,3 +5,4 @@ obj/
 [Rr]elease*/
 
 /packages/
+.vs/config/applicationhost.config

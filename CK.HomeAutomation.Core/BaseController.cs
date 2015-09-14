@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
+using Windows.Devices.Gpio;
 using Windows.Storage;
 using CK.HomeAutomation.Core.Timer;
 using CK.HomeAutomation.Networking;
@@ -16,6 +17,7 @@ namespace CK.HomeAutomation.Core
         protected INotificationHandler NotificationHandler { get; private set; }
         protected IHttpRequestController HttpApiController { get; private set; }
         protected IHomeAutomationTimer Timer { get; private set; }
+        protected HealthMonitor HealthMonitor { get; private set; }
 
         public void RunAsync(IBackgroundTaskInstance taskInstance)
         {
@@ -23,7 +25,20 @@ namespace CK.HomeAutomation.Core
             Task.Factory.StartNew(InitializeCore, TaskCreationOptions.LongRunning);
         }
 
-        protected void InitializeHttpApi()
+        protected virtual void Initialize()
+        {
+        }
+
+        protected void InitializeHealthMonitor(int pi2GpioPinWithLed)
+        {
+            var pi2PortController = GpioController.GetDefault();
+            var ledPin = pi2PortController.OpenPin(pi2GpioPinWithLed);
+            ledPin.SetDriveMode(GpioPinDriveMode.Output);
+
+            HealthMonitor = new HealthMonitor(ledPin, Timer, HttpApiController);
+        }
+
+        private void InitializeHttpApi()
         {
             _httpServer = new HttpServer();
             var httpRequestDispatcher = new HttpRequestDispatcher(_httpServer);
@@ -33,19 +48,15 @@ namespace CK.HomeAutomation.Core
             httpRequestDispatcher.MapDirectory("app", appPath);
         }
 
-        protected void InitializeTimer()
+        private void InitializeTimer()
         {
             Timer = new HomeAutomationTimer(NotificationHandler);
         }
 
-        protected void InitializeNotificationHandler()
+        private void InitializeNotificationHandler()
         {
             NotificationHandler = new NotificationHandler();
             NotificationHandler.Publish(NotificationType.Info, "Starting");
-        }
-
-        protected virtual void Initialize()
-        {
         }
 
         private void InitializeCore()

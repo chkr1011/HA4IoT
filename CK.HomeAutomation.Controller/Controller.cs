@@ -20,9 +20,10 @@ namespace CK.HomeAutomation.Controller
     {
         protected override void Initialize()
         {
-            var pi2PortController = new Pi2PortController();
-            var healthMonitor = new HealthMonitor(pi2PortController.GetOutput(22).WithInvertedState(), Timer, HttpApiController);
+            InitializeHealthMonitor(22);
 
+            var pi2PortController = new Pi2PortController();
+            
             var i2CBus = new I2cBusAccessor(NotificationHandler);
 
             WeatherStation weatherStation = CreateWeatherStation();
@@ -30,7 +31,7 @@ namespace CK.HomeAutomation.Controller
             var sensorBridgeDriver = new DHT22Reader(50, Timer, i2CBus);
 
             var ioBoardManager = new IOBoardManager(HttpApiController, NotificationHandler);
-            var ccToolsBoardController = new CCToolsBoardController(i2CBus, ioBoardManager, HttpApiController, NotificationHandler);
+            var ccToolsBoardController = new CCToolsBoardController(i2CBus, ioBoardManager, NotificationHandler);
 
             ccToolsBoardController.CreateHSPE16InputOnly(Device.Input0, 42);
             ccToolsBoardController.CreateHSPE16InputOnly(Device.Input1, 43);
@@ -42,7 +43,7 @@ namespace CK.HomeAutomation.Controller
             var remoteSwitchController = new RemoteSwitchController(new RemoteSwitchSender(i2CBus, 50), Timer);
             remoteSwitchController.Register(0, new RemoteSwitchCode(21, 24), new RemoteSwitchCode(20, 24));
 
-            var home = new Home(Timer, healthMonitor, weatherStation, HttpApiController, NotificationHandler);
+            var home = new Home(Timer, HealthMonitor, weatherStation, HttpApiController, NotificationHandler);
 
             new BedroomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
             new OfficeConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver, remoteSwitchController);

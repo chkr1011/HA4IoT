@@ -1,6 +1,5 @@
 ﻿using System;
 using CK.HomeAutomation.Hardware.GenericIOBoard;
-using CK.HomeAutomation.Networking;
 using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Hardware.CCTools
@@ -11,11 +10,10 @@ namespace CK.HomeAutomation.Hardware.CCTools
         private readonly IOBoardManager _ioBoardManager;
         private readonly INotificationHandler _notificationHandler;
 
-        public CCToolsBoardController(II2cBusAccessor i2CBus, IOBoardManager ioBoardManager, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
+        public CCToolsBoardController(II2cBusAccessor i2CBus, IOBoardManager ioBoardManager, INotificationHandler notificationHandler)
         {
             if (i2CBus == null) throw new ArgumentNullException(nameof(i2CBus));
             if (ioBoardManager == null) throw new ArgumentNullException(nameof(ioBoardManager));
-            if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
 
             _i2CBus = i2CBus;
             _notificationHandler = notificationHandler;
