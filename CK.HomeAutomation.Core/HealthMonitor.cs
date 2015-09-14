@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Windows.Data.Json;
+using Windows.Devices.Gpio;
 using CK.HomeAutomation.Core.Timer;
-using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Networking;
 
 namespace CK.HomeAutomation.Core
@@ -13,7 +13,7 @@ namespace CK.HomeAutomation.Core
         private readonly List<int> _durations = new List<int>(100);
         private readonly Timeout _ledTimeout = new Timeout();
         private readonly DateTime _startedDate = DateTime.Now;
-        private readonly IBinaryOutput _statusLed;
+        private readonly GpioPin _statusLed;
         private float? _averageTimerDuration;
 
         private bool _ledState;
@@ -21,7 +21,7 @@ namespace CK.HomeAutomation.Core
 
         private float? _minTimerDuration;
 
-        public HealthMonitor(IBinaryOutput statusLed, IHomeAutomationTimer timer, IHttpRequestController httpApiController)
+        public HealthMonitor(GpioPin statusLed, IHomeAutomationTimer timer, IHttpRequestController httpApiController)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
             if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
@@ -95,12 +95,12 @@ namespace CK.HomeAutomation.Core
         {
             if (_ledState)
             {
-                _statusLed.Write(BinaryState.Low);
+                _statusLed.Write(GpioPinValue.High);
                 _ledTimeout.Start(TimeSpan.FromSeconds(5));
             }
             else
             {
-                _statusLed.Write(BinaryState.High);
+                _statusLed.Write(GpioPinValue.Low);
                 _ledTimeout.Start(TimeSpan.FromMilliseconds(200));
             }
 
