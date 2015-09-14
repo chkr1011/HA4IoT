@@ -3,41 +3,26 @@
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{171A1B71-EC5A-42BC-A3D9-0252B157F70A}</ProjectGuid>
+    <OutputType>winmdobj</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CK.HomeAutomation.Core</RootNamespace>
-    <AssemblyName>CK.HomeAutomation.Core</AssemblyName>
+    <RootNamespace>CK.HomeAutomation.Controller.Empty</RootNamespace>
+    <AssemblyName>CK.HomeAutomation.Controller.Empty</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
+    <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <AllowCrossPlatformRetargeting>false</AllowCrossPlatformRetargeting>
+    <PackageCertificateKeyFile>CK.HomeAutomation.Controller.Empty_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <AppxPackage>true</AppxPackage>
+    <ContainsStartupTask>true</ContainsStartupTask>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
-    <PlatformTarget>ARM</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\ARM\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
@@ -49,7 +34,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
-    <PlatformTarget>ARM</PlatformTarget>
     <OutputPath>bin\ARM\Release\</OutputPath>
     <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <Optimize>true</Optimize>
@@ -59,10 +43,9 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
@@ -74,7 +57,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <PlatformTarget>x64</PlatformTarget>
     <OutputPath>bin\x64\Release\</OutputPath>
     <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <Optimize>true</Optimize>
@@ -84,9 +66,9 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
@@ -98,7 +80,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <PlatformTarget>x86</PlatformTarget>
     <OutputPath>bin\x86\Release\</OutputPath>
     <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <Optimize>true</Optimize>
@@ -108,36 +89,74 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseController.cs" />
-    <Compile Include="HealthMonitor.cs" />
-    <Compile Include="Timer\IHomeAutomationTimer.cs" />
-    <Compile Include="Timer\TimedAction.cs" />
-    <Compile Include="Timer\Timeout.cs" />
-    <Compile Include="Timer\HomeAutomationTimer.cs" />
+    <Compile Include="Controller.cs" />
+    <Compile Include="StartupTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Timer\TimerTickEventArgs.cs" />
-    <Content Include="Properties\CK.HomeAutomation.Core.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+    <None Include="CK.HomeAutomation.Controller.Empty_TemporaryKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Properties\Default.rd.xml" />
+    <Content Include="Assets\LockScreenLogo.scale-200.png" />
+    <Content Include="Assets\SplashScreen.scale-200.png" />
+    <Content Include="Assets\Square150x150Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\StoreLogo.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CK.HomeAutomation.Actuators\CK.HomeAutomation.Actuators.csproj">
+      <Project>{808ABECF-D9C2-4AB2-95D8-EAF228B44576}</Project>
+      <Name>CK.HomeAutomation.Actuators</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CK.HomeAutomation.Core\CK.HomeAutomation.Core.csproj">
+      <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
+      <Name>CK.HomeAutomation.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CK.HomeAutomation.Hardware.CCTools\CK.HomeAutomation.Hardware.CCTools.csproj">
+      <Project>{B0A7EF01-9382-422C-81AF-C90DC5A7AFFD}</Project>
+      <Name>CK.HomeAutomation.Hardware.CCTools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CK.HomeAutomation.Hardware.GenericIOBoard\CK.HomeAutomation.Hardware.GenericIOBoard.csproj">
+      <Project>{74becf44-f00b-40f1-9220-06c4c7f2220f}</Project>
+      <Name>CK.HomeAutomation.Hardware.GenericIOBoard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CK.HomeAutomation.Hardware.Pi2\CK.HomeAutomation.Hardware.Pi2.csproj">
+      <Project>{39819B8F-40F8-418A-AD3A-92A8C8D63268}</Project>
+      <Name>CK.HomeAutomation.Hardware.Pi2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CK.HomeAutomation.Hardware.RemoteSwitch\CK.HomeAutomation.Hardware.RemoteSwitch.csproj">
+      <Project>{BADA2E47-5626-4E9E-92A7-8F712D084493}</Project>
+      <Name>CK.HomeAutomation.Hardware.RemoteSwitch</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CK.HomeAutomation.Hardware\CK.HomeAutomation.Hardware.csproj">
+      <Project>{287a9bd0-4037-4add-986f-54056f059eae}</Project>
+      <Name>CK.HomeAutomation.Hardware</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CK.HomeAutomation.Networking\CK.HomeAutomation.Networking.csproj">
-      <Project>{d4e0a3f9-6521-4aee-815a-e2a60323fb63}</Project>
+      <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
       <Name>CK.HomeAutomation.Networking</Name>
     </ProjectReference>
     <ProjectReference Include="..\CK.HomeAutomation.Notifications\CK.HomeAutomation.Notifications.csproj">
       <Project>{15DB669D-AF71-4E89-9748-0290A2E5D291}</Project>
       <Name>CK.HomeAutomation.Notifications</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <SDKReference Include="WindowsIoT, Version=10.0.10240.0">
-      <Name>Windows IoT Extensions for the UWP</Name>
-    </SDKReference>
+    <ProjectReference Include="..\CK.HomeAutomation.Telemetry\CK.HomeAutomation.Telemetry.csproj">
+      <Project>{97F3345C-33B6-4779-9212-5FFBCEEF3F96}</Project>
+      <Name>CK.HomeAutomation.Telemetry</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

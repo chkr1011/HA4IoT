@@ -47,18 +47,18 @@ namespace CK.HomeAutomation.Controller.Cellar
 
         protected override void Initialize()
         {
-            var pi2PortController = new Pi2PortController();
+            InitializeHealthMonitor(22);
 
-            var healthMonitor = new HealthMonitor(pi2PortController.GetOutput(22).WithInvertedState(), Timer, HttpApiController);
+            var pi2PortController = new Pi2PortController();
 
             WeatherStation weatherStation = CreateWeatherStation();
             var i2CBus = new I2cBusAccessor(NotificationHandler);
 
             var ioBoardManager = new IOBoardManager(HttpApiController, NotificationHandler);
-            var ccToolsFactory = new CCToolsBoardController(i2CBus, ioBoardManager, HttpApiController, NotificationHandler);
+            var ccToolsFactory = new CCToolsBoardController(i2CBus, ioBoardManager, NotificationHandler);
             var hsrt16 = ccToolsFactory.CreateHSRT16(Device.CellarHSRT16, 32);
 
-            var home = new Home(Timer, healthMonitor, weatherStation, HttpApiController, NotificationHandler);
+            var home = new Home(Timer, HealthMonitor, weatherStation, HttpApiController, NotificationHandler);
 
             var garden = home.AddRoom(Room.Garden)
                 .WithLamp(Garden.LampTerrace, hsrt16.GetOutput(15))
