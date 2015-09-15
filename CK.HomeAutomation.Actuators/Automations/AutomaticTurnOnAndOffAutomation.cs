@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CK.HomeAutomation.Actuators.Conditions;
 using CK.HomeAutomation.Actuators.Conditions.Specialized;
@@ -10,7 +11,7 @@ namespace CK.HomeAutomation.Actuators.Automations
     {
         private readonly ConditionsValidator _conditionValidator = new ConditionsValidator();
         private readonly IHomeAutomationTimer _timer;
-        private IBinaryStateOutputActuator _actuator;
+        private readonly List<IBinaryStateOutputActuator> _actuators = new List<IBinaryStateOutputActuator>();
         private TimeSpan _duration;
         private TimedAction _turnOffTimeout;
         private bool _isOn;
@@ -52,7 +53,7 @@ namespace CK.HomeAutomation.Actuators.Automations
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
-            _actuator = actuator;
+            _actuators.Add(actuator);
             return this;
         }
 
@@ -118,7 +119,7 @@ namespace CK.HomeAutomation.Actuators.Automations
                 _isOn = true;
 
                 _turnOffTimeout?.Cancel();
-                _actuator.TurnOn();
+                _actuators.ForEach(a => a.TurnOn());
             }
         }
 
@@ -127,7 +128,7 @@ namespace CK.HomeAutomation.Actuators.Automations
             _turnOffTimeout?.Cancel();
             _turnOffTimeout = _timer.In(_duration).Do(() =>
             {
-                _actuator.TurnOff();
+                _actuators.ForEach(a => a.TurnOff());
                 _isOn = false;
             });
         }

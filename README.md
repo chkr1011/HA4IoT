@@ -2,20 +2,20 @@
 The first open source home automation SDK for the RaspberryPi 2 using Windows 10 IoT.
 
 ## Key features
-* Virtual actuators like pushbuttons, motion motion detectors, lamps, sockets, roller shutters which can be connected among themselves using a fluent API
-* WebApp for iOS, Android, OSX and Windows
+* Virtual actuators like pushbuttons, motion motion detectors, lamps, sockets, roller shutters which can be interconnected using a fluent API
+* Responsive WebApp for iOS, Android, OSX and Windows
 * Highly configurable automations with complex conditions
 * Predefined conditions depending on sunrise, sunset, time, state of other actuators, position of roller shutters, motion detected
-* Predefined common automations like automatic lights, roller shutters etc.
-* Software architecture which uses several layers which allows transparent configuration of inputs and outputs across the used hardware
-* Optional connection with a Microsoft Azure Event Hub which allows analysis of actuator states or power consumption
-* Optional CSV log which contains the state changes of every actuator which allows analysis of actuator states or power consumption
+* Predefined common automations like automated lights, roller shutters etc.
+* Software architecture using several layers which allows for transparent configuration of inputs and outputs across the used hardware
+* Optional integration of Microsoft Azure EventHubs to allow for analysis of actuator states or power consumption statistics
+* Optional CSV log containing all state changes of every actuator which allows for analysis of actuator states or power consumption
 * UDP broadcasted debug traces
-* Included fritzing sketches and documentation which allows building devices like 433Mhz sender, sensors etc. by your own
+* Complete with fritzing sketches and documentation to build devices like 433Mhz sender, sensors etc. on your own
 
 ## Supported hardware
-* Any kind of relay board which uses a PCF8574/A, MAX7311, PCA9555D (I2C bus)
-* Any king of input board (port expander) which uses a PCF8574/A, MAX7311, PCA9555D (I2C bus)
+* Any kind of relay board that uses a PCF8574/A, MAX7311, PCA9555D (I2C bus)
+* Any kind of input board (port expander) that uses a PCF8574/A, MAX7311, PCA9555D (I2C bus)
 * Remote switches with 433Mhz receiver
 * DHT22 based temperature and humidity sensors
 * A wide range of input and output boards from [CCTools]("http://www.cctools.net").
@@ -28,13 +28,13 @@ The first open source home automation SDK for the RaspberryPi 2 using Windows 10
 * Roller shutters
 * Lamp
 * Socket
-* Combined actuators to a new one
+* Combine multiple actuators into virtual ones
 * Humidity sensor
 * Temperature sensor
 * State machine (for complex actuators like fans or 'moods' for lights)
 
 ## Quick start
-The software solution contains the project ``CK.HomeAutomation.Controller.Empty`` which can be used to play around with the SDK. The other projects ``CK.HomeAutomation.Controller.Cellar`` and ``CK.HomeAutomation.Controller`` containing a full configuration which can be used as an example.
+The software solution contains the project ``CK.HomeAutomation.Controller.Empty`` which can be used to start playing around with the SDK. The other projects ``CK.HomeAutomation.Controller.Cellar`` and ``CK.HomeAutomation.Controller`` containing a full "real life" configuration which can be used as an example.
 
 ## Documentation
 
