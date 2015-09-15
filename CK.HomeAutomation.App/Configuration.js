@@ -1,5 +1,5 @@
-﻿// The IP address of the Pi2.
-appConfiguration.controllerAddress = "192.168.1.15";
+﻿// The IP address of the Pi2 (only required if the app is not hosted at the Pi2).
+appConfiguration.controllerAddress = "";
 
 // The interval which should be used to poll the current state from the Pi2.
 appConfiguration.pollInterval = 250;

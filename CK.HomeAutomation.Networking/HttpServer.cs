@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
@@ -6,7 +7,6 @@ using Windows.Data.Json;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 using Buffer = Windows.Storage.Streams.Buffer;
-using UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding;
 
 namespace CK.HomeAutomation.Networking
 {
@@ -57,7 +57,7 @@ namespace CK.HomeAutomation.Networking
                     if (context != null)
                     {
                         context.Response.StatusCode = HttpStatusCode.InternalServerError;
-                        context.Response.Body.Append(ExceptionToJson(exception));
+                        context.Response.Body = new JsonBody(ExceptionToJson(exception));
                     }
                 }
                 finally
@@ -72,42 +72,44 @@ namespace CK.HomeAutomation.Networking
 
         private async Task SendResponse(StreamSocket client, HttpResponse response)
         {
-            var statusDescription = _statusDescriptionProvider.GetDescription(response.StatusCode);
-
-            using (var dataWriter = new DataWriter(client.OutputStream))
+            try
             {
-                dataWriter.UnicodeEncoding = UnicodeEncoding.Utf8;
-                dataWriter.WriteString("HTTP/1.1 ");
-                dataWriter.WriteString((int) response.StatusCode + " " + statusDescription + Environment.NewLine);
+                var statusDescription = _statusDescriptionProvider.GetDescription(response.StatusCode);
 
-                dataWriter.WriteString("Access-Control-Allow-Origin: *" + Environment.NewLine);
-                dataWriter.WriteString("Connection: close" + Environment.NewLine);
+                var responseText = new StringBuilder();
+                responseText.AppendFormat("HTTP/1.1 {0} {1}", (int)response.StatusCode, statusDescription + Environment.NewLine);
+                responseText.AppendLine("Access-Control-Allow-Origin: *");
+                responseText.AppendLine("Connection: close");
 
-                string content;
-                if (response.Result != null)
+                byte[] content;
+                string mimeType;
+                if (response.Body != null)
                 {
-                    if (response.Body.Length > 0)
-                    {
-                        throw new InvalidOperationException("Could not send body content and result at the same time.");
-                    }
-
-                    content = response.Result.Stringify();
-                    dataWriter.WriteString("Content-Type: application/json" + Environment.NewLine);
+                    content = response.Body.ToByteArray();
+                    mimeType = response.Body.MimeType;
                 }
                 else
                 {
-                    content = response.Body.ToString();
-                    dataWriter.WriteString("Content-Type: " + response.MimeType + Environment.NewLine);
+                    content = new byte[0];
+                    mimeType = string.Empty;
                 }
 
-                dataWriter.WriteString("Content-Length: " + content.Length + Environment.NewLine);
-                dataWriter.WriteString(Environment.NewLine);
+                responseText.AppendLine("Content-Type: " + mimeType);
+                responseText.AppendLine("Content-Length: " + content.Length);
+                responseText.AppendLine();
 
-                await dataWriter.StoreAsync();
+                using (var dataWriter = new DataWriter(client.OutputStream))
+                {
+                    dataWriter.WriteString(responseText.ToString());
+                    await dataWriter.StoreAsync();
 
-                dataWriter.WriteString(content);
-
-                await dataWriter.StoreAsync();
+                    dataWriter.WriteBytes(content);
+                    await dataWriter.StoreAsync();
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Write("Error while sending response. " + e);
             }
         }
 
@@ -125,14 +127,14 @@ namespace CK.HomeAutomation.Networking
             return request;
         }
 
-        private string ExceptionToJson(Exception exception)
+        private JsonObject ExceptionToJson(Exception exception)
         {
             var root = new JsonObject();
             root.SetNamedValue("type", JsonValue.CreateStringValue(exception.GetType().Name));
             root.SetNamedValue("message", JsonValue.CreateStringValue(exception.Message));
             root.SetNamedValue("stackTrace", JsonValue.CreateStringValue(exception.StackTrace));
             root.SetNamedValue("source", JsonValue.CreateStringValue(exception.Source));
-            return root.Stringify();
+            return root;
         }
     }
 }

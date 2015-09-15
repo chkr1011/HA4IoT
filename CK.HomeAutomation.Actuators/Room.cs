@@ -20,7 +20,7 @@ namespace CK.HomeAutomation.Actuators
             Id = id;
 
             _home = home;
-            _home.HttpApiController.Handle(HttpMethod.Get, "room").WithSegment(id).Using(c => c.Response.Result = GetStatusAsJSON());
+            _home.HttpApiController.Handle(HttpMethod.Get, "room").WithSegment(id).Using(c => c.Response.Body = new JsonBody(GetStatusAsJSON()));
         }
 
         public string Id { get; }

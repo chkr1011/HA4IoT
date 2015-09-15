@@ -28,7 +28,7 @@ namespace CK.HomeAutomation.Actuators
             _notificationHandler = notificationHandler;
             _weatherDataSourceUrl = new Uri(string.Format("http://api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}&units=metric", lat, lon));
 
-            httpApiController.Handle(HttpMethod.Get, "weatherStation").Using(c => c.Response.Result = ApiGet());
+            httpApiController.Handle(HttpMethod.Get, "weatherStation").Using(c => c.Response.Body = new JsonBody(ApiGet()));
             httpApiController.Handle(HttpMethod.Post, "weatherStation").WithRequiredJsonBody().Using(c => ApiPost(c.Request));
 
             LoadPersistedValues();
