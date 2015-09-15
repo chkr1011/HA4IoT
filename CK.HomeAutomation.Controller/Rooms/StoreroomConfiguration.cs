@@ -23,7 +23,9 @@ namespace CK.HomeAutomation.Controller.Rooms
 
             storeroom.SetupAutomaticTurnOnAndOffAction()
                 .WithMotionDetector(storeroom.MotionDetector(Storeroom.MotionDetector))
-                .WithTarget(storeroom.Lamp(Storeroom.LightCeiling));
+                .WithTarget(storeroom.Lamp(Storeroom.LightCeiling))
+                .WithTarget(storeroom.Socket(Storeroom.CatLitterBoxFan))
+                .WithOnDuration(TimeSpan.FromMinutes(1));
 
             storeroom.WithSocket(Storeroom.CirculatingPump, hsrel5UpperHeatingValves.GetOutput(3));
 
