@@ -28,8 +28,8 @@ namespace CK.HomeAutomation.Actuators
             HttpApiController = httpApiController;
             NotificationHandler = notificationHandler;
 
-            httpApiController.Handle(HttpMethod.Get, "configuration").Using(c => c.Response.Result = GetConfigurationAsJSON());
-            httpApiController.Handle(HttpMethod.Get, "status").Using(c => c.Response.Result = GetStatusAsJSON());
+            httpApiController.Handle(HttpMethod.Get, "configuration").Using(c => c.Response.Body = new JsonBody(GetConfigurationAsJSON()));
+            httpApiController.Handle(HttpMethod.Get, "status").Using(c => c.Response.Body = new JsonBody(GetStatusAsJSON()));
         }
 
         public IHomeAutomationTimer Timer { get; }

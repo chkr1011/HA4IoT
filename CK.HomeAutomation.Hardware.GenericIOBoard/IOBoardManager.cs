@@ -58,7 +58,7 @@ namespace CK.HomeAutomation.Hardware.GenericIOBoard
 
         private void ExposeToApi(IOBoardController ioBoard)
         {
-            _httpApiController.Handle(HttpMethod.Get, "device").WithSegment(ioBoard.Id).Using(c => c.Response.Result = ApiGet(ioBoard));
+            _httpApiController.Handle(HttpMethod.Get, "device").WithSegment(ioBoard.Id).Using(c => c.Response.Body = new JsonBody(ApiGet(ioBoard)));
 
             _httpApiController.Handle(HttpMethod.Put, "device")
                 .WithSegment(ioBoard.Id)

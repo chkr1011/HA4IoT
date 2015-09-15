@@ -14,6 +14,14 @@ function getFriendlyName(key) {
     return result;
 }
 
+function getApiUrl() {
+	if (appConfiguration.controllerAddress === "") {
+		return "/api/";
+	} else {
+		return "http://" + appConfiguration.controllerAddress + "/api/";
+	}
+}
+
 function getVersion(callback) {
     $.get("cache.manifest", function (data) {
         var parser = new RegExp("# Version ([0-9|.]*)", "");
@@ -39,7 +47,7 @@ function setupController() {
             getVersion(function (version) { c.version = version });
 
             c.generateRooms = function () {
-                getJSON(c, "http://" + c.appConfiguration.controllerAddress + "/api/configuration", function (data) {
+                getJSON(c, getApiUrl() + "configuration", function (data) {
 
                     $.each(data, function (roomIndex, room) {
 
@@ -90,7 +98,7 @@ function setupController() {
             }
 
             c.pollStatus = function () {
-                getJSON(c, "http://" + c.appConfiguration.controllerAddress + "/api/status", function (data) {
+                getJSON(c, getApiUrl() + "status", function (data) {
 
                     $.each(data, function (id, state) {
                         c.updateStatus(id, state);
@@ -255,7 +263,7 @@ function invokeActuator(id, request, successCallback) {
     $.ajax(
         {
             method: "POST",
-            url: "http://" + appConfiguration.controllerAddress + "/api/actuator/" + id + "?body=" + JSON.stringify(request),
+            url: getApiUrl() + "actuator/" + id + "?body=" + JSON.stringify(request),
             crossDomain: true,
             timeout: 2500
         }).success(function () {

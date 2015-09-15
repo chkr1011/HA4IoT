@@ -70,7 +70,7 @@ namespace CK.HomeAutomation.Actuators
                     var context = new ApiRequestContext(c.Request.JsonBody, new JsonObject());
                     ApiPost(context);
 
-                    c.Response.Result = context.Response;
+                    c.Response.Body = new JsonBody(context.Response);
                 });
 
             httpApiController.Handle(HttpMethod.Get, "actuator")
@@ -80,7 +80,7 @@ namespace CK.HomeAutomation.Actuators
                     var context = new ApiRequestContext(c.Request.JsonBody, new JsonObject());
                     ApiGet(context);
 
-                    c.Response.Result = context.Response;
+                    c.Response.Body = new JsonBody(context.Response);
                 });
         }
     }

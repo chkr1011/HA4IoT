@@ -4,7 +4,7 @@ namespace CK.HomeAutomation.Networking
 {
     public class MimeTypeProvider
     {
-        public string GetMimeTypeOfFile(string filename)
+        public string GetMimeTypeFromFile(string filename)
         {
             string extension = Path.GetExtension(filename).ToLower();
             switch (extension)
@@ -23,6 +23,22 @@ namespace CK.HomeAutomation.Networking
                 case ".css":
                     {
                         return "text/css; charset=utf-8";
+                    }
+
+                case ".png":
+                    {
+                        return "image/png";
+                    }
+
+                case ".jpeg":
+                case ".jpg":
+                    {
+                        return "image/jpg";
+                    }
+
+                case ".manifest":
+                    {
+                        return "text/cache-manifest";
                     }
 
                 default:

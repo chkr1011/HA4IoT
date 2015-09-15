@@ -4,6 +4,6 @@
     {
         IHttpRequestController GetController(string name);
     
-        void MapDirectory(string controllerName, string rootDirectory);
+        void MapFolder(string controllerName, string rootDirectory);
     }
 }
