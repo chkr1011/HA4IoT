@@ -33,7 +33,7 @@ namespace CK.HomeAutomation.Core
             }
 
             timer.Tick += Tick;
-            httpApiController.Handle(HttpMethod.Get, "health").Using(c => c.Response.Result = ApiGet());
+            httpApiController.Handle(HttpMethod.Get, "health").Using(c => c.Response.Body = new JsonBody(ApiGet()));
             httpApiController.Handle(HttpMethod.Post, "health").WithSegment("reset").Using(c => ResetStatistics());
         }
 

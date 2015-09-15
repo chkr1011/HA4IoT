@@ -45,7 +45,7 @@ namespace CK.HomeAutomation.Core
             HttpApiController = httpRequestDispatcher.GetController("api");
 
             var appPath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "app");
-            httpRequestDispatcher.MapDirectory("app", appPath);
+            httpRequestDispatcher.MapFolder("app", appPath);
         }
 
         private void InitializeTimer()

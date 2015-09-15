@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace CK.HomeAutomation.Networking
 {
@@ -32,26 +31,18 @@ namespace CK.HomeAutomation.Networking
             return controller;
         }
 
-        public void MapDirectory(string controllerName, string rootDirectory)
+        public void MapFolder(string name, string rootFolder)
         {
-            var controller = GetController(controllerName);
-            controller.Handle(HttpMethod.Get, "").WithAnySubUrl().Using(c =>
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (name == null) throw new ArgumentNullException(nameof(rootFolder));
+
+            if (_controllers.ContainsKey(name))
             {
-                string relativeUrl = c.Request.Uri.Trim('/');
-                int index = relativeUrl.IndexOf(controllerName, StringComparison.OrdinalIgnoreCase);
-                if (index == -1)
-                {
-                    return;
-                }
+                throw new InvalidOperationException("The controller is already registered");
+            }
 
-                relativeUrl = relativeUrl.Substring(index + controllerName.Length).Replace("/", "\\").Replace("%20", " ");
-                string filename = rootDirectory + relativeUrl;
-
-                var mimeTypeProvider = new MimeTypeProvider();
-                c.Response.MimeType = mimeTypeProvider.GetMimeTypeOfFile(filename);
-
-                c.Response.Body.Append(File.ReadAllText(filename));
-            });
+            var controller = new MappedFolderController(name, rootFolder, _server);
+            _controllers.Add(name, controller);
         }
     }
 }
