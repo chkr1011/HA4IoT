@@ -1,19 +1,23 @@
 ﻿// The IP address of the Pi2 (only required if the app is not hosted at the Pi2).
 appConfiguration.controllerAddress = "";
+appConfiguration.controllerAddress = "192.168.1.15";
 
 // The interval which should be used to poll the current state from the Pi2.
 appConfiguration.pollInterval = 250;
 
-// Indicates whether the overview of all sensor should be shown.
+// Indicates whether the overview of all sensor (temperature and humidity) should be shown.
 appConfiguration.showSensorsOverview = true;
 
 // Indicates whether the overview of all roller shutters should be shown.
 appConfiguration.showRollerShuttersOverview = true;
 
+// Indicates whether the overview of all motion detectors should be shown.
+appConfiguration.showMotionDetectorsOverview = true;
+
 // Supported values for an actuator configuration:
 // caption: "The caption (the id is default)
 // image: "The name of the image"
-// sortValue: 1 (The value which is used to sort the actuators) 
+// sortValue: 1 (The value which is used to sort the actuators)
 appConfiguration.actuatorExtender = function (actuator) {
     switch (actuator.id) {
         case "Bedroom.Fan":
@@ -133,7 +137,7 @@ friendlyNameLookup = [
     { key: "ReadingRoom.SocketWallLeft", value: "Schräge links" },
     { key: "ReadingRoom.SocketWallRight", value: "Schräge rechts" },
     { key: "ReadingRoom.SocketWindow", value: "Fenster" },
-    
+
     { key: "ChildrensRoom.LightCeilingMiddle", value: "Licht" },
     { key: "ChildrensRoom.SocketWallLeft", value: "Schräge links" },
     { key: "ChildrensRoom.SocketWallRight", value: "Schräge rechts" },

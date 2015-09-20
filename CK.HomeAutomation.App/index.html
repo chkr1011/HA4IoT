@@ -68,14 +68,26 @@
                 <h1 class="panel-title pointer">Sensoren</h1>
             </div>
             <table class="table table-striped" ng-show="haCtrl.showSensorsOverview==true">
-                <thead>
-                    <tr>
-                        <th>Sensor</th>
-                        <th>Wert</th>
-                    </tr>
-                </thead>
                 <tbody>
                     <tr ng-repeat="actuator in haCtrl.sensors | orderBy:['id']">
+                        <td style="vertical-align: middle;">
+                            <span><img class="icon" ng-src="Images/{{actuator.image}}.png" />{{actuator.id}}</span>
+                        </td>
+                        <td class="rightTextAligned" ng-include="actuator.template"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="motionDetectorsOverviewTemplate">
+        <div class="panel panel-success row" id="sensors">
+            <div class="panel-heading" ng-click="haCtrl.showMotionDetectorsOverview=!haCtrl.showMotionDetectorsOverview">
+                <h1 class="panel-title pointer">Bewegungsmelder</h1>
+            </div>
+            <table class="table table-striped" ng-show="haCtrl.showMotionDetectorsOverview==true">
+                <tbody>
+                    <tr ng-repeat="actuator in haCtrl.motionDetectors | orderBy:['id']">
                         <td style="vertical-align: middle;">
                             <span><img class="icon" ng-src="Images/{{actuator.image}}.png" />{{actuator.id}}</span>
                         </td>
@@ -153,9 +165,9 @@
 
     <div class="hidden container-fluid" id="content">
         <div ng-include="'roomsOverviewTemplate'"></div>
-        <div ng-show="haCtrl.appConfiguration.showSensorsOverview" ng-include="'sensorsOverviewTemplate'"></div>
+        <div ng-show="haCtrl.appConfiguration.showSensorsOverview" ng-include="'sensorsOverviewTemplate'" ></div>
         <div ng-show="haCtrl.appConfiguration.showRollerShuttersOverview" ng-include="'rollerShuttersOverviewTemplate'"></div>
-        <div ng-show="haCtrl.appConfiguration.showRollerShuttersOverview" ng-include="'bottomBar'"></div>
+        <div ng-show="haCtrl.appConfiguration.showMotionDetectorsOverview" ng-include="'motionDetectorsOverviewTemplate'"></div>
     </div>
 
     <link rel="stylesheet" href="Content/bootstrap.min.css" />
