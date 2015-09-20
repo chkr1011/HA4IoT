@@ -2,6 +2,7 @@
 using System.IO;
 using Windows.Storage;
 using CK.HomeAutomation.Actuators;
+using CK.HomeAutomation.Actuators.Contracts;
 using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Telemetry

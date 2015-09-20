@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CK.HomeAutomation.Actuators.Contracts;
 using CK.HomeAutomation.Hardware;
 
 namespace CK.HomeAutomation.Actuators

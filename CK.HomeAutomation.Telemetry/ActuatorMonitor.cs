@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using CK.HomeAutomation.Actuators;
+using CK.HomeAutomation.Actuators.Contracts;
 using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Telemetry
@@ -47,7 +48,7 @@ namespace CK.HomeAutomation.Telemetry
                     continue;
                 }
 
-                var motionDetector = actuator as MotionDetector;
+                var motionDetector = actuator as IMotionDetector;
                 if (motionDetector != null)
                 {
                     motionDetector.MotionDetected += (s, e) =>
@@ -74,7 +75,7 @@ namespace CK.HomeAutomation.Telemetry
             }
         }
 
-        protected virtual void OnMotionDetected(MotionDetector motionDetector)
+        protected virtual void OnMotionDetected(IMotionDetector motionDetector)
         {
         }
 

@@ -3,6 +3,7 @@ using Windows.Data.Json;
 using Windows.Web.Http;
 using Windows.Web.Http.Headers;
 using CK.HomeAutomation.Actuators;
+using CK.HomeAutomation.Actuators.Contracts;
 using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Telemetry
@@ -68,7 +69,7 @@ namespace CK.HomeAutomation.Telemetry
             SendToAzureEventHubAsync(data);
         }
 
-        protected override void OnMotionDetected(MotionDetector motionDetector)
+        protected override void OnMotionDetected(IMotionDetector motionDetector)
         {
             JsonObject data = CreateDataPackage(motionDetector.Id, EventType.MotionDetected);
             data.SetNamedValue("kind", JsonValue.CreateStringValue("detected"));

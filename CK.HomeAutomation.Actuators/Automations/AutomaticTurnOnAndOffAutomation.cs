@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CK.HomeAutomation.Actuators.Conditions;
 using CK.HomeAutomation.Actuators.Conditions.Specialized;
+using CK.HomeAutomation.Actuators.Contracts;
 using CK.HomeAutomation.Core.Timer;
 
 namespace CK.HomeAutomation.Actuators.Automations
@@ -14,8 +15,7 @@ namespace CK.HomeAutomation.Actuators.Automations
         private readonly List<IBinaryStateOutputActuator> _actuators = new List<IBinaryStateOutputActuator>();
         private TimeSpan _duration;
         private TimedAction _turnOffTimeout;
-        private bool _isOn;
-        
+
         public AutomaticTurnOnAndOffAutomation(IHomeAutomationTimer timer)
         {
             _timer = timer;
@@ -23,7 +23,7 @@ namespace CK.HomeAutomation.Actuators.Automations
             WithOnDuration(TimeSpan.FromMinutes(1));
         }
 
-        public AutomaticTurnOnAndOffAutomation WithMotionDetector(MotionDetector motionDetector)
+        public AutomaticTurnOnAndOffAutomation WithMotionDetector(IMotionDetector motionDetector)
         {
             if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
 
@@ -33,17 +33,15 @@ namespace CK.HomeAutomation.Actuators.Automations
             return this;
         }
 
-        public AutomaticTurnOnAndOffAutomation WithButtonPressedShort(Button button)
+        public AutomaticTurnOnAndOffAutomation WithButtonPressedShort(IButton button)
         {
             if (button == null) throw new ArgumentNullException(nameof(button));
 
             button.PressedShort += (s, e) =>
             {
-                Trigger();
-                if (_isOn)
-                {
-                    StartTimeout();
-                }
+                // The state should be turned on because manual actions are not conditional.
+                TurnOn();
+                StartTimeout();
             };
 
             return this;
@@ -114,13 +112,18 @@ namespace CK.HomeAutomation.Actuators.Automations
 
         private void Trigger()
         {
-            if (_conditionValidator.Validate() == ConditionState.Fulfilled)
+            if (_conditionValidator.Validate() == ConditionState.NotFulfilled)
             {
-                _isOn = true;
-
-                _turnOffTimeout?.Cancel();
-                _actuators.ForEach(a => a.TurnOn());
+                return;
             }
+
+            TurnOn();
+        }
+
+        private void TurnOn()
+        {
+            _turnOffTimeout?.Cancel();
+            _actuators.ForEach(a => a.TurnOn());
         }
 
         private void StartTimeout()
@@ -129,7 +132,6 @@ namespace CK.HomeAutomation.Actuators.Automations
             _turnOffTimeout = _timer.In(_duration).Do(() =>
             {
                 _actuators.ForEach(a => a.TurnOff());
-                _isOn = false;
             });
         }
     }

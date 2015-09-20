@@ -1,4 +1,5 @@
 ﻿using System;
+using CK.HomeAutomation.Actuators.Contracts;
 using CK.HomeAutomation.Core.Timer;
 using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Networking;

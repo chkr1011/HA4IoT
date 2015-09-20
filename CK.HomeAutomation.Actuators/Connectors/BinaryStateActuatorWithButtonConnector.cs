@@ -1,4 +1,5 @@
 ﻿using System;
+using CK.HomeAutomation.Actuators.Contracts;
 
 namespace CK.HomeAutomation.Actuators.Connectors
 {

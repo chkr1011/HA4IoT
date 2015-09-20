@@ -1,6 +1,6 @@
 ﻿using Windows.Data.Json;
 
-namespace CK.HomeAutomation.Actuators
+namespace CK.HomeAutomation.Actuators.Contracts
 {
     public interface IWeatherStation
     {

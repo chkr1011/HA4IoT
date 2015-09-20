@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Windows.Data.Json;
 using CK.HomeAutomation.Actuators.Automations;
+using CK.HomeAutomation.Actuators.Contracts;
 using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Hardware.DHT22;
 using CK.HomeAutomation.Networking;

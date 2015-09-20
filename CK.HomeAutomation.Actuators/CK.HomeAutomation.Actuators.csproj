@@ -138,10 +138,11 @@
     <Compile Include="BaseActuator.cs" />
     <Compile Include="BinaryActuatorState.cs" />
     <Compile Include="Connectors\RollerShutterWithRollerShutterButtonsConnector.cs" />
+    <Compile Include="Contracts\IMotionDetector.cs" />
     <Compile Include="Home.cs" />
-    <Compile Include="IBinaryStateOutputActuator.cs" />
-    <Compile Include="IButton.cs" />
-    <Compile Include="IWeatherStation.cs" />
+    <Compile Include="Contracts\IBinaryStateOutputActuator.cs" />
+    <Compile Include="Contracts\IButton.cs" />
+    <Compile Include="Contracts\IWeatherStation.cs" />
     <Compile Include="RollerShutterPositionTracker.cs" />
     <Compile Include="Room.cs" />
     <Compile Include="RollerShutter.cs" />

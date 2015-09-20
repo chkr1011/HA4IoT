@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CK.HomeAutomation.Actuators
+namespace CK.HomeAutomation.Actuators.Contracts
 {
     public interface IButton
     {

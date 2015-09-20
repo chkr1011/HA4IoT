@@ -1,4 +1,5 @@
 ﻿using System;
+using CK.HomeAutomation.Actuators.Contracts;
 using CK.HomeAutomation.Core.Timer;
 
 namespace CK.HomeAutomation.Actuators.Automations
@@ -18,7 +19,7 @@ namespace CK.HomeAutomation.Actuators.Automations
             _timer = timer;
         }
 
-        public AutomaticBathroomFanAutomation WithMotionDetector(MotionDetector motionDetector)
+        public AutomaticBathroomFanAutomation WithMotionDetector(IMotionDetector motionDetector)
         {
             if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
 

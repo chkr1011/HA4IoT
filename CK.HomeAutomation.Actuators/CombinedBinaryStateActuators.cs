@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CK.HomeAutomation.Actuators.Animations;
+using CK.HomeAutomation.Actuators.Contracts;
 using CK.HomeAutomation.Core.Timer;
 using CK.HomeAutomation.Networking;
 using CK.HomeAutomation.Notifications;

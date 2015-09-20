@@ -113,13 +113,20 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestBinaryStateOutputActuator.cs" />
+    <Compile Include="TestButton.cs" />
     <Compile Include="TestHttpRequestController.cs" />
     <Compile Include="TestHomeAutomationTimer.cs" />
+    <Compile Include="TestMotionDetector.cs" />
     <Compile Include="TestNotificationHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Properties\CK.HomeAutomation.Tests.Mockups.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CK.HomeAutomation.Actuators\CK.HomeAutomation.Actuators.csproj">
+      <Project>{808ABECF-D9C2-4AB2-95D8-EAF228B44576}</Project>
+      <Name>CK.HomeAutomation.Actuators</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CK.HomeAutomation.Core\CK.HomeAutomation.Core.csproj">
       <Project>{2bbef090-4fee-4fb7-9cf1-f6597f2c53ea}</Project>
       <Name>CK.HomeAutomation.Core</Name>

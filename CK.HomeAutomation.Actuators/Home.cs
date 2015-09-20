@@ -4,6 +4,7 @@ using Windows.Data.Json;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using Windows.Storage.Streams;
+using CK.HomeAutomation.Actuators.Contracts;
 using CK.HomeAutomation.Core;
 using CK.HomeAutomation.Core.Timer;
 using CK.HomeAutomation.Networking;

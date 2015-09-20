@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.Data.Json;
+using CK.HomeAutomation.Actuators.Contracts;
 using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Networking;
 using CK.HomeAutomation.Notifications;

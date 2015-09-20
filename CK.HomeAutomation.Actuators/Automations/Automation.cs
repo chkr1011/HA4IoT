@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CK.HomeAutomation.Actuators.Conditions;
+using CK.HomeAutomation.Actuators.Contracts;
 using CK.HomeAutomation.Core.Timer;
 
 namespace CK.HomeAutomation.Actuators.Automations
@@ -87,7 +88,7 @@ namespace CK.HomeAutomation.Actuators.Automations
             return this;
         }
 
-        public Automation WithMotionDetectedTrigger(MotionDetector motionDetector)
+        public Automation WithMotionDetectedTrigger(IMotionDetector motionDetector)
         {
             if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
 
@@ -95,7 +96,7 @@ namespace CK.HomeAutomation.Actuators.Automations
             return this;
         }
 
-        public Automation WithMotionDetectionCompletedTrigger(MotionDetector motionDetector)
+        public Automation WithMotionDetectionCompletedTrigger(IMotionDetector motionDetector)
         {
             if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
 
