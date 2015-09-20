@@ -40,6 +40,8 @@ function setupController() {
             c.appConfiguration = appConfiguration;
             c.rooms = [];
 
+            c.weatherStation = {};
+            c.health = {};
             c.sensors = [];
             c.rollerShutters = [];
             c.motionDetectors = [];
@@ -90,16 +92,16 @@ function setupController() {
                 });
             };
 
-            c.setActiveRoom = function (roomId) {
-                if (c.activeRoom === roomId) {
+            c.setActivePanel = function (id) {
+                if (c.activePanel === id) {
                     c.activeRoom = "";
                 } else {
-                    c.activeRoom = roomId;
+                    c.activePanel = id;
                 }
 
                 setTimeout(function () {
                     $("html, body").animate({
-                        scrollTop: $("#" + roomId).offset().top
+                        scrollTop: $("#" + id).offset().top
                     }, 250);
                 }, 100);
             }
@@ -111,6 +113,9 @@ function setupController() {
                         c.updateStatus(id, state);
                     });
 
+                    c.weatherStation = data.weatherStation;
+                    c.health = data.health;
+                    
                     $scope.$apply(function () {
                         $scope.msgs = data;
                     });

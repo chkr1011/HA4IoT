@@ -22,7 +22,7 @@
     </script>
 
     <script type="text/ng-template" id="humiditySensorTemplate">
-        <h5>{{(actuator.state.value | number:1) + '%' }} <span ng-class="{'text-danger':actuator.state.value>=70,'text-warning':actuator.state.value>=60,'text-success':actuator.state.value<=60}" class="glyphicon glyphicon-tint"></span></h5>
+        <h5>{{(actuator.state.value | number:1) + '%' }}<span ng-class="{'text-danger':actuator.state.value>=70,'text-warning':actuator.state.value>=60,'text-success':actuator.state.value<=60}" class="glyphicon glyphicon-tint"></span></h5>
     </script>
 
     <script type="text/ng-template" id="toggleTemplate">
@@ -41,14 +41,11 @@
     </script>
 
     <script type="text/ng-template" id="rollerShutterTemplate">
-
         <div class="btn-group" role="group">
-
             <div class="progress">
                 <div class="progress-bar progress-bar-default" ng-class="{'active progress-bar-striped' : actuator.state.state!='Stopped', 'progress-bar-success' : actuator.state.position > (15467-3000)}" ng-style="{width: ((actuator.state.position / (15467))*100) + '%'}">
                 </div>
             </div>
-
             <button class="btn btn-primary" ng-class="{'btn-danger': actuator.state.state=='MovingUp'}" ng-click="setState(actuator, 'MovingUp')">
                 <span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span>
             </button>
@@ -59,15 +56,17 @@
                 <span class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></span>
             </button>
         </div>
-
     </script>
 
     <script type="text/ng-template" id="sensorsOverviewTemplate">
-        <div class="panel panel-success row" id="sensors">
-            <div class="panel-heading" ng-click="haCtrl.showSensorsOverview=!haCtrl.showSensorsOverview">
-                <h1 class="panel-title pointer">Sensoren</h1>
+        <div class="panel panel-default row" id="sensorsOverview">
+            <div class="panel-heading pointer" ng-click="haCtrl.setActivePanel('sensorsOverview')">
+                <div>
+                    <span class="glyphicon glyphicon-th-list"></span>
+                    <span class="panel-title">Sensoren</span>
+                </div>
             </div>
-            <table class="table table-striped" ng-show="haCtrl.showSensorsOverview==true">
+            <table class="table table-striped" ng-show="haCtrl.activePanel=='sensorsOverview'">
                 <tbody>
                     <tr ng-repeat="actuator in haCtrl.sensors | orderBy:['id']">
                         <td style="vertical-align: middle;">
@@ -81,11 +80,14 @@
     </script>
 
     <script type="text/ng-template" id="motionDetectorsOverviewTemplate">
-        <div class="panel panel-success row" id="sensors">
-            <div class="panel-heading" ng-click="haCtrl.showMotionDetectorsOverview=!haCtrl.showMotionDetectorsOverview">
-                <h1 class="panel-title pointer">Bewegungsmelder</h1>
+        <div class="panel panel-default row" id="motionDetectorsOverview">
+            <div class="panel-heading pointer" ng-click="haCtrl.setActivePanel('motionDetectorsOverview')">
+                <div>
+                    <span class="glyphicon glyphicon-th-list"></span>
+                    <span class="panel-title">Bewegungsmelder</span>
+                </div>
             </div>
-            <table class="table table-striped" ng-show="haCtrl.showMotionDetectorsOverview==true">
+            <table class="table table-striped" ng-show="haCtrl.activePanel=='motionDetectorsOverview'">
                 <tbody>
                     <tr ng-repeat="actuator in haCtrl.motionDetectors | orderBy:['id']">
                         <td style="vertical-align: middle;">
@@ -98,12 +100,49 @@
         </div>
     </script>
 
-    <script type="text/ng-template" id="rollerShuttersOverviewTemplate">
-        <div class="row panel panel-success" ng-click="haCtrl.showRollerShuttersOverview=!haCtrl.showRollerShuttersOverview">
-            <div class="panel-heading">
-                <h1 class="panel-title pointer">Rolladen</h1>
+    <script type="text/ng-template" id="weatherStationTemplate">
+        <div class="row panel panel-default" id="weatherStation">
+            <div class="panel-heading pointer" ng-click="haCtrl.setActivePanel('weatherStation')">
+                <h1 class="panel-title">Wetterstation</h1>
             </div>
-            <table class="table table-striped" ng-show="haCtrl.showRollerShuttersOverview==true">
+            <table class="table table-striped" ng-show="haCtrl.activePanel=='weatherStation'">
+                <tr>
+                    <td style="vertical-align: middle;">
+                        <span><img class="icon" ng-src="Images/TemperatureSensor.png" />Temperatur</span>
+                    </td>
+                    <td style="text-align: right;"><h4>{{(haCtrl.weatherStation.temperature | number:1) + '°C' }}</h4></td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: middle;">
+                        <span><img class="icon" ng-src="Images/HumiditySensor.png" />Luftfeuchtigkeit</span>
+                    </td>
+                    <td style="text-align: right;"><h5>{{(haCtrl.weatherStation.humidity | number:1) + '%' }}</h5></td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: middle;">
+                        <span><img class="icon" ng-src="Images/Sunrise.png" />Sonnenaufgang</span>
+                    </td>
+                    <td style="text-align: right;"><h5>{{haCtrl.weatherStation.sunrise}}</h5></td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: middle;">
+                        <span><img class="icon" ng-src="Images/Sunset.png" />Sonnenuntergang</span>
+                    </td>
+                    <td style="text-align: right;"><h5>{{haCtrl.weatherStation.sunset}}</h5></td>
+                </tr>
+            </table>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="rollerShuttersOverviewTemplate">
+        <div class="row panel panel-default" id="rollerShuttersOverview">
+            <div class="panel-heading pointer" ng-click="haCtrl.setActivePanel('rollerShuttersOverview')">
+                <div>
+                    <span class="glyphicon glyphicon-th-list"></span>
+                    <span class="panel-title">Rolladen</span>
+                </div>
+            </div>
+            <table class="table table-striped" ng-show="haCtrl.activePanel=='rollerShuttersOverview'">
                 <tr ng-repeat="actuator in haCtrl.rollerShutters | orderBy:['id']">
                     <td style="vertical-align: middle;">
                         <span><img class="icon" ng-src="Images/{{actuator.image}}.png" />{{actuator.id}}</span>
@@ -123,11 +162,11 @@
     </script>
 
     <script type="text/ng-template" id="roomsOverviewTemplate">
-        <div class="row panel panel-default" ng-class="{'panel-primary': haCtrl.activeRoom==room.id}" id="{{room.id}}" ng-repeat="room in haCtrl.rooms | orderBy:['sortValue', 'caption']">
-            <div class="panel-heading" ng-click="haCtrl.setActiveRoom(room.id)">
-                <h1 class="panel-title pointer">{{room.caption}}</h1>
+        <div class="row panel panel-default" ng-class="{'panel-primary': haCtrl.activePanel==room.id}" id="{{room.id}}" ng-repeat="room in haCtrl.rooms | orderBy:['sortValue', 'caption']">
+            <div class="panel-heading pointer" ng-click="haCtrl.setActivePanel(room.id)">
+                <h1 class="panel-title">{{room.caption}}</h1>
             </div>
-            <table class="table table-striped" ng-show="haCtrl.activeRoom==room.id">
+            <table class="table table-striped" ng-show="haCtrl.activePanel==room.id">
                 <tr ng-repeat="actuator in room.actuators | orderBy:['sortValue', 'caption']">
                     <td style="vertical-align: middle;">
                         <span><img class="icon" ng-src="Images/{{actuator.image}}.png" />{{actuator.caption}}</span>
@@ -138,17 +177,34 @@
         </div>
     </script>
 
-    <script type="text/ng-template" id="bottomBar">
-        <nav class="row navbar navbar-inverse">
-            <span class="navbar-text" style="vertical-align: middle; margin: 10px;">
-                <span class="glyphicon glyphicon-signal" ng-class="{'text-danger': haCtrl.errorMessage!='', 'text-success': haCtrl.errorMessage===''}" aria-hidden="true"></span>
-                <span class="text-danger">{{haCtrl.errorMessage}}</span>
-                <span style="margin-left: 10px;">Version: {{haCtrl.version}}</span>
-                <a href="#" style="margin-left: 10px;">
-                    <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
-                </a>
-            </span>
-        </nav>
+<script type="text/ng-template" id="bottomBarTemplate">
+        <div class="row panel panel-default" ng-class="{'panel-primary': haCtrl.activePanel=='bottomBar'}" id="bottomBar">
+            <div class="panel-heading" ng-click="haCtrl.setActivePanel('bottomBar')">
+                <h1 class="panel-title pointer">
+                    <span class="glyphicon glyphicon-signal" ng-class="{'text-danger': haCtrl.errorMessage!='', 'text-success': haCtrl.errorMessage===''}" aria-hidden="true"></span>
+                    <span class="text-danger">{{haCtrl.errorMessage}}</span>
+                    <span style="margin-left: 10px;">Version: {{haCtrl.version}}</span>
+                </h1>
+            </div>
+            <table class="table table-striped" ng-show="haCtrl.activePanel=='bottomBar'">
+                <tr>
+                    <td>Timer-AVG</td>
+                    <td>{{haCtrl.health.timerAverage}}</td>
+                </tr>
+                <tr>
+                    <td>Timer-MIN</td>
+                    <td>{{haCtrl.health.timerMin}}</td>
+                </tr>
+                <tr>
+                    <td>Timer-MAX</td>
+                    <td>{{haCtrl.health.timerMax}}</td>
+                </tr>
+                <tr>
+                    <td>Uptime</td>
+                    <td>{{haCtrl.health.uptime}}</td>
+                </tr>
+            </table>
+        </div>
     </script>
 
     <div ng-hide="haCtrl.isReady==true">
@@ -165,9 +221,12 @@
 
     <div class="hidden container-fluid" id="content">
         <div ng-include="'roomsOverviewTemplate'"></div>
-        <div ng-show="haCtrl.appConfiguration.showSensorsOverview" ng-include="'sensorsOverviewTemplate'" ></div>
+        <div ng-show="haCtrl.appConfiguration.showWeatherStation" ng-include="'weatherStationTemplate'"></div>
+        <div ng-show="haCtrl.appConfiguration.showSensorsOverview" ng-include="'sensorsOverviewTemplate'"></div>
         <div ng-show="haCtrl.appConfiguration.showRollerShuttersOverview" ng-include="'rollerShuttersOverviewTemplate'"></div>
         <div ng-show="haCtrl.appConfiguration.showMotionDetectorsOverview" ng-include="'motionDetectorsOverviewTemplate'"></div>
+
+        <div ng-include="'bottomBarTemplate'"></div>
     </div>
 
     <link rel="stylesheet" href="Content/bootstrap.min.css" />

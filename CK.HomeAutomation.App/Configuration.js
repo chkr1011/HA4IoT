@@ -1,6 +1,6 @@
 ﻿// The IP address of the Pi2 (only required if the app is not hosted at the Pi2).
 appConfiguration.controllerAddress = "";
-appConfiguration.controllerAddress = "192.168.1.15";
+//appConfiguration.controllerAddress = "192.168.1.15";
 
 // The interval which should be used to poll the current state from the Pi2.
 appConfiguration.pollInterval = 250;
@@ -13,6 +13,9 @@ appConfiguration.showRollerShuttersOverview = true;
 
 // Indicates whether the overview of all motion detectors should be shown.
 appConfiguration.showMotionDetectorsOverview = true;
+
+// Indicates whether the values from the weather station should be shown.
+appConfiguration.showWeatherStation = true;
 
 // Supported values for an actuator configuration:
 // caption: "The caption (the id is default)
