@@ -38,12 +38,16 @@ function setupController() {
             var c = this;
 
             c.appConfiguration = appConfiguration;
+            c.rooms = [];
+
             c.sensors = [];
             c.rollerShutters = [];
+            c.motionDetectors = [];
+
             c.activeRoom = "";
             c.errorMessage = "";
             c.version = "-";
-            c.rooms = [];
+
             getVersion(function (version) { c.version = version });
 
             c.generateRooms = function () {
@@ -64,6 +68,9 @@ function setupController() {
                                 }
                                 else if (actuator.type === "RollerShutter") {
                                     c.rollerShutters.push(actuator);
+                                }
+                                else if (actuator.type === "MotionDetector") {
+                                    c.motionDetectors.push(actuator);
                                 }
                             }
 
@@ -166,7 +173,7 @@ function configureActuator(room, actuator, i) {
     actuator.sortValue = 0;
     actuator.hide = false;
     actuator.image = actuator.type;
-    
+
     actuator.state = {};
     actuator.displayVertical = false;
 
