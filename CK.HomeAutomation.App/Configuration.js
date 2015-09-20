@@ -3,7 +3,7 @@ appConfiguration.controllerAddress = "";
 //appConfiguration.controllerAddress = "192.168.1.15";
 
 // The interval which should be used to poll the current state from the Pi2.
-appConfiguration.pollInterval = 250;
+appConfiguration.pollInterval = 500;
 
 // Indicates whether the overview of all sensor (temperature and humidity) should be shown.
 appConfiguration.showSensorsOverview = true;
