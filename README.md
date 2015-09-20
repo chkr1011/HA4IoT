@@ -2,7 +2,7 @@
 The first open source home automation SDK for the RaspberryPi 2 using Windows 10 IoT.
 
 ## Key features
-* Virtual actuators like pushbuttons, motion motion detectors, lamps, sockets, roller shutters which can be interconnected using a fluent API
+* Virtual actuators like push buttons, motion motion detectors, lamps, sockets, roller shutters which can be interconnected using a fluent API
 * Responsive WebApp for iOS, Android, OSX and Windows
 * Highly configurable automations with complex conditions
 * Predefined conditions depending on sunrise, sunset, time, state of other actuators, position of roller shutters, motion detected
