@@ -94,7 +94,7 @@ function setupController() {
 
             c.setActivePanel = function (id) {
                 if (c.activePanel === id) {
-                    c.activeRoom = "";
+                    c.activePanel = "";
                 } else {
                     c.activePanel = id;
                 }
