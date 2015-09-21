@@ -51,6 +51,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Tests.Moc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Controller.Empty", "CK.HomeAutomation.Controller.Empty\CK.HomeAutomation.Controller.Empty.csproj", "{171A1B71-EC5A-42BC-A3D9-0252B157F70A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "I2CHardwareBridge", "I2CHardwareBridge\InfraRedSender.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -379,6 +381,16 @@ Global
 		{171A1B71-EC5A-42BC-A3D9-0252B157F70A}.Release|x86.ActiveCfg = Release|x86
 		{171A1B71-EC5A-42BC-A3D9-0252B157F70A}.Release|x86.Build.0 = Release|x86
 		{171A1B71-EC5A-42BC-A3D9-0252B157F70A}.Release|x86.Deploy.0 = Release|x86
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|ARM.ActiveCfg = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x64.ActiveCfg = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.ActiveCfg = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.Build.0 = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|Any CPU.ActiveCfg = Release|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|ARM.ActiveCfg = Release|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x64.ActiveCfg = Release|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.ActiveCfg = Release|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -405,5 +417,6 @@ Global
 		{02CBC16A-2BDA-4789-AE84-BC2679C1185B} = {0889E29C-AF64-44A6-8529-9A6CB35A22DA}
 		{238AD610-4F9B-4652-81DB-A8FC215F61A5} = {0889E29C-AF64-44A6-8529-9A6CB35A22DA}
 		{171A1B71-EC5A-42BC-A3D9-0252B157F70A} = {CD5D2CCD-44D0-46E5-BE14-3B377048E0A2}
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88} = {A1F8CE2B-E00D-445B-9E31-A093BD676A1B}
 	EndGlobalSection
 EndGlobal
