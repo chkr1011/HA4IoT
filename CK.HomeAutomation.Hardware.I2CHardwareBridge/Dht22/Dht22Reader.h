@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Arduino.h>
 
 #define IS_HIGH(pin) (PIND & (1<<pin))
@@ -10,14 +12,14 @@
 class Dht22Reader 
 {
 private:
-	byte _buffer[6];
 	byte _pin;
-	boolean validateBuffer(byte readBitsCount);
+	byte _buffer[6];
+	bool validateBuffer(byte readBitsCount);
 
 public:
 	Dht22Reader(byte pin);
 	void setup();
-	boolean read();
+	bool read();
 	float getTemperature();
 	float getHumidity();
 };

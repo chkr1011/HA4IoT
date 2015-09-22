@@ -21,6 +21,9 @@
     <ClInclude Include="__vm\.I2CHardwareBridge.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Dht22Reader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="I2CHardwareBridge.ino" />
@@ -30,6 +33,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="InfraredSender.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dht22Reader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

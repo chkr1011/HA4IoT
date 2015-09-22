@@ -51,7 +51,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Tests.Moc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Controller.Empty", "CK.HomeAutomation.Controller.Empty\CK.HomeAutomation.Controller.Empty.csproj", "{171A1B71-EC5A-42BC-A3D9-0252B157F70A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "I2CHardwareBridge", "I2CHardwareBridge\InfraRedSender.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CK.HomeAutomation.Hardware.I2CHardwareBridge", "CK.HomeAutomation.Hardware.I2CHardwareBridge\CK.HomeAutomation.Hardware.I2CHardwareBridge.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

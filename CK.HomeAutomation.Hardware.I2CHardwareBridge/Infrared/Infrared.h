@@ -1,8 +1,5 @@
 #include "Arduino.h"
 
-#define INPUT_PIN PD3
-#define OUTPUT_PIN PD4
-
 #define IS_HIGH(pin) (PIND & (1<<pin))
 #define IS_LOW(pin) ((PIND & (1<<pin))==0)
 #define SET_HIGH(pin) (PORTD) |= (1<<(pin))
@@ -19,20 +16,23 @@
 #define FREQUENCY_33Khz 30 // 30.3030
 #define FREQUENCY_30Khz 33 // 33.3333
 
+#define INFRARED_RECEIVER_PIN PD3
+#define INFRARED_RECEIVER_FREQUENCY FREQUENCY_38Khz
+#define INFRARED_SENDER_PIN PD4
+#define INFRARED_SENDER_FREQUENCY FREQUENCY_38Khz
+
 #define DEBUG 1
 
 class InfraredReceiver
 {
 private:
-	byte _signal[96];
+	byte _signal[SIGNAL_CACHE_SIZE];
 	byte _signalIndex;
-	byte _frequency;
 	byte optimizeSignal(short value);
 
 public:
-	InfraredReceiver(byte frequency);
+	InfraredReceiver();
 	void recordSignal();
-	void optimizeReceivedSignal();
 	void printReceivedSignalRawArray();
 	void printReceivedSignalWaveform();
 	void printReceivedSignalRawCode();
@@ -41,12 +41,11 @@ public:
 class InfraredSender
 {
 private:
-	byte _frequency;
-	byte _pulseDelay;
-	void sendPulse(unsigned int duration);
+	byte _pin;
+	unsigned int _frequency;
+	unsigned int _pluseDelay;
 
 public:
-	InfraredSender(byte frequency);
-	void sendSignalRawCode(unsigned long code[]);
+	InfraredSender(byte pin, byte frequency);
 	void sendSignalRawArray(byte data[], byte length);
 };

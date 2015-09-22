@@ -1,8 +1,8 @@
 #include "Infrared.h"
 
-InfraredReceiver::InfraredReceiver(byte frequency)
+InfraredReceiver::InfraredReceiver()
 {
-	_frequency = frequency;
+	pinMode(INFRARED_RECEIVER_PIN, INPUT);
 }
 
 void InfraredReceiver::recordSignal()
@@ -14,7 +14,7 @@ void InfraredReceiver::recordSignal()
 	noInterrupts();
 
 	// HIGH is 'not sending'. LOW is 'sending'.
-	while (IS_HIGH(INPUT_PIN))
+	while (IS_HIGH(INFRARED_RECEIVER_PIN))
 	{
 	}
 
@@ -22,9 +22,9 @@ void InfraredReceiver::recordSignal()
 	{
 		// Always record a pair of 'mark' and 'spot'
 		lowCount = 0;
-		while (IS_LOW(INPUT_PIN))
+		while (IS_LOW(INFRARED_RECEIVER_PIN))
 		{
-			delayMicroseconds(_frequency);
+			delayMicroseconds(INFRARED_RECEIVER_FREQUENCY);
 			lowCount++;
 		}
 
@@ -37,9 +37,9 @@ void InfraredReceiver::recordSignal()
 		}
 
 		highCount = 0;
-		while (IS_HIGH(INPUT_PIN))
+		while (IS_HIGH(INFRARED_RECEIVER_PIN))
 		{
-			delayMicroseconds(_frequency);
+			delayMicroseconds(INFRARED_RECEIVER_FREQUENCY);
 			highCount++;
 			
 			if (highCount > RECEIVE_TIMEOUT)

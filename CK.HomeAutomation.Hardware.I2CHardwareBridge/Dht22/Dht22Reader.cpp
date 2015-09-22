@@ -8,15 +8,15 @@ Dht22Reader::Dht22Reader(byte pin)
 void Dht22Reader::setup()
 {
 	pinMode(_pin, OUTPUT);
-	digitalWrite(_pin, HIGH);
+	SET_HIGH(_pin);
 }
 
 float Dht22Reader::getHumidity()
 {
 	float value = _buffer[0];
-	value *= 256;
+	value *= 256.0;
 	value += _buffer[1];
-	value /= 10;
+	value /= 10.0;
 
 	return value;
 }
@@ -24,13 +24,13 @@ float Dht22Reader::getHumidity()
 float Dht22Reader::getTemperature()
 {
 	float value = _buffer[2] & 0x7F;
-	value *= 256;
+	value *= 256.0;
 	value += _buffer[3];
-	value /= 10;
+	value /= 10.0;
 
 	if (_buffer[2] & 0x80)
 	{
-		value *= -1;
+		value *= -1.0;
 	}
 
 	return value;
