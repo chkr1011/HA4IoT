@@ -7,11 +7,11 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch
     public class RemoteSwitchController : IOutputController
     {
         private readonly Dictionary<int, RemoteSwitchOutputPort> _ports = new Dictionary<int, RemoteSwitchOutputPort>();
-        private readonly RemoteSwitchSender _sender;
+        private readonly Wireless433MhzSignalSender _sender;
         private readonly object _syncRoot = new object();
         private readonly IHomeAutomationTimer _timer;
 
-        public RemoteSwitchController(RemoteSwitchSender sender, IHomeAutomationTimer timer)
+        public RemoteSwitchController(Wireless433MhzSignalSender sender, IHomeAutomationTimer timer)
         {
             if (sender == null) throw new ArgumentNullException(nameof(sender));
             if (timer == null) throw new ArgumentNullException(nameof(timer));

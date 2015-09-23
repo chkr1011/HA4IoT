@@ -7,11 +7,11 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch
     {
         private readonly RemoteSwitchCode _offCode;
         private readonly RemoteSwitchCode _onCode;
-        private readonly RemoteSwitchSender _sender;
+        private readonly Wireless433MhzSignalSender _sender;
         private readonly object _syncRoot = new object();
         private BinaryState _state;
 
-        public RemoteSwitchOutputPort(int id, RemoteSwitchCode onCode, RemoteSwitchCode offCode, RemoteSwitchSender sender, IHomeAutomationTimer timer)
+        public RemoteSwitchOutputPort(int id, RemoteSwitchCode onCode, RemoteSwitchCode offCode, Wireless433MhzSignalSender sender, IHomeAutomationTimer timer)
         {
             if (onCode == null) throw new ArgumentNullException(nameof(onCode));
             if (offCode == null) throw new ArgumentNullException(nameof(offCode));
