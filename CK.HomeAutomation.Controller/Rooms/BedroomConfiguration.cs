@@ -74,7 +74,8 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithTarget(bedroom.Actuator<BinaryStateOutput>(Bedroom.LightCeiling))
                 .WithOnDuration(TimeSpan.FromSeconds(15))
                 .WithOnIfAllRollerShuttersClosed(bedroom.RollerShutter(Bedroom.RollerShutterLeft), bedroom.RollerShutter(Bedroom.RollerShutterRight))
-                .WithOnAtNightTimeRange(home.WeatherStation);
+                .WithOnAtNightTimeRange(home.WeatherStation)
+                .WithSkipIfAnyActuatorIsAlreadyOn(bedroom.Lamp(Bedroom.LampBedLeft), bedroom.Lamp(Bedroom.LampBedRight));
                
             var fanPort1 = hsrel8.GetOutput(0);
             var fanPort2 = hsrel8.GetOutput(1);

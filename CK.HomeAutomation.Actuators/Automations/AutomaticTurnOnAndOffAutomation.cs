@@ -10,7 +10,9 @@ namespace CK.HomeAutomation.Actuators.Automations
 {
     public class AutomaticTurnOnAndOffAutomation
     {
-        private readonly ConditionsValidator _conditionValidator = new ConditionsValidator();
+        private readonly ConditionsValidator _enablingConditionsValidator = new ConditionsValidator().WithDefaultState(ConditionState.NotFulfilled);
+        private readonly ConditionsValidator _disablingConditionsValidator = new ConditionsValidator().WithDefaultState(ConditionState.NotFulfilled);
+
         private readonly IHomeAutomationTimer _timer;
         private readonly List<IBinaryStateOutputActuator> _actuators = new List<IBinaryStateOutputActuator>();
         private TimeSpan _duration;
@@ -61,13 +63,18 @@ namespace CK.HomeAutomation.Actuators.Automations
             return this;
         }
 
+        public AutomaticTurnOnAndOffAutomation WithAlwaysOn()
+        {
+            _enablingConditionsValidator.WithDefaultState(ConditionState.Fulfilled);
+            return this;
+        }
+
         public AutomaticTurnOnAndOffAutomation WithOnWithinTimeRange(Func<TimeSpan> from, Func<TimeSpan> until)
         {
             if (@from == null) throw new ArgumentNullException(nameof(@from));
             if (until == null) throw new ArgumentNullException(nameof(until));
 
-            _conditionValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_timer).WithStart(from).WithEnd(until));
-            _conditionValidator.WithDefaultState(ConditionState.NotFulfilled);
+            _enablingConditionsValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_timer).WithStart(from).WithEnd(until));
             return this;
         }
 
@@ -81,8 +88,7 @@ namespace CK.HomeAutomation.Actuators.Automations
                 condition.WithRelatedCondition(ConditionRelation.And, new Condition().WithExpression(() => otherRollerShutter.IsClosed));
             }
 
-            _conditionValidator.WithCondition(ConditionRelation.Or, condition);
-            _conditionValidator.WithDefaultState(ConditionState.NotFulfilled);
+            _enablingConditionsValidator.WithCondition(ConditionRelation.Or, condition);
             return this;
         }
 
@@ -93,8 +99,7 @@ namespace CK.HomeAutomation.Actuators.Automations
             Func<TimeSpan> start = () => weatherStation.Daylight.Sunrise.Add(TimeSpan.FromHours(1));
             Func<TimeSpan> end = () => weatherStation.Daylight.Sunset.Subtract(TimeSpan.FromHours(1));
 
-            _conditionValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_timer).WithStart(start).WithEnd(end));
-            _conditionValidator.WithDefaultState(ConditionState.NotFulfilled);
+            _enablingConditionsValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_timer).WithStart(start).WithEnd(end));
             return this;
         }
 
@@ -105,14 +110,26 @@ namespace CK.HomeAutomation.Actuators.Automations
             Func<TimeSpan> start = () => weatherStation.Daylight.Sunset.Subtract(TimeSpan.FromHours(1));
             Func<TimeSpan> end = () => weatherStation.Daylight.Sunrise.Add(TimeSpan.FromHours(1));
 
-            _conditionValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_timer).WithStart(start).WithEnd(end));
-            _conditionValidator.WithDefaultState(ConditionState.NotFulfilled);
+            _enablingConditionsValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_timer).WithStart(start).WithEnd(end));
             return this;
         }
 
+        public void WithSkipIfAnyActuatorIsAlreadyOn(params IBinaryStateOutputActuator[] actuators)
+        {
+            if (actuators == null) throw new ArgumentNullException(nameof(actuators));
+
+            _disablingConditionsValidator.WithCondition(ConditionRelation.Or,
+                new Condition().WithExpression(() => actuators.Any(a => a.State == BinaryActuatorState.On)));
+        }
+        
         private void Trigger()
         {
-            if (_conditionValidator.Validate() == ConditionState.NotFulfilled)
+            if (_disablingConditionsValidator.Conditions.Any() && _disablingConditionsValidator.Validate() == ConditionState.Fulfilled)
+            {
+                return;
+            }
+
+            if (_enablingConditionsValidator.Conditions.Any() && _enablingConditionsValidator.Validate() == ConditionState.NotFulfilled)
             {
                 return;
             }

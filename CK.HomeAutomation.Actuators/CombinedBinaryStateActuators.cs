@@ -12,7 +12,7 @@ namespace CK.HomeAutomation.Actuators
     public class CombinedBinaryStateActuators : BaseActuator, IBinaryStateOutputActuator
     {
         private readonly IHomeAutomationTimer _timer;
-        private bool _animationsEnabled;
+        ////private bool _animationsEnabled;
 
         public CombinedBinaryStateActuators(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler, IHomeAutomationTimer timer) : base(
                 id, httpApiController, notificationHandler)
@@ -89,10 +89,10 @@ namespace CK.HomeAutomation.Actuators
             return this;
         }
 
-        public CombinedBinaryStateActuators WithEnabledAnimations()
-        {
-            _animationsEnabled = true;
-            return this;
-        }
+        ////public CombinedBinaryStateActuators WithEnabledAnimations()
+        ////{
+        ////    _animationsEnabled = true;
+        ////    return this;
+        ////}
     }
 }
