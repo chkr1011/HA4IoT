@@ -1,5 +1,6 @@
 ﻿using System;
 using CK.HomeAutomation.Actuators.Automations;
+using CK.HomeAutomation.Actuators.Contracts;
 using CK.HomeAutomation.Tests.Mockups;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -79,6 +80,61 @@ namespace CK.HomeAutomation.Actuators.Tests
             automation.WithTarget(output);
 
             button.PressShort();
+
+            output.State.ShouldBeEquivalentTo(BinaryActuatorState.On);
+        }
+
+        [TestMethod]
+        public void Should_NotTurnOn_IfMotionDetected_AndSkipConditionIs_Fulfilled()
+        {
+            var timer = new TestHomeAutomationTimer();
+            timer.CurrentTime = TimeSpan.Parse("14:00:00");
+
+            var automation = new AutomaticTurnOnAndOffAutomation(timer);
+            var motionDetector = new TestMotionDetector();
+
+            var output = new TestBinaryStateOutputActuator();
+            output.State.ShouldBeEquivalentTo(BinaryActuatorState.Off);
+
+            automation.WithMotionDetector(motionDetector);
+            automation.WithTarget(output);
+            automation.WithOnDuration(TimeSpan.FromSeconds(15));
+
+            IBinaryStateOutputActuator[] otherActuators =
+            {
+                new TestBinaryStateOutputActuator().WithOffState(), new TestBinaryStateOutputActuator().WithOnState()
+            };
+
+            automation.WithSkipIfAnyActuatorIsAlreadyOn(otherActuators);
+
+            motionDetector.WalkIntoMotionDetector();
+
+            output.State.ShouldBeEquivalentTo(BinaryActuatorState.Off);
+        }
+
+        [TestMethod]
+        public void Should_TurnOn_IfMotionDetected_AndSkipConditionIs_NotFulfilled()
+        {
+            var timer = new TestHomeAutomationTimer();
+            timer.CurrentTime = TimeSpan.Parse("14:00:00");
+
+            var automation = new AutomaticTurnOnAndOffAutomation(timer);
+            var motionDetector = new TestMotionDetector();
+
+            var output = new TestBinaryStateOutputActuator();
+            output.State.ShouldBeEquivalentTo(BinaryActuatorState.Off);
+
+            automation.WithMotionDetector(motionDetector);
+            automation.WithTarget(output);
+
+            IBinaryStateOutputActuator[] otherActuators =
+            {
+                new TestBinaryStateOutputActuator().WithOffState(), new TestBinaryStateOutputActuator().WithOffState()
+            };
+
+            automation.WithSkipIfAnyActuatorIsAlreadyOn(otherActuators);
+
+            motionDetector.WalkIntoMotionDetector();
 
             output.State.ShouldBeEquivalentTo(BinaryActuatorState.On);
         }

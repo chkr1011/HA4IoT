@@ -82,8 +82,7 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithActuator(floor.Lamp(Floor.LampStairsCeiling1))
                 .WithActuator(floor.Lamp(Floor.LampStairsCeiling2))
                 .WithActuator(floor.Lamp(Floor.LampStairsCeiling3))
-                .WithActuator(floor.Lamp(Floor.LampStairsCeiling4))
-                .WithEnabledAnimations();
+                .WithActuator(floor.Lamp(Floor.LampStairsCeiling4));
 
             floor.SetupAutomaticTurnOnAndOffAction()
                 .WithMotionDetector(floor.MotionDetector(Floor.StairsLowerMotionDetector))

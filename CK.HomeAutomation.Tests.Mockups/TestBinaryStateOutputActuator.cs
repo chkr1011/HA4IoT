@@ -49,5 +49,17 @@ namespace CK.HomeAutomation.Tests.Mockups
         {
             SetState(BinaryActuatorState.On);
         }
+
+        public TestBinaryStateOutputActuator WithOnState()
+        {
+            State = BinaryActuatorState.On;
+            return this;
+        }
+
+        public TestBinaryStateOutputActuator WithOffState()
+        {
+            State = BinaryActuatorState.Off;
+            return this;
+        }
     }
 }
