@@ -11,6 +11,7 @@ using CK.HomeAutomation.Hardware.DHT22;
 using CK.HomeAutomation.Hardware.GenericIOBoard;
 using CK.HomeAutomation.Hardware.Pi2;
 using CK.HomeAutomation.Hardware.RemoteSwitch;
+using CK.HomeAutomation.Hardware.RemoteSwitch.Codes;
 using CK.HomeAutomation.Notifications;
 using CK.HomeAutomation.Telemetry;
 
@@ -40,8 +41,8 @@ namespace CK.HomeAutomation.Controller
             ccToolsBoardController.CreateHSPE16InputOnly(Device.Input4, 46);
             ccToolsBoardController.CreateHSPE16InputOnly(Device.Input5, 44);
 
-            var remoteSwitchController = new RemoteSwitchController(new RemoteSwitchSender(i2CBus, 50), Timer);
-            remoteSwitchController.Register(0, new RemoteSwitchCode(21, 24), new RemoteSwitchCode(20, 24));
+            var remoteSwitchController = new RemoteSwitchController(new Wireless433MhzSignalSender(i2CBus, 50, HttpApiController), Timer);
+            remoteSwitchController.Register(0, Intertechno.A1On, Intertechno.A1Off);
 
             var home = new Home(Timer, HealthMonitor, weatherStation, HttpApiController, NotificationHandler);
 
