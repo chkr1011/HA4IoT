@@ -1,5 +1,4 @@
 #include "InfraRed.h"
-#define SEND_PULSE(duration) (while(duration>0){SET_HIGH(_pin);delay})
 
 InfraredSender::InfraredSender(byte pin, byte frequency)
 {
@@ -17,9 +16,10 @@ void InfraredSender::sendSignalRawArray(byte signal[], byte length)
 	
 	noInterrupts();
 
+	unsigned int duration;
 	for (byte i = 0; i < length; i++)
 	{
-		unsigned int duration = signal[i] * SAMPLE_LENGTH * INFRARED_RECEIVER_FREQUENCY;
+		duration = signal[i] * SAMPLE_LENGTH * _frequency;
 
 		if (isHigh)
 		{
@@ -41,7 +41,7 @@ void InfraredSender::sendSignalRawArray(byte signal[], byte length)
 		isHigh = !isHigh;
 	}
 
-	SET_LOW(INFRARED_SENDER_PIN);
+	SET_LOW(pin);
 
 	interrupts();
 }

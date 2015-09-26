@@ -1,19 +1,19 @@
 #include <Wire.h>
-#include "Infrared\InfraredController.h"
-#include "Dht22\Dht22Controller.h"
-#include "433Mhz\433MhzController.h"
+#include "InfraredController.h"
+#include "Dht22Controller.h"
+#include "LPD433MhzController.h"
 
 #define IS_HIGH(pin) (PIND & (1<<pin))
 #define IS_LOW(pin) ((PIND & (1<<pin))==0)
 #define SET_HIGH(pin) (PORTD) |= (1<<(pin))
 #define SET_LOW(pin) (PORTD) &= (~(1<<(pin)))
 
-#define DEBUG 1
+#define DEBUG 0
 
 #define I2C_SLAVE_ADDRESS 50
 #define REFRESH_TIMEOUT 5000L
 #define LED 13
-#define MAIN_LOOP_SLEEP_TIME 1
+#define MAIN_LOOP_SLEEP_TIME 5
 
 #define I2C_ACTION_DHT22 1
 #define I2C_ACTION_433Mhz 2
@@ -39,7 +39,7 @@ void setup() {
 	Wire.onReceive(handleI2CWrite);
 	Wire.onRequest(handleI2CRead);
 
-	_433MhzController_setup();
+	LPD433MhzController_setup();
 
 	SET_LOW(LED);
 }
@@ -83,7 +83,7 @@ void handleI2CWrite(int dataLength)
 	}
 	case I2C_ACTION_433Mhz:
 	{
-		_433MhzController_handleI2CWrite(dataLength);
+		LPD433MhzController_handleI2CWrite(dataLength);
 		break;
 	}
 	case I2C_ACTION_Infrared:
@@ -97,38 +97,6 @@ void handleI2CWrite(int dataLength)
 }
 
 void loop() {
-
-	
-		////while (true)
-	////{
-	////	InfraredController_sendTestSignal();
-	////	DHT22Controller_pollTestSensor();
-
-	////	delay(1000);
-	////}
-
-	////InfraredReceiver irRec = InfraredReceiver();
-
-	////while (false)
-	////{
-
-	////	Serial.println(F("Waiting for signal..."));
-	////	Serial.flush();
-
-	////	irRec.recordSignal();
-
-	////	irRec.printReceivedSignalWaveform();
-	////	irRec.printReceivedSignalRawArray();
-
-	////	Serial.flush();
-	////}
-
-#if (DEBUG)
-	////_433MhzController_sendTestSignal();
-	////_433MhzController_checkForReceivedSignal();
-	////delay(500);
-#endif
-
 	unsigned long time = millis();
 	unsigned long elapsed = time - _lastTime;
 
@@ -150,6 +118,6 @@ void loop() {
 	if (_timeout <= 0)
 	{
 		_timeout = REFRESH_TIMEOUT;
-		//DHT22Controller_pollSensors();
+		DHT22Controller_pollSensors();
 	}
 }

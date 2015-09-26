@@ -1,8 +1,5 @@
-#include "Infrared\Infrared.h"
+#include "Infrared.h"
 #include <Wire.h>
-
-#define INFRARED_RECEIVER_FREQUENCY FREQUENCY_38Khz
-#define INFRARED_SENDER_FREQUENCY FREQUENCY_38Khz
 
 byte _cachedSignal[128];
 byte _cachedSignalIndex = 0;
@@ -43,10 +40,4 @@ void InfraredController_handleI2CWrite(int dataLength)
 			break;
 		}
 	}
-}
-
-void InfraredController_sendTestSignal()
-{
-	byte signal[67] = { 17,8,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,3,1,3,1,3,1,1,1,3,1,3,1,3,1,3,1 };
-	_irs.sendSignalRawArray(signal, 67);
 }

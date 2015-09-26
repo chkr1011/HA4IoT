@@ -1,35 +1,42 @@
 #include <Arduino.h>
 #include <Wire.h>
-
-#include "433Mhz\RCSwitch.h"
+#include "RCSwitch.h"
 
 #define RCSWITCH_PIN PD7+3
 #define RCSWITCH_PIN PD5
 
+#define DEBUG 0
+
+unsigned long _receivedCode;
 RCSwitch _rcs = RCSwitch();
 
-void _433MhzController_setup()
+unsigned long LPD433MhzController_getReceivedCode()
 {
-	_rcs.enableTransmit(RCSWITCH_PIN);
-	_rcs.enableReceive(INT1);
-
+	return _receivedCode;
 }
 
-void _433MhzController_checkForReceivedSignal()
+void LPD433MhzController_setup()
+{
+	//_rcs.enableReceive(INT1);
+	_rcs.enableTransmit(RCSWITCH_PIN);
+}
+
+bool LPD433MhzController_checkForReceivedSignal()
 {
 	if (!_rcs.available())
 	{
-		return;
+		return false;
 	}
 
-	Serial.println("Received value: " + String(_rcs.getReceivedValue()));
-	Serial.println("Received length: " + String(_rcs.getReceivedBitlength()));
+	_receivedCode = _rcs.getReceivedValue();
+	Serial.println("Received value: " + String(_receivedCode) + "@" + String(_rcs.getReceivedBitlength()) + "bits");
 
 	_rcs.resetAvailable();
 
+	return true;
 }
 
-void _433MhzController_handleI2CWrite(int dataLength)
+void LPD433MhzController_handleI2CWrite(int dataLength)
 {
 	// Byte 0 = Action; Byte 1-4 = code; Byte 5 = length
 	if (dataLength != 6)
@@ -53,7 +60,7 @@ void _433MhzController_handleI2CWrite(int dataLength)
 	_rcs.send(code, length);
 }
 
-void _433MhzController_sendTestSignal()
+void LPD433MhzController_sendTestSignal()
 {
 	_rcs.send(21UL, 24U);
 }

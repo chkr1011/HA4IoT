@@ -84,8 +84,6 @@ extern "C" void __cxa_pure_virtual() {;}
 #define portInputRegister(P)
 #define portModeRegister(P)
 #include <CK.HomeAutomation.Hardware.I2CHardwareBridge.ino>
-#include <433MhzController.cpp>
-#include <433MhzController.h>
 #include <Dht22Controller.cpp>
 #include <Dht22Controller.h>
 #include <Dht22Reader.cpp>
@@ -95,6 +93,8 @@ extern "C" void __cxa_pure_virtual() {;}
 #include <InfraredController.h>
 #include <InfraredReceiver.cpp>
 #include <InfraredSender.cpp>
+#include <LPD433MhzController.cpp>
+#include <LPD433MhzController.h>
 #include <RCSwitch.cpp>
 #include <RCSwitch.h>
 #endif

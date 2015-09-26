@@ -1,5 +1,7 @@
 #include "Infrared.h"
 
+#define INFRARED_RECEIVER_FREQUENCY 26
+
 InfraredReceiver::InfraredReceiver()
 {
 	pinMode(INFRARED_RECEIVER_PIN, INPUT);

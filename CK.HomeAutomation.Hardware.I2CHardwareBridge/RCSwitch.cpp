@@ -702,7 +702,7 @@ void RCSwitch::handleInterrupt() {
       if (receiveProtocol1(changeCount) == false){
         if (receiveProtocol2(changeCount) == false){
           if (receiveProtocol3(changeCount) == false){
-            //failed
+             // Failed
           }
         }
       }
