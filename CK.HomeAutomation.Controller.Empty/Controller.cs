@@ -12,6 +12,9 @@ namespace CK.HomeAutomation.Controller.Empty
 {
     internal class Controller : BaseController
     {
+        private const int LedGpio = 22;
+        private const int RemoteSwitchSenderAddress = 50;
+
         private enum Room
         {
             Room1
@@ -31,7 +34,7 @@ namespace CK.HomeAutomation.Controller.Empty
         protected override void Initialize()
         {
             // Setup the health monitor which tracks the average time and let an LED blink if everything is healthy.
-            InitializeHealthMonitor(22);
+            InitializeHealthMonitor(LedGpio);
 
             // Setup the controller which provides ports from the GPIOs of the Pi2.
             var pi2PortController = new Pi2PortController();
@@ -45,12 +48,14 @@ namespace CK.HomeAutomation.Controller.Empty
 
             // Setup the controller which creates ports for IO boards from CCTools (or based on PCF8574/MAX7311/PCA9555D).
             var ccToolsBoardController = new CCToolsBoardController(i2CBus, ioBoardManager, NotificationHandler);
+            ccToolsBoardController.CreateHSREL5(RelayBoard.Board1, 37);
 
             // Setup the remote switch 433Mhz sender which is attached to the I2C bus (Arduino Nano).
-            var remoteSwitchSender = new RemoteSwitchSender(i2CBus, 50);
+            var remoteSwitchSender = new RemoteSwitchSender(i2CBus, RemoteSwitchSenderAddress);
 
             // Setup the controller which creates ports for wireless sockets (433Mhz).
             var remoteSwitchController = new RemoteSwitchController(remoteSwitchSender, Timer);
+            remoteSwitchController.Register(0, new RemoteSwitchCode(21, 24), new RemoteSwitchCode(20, 24));
             
             // Setup the weather station which provides sunrise and sunset information.
             double lat = 52.5075419;
@@ -63,8 +68,8 @@ namespace CK.HomeAutomation.Controller.Empty
             // Add new rooms with actuators here!
             // Example:
             var room1 = home.AddRoom(Room.Room1)
-                .WithLamp(Room1Actuator.Lamp1, remoteSwitchController.GetOutput(1))
-                .WithSocket(Room1Actuator.Socket1, ccToolsBoardController.CreateHSREL5(RelayBoard.Board1, 37).GetOutput(1));
+                .WithLamp(Room1Actuator.Lamp1, remoteSwitchController.GetOutput(0))
+                .WithSocket(Room1Actuator.Socket1, ioBoardManager.GetOutputBoard(RelayBoard.Board1).GetOutput(0));
 
             // Setup the CSV writer which writes all state changes to the SD card (package directory).
             var localCsvFileWriter = new LocalCsvFileWriter(NotificationHandler);
