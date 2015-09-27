@@ -8,7 +8,7 @@ Dht22Reader::Dht22Reader(byte pin)
 void Dht22Reader::setup()
 {
 	pinMode(_pin, OUTPUT);
-	SET_HIGH(_pin);
+	digitalWrite(_pin, HIGH);
 }
 
 float Dht22Reader::getHumidity()
@@ -43,12 +43,12 @@ boolean Dht22Reader::read(void) {
 
 	_buffer[0] = _buffer[1] = _buffer[2] = _buffer[3] = _buffer[4] = 0;
 
-	SET_LOW(_pin);
+	digitalWrite(_pin, LOW);
 	delay(1);
 
 	noInterrupts();
 
-	SET_HIGH(_pin);
+	digitalWrite(_pin, HIGH);
 	delayMicroseconds(40);
 
 	pinMode(_pin, INPUT);
@@ -85,7 +85,7 @@ boolean Dht22Reader::read(void) {
 	interrupts();
 
 	pinMode(_pin, OUTPUT);
-	SET_HIGH(_pin);
+	digitalWrite(_pin, HIGH);
 
 	return validateBuffer(j);
 }

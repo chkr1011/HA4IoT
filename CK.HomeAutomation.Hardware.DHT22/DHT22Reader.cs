@@ -5,9 +5,12 @@ namespace CK.HomeAutomation.Hardware.DHT22
 {
     public class DHT22Reader
     {
-        private readonly int _bridgeAddress;
-        private readonly float[] _humidities = new float[10];
+        private const byte ActionReadDht22 = 1;
+
         private readonly II2cBusAccessor _i2CBus;
+        private readonly int _bridgeAddress;
+
+        private readonly float[] _humidities = new float[10];
         private readonly float[] _temperatures = new float[10];
 
         public DHT22Reader(int address, IHomeAutomationTimer timer, II2cBusAccessor i2CBus)
@@ -45,7 +48,7 @@ namespace CK.HomeAutomation.Hardware.DHT22
         private void FetchValues(int id)
         {
             // The first byte is the action (set sensor index), the second the index of the sensor.
-            byte[] writeBuffer = { 1, (byte)id };
+            byte[] writeBuffer = { ActionReadDht22, (byte)id };
             byte[] readBuffer = new byte[8];
 
             // TODO: Repeatet start conditions are not(!) working with the Pi2 and the Arduino Nano (maybe the Arduino Wire library hack is the problem here).

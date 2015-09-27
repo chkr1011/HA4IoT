@@ -2,7 +2,9 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#define SENSORS_COUNT 10
+#define SENSORS_COUNT 9
+
+#define DEBUG 0
 
 union floatToBytes
 {
@@ -29,11 +31,20 @@ void DHT22Controller_pollSensor(byte index, byte port)
 	{
 		_temperatures[index] = dht22Reader.getTemperature();
 		_humidities[index] = dht22Reader.getHumidity();
+
+   #if(DEBUG)
+    Serial.println("T:" + String(dht22Reader.getTemperature()));
+    Serial.println("H:" + String(dht22Reader.getHumidity()));
+   #endif
 	}
 	else
 	{
 		_temperatures[index] = 0.0;
 		_humidities[index] = 0.0;
+
+   #if(DEBUG)
+    Serial.println("Error reading DHT22 sensor.");
+   #endif
 	}
 }
 
@@ -68,7 +79,7 @@ void DHT22Controller_pollSensors()
 	DHT22Controller_pollSensor(6, PD2);
 	DHT22Controller_pollSensor(7, PD4);
 	DHT22Controller_pollSensor(8, PD6);
-	DHT22Controller_pollSensor(9, PD7 + 6);
+	//DHT22Controller_pollSensor(9, PD7 + 6);
 }
 
 void DHT22Controller_handleI2CWrite(int dataLength)

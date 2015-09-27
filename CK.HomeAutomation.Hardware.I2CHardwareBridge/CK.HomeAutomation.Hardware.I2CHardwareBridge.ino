@@ -12,6 +12,7 @@
 
 #define I2C_SLAVE_ADDRESS 50
 #define REFRESH_TIMEOUT 5000L
+#define INITIAL_REFRESH_TIMEOUT 2000L
 #define LED 13
 #define MAIN_LOOP_SLEEP_TIME 5
 
@@ -19,7 +20,7 @@
 #define I2C_ACTION_433Mhz 2
 #define I2C_ACTION_Infrared 3
 
-unsigned short _timeout = 0L;
+long _timeout = INITIAL_REFRESH_TIMEOUT;
 unsigned long _lastTime = 0UL;
 byte _lastAction = 0;
 
@@ -27,7 +28,7 @@ void setup() {
 	SET_HIGH(LED);
 
 #if DEBUG
-	Serial.begin(115200);
+	Serial.begin(9600);
 	Serial.println(F("Started..."));
 	Serial.flush();
 #endif
@@ -109,13 +110,13 @@ void loop() {
 	if (elapsed < MAIN_LOOP_SLEEP_TIME)
 	{
 		delay(MAIN_LOOP_SLEEP_TIME - elapsed);
-		return;
+  	return;
 	}
 
 	_lastTime = time;
 	_timeout -= elapsed;
 
-	if (_timeout <= 0)
+	if (_timeout <= 0L)
 	{
 		_timeout = REFRESH_TIMEOUT;
 		DHT22Controller_pollSensors();

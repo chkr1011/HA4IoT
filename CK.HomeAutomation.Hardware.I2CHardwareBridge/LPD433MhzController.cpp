@@ -3,7 +3,6 @@
 #include "RCSwitch.h"
 
 #define RCSWITCH_PIN PD7+3
-#define RCSWITCH_PIN PD5
 
 #define DEBUG 0
 

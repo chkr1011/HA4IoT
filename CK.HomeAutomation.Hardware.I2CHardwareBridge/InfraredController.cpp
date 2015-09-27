@@ -3,7 +3,7 @@
 
 byte _cachedSignal[128];
 byte _cachedSignalIndex = 0;
-InfraredSender _irs = InfraredSender(PD4, FREQUENCY_38Khz);
+InfraredSender _irs = InfraredSender(PD7 + 6, FREQUENCY_38Khz);
 //InfraredReceiver _irr = InfraredReceiver();
 
 void InfraredController_handleI2CWrite(int dataLength)
