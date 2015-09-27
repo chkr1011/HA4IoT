@@ -5,20 +5,20 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch
 {
     public class RemoteSwitchOutputPort : IBinaryOutput
     {
-        private readonly RemoteSwitchCode _offCode;
-        private readonly RemoteSwitchCode _onCode;
-        private readonly Wireless433MhzSignalSender _sender;
+        private readonly LPD433MhzCodeSequence _onCodeSqCodeSequence;
+        private readonly LPD433MhzCodeSequence _offCodeSequence;
+        private readonly LPD433MhzSignalSender _sender;
         private readonly object _syncRoot = new object();
         private BinaryState _state;
 
-        public RemoteSwitchOutputPort(int id, RemoteSwitchCode onCode, RemoteSwitchCode offCode, Wireless433MhzSignalSender sender, IHomeAutomationTimer timer)
+        public RemoteSwitchOutputPort(int id, LPD433MhzCodeSequence onCodeSequence, LPD433MhzCodeSequence offCodeSequence, LPD433MhzSignalSender sender, IHomeAutomationTimer timer)
         {
-            if (onCode == null) throw new ArgumentNullException(nameof(onCode));
-            if (offCode == null) throw new ArgumentNullException(nameof(offCode));
+            if (onCodeSequence == null) throw new ArgumentNullException(nameof(onCodeSequence));
+            if (offCodeSequence == null) throw new ArgumentNullException(nameof(offCodeSequence));
             if (sender == null) throw new ArgumentNullException(nameof(sender));
 
-            _onCode = onCode;
-            _offCode = offCode;
+            _onCodeSqCodeSequence = onCodeSequence;
+            _offCodeSequence = offCodeSequence;
             _sender = sender;
 
             // Ensure that the state of the remote switch is restored if the original remote is used
@@ -37,11 +37,11 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch
             {
                 if (state == BinaryState.High)
                 {
-                    _sender.Send(_onCode);
+                    _sender.Send(_onCodeSqCodeSequence);
                 }
                 else if (state == BinaryState.Low)
                 {
-                    _sender.Send(_offCode);
+                    _sender.Send(_offCodeSequence);
                 }
                 else
                 {

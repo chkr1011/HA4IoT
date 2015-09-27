@@ -41,8 +41,13 @@ namespace CK.HomeAutomation.Controller
             ccToolsBoardController.CreateHSPE16InputOnly(Device.Input4, 46);
             ccToolsBoardController.CreateHSPE16InputOnly(Device.Input5, 44);
 
-            var remoteSwitchController = new RemoteSwitchController(new Wireless433MhzSignalSender(i2CBus, 50, HttpApiController), Timer);
-            remoteSwitchController.Register(0, Intertechno.A1On, Intertechno.A1Off);
+            var remoteSwitchController = new RemoteSwitchController(new LPD433MhzSignalSender(i2CBus, 50, HttpApiController), Timer);
+
+            var intertechnoCodes = new IntertechnoCodeSequenceProvider();
+            remoteSwitchController.Register(
+                0, 
+                intertechnoCodes.GetSequence(IntertechnoCodeSequenceProvider.SystemCode.A, 1, RemoteSwitchCommand.TurnOn),
+                intertechnoCodes.GetSequence(IntertechnoCodeSequenceProvider.SystemCode.A, 1, RemoteSwitchCommand.TurnOff));
 
             var home = new Home(Timer, HealthMonitor, weatherStation, HttpApiController, NotificationHandler);
 

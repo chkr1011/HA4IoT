@@ -7,11 +7,11 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch
     public class RemoteSwitchController : IOutputController
     {
         private readonly Dictionary<int, RemoteSwitchOutputPort> _ports = new Dictionary<int, RemoteSwitchOutputPort>();
-        private readonly Wireless433MhzSignalSender _sender;
+        private readonly LPD433MhzSignalSender _sender;
         private readonly object _syncRoot = new object();
         private readonly IHomeAutomationTimer _timer;
 
-        public RemoteSwitchController(Wireless433MhzSignalSender sender, IHomeAutomationTimer timer)
+        public RemoteSwitchController(LPD433MhzSignalSender sender, IHomeAutomationTimer timer)
         {
             if (sender == null) throw new ArgumentNullException(nameof(sender));
             if (timer == null) throw new ArgumentNullException(nameof(timer));
@@ -28,11 +28,14 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch
             }
         }
 
-        public void Register(int id, RemoteSwitchCode onCode, RemoteSwitchCode offCode)
+        public void Register(int id, LPD433MhzCodeSequence onCodeSequence, LPD433MhzCodeSequence offCodeSequence)
         {
+            if (onCodeSequence == null) throw new ArgumentNullException(nameof(onCodeSequence));
+            if (offCodeSequence == null) throw new ArgumentNullException(nameof(offCodeSequence));
+
             lock (_syncRoot)
             {
-                var port = new RemoteSwitchOutputPort(id, onCode, offCode, _sender, _timer);
+                var port = new RemoteSwitchOutputPort(id, onCodeSequence, offCodeSequence, _sender, _timer);
                 port.Write(BinaryState.Low);
 
                 _ports.Add(id, port);

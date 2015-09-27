@@ -47,7 +47,7 @@ namespace CK.HomeAutomation.Controller.Empty
             var ccToolsBoardController = new CCToolsBoardController(i2CBus, ioBoardManager, NotificationHandler);
 
             // Setup the remote switch 433Mhz sender which is attached to the I2C bus (Arduino Nano).
-            var remoteSwitchSender = new Wireless433MhzSignalSender(i2CBus, 50, HttpApiController);
+            var remoteSwitchSender = new LPD433MhzSignalSender(i2CBus, 50, HttpApiController);
 
             // Setup the controller which creates ports for wireless sockets (433Mhz).
             var remoteSwitchController = new RemoteSwitchController(remoteSwitchSender, Timer);
