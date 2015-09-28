@@ -5,6 +5,7 @@ using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.GenericIOBoard;
 using CK.HomeAutomation.Hardware.Pi2;
 using CK.HomeAutomation.Hardware.RemoteSwitch;
+using CK.HomeAutomation.Hardware.RemoteSwitch.Codes;
 using CK.HomeAutomation.Notifications;
 using CK.HomeAutomation.Telemetry;
 
@@ -51,11 +52,15 @@ namespace CK.HomeAutomation.Controller.Empty
             ccToolsBoardController.CreateHSREL5(RelayBoard.Board1, 37);
 
             // Setup the remote switch 433Mhz sender which is attached to the I2C bus (Arduino Nano).
-            var remoteSwitchSender = new RemoteSwitchSender(i2CBus, RemoteSwitchSenderAddress);
+            var remoteSwitchSender = new LPD433MhzSignalSender(i2CBus, RemoteSwitchSenderAddress, HttpApiController);
 
             // Setup the controller which creates ports for wireless sockets (433Mhz).
             var remoteSwitchController = new RemoteSwitchController(remoteSwitchSender, Timer);
-            remoteSwitchController.Register(0, new RemoteSwitchCode(21, 24), new RemoteSwitchCode(20, 24));
+            var intertechnoCodes = new IntertechnoCodeSequenceProvider();
+            remoteSwitchController.Register(
+                0, 
+                intertechnoCodes.GetSequence(IntertechnoCodeSequenceProvider.SystemCode.A, 1, RemoteSwitchCommand.TurnOn),
+                intertechnoCodes.GetSequence(IntertechnoCodeSequenceProvider.SystemCode.A, 1, RemoteSwitchCommand.TurnOff));
             
             // Setup the weather station which provides sunrise and sunset information.
             double lat = 52.5075419;
