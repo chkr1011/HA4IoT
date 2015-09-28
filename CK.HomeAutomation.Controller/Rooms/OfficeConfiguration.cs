@@ -8,16 +8,18 @@ namespace CK.HomeAutomation.Controller.Rooms
 {
     internal class OfficeConfiguration
     {
-        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Reader sensorBridgeDriver, RemoteSwitchController remoteSwitchController)
+        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Accessor dht22Accessor, RemoteSwitchController remoteSwitchController)
         {
             var hsrel8 = ccToolsController.CreateHSREL8(Device.OfficeHSREL8, 20);
             var hspe8 = ccToolsController.CreateHSPE8OutputOnly(Device.UpperFloorAndOfficeHSPE8, 37);
             var input4 = ioBoardManager.GetInputBoard(Device.Input4);
             var input5 = ioBoardManager.GetInputBoard(Device.Input5);
 
+            const int SensorID = 6;
+
             var office = home.AddRoom(Room.Office)
-                .WithTemperatureSensor(Office.TemperatureSensor, 6, sensorBridgeDriver)
-                .WithHumiditySensor(Office.HumiditySensor, 6, sensorBridgeDriver)
+                .WithTemperatureSensor(Office.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorID))
+                .WithHumiditySensor(Office.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorID))
                 .WithLamp(Office.LightCeilingFrontRight, hsrel8.GetOutput(8).WithInvertedState())
                 .WithLamp(Office.LightCeilingFrontMiddle, hspe8.GetOutput(2).WithInvertedState())
                 .WithLamp(Office.LightCeilingFrontLeft, hspe8.GetOutput(0).WithInvertedState())

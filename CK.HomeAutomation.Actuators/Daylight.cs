@@ -4,7 +4,7 @@ namespace CK.HomeAutomation.Actuators
 {
     public struct Daylight
     {
-        internal Daylight(TimeSpan sunrise, TimeSpan sunset)
+        public Daylight(TimeSpan sunrise, TimeSpan sunset)
         {
             Sunrise = sunrise;
             Sunset = sunset;

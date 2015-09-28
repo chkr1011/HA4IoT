@@ -8,7 +8,7 @@ using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Actuators
 {
-    public class Button : BaseButton
+    public class Button : ButtonBase
     {
         private readonly Stopwatch _stopwatch = new Stopwatch();
         private readonly TimeSpan _timeoutForLongAction = TimeSpan.FromSeconds(1.5);

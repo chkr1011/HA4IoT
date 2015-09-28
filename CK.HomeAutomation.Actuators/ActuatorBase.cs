@@ -5,11 +5,11 @@ using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Actuators
 {
-    public abstract class BaseActuator
+    public abstract class ActuatorBase
     {
         private bool _isEnabled = true;
 
-        protected BaseActuator(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
+        protected ActuatorBase(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));

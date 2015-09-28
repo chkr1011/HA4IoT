@@ -4,27 +4,34 @@ using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Storage;
 using Windows.Web.Http;
+using CK.HomeAutomation.Actuators;
 using CK.HomeAutomation.Actuators.Contracts;
 using CK.HomeAutomation.Core.Timer;
 using CK.HomeAutomation.Networking;
 using CK.HomeAutomation.Notifications;
 using HttpMethod = CK.HomeAutomation.Networking.HttpMethod;
 
-namespace CK.HomeAutomation.Actuators
+namespace CK.HomeAutomation.Hardware.OpenWeatherMapWeatherStation
 {
-    public class WeatherStation : IWeatherStation
+    public class OWMWeatherStation : IWeatherStation
     {
         private readonly INotificationHandler _notificationHandler;
         private readonly Uri _weatherDataSourceUrl;
+        private readonly WeatherStationTemperatureSensor _temperature = new WeatherStationTemperatureSensor();
+        private readonly WeatherStationHumiditySensor _humidity = new WeatherStationHumiditySensor();
+
         private DateTime? _lastFetched;
         private TimeSpan _sunrise;
         private TimeSpan _sunset;
-
-        public WeatherStation(double lat, double lon, IHomeAutomationTimer timer, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
+        
+        public OWMWeatherStation(double lat, double lon, IHomeAutomationTimer timer, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
             if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
             if (notificationHandler == null) throw new ArgumentNullException(nameof(notificationHandler));
+
+            Temperature = _temperature;
+            Humidity = _humidity;
 
             _notificationHandler = notificationHandler;
             _weatherDataSourceUrl = new Uri(string.Format("http://api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}&units=metric", lat, lon));
@@ -37,14 +44,14 @@ namespace CK.HomeAutomation.Actuators
         }
 
         public Daylight Daylight => new Daylight(_sunrise, _sunset);
-        public float Temperature { get; private set; }
-        public float Humidity { get; private set; }
+        public ITemperatureSensor Temperature { get; }
+        public IHumiditySensor Humidity { get; }
 
         public JsonObject ApiGet()
         {
             var result = new JsonObject();
-            result.SetNamedValue("temperature", JsonValue.CreateNumberValue(Temperature));
-            result.SetNamedValue("humidity", JsonValue.CreateNumberValue(Humidity));
+            result.SetNamedValue("temperature", JsonValue.CreateNumberValue(Temperature.Value));
+            result.SetNamedValue("humidity", JsonValue.CreateNumberValue(Humidity.Value));
 
             result.SetNamedValue("lastFetched",
                 _lastFetched.HasValue ? JsonValue.CreateStringValue(_lastFetched.Value.ToString("O")) : JsonValue.CreateNullValue());
@@ -82,8 +89,8 @@ namespace CK.HomeAutomation.Actuators
             _sunset = UnixTimeStampToDateTime(sunsetValue).TimeOfDay;
 
             var main = data["main"].GetObject();
-            Temperature = (float)main["temp"].GetNumber();
-            Humidity = (float)main["humidity"].GetNumber();
+            _temperature.UpdateValue((float) main["temp"].GetNumber());
+            _humidity.UpdateValue((float) main["humidity"].GetNumber());
         }
 
         private async Task<JsonObject> FetchWeatherData()
@@ -104,8 +111,8 @@ namespace CK.HomeAutomation.Actuators
 
         private void ApiPost(HttpRequest request)
         {
-            Temperature = (float) request.JsonBody.GetNamedNumber("temperature");
-            Humidity = (float) request.JsonBody.GetNamedNumber("humidity");
+            _temperature.UpdateValue((float) request.JsonBody.GetNamedNumber("temperature"));
+            _humidity.UpdateValue((float) request.JsonBody.GetNamedNumber("humidity"));
             _sunrise = TimeSpan.Parse(request.JsonBody.GetNamedString("sunrise"));
             _sunset = TimeSpan.Parse(request.JsonBody.GetNamedString("sunset"));
 

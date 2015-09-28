@@ -9,7 +9,7 @@ using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Actuators
 {
-    public class RollerShutter : BaseActuator
+    public class RollerShutter : ActuatorBase
     {
         private readonly TimeSpan _autoOffTimeout;
         private readonly IBinaryOutput _directionGpioPin;

@@ -139,6 +139,10 @@
       <Project>{74BECF44-F00B-40F1-9220-06C4C7F2220F}</Project>
       <Name>CK.HomeAutomation.Hardware.GenericIOBoard</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CK.HomeAutomation.Hardware.OpenWeatherMapWeatherStation\CK.HomeAutomation.Hardware.OpenWeatherMapWeatherStation.csproj">
+      <Project>{25A0003B-E68E-481A-92AD-F4BDABC65700}</Project>
+      <Name>CK.HomeAutomation.Hardware.OpenWeatherMapWeatherStation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CK.HomeAutomation.Hardware.Pi2\CK.HomeAutomation.Hardware.Pi2.csproj">
       <Project>{39819b8f-40f8-418a-ad3a-92a8c8d63268}</Project>
       <Name>CK.HomeAutomation.Hardware.Pi2</Name>

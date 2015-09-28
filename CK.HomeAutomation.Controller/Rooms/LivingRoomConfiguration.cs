@@ -31,7 +31,7 @@ namespace CK.HomeAutomation.Controller.Rooms
             ButtonPassage,
         }
 
-        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Reader sensorBridgeDriver)
+        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Accessor dht22Accessor)
         {
             var hsrel8 = ccToolsController.CreateHSREL8(Device.LivingRoomHSREL8, 18);
             var hsrel5 = ccToolsController.CreateHSREL5(Device.LivingRoomHSREL5, 57);
@@ -42,8 +42,8 @@ namespace CK.HomeAutomation.Controller.Rooms
             const int SensorID = 0;
 
             var livingRoom = home.AddRoom(Room.LivingRoom)
-                .WithTemperatureSensor(LivingRoom.TemperatureSensor, SensorID, sensorBridgeDriver)
-                .WithHumiditySensor(LivingRoom.HumiditySensor, SensorID, sensorBridgeDriver)
+                .WithTemperatureSensor(LivingRoom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorID))
+                .WithHumiditySensor(LivingRoom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorID))
                 .WithLamp(LivingRoom.LampCouch, hsrel8.GetOutput(8).WithInvertedState())
                 .WithLamp(LivingRoom.LampDiningTable, hsrel8.GetOutput(9).WithInvertedState())
                 .WithSocket(LivingRoom.SocketWindowLeftLower, hsrel8.GetOutput(1))

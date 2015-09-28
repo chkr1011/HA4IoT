@@ -129,7 +129,9 @@
     <Compile Include="IInputController.cs" />
     <Compile Include="InterruptMonitor.cs" />
     <Compile Include="IOutputController.cs" />
+    <Compile Include="ISingleValueSensor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SingleValueSensorValueChangedEventArgs.cs" />
     <Content Include="Properties\CK.HomeAutomation.Hardware.rd.xml" />
   </ItemGroup>
   <ItemGroup>

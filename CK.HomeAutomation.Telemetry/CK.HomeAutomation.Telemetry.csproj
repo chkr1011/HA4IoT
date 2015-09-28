@@ -124,6 +124,10 @@
       <Project>{808ABECF-D9C2-4AB2-95D8-EAF228B44576}</Project>
       <Name>CK.HomeAutomation.Actuators</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CK.HomeAutomation.Hardware\CK.HomeAutomation.Hardware.csproj">
+      <Project>{287a9bd0-4037-4add-986f-54056f059eae}</Project>
+      <Name>CK.HomeAutomation.Hardware</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CK.HomeAutomation.Notifications\CK.HomeAutomation.Notifications.csproj">
       <Project>{15DB669D-AF71-4E89-9748-0290A2E5D291}</Project>
       <Name>CK.HomeAutomation.Notifications</Name>

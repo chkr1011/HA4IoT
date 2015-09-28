@@ -33,7 +33,7 @@ namespace CK.HomeAutomation.Controller.Rooms
             SocketKitchenette
         }
 
-        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Reader sensorBridgeDriver)
+        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Accessor dht22Accessor)
         {
             var hsrel5 = ccToolsController.CreateHSREL5(Device.KitchenHSREL5, 58);
             var hspe8 = ccToolsController.CreateHSPE8OutputOnly(Device.KitchenHSPE8, 39);
@@ -44,8 +44,8 @@ namespace CK.HomeAutomation.Controller.Rooms
             const int SensorID = 1;
 
             var kitchen = home.AddRoom(Room.Kitchen)
-                .WithTemperatureSensor(Kitchen.TemperatureSensor, SensorID, sensorBridgeDriver)
-                .WithHumiditySensor(Kitchen.HumiditySensor, SensorID, sensorBridgeDriver)
+                .WithTemperatureSensor(Kitchen.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorID))
+                .WithHumiditySensor(Kitchen.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorID))
                 .WithMotionDetector(Kitchen.MotionDetector, input1.GetInput(8))
                 .WithLamp(Kitchen.LightCeilingMiddle, hsrel5.GetOutput(5).WithInvertedState())
                 .WithLamp(Kitchen.LightCeilingWindow, hsrel5.GetOutput(6).WithInvertedState())

@@ -3,7 +3,7 @@ using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Actuators
 {
-    public class VirtualButton : BaseButton
+    public class VirtualButton : ButtonBase
     {
         public VirtualButton(string id, HttpRequestController httpApiController, INotificationHandler notificationHandler)
             : base(id, httpApiController, notificationHandler)

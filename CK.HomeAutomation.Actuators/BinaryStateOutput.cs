@@ -7,7 +7,7 @@ using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Actuators
 {
-    public class BinaryStateOutput : BaseActuator, IBinaryStateOutputActuator
+    public class BinaryStateOutput : ActuatorBase, IBinaryStateOutputActuator
     {
         private readonly IBinaryOutput _output;
 

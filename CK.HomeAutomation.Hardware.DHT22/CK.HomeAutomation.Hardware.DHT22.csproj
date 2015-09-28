@@ -113,7 +113,10 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DHT22Reader.cs" />
+    <Compile Include="DHT22Accessor.cs" />
+    <Compile Include="DHT22HumiditySensor.cs" />
+    <Compile Include="DHT22SensorBase.cs" />
+    <Compile Include="DHT22TemperatureSensor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Properties\CK.HomeAutomation.Hardware.DHT22.rd.xml" />
   </ItemGroup>

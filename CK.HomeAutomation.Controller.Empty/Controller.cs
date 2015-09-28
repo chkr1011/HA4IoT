@@ -3,6 +3,7 @@ using CK.HomeAutomation.Core;
 using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.GenericIOBoard;
+using CK.HomeAutomation.Hardware.OpenWeatherMapWeatherStation;
 using CK.HomeAutomation.Hardware.Pi2;
 using CK.HomeAutomation.Hardware.RemoteSwitch;
 using CK.HomeAutomation.Hardware.RemoteSwitch.Codes;
@@ -65,7 +66,7 @@ namespace CK.HomeAutomation.Controller.Empty
             // Setup the weather station which provides sunrise and sunset information.
             double lat = 52.5075419;
             double lon = 13.4251364;
-            var weatherStation = new WeatherStation(lat, lon, Timer, HttpApiController, NotificationHandler);
+            var weatherStation = new OWMWeatherStation(lat, lon, Timer, HttpApiController, NotificationHandler);
             NotificationHandler.PublishFrom(this, NotificationType.Info, "WeatherStation initialized successfully.");
 
             var home = new Home(Timer, HealthMonitor, weatherStation, HttpApiController, NotificationHandler);

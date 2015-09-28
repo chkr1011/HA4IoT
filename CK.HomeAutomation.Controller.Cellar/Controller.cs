@@ -4,10 +4,12 @@ using Windows.Data.Json;
 using Windows.Storage;
 using CK.HomeAutomation.Actuators;
 using CK.HomeAutomation.Actuators.Connectors;
+using CK.HomeAutomation.Actuators.Contracts;
 using CK.HomeAutomation.Core;
 using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.GenericIOBoard;
+using CK.HomeAutomation.Hardware.OpenWeatherMapWeatherStation;
 using CK.HomeAutomation.Hardware.Pi2;
 using CK.HomeAutomation.Notifications;
 
@@ -51,7 +53,7 @@ namespace CK.HomeAutomation.Controller.Cellar
 
             var pi2PortController = new Pi2PortController();
 
-            WeatherStation weatherStation = CreateWeatherStation();
+            IWeatherStation weatherStation = CreateWeatherStation();
             var i2CBus = new I2cBusAccessor(NotificationHandler);
 
             var ioBoardManager = new IOBoardManager(HttpApiController, NotificationHandler);
@@ -156,7 +158,7 @@ namespace CK.HomeAutomation.Controller.Cellar
             Timer.Tick += (s, e) => { pi2PortController.PollOpenInputPorts(); };
         }
 
-        private WeatherStation CreateWeatherStation()
+        private IWeatherStation CreateWeatherStation()
         {
             try
             {
@@ -165,7 +167,7 @@ namespace CK.HomeAutomation.Controller.Cellar
                 double lat = configuration.GetNamedNumber("lat");
                 double lon = configuration.GetNamedNumber("lon");
 
-                var weatherStation = new WeatherStation(lat, lon, Timer, HttpApiController, NotificationHandler);
+                var weatherStation = new OWMWeatherStation(lat, lon, Timer, HttpApiController, NotificationHandler);
                 NotificationHandler.PublishFrom(this, NotificationType.Info, "WeatherStation initialized successfully.");
                 return weatherStation;
             }
