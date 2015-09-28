@@ -204,6 +204,14 @@ function configureActuator(room, actuator, i) {
                 break;
             }
 
+        case "Window":
+            {
+                actuator.caption = getFriendlyName("Window");
+                actuator.template = "windowTemplate";
+                actuator.sortValue = -4;
+                break;
+            }
+
         case "StateMachine":
             {
                 var extendedStates = [];

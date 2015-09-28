@@ -11,7 +11,7 @@ namespace CK.HomeAutomation.Hardware.GenericIOBoard
             Number = number;
             Controller = controller;
 
-            controller.StateChanged += FireEvents;
+            controller.StateChanged += OnControllerStateChanged;
         }
 
         public int Number { get; }
@@ -64,7 +64,7 @@ namespace CK.HomeAutomation.Hardware.GenericIOBoard
             return state;
         }
 
-        private void FireEvents(object sender, IOBoardStateChangedEventArgs e)
+        private void OnControllerStateChanged(object sender, IOBoardStateChangedEventArgs e)
         {
             bool oldState = e.OldState.GetBit(Number);
             bool newState = e.NewState.GetBit(Number);

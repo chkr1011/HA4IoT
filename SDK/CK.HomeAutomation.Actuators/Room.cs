@@ -39,6 +39,16 @@ namespace CK.HomeAutomation.Actuators
             return WithActuator(id, new MotionDetector(GenerateID(id), input, _home.Timer, _home.HttpApiController, _home.NotificationHandler));
         }
 
+        public Room WithWindow(Enum id, Action<Window> initializer)
+        {
+            if (initializer == null) throw new ArgumentNullException(nameof(initializer));
+            
+            var window = new Window(GenerateID(id), _home.HttpApiController, _home.NotificationHandler);
+            initializer(window);
+
+            return WithActuator(id, window);
+        }
+
         public Room WithLamp(Enum id, IBinaryOutput output)
         {
             if (output == null) throw new ArgumentNullException(nameof(output));

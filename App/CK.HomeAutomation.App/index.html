@@ -161,7 +161,7 @@
         </div>
     </script>
 
-    <script type="text/ng-template" id="roomsOverviewTemplate">
+<script type="text/ng-template" id="roomsOverviewTemplate">
         <div class="row panel panel-default" ng-class="{'panel-primary': haCtrl.activePanel==room.id}" id="{{room.id}}" ng-repeat="room in haCtrl.rooms | orderBy:['sortValue', 'caption']">
             <div class="panel-heading pointer" ng-click="haCtrl.setActivePanel(room.id)">
                 <h1 class="panel-title">{{room.caption}}</h1>
@@ -176,6 +176,14 @@
             </table>
         </div>
     </script>
+
+<script type="text/ng-template" id="windowTemplate">
+       <div ng-repeat="casement in actuator.state">
+           <p ng-show="casement=='Closed'"><span class="label label-success">Geschlossen</span></p>
+           <p ng-show="casement=='Tilt'"><span class="label label-warning">Kipp</span></p>
+           <p ng-show="casement=='Open'"><span class="label label-danger">Offen</span></p>
+       </div>
+</script>
 
 <script type="text/ng-template" id="bottomBarTemplate">
         <div class="row panel panel-default" ng-class="{'panel-primary': haCtrl.activePanel=='bottomBar'}" id="bottomBar">

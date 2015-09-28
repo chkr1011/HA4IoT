@@ -1,6 +1,5 @@
 ﻿using CK.HomeAutomation.Actuators;
 using CK.HomeAutomation.Actuators.Connectors;
-using CK.HomeAutomation.Core;
 using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.DHT22;
 using CK.HomeAutomation.Hardware.GenericIOBoard;
@@ -30,6 +29,9 @@ namespace CK.HomeAutomation.Controller.Rooms
             ButtonMiddle,
             ButtonLower,
             ButtonPassage,
+
+            WindowLeft,
+            WindowRight,
         }
 
         public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Accessor dht22Accessor)
@@ -56,7 +58,9 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithButton(LivingRoom.ButtonUpper, input0.GetInput(15))
                 .WithButton(LivingRoom.ButtonMiddle, input0.GetInput(14))
                 .WithButton(LivingRoom.ButtonLower, input0.GetInput(13))
-                .WithButton(LivingRoom.ButtonPassage, input1.GetInput(10));
+                .WithButton(LivingRoom.ButtonPassage, input1.GetInput(10))
+                .WithWindow(LivingRoom.WindowLeft,
+                    w => w.WithCasement(input0.GetInput(14), input0.GetInput(15)).WithCasement(input0.GetInput(13), input0.GetInput(12)));
 
             livingRoom.Lamp(LivingRoom.LampDiningTable)
                 .ConnectToggleWith(livingRoom.Button(LivingRoom.ButtonUpper))
