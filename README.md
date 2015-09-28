@@ -11,6 +11,7 @@ The first open source home automation SDK for the RaspberryPi 2 using Windows 10
 * Optional integration of Microsoft Azure EventHubs to allow for analysis of actuator states or power consumption statistics
 * Optional CSV log containing all state changes of every actuator which allows for analysis of actuator states or power consumption
 * UDP broadcasted debug traces
+* Powerful RESTful API
 * Complete with fritzing sketches and documentation to build devices like 433Mhz sender, sensors etc. on your own
 
 ## Supported hardware
