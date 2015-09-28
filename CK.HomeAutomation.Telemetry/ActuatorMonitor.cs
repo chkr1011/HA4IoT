@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using CK.HomeAutomation.Actuators;
 using CK.HomeAutomation.Actuators.Contracts;
+using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Telemetry
@@ -37,7 +38,7 @@ namespace CK.HomeAutomation.Telemetry
                     continue;
                 }
 
-                var sensor = actuator as BaseSensor;
+                var sensor = actuator as SingleValueSensorBase;
                 if (sensor != null)
                 {
                     sensor.ValueChanged += (s, e) =>
@@ -91,7 +92,7 @@ namespace CK.HomeAutomation.Telemetry
         {
         }
 
-        protected virtual void OnSensorValueChanged(BaseSensor sensor)
+        protected virtual void OnSensorValueChanged(SingleValueSensorBase sensor)
         {
         }
 

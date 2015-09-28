@@ -31,7 +31,7 @@ namespace CK.HomeAutomation.Telemetry
             SendToAzureEventHubAsync(data);
         }
 
-        protected override void OnSensorValueChanged(BaseSensor sensor)
+        protected override void OnSensorValueChanged(SingleValueSensorBase sensor)
         {
             JsonObject data = CreateDataPackage(sensor.Id, EventType.SensorValueChanged);
             data.SetNamedValue("kind", JsonValue.CreateStringValue(sensor.GetType().Name));

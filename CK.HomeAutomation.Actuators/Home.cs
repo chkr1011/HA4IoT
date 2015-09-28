@@ -7,6 +7,7 @@ using Windows.Storage.Streams;
 using CK.HomeAutomation.Actuators.Contracts;
 using CK.HomeAutomation.Core;
 using CK.HomeAutomation.Core.Timer;
+using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Networking;
 using CK.HomeAutomation.Notifications;
 
@@ -41,7 +42,7 @@ namespace CK.HomeAutomation.Actuators
 
         public IWeatherStation WeatherStation { get; }
 
-        public Dictionary<Enum, BaseActuator> Actuators { get; } = new Dictionary<Enum, BaseActuator>();
+        public Dictionary<Enum, ActuatorBase> Actuators { get; } = new Dictionary<Enum, ActuatorBase>();
 
         public Room AddRoom(Enum id)
         {

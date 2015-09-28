@@ -9,7 +9,7 @@ using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Actuators
 {
-    public class CombinedBinaryStateActuators : BaseActuator, IBinaryStateOutputActuator
+    public class CombinedBinaryStateActuators : ActuatorBase, IBinaryStateOutputActuator
     {
         private readonly IHomeAutomationTimer _timer;
         ////private bool _animationsEnabled;

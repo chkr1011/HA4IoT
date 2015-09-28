@@ -3,12 +3,14 @@ using System.IO;
 using Windows.Data.Json;
 using Windows.Storage;
 using CK.HomeAutomation.Actuators;
+using CK.HomeAutomation.Actuators.Contracts;
 using CK.HomeAutomation.Controller.Rooms;
 using CK.HomeAutomation.Core;
 using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.DHT22;
 using CK.HomeAutomation.Hardware.GenericIOBoard;
+using CK.HomeAutomation.Hardware.OpenWeatherMapWeatherStation;
 using CK.HomeAutomation.Hardware.Pi2;
 using CK.HomeAutomation.Hardware.RemoteSwitch;
 using CK.HomeAutomation.Hardware.RemoteSwitch.Codes;
@@ -27,9 +29,9 @@ namespace CK.HomeAutomation.Controller
             
             var i2CBus = new I2cBusAccessor(NotificationHandler);
 
-            WeatherStation weatherStation = CreateWeatherStation();
+            IWeatherStation weatherStation = CreateWeatherStation();
 
-            var sensorBridgeDriver = new DHT22Reader(50, Timer, i2CBus);
+            var sensorBridgeDriver = new DHT22Accessor(50, Timer, i2CBus);
 
             var ioBoardManager = new IOBoardManager(HttpApiController, NotificationHandler);
             var ccToolsBoardController = new CCToolsBoardController(i2CBus, ioBoardManager, NotificationHandler);
@@ -94,7 +96,7 @@ namespace CK.HomeAutomation.Controller
             }
         }
 
-        private WeatherStation CreateWeatherStation()
+        private IWeatherStation CreateWeatherStation()
         {
             try
             {
@@ -103,7 +105,7 @@ namespace CK.HomeAutomation.Controller
                 double lat = configuration.GetNamedNumber("lat");
                 double lon = configuration.GetNamedNumber("lon");
 
-                var weatherStation = new WeatherStation(lat, lon, Timer, HttpApiController, NotificationHandler);
+                var weatherStation = new OWMWeatherStation(lat, lon, Timer, HttpApiController, NotificationHandler);
                 NotificationHandler.PublishFrom(this, NotificationType.Info, "WeatherStation initialized successfully.");
                 return weatherStation;
             }

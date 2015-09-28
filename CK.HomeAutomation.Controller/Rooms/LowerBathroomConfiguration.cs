@@ -22,7 +22,7 @@ namespace CK.HomeAutomation.Controller.Rooms
             LampMirror,
         }
 
-        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Reader sensorBridgeDriver)
+        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Accessor dht22Accessor)
         {
             var hspe16_FloorAndLowerBathroom = ioBoardManager.GetOutputBoard(Device.LowerFloorAndLowerBathroomHSPE16);
             var input3 = ioBoardManager.GetInputBoard(Device.Input3);
@@ -31,8 +31,8 @@ namespace CK.HomeAutomation.Controller.Rooms
 
             var bathroom = home.AddRoom(Room.LowerBathroom)
                 .WithMotionDetector(LowerBathroom.MotionDetector, input3.GetInput(15))
-                .WithTemperatureSensor(LowerBathroom.TemperatureSensor, SensorID, sensorBridgeDriver)
-                .WithHumiditySensor(LowerBathroom.HumditySensor, SensorID, sensorBridgeDriver)
+                .WithTemperatureSensor(LowerBathroom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorID))
+                .WithHumiditySensor(LowerBathroom.HumditySensor, dht22Accessor.GetHumiditySensor(SensorID))
                 .WithLamp(LowerBathroom.LightCeilingDoor, hspe16_FloorAndLowerBathroom.GetOutput(0).WithInvertedState())
                 .WithLamp(LowerBathroom.LightCeilingMiddle, hspe16_FloorAndLowerBathroom.GetOutput(1).WithInvertedState())
                 .WithLamp(LowerBathroom.LightCeilingWindow, hspe16_FloorAndLowerBathroom.GetOutput(2).WithInvertedState())

@@ -1,6 +1,5 @@
 ﻿using System;
 using CK.HomeAutomation.Actuators;
-using CK.HomeAutomation.Actuators.Animations;
 using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.DHT22;
 using CK.HomeAutomation.Hardware.GenericIOBoard;
@@ -9,7 +8,7 @@ namespace CK.HomeAutomation.Controller.Rooms
 {
     internal class FloorConfiguration
     {
-        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Reader dht22Reader)
+        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Accessor dht22Accessor)
         {
             var hsrel5Stairway = ccToolsController.CreateHSREL5(Device.StairwayHSREL5, 60);
             var hspe8UpperFloor = ioBoardManager.GetOutputBoard(Device.UpperFloorAndOfficeHSPE8);
@@ -26,8 +25,8 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithMotionDetector(Floor.StairsLowerMotionDetector, input4.GetInput(7))
                 .WithMotionDetector(Floor.StairsUpperMotionDetector, input4.GetInput(6))
                 .WithMotionDetector(Floor.LowerFloorMotionDetector, input1.GetInput(4))
-                .WithTemperatureSensor(Floor.LowerFloorTemperatureSensor, SensorID, dht22Reader)
-                .WithHumiditySensor(Floor.LowerFloorHumiditySensor, SensorID, dht22Reader)
+                .WithTemperatureSensor(Floor.LowerFloorTemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorID))
+                .WithHumiditySensor(Floor.LowerFloorHumiditySensor, dht22Accessor.GetHumiditySensor(SensorID))
                 .WithLamp(Floor.LampStairsCeiling1, hspe8UpperFloor.GetOutput(4).WithInvertedState())
                 .WithLamp(Floor.LampStairsCeiling2, hspe8UpperFloor.GetOutput(5).WithInvertedState())
                 .WithLamp(Floor.LampStairsCeiling3, hspe8UpperFloor.GetOutput(7).WithInvertedState())

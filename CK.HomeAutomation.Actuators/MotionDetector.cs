@@ -8,7 +8,7 @@ using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Actuators
 {
-    public class MotionDetector : BaseActuator, IMotionDetector
+    public class MotionDetector : ActuatorBase, IMotionDetector
     {
         private TimedAction _autoEnableAction;
 

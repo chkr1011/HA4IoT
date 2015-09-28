@@ -53,6 +53,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Controlle
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CK.HomeAutomation.Hardware.I2CHardwareBridge", "CK.HomeAutomation.Hardware.I2CHardwareBridge\CK.HomeAutomation.Hardware.I2CHardwareBridge.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Hardware.OpenWeatherMapWeatherStation", "CK.HomeAutomation.Hardware.OpenWeatherMapWeatherStation\CK.HomeAutomation.Hardware.OpenWeatherMapWeatherStation.csproj", "{25A0003B-E68E-481A-92AD-F4BDABC65700}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -391,6 +393,22 @@ Global
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x64.ActiveCfg = Release|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.ActiveCfg = Release|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.Build.0 = Release|Win32
+		{25A0003B-E68E-481A-92AD-F4BDABC65700}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25A0003B-E68E-481A-92AD-F4BDABC65700}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25A0003B-E68E-481A-92AD-F4BDABC65700}.Debug|ARM.ActiveCfg = Debug|ARM
+		{25A0003B-E68E-481A-92AD-F4BDABC65700}.Debug|ARM.Build.0 = Debug|ARM
+		{25A0003B-E68E-481A-92AD-F4BDABC65700}.Debug|x64.ActiveCfg = Debug|x64
+		{25A0003B-E68E-481A-92AD-F4BDABC65700}.Debug|x64.Build.0 = Debug|x64
+		{25A0003B-E68E-481A-92AD-F4BDABC65700}.Debug|x86.ActiveCfg = Debug|x86
+		{25A0003B-E68E-481A-92AD-F4BDABC65700}.Debug|x86.Build.0 = Debug|x86
+		{25A0003B-E68E-481A-92AD-F4BDABC65700}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25A0003B-E68E-481A-92AD-F4BDABC65700}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25A0003B-E68E-481A-92AD-F4BDABC65700}.Release|ARM.ActiveCfg = Release|ARM
+		{25A0003B-E68E-481A-92AD-F4BDABC65700}.Release|ARM.Build.0 = Release|ARM
+		{25A0003B-E68E-481A-92AD-F4BDABC65700}.Release|x64.ActiveCfg = Release|x64
+		{25A0003B-E68E-481A-92AD-F4BDABC65700}.Release|x64.Build.0 = Release|x64
+		{25A0003B-E68E-481A-92AD-F4BDABC65700}.Release|x86.ActiveCfg = Release|x86
+		{25A0003B-E68E-481A-92AD-F4BDABC65700}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -418,5 +436,6 @@ Global
 		{238AD610-4F9B-4652-81DB-A8FC215F61A5} = {0889E29C-AF64-44A6-8529-9A6CB35A22DA}
 		{171A1B71-EC5A-42BC-A3D9-0252B157F70A} = {CD5D2CCD-44D0-46E5-BE14-3B377048E0A2}
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88} = {A1F8CE2B-E00D-445B-9E31-A093BD676A1B}
+		{25A0003B-E68E-481A-92AD-F4BDABC65700} = {A1F8CE2B-E00D-445B-9E31-A093BD676A1B}
 	EndGlobalSection
 EndGlobal

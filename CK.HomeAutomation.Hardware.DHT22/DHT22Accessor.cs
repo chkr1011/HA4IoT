@@ -3,7 +3,7 @@ using CK.HomeAutomation.Core.Timer;
 
 namespace CK.HomeAutomation.Hardware.DHT22
 {
-    public class DHT22Reader
+    public class DHT22Accessor
     {
         private const byte ActionReadDht22 = 1;
 
@@ -13,7 +13,7 @@ namespace CK.HomeAutomation.Hardware.DHT22
         private readonly float[] _humidities = new float[10];
         private readonly float[] _temperatures = new float[10];
 
-        public DHT22Reader(int address, IHomeAutomationTimer timer, II2cBusAccessor i2CBus)
+        public DHT22Accessor(int address, IHomeAutomationTimer timer, II2cBusAccessor i2CBus)
         {
             if (i2CBus == null) throw new ArgumentNullException(nameof(i2CBus));
             
@@ -25,9 +25,19 @@ namespace CK.HomeAutomation.Hardware.DHT22
 
         public event EventHandler ValuesUpdated;
 
+        public DHT22TemperatureSensor GetTemperatureSensor(int sensorId)
+        {
+            return new DHT22TemperatureSensor(sensorId, this);
+        }
+
         public float GetTemperature(int sensorId)
         {
             return _temperatures[sensorId];
+        }
+
+        public DHT22HumiditySensor GetHumiditySensor(int sensorId)
+        {
+            return new DHT22HumiditySensor(sensorId, this);
         }
 
         public float GetHumidity(int sensorId)

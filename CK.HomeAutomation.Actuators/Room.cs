@@ -4,7 +4,6 @@ using Windows.Data.Json;
 using CK.HomeAutomation.Actuators.Automations;
 using CK.HomeAutomation.Actuators.Contracts;
 using CK.HomeAutomation.Hardware;
-using CK.HomeAutomation.Hardware.DHT22;
 using CK.HomeAutomation.Networking;
 
 namespace CK.HomeAutomation.Actuators
@@ -12,7 +11,7 @@ namespace CK.HomeAutomation.Actuators
     public class Room
     {
         private readonly Home _home;
-        private readonly List<BaseActuator> _ownActuators = new List<BaseActuator>();
+        private readonly List<ActuatorBase> _ownActuators = new List<ActuatorBase>();
 
         public Room(Home home, string id)
         {
@@ -26,7 +25,7 @@ namespace CK.HomeAutomation.Actuators
 
         public string Id { get; }
 
-        public Room WithActuator(Enum id, BaseActuator actuator)
+        public Room WithActuator(Enum id, ActuatorBase actuator)
         {
             _home.Actuators.Add(id, actuator);
             _ownActuators.Add(actuator);
@@ -78,21 +77,21 @@ namespace CK.HomeAutomation.Actuators
             return WithActuator(id, new RollerShutterButtons(GenerateID(id), upInput, downInput, _home.HttpApiController, _home.NotificationHandler, _home.Timer));
         }
 
-        public Room WithHumiditySensor(Enum id, int sensorId, DHT22Reader sensorReader)
+        public Room WithHumiditySensor(Enum id, ISingleValueSensor sensor)
         {
-            if (sensorReader == null) throw new ArgumentNullException(nameof(sensorReader));
+            if (sensor == null) throw new ArgumentNullException(nameof(sensor));
 
             return WithActuator(id,
-                new HumiditySensor(GenerateID(id), sensorId, sensorReader, _home.HttpApiController,
+                new HumiditySensor(GenerateID(id), sensor, _home.HttpApiController,
                     _home.NotificationHandler));
         }
 
-        public Room WithTemperatureSensor(Enum id, int sensorId, DHT22Reader sensorReader)
+        public Room WithTemperatureSensor(Enum id, ISingleValueSensor sensor)
         {
-            if (sensorReader == null) throw new ArgumentNullException(nameof(sensorReader));
+            if (sensor == null) throw new ArgumentNullException(nameof(sensor));
 
             return WithActuator(id,
-                new TemperatureSensor(GenerateID(id), sensorId, sensorReader, _home.HttpApiController,
+                new TemperatureSensor(GenerateID(id), sensor, _home.HttpApiController,
                     _home.NotificationHandler));
         }
 
@@ -170,9 +169,9 @@ namespace CK.HomeAutomation.Actuators
             return configuration;
         }
 
-        public TActuator Actuator<TActuator>(Enum id) where TActuator : BaseActuator
+        public TActuator Actuator<TActuator>(Enum id) where TActuator : ActuatorBase
         {
-            BaseActuator actuator;
+            ActuatorBase actuator;
             if (!_home.Actuators.TryGetValue(id, out actuator))
             {
                 throw new InvalidOperationException("The actuator with id '" + id + "' is not registered.");
@@ -183,7 +182,7 @@ namespace CK.HomeAutomation.Actuators
 
         public IBinaryStateOutputActuator BinaryStateOutput(Enum id)
         {
-            return (IBinaryStateOutputActuator)Actuator<BaseActuator>(id);
+            return (IBinaryStateOutputActuator)Actuator<ActuatorBase>(id);
         }
 
         public Button Button(Enum id)

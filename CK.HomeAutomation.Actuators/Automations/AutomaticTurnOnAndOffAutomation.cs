@@ -5,6 +5,7 @@ using CK.HomeAutomation.Actuators.Conditions;
 using CK.HomeAutomation.Actuators.Conditions.Specialized;
 using CK.HomeAutomation.Actuators.Contracts;
 using CK.HomeAutomation.Core.Timer;
+using CK.HomeAutomation.Hardware;
 
 namespace CK.HomeAutomation.Actuators.Automations
 {

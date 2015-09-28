@@ -7,7 +7,7 @@ using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Actuators
 {
-    public class StateMachine : BaseActuator
+    public class StateMachine : ActuatorBase
     {
         private int _index;
         private bool _turnOffIfStateIsAppliedTwice;

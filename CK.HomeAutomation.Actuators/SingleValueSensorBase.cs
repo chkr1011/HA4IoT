@@ -1,20 +1,21 @@
 ﻿using System;
 using Windows.Data.Json;
+using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Networking;
 using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Actuators
 {
-    public abstract class BaseSensor : BaseActuator
+    public abstract class SingleValueSensorBase : ActuatorBase
     {
-        protected BaseSensor(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
+        protected SingleValueSensorBase(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
             : base(id, httpApiController, notificationHandler)
         {
         }
 
-        public float Value { get; private set; }
+        public event EventHandler<SingleValueSensorValueChangedEventArgs> ValueChanged;
 
-        public event EventHandler ValueChanged;
+        public float Value { get; private set; }
 
         public override void ApiGet(ApiRequestContext context)
         {
@@ -29,7 +30,7 @@ namespace CK.HomeAutomation.Actuators
                 Value = newValue;
 
                 NotificationHandler.PublishFrom(this, NotificationType.Info, "'{0}' updated the value to from '{1}' to '{2}'", Id, oldValue, Value);
-                ValueChanged?.Invoke(this, EventArgs.Empty);
+                ValueChanged?.Invoke(this, new SingleValueSensorValueChangedEventArgs(oldValue, Value));
             }
         }
     }

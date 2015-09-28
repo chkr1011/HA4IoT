@@ -1,19 +1,20 @@
 ﻿using System;
-using CK.HomeAutomation.Hardware.DHT22;
+using CK.HomeAutomation.Actuators.Contracts;
+using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Networking;
 using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Actuators
 {
-    public class TemperatureSensor : BaseSensor
+    public class TemperatureSensor : SingleValueSensorBase, ITemperatureSensor
     {
-        public TemperatureSensor(string id, int sensorId, DHT22Reader dht22Reader,
+        public TemperatureSensor(string id, ISingleValueSensor sensor,
             IHttpRequestController httpApiController, INotificationHandler notificationHandler)
             : base(id, httpApiController, notificationHandler)
         {
-            if (dht22Reader == null) throw new ArgumentNullException(nameof(dht22Reader));
+            if (sensor == null) throw new ArgumentNullException(nameof(sensor));
 
-            dht22Reader.ValuesUpdated += (s, e) => UpdateValue(dht22Reader.GetTemperature(sensorId));
+            sensor.ValueChanged += (s, e) => UpdateValue(e.NewValue);
         }
     }
 }

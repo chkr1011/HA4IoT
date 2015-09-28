@@ -9,7 +9,7 @@ namespace CK.HomeAutomation.Controller.Rooms
 {
     internal class BedroomConfiguration
     {
-        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Reader dht22Reader)
+        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Accessor dht22Accessor)
         {
             var hsrel5 = ccToolsController.CreateHSREL5(Device.BedroomHSREL5, 38);
             var hsrel8 = ccToolsController.CreateHSREL8(Device.BedroomHSREL8, 21);
@@ -19,8 +19,8 @@ namespace CK.HomeAutomation.Controller.Rooms
             const int SensorID = 8;
 
             var bedroom = home.AddRoom(Room.Bedroom)
-                .WithTemperatureSensor(Bedroom.TemperatureSensor, SensorID, dht22Reader)
-                .WithHumiditySensor(Bedroom.HumiditySensor, SensorID, dht22Reader)
+                .WithTemperatureSensor(Bedroom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorID))
+                .WithHumiditySensor(Bedroom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorID))
                 .WithMotionDetector(Bedroom.MotionDetector, input5.GetInput(12))
                 .WithLamp(Bedroom.LightCeiling, hsrel5.GetOutput(5).WithInvertedState())
                 .WithLamp(Bedroom.LightCeilingWindow, hsrel5.GetOutput(6).WithInvertedState())

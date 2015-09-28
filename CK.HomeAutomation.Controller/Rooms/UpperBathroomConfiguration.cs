@@ -10,14 +10,16 @@ namespace CK.HomeAutomation.Controller.Rooms
 {
     internal class UpperBathroomConfiguration
     {
-        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Reader sensorBridgeDriver)
+        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Accessor dht22Accessor)
         {
             var hsrel5 = ccToolsController.CreateHSREL5(Device.UpperBathroomHSREL5, 61);
             var input5 = ioBoardManager.GetInputBoard(Device.Input5);
 
+            const int SensorID = 7;
+
             var bathroom = home.AddRoom(Room.UpperBathroom)
-                .WithTemperatureSensor(UpperBathroom.TemperatureSensor, 7, sensorBridgeDriver)
-                .WithHumiditySensor(UpperBathroom.HumiditySensor, 7, sensorBridgeDriver)
+                .WithTemperatureSensor(UpperBathroom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorID))
+                .WithHumiditySensor(UpperBathroom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorID))
                 .WithMotionDetector(UpperBathroom.MotionDetector, input5.GetInput(15))
                 .WithLamp(UpperBathroom.LightCeilingDoor, hsrel5.GetOutput(0))
                 .WithLamp(UpperBathroom.LightCeilingEdge, hsrel5.GetOutput(1))

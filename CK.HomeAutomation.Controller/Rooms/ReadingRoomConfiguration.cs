@@ -8,7 +8,7 @@ namespace CK.HomeAutomation.Controller.Rooms
 {
     internal class ReadingRoomConfiguration
     {
-        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Reader sensorBridgeDriver)
+        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Accessor dht22Accessor)
         {
             var hsrel5 = ccToolsController.CreateHSREL5(Device.ReadingRoomHSREL5, 62);
             var input2 = ioBoardManager.GetInputBoard(Device.Input2);
@@ -16,8 +16,8 @@ namespace CK.HomeAutomation.Controller.Rooms
             const int SensorID = 2;
 
             var readingRoom = home.AddRoom(Room.ReadingRoom)
-                .WithTemperatureSensor(ReadingRoom.TemperatureSensor, SensorID, sensorBridgeDriver)
-                .WithHumiditySensor(ReadingRoom.HumiditySensor, SensorID, sensorBridgeDriver)
+                .WithTemperatureSensor(ReadingRoom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorID))
+                .WithHumiditySensor(ReadingRoom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorID))
                 .WithLamp(ReadingRoom.LightCeilingMiddle, hsrel5.GetOutput(6).WithInvertedState())
                 .WithRollerShutter(ReadingRoom.RollerShutter, hsrel5.GetOutput(4), hsrel5.GetOutput(3), RollerShutter.DefaultMaxMovingDuration, 20000)
                 .WithSocket(ReadingRoom.SocketWindow, hsrel5.GetOutput(0))

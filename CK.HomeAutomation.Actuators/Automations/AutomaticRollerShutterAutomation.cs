@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CK.HomeAutomation.Actuators.Contracts;
 using CK.HomeAutomation.Core.Timer;
+using CK.HomeAutomation.Hardware;
 
 namespace CK.HomeAutomation.Actuators.Automations
 {
@@ -57,7 +58,7 @@ namespace CK.HomeAutomation.Actuators.Automations
 
             if (_maxOutsideTemperature.HasValue && !_maxOutsideTemperatureApplied)
             {
-                if (_weatherStation.Temperature > _maxOutsideTemperature.Value)
+                if (_weatherStation.Temperature.Value > _maxOutsideTemperature.Value)
                 {
                     _maxOutsideTemperatureApplied = true;
                     StartMoveDown();

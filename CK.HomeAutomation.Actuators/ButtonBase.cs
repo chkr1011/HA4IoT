@@ -6,9 +6,9 @@ using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Actuators
 {
-    public abstract class BaseButton : BaseActuator, IButton
+    public abstract class ButtonBase : ActuatorBase, IButton
     {
-        protected BaseButton(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
+        protected ButtonBase(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
             : base(id, httpApiController, notificationHandler)
         {
         }
@@ -19,13 +19,13 @@ namespace CK.HomeAutomation.Actuators
         public event EventHandler PressedShort;
         public event EventHandler PressedLong;
 
-        public BaseButton WithShortAction(Action action)
+        public ButtonBase WithShortAction(Action action)
         {
             ShortActions.Add(action);
             return this;
         }
 
-        public BaseButton WithLongAction(Action action)
+        public ButtonBase WithLongAction(Action action)
         {
             LongActions.Add(action);
             return this;

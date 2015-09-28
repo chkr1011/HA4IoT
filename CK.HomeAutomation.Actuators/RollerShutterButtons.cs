@@ -7,7 +7,7 @@ using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Actuators
 {
-    public class RollerShutterButtons : BaseActuator
+    public class RollerShutterButtons : ActuatorBase
     {
         public RollerShutterButtons(string id, IBinaryInput upInput, IBinaryInput downInput,
             IHttpRequestController httpRequestController, INotificationHandler notificationHandler, IHomeAutomationTimer timer) : base(id, httpRequestController, notificationHandler)
