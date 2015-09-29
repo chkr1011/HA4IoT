@@ -11,18 +11,18 @@ union floatToBytes
 	float value;
 	struct
 	{
-		byte b0;
-		byte b1;
-		byte b2;
-		byte b3;
+		uint8_t b0;
+		uint8_t b1;
+		uint8_t b2;
+		uint8_t b3;
 	} bytes;
 };
 
 float _temperatures[SENSORS_COUNT];
 float _humidities[SENSORS_COUNT];
-byte _nextSensorIndex = 0;
+int _nextSensorIndex = 0;
 
-void DHT22Controller_pollSensor(byte index, byte port)
+void DHT22Controller_pollSensor(int index, byte port)
 {
 	Dht22Reader dht22Reader = Dht22Reader(port);
 	bool success = dht22Reader.read();
@@ -100,7 +100,7 @@ void DHT22Controller_handleI2CWrite(int dataLength)
 
 void DHT22Controller_handleI2CRead()
 {
-	byte data[8];
+	uint8_t data[8];
 	union floatToBytes converter;
 
 	converter.value = _temperatures[_nextSensorIndex];
