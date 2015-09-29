@@ -118,6 +118,21 @@ namespace CK.HomeAutomation.Actuators
             context.Response.SetNamedValue("state", JsonValue.CreateStringValue(States[_index].Id));
         }
 
+        public override JsonObject ApiGetConfiguration()
+        {
+            JsonObject configuration = base.ApiGetConfiguration();
+
+            JsonArray stateMachineStates = new JsonArray();
+            foreach (var state in States)
+            {
+                stateMachineStates.Add(JsonValue.CreateStringValue(state.Id));
+            }
+
+            configuration.SetNamedValue("states", stateMachineStates);
+
+            return configuration;
+        }
+
         protected override void ApiPost(ApiRequestContext context)
         {
             if (!context.Request.ContainsKey("state"))

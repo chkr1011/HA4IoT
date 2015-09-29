@@ -30,7 +30,8 @@ namespace CK.HomeAutomation.Actuators
             NotificationHandler = notificationHandler;
 
             httpApiController.Handle(HttpMethod.Get, "configuration").Using(c => c.Response.Body = new JsonBody(GetConfigurationAsJSON()));
-            httpApiController.Handle(HttpMethod.Get, "status").Using(c => c.Response.Body = new JsonBody(GetStatusAsJSON()));
+            httpApiController.Handle(HttpMethod.Get, "status").Using(c => c.Response.Body = new JsonBody(GetStatusAsJSON(c.Request)));
+            httpApiController.Handle(HttpMethod.Get, "health").Using(c => c.Response.Body = new JsonBody(_healthMonitor.ApiGet()));
         }
 
         public IHomeAutomationTimer Timer { get; }
@@ -61,7 +62,7 @@ namespace CK.HomeAutomation.Actuators
             NotificationHandler.PublishFrom(this, NotificationType.Info, "Registered actuators = {0}, Rooms = {1}.", Actuators.Count, _rooms.Count);
         }
 
-        private JsonObject GetStatusAsJSON()
+        private JsonObject GetStatusAsJSON(HttpRequest request)
         {
             var result = new JsonObject();
             foreach (var actuator in Actuators.Values)
@@ -77,13 +78,15 @@ namespace CK.HomeAutomation.Actuators
                 result.SetNamedValue("weatherStation", WeatherStation.ApiGet());
             }
 
-            if (_healthMonitor != null)
-            {
-                result.SetNamedValue("health", _healthMonitor.ApiGet());
-            }
-
             string jsonText = result.Stringify();
-            result.SetNamedValue("_hash", JsonValue.CreateStringValue(GenerateHash(jsonText)));
+            string hash = GenerateHash(jsonText);
+            result.SetNamedValue("_hash", JsonValue.CreateStringValue(hash));
+
+            if (string.Equals(request.Query, hash))
+            {
+                result = new JsonObject();
+                result.SetNamedValue("_hash", JsonValue.CreateStringValue(hash));
+            }
 
             return result;
         }

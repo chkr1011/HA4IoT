@@ -47,7 +47,7 @@ namespace CK.HomeAutomation.Actuators.Tests
             }
 #endif
 
-            Frame rootFrame = Window.Current.Content as Frame;
+            Frame rootFrame = Windows.UI.Xaml.Window.Current.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active
@@ -64,13 +64,13 @@ namespace CK.HomeAutomation.Actuators.Tests
                 }
 
                 // Place the frame in the current Window
-                Window.Current.Content = rootFrame;
+                Windows.UI.Xaml.Window.Current.Content = rootFrame;
             }
             
             Microsoft.VisualStudio.TestPlatform.TestExecutor.UnitTestClient.CreateDefaultUI();
 
             // Ensure the current window is active
-            Window.Current.Activate();
+            Windows.UI.Xaml.Window.Current.Activate();
 
             Microsoft.VisualStudio.TestPlatform.TestExecutor.UnitTestClient.Run(e.Arguments);
         }

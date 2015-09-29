@@ -37,14 +37,16 @@ function setupController() {
         "$scope", function ($scope) {
             var c = this;
 
+            c.latestStateHash = "";
+
             c.appConfiguration = appConfiguration;
             c.rooms = [];
 
             c.weatherStation = {};
-            c.health = {};
             c.sensors = [];
             c.rollerShutters = [];
             c.motionDetectors = [];
+            c.windows = [];
 
             c.activeRoom = "";
             c.errorMessage = "";
@@ -56,8 +58,7 @@ function setupController() {
                 getJSON(c, getApiUrl() + "configuration", function (data) {
 
                     $.each(data, function (roomIndex, room) {
-
-                        configureRoom(room);
+                       configureRoom(room);
 
                         if (!room.hide) {
                             for (var i = room.actuators.length - 1; i >= 0; i--) {
@@ -74,6 +75,9 @@ function setupController() {
                                 else if (actuator.type === "MotionDetector") {
                                     c.motionDetectors.push(actuator);
                                 }
+                                else if (actuator.type === "Window") {
+                                    c.windows.push(actuator);
+                                }
                             }
 
                             c.rooms.push(room);
@@ -83,6 +87,26 @@ function setupController() {
                     $scope.$apply(function () {
                         $scope.msgs = c.rooms;
                     });
+
+                    if (c.sensors.length == 0)
+                    {
+                        c.appConfiguration.showSensorsOverview = false;
+                    }
+
+                    if (c.rollerShutters.length == 0)
+                    {
+                        c.appConfiguration.showRollerShuttersOverview = false;
+                    }
+
+                    if (c.motionDetectors.length == 0)
+                    {
+                        c.appConfiguration.showMotionDetectorsOverview = false;
+                    }
+
+                    if (c.windows.length == 0)
+                    {
+                        c.appConfiguration.showWindowsOverview = false;
+                    }
 
                     c.pollStatus();
                     c.isReady = true;
@@ -107,15 +131,21 @@ function setupController() {
             }
 
             c.pollStatus = function () {
-                getJSON(c, getApiUrl() + "status", function (data) {
+                getJSON(c, getApiUrl() + "status?" + c.latestStateHash, function (data) {
+
+                    if (c.latestStateHash == data._hash) {
+                      // The state has not changed. Skip update.
+                      return;
+                    }
+
+                    c.latestStateHash = data._hash;
 
                     $.each(data, function (id, state) {
                         c.updateStatus(id, state);
                     });
 
                     c.weatherStation = data.weatherStation;
-                    c.health = data.health;
-                    
+
                     $scope.$apply(function () {
                         $scope.msgs = data;
                     });
@@ -173,6 +203,16 @@ function configureRoom(room) {
     appConfiguration.roomExtender(room);
 }
 
+function binaryActuatorStateUpdater(actuator, newState)
+{
+  if (newState.state == "On") {
+    actuator.state.stateBool = true;
+  }
+  else {
+    actuator.state.stateBool = false;
+  }
+}
+
 function configureActuator(room, actuator, i) {
     actuator.caption = getFriendlyName(actuator.id);
     actuator.sortValue = 0;
@@ -186,12 +226,14 @@ function configureActuator(room, actuator, i) {
         case "Lamp":
             {
                 actuator.template = "toggleTemplate";
+                actuator.updateState = binaryActuatorStateUpdater;
                 actuator.sortValue = -7;
                 break;
             }
         case "Socket":
             {
                 actuator.template = "toggleTemplate";
+                actuator.updateState = binaryActuatorStateUpdater;
                 actuator.sortValue = -6;
                 break;
             }
@@ -200,6 +242,14 @@ function configureActuator(room, actuator, i) {
             {
                 actuator.caption = getFriendlyName("RollerShutter");
                 actuator.template = "rollerShutterTemplate";
+                actuator.sortValue = -4;
+                break;
+            }
+
+        case "Window":
+            {
+                actuator.caption = getFriendlyName("Window");
+                actuator.template = "windowTemplate";
                 actuator.sortValue = -4;
                 break;
             }

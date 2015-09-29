@@ -39,6 +39,16 @@ namespace CK.HomeAutomation.Actuators
             return WithActuator(id, new MotionDetector(GenerateID(id), input, _home.Timer, _home.HttpApiController, _home.NotificationHandler));
         }
 
+        public Room WithWindow(Enum id, Action<Window> initializer)
+        {
+            if (initializer == null) throw new ArgumentNullException(nameof(initializer));
+            
+            var window = new Window(GenerateID(id), _home.HttpApiController, _home.NotificationHandler);
+            initializer(window);
+
+            return WithActuator(id, window);
+        }
+
         public Room WithLamp(Enum id, IBinaryOutput output)
         {
             if (output == null) throw new ArgumentNullException(nameof(output));
@@ -144,22 +154,7 @@ namespace CK.HomeAutomation.Actuators
             JsonArray actuatorDescriptions = new JsonArray();
             foreach (var actuator in _ownActuators)
             {
-                var actuatorDescription = new JsonObject();
-                actuatorDescription.SetNamedValue("id", JsonValue.CreateStringValue(actuator.Id));
-                actuatorDescription.SetNamedValue("type", JsonValue.CreateStringValue(actuator.GetType().Name));
-
-                var stateMachine = actuator as StateMachine;
-                if (stateMachine != null)
-                {
-                    JsonArray stateMachineStates = new JsonArray();
-                    foreach (StateMachineState state in stateMachine.States)
-                    {
-                        stateMachineStates.Add(JsonValue.CreateStringValue(state.Id));
-                    }
-
-                    actuatorDescription.SetNamedValue("states", stateMachineStates);
-                }
-
+                JsonObject actuatorDescription = actuator.ApiGetConfiguration();
                 actuatorDescriptions.Add(actuatorDescription);
             }
 

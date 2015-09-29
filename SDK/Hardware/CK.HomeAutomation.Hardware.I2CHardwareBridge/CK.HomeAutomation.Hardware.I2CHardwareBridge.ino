@@ -22,7 +22,7 @@
 
 long _timeout = INITIAL_REFRESH_TIMEOUT;
 unsigned long _lastTime = 0UL;
-byte _lastAction = 0;
+int _lastAction = 0;
 
 void setup() {
 	SET_HIGH(LED);

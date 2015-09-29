@@ -124,6 +124,8 @@
     <Compile Include="Automations\AutomaticTurnOnAndOffAutomation.cs" />
     <Compile Include="Automations\Automation.cs" />
     <Compile Include="ButtonBase.cs" />
+    <Compile Include="Casement.cs" />
+    <Compile Include="CasementState.cs" />
     <Compile Include="Conditions\Condition.cs" />
     <Compile Include="Conditions\ConditionRelation.cs" />
     <Compile Include="Conditions\ConditionState.cs" />
@@ -167,6 +169,7 @@
     <Compile Include="RoomSettings.cs" />
     <Compile Include="Socket.cs" />
     <Compile Include="BinaryStateOutput.cs" />
+    <Compile Include="Window.cs" />
     <Content Include="Properties\CK.HomeAutomation.Actuators.rd.xml" />
   </ItemGroup>
   <ItemGroup>

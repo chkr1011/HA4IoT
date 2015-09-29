@@ -161,6 +161,14 @@
         </div>
     </script>
 
+    <script type="text/ng-template" id="windowTemplate">
+        <span ng-repeat="casement in actuator.casements">
+            <span class="label label-success" ng-show="actuator.state.state.{{casement}}=='Closed'">Geschlossen</span>
+            <span class="label label-warning" ng-show="actuator.state.state.{{casement}}=='Tilt'">Kipp</span>
+            <span class="label label-danger" ng-show="actuator.state.state.{{casement}}=='Open'">Offen</span>
+        </span>
+    </script>
+
     <script type="text/ng-template" id="roomsOverviewTemplate">
         <div class="row panel panel-default" ng-class="{'panel-primary': haCtrl.activePanel==room.id}" id="{{room.id}}" ng-repeat="room in haCtrl.rooms | orderBy:['sortValue', 'caption']">
             <div class="panel-heading pointer" ng-click="haCtrl.setActivePanel(room.id)">
@@ -177,7 +185,7 @@
         </div>
     </script>
 
-<script type="text/ng-template" id="bottomBarTemplate">
+    <script type="text/ng-template" id="bottomBarTemplate">
         <div class="row panel panel-default" ng-class="{'panel-primary': haCtrl.activePanel=='bottomBar'}" id="bottomBar">
             <div class="panel-heading" ng-click="haCtrl.setActivePanel('bottomBar')">
                 <h1 class="panel-title pointer">
@@ -186,24 +194,6 @@
                     <span style="margin-left: 10px;">Version: {{haCtrl.version}}</span>
                 </h1>
             </div>
-            <table class="table table-striped" ng-show="haCtrl.activePanel=='bottomBar'">
-                <tr>
-                    <td>Timer-AVG</td>
-                    <td>{{haCtrl.health.timerAverage}}</td>
-                </tr>
-                <tr>
-                    <td>Timer-MIN</td>
-                    <td>{{haCtrl.health.timerMin}}</td>
-                </tr>
-                <tr>
-                    <td>Timer-MAX</td>
-                    <td>{{haCtrl.health.timerMax}}</td>
-                </tr>
-                <tr>
-                    <td>Uptime</td>
-                    <td>{{haCtrl.health.uptime}}</td>
-                </tr>
-            </table>
         </div>
     </script>
 
