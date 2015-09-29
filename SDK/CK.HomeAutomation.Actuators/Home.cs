@@ -31,6 +31,7 @@ namespace CK.HomeAutomation.Actuators
 
             httpApiController.Handle(HttpMethod.Get, "configuration").Using(c => c.Response.Body = new JsonBody(GetConfigurationAsJSON()));
             httpApiController.Handle(HttpMethod.Get, "status").Using(c => c.Response.Body = new JsonBody(GetStatusAsJSON()));
+            httpApiController.Handle(HttpMethod.Get, "health").Using(c => c.Response.Body = new JsonBody(_healthMonitor.ApiGet()));
         }
 
         public IHomeAutomationTimer Timer { get; }
@@ -75,11 +76,6 @@ namespace CK.HomeAutomation.Actuators
             if (WeatherStation != null)
             {
                 result.SetNamedValue("weatherStation", WeatherStation.ApiGet());
-            }
-
-            if (_healthMonitor != null)
-            {
-                result.SetNamedValue("health", _healthMonitor.ApiGet());
             }
 
             string jsonText = result.Stringify();
