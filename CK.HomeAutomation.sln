@@ -8,6 +8,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SDK", "SDK", "{982ABB4E-A5DC-4C78-87A3-30BF49DD5764}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App", "App", "{20B098BA-1C68-4602-8BBA-902E7E3CA0B4}"
+	ProjectSection(SolutionItems) = preProject
+		App\DeployWebApp.ps1 = App\DeployWebApp.ps1
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hardware", "Hardware", "{A1F8CE2B-E00D-445B-9E31-A093BD676A1B}"
 EndProject

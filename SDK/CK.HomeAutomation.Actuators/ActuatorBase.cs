@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Windows.Data.Json;
+using Windows.UI.Xaml.Automation.Peers;
 using CK.HomeAutomation.Networking;
 using CK.HomeAutomation.Notifications;
 
@@ -58,6 +60,15 @@ namespace CK.HomeAutomation.Actuators
         public virtual void ApiGet(ApiRequestContext context)
         {
             context.Response.SetNamedValue("isEnabled", JsonValue.CreateBooleanValue(IsEnabled));
+        }
+
+        public virtual JsonObject ApiGetConfiguration()
+        {
+            var configuration = new JsonObject();
+            configuration.SetNamedValue("id", JsonValue.CreateStringValue(Id));
+            configuration.SetNamedValue("type", JsonValue.CreateStringValue(GetType().Name));
+
+            return configuration;
         }
 
         private void ExposeToApi(IHttpRequestController httpApiController)

@@ -154,22 +154,7 @@ namespace CK.HomeAutomation.Actuators
             JsonArray actuatorDescriptions = new JsonArray();
             foreach (var actuator in _ownActuators)
             {
-                var actuatorDescription = new JsonObject();
-                actuatorDescription.SetNamedValue("id", JsonValue.CreateStringValue(actuator.Id));
-                actuatorDescription.SetNamedValue("type", JsonValue.CreateStringValue(actuator.GetType().Name));
-
-                var stateMachine = actuator as StateMachine;
-                if (stateMachine != null)
-                {
-                    JsonArray stateMachineStates = new JsonArray();
-                    foreach (StateMachineState state in stateMachine.States)
-                    {
-                        stateMachineStates.Add(JsonValue.CreateStringValue(state.Id));
-                    }
-
-                    actuatorDescription.SetNamedValue("states", stateMachineStates);
-                }
-
+                JsonObject actuatorDescription = actuator.ApiGetConfiguration();
                 actuatorDescriptions.Add(actuatorDescription);
             }
 

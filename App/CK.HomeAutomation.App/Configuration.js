@@ -1,6 +1,6 @@
 ﻿// The IP address of the Pi2 (only required if the app is not hosted at the Pi2).
 appConfiguration.controllerAddress = "";
-appConfiguration.controllerAddress = "192.168.1.15";
+//appConfiguration.controllerAddress = "192.168.1.15";
 
 // The interval which should be used to poll the current state from the Pi2.
 appConfiguration.pollInterval = 500;
@@ -66,6 +66,30 @@ appConfiguration.actuatorExtender = function (actuator) {
                 actuator.image = "Wifi";
                 break;
             }
+
+        case "LivingRoom.WindowLeft":
+            {
+                actuator.caption = "Fenster / links";
+                break;
+            }
+
+        case "LivingRoom.WindowRight":
+            {
+                actuator.caption = "Fenster / rechts";
+                break;
+            }
+
+        case "Bedroom.RollerShutterLeft":
+            {
+                actuator.caption = "Rollo / links";
+                break;
+            }
+
+        case "Bedroom.RollerShutterRight":
+            {
+                actuator.caption = "Rollo / rechts";
+                break;
+            }
     }
 };
 
@@ -86,7 +110,7 @@ appConfiguration.roomExtender = function (room) {
 }
 
 friendlyNameLookup = [
-	{ key: "Off", value: "Aus" },
+	  { key: "Off", value: "Aus" },
     { key: "On", value: "An" },
     { key: "RollerShutter", value: "Rollo" },
     { key: "Window", value: "Fenster" },
@@ -102,8 +126,6 @@ friendlyNameLookup = [
     { key: "LowerBathroom", value: "Badezimmer (unten)" },
     { key: "Storeroom", value: "Abstellkammer" },
 
-    { key: "Bedroom.RollerShutterLeft", value: "Rollo / links" },
-    { key: "Bedroom.RollerShutterRight", value: "Rollo / rechts" },
     { key: "Bedroom.Fan", value: "Ventilator" },
     { key: "Bedroom.SocketWindowLeft", value: "Mückenstecker" },
     { key: "Bedroom.LightCeiling", value: "Licht" },
@@ -169,7 +191,7 @@ friendlyNameLookup = [
     { key: "Kitchen.LightCeilingWall", value: "Strahler / Wand" },
     { key: "Kitchen.LightCeilingWindow", value: "Strahler / Fenster" },
     { key: "Kitchen.SocketWall", value: "Wand" },
-	
+
 	{ key: "LivingRoom.LampCouch", value: "Couch" },
 	{ key: "LivingRoom.LampDiningTable", value: "Esstisch" },
 	{ key: "LivingRoom.SocketWallRightEdgeRight", value: "Stehlampe" },
@@ -177,7 +199,5 @@ friendlyNameLookup = [
 	{ key: "LivingRoom.SocketWindowLeftUpper", value: "Fenster l. oben" },
 	{ key: "LivingRoom.SocketWindowMiddleLower", value: "Fenster m. unten" },
 	{ key: "LivingRoom.SocketWindowRightLower", value: "Fenster r. unten" },
-	{ key: "LivingRoom.SocketWindowRightUpper", value: "Fenster r. oben" },
-	{ key: "LivingRoom.WindowLeft", value: "Fenster links" },
-	{ key: "LivingRoom.WindowRight", value: "Fenster rechts" },
+	{ key: "LivingRoom.SocketWindowRightUpper", value: "Fenster r. oben" }
 ];

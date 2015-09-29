@@ -20,20 +20,45 @@ namespace CK.HomeAutomation.Actuators
             return this;
         }
 
-        public Window WithCasement(IBinaryInput fullOpenReedSwitch, IBinaryInput tiltReedSwitch = null)
+        public Window WithCasement(string id, IBinaryInput fullOpenReedSwitch, IBinaryInput tiltReedSwitch = null)
         {
-            return WithCasement(new Casement(fullOpenReedSwitch, tiltReedSwitch));
+            return WithCasement(new Casement(id, fullOpenReedSwitch, tiltReedSwitch));
+        }
+
+        public Window WithLeftCasement(IBinaryInput fullOpenReedSwitch, IBinaryInput tiltReedSwitch = null)
+        {
+            return WithCasement(new Casement(Casement.LeftCasementId, fullOpenReedSwitch, tiltReedSwitch));
+        }
+
+        public Window WithRightCasement(IBinaryInput fullOpenReedSwitch, IBinaryInput tiltReedSwitch = null)
+        {
+            return WithCasement(new Casement(Casement.RightCasementId, fullOpenReedSwitch, tiltReedSwitch));
         }
 
         public override void ApiGet(ApiRequestContext context)
         {
-            var state = new JsonArray();
+            var state = new JsonObject();
             foreach (var casement in _casements)
             {
-                state.Add(JsonValue.CreateStringValue(casement.State.ToString()));
+                state.SetNamedValue(casement.Id, JsonValue.CreateStringValue(casement.State.ToString()));
             }            
 
             context.Response.SetNamedValue("state", state);
+        }
+
+        public override JsonObject ApiGetConfiguration()
+        {
+            JsonObject configuration = base.ApiGetConfiguration();
+
+            JsonArray casements = new JsonArray();
+            foreach (var casement in _casements)
+            {
+                casements.Add(JsonValue.CreateStringValue(casement.Id));
+            }
+
+            configuration.SetNamedValue("casements", casements);
+
+            return configuration;
         }
     }
 }

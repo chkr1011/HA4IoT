@@ -5,15 +5,20 @@ namespace CK.HomeAutomation.Actuators
 {
     public class Casement
     {
+        public const string LeftCasementId = "Left";
+        public const string RightCasementId = "Right";
+
         private readonly IBinaryInput _fullOpenReedSwitch;
         private readonly IBinaryInput _tiltReedSwitch;
 
         private CasementState _state = CasementState.Closed;
 
-        public Casement(IBinaryInput fullOpenReedSwitch, IBinaryInput tiltReedSwitch = null)
+        public Casement(string id, IBinaryInput fullOpenReedSwitch, IBinaryInput tiltReedSwitch = null)
         {
+            if (id == null) throw new ArgumentNullException(nameof(id));
             if (fullOpenReedSwitch == null) throw new ArgumentNullException(nameof(fullOpenReedSwitch));
 
+            Id = id;
             _fullOpenReedSwitch = fullOpenReedSwitch;
             _tiltReedSwitch = tiltReedSwitch;
 
@@ -24,6 +29,8 @@ namespace CK.HomeAutomation.Actuators
 
             _fullOpenReedSwitch.StateChanged += (s, e) => Update();
         }
+
+        public string Id { get; private set; }
 
         public CasementState State
         {
