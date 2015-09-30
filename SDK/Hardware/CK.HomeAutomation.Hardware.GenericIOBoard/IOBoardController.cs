@@ -12,10 +12,10 @@ namespace CK.HomeAutomation.Hardware.GenericIOBoard
 
         private readonly INotificationHandler _notificationHandler;
         private readonly Dictionary<int, IOBoardPort> _openPorts = new Dictionary<int, IOBoardPort>();
-        private readonly IDeviceDriver _portExpanderDriver;
+        private readonly IPortExpanderDriver _portExpanderDriver;
         private readonly object _syncRoot = new object();
 
-        protected IOBoardController(string id, IDeviceDriver portExpanderDriver, INotificationHandler notificationHandler)
+        protected IOBoardController(string id, IPortExpanderDriver portExpanderDriver, INotificationHandler notificationHandler)
         {
             if (portExpanderDriver == null) throw new ArgumentNullException(nameof(portExpanderDriver));
             if (notificationHandler == null) throw new ArgumentNullException(nameof(notificationHandler));

@@ -120,12 +120,14 @@
     <Compile Include="HSREL5.cs" />
     <Compile Include="HSREL8.cs" />
     <Compile Include="HSRT16.cs" />
-    <Compile Include="MAX7311Driver.cs" />
-    <Compile Include="PCF8574Driver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Properties\CK.HomeAutomation.Hardware.CCTools.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\CK.HomeAutomation.Hardware.PortExpanderDrivers\CK.HomeAutomation.Hardware.PortExpanderDrivers.csproj">
+      <Project>{B95B45D4-6E3D-4147-9838-5D4A262EA328}</Project>
+      <Name>CK.HomeAutomation.Hardware.PortExpanderDrivers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\CK.HomeAutomation.Core\CK.HomeAutomation.Core.csproj">
       <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
       <Name>CK.HomeAutomation.Core</Name>

@@ -1,6 +1,6 @@
 ﻿namespace CK.HomeAutomation.Hardware
 {
-    public interface IDeviceDriver
+    public interface IPortExpanderDriver
     {
         int StateSize { get; }
 

@@ -1,4 +1,5 @@
 ﻿using CK.HomeAutomation.Hardware.GenericIOBoard;
+using CK.HomeAutomation.Hardware.PortExpanderDrivers;
 using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Hardware.CCTools
@@ -8,7 +9,7 @@ namespace CK.HomeAutomation.Hardware.CCTools
         public HSPE16InputOnly(string id, int address, II2cBusAccessor i2cBus, INotificationHandler notificationHandler)
             : base(id, new MAX7311Driver(address, i2cBus), notificationHandler)
         {
-            byte[] setupAsInputs = {0x06, 0xFF, 0xFF};
+            byte[] setupAsInputs = { 0x06, 0xFF, 0xFF };
             i2cBus.Execute(address, b => b.Write(setupAsInputs));
 
             FetchState();

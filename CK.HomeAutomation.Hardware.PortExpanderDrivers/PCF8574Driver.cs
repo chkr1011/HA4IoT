@@ -1,18 +1,18 @@
 ﻿using System;
 
-namespace CK.HomeAutomation.Hardware.CCTools
+namespace CK.HomeAutomation.Hardware.PortExpanderDrivers
 {
-    public class PCF8574Driver : IDeviceDriver
+    public class PCF8574Driver : IPortExpanderDriver
     {
         private readonly II2cBusAccessor _i2CBus;
-        private readonly int _i2CDeviceAddress;
+        private readonly int _address;
 
-        public PCF8574Driver(int i2cDeviceAddress, II2cBusAccessor i2cBus)
+        public PCF8574Driver(int address, II2cBusAccessor i2CBus)
         {
-            if (i2cBus == null) throw new ArgumentNullException(nameof(i2cBus));
+            if (i2CBus == null) throw new ArgumentNullException(nameof(i2CBus));
 
-            _i2CDeviceAddress = i2cDeviceAddress;
-            _i2CBus = i2cBus;
+            _address = address;
+            _i2CBus = i2CBus;
         }
 
         public int StateSize { get; } = 1;
@@ -23,14 +23,16 @@ namespace CK.HomeAutomation.Hardware.CCTools
             if (state.Length != StateSize) throw new ArgumentException("Length is invalid.", nameof(state));
 
             // TODO: Check error handling here if device is currently not available.
-            _i2CBus.Execute(_i2CDeviceAddress, bus => bus.Write(state));
+
+            _i2CBus.Execute(_address, bus => bus.Write(state));
         }
 
         public byte[] Read()
         {
             // TODO: Check error handling here if device is currently not available.
+
             var buffer = new byte[StateSize];
-            _i2CBus.Execute(_i2CDeviceAddress, bus => bus.Read(buffer));
+            _i2CBus.Execute(_address, bus => bus.Read(buffer));
 
             return buffer;
         }
