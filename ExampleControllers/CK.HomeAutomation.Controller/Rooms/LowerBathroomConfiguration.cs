@@ -1,5 +1,4 @@
 ﻿using CK.HomeAutomation.Actuators;
-using CK.HomeAutomation.Core;
 using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.DHT22;
 using CK.HomeAutomation.Hardware.GenericIOBoard;
@@ -21,6 +20,8 @@ namespace CK.HomeAutomation.Controller.Rooms
             CombinedLights,
 
             LampMirror,
+
+            Window
         }
 
         public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Accessor dht22Accessor)
@@ -37,7 +38,8 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithLamp(LowerBathroom.LightCeilingDoor, hspe16_FloorAndLowerBathroom.GetOutput(0).WithInvertedState())
                 .WithLamp(LowerBathroom.LightCeilingMiddle, hspe16_FloorAndLowerBathroom.GetOutput(1).WithInvertedState())
                 .WithLamp(LowerBathroom.LightCeilingWindow, hspe16_FloorAndLowerBathroom.GetOutput(2).WithInvertedState())
-                .WithLamp(LowerBathroom.LampMirror, hspe16_FloorAndLowerBathroom.GetOutput(4).WithInvertedState());
+                .WithLamp(LowerBathroom.LampMirror, hspe16_FloorAndLowerBathroom.GetOutput(4).WithInvertedState())
+                .WithWindow(LowerBathroom.Window, w => w.WithCenterCasement(input3.GetInput(13), input3.GetInput(14)));
 
             bathroom.CombineActuators(LowerBathroom.CombinedLights)
                 .WithActuator(bathroom.Lamp(LowerBathroom.LightCeilingDoor))

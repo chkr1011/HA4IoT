@@ -62,7 +62,7 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithWindow(LivingRoom.WindowLeft,
                     w => w.WithLeftCasement(input0.GetInput(10), input0.GetInput(11)).WithRightCasement(input0.GetInput(9), input0.GetInput(8)))
                 .WithWindow(LivingRoom.WindowRight,
-                    w => w.WithLeftCasement(input0.GetInput(14), input0.GetInput(15)).WithRightCasement(input0.GetInput(13), input0.GetInput(12)));
+                    w => w.WithLeftCasement(input1.GetInput(14), input1.GetInput(15)).WithRightCasement(input1.GetInput(13), input1.GetInput(12)));
 
             livingRoom.Lamp(LivingRoom.LampDiningTable)
                 .ConnectToggleWith(livingRoom.Button(LivingRoom.ButtonUpper))

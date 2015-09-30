@@ -6,6 +6,7 @@ namespace CK.HomeAutomation.Actuators
     public class Casement
     {
         public const string LeftCasementId = "Left";
+        public const string CenterCasementId = "Center";
         public const string RightCasementId = "Right";
 
         private readonly IBinaryInput _fullOpenReedSwitch;
@@ -28,6 +29,8 @@ namespace CK.HomeAutomation.Actuators
             }
 
             _fullOpenReedSwitch.StateChanged += (s, e) => Update();
+
+            Update();
         }
 
         public string Id { get; private set; }
