@@ -1,0 +1,9 @@
+﻿<div class="row panel panel-default" ng-class="{'panel-primary': haCtrl.activePanel=='bottomBar'}" id="bottomBar">
+    <div class="panel-heading" ng-click="haCtrl.setActivePanel('bottomBar')">
+        <h1 class="panel-title pointer">
+            <span class="glyphicon glyphicon-signal" ng-class="{'text-danger': haCtrl.errorMessage!='', 'text-success': haCtrl.errorMessage===''}" aria-hidden="true"></span>
+            <span class="text-danger">{{haCtrl.errorMessage}}</span>
+            <span style="margin-left: 10px;">Version: {{haCtrl.version}}</span>
+        </h1>
+    </div>
+</div>

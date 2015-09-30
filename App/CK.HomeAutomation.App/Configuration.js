@@ -14,6 +14,9 @@ appConfiguration.showRollerShuttersOverview = true;
 // Indicates whether the overview of all motion detectors should be shown.
 appConfiguration.showMotionDetectorsOverview = true;
 
+// Indicates whether the overview of all windows should be shown.
+appConfiguration.showWindowsOverview = true;
+
 // Indicates whether the values from the weather station should be shown.
 appConfiguration.showWeatherStation = true;
 
