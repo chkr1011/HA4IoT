@@ -65,3 +65,5 @@ INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) V
 INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'Floor.LampStairsCeiling4', 'On', 3.5)
 
 INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'Floor.LampStairsCeiling4', 'On', 3.5)
+
+INSERT INTO [PowerConsumption] ([timestamp],[actuator],[state],[wattsPerHour]) VALUES ('01.01.2015 00:00:00', 'Storeroom.CirculatingPump', 'On', 25)
