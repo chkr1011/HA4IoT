@@ -9,7 +9,7 @@
         <tbody>
             <tr ng-repeat="actuator in haCtrl.windows | orderBy:['id']">
                 <td style="vertical-align: middle;">
-                    <span><img class="icon" ng-src="Images/Window.png" />{{actuator.id}}</span>
+                    <span><img class="icon" ng-src="Images/Window.png" />{{actuator.overviewCaption}}</span>
                 </td>
                 <td class="rightTextAligned" ng-include="actuator.template"></td>
             </tr>

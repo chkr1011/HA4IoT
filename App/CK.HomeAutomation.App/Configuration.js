@@ -3,7 +3,7 @@ appConfiguration.controllerAddress = "";
 //appConfiguration.controllerAddress = "192.168.1.15";
 
 // The interval which should be used to poll the current state from the Pi2.
-appConfiguration.pollInterval = 500;
+appConfiguration.pollInterval = 250;
 
 // Indicates whether the overview of all sensor (temperature and humidity) should be shown.
 appConfiguration.showSensorsOverview = true;
@@ -21,9 +21,10 @@ appConfiguration.showWindowsOverview = true;
 appConfiguration.showWeatherStation = true;
 
 // Supported values for an actuator configuration:
-// caption: "The caption (the id is default)
-// image: "The name of the image"
-// sortValue: 1 (The value which is used to sort the actuators)
+// caption:         The caption (the id is default)
+// overviewCaption: The caption which is used at the overview
+// image:           The name of the image
+// sortValue:       The number which is used to sort the actuators
 appConfiguration.actuatorExtender = function (actuator) {
     switch (actuator.id) {
         case "Bedroom.Fan":
@@ -36,6 +37,13 @@ appConfiguration.actuatorExtender = function (actuator) {
         case "Bedroom.SocketWindowLeft":
             {
                 actuator.image = "Poison";
+                break;
+            }
+
+        case "Bedroom.SocketBedLeft":
+        case "Bedroom.SocketBedRight":
+            {
+                actuator.image = "Night-Lamp";
                 break;
             }
 
@@ -73,24 +81,85 @@ appConfiguration.actuatorExtender = function (actuator) {
         case "LivingRoom.WindowLeft":
             {
                 actuator.caption = "Fenster / links";
+                actuator.overviewCaption = "Wohnzimmer / links";
                 break;
             }
 
         case "LivingRoom.WindowRight":
             {
                 actuator.caption = "Fenster / rechts";
+                actuator.overviewCaption = "Wohnzimmer / rechts";
                 break;
             }
 
         case "Bedroom.RollerShutterLeft":
             {
                 actuator.caption = "Rollo / links";
+                actuator.overviewCaption = "Schlafzimmer / links";
                 break;
             }
 
         case "Bedroom.RollerShutterRight":
             {
                 actuator.caption = "Rollo / rechts";
+                actuator.overviewCaption = "Schlafzimmer / rechts";
+                break;
+            }
+
+        case "LivingRoom.MotionDetector":
+        case "LivingRoom.TemperatureSensor":
+        case "LivingRoom.HumiditySensor":
+            {
+                actuator.overviewCaption = "Wohnzimmer";
+                break;
+            }
+
+        case "Kitchen.MotionDetector":
+        case "Kitchen.TemperatureSensor":
+        case "Kitchen.HumiditySensor":
+            {
+                actuator.overviewCaption = "Küche";
+                break;
+            }
+
+        case "Bedroom.MotionDetector":
+        case "Bedroom.TemperatureSensor":
+        case "Bedroom.HumiditySensor":
+            {
+                actuator.overviewCaption = "Schlafzimmer";
+                break;
+            }
+            
+        case "ReadingRoom.Window":
+        case "ReadingRoom.RollerShutter":
+        case "ReadingRoom.TemperatureSensor":
+        case "ReadingRoom.HumiditySensor":
+            {
+                actuator.overviewCaption = "Lesezimmer";
+                break;
+            }
+
+        case "ChildrensRoom.Window":
+        case "ChildrensRoom.RollerShutter":
+        case "ChildrensRoom.TemperatureSensor":
+        case "ChildrensRoom.HumiditySensor":
+            {
+                actuator.overviewCaption = "Kinderzimmer";
+                break;
+            }
+
+        case "UpperBathroom.TemperatureSensor":
+        case "UpperBathroom.HumiditySensor":
+            {
+                actuator.overviewCaption = "Bad / oben";
+                break;
+            }
+
+        case "LowerBathroom.Window":
+        case "LowerBathroom.TemperatureSensor":
+        case "LowerBathroom.HumiditySensor":
+            {
+                actuator.overviewCaption = "Bad / unten";
                 break;
             }
     }
@@ -113,7 +182,7 @@ appConfiguration.roomExtender = function (room) {
 }
 
 friendlyNameLookup = [
-	  { key: "Off", value: "Aus" },
+	{ key: "Off", value: "Aus" },
     { key: "On", value: "An" },
     { key: "RollerShutter", value: "Rollo" },
     { key: "Window", value: "Fenster" },

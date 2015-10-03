@@ -8,7 +8,7 @@
     <table class="table table-striped" ng-show="haCtrl.activePanel=='rollerShuttersOverview'">
         <tr ng-repeat="actuator in haCtrl.rollerShutters | orderBy:['id']">
             <td style="vertical-align: middle;">
-                <span><img class="icon" ng-src="Images/{{actuator.image}}.png" />{{actuator.id}}</span>
+                <span><img class="icon" ng-src="Images/{{actuator.image}}.png" />{{actuator.overviewCaption}}</span>
             </td>
             <td style="text-align: right;" ng-include="actuator.template"></td>
         </tr>

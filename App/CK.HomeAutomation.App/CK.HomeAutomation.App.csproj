@@ -75,11 +75,15 @@
     <Content Include="Images\HumiditySensor.png" />
     <Content Include="Images\Lamp.png" />
     <Content Include="Images\MotionDetector.png" />
+    <Content Include="Images\Night-Lamp.png" />
     <Content Include="Images\Poison.png" />
+    <Content Include="Images\Power.png" />
     <Content Include="Images\RollerShutter.png" />
     <Content Include="Images\Socket.png" />
-    <Content Include="Images\Sofa.png" />
     <Content Include="Images\Spotlight.png" />
+    <Content Include="Images\Sunrise.png" />
+    <Content Include="Images\Sunset.png" />
+    <Content Include="Images\Table-Lamp.png" />
     <Content Include="Images\TemperatureSensor.png" />
     <Content Include="Images\WaterPump.png" />
     <Content Include="Images\Wifi.png" />
