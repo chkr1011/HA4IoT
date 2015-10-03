@@ -1,6 +1,5 @@
 ﻿using System;
 using CK.HomeAutomation.Actuators;
-using CK.HomeAutomation.Core;
 using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.DHT22;
 using CK.HomeAutomation.Hardware.GenericIOBoard;
@@ -9,6 +8,15 @@ namespace CK.HomeAutomation.Controller.Rooms
 {
     internal class StoreroomConfiguration
     {
+        private enum Storeroom
+        {
+            MotionDetector,
+            LightCeiling,
+
+            CatLitterBoxFan,
+            CirculatingPump
+        }
+
         public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Accessor dht22Reader)
         {
             var hsrel8LowerHeatingValves = ccToolsController.CreateHSREL8(Device.LowerHeatingValvesHSREL8, 16);
@@ -36,15 +44,6 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithTarget(storeroom.Socket(Storeroom.CirculatingPump))
                 .WithOnDuration(TimeSpan.FromMinutes(1))
                 .WithOnAtDayTimeRange(home.WeatherStation);
-        }
-
-        private enum Storeroom
-        {
-            MotionDetector,
-            LightCeiling,
-
-            CatLitterBoxFan,
-            CirculatingPump
         }
     }
 }

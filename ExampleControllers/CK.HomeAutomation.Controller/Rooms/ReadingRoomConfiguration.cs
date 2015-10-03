@@ -1,6 +1,5 @@
 ﻿using CK.HomeAutomation.Actuators;
 using CK.HomeAutomation.Actuators.Connectors;
-using CK.HomeAutomation.Core;
 using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.DHT22;
 using CK.HomeAutomation.Hardware.GenericIOBoard;
@@ -9,6 +8,25 @@ namespace CK.HomeAutomation.Controller.Rooms
 {
     internal class ReadingRoomConfiguration
     {
+        private enum ReadingRoom
+        {
+            TemperatureSensor,
+            HumiditySensor,
+
+            LightCeilingMiddle,
+
+            RollerShutter,
+            RollerShutterButtons,
+
+            Button,
+
+            SocketWindow,
+            SocketWallLeft,
+            SocketWallRight,
+
+            Window
+        }
+
         public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Accessor dht22Accessor)
         {
             var hsrel5 = ccToolsController.CreateHSREL5(Device.ReadingRoomHSREL5, 62);
@@ -25,6 +43,7 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithSocket(ReadingRoom.SocketWallLeft, hsrel5.GetOutput(1))
                 .WithSocket(ReadingRoom.SocketWallRight, hsrel5.GetOutput(2))
                 .WithButton(ReadingRoom.Button, input2.GetInput(13))
+                .WithWindow(ReadingRoom.Window, w => w.WithCenterCasement(input2.GetInput(8))) // Tilt = input2.GetInput(9) -- currently broken!
                 .WithRollerShutterButtons(ReadingRoom.RollerShutterButtons, input2.GetInput(12), input2.GetInput(11));
 
             readingRoom.Lamp(ReadingRoom.LightCeilingMiddle).ConnectToggleWith(readingRoom.Button(ReadingRoom.Button));
@@ -32,23 +51,6 @@ namespace CK.HomeAutomation.Controller.Rooms
             readingRoom.SetupAutomaticRollerShutters().WithRollerShutter(readingRoom.RollerShutter(ReadingRoom.RollerShutter));
             readingRoom.RollerShutter(ReadingRoom.RollerShutter)
                 .ConnectWith(readingRoom.RollerShutterButtons(ReadingRoom.RollerShutterButtons));
-        }
-
-        private enum ReadingRoom
-        {
-            TemperatureSensor,
-            HumiditySensor,
-
-            LightCeilingMiddle,
-
-            RollerShutter,
-            RollerShutterButtons,
-
-            Button,
-
-            SocketWindow,
-            SocketWallLeft,
-            SocketWallRight
         }
     }
 }
