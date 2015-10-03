@@ -1,16 +1,9 @@
-﻿using System;
-
-namespace CK.HomeAutomation.Actuators
+﻿namespace CK.HomeAutomation.Actuators
 {
-    public class BinaryActuatorStateChangedEventArgs : EventArgs
+    public class BinaryActuatorStateChangedEventArgs : ValueChangedEventArgsBase<BinaryActuatorState>
     {
-        public BinaryActuatorStateChangedEventArgs(BinaryActuatorState oldState, BinaryActuatorState newState)
+        public BinaryActuatorStateChangedEventArgs(BinaryActuatorState oldState, BinaryActuatorState newState) : base(oldState, newState)
         {
-            OldState = oldState;
-            NewState = newState;
         }
-
-        public BinaryActuatorState OldState { get; }
-        public BinaryActuatorState NewState { get; }
     }
 }

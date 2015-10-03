@@ -40,13 +40,13 @@ namespace CK.HomeAutomation.Actuators
                 }
 
                 _isEnabled = value;
-                IsEnabledChanged?.Invoke(this, EventArgs.Empty);
+                IsEnabledChanged?.Invoke(this, new ActuatorIsEnabledChangedEventArgs(!value, value));
             }
         }
 
         protected INotificationHandler NotificationHandler { get; }
 
-        public event EventHandler IsEnabledChanged;
+        public event EventHandler<ActuatorIsEnabledChangedEventArgs> IsEnabledChanged;
 
         protected virtual void ApiPost(ApiRequestContext context)
         {

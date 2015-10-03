@@ -2,10 +2,8 @@
 
 namespace CK.HomeAutomation.Actuators.Contracts
 {
-    public interface IButton
+    public interface IButton : IActuatorBase
     {
-        string Id { get; }
-
         event EventHandler PressedShort;
 
         event EventHandler PressedLong;

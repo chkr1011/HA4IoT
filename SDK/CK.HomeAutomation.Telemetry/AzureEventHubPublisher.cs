@@ -58,12 +58,12 @@ namespace CK.HomeAutomation.Telemetry
         protected override void OnStateMachineStateChanged(StateMachine stateMachine, StateMachineStateChangedEventArgs eventArgs, TimeSpan previousStateDuration)
         {
             JsonObject data = CreateDataPackage(stateMachine.Id, EventType.OutputActuatorStateChanged);
-            data.SetNamedValue("state", JsonValue.CreateStringValue(eventArgs.NewState));
+            data.SetNamedValue("state", JsonValue.CreateStringValue(eventArgs.NewValue));
             data.SetNamedValue("kind", JsonValue.CreateStringValue("Start"));
             SendToAzureEventHubAsync(data);
 
             data = CreateDataPackage(stateMachine.Id, EventType.OutputActuatorStateChanged);
-            data.SetNamedValue("state", JsonValue.CreateStringValue(eventArgs.OldState));
+            data.SetNamedValue("state", JsonValue.CreateStringValue(eventArgs.OldValue));
             data.SetNamedValue("kind", JsonValue.CreateStringValue("End"));
             data.SetNamedValue("duration", JsonValue.CreateNumberValue(previousStateDuration.TotalSeconds));
             SendToAzureEventHubAsync(data);

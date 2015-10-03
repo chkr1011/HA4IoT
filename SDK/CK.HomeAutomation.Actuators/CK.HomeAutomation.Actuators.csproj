@@ -114,6 +114,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActuatorIsEnabledChangedEventArgs.cs" />
     <Compile Include="Animations\Animation.cs" />
     <Compile Include="Animations\DirectionAnimation.cs" />
     <Compile Include="Animations\Frame.cs" />
@@ -132,6 +133,7 @@
     <Compile Include="Conditions\ConditionsValidator.cs" />
     <Compile Include="Conditions\RelatedCondition.cs" />
     <Compile Include="Conditions\Specialized\TimeRangeCondition.cs" />
+    <Compile Include="Contracts\IActuatorBase.cs" />
     <Compile Include="Contracts\IHumiditySensor.cs" />
     <Compile Include="Contracts\ITemperatureSensor.cs" />
     <Compile Include="Contracts\IWeatherStation.cs" />
@@ -162,6 +164,7 @@
     <Compile Include="StateMachine.cs" />
     <Compile Include="StateMachineState.cs" />
     <Compile Include="TimeRangeChecker.cs" />
+    <Compile Include="ValueChangedEventArgsBase.cs" />
     <Compile Include="VirtualButton.cs" />
     <Compile Include="Lamp.cs" />
     <Compile Include="MotionDetector.cs" />

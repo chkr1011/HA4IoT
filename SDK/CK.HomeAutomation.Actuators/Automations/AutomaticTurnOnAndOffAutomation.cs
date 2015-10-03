@@ -32,6 +32,8 @@ namespace CK.HomeAutomation.Actuators.Automations
             motionDetector.MotionDetected += (s, e) => Trigger();
             motionDetector.DetectionCompleted += (s, e) => StartTimeout();
 
+            motionDetector.IsEnabledChanged += CancelTimeoutIfMotionDetectorDeactivated;
+
             return this;
         }
 
@@ -121,7 +123,17 @@ namespace CK.HomeAutomation.Actuators.Automations
             _disablingConditionsValidator.WithCondition(ConditionRelation.Or,
                 new Condition().WithExpression(() => actuators.Any(a => a.State == BinaryActuatorState.On)));
         }
-        
+
+        private void CancelTimeoutIfMotionDetectorDeactivated(object sender, ActuatorIsEnabledChangedEventArgs e)
+        {
+            bool isDeactivated = !e.NewValue;
+
+            if (isDeactivated)
+            {
+                _turnOffTimeout?.Cancel();
+            }
+        }
+
         private void Trigger()
         {
             if (_disablingConditionsValidator.Conditions.Any() && _disablingConditionsValidator.Validate() == ConditionState.Fulfilled)
