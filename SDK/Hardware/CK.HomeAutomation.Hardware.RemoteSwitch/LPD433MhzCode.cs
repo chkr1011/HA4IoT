@@ -2,13 +2,13 @@
 {
     public class LPD433MhzCode
     {
-        public LPD433MhzCode(ulong value, int length)
+        public LPD433MhzCode(uint value, int length)
         {
             Value = value;
             Length = length;
         }
 
-        public ulong Value { get; }
+        public uint Value { get; }
 
         public int Length { get; }
     }

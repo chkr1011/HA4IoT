@@ -13,12 +13,12 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch.Tests
         {
             var generator = new BrennenstuhlCodeSequenceProvider();
             var sequence = generator.GetSequence(
-                BrennenstuhlCodeSequenceProvider.SystemCode.AllOn,
-                BrennenstuhlCodeSequenceProvider.UnitCode.A,
+                BrennenstuhlSystemCode.AllOn,
+                BrennenstuhlUnitCode.A,
                 RemoteSwitchCommand.TurnOn);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);
-            sequence.Codes.First().Value.ShouldBeEquivalentTo(1361UL);
+            sequence.Codes.First().Value.ShouldBeEquivalentTo(1361U);
         }
 
         [TestMethod]
@@ -26,12 +26,12 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch.Tests
         {
             var generator = new BrennenstuhlCodeSequenceProvider();
             var sequence = generator.GetSequence(
-                BrennenstuhlCodeSequenceProvider.SystemCode.AllOn,
-                BrennenstuhlCodeSequenceProvider.UnitCode.A,
+                BrennenstuhlSystemCode.AllOn,
+                BrennenstuhlUnitCode.A,
                 RemoteSwitchCommand.TurnOff);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);
-            sequence.Codes.First().Value.ShouldBeEquivalentTo(1364UL);
+            sequence.Codes.First().Value.ShouldBeEquivalentTo(1364U);
         }
 
         [TestMethod]
@@ -39,12 +39,12 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch.Tests
         {
             var generator = new BrennenstuhlCodeSequenceProvider();
             var sequence = generator.GetSequence(
-                BrennenstuhlCodeSequenceProvider.SystemCode.AllOn,
-                BrennenstuhlCodeSequenceProvider.UnitCode.B,
+                BrennenstuhlSystemCode.AllOn,
+                BrennenstuhlUnitCode.B,
                 RemoteSwitchCommand.TurnOn);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);
-            sequence.Codes.First().Value.ShouldBeEquivalentTo(4433UL);
+            sequence.Codes.First().Value.ShouldBeEquivalentTo(4433U);
         }
 
         [TestMethod]
@@ -52,12 +52,12 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch.Tests
         {
             var generator = new BrennenstuhlCodeSequenceProvider();
             var sequence = generator.GetSequence(
-                BrennenstuhlCodeSequenceProvider.SystemCode.AllOn,
-                BrennenstuhlCodeSequenceProvider.UnitCode.B,
+                BrennenstuhlSystemCode.AllOn,
+                BrennenstuhlUnitCode.B,
                 RemoteSwitchCommand.TurnOff);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);
-            sequence.Codes.First().Value.ShouldBeEquivalentTo(4436UL);
+            sequence.Codes.First().Value.ShouldBeEquivalentTo(4436U);
         }
 
         [TestMethod]
@@ -66,13 +66,12 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch.Tests
             var generator = new BrennenstuhlCodeSequenceProvider();
             var sequence =
                 generator.GetSequence(
-                    BrennenstuhlCodeSequenceProvider.SystemCode.Switch1 | BrennenstuhlCodeSequenceProvider.SystemCode.Switch3 |
-                    BrennenstuhlCodeSequenceProvider.SystemCode.Switch5,
-                    BrennenstuhlCodeSequenceProvider.UnitCode.C,
+                    BrennenstuhlSystemCode.Switch1 | BrennenstuhlSystemCode.Switch3 | BrennenstuhlSystemCode.Switch5,
+                    BrennenstuhlUnitCode.C,
                     RemoteSwitchCommand.TurnOn);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);
-            sequence.Codes.First().Value.ShouldBeEquivalentTo(1119313UL);
+            sequence.Codes.First().Value.ShouldBeEquivalentTo(1119313U);
         }
 
         [TestMethod]
@@ -81,13 +80,12 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch.Tests
             var generator = new BrennenstuhlCodeSequenceProvider();
             var sequence =
                 generator.GetSequence(
-                    BrennenstuhlCodeSequenceProvider.SystemCode.Switch1 | BrennenstuhlCodeSequenceProvider.SystemCode.Switch3 |
-                    BrennenstuhlCodeSequenceProvider.SystemCode.Switch5,
-                    BrennenstuhlCodeSequenceProvider.UnitCode.C,
+                    BrennenstuhlSystemCode.Switch1 | BrennenstuhlSystemCode.Switch3 | BrennenstuhlSystemCode.Switch5,
+                    BrennenstuhlUnitCode.C,
                     RemoteSwitchCommand.TurnOff);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);
-            sequence.Codes.First().Value.ShouldBeEquivalentTo(1119316UL);
+            sequence.Codes.First().Value.ShouldBeEquivalentTo(1119316U);
         }
 
         [TestMethod]
@@ -96,12 +94,12 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch.Tests
             var generator = new BrennenstuhlCodeSequenceProvider();
             var sequence =
                 generator.GetSequence(
-                    BrennenstuhlCodeSequenceProvider.SystemCode.AllOff,
-                    BrennenstuhlCodeSequenceProvider.UnitCode.D,
+                    BrennenstuhlSystemCode.AllOff,
+                    BrennenstuhlUnitCode.D,
                     RemoteSwitchCommand.TurnOn);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);
-            sequence.Codes.First().Value.ShouldBeEquivalentTo(5592337UL);
+            sequence.Codes.First().Value.ShouldBeEquivalentTo(5592337U);
         }
 
         [TestMethod]
@@ -110,12 +108,12 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch.Tests
             var generator = new BrennenstuhlCodeSequenceProvider();
             var sequence =
                 generator.GetSequence(
-                    BrennenstuhlCodeSequenceProvider.SystemCode.AllOff,
-                    BrennenstuhlCodeSequenceProvider.UnitCode.D,
+                    BrennenstuhlSystemCode.AllOff,
+                    BrennenstuhlUnitCode.D,
                     RemoteSwitchCommand.TurnOff);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);
-            sequence.Codes.First().Value.ShouldBeEquivalentTo(5592340UL);
+            sequence.Codes.First().Value.ShouldBeEquivalentTo(5592340U);
         }
     }
 }

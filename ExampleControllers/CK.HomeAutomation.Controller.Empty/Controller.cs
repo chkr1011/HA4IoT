@@ -60,8 +60,8 @@ namespace CK.HomeAutomation.Controller.Empty
             var intertechnoCodes = new IntertechnoCodeSequenceProvider();
             remoteSwitchController.Register(
                 0, 
-                intertechnoCodes.GetSequence(IntertechnoCodeSequenceProvider.SystemCode.A, 1, RemoteSwitchCommand.TurnOn),
-                intertechnoCodes.GetSequence(IntertechnoCodeSequenceProvider.SystemCode.A, 1, RemoteSwitchCommand.TurnOff));
+                intertechnoCodes.GetSequence(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1, RemoteSwitchCommand.TurnOn),
+                intertechnoCodes.GetSequence(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1, RemoteSwitchCommand.TurnOff));
             
             // Setup the weather station which provides sunrise and sunset information.
             double lat = 52.5075419;

@@ -4,28 +4,7 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch.Codes
 {
     public class BrennenstuhlCodeSequenceProvider
     {
-        [Flags]
-        public enum SystemCode
-        {
-            AllOff = 0, // Used to affect the state where all DIP switches are off.
-            Switch1 = 1,
-            Switch2 = 2,
-            Switch3 = 4,
-            Switch4 = 8,
-            Switch5 = 16,
-            AllOn = Switch1 | Switch2 | Switch3 | Switch4 | Switch5
-        }
-
-        public enum UnitCode
-        {
-            A,
-            B,
-            C,
-            D
-            //E -- is not used (taken from official documentation)
-        }
-
-        public LPD433MhzCodeSequence GetSequence(SystemCode systemCode, UnitCode unitCode, RemoteSwitchCommand command)
+        public LPD433MhzCodeSequence GetSequence(BrennenstuhlSystemCode systemCode, BrennenstuhlUnitCode unitCode, RemoteSwitchCommand command)
         {
             // Examples:
             // System Code = 11111
@@ -56,7 +35,7 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch.Codes
             //00000000|00010001000|1010100|010001 = 1119505 D ON
             //00000000|00010001000|1010100|010100 = 1119508 D OFF
 
-            ulong code = 0UL;
+            uint code = 0U;
             code = SetSystemCode(code, systemCode);
             code = SetUnitCode(code, unitCode);
             code = SetCommand(code, command);
@@ -64,63 +43,63 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch.Codes
             return new LPD433MhzCodeSequence().WithCode(new LPD433MhzCode(code, 24));
         }
 
-        private ulong SetSystemCode(ulong code, SystemCode systemCode)
+        private uint SetSystemCode(uint code, BrennenstuhlSystemCode systemCode)
         {
             // A LOW switch is binary 10 and a HIGH switch is binary 00.
             // The values of the DIP switches are inverted.
-            if (!systemCode.HasFlag(SystemCode.Switch1))
+            if (!systemCode.HasFlag(BrennenstuhlSystemCode.Switch1))
             {
-                code |= 1UL << 22;
+                code |= 1U << 22;
             }
 
-            if (!systemCode.HasFlag(SystemCode.Switch2))
+            if (!systemCode.HasFlag(BrennenstuhlSystemCode.Switch2))
             {
-                code |= 1UL << 20;
+                code |= 1U << 20;
             }
 
-            if (!systemCode.HasFlag(SystemCode.Switch3))
+            if (!systemCode.HasFlag(BrennenstuhlSystemCode.Switch3))
             {
-                code |= 1UL << 18;
+                code |= 1U << 18;
             }
 
-            if (!systemCode.HasFlag(SystemCode.Switch4))
+            if (!systemCode.HasFlag(BrennenstuhlSystemCode.Switch4))
             {
-                code |= 1UL << 16;
+                code |= 1U << 16;
             }
 
-            if (!systemCode.HasFlag(SystemCode.Switch5))
+            if (!systemCode.HasFlag(BrennenstuhlSystemCode.Switch5))
             {
-                code |= 1UL << 14;
+                code |= 1U << 14;
             }
 
             return code;
         }
 
-        private ulong SetUnitCode(ulong code, UnitCode unitCode)
+        private uint SetUnitCode(uint code, BrennenstuhlUnitCode unitCode)
         {
-            ulong unitCodeValue;
+            uint unitCodeValue;
 
             switch (unitCode)
             {
-                case UnitCode.A:
+                case BrennenstuhlUnitCode.A:
                     {
                         unitCodeValue = 0x15;
                         break;
                     }
 
-                case UnitCode.B:
+                case BrennenstuhlUnitCode.B:
                     {
                         unitCodeValue = 0x45;
                         break;
                     }
 
-                case UnitCode.C:
+                case BrennenstuhlUnitCode.C:
                     {
                         unitCodeValue = 0x51;
                         break;
                     }
 
-                case UnitCode.D:
+                case BrennenstuhlUnitCode.D:
                     {
                         unitCodeValue = 0x54;
                         break;
@@ -136,7 +115,7 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch.Codes
             return code;
         }
 
-        private ulong SetCommand(ulong code, RemoteSwitchCommand command)
+        private uint SetCommand(uint code, RemoteSwitchCommand command)
         {
             switch (command)
             {

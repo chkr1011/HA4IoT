@@ -114,7 +114,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Codes\BrennenstuhlCodeSequenceProvider.cs" />
+    <Compile Include="Codes\BrennenstuhlSystemCode.cs" />
+    <Compile Include="Codes\BrennenstuhlUnitCode.cs" />
     <Compile Include="Codes\IntertechnoCodeSequenceProvider.cs" />
+    <Compile Include="Codes\IntertechnoUnitCode.cs" />
+    <Compile Include="Codes\IntertechnoSystemCode.cs" />
     <Compile Include="ILPD433MhzSignalSender.cs" />
     <Compile Include="LPD433MhzCodeSequence.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

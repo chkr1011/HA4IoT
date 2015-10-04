@@ -22,9 +22,17 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch
 
         public IBinaryOutput GetOutput(int number)
         {
+            if (number < 0) throw new ArgumentOutOfRangeException(nameof(number));
+
             lock (_syncRoot)
             {
-                return _ports[number];
+                RemoteSwitchOutputPort output;
+                if (!_ports.TryGetValue(number, out output))
+                {
+                    throw new InvalidOperationException("No remote switch with ID " + number + " is registered.");    
+                }
+
+                return output;
             }
         }
 

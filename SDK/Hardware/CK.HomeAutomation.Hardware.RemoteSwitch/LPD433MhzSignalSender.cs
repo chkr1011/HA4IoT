@@ -32,8 +32,8 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch
 
         private void ApiPost(HttpContext context)
         {
-            JsonArray sequence = context.Request.JsonBody.GetNamedArray("sequence", null);
-            if (sequence == null)
+            JsonArray sequence = context.Request.JsonBody.GetNamedArray("sequence", new JsonArray());
+            if (sequence.Count == 0)
             {
                 return;
             }
@@ -43,7 +43,7 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch
             {
                 var code = item.GetObject();
 
-                ulong value = (ulong)code.GetNamedNumber("value", 0);
+                uint value = (uint)code.GetNamedNumber("value", 0);
                 int length = (int)code.GetNamedNumber("length", 0);
 
                 if (value == 0 || length == 0)
@@ -57,7 +57,7 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch
             Send(codeSequence);
         }
 
-        private void Send(ulong code, int length)
+        private void Send(uint code, int length)
         {
             var codeBuffer = BitConverter.GetBytes(code);
 

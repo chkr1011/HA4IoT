@@ -43,13 +43,7 @@ namespace CK.HomeAutomation.Controller
             ccToolsBoardController.CreateHSPE16InputOnly(Device.Input4, 46);
             ccToolsBoardController.CreateHSPE16InputOnly(Device.Input5, 44);
 
-            var remoteSwitchController = new RemoteSwitchController(new LPD433MhzSignalSender(i2CBus, 50, HttpApiController), Timer);
-
-            var intertechnoCodes = new IntertechnoCodeSequenceProvider();
-            remoteSwitchController.Register(
-                0, 
-                intertechnoCodes.GetSequence(IntertechnoCodeSequenceProvider.SystemCode.A, 1, RemoteSwitchCommand.TurnOn),
-                intertechnoCodes.GetSequence(IntertechnoCodeSequenceProvider.SystemCode.A, 1, RemoteSwitchCommand.TurnOff));
+            RemoteSwitchController remoteSwitchController = SetupRemoteSwitchController(i2CBus);
 
             var home = new Home(Timer, HealthMonitor, weatherStation, HttpApiController, NotificationHandler);
 
@@ -73,6 +67,28 @@ namespace CK.HomeAutomation.Controller
             var ioBoardsInterruptMonitor = new InterruptMonitor(pi2PortController.GetInput(4));
             Timer.Tick += (s, e) => ioBoardsInterruptMonitor.Poll();
             ioBoardsInterruptMonitor.InterruptDetected += (s, e) => ioBoardManager.PollInputBoardStates();
+        }
+
+        private RemoteSwitchController SetupRemoteSwitchController(II2cBusAccessor i2CBus)
+        {
+            var remoteSwitchController = new RemoteSwitchController(new LPD433MhzSignalSender(i2CBus, 50, HttpApiController), Timer);
+
+            var intertechnoCodes = new IntertechnoCodeSequenceProvider();
+            var brennenstuhlCodes = new BrennenstuhlCodeSequenceProvider();
+
+            remoteSwitchController.Register(
+                0,
+                intertechnoCodes.GetSequence(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1, RemoteSwitchCommand.TurnOn),
+                intertechnoCodes.GetSequence(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1, RemoteSwitchCommand.TurnOff));
+
+            //remoteSwitchController.Register(
+            //    1,
+            //    brennenstuhlCodes.GetSequence(BrennenstuhlCodeSequenceProvider.SystemCode.AllOn, BrennenstuhlCodeSequenceProvider.UnitCode.A,
+            //        RemoteSwitchCommand.TurnOn),
+            //    brennenstuhlCodes.GetSequence(BrennenstuhlCodeSequenceProvider.SystemCode.AllOn, BrennenstuhlCodeSequenceProvider.UnitCode.A,
+            //        RemoteSwitchCommand.TurnOff));
+
+            return remoteSwitchController;
         }
 
         private void AttachAzureEventHubPublisher(Home home)
