@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using CK.HomeAutomation.Core.Timer;
 using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Networking;
@@ -11,8 +10,7 @@ namespace CK.HomeAutomation.Actuators
     public class Button : ButtonBase
     {
         private readonly Stopwatch _stopwatch = new Stopwatch();
-        private readonly TimeSpan _timeoutForLongAction = TimeSpan.FromSeconds(1.5);
-
+        
         public Button(string id, IBinaryInput input, IHttpRequestController httpApiController, INotificationHandler notificationHandler, IHomeAutomationTimer timer)
             : base(id, httpApiController, notificationHandler)
         {
@@ -20,44 +18,49 @@ namespace CK.HomeAutomation.Actuators
             if (input == null) throw new ArgumentNullException(nameof(input));
             
             timer.Tick += CheckForTimeout;
+            input.StateChanged += HandleInputStateChanged;
+        }
 
-            input.StateChanged += (s, e) =>
+        public TimeSpan TimeoutForPressedLongActions { get; set; } = TimeSpan.FromSeconds(1.5);
+
+        private void HandleInputStateChanged(object sender, BinaryStateChangedEventArgs e)
+        {
+            if (!IsEnabled)
             {
-                if (!IsEnabled)
+                return;
+            }
+
+            bool buttonIsPressed = e.NewState == BinaryState.High;
+            bool buttonIsReleased = e.NewState == BinaryState.Low;
+
+            if (buttonIsPressed)
+            {
+                if (!IsActionForPressedLongAttached)
+                {
+                    OnPressedShort();
+                }
+                else
+                {
+                    _stopwatch.Restart();
+                }
+            }
+            else if (buttonIsReleased)
+            {
+                if (!_stopwatch.IsRunning)
                 {
                     return;
                 }
 
-                if (e.NewState == BinaryState.High)
+                _stopwatch.Stop();
+                if (_stopwatch.Elapsed >= TimeoutForPressedLongActions)
                 {
-                    if (!LongActions.Any())
-                    {
-                        InvokeShortAction();
-                    }
-                    else
-                    {
-                        notificationHandler.PublishFrom(this, NotificationType.Info, "'{0}' started measuring time.", Id);
-                        _stopwatch.Restart();
-                    }
+                    OnPressedLong();
                 }
                 else
                 {
-                    if (!_stopwatch.IsRunning)
-                    {
-                        return;
-                    }
-
-                    _stopwatch.Stop();
-                    if (_stopwatch.Elapsed > _timeoutForLongAction)
-                    {
-                        InvokeLongAction();
-                    }
-                    else
-                    {
-                        InvokeShortAction();
-                    }
+                    OnPressedShort();
                 }
-            };
+            }
         }
 
         private void CheckForTimeout(object sender, TimerTickEventArgs e)
@@ -67,10 +70,10 @@ namespace CK.HomeAutomation.Actuators
                 return;
             }
 
-            if (_stopwatch.Elapsed > _timeoutForLongAction)
+            if (_stopwatch.Elapsed > TimeoutForPressedLongActions)
             {
                 _stopwatch.Stop();
-                InvokeLongAction();
+                OnPressedLong();
             }
         }
     }

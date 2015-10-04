@@ -15,8 +15,11 @@ namespace CK.HomeAutomation.Actuators.Automations
 
         private readonly IHomeAutomationTimer _timer;
         private readonly List<IBinaryStateOutputActuator> _actuators = new List<IBinaryStateOutputActuator>();
+
         private TimeSpan _duration;
         private TimedAction _turnOffTimeout;
+        private bool _turnOffIfButtonPressedWhileAlreadyOn;
+        private bool _isOn;
 
         public AutomaticTurnOnAndOffAutomation(IHomeAutomationTimer timer)
         {
@@ -25,29 +28,34 @@ namespace CK.HomeAutomation.Actuators.Automations
             WithOnDuration(TimeSpan.FromMinutes(1));
         }
 
-        public AutomaticTurnOnAndOffAutomation WithMotionDetector(IMotionDetector motionDetector)
+        public AutomaticTurnOnAndOffAutomation WithTrigger(IMotionDetector motionDetector)
         {
             if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
 
             motionDetector.MotionDetected += (s, e) => Trigger();
             motionDetector.DetectionCompleted += (s, e) => StartTimeout();
-
             motionDetector.IsEnabledChanged += CancelTimeoutIfMotionDetectorDeactivated;
 
             return this;
         }
 
-        public AutomaticTurnOnAndOffAutomation WithButtonPressedShort(IButton button)
+        public AutomaticTurnOnAndOffAutomation WithTrigger(IButton button, ButtonPressedDuration duration = ButtonPressedDuration.Short)
         {
             if (button == null) throw new ArgumentNullException(nameof(button));
 
-            button.PressedShort += (s, e) =>
+            if (duration == ButtonPressedDuration.Short)
             {
-                // The state should be turned on because manual actions are not conditional.
-                TurnOn();
-                StartTimeout();
-            };
-
+                button.PressedShort += HandleButtonPressed;
+            }
+            else if (duration == ButtonPressedDuration.Long)
+            {
+                button.PressedLong += HandleButtonPressed;
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+            
             return this;
         }
 
@@ -71,7 +79,7 @@ namespace CK.HomeAutomation.Actuators.Automations
             return this;
         }
 
-        public AutomaticTurnOnAndOffAutomation WithOnWithinTimeRange(Func<TimeSpan> from, Func<TimeSpan> until)
+        public AutomaticTurnOnAndOffAutomation WithTurnOnWithinTimeRange(Func<TimeSpan> from, Func<TimeSpan> until)
         {
             if (@from == null) throw new ArgumentNullException(nameof(@from));
             if (until == null) throw new ArgumentNullException(nameof(until));
@@ -80,7 +88,7 @@ namespace CK.HomeAutomation.Actuators.Automations
             return this;
         }
 
-        public AutomaticTurnOnAndOffAutomation WithOnIfAllRollerShuttersClosed(params RollerShutter[] rollerShutters)
+        public AutomaticTurnOnAndOffAutomation WithTurnOnIfAllRollerShuttersClosed(params RollerShutter[] rollerShutters)
         {
             if (rollerShutters == null) throw new ArgumentNullException(nameof(rollerShutters));
 
@@ -94,7 +102,7 @@ namespace CK.HomeAutomation.Actuators.Automations
             return this;
         }
 
-        public AutomaticTurnOnAndOffAutomation WithOnAtDayTimeRange(IWeatherStation weatherStation)
+        public AutomaticTurnOnAndOffAutomation WithEnabledAtDay(IWeatherStation weatherStation)
         {
             if (weatherStation == null) throw new ArgumentNullException(nameof(weatherStation));
 
@@ -105,7 +113,7 @@ namespace CK.HomeAutomation.Actuators.Automations
             return this;
         }
 
-        public AutomaticTurnOnAndOffAutomation WithOnAtNightTimeRange(IWeatherStation weatherStation)
+        public AutomaticTurnOnAndOffAutomation WithEnabledAtNight(IWeatherStation weatherStation)
         {
             if (weatherStation == null) throw new ArgumentNullException(nameof(weatherStation));
 
@@ -116,12 +124,33 @@ namespace CK.HomeAutomation.Actuators.Automations
             return this;
         }
 
-        public void WithSkipIfAnyActuatorIsAlreadyOn(params IBinaryStateOutputActuator[] actuators)
+        public AutomaticTurnOnAndOffAutomation WithSkipIfAnyActuatorIsAlreadyOn(params IBinaryStateOutputActuator[] actuators)
         {
             if (actuators == null) throw new ArgumentNullException(nameof(actuators));
 
             _disablingConditionsValidator.WithCondition(ConditionRelation.Or,
                 new Condition().WithExpression(() => actuators.Any(a => a.State == BinaryActuatorState.On)));
+
+            return this;
+        }
+
+        public AutomaticTurnOnAndOffAutomation WithTurnOffIfButtonPressedWhileAlreadyOn()
+        {
+            _turnOffIfButtonPressedWhileAlreadyOn = true;
+            return this;
+        }
+
+        private void HandleButtonPressed(object sender, EventArgs e)
+        {
+            if (_turnOffIfButtonPressedWhileAlreadyOn && _isOn)
+            {
+                TurnOff();
+                return;
+            }
+
+            // The state should be turned on because manual actions are not conditional.
+            TurnOn();
+            StartTimeout();
         }
 
         private void CancelTimeoutIfMotionDetectorDeactivated(object sender, ActuatorIsEnabledChangedEventArgs e)
@@ -153,15 +182,21 @@ namespace CK.HomeAutomation.Actuators.Automations
         {
             _turnOffTimeout?.Cancel();
             _actuators.ForEach(a => a.TurnOn());
+
+            _isOn = true;
+        }
+
+        private void TurnOff()
+        {
+            _turnOffTimeout?.Cancel();
+            _actuators.ForEach(a => a.TurnOff());
+
+            _isOn = false;
         }
 
         private void StartTimeout()
         {
-            _turnOffTimeout?.Cancel();
-            _turnOffTimeout = _timer.In(_duration).Do(() =>
-            {
-                _actuators.ForEach(a => a.TurnOff());
-            });
+            _turnOffTimeout = _timer.In(_duration).Do(TurnOff);
         }
     }
 }
