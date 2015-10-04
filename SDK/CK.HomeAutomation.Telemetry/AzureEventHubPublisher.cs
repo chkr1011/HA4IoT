@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Web.Http;
 using Windows.Web.Http.Headers;
@@ -87,7 +88,7 @@ namespace CK.HomeAutomation.Telemetry
             return data;
         }
 
-        private async void SendToAzureEventHubAsync(JsonObject data)
+        private async Task SendToAzureEventHubAsync(JsonObject data)
         {
             try
             {
