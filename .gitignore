@@ -8,3 +8,4 @@ obj/
 .vs/config/applicationhost.config
 
 project.lock.json
+__vm/
