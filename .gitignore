@@ -6,3 +6,5 @@ obj/
 
 /packages/
 .vs/config/applicationhost.config
+
+lock.project.json
