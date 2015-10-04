@@ -31,7 +31,7 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithSocket(Storeroom.CatLitterBoxFan, hsrel8LowerHeatingValves.GetOutput(15));
 
             storeroom.SetupAutomaticTurnOnAndOffAction()
-                .WithMotionDetector(storeroom.MotionDetector(Storeroom.MotionDetector))
+                .WithTrigger(storeroom.MotionDetector(Storeroom.MotionDetector))
                 .WithTarget(storeroom.Lamp(Storeroom.LightCeiling))
                 .WithTarget(storeroom.Socket(Storeroom.CatLitterBoxFan))
                 .WithOnDuration(TimeSpan.FromMinutes(1));
@@ -39,11 +39,11 @@ namespace CK.HomeAutomation.Controller.Rooms
             storeroom.WithSocket(Storeroom.CirculatingPump, hsrel5UpperHeatingValves.GetOutput(3));
 
             storeroom.SetupAutomaticTurnOnAndOffAction()
-                .WithMotionDetector(home.Room(Room.Kitchen).MotionDetector(KitchenConfiguration.Kitchen.MotionDetector))
-                .WithMotionDetector(home.Room(Room.LowerBathroom).MotionDetector(LowerBathroomConfiguration.LowerBathroom.MotionDetector))
+                .WithTrigger(home.Room(Room.Kitchen).MotionDetector(KitchenConfiguration.Kitchen.MotionDetector))
+                .WithTrigger(home.Room(Room.LowerBathroom).MotionDetector(LowerBathroomConfiguration.LowerBathroom.MotionDetector))
                 .WithTarget(storeroom.Socket(Storeroom.CirculatingPump))
                 .WithOnDuration(TimeSpan.FromMinutes(1))
-                .WithOnAtDayTimeRange(home.WeatherStation);
+                .WithEnabledAtDay(home.WeatherStation);
         }
     }
 }

@@ -75,9 +75,9 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithActuator(kitchen.Lamp(Kitchen.LightCeilingWindow));
 
             kitchen.SetupAutomaticTurnOnAndOffAction()
-                .WithMotionDetector(kitchen.MotionDetector(Kitchen.MotionDetector))
+                .WithTrigger(kitchen.MotionDetector(Kitchen.MotionDetector))
                 .WithTarget(kitchen.BinaryStateOutput(Kitchen.CombinedAutomaticLights))
-                .WithOnAtNightTimeRange(home.WeatherStation);
+                .WithEnabledAtNight(home.WeatherStation);
         }
     }
 }

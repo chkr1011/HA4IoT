@@ -71,11 +71,11 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithCloseIfOutsideTemperatureIsGreaterThan(28);
 
             bedroom.SetupAutomaticTurnOnAndOffAction()
-                .WithMotionDetector(bedroom.MotionDetector(Bedroom.MotionDetector))
+                .WithTrigger(bedroom.MotionDetector(Bedroom.MotionDetector))
                 .WithTarget(bedroom.Actuator<BinaryStateOutput>(Bedroom.LightCeiling))
                 .WithOnDuration(TimeSpan.FromSeconds(15))
-                .WithOnIfAllRollerShuttersClosed(bedroom.RollerShutter(Bedroom.RollerShutterLeft), bedroom.RollerShutter(Bedroom.RollerShutterRight))
-                .WithOnAtNightTimeRange(home.WeatherStation)
+                .WithTurnOnIfAllRollerShuttersClosed(bedroom.RollerShutter(Bedroom.RollerShutterLeft), bedroom.RollerShutter(Bedroom.RollerShutterRight))
+                .WithEnabledAtNight(home.WeatherStation)
                 .WithSkipIfAnyActuatorIsAlreadyOn(bedroom.Lamp(Bedroom.LampBedLeft), bedroom.Lamp(Bedroom.LampBedRight));
                
             var fanPort1 = hsrel8.GetOutput(0);
