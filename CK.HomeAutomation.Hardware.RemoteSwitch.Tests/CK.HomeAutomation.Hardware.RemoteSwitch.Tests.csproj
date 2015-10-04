@@ -125,6 +125,10 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SDK\CK.HomeAutomation.Hardware\CK.HomeAutomation.Hardware.csproj">
+      <Project>{287a9bd0-4037-4add-986f-54056f059eae}</Project>
+      <Name>CK.HomeAutomation.Hardware</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SDK\Hardware\CK.HomeAutomation.Hardware.RemoteSwitch\CK.HomeAutomation.Hardware.RemoteSwitch.csproj">
       <Project>{BADA2E47-5626-4E9E-92A7-8F712D084493}</Project>
       <Name>CK.HomeAutomation.Hardware.RemoteSwitch</Name>
