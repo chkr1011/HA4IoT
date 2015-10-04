@@ -44,6 +44,18 @@ namespace CK.HomeAutomation.Hardware.GenericIOBoard
         public void PollInputBoardStates()
         {
             var stopwatch = Stopwatch.StartNew();
+
+            foreach (var portExpanderController in _ioBoards.Values)
+            {
+                if (portExpanderController.AutomaticallyFetchState)
+                {
+                    portExpanderController.PeekState();
+                }
+            }
+
+            stopwatch.Stop();
+            _notificationHandler.Publish(NotificationType.Verbose, "Fetching inputs took {0}ms.", stopwatch.ElapsedMilliseconds);
+
             foreach (var portExpanderController in _ioBoards.Values)
             {
                 if (portExpanderController.AutomaticallyFetchState)
@@ -51,9 +63,6 @@ namespace CK.HomeAutomation.Hardware.GenericIOBoard
                     portExpanderController.FetchState();
                 }
             }
-
-            stopwatch.Stop();
-            _notificationHandler.Publish(NotificationType.Verbose, "Fetching inputs took {0}ms.", stopwatch.ElapsedMilliseconds);
         }
 
         private void ExposeToApi(IOBoardController ioBoard)
