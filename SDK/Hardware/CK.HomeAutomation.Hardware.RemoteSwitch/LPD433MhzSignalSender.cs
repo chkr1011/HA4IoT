@@ -26,7 +26,7 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch
         {
             foreach (var code in codeSequence.Codes)
             {
-                Send(code.Code, code.Length);
+                Send(code.Value, code.Length);
             }
         }
 
