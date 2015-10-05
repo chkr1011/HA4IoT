@@ -1,8 +1,5 @@
 <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/Overview1.png?raw=true">
 
-# CK.HomeAutomation
-The first open source home automation SDK for the RaspberryPi 2 using Windows 10 IoT.
-
 ## Key features
 * Virtual actuators like push buttons, motion motion detectors, lamps, sockets, roller shutters which can be interconnected using a fluent API
 * Responsive WebApp for iOS, Android, OSX and Windows
