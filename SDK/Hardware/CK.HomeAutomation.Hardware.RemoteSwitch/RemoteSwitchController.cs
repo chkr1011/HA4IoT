@@ -6,10 +6,10 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch
 {
     public class RemoteSwitchController : IOutputController
     {
+        private readonly object _syncRoot = new object();
+
         private readonly Dictionary<int, RemoteSwitchOutputPort> _ports = new Dictionary<int, RemoteSwitchOutputPort>();
         private readonly LPD433MhzSignalSender _sender;
-        private readonly object _syncRoot = new object();
-        private readonly IHomeAutomationTimer _timer;
 
         public RemoteSwitchController(LPD433MhzSignalSender sender, IHomeAutomationTimer timer)
         {
@@ -17,7 +17,10 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch
             if (timer == null) throw new ArgumentNullException(nameof(timer));
 
             _sender = sender;
-            _timer = timer;
+
+            // Ensure that the state of the remote switch is restored if the original remote is used
+            // or the switch has been removed from the socket and plugged in at another place.
+            timer.Every(TimeSpan.FromSeconds(5)).Do(RefreshStates);
         }
 
         public IBinaryOutput GetOutput(int number)
@@ -43,10 +46,18 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch
 
             lock (_syncRoot)
             {
-                var port = new RemoteSwitchOutputPort(id, onCodeSequence, offCodeSequence, _sender, _timer);
+                var port = new RemoteSwitchOutputPort(id, onCodeSequence, offCodeSequence, _sender);
                 port.Write(BinaryState.Low);
 
                 _ports.Add(id, port);
+            }
+        }
+
+        private void RefreshStates()
+        {
+            foreach (var port in _ports.Values)
+            {
+                port.Write(port.Read());
             }
         }
     }
