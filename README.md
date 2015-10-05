@@ -1,3 +1,5 @@
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/Overview1.PNG?raw=true">
+
 # CK.HomeAutomation
 The first open source home automation SDK for the RaspberryPi 2 using Windows 10 IoT.
 
@@ -46,9 +48,12 @@ A detailed documentation at GitHub is in progress.
 ## Contributors
 This project requires contributors. If you are interested in supporting this project in any way (software, hardware, documentation, fritzing sketches, testing, design, donation) feel free to contact me.
 
-## Images
+## App
+
+Every actuator can be controlled using the web app which is hosted at the Pi2 using the build in webserver. The language for the examples is German but translation of each UI element is supported.
 
 <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_Splash.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_Room2.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_Room3.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_Room4.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_ReadingRoom.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_Bedroom_1.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_Bedroom_2.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_WindowsOverview.PNG?raw=true" width="256">
