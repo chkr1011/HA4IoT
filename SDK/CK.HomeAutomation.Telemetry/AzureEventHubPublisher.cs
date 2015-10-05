@@ -29,7 +29,7 @@ namespace CK.HomeAutomation.Telemetry
             JsonObject data = CreateDataPackage(button.Id, EventType.ButtonPressed);
             data.SetNamedValue("kind", JsonValue.CreateStringValue(duration.ToString()));
 
-            SendToAzureEventHubAsync(data);
+            Task.Run(() => SendToAzureEventHubAsync(data));
         }
 
         protected override void OnSensorValueChanged(SingleValueSensorBase sensor)
@@ -38,36 +38,36 @@ namespace CK.HomeAutomation.Telemetry
             data.SetNamedValue("kind", JsonValue.CreateStringValue(sensor.GetType().Name));
             data.SetNamedValue("value", JsonValue.CreateNumberValue(sensor.Value));
 
-            SendToAzureEventHubAsync(data);
+            Task.Run(() => SendToAzureEventHubAsync(data));
         }
 
         protected override void OnBinaryStateActuatorStateChanged(IBinaryStateOutputActuator actuator, TimeSpan previousStateDuration)
         {
-            JsonObject data = CreateDataPackage(actuator.Id, EventType.OutputActuatorStateChanged);
-            data.SetNamedValue("state", JsonValue.CreateStringValue(actuator.State.ToString()));
-            data.SetNamedValue("kind", JsonValue.CreateStringValue("Start"));
-            SendToAzureEventHubAsync(data);
+            JsonObject startData = CreateDataPackage(actuator.Id, EventType.OutputActuatorStateChanged);
+            startData.SetNamedValue("state", JsonValue.CreateStringValue(actuator.State.ToString()));
+            startData.SetNamedValue("kind", JsonValue.CreateStringValue("Start"));
+            Task.Run(() => SendToAzureEventHubAsync(startData));
 
             BinaryActuatorState previousState = actuator.State == BinaryActuatorState.On ? BinaryActuatorState.Off : BinaryActuatorState.On;
-            data = CreateDataPackage(actuator.Id, EventType.OutputActuatorStateChanged);
-            data.SetNamedValue("state", JsonValue.CreateStringValue(previousState.ToString()));
-            data.SetNamedValue("kind", JsonValue.CreateStringValue("End"));
-            data.SetNamedValue("duration", JsonValue.CreateNumberValue(previousStateDuration.TotalSeconds));
-            SendToAzureEventHubAsync(data);
+            JsonObject endData = CreateDataPackage(actuator.Id, EventType.OutputActuatorStateChanged);
+            endData.SetNamedValue("state", JsonValue.CreateStringValue(previousState.ToString()));
+            endData.SetNamedValue("kind", JsonValue.CreateStringValue("End"));
+            endData.SetNamedValue("duration", JsonValue.CreateNumberValue(previousStateDuration.TotalSeconds));
+            Task.Run(() => SendToAzureEventHubAsync(endData));
         }
 
         protected override void OnStateMachineStateChanged(StateMachine stateMachine, StateMachineStateChangedEventArgs eventArgs, TimeSpan previousStateDuration)
         {
-            JsonObject data = CreateDataPackage(stateMachine.Id, EventType.OutputActuatorStateChanged);
-            data.SetNamedValue("state", JsonValue.CreateStringValue(eventArgs.NewValue));
-            data.SetNamedValue("kind", JsonValue.CreateStringValue("Start"));
-            SendToAzureEventHubAsync(data);
+            JsonObject startData = CreateDataPackage(stateMachine.Id, EventType.OutputActuatorStateChanged);
+            startData.SetNamedValue("state", JsonValue.CreateStringValue(eventArgs.NewValue));
+            startData.SetNamedValue("kind", JsonValue.CreateStringValue("Start"));
+            Task.Run(() => SendToAzureEventHubAsync(startData));
 
-            data = CreateDataPackage(stateMachine.Id, EventType.OutputActuatorStateChanged);
-            data.SetNamedValue("state", JsonValue.CreateStringValue(eventArgs.OldValue));
-            data.SetNamedValue("kind", JsonValue.CreateStringValue("End"));
-            data.SetNamedValue("duration", JsonValue.CreateNumberValue(previousStateDuration.TotalSeconds));
-            SendToAzureEventHubAsync(data);
+            JsonObject endData = CreateDataPackage(stateMachine.Id, EventType.OutputActuatorStateChanged);
+            endData.SetNamedValue("state", JsonValue.CreateStringValue(eventArgs.OldValue));
+            endData.SetNamedValue("kind", JsonValue.CreateStringValue("End"));
+            endData.SetNamedValue("duration", JsonValue.CreateNumberValue(previousStateDuration.TotalSeconds));
+            Task.Run(() => SendToAzureEventHubAsync(endData));
         }
 
         protected override void OnMotionDetected(IMotionDetector motionDetector)
@@ -75,7 +75,7 @@ namespace CK.HomeAutomation.Telemetry
             JsonObject data = CreateDataPackage(motionDetector.Id, EventType.MotionDetected);
             data.SetNamedValue("kind", JsonValue.CreateStringValue("detected"));
 
-            SendToAzureEventHubAsync(data);
+            Task.Run(() => SendToAzureEventHubAsync(data));
         }
 
         private JsonObject CreateDataPackage(string actuatorId, EventType eventType)
