@@ -1,5 +1,4 @@
-# CK.HomeAutomation
-The first open source home automation SDK for the RaspberryPi 2 using Windows 10 IoT.
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/Overview1.png?raw=true">
 
 ## Key features
 * Virtual actuators like push buttons, motion motion detectors, lamps, sockets, roller shutters which can be interconnected using a fluent API
@@ -11,6 +10,7 @@ The first open source home automation SDK for the RaspberryPi 2 using Windows 10
 * Optional integration of Microsoft Azure EventHubs to allow for analysis of actuator states or power consumption statistics
 * Optional CSV log containing all state changes of every actuator which allows for analysis of actuator states or power consumption
 * UDP broadcasted debug traces
+* Powerful RESTful API
 * Complete with fritzing sketches and documentation to build devices like 433Mhz sender, sensors etc. on your own
 
 ## Supported hardware
@@ -45,9 +45,12 @@ A detailed documentation at GitHub is in progress.
 ## Contributors
 This project requires contributors. If you are interested in supporting this project in any way (software, hardware, documentation, fritzing sketches, testing, design, donation) feel free to contact me.
 
-## Images
+## App
+
+Every actuator can be controlled using the web app which is hosted at the Pi2 using the build in webserver. The language for the examples is German but translation of each UI element is supported.
 
 <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_Splash.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_Room2.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_Room3.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_Room4.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_ReadingRoom.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_Bedroom_1.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_Bedroom_2.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_WindowsOverview.PNG?raw=true" width="256">
