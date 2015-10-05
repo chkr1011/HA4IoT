@@ -1,4 +1,4 @@
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/Overview1.PNG?raw=true">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/Overview1.png?raw=true">
 
 # CK.HomeAutomation
 The first open source home automation SDK for the RaspberryPi 2 using Windows 10 IoT.
