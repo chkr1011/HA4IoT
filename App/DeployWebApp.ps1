@@ -2,17 +2,39 @@
 # Ensure that you are authorized (open \\[IP]\c$ the share with Windows Explorer).
 # Ensure that the IP and package name fits your setup.
 
-$ip = "192.168.1.15";
-$package = "CK.HomeAutomation.Controller-uwp_p2wxv0ry6mv8g";
+$ip = "192.168.1.15"
 
-$sourceDir = ".\CK.HomeAutomation.App";
-$remoteDir = "\\$ip\c$\Users\DefaultAccount\AppData\Local\Packages\$package\LocalState\app";
+Write-Host("Enter IP if another one should be used as $ip" + ":")
+$newIP = Read-Host
+if ($newIP)
+{
+	$ip = $newIP;
+}
+
+$package = Get-ChildItem("\\$ip\c$\Users\DefaultAccount\AppData\Local\Packages\CK.HomeAutomation.Controller*") -name
+Write-Host("Found package: " + $package)
+
+if (!$package)
+{
+	Write-Host "No package found!"
+	return
+}
+
+Write-Host "Clear remote directory (y/n)?"
+$clearRemoteDirectory = Read-Host
+
+$sourceDir = ".\CK.HomeAutomation.App"
+$remoteDir = "\\$ip\c$\Users\DefaultAccount\AppData\Local\Packages\$package\LocalState\app"
 
 Write-Host "Deploying to $remoteDir..."
 
 New-Item -ItemType directory -Path $remoteDir -ea SilentlyContinue
-Write-Host "Cleaning remote directory..."
-Remove-Item $remoteDir\* -Recurse -Force -Exclude "Configuration.js"
+
+if ($clearRemoteDirectory -eq "y")
+{
+	Write-Host "Cleaning remote directory..."
+	Remove-Item $remoteDir\* -Recurse -Force -Exclude "Configuration.js"
+}
 
 Write-Host "Copying files to remote directory..."
 Copy-Item $sourceDir\* $remoteDir -Recurse -Force
@@ -23,4 +45,5 @@ Remove-Item $remoteDir\Properties -Recurse -Force -ea SilentlyContinue
 Remove-Item $remoteDir\*.config -Force -ea SilentlyContinue
 Remove-Item $remoteDir\*.csproj -Force -ea SilentlyContinue
 
-Write-Host "Deployment completed."
+Write-Host "Deployment completed. (Press any key to close)"
+Read-Host
