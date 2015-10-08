@@ -40,8 +40,8 @@ appConfiguration.actuatorExtender = function (actuator) {
                 break;
             }
 
-        case "Bedroom.SocketBedLeft":
-        case "Bedroom.SocketBedRight":
+        case "Bedroom.LampBedLeft":
+        case "Bedroom.LampBedRight":
             {
                 actuator.image = "Night-Lamp";
                 break;
@@ -160,6 +160,68 @@ appConfiguration.actuatorExtender = function (actuator) {
         case "LowerBathroom.HumiditySensor":
             {
                 actuator.overviewCaption = "Bad / unten";
+                break;
+            }
+
+        case "Garden.SocketPavillion":
+            {
+                actuator.caption = "Pavillion";
+                break;
+            }
+
+        case "Garden.SpotlightRoof":
+            {
+                actuator.caption = "Strahler Dach";
+                break;
+            }
+
+        case "Garden.LampTerrace":
+            {
+                actuator.caption = "Terasse";
+                break;
+            }
+
+        case "Garden.LampTap":
+            {
+                actuator.caption = "Wasserhahn";
+                break;
+            }
+
+        case "Garden.LampRearArea":
+            {
+                actuator.caption = "Tiere";
+                break;
+            }
+
+        case "Garden.LampGarage":
+            {
+                actuator.caption = "Garage";
+                break;
+            }
+
+        case "Garden.LampParkingLot1":
+            {
+                actuator.caption = "Parkplatz (1)";
+                break;
+            }
+
+        case "Garden.LampParkingLot2":
+            {
+                actuator.caption = "Parkplatz (2)";
+                break;
+            }
+
+        case "Garden.LampParkingLot3":
+            {
+                actuator.caption = "Parkplatz (3)";
+                break;
+            }
+
+        case "Garden.StateMachine":
+            {
+                actuator.caption = "Vorlage";
+                actuator.image = "Favorites";
+                actuator.displayVertical = true;
                 break;
             }
     }
