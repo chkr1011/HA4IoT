@@ -259,6 +259,7 @@ friendlyNameLookup = [
     { key: "UpperBathroom", value: "Badezimmer (oben)" },
     { key: "LowerBathroom", value: "Badezimmer (unten)" },
     { key: "Storeroom", value: "Abstellkammer" },
+    { key: "Garden", value: "Garten" },
 
     { key: "Bedroom.Fan", value: "Ventilator" },
     { key: "Bedroom.SocketWindowLeft", value: "Mückenstecker" },
