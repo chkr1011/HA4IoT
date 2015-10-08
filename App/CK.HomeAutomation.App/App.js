@@ -85,20 +85,24 @@ function setupController() {
                       }
                   });
 
-                  if (c.sensors.length == 0) {
+                  if (c.sensors.length === 0) {
                       c.appConfiguration.showSensorsOverview = false;
                   }
 
-                  if (c.rollerShutters.length == 0) {
+                  if (c.rollerShutters.length === 0) {
                       c.appConfiguration.showRollerShuttersOverview = false;
                   }
 
-                  if (c.motionDetectors.length == 0) {
+                  if (c.motionDetectors.length === 0) {
                       c.appConfiguration.showMotionDetectorsOverview = false;
                   }
 
-                  if (c.windows.length == 0) {
+                  if (c.windows.length === 0) {
                       c.appConfiguration.showWindowsOverview = false;
+                  }
+
+                  if (c.rooms.length === 1) {
+                      c.setActivePanel(c.rooms[0].id);
                   }
 
                   c.pollStatus();

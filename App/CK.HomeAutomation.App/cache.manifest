@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Version 1.1.40
+# Version 1.1.49
 
 CACHE:
 
@@ -15,7 +15,18 @@ Scripts/angular.min.js
 Content/bootstrap.min.css
 Content/bootstrap-theme.min.css
 
-Images/*
+fonts/glyphicons-halflings-regular.ttf
+fonts/glyphicons-halflings-regular.svg
+fonts/glyphicons-halflings-regular.eot
+fonts/glyphicons-halflings-regular.woff
+fonts/glyphicons-halflings-regular.woff2
+
+Images/Socket.png
+Images/Lamp.png
+Images/RollerShutter.png
+Images/TemperatureSensor.png
+Images/HumiditySensor.png
+Images/MotionDetector.png
 
 NETWORK:
 *
