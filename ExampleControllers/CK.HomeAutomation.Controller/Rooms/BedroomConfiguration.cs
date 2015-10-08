@@ -1,7 +1,6 @@
 ﻿using System;
 using CK.HomeAutomation.Actuators;
 using CK.HomeAutomation.Actuators.Connectors;
-using CK.HomeAutomation.Core;
 using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.DHT22;
 using CK.HomeAutomation.Hardware.GenericIOBoard;
