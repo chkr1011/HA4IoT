@@ -172,6 +172,7 @@
     <Compile Include="RoomSettings.cs" />
     <Compile Include="Socket.cs" />
     <Compile Include="BinaryStateOutput.cs" />
+    <Compile Include="VirtualButtonGroup.cs" />
     <Compile Include="Window.cs" />
     <Content Include="Properties\CK.HomeAutomation.Actuators.rd.xml" />
   </ItemGroup>

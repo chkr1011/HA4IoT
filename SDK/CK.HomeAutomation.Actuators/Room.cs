@@ -27,6 +27,11 @@ namespace CK.HomeAutomation.Actuators
 
         public Room WithActuator(Enum id, ActuatorBase actuator)
         {
+            if (_home.Actuators.ContainsKey(id))
+            {
+                throw new InvalidOperationException("The actuator with ID " + id + " is aready registered.");
+            }
+
             _home.Actuators.Add(id, actuator);
             _ownActuators.Add(actuator);
             return this;
@@ -77,6 +82,26 @@ namespace CK.HomeAutomation.Actuators
             if (input == null) throw new ArgumentNullException(nameof(input));
 
             return WithActuator(id, new Button(GenerateID(id), input, _home.HttpApiController, _home.NotificationHandler, _home.Timer));
+        }
+
+        public Room WithVirtualButton(Enum id, Action<VirtualButton> initializer)
+        {
+            if (initializer == null) throw new ArgumentNullException(nameof(initializer));
+
+            var virtualButton = new VirtualButton(GenerateID(id), _home.HttpApiController, _home.NotificationHandler);
+            initializer.Invoke(virtualButton);
+
+            return WithActuator(id, virtualButton);
+        }
+
+        public Room WithVirtualButtonGroup(Enum id, Action<VirtualButtonGroup> initializer)
+        {
+            if (initializer == null) throw new ArgumentNullException(nameof(initializer));
+
+            var virtualButtonGroup = new VirtualButtonGroup(GenerateID(id), _home.HttpApiController, _home.NotificationHandler);
+            initializer.Invoke(virtualButtonGroup);
+
+            return WithActuator(id, virtualButtonGroup);
         }
 
         public Room WithRollerShutterButtons(Enum id, IBinaryInput upInput, IBinaryInput downInput)

@@ -334,5 +334,13 @@ friendlyNameLookup = [
 	{ key: "LivingRoom.SocketWindowLeftUpper", value: "Fenster l. oben" },
 	{ key: "LivingRoom.SocketWindowMiddleLower", value: "Fenster m. unten" },
 	{ key: "LivingRoom.SocketWindowRightLower", value: "Fenster r. unten" },
-	{ key: "LivingRoom.SocketWindowRightUpper", value: "Fenster r. oben" }
+	{ key: "LivingRoom.SocketWindowRightUpper", value: "Fenster r. oben" },
+
+    { key: "ExampleRoom.LedStripRemote", value: "LED Strip" },
+    { key: "ExampleRoom.LedStripRemote.green1", value: "Green" },
+    { key: "ExampleRoom.LedStripRemote.red1", value: "Rot" },
+    { key: "ExampleRoom.LedStripRemote.blue1", value: "Blau" },
+    { key: "ExampleRoom.LedStripRemote.on", value: "An" },
+    { key: "ExampleRoom.LedStripRemote.off", value: "Aus" },
+    { key: "ExampleRoom.LedStripRemote.white", value: "Weiß" }
 ];

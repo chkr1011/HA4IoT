@@ -95,7 +95,7 @@ namespace CK.HomeAutomation.Actuators
             context.Response.SetNamedValue("position", JsonValue.CreateNumberValue(_position));
         }
 
-        protected override void ApiPost(ApiRequestContext context)
+        public override void ApiPost(ApiRequestContext context)
         {
             if (!context.Request.ContainsKey("state"))
             {
