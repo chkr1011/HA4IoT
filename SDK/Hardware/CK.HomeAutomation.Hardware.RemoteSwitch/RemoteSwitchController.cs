@@ -9,9 +9,9 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch
         private readonly object _syncRoot = new object();
 
         private readonly Dictionary<int, RemoteSwitchOutputPort> _ports = new Dictionary<int, RemoteSwitchOutputPort>();
-        private readonly LPD433MhzSignalSender _sender;
+        private readonly LPD433MHzSignalSender _sender;
 
-        public RemoteSwitchController(LPD433MhzSignalSender sender, IHomeAutomationTimer timer)
+        public RemoteSwitchController(LPD433MHzSignalSender sender, IHomeAutomationTimer timer)
         {
             if (sender == null) throw new ArgumentNullException(nameof(sender));
             if (timer == null) throw new ArgumentNullException(nameof(timer));
@@ -39,7 +39,7 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch
             }
         }
 
-        public void Register(int id, LPD433MhzCodeSequence onCodeSequence, LPD433MhzCodeSequence offCodeSequence)
+        public void Register(int id, LPD433MHzCodeSequence onCodeSequence, LPD433MHzCodeSequence offCodeSequence)
         {
             if (onCodeSequence == null) throw new ArgumentNullException(nameof(onCodeSequence));
             if (offCodeSequence == null) throw new ArgumentNullException(nameof(offCodeSequence));

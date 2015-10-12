@@ -1,6 +1,6 @@
 #include "Dht22Reader.h"
 
-Dht22Reader::Dht22Reader(byte pin)
+Dht22Reader::Dht22Reader(uint8_t pin)
 {
 	_pin = pin;
 }
@@ -99,3 +99,4 @@ boolean Dht22Reader::validateBuffer(byte readBitsCount)
 
 	return false;
 }
+

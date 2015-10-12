@@ -2,11 +2,11 @@
 
 namespace CK.HomeAutomation.Hardware.RemoteSwitch
 {
-    public class LPD433MhzCodeSequence
+    public class LPD433MHzCodeSequence
     {
-        public IList<LPD433MhzCode> Codes { get; } = new List<LPD433MhzCode>();
+        public IList<LPD433MHzCode> Codes { get; } = new List<LPD433MHzCode>();
 
-        public LPD433MhzCodeSequence WithCode(LPD433MhzCode code)
+        public LPD433MHzCodeSequence WithCode(LPD433MHzCode code)
         {
             Codes.Add(code);
             return this;
