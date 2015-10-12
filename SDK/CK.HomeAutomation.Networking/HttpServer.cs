@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
@@ -107,9 +108,9 @@ namespace CK.HomeAutomation.Networking
                     await dataWriter.StoreAsync();
                 }
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Debug.Write("Error while sending response. " + e);
+                Debug.WriteLine("Failed to send HTTP response. " + exception.Message);
             }
         }
 
