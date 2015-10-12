@@ -54,8 +54,11 @@ namespace CK.HomeAutomation.Hardware.GenericIOBoard
             }
 
             stopwatch.Stop();
-            _notificationHandler.Publish(NotificationType.Verbose, "Fetching inputs took {0}ms.", stopwatch.ElapsedMilliseconds);
-
+            if (stopwatch.ElapsedMilliseconds > 25)
+            {
+                _notificationHandler.Publish(NotificationType.Warning, "Fetching inputs took {0}ms.", stopwatch.ElapsedMilliseconds);
+            }
+            
             foreach (var portExpanderController in _ioBoards.Values)
             {
                 if (portExpanderController.AutomaticallyFetchState)
