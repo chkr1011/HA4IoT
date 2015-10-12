@@ -166,9 +166,11 @@ namespace CK.HomeAutomation.Controller.Cellar
 
                 double lat = configuration.GetNamedNumber("lat");
                 double lon = configuration.GetNamedNumber("lon");
+                string appId = configuration.GetNamedString("appID");
 
-                var weatherStation = new OWMWeatherStation(lat, lon, Timer, HttpApiController, NotificationHandler);
-                NotificationHandler.PublishFrom(this, NotificationType.Info, "WeatherStation initialized successfully.");
+                var weatherStation = new OWMWeatherStation(lat, lon, appId, Timer, HttpApiController, NotificationHandler);
+                NotificationHandler.PublishFrom(this, NotificationType.Info, "WeatherStation initialized successfully");
+
                 return weatherStation;
             }
             catch (Exception exception)

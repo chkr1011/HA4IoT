@@ -10,6 +10,7 @@ using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.DHT22;
 using CK.HomeAutomation.Hardware.GenericIOBoard;
+using CK.HomeAutomation.Hardware.I2CHardwareBridge;
 using CK.HomeAutomation.Hardware.OpenWeatherMapWeatherStation;
 using CK.HomeAutomation.Hardware.Pi2;
 using CK.HomeAutomation.Hardware.RemoteSwitch;
@@ -31,7 +32,8 @@ namespace CK.HomeAutomation.Controller
 
             IWeatherStation weatherStation = CreateWeatherStation();
 
-            var sensorBridgeDriver = new DHT22Accessor(50, Timer, i2CBus);
+            var i2CHardwareBridge = new I2CHardwareBridge(50, i2CBus);
+            var sensorBridgeDriver = new DHT22Accessor(i2CHardwareBridge, Timer);
 
             var ioBoardManager = new IOBoardManager(HttpApiController, NotificationHandler);
             var ccToolsBoardController = new CCToolsBoardController(i2CBus, ioBoardManager, NotificationHandler);
@@ -43,7 +45,7 @@ namespace CK.HomeAutomation.Controller
             ccToolsBoardController.CreateHSPE16InputOnly(Device.Input4, 46);
             ccToolsBoardController.CreateHSPE16InputOnly(Device.Input5, 44);
 
-            RemoteSwitchController remoteSwitchController = SetupRemoteSwitchController(i2CBus);
+            RemoteSwitchController remoteSwitchController = SetupRemoteSwitchController(i2CHardwareBridge);
 
             var home = new Home(Timer, HealthMonitor, weatherStation, HttpApiController, NotificationHandler);
 
@@ -57,6 +59,7 @@ namespace CK.HomeAutomation.Controller
             new LowerBathroomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
             new StoreroomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
             new LivingRoomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
+
             home.PublishStatisticsNotification();
 
             AttachAzureEventHubPublisher(home);
@@ -69,9 +72,11 @@ namespace CK.HomeAutomation.Controller
             ioBoardsInterruptMonitor.InterruptDetected += (s, e) => ioBoardManager.PollInputBoardStates();
         }
 
-        private RemoteSwitchController SetupRemoteSwitchController(II2cBusAccessor i2CBus)
+        private RemoteSwitchController SetupRemoteSwitchController(I2CHardwareBridge i2CHardwareBridge)
         {
-            var remoteSwitchController = new RemoteSwitchController(new LPD433MhzSignalSender(i2CBus, 50, HttpApiController), Timer);
+            // TODO: PD7+3
+            var ldp433MHzSender = new LPD433MHzSignalSender(i2CHardwareBridge, 10, HttpApiController);
+            var remoteSwitchController = new RemoteSwitchController(ldp433MHzSender, Timer);
 
             var intertechnoCodes = new IntertechnoCodeSequenceProvider();
             var brennenstuhlCodes = new BrennenstuhlCodeSequenceProvider();
@@ -120,8 +125,9 @@ namespace CK.HomeAutomation.Controller
 
                 double lat = configuration.GetNamedNumber("lat");
                 double lon = configuration.GetNamedNumber("lon");
+                string appId = configuration.GetNamedString("appID");
 
-                var weatherStation = new OWMWeatherStation(lat, lon, Timer, HttpApiController, NotificationHandler);
+                var weatherStation = new OWMWeatherStation(lat, lon, appId, Timer, HttpApiController, NotificationHandler);
                 NotificationHandler.PublishFrom(this, NotificationType.Info, "WeatherStation initialized successfully.");
                 return weatherStation;
             }
