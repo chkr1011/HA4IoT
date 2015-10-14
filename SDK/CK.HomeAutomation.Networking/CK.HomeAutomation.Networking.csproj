@@ -114,6 +114,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BadRequestException.cs" />
     <Compile Include="BinaryBody.cs" />
     <Compile Include="HttpContext.cs" />
     <Compile Include="MappedFolderController.cs" />

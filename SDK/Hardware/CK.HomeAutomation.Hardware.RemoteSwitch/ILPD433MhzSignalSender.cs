@@ -1,7 +1,7 @@
 ﻿namespace CK.HomeAutomation.Hardware.RemoteSwitch
 {
-    public interface ILPD433MhzSignalSender
+    public interface ILPD433MHzSignalSender
     {
-        void Send(LPD433MhzCodeSequence codeSequence);
+        void Send(LPD433MHzCodeSequence codeSequence);
     }
 }

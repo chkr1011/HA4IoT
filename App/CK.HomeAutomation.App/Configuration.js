@@ -129,7 +129,7 @@ appConfiguration.actuatorExtender = function (actuator) {
                 actuator.overviewCaption = "Schlafzimmer";
                 break;
             }
-            
+
         case "ReadingRoom.Window":
         case "ReadingRoom.RollerShutter":
         case "ReadingRoom.TemperatureSensor":
@@ -222,6 +222,18 @@ appConfiguration.actuatorExtender = function (actuator) {
                 actuator.caption = "Vorlage";
                 actuator.image = "Favorites";
                 actuator.displayVertical = true;
+                break;
+            }
+
+        case "ExampleRoom.CeilingFan":
+            {
+                actuator.image = "Fan";
+                break;
+            }
+
+        case "ExampleRoom.BathroomFan":
+            {
+                actuator.image = "Air";
                 break;
             }
     }
@@ -334,5 +346,18 @@ friendlyNameLookup = [
 	{ key: "LivingRoom.SocketWindowLeftUpper", value: "Fenster l. oben" },
 	{ key: "LivingRoom.SocketWindowMiddleLower", value: "Fenster m. unten" },
 	{ key: "LivingRoom.SocketWindowRightLower", value: "Fenster r. unten" },
-	{ key: "LivingRoom.SocketWindowRightUpper", value: "Fenster r. oben" }
+	{ key: "LivingRoom.SocketWindowRightUpper", value: "Fenster r. oben" },
+
+    { key: "ExampleRoom.LedStripRemote", value: "LED Strip" },
+    { key: "ExampleRoom.LedStripRemote.green1", value: "Green" },
+    { key: "ExampleRoom.LedStripRemote.red1", value: "Red" },
+    { key: "ExampleRoom.LedStripRemote.blue1", value: "Blue" },
+    { key: "ExampleRoom.LedStripRemote.on", value: "An" },
+    { key: "ExampleRoom.LedStripRemote.off", value: "Aus" },
+    { key: "ExampleRoom.LedStripRemote.white", value: "White" },
+
+    { key: "ExampleRoom.CeilingFan", value: "Ceiling fan" },
+    { key: "ExampleRoom.CeilingFan.Off", value: "Stop" },
+    { key: "ExampleRoom.CeilingFan.1", value: "Slow" },
+    { key: "ExampleRoom.CeilingFan.2", value: "Fast" }
 ];

@@ -18,13 +18,13 @@
 
 #define INFRARED_RECEIVER_PIN PD3
 
-#define DEBUG 1
+#define DEBUG 0
 
 class InfraredReceiver
 {
 private:
-	byte _signal[SIGNAL_CACHE_SIZE];
-	byte _signalIndex;
+	uint8_t _signal[SIGNAL_CACHE_SIZE];
+	uint8_t _signalIndex;
 	byte optimizeSignal(short value);
 
 public:
@@ -38,11 +38,12 @@ public:
 class InfraredSender
 {
 private:
-	byte _pin;
+	uint8_t _pin;
 	unsigned int _frequency;
 	unsigned int _pluseDelay;
 
 public:
-	InfraredSender(byte pin, byte frequency);
-	void sendSignalRawArray(byte data[], byte length);
+	InfraredSender(uint8_t pin, uint8_t frequency);
+	void sendSignalRawArray(uint8_t data[], uint8_t length);
 };
+

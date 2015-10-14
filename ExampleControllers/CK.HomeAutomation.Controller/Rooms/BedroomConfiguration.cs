@@ -53,8 +53,8 @@ namespace CK.HomeAutomation.Controller.Rooms
             bedroom.CombineActuators(Bedroom.CombinedCeilingLights)
                 .WithActuator(bedroom.Lamp(Bedroom.LightCeilingWall))
                 .WithActuator(bedroom.Lamp(Bedroom.LightCeilingWindow))
-                .ConnectToggleWith(bedroom.Button(Bedroom.ButtonDoor))
-                .ConnectToggleWith(bedroom.Button(Bedroom.ButtonWindowUpper));
+                .ConnectToggleActionWith(bedroom.Button(Bedroom.ButtonDoor))
+                .ConnectToggleActionWith(bedroom.Button(Bedroom.ButtonWindowUpper));
 
             bedroom.Button(Bedroom.ButtonDoor).WithLongAction(() =>
             {
@@ -89,7 +89,7 @@ namespace CK.HomeAutomation.Controller.Rooms
             fan.AddState("2").WithHighPort(fanPort1).WithHighPort(fanPort2).WithLowPort(fanPort3);
             fan.AddState("3").WithHighPort(fanPort1).WithHighPort(fanPort2).WithHighPort(fanPort3);
             fan.TurnOff();
-            fan.ConnectMoveNextWith(bedroom.Button(Bedroom.ButtonWindowLower));
+            fan.ConnectMoveNextAndToggleOffWith(bedroom.Button(Bedroom.ButtonWindowLower));
 
             bedroom.Button(Bedroom.ButtonBedLeftInner).WithShortAction(() => bedroom.Lamp(Bedroom.LampBedLeft).Toggle());
             bedroom.Button(Bedroom.ButtonBedLeftInner).WithLongAction(() => bedroom.BinaryStateOutput(Bedroom.CombinedCeilingLights).Toggle());

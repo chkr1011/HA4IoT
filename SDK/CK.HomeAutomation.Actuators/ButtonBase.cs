@@ -34,7 +34,7 @@ namespace CK.HomeAutomation.Actuators
             return this;
         }
 
-        protected override void ApiPost(ApiRequestContext context)
+        public override void ApiPost(ApiRequestContext context)
         {
             string action = context.Request.GetNamedString("duration", string.Empty);
             if (action.Equals(ButtonPressedDuration.Long.ToString(), StringComparison.OrdinalIgnoreCase))

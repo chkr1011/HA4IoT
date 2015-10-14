@@ -1,6 +1,6 @@
-#include "InfraRed.h"
+#include "Infrared.h"
 
-InfraredSender::InfraredSender(byte pin, byte frequency)
+InfraredSender::InfraredSender(uint8_t pin, uint8_t frequency)
 {
 	_pin = pin;
 	pinMode(pin, OUTPUT);
@@ -8,16 +8,16 @@ InfraredSender::InfraredSender(byte pin, byte frequency)
 	_frequency = frequency;
 }
 
-void InfraredSender::sendSignalRawArray(byte signal[], byte length)
+void InfraredSender::sendSignalRawArray(uint8_t signal[], uint8_t length)
 {
-	byte isHigh = 1;
-	byte pin = _pin;
-	byte pulseDelay = (_frequency / 2);
+	uint8_t isHigh = 1;
+	uint8_t pin = _pin;
+	unsigned int pulseDelay = (_frequency / 2);
 	
 	noInterrupts();
 
 	unsigned int duration;
-	for (byte i = 0; i < length; i++)
+	for (uint8_t i = 0; i < length; i++)
 	{
 		duration = signal[i] * SAMPLE_LENGTH * _frequency;
 
@@ -45,3 +45,4 @@ void InfraredSender::sendSignalRawArray(byte signal[], byte length)
 
 	interrupts();
 }
+

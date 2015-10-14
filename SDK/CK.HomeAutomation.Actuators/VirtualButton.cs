@@ -5,7 +5,7 @@ namespace CK.HomeAutomation.Actuators
 {
     public class VirtualButton : ButtonBase
     {
-        public VirtualButton(string id, HttpRequestController httpApiController, INotificationHandler notificationHandler)
+        public VirtualButton(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
             : base(id, httpApiController, notificationHandler)
         {
         }

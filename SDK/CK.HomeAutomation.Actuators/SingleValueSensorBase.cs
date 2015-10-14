@@ -17,6 +17,8 @@ namespace CK.HomeAutomation.Actuators
 
         public float Value { get; private set; }
 
+        public float ValueChangedMinDelta { get; set; } = 0.15F;
+
         public override void ApiGet(ApiRequestContext context)
         {
             context.Response.SetNamedValue("value", JsonValue.CreateNumberValue(Value));
@@ -25,7 +27,7 @@ namespace CK.HomeAutomation.Actuators
         protected void UpdateValue(float newValue)
         {
             float oldValue = Value;
-            if (Math.Abs(oldValue - newValue) > 0.15)
+            if (Math.Abs(oldValue - newValue) > ValueChangedMinDelta)
             {
                 Value = newValue;
 

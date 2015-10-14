@@ -166,3 +166,4 @@ byte InfraredReceiver::optimizeSignal(short value)
 
 	return value / SAMPLE_LENGTH;
 }
+

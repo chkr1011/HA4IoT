@@ -1,15 +1,17 @@
 ﻿
+using CK.HomeAutomation.Actuators.Contracts;
+
 namespace CK.HomeAutomation.Actuators.Connectors
 {
     public static class StateMachineWithButtonConnector
     {
-        public static StateMachine ConnectMoveNextWith(this StateMachine stateMachineActuator, Button button)
+        public static StateMachine ConnectMoveNextAndToggleOffWith(this StateMachine stateMachineActuator, IButton button)
         {
-            button.WithShortAction(() => stateMachineActuator.ApplyNextState());
+            button.PressedShort += (s, e) => stateMachineActuator.ApplyNextState();
 
             if (stateMachineActuator.HasOffState)
             {
-                button.WithLongAction(() => stateMachineActuator.ApplyState(BinaryActuatorState.Off.ToString()));
+                button.PressedLong += (s, e) => stateMachineActuator.ApplyState(BinaryActuatorState.Off.ToString());
             }
 
             return stateMachineActuator;

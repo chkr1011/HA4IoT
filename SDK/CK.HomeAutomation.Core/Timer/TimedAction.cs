@@ -40,15 +40,20 @@ namespace CK.HomeAutomation.Core.Timer
                 return;
             }
 
-            _action?.Invoke();
-
-            if (_interval == TimeSpan.Zero)
+            try
             {
-                Cancel();
+                _action?.Invoke();
             }
-            else
+            finally
             {
-                _timeout = _interval;
+                if (_interval == TimeSpan.Zero)
+                {
+                    Cancel();
+                }
+                else
+                {
+                    _timeout = _interval;
+                }
             }
         }
 

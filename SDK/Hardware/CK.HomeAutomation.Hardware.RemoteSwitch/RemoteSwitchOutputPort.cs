@@ -4,13 +4,13 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch
 {
     public class RemoteSwitchOutputPort : IBinaryOutput
     {
-        private readonly LPD433MhzCodeSequence _onCodeSqCodeSequence;
-        private readonly LPD433MhzCodeSequence _offCodeSequence;
-        private readonly LPD433MhzSignalSender _sender;
+        private readonly LPD433MHzCodeSequence _onCodeSqCodeSequence;
+        private readonly LPD433MHzCodeSequence _offCodeSequence;
+        private readonly LPD433MHzSignalSender _sender;
         private readonly object _syncRoot = new object();
         private BinaryState _state;
 
-        public RemoteSwitchOutputPort(int id, LPD433MhzCodeSequence onCodeSequence, LPD433MhzCodeSequence offCodeSequence, LPD433MhzSignalSender sender)
+        public RemoteSwitchOutputPort(int id, LPD433MHzCodeSequence onCodeSequence, LPD433MHzCodeSequence offCodeSequence, LPD433MHzSignalSender sender)
         {
             if (onCodeSequence == null) throw new ArgumentNullException(nameof(onCodeSequence));
             if (offCodeSequence == null) throw new ArgumentNullException(nameof(offCodeSequence));

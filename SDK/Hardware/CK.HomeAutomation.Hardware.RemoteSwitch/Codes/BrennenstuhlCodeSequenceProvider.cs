@@ -4,7 +4,7 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch.Codes
 {
     public class BrennenstuhlCodeSequenceProvider
     {
-        public LPD433MhzCodeSequence GetSequence(BrennenstuhlSystemCode systemCode, BrennenstuhlUnitCode unitCode, RemoteSwitchCommand command)
+        public LPD433MHzCodeSequence GetSequence(BrennenstuhlSystemCode systemCode, BrennenstuhlUnitCode unitCode, RemoteSwitchCommand command)
         {
             // Examples:
             // System Code = 11111
@@ -40,7 +40,7 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch.Codes
             code = SetUnitCode(code, unitCode);
             code = SetCommand(code, command);
 
-            return new LPD433MhzCodeSequence().WithCode(new LPD433MhzCode(code, 24));
+            return new LPD433MHzCodeSequence().WithCode(new LPD433MHzCode(code, 24, 3));
         }
 
         private uint SetSystemCode(uint code, BrennenstuhlSystemCode systemCode)

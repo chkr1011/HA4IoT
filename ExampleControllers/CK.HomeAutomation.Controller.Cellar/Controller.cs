@@ -141,7 +141,7 @@ namespace CK.HomeAutomation.Controller.Cellar
                 .WithActuator(garden.Lamp(Garden.SpotlightRoof), BinaryActuatorState.On)
                 .WithActuator(garden.Lamp(Garden.LampRearArea), BinaryActuatorState.On);
 
-            garden.StateMachine(Garden.StateMachine).ConnectMoveNextWith(garden.Button(Garden.Button));
+            garden.StateMachine(Garden.StateMachine).ConnectMoveNextAndToggleOffWith(garden.Button(Garden.Button));
 
             garden.CombineActuators(Garden.CombinedParkingLotLamps)
                 .WithActuator(garden.Lamp(Garden.LampParkingLot1))
@@ -166,9 +166,11 @@ namespace CK.HomeAutomation.Controller.Cellar
 
                 double lat = configuration.GetNamedNumber("lat");
                 double lon = configuration.GetNamedNumber("lon");
+                string appId = configuration.GetNamedString("appID");
 
-                var weatherStation = new OWMWeatherStation(lat, lon, Timer, HttpApiController, NotificationHandler);
-                NotificationHandler.PublishFrom(this, NotificationType.Info, "WeatherStation initialized successfully.");
+                var weatherStation = new OWMWeatherStation(lat, lon, appId, Timer, HttpApiController, NotificationHandler);
+                NotificationHandler.PublishFrom(this, NotificationType.Info, "WeatherStation initialized successfully");
+
                 return weatherStation;
             }
             catch (Exception exception)

@@ -63,8 +63,8 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithRollerShutterButtons(Kitchen.RollerShutterButtons, input2.GetInput(15), input2.GetInput(14))
                 .WithWindow(Kitchen.Window, w => w.WithCenterCasement(input0.GetInput(6), input0.GetInput(7)));
 
-            kitchen.Lamp(Kitchen.LightCeilingMiddle).ConnectToggleWith(kitchen.Button(Kitchen.ButtonKitchenette));
-            kitchen.Lamp(Kitchen.LightCeilingMiddle).ConnectToggleWith(kitchen.Button(Kitchen.ButtonPassage));
+            kitchen.Lamp(Kitchen.LightCeilingMiddle).ConnectToggleActionWith(kitchen.Button(Kitchen.ButtonKitchenette));
+            kitchen.Lamp(Kitchen.LightCeilingMiddle).ConnectToggleActionWith(kitchen.Button(Kitchen.ButtonPassage));
 
             kitchen.SetupAutomaticRollerShutters().WithRollerShutter(kitchen.RollerShutter(Kitchen.RollerShutter));
             kitchen.RollerShutter(Kitchen.RollerShutter).ConnectWith(kitchen.RollerShutterButtons(Kitchen.RollerShutterButtons));

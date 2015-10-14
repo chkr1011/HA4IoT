@@ -24,7 +24,7 @@ namespace CK.HomeAutomation.Hardware.OpenWeatherMapWeatherStation
         private TimeSpan _sunrise;
         private TimeSpan _sunset;
         
-        public OWMWeatherStation(double lat, double lon, IHomeAutomationTimer timer, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
+        public OWMWeatherStation(double lat, double lon, string appId, IHomeAutomationTimer timer, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
             if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
@@ -34,7 +34,7 @@ namespace CK.HomeAutomation.Hardware.OpenWeatherMapWeatherStation
             Humidity = _humidity;
 
             _notificationHandler = notificationHandler;
-            _weatherDataSourceUrl = new Uri(string.Format("http://api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}&units=metric", lat, lon));
+            _weatherDataSourceUrl = new Uri(string.Format("http://api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}&APPID={2}&units=metric", lat, lon, appId));
 
             httpApiController.Handle(HttpMethod.Get, "weatherStation").Using(c => c.Response.Body = new JsonBody(ApiGet()));
             httpApiController.Handle(HttpMethod.Post, "weatherStation").WithRequiredJsonBody().Using(c => ApiPost(c.Request));

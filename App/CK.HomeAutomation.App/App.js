@@ -131,7 +131,7 @@ function setupController() {
               getJSON(c, getApiUrl() + "status?" + c.latestStateHash, function (
                 data) {
 
-                  if (c.latestStateHash == data._hash) {
+                  if (c.latestStateHash === data._hash) {
                       // The state has not changed. Skip update.
                       return;
                   }
@@ -168,6 +168,14 @@ function setupController() {
                   actuator.state.stateBool = newState;
               });
           };
+
+          $scope.invokeVirtualButton = function (actuator) {
+              invokeActuator(actuator.id, {});
+          }
+
+          $scope.invokeVirtualButtonGroup = function (actuator, button) {
+              invokeActuator(actuator, { button: button });
+          }
 
           $scope.toggleIsEnabled = function (actuator) {
               var newState = !actuator.state.isEnabled;
@@ -214,7 +222,7 @@ function configureRoom(room) {
 }
 
 function binaryActuatorStateUpdater(actuator, newState) {
-    if (newState.state == "On") {
+    if (newState.state === "On") {
         actuator.state.stateBool = true;
     } else {
         actuator.state.stateBool = false;
@@ -264,19 +272,15 @@ function configureActuator(room, actuator, i) {
 
         case "StateMachine":
             {
-                var extendedStates = [];
+                actuator.template = "Views/StateMachineTemplate.html";
+                actuator.sortValue = -5;
 
-                $.each(actuator.states, function (stateIndex, state) {
-                    extendedStates.push({
-                        value: state,
-                        caption: getFriendlyName(state)
-                    });
+                var extendedStates = [];
+                $.each(actuator.states, function (i, state) {
+                    extendedStates.push({ value: state, caption: getFriendlyName(actuator.id + "." + state) });
                 });
 
                 actuator.states = extendedStates;
-
-                actuator.template = "Views/StateMachineTemplate.html";
-                actuator.sortValue = -5;
                 break;
             }
 
@@ -304,6 +308,29 @@ function configureActuator(room, actuator, i) {
                 break;
             }
 
+        case "VirtualButton":
+            {
+                actuator.template = "Views/VirtualButtonTemplate.html";
+                actuator.image = "Button";
+                actuator.sortValue = -1;
+                break;
+            }
+
+        case "VirtualButtonGroup":
+            {
+                actuator.template = "Views/VirtualButtonGroupTemplate.html";
+                actuator.image = "Button";
+                actuator.sortValue = -1;
+
+                var extendedButtons = [];
+                $.each(actuator.buttons, function (i, button) {
+                    extendedButtons.push({ id: button, caption: getFriendlyName(actuator.id + "." + button) });
+                });
+
+                actuator.buttons = extendedButtons;
+                break;
+            }
+
         default:
             {
                 room.actuators.splice(i, 1);
@@ -323,17 +350,16 @@ function getJSON(controller, url, callback) {
         url: url,
         crossDomain: true,
         timeout: 2500
-    })
-      .success(function (data) {
-          controller.errorMessage = "";
-          callback(data);
-      })
-      .fail(function (jqXHR, textStatus, errorThrown) {
-          controller.errorMessage = textStatus;
-      });
+    }).success(function (data) {
+        controller.errorMessage = "";
+        callback(data);
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        controller.errorMessage = textStatus;
+    });
 };
 
 function invokeActuator(id, request, successCallback) {
+    // The hack with the body as query is required to allow cross site calls.
     $.ajax({
         method: "POST",
         url: getApiUrl() + "actuator/" + id + "?body=" + JSON.stringify(request),
@@ -343,8 +369,7 @@ function invokeActuator(id, request, successCallback) {
         if (successCallback != null) {
             successCallback();
         }
-    })
-      .fail(function (jqXHR, textStatus, errorThrown) {
-          controller.errorMessage = textStatus;
-      });
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        alert(textStatus);
+    });
 }

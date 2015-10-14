@@ -70,8 +70,10 @@
     <Content Include="Images\Air.png" />
     <Content Include="Images\blind-blade-closed.png" />
     <Content Include="Images\blind-blade-open.png" />
+    <Content Include="Images\Button.png" />
     <Content Include="Images\Cat.png" />
     <Content Include="Images\Fan.png" />
+    <Content Include="Images\Favorites.png" />
     <Content Include="Images\HumiditySensor.png" />
     <Content Include="Images\Lamp.png" />
     <Content Include="Images\MotionDetector.png" />
@@ -906,6 +908,8 @@
     <Content Include="Views\RollerShuttersOverviewTemplate.html" />
     <Content Include="Views\RollerShutterTemplate.html" />
     <Content Include="Views\RoomsOverviewTemplate.html" />
+    <Content Include="Views\VirtualButtonGroupTemplate.html" />
+    <Content Include="Views\VirtualButtonTemplate.html" />
     <Content Include="Views\WindowsOverviewTemplate.html" />
     <Content Include="Views\SensorsOverviewTemplate.html" />
     <Content Include="Views\StateMachineTemplate.html" />
