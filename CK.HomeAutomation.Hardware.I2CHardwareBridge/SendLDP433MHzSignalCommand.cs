@@ -10,7 +10,7 @@ namespace CK.HomeAutomation.Hardware.I2CHardwareBridge
         private uint _code;
         private byte _length = 24;
         private byte _pin;
-        private byte _repeats = 2;
+        private byte _repeats = 10;
 
         public SendLDP433MhzSignalCommand WithCode(uint code)
         {
