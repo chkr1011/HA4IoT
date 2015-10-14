@@ -46,7 +46,7 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithWindow(ReadingRoom.Window, w => w.WithCenterCasement(input2.GetInput(8))) // Tilt = input2.GetInput(9) -- currently broken!
                 .WithRollerShutterButtons(ReadingRoom.RollerShutterButtons, input2.GetInput(12), input2.GetInput(11));
 
-            readingRoom.Lamp(ReadingRoom.LightCeilingMiddle).ConnectToggleWith(readingRoom.Button(ReadingRoom.Button));
+            readingRoom.Lamp(ReadingRoom.LightCeilingMiddle).ConnectToggleActionWith(readingRoom.Button(ReadingRoom.Button));
 
             readingRoom.SetupAutomaticRollerShutters().WithRollerShutter(readingRoom.RollerShutter(ReadingRoom.RollerShutter));
             readingRoom.RollerShutter(ReadingRoom.RollerShutter)

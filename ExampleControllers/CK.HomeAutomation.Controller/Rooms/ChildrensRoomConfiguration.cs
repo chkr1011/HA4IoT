@@ -46,7 +46,7 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithWindow(ChildrensRoom.Window, w => w.WithCenterCasement(input0.GetInput(5), input0.GetInput(4)))
                 .WithRollerShutterButtons(ChildrensRoom.RollerShutterButtons, input0.GetInput(1), input0.GetInput(2));
 
-            childrensRoom.Lamp(ChildrensRoom.LightCeilingMiddle).ConnectToggleWith(childrensRoom.Button(ChildrensRoom.Button));
+            childrensRoom.Lamp(ChildrensRoom.LightCeilingMiddle).ConnectToggleActionWith(childrensRoom.Button(ChildrensRoom.Button));
 
             childrensRoom.SetupAutomaticRollerShutters().WithRollerShutter(childrensRoom.RollerShutter(ChildrensRoom.RollerShutter));
             childrensRoom.RollerShutter(ChildrensRoom.RollerShutter)

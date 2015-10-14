@@ -3,6 +3,7 @@ using System.IO;
 using Windows.Data.Json;
 using Windows.Storage;
 using CK.HomeAutomation.Actuators;
+using CK.HomeAutomation.Actuators.Connectors;
 using CK.HomeAutomation.Actuators.Contracts;
 using CK.HomeAutomation.Core;
 using CK.HomeAutomation.Hardware;
@@ -43,19 +44,19 @@ namespace CK.HomeAutomation.Controller.Empty
             Lamp4,
             Lamp5,
             Lamp6,
-            Lamp7,
 
             Socket1,
             Socket2,
-            Socket3,
-            Socket4,
 
             Window,
 
-            VirtualButtonTest,
             LedStripRemote,
 
-            Fan
+            BathroomFan,
+            CeilingFan,
+
+            Button1,
+            Button2
         }
 
         private enum Device
@@ -93,18 +94,18 @@ namespace CK.HomeAutomation.Controller.Empty
 
             // Setup the controller which creates ports for wireless sockets (433Mhz).
             var remoteSwitchController = new RemoteSwitchController(remoteSwitchSender, Timer);
-            var intertechnoCodes = new IntertechnoCodeSequenceProvider();
-            var brennenstuhlCodes = new BrennenstuhlCodeSequenceProvider();
 
-            remoteSwitchController.Register(
-                0,
-                brennenstuhlCodes.GetSequence(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A, RemoteSwitchCommand.TurnOn),
-                brennenstuhlCodes.GetSequence(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A, RemoteSwitchCommand.TurnOff));
-
+            ////var brennenstuhlCodes = new BrennenstuhlCodeSequenceProvider();
             ////remoteSwitchController.Register(
             ////    0,
-            ////    intertechnoCodes.GetSequence(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1, RemoteSwitchCommand.TurnOn),
-            ////    intertechnoCodes.GetSequence(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1, RemoteSwitchCommand.TurnOff));
+            ////    brennenstuhlCodes.GetSequence(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A, RemoteSwitchCommand.TurnOn),
+            ////    brennenstuhlCodes.GetSequence(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A, RemoteSwitchCommand.TurnOff));
+
+            var intertechnoCodes = new IntertechnoCodeSequenceProvider();
+            remoteSwitchController.Register(
+                0,
+                intertechnoCodes.GetSequence(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1, RemoteSwitchCommand.TurnOn),
+                intertechnoCodes.GetSequence(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1, RemoteSwitchCommand.TurnOff));
 
             // Setup the weather station which provides sunrise and sunset information.
             var weatherStation = CreateWeatherStation();
@@ -119,25 +120,28 @@ namespace CK.HomeAutomation.Controller.Empty
                 .WithWindow(ExampleRoom.Window, w => w.WithCenterCasement(ioBoardManager.GetInputBoard(Device.HSPE16).GetInput(0)))
                 .WithLamp(ExampleRoom.Lamp1, remoteSwitchController.GetOutput(0))
                 .WithSocket(ExampleRoom.Socket1, ioBoardManager.GetOutputBoard(Device.HSRel5).GetOutput(0))
-                .WithSocket(ExampleRoom.Socket2, ioBoardManager.GetOutputBoard(Device.HSRel5).GetOutput(1))
-                .WithSocket(ExampleRoom.Socket3, ioBoardManager.GetOutputBoard(Device.HSRel5).GetOutput(2))
-                .WithSocket(ExampleRoom.Fan, ioBoardManager.GetOutputBoard(Device.HSRel5).GetOutput(3))
+                .WithSocket(ExampleRoom.Socket2, ioBoardManager.GetOutputBoard(Device.HSRel5).GetOutput(4))
+                .WithSocket(ExampleRoom.BathroomFan, ioBoardManager.GetOutputBoard(Device.HSRel5).GetOutput(3))
                 .WithLamp(ExampleRoom.Lamp2, ioBoardManager.GetOutputBoard(Device.HSRel8).GetOutput(0))
                 .WithLamp(ExampleRoom.Lamp3, ioBoardManager.GetOutputBoard(Device.HSRel8).GetOutput(1))
                 .WithLamp(ExampleRoom.Lamp4, ioBoardManager.GetOutputBoard(Device.HSRel8).GetOutput(2))
                 .WithLamp(ExampleRoom.Lamp5, ioBoardManager.GetOutputBoard(Device.HSRel8).GetOutput(3))
                 .WithLamp(ExampleRoom.Lamp6, ioBoardManager.GetOutputBoard(Device.HSRel8).GetOutput(4))
-                .WithLamp(ExampleRoom.Lamp7, ioBoardManager.GetOutputBoard(Device.HSRel8).GetOutput(5))
-                .WithVirtualButtonGroup(ExampleRoom.LedStripRemote, g => SetupLEDStripRemote(i2CHardwareBridge, g));
+                .WithButton(ExampleRoom.Button1, ioBoardManager.GetInputBoard(Device.HSPE16).GetInput(1))
+                .WithButton(ExampleRoom.Button2, ioBoardManager.GetInputBoard(Device.HSPE16).GetInput(2))
+                .WithVirtualButtonGroup(ExampleRoom.LedStripRemote, g => SetupLEDStripRemote(i2CHardwareBridge, g))
+                .WithStateMachine(ExampleRoom.CeilingFan, sm => SetupCeilingFan(sm, ioBoardManager));
             
-            exampleRoom.SetupAutomaticTurnOnAndOffAction()
-                .WithTrigger(exampleRoom.MotionDetector(ExampleRoom.MotionDetector))
-                .WithTarget(exampleRoom.Lamp(ExampleRoom.Lamp2))
-                .WithOnDuration(TimeSpan.FromSeconds(10));
+            exampleRoom.Lamp(ExampleRoom.Lamp5).ConnectToggleActionWith(exampleRoom.Button(ExampleRoom.Button1));
+            exampleRoom.Lamp(ExampleRoom.Lamp6).ConnectToggleActionWith(exampleRoom.Button(ExampleRoom.Button1), ButtonPressedDuration.Long);
+            exampleRoom.StateMachine(ExampleRoom.CeilingFan).ConnectMoveNextAndToggleOffWith(exampleRoom.Button(ExampleRoom.Button2));
+
+            SetupHumidityDependingOutput(exampleRoom.HumiditySensor(ExampleRoom.HumiditySensor), ioBoardManager.GetOutputBoard(Device.HSRel8).GetOutput(5));
 
             exampleRoom.SetupAutomaticTurnOnAndOffAction()
                 .WithTrigger(exampleRoom.MotionDetector(ExampleRoom.MotionDetector))
-                .WithTarget(exampleRoom.BinaryStateOutput(ExampleRoom.Fan))
+                .WithTarget(exampleRoom.BinaryStateOutput(ExampleRoom.BathroomFan))
+                .WithTarget(exampleRoom.BinaryStateOutput(ExampleRoom.Lamp2))
                 .WithOnDuration(TimeSpan.FromSeconds(10));
 
             home.PublishStatisticsNotification();
@@ -151,6 +155,33 @@ namespace CK.HomeAutomation.Controller.Empty
                 pi2PortController.PollOpenInputPorts();
                 ioBoardManager.PollInputBoardStates();
             };
+        }
+
+        private void SetupHumidityDependingOutput(IHumiditySensor sensor, IBinaryOutput output)
+        {
+            sensor.ValueChanged += (s, e) =>
+            {
+                if (e.NewValue > 80.0F)
+                {
+                    output.Write(BinaryState.High);
+                }
+                else
+                {
+                    output.Write(BinaryState.Low);
+                }
+            };
+        }
+
+        private void SetupCeilingFan(StateMachine stateMachine, IOBoardManager ioBoardManager)
+        {
+            var relayBoard = ioBoardManager.GetOutputBoard(Device.HSRel5);
+            var gear1 = relayBoard.GetOutput(2);
+            var gear2 = relayBoard.GetOutput(1);
+
+            stateMachine.AddOffState().WithLowPort(gear1).WithLowPort(gear2);
+
+            stateMachine.AddState("1").WithHighPort(gear1).WithLowPort(gear2);
+            stateMachine.AddState("2").WithLowPort(gear1).WithHighPort(gear2);
         }
 
         private void SetupLEDStripRemote(I2CHardwareBridge i2CHardwareBridge, VirtualButtonGroup group)
