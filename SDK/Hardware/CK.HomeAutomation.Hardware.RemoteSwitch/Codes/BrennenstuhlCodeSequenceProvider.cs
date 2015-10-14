@@ -40,7 +40,7 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch.Codes
             code = SetUnitCode(code, unitCode);
             code = SetCommand(code, command);
 
-            return new LPD433MHzCodeSequence().WithCode(new LPD433MHzCode(code, 24)).WithCode(new LPD433MHzCode(code, 24));
+            return new LPD433MHzCodeSequence().WithCode(new LPD433MHzCode(code, 24, 3));
         }
 
         private uint SetSystemCode(uint code, BrennenstuhlSystemCode systemCode)

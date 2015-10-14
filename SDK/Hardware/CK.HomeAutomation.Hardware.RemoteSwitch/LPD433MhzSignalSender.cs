@@ -35,13 +35,14 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch
 
                 uint value = (uint)code.GetNamedNumber("value", 0);
                 byte length = (byte)code.GetNamedNumber("length", 0);
+                byte repeats = (byte)code.GetNamedNumber("repeats", 1);
 
                 if (value == 0 || length == 0)
                 {
                     throw new InvalidOperationException("Value or length is null.");
                 }
 
-                codeSequence.WithCode(new LPD433MHzCode(value, length));
+                codeSequence.WithCode(new LPD433MHzCode(value, length, repeats));
             }
 
             Send(codeSequence);
@@ -51,13 +52,13 @@ namespace CK.HomeAutomation.Hardware.RemoteSwitch
         {
             foreach (var code in codeSequence.Codes)
             {
-                Send(code.Value, code.Length);
+                Send(code);
             }
         }
 
-        private void Send(uint code, byte length)
+        private void Send(LPD433MHzCode code)
         {
-            var command = new SendLDP433MhzSignalCommand().WithCode(code).WithLength(length).WithPin(_pin);
+            var command = new SendLDP433MhzSignalCommand().WithPin(_pin).WithCode(code.Value).WithLength(code.Length).WithRepeats(code.Repeats);
             _i2CHardwareBridge.ExecuteCommand(command);
         }
     }
