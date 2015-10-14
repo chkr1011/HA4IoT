@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Devices.Gpio;
@@ -64,11 +65,22 @@ namespace CK.HomeAutomation.Core
             InitializeNotificationHandler();
             InitializeTimer();
             InitializeHttpApi();
+            TryInitializeActuators();
 
-            Initialize();
-            
             _httpServer.StartAsync(80).Wait();
             Timer.Run();
+        }
+
+        private void TryInitializeActuators()
+        {
+            try
+            {
+                Initialize();
+            }
+            catch (Exception exception)
+            {
+                NotificationHandler.PublishFrom(this, NotificationType.Error, "Error while initializing. " + exception);
+            }
         }
     }
 }

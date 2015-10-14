@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CK.HomeAutomation.Actuators.Contracts;
 using CK.HomeAutomation.Networking;
 using CK.HomeAutomation.Notifications;
@@ -8,56 +9,70 @@ namespace CK.HomeAutomation.Actuators
 {
     public abstract class ButtonBase : ActuatorBase, IButton
     {
+        private readonly List<Action>  _actionsForPressedShort = new List<Action>();
+        private readonly List<Action> _actionsForPressedLong = new List<Action>();
+
         protected ButtonBase(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
             : base(id, httpApiController, notificationHandler)
         {
         }
 
-        protected List<Action> ShortActions { get; } = new List<Action>();
-        protected List<Action> LongActions { get; } = new List<Action>();
-
         public event EventHandler PressedShort;
         public event EventHandler PressedLong;
 
+        protected bool IsActionForPressedLongAttached => _actionsForPressedLong.Any() || PressedLong != null;
+
         public ButtonBase WithShortAction(Action action)
         {
-            ShortActions.Add(action);
+            _actionsForPressedShort.Add(action);
             return this;
         }
 
         public ButtonBase WithLongAction(Action action)
         {
-            LongActions.Add(action);
+            _actionsForPressedLong.Add(action);
             return this;
         }
 
-        protected override void ApiPost(ApiRequestContext context)
+        public override void ApiPost(ApiRequestContext context)
         {
             string action = context.Request.GetNamedString("duration", string.Empty);
             if (action.Equals(ButtonPressedDuration.Long.ToString(), StringComparison.OrdinalIgnoreCase))
             {
-                InvokeLongAction();
+                OnPressedLong();
             }
             else
             {
-                InvokeShortAction();
+                OnPressedShort();
             }
         }
 
-        protected void InvokeShortAction()
+        protected void OnPressedShort()
         {
             NotificationHandler.PublishFrom(this, NotificationType.Info, "'{0}' was pressed short.", Id);
 
-            PressedShort?.Invoke(this, EventArgs.Empty);
-            ShortActions.ForEach(a => a.Invoke());
+            try
+            {
+                PressedShort?.Invoke(this, EventArgs.Empty);
+            }
+            finally
+            {
+                _actionsForPressedShort.ForEach(a => a.Invoke());
+            }
         }
 
-        protected void InvokeLongAction()
+        protected void OnPressedLong()
         {
             NotificationHandler.PublishFrom(this, NotificationType.Info, "'{0}' was pressed long.", Id);
 
-            PressedLong?.Invoke(this, EventArgs.Empty);
-            LongActions.ForEach(a => a.Invoke());
+            try
+            {
+                PressedLong?.Invoke(this, EventArgs.Empty);
+            }
+            finally
+            {
+                _actionsForPressedLong.ForEach(a => a.Invoke());
+            }
         }
     }
 }

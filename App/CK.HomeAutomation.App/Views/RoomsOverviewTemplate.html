@@ -1,0 +1,13 @@
+﻿<div class="row panel panel-default" ng-class="{'panel-primary': haCtrl.activePanel==room.id}" id="{{room.id}}" ng-repeat="room in haCtrl.rooms | orderBy:['sortValue', 'caption']">
+    <div class="panel-heading pointer" ng-click="haCtrl.setActivePanel(room.id)">
+        <h1 class="panel-title">{{room.caption}}</h1>
+    </div>
+    <table class="table table-striped" ng-show="haCtrl.activePanel==room.id">
+        <tr ng-repeat="actuator in room.actuators | orderBy:['sortValue', 'caption']">
+            <td style="vertical-align: middle;">
+                <span><img class="icon" ng-src="Images/{{actuator.image}}.png" />{{actuator.caption}}</span>
+            </td>
+            <td style="text-align: right;" ng-include="actuator.template"></td>
+        </tr>
+    </table>
+</div>

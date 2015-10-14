@@ -1,17 +1,9 @@
-﻿using System;
-
-namespace CK.HomeAutomation.Actuators
+﻿namespace CK.HomeAutomation.Actuators
 {
-    public class StateMachineStateChangedEventArgs : EventArgs
+    public class StateMachineStateChangedEventArgs : ValueChangedEventArgsBase<string>
     {
-        public StateMachineStateChangedEventArgs(string oldState, string newState)
+        public StateMachineStateChangedEventArgs(string oldState, string newState) : base(oldState, newState)
         {
-            OldState = oldState;
-            NewState = newState;
         }
-
-        public string OldState { get; }
-
-        public string NewState { get; }
     }
 }

@@ -19,7 +19,7 @@ namespace CK.HomeAutomation.Actuators.Tests
             var output = new TestBinaryStateOutputActuator();
             output.State.ShouldBeEquivalentTo(BinaryActuatorState.Off);
 
-            automation.WithMotionDetector(motionDetector);
+            automation.WithTrigger(motionDetector);
             automation.WithTarget(output);
 
             motionDetector.WalkIntoMotionDetector();
@@ -36,7 +36,7 @@ namespace CK.HomeAutomation.Actuators.Tests
             var output = new TestBinaryStateOutputActuator();
             output.State.ShouldBeEquivalentTo(BinaryActuatorState.Off);
 
-            automation.WithButtonPressedShort(button);
+            automation.WithTrigger(button);
             automation.WithTarget(output);
 
             button.PressShort();
@@ -55,8 +55,8 @@ namespace CK.HomeAutomation.Actuators.Tests
             var output = new TestBinaryStateOutputActuator();
             output.State.ShouldBeEquivalentTo(BinaryActuatorState.Off);
 
-            automation.WithOnWithinTimeRange(() => TimeSpan.Parse("10:00:00"), () => TimeSpan.Parse("15:00:00"));
-            automation.WithMotionDetector(motionDetector);
+            automation.WithTurnOnWithinTimeRange(() => TimeSpan.Parse("10:00:00"), () => TimeSpan.Parse("15:00:00"));
+            automation.WithTrigger(motionDetector);
             automation.WithTarget(output);
 
             motionDetector.WalkIntoMotionDetector();
@@ -75,8 +75,8 @@ namespace CK.HomeAutomation.Actuators.Tests
             var output = new TestBinaryStateOutputActuator();
             output.State.ShouldBeEquivalentTo(BinaryActuatorState.Off);
 
-            automation.WithOnWithinTimeRange(() => TimeSpan.Parse("10:00:00"), () => TimeSpan.Parse("15:00:00"));
-            automation.WithButtonPressedShort(button);
+            automation.WithTurnOnWithinTimeRange(() => TimeSpan.Parse("10:00:00"), () => TimeSpan.Parse("15:00:00"));
+            automation.WithTrigger(button);
             automation.WithTarget(output);
 
             button.PressShort();
@@ -96,7 +96,7 @@ namespace CK.HomeAutomation.Actuators.Tests
             var output = new TestBinaryStateOutputActuator();
             output.State.ShouldBeEquivalentTo(BinaryActuatorState.Off);
 
-            automation.WithMotionDetector(motionDetector);
+            automation.WithTrigger(motionDetector);
             automation.WithTarget(output);
             automation.WithOnDuration(TimeSpan.FromSeconds(15));
 
@@ -124,7 +124,7 @@ namespace CK.HomeAutomation.Actuators.Tests
             var output = new TestBinaryStateOutputActuator();
             output.State.ShouldBeEquivalentTo(BinaryActuatorState.Off);
 
-            automation.WithMotionDetector(motionDetector);
+            automation.WithTrigger(motionDetector);
             automation.WithTarget(output);
 
             IBinaryStateOutputActuator[] otherActuators =
@@ -137,6 +137,39 @@ namespace CK.HomeAutomation.Actuators.Tests
             motionDetector.WalkIntoMotionDetector();
 
             output.State.ShouldBeEquivalentTo(BinaryActuatorState.On);
+        }
+
+        [TestMethod]
+        public void Should_TurnOff_IfButtonPressed_WhileTargetIsAlreadyOn()
+        {
+            var timer = new TestHomeAutomationTimer();
+            timer.CurrentTime = TimeSpan.Parse("14:00:00");
+
+            var automation = new AutomaticTurnOnAndOffAutomation(timer);
+            var button = new TestButton();
+
+            var output = new TestBinaryStateOutputActuator();
+            output.State.ShouldBeEquivalentTo(BinaryActuatorState.Off);
+
+            automation.WithTrigger(button);
+            automation.WithTarget(output);
+
+            IBinaryStateOutputActuator[] otherActuators =
+            {
+                new TestBinaryStateOutputActuator().WithOffState(), new TestBinaryStateOutputActuator().WithOffState()
+            };
+
+            automation.WithSkipIfAnyActuatorIsAlreadyOn(otherActuators);
+
+            button.PressShort();
+            output.State.ShouldBeEquivalentTo(BinaryActuatorState.On);
+
+            button.PressShort();
+            output.State.ShouldBeEquivalentTo(BinaryActuatorState.On);
+
+            automation.WithTurnOffIfButtonPressedWhileAlreadyOn();
+            button.PressShort();
+            output.State.ShouldBeEquivalentTo(BinaryActuatorState.Off);
         }
     }
 }

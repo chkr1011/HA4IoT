@@ -1,78 +1,73 @@
 ﻿using System;
+using System.Collections.Generic;
 using CK.HomeAutomation.Core.Timer;
+using CK.HomeAutomation.Hardware.I2CHardwareBridge;
 
 namespace CK.HomeAutomation.Hardware.DHT22
 {
     public class DHT22Accessor
     {
-        private const byte ActionReadDht22 = 1;
+        private readonly I2CHardwareBridge.I2CHardwareBridge _i2CHardwareBridge;
 
-        private readonly II2cBusAccessor _i2CBus;
-        private readonly int _bridgeAddress;
-
-        private readonly float[] _humidities = new float[10];
-        private readonly float[] _temperatures = new float[10];
-
-        public DHT22Accessor(int address, IHomeAutomationTimer timer, II2cBusAccessor i2CBus)
+        private readonly HashSet<byte> _openPins = new HashSet<byte>();
+        private readonly Dictionary<byte, float> _humidities = new Dictionary<byte, float>();
+        private readonly Dictionary<byte, float> _temperatures = new Dictionary<byte, float>();
+        
+        public DHT22Accessor(I2CHardwareBridge.I2CHardwareBridge i2CHardwareBridge, IHomeAutomationTimer timer)
         {
-            if (i2CBus == null) throw new ArgumentNullException(nameof(i2CBus));
-            
-            _bridgeAddress = address;
-            _i2CBus = i2CBus;
+            if (i2CHardwareBridge == null) throw new ArgumentNullException(nameof(i2CHardwareBridge));
+            if (timer == null) throw new ArgumentNullException(nameof(timer));
 
+            _i2CHardwareBridge = i2CHardwareBridge;
             timer.Every(TimeSpan.FromSeconds(10)).Do(FetchValues);
         }
 
         public event EventHandler ValuesUpdated;
 
-        public DHT22TemperatureSensor GetTemperatureSensor(int sensorId)
+        public DHT22TemperatureSensor GetTemperatureSensor(byte pin)
         {
-            return new DHT22TemperatureSensor(sensorId, this);
+            _openPins.Add(pin);
+
+            return new DHT22TemperatureSensor(pin, this);
         }
 
-        public float GetTemperature(int sensorId)
+        public float GetTemperature(byte pin)
         {
-            return _temperatures[sensorId];
+            return _temperatures[pin];
         }
 
-        public DHT22HumiditySensor GetHumiditySensor(int sensorId)
+        public DHT22HumiditySensor GetHumiditySensor(byte pin)
         {
-            return new DHT22HumiditySensor(sensorId, this);
+            _openPins.Add(pin);
+
+            return new DHT22HumiditySensor(pin, this);
         }
 
-        public float GetHumidity(int sensorId)
+        public float GetHumidity(byte pin)
         {
-            return _humidities[sensorId];
+            return _humidities[pin];
         }
 
         private void FetchValues()
         {
-            for (int i = 0; i < 9; i++)
+            foreach (var openPin in _openPins)
             {
-                FetchValues(i);    
+                FetchValues(openPin);
             }
             
             ValuesUpdated?.Invoke(this, EventArgs.Empty);
         }
 
-        private void FetchValues(int id)
+        private void FetchValues(byte pin)
         {
-            // The first byte is the action (set sensor index), the second the index of the sensor.
-            byte[] writeBuffer = { ActionReadDht22, (byte)id };
-            byte[] readBuffer = new byte[8];
+            var command = new ReadDHT22SensorCommand().WithPin(pin);
+            _i2CHardwareBridge.ExecuteCommand(command);
 
-            // TODO: Repeatet start conditions are not(!) working with the Pi2 and the Arduino Nano (maybe the Arduino Wire library hack is the problem here).
-            // The Arduino code is currently running without the hack and thus, a separeted write and read is required.
-
-            ////_i2CBus.Execute(_bridgeAddress, bus => bus.WriteRead(writeBuffer, readBuffer));
-            _i2CBus.Execute(_bridgeAddress, bus =>
+            if (command.Response != null && command.Response.Succeeded)
             {
-                bus.Write(writeBuffer);
-                bus.Read(readBuffer);
-            }, false);
-
-            _temperatures[id] = BitConverter.ToSingle(readBuffer, 0);
-            _humidities[id] = BitConverter.ToSingle(readBuffer, 4);
+                _temperatures[pin] = command.Response.Temperature;
+                _humidities[pin] = command.Response.Humidity;
+            }
         }
     }
 }

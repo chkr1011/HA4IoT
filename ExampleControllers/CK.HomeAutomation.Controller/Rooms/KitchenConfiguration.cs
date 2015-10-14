@@ -1,7 +1,6 @@
 ﻿
 using CK.HomeAutomation.Actuators;
 using CK.HomeAutomation.Actuators.Connectors;
-using CK.HomeAutomation.Core;
 using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.DHT22;
 using CK.HomeAutomation.Hardware.GenericIOBoard;
@@ -31,7 +30,9 @@ namespace CK.HomeAutomation.Controller.Rooms
             ButtonKitchenette,
 
             SocketWall,
-            SocketKitchenette
+            SocketKitchenette,
+
+            Window
         }
 
         public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Accessor dht22Accessor)
@@ -39,6 +40,7 @@ namespace CK.HomeAutomation.Controller.Rooms
             var hsrel5 = ccToolsController.CreateHSREL5(Device.KitchenHSREL5, 58);
             var hspe8 = ccToolsController.CreateHSPE8OutputOnly(Device.KitchenHSPE8, 39);
 
+            var input0 = ioBoardManager.GetInputBoard(Device.Input0);
             var input1 = ioBoardManager.GetInputBoard(Device.Input1);
             var input2 = ioBoardManager.GetInputBoard(Device.Input2);
 
@@ -58,10 +60,11 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithRollerShutter(Kitchen.RollerShutter, hsrel5.GetOutput(4), hsrel5.GetOutput(3), RollerShutter.DefaultMaxMovingDuration, 15467)
                 .WithButton(Kitchen.ButtonKitchenette, input1.GetInput(11))
                 .WithButton(Kitchen.ButtonPassage, input1.GetInput(9))
-                .WithRollerShutterButtons(Kitchen.RollerShutterButtons, input2.GetInput(15), input2.GetInput(14));
+                .WithRollerShutterButtons(Kitchen.RollerShutterButtons, input2.GetInput(15), input2.GetInput(14))
+                .WithWindow(Kitchen.Window, w => w.WithCenterCasement(input0.GetInput(6), input0.GetInput(7)));
 
-            kitchen.Lamp(Kitchen.LightCeilingMiddle).ConnectToggleWith(kitchen.Button(Kitchen.ButtonKitchenette));
-            kitchen.Lamp(Kitchen.LightCeilingMiddle).ConnectToggleWith(kitchen.Button(Kitchen.ButtonPassage));
+            kitchen.Lamp(Kitchen.LightCeilingMiddle).ConnectToggleActionWith(kitchen.Button(Kitchen.ButtonKitchenette));
+            kitchen.Lamp(Kitchen.LightCeilingMiddle).ConnectToggleActionWith(kitchen.Button(Kitchen.ButtonPassage));
 
             kitchen.SetupAutomaticRollerShutters().WithRollerShutter(kitchen.RollerShutter(Kitchen.RollerShutter));
             kitchen.RollerShutter(Kitchen.RollerShutter).ConnectWith(kitchen.RollerShutterButtons(Kitchen.RollerShutterButtons));
@@ -72,9 +75,9 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithActuator(kitchen.Lamp(Kitchen.LightCeilingWindow));
 
             kitchen.SetupAutomaticTurnOnAndOffAction()
-                .WithMotionDetector(kitchen.MotionDetector(Kitchen.MotionDetector))
+                .WithTrigger(kitchen.MotionDetector(Kitchen.MotionDetector))
                 .WithTarget(kitchen.BinaryStateOutput(Kitchen.CombinedAutomaticLights))
-                .WithOnAtNightTimeRange(home.WeatherStation);
+                .WithEnabledAtNight(home.WeatherStation);
         }
     }
 }

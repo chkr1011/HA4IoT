@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using CK.HomeAutomation.Actuators;
 using CK.HomeAutomation.Actuators.Contracts;
-using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Telemetry

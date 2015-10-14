@@ -124,7 +124,7 @@
     <Compile Include="I2cBusAccessor.cs" />
     <Compile Include="IBinaryInput.cs" />
     <Compile Include="IBinaryOutput.cs" />
-    <Compile Include="IDeviceDriver.cs" />
+    <Compile Include="IPortExpanderDriver.cs" />
     <Compile Include="II2cBusAccessor.cs" />
     <Compile Include="IInputController.cs" />
     <Compile Include="InterruptMonitor.cs" />

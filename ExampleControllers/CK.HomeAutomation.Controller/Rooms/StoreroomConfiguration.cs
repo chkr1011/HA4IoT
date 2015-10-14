@@ -1,6 +1,5 @@
 ﻿using System;
 using CK.HomeAutomation.Actuators;
-using CK.HomeAutomation.Core;
 using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.DHT22;
 using CK.HomeAutomation.Hardware.GenericIOBoard;
@@ -9,6 +8,15 @@ namespace CK.HomeAutomation.Controller.Rooms
 {
     internal class StoreroomConfiguration
     {
+        private enum Storeroom
+        {
+            MotionDetector,
+            LightCeiling,
+
+            CatLitterBoxFan,
+            CirculatingPump
+        }
+
         public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Accessor dht22Reader)
         {
             var hsrel8LowerHeatingValves = ccToolsController.CreateHSREL8(Device.LowerHeatingValvesHSREL8, 16);
@@ -23,7 +31,7 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithSocket(Storeroom.CatLitterBoxFan, hsrel8LowerHeatingValves.GetOutput(15));
 
             storeroom.SetupAutomaticTurnOnAndOffAction()
-                .WithMotionDetector(storeroom.MotionDetector(Storeroom.MotionDetector))
+                .WithTrigger(storeroom.MotionDetector(Storeroom.MotionDetector))
                 .WithTarget(storeroom.Lamp(Storeroom.LightCeiling))
                 .WithTarget(storeroom.Socket(Storeroom.CatLitterBoxFan))
                 .WithOnDuration(TimeSpan.FromMinutes(1));
@@ -31,20 +39,11 @@ namespace CK.HomeAutomation.Controller.Rooms
             storeroom.WithSocket(Storeroom.CirculatingPump, hsrel5UpperHeatingValves.GetOutput(3));
 
             storeroom.SetupAutomaticTurnOnAndOffAction()
-                .WithMotionDetector(home.Room(Room.Kitchen).MotionDetector(KitchenConfiguration.Kitchen.MotionDetector))
-                .WithMotionDetector(home.Room(Room.LowerBathroom).MotionDetector(LowerBathroomConfiguration.LowerBathroom.MotionDetector))
+                .WithTrigger(home.Room(Room.Kitchen).MotionDetector(KitchenConfiguration.Kitchen.MotionDetector))
+                .WithTrigger(home.Room(Room.LowerBathroom).MotionDetector(LowerBathroomConfiguration.LowerBathroom.MotionDetector))
                 .WithTarget(storeroom.Socket(Storeroom.CirculatingPump))
                 .WithOnDuration(TimeSpan.FromMinutes(1))
-                .WithOnAtDayTimeRange(home.WeatherStation);
-        }
-
-        private enum Storeroom
-        {
-            MotionDetector,
-            LightCeiling,
-
-            CatLitterBoxFan,
-            CirculatingPump
+                .WithEnabledAtDay(home.WeatherStation);
         }
     }
 }

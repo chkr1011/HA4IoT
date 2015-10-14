@@ -44,7 +44,7 @@ namespace CK.HomeAutomation.Actuators
             SetState(State == BinaryActuatorState.On ? BinaryActuatorState.Off : BinaryActuatorState.On, commit);
         }
 
-        protected override void ApiPost(ApiRequestContext context)
+        public override void ApiPost(ApiRequestContext context)
         {
             base.ApiPost(context);
 

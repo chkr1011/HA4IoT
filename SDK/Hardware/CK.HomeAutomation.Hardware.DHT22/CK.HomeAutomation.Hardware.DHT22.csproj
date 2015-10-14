@@ -121,6 +121,10 @@
     <Content Include="Properties\CK.HomeAutomation.Hardware.DHT22.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\CK.HomeAutomation.Hardware.I2CHardwareBridge\CK.HomeAutomation.Hardware.I2CHardwareBridge.csproj">
+      <Project>{8BF16E28-A01D-47E9-A5C4-CC93E347AAF4}</Project>
+      <Name>CK.HomeAutomation.Hardware.I2CHardwareBridge</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\CK.HomeAutomation.Core\CK.HomeAutomation.Core.csproj">
       <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
       <Name>CK.HomeAutomation.Core</Name>

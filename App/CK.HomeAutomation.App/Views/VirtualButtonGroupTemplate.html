@@ -1,0 +1,5 @@
+﻿<div class="btn-group-vertical" role="group">
+    <button class="btn btn-default" style="min-width: 60px;" ng-repeat="button in actuator.buttons" ng-click="invokeVirtualButtonGroup(actuator.id, button.id)">
+        <span>{{button.caption}}</span>
+    </button>    
+</div>

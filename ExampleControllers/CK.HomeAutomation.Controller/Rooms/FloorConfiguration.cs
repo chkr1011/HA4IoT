@@ -1,6 +1,5 @@
 ﻿using System;
 using CK.HomeAutomation.Actuators;
-using CK.HomeAutomation.Core;
 using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.DHT22;
 using CK.HomeAutomation.Hardware.GenericIOBoard;
@@ -9,6 +8,52 @@ namespace CK.HomeAutomation.Controller.Rooms
 {
     internal class FloorConfiguration
     {
+        private enum Floor
+        {
+            StairwayMotionDetector,
+
+            StairwayLampWall,
+            StairwayLampCeiling,
+            CombinedStairwayLamp,
+
+            StairwayRollerShutter,
+
+            LowerFloorTemperatureSensor,
+            LowerFloorHumiditySensor,
+            LowerFloorMotionDetector,
+
+            StairsLowerMotionDetector,
+            StairsUpperMotionDetector,
+
+            ButtonLowerFloorUpper,
+            ButtonLowerFloorLower,
+            ButtonLowerFloorAtBathroom,
+            ButtonLowerFloorAtKitchen,
+            ButtonStairway,
+            ButtonStairsLowerUpper,
+            ButtonStairsLowerLower,
+            ButtonStairsUpper,
+
+            Lamp1,
+            Lamp2,
+            Lamp3,
+            CombinedLamps,
+
+            LampStairsCeiling1,
+            LampStairsCeiling2,
+            LampStairsCeiling3,
+            LampStairsCeiling4,
+            CombinedLampStairsCeiling,
+
+            LampStairs1,
+            LampStairs2,
+            LampStairs3,
+            LampStairs4,
+            LampStairs5,
+            LampStairs6,
+            CombinedLampStairs
+        }
+
         public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Accessor dht22Accessor)
         {
             var hsrel5Stairway = ccToolsController.CreateHSREL5(Device.StairwayHSREL5, 60);
@@ -58,10 +103,10 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithActuator(floor.Lamp(Floor.StairwayLampWall));
 
             floor.SetupAutomaticTurnOnAndOffAction()
-                .WithMotionDetector(floor.MotionDetector(Floor.StairwayMotionDetector))
-                .WithButtonPressedShort(floor.Button(Floor.ButtonStairway))
+                .WithTrigger(floor.MotionDetector(Floor.StairwayMotionDetector))
+                .WithTrigger(floor.Button(Floor.ButtonStairway))
                 .WithTarget(floor.BinaryStateOutput(Floor.CombinedStairwayLamp))
-                .WithOnAtNightTimeRange(home.WeatherStation)
+                .WithEnabledAtNight(home.WeatherStation)
                 .WithOnDuration(TimeSpan.FromSeconds(30));
 
             floor.CombineActuators(Floor.CombinedLamps)
@@ -70,12 +115,13 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithActuator(floor.Lamp(Floor.Lamp3));
 
             floor.SetupAutomaticTurnOnAndOffAction()
-                .WithMotionDetector(floor.MotionDetector(Floor.LowerFloorMotionDetector))
-                .WithButtonPressedShort(floor.Button(Floor.ButtonLowerFloorUpper))
-                .WithButtonPressedShort(floor.Button(Floor.ButtonLowerFloorAtBathroom))
-                .WithButtonPressedShort(floor.Button(Floor.ButtonLowerFloorAtKitchen))
+                .WithTrigger(floor.MotionDetector(Floor.LowerFloorMotionDetector))
+                .WithTrigger(floor.Button(Floor.ButtonLowerFloorUpper))
+                .WithTrigger(floor.Button(Floor.ButtonLowerFloorAtBathroom))
+                .WithTrigger(floor.Button(Floor.ButtonLowerFloorAtKitchen))
                 .WithTarget(floor.BinaryStateOutput(Floor.CombinedLamps))
-                .WithOnAtNightTimeRange(home.WeatherStation)
+                .WithEnabledAtNight(home.WeatherStation)
+                .WithTurnOffIfButtonPressedWhileAlreadyOn()
                 .WithOnDuration(TimeSpan.FromSeconds(20));
 
             floor.CombineActuators(Floor.CombinedLampStairsCeiling)
@@ -85,9 +131,9 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithActuator(floor.Lamp(Floor.LampStairsCeiling4));
 
             floor.SetupAutomaticTurnOnAndOffAction()
-                .WithMotionDetector(floor.MotionDetector(Floor.StairsLowerMotionDetector))
-                .WithMotionDetector(floor.MotionDetector(Floor.StairsUpperMotionDetector))
-                .WithButtonPressedShort(floor.Button(Floor.ButtonStairsUpper))
+                .WithTrigger(floor.MotionDetector(Floor.StairsLowerMotionDetector))
+                .WithTrigger(floor.MotionDetector(Floor.StairsUpperMotionDetector))
+                .WithTrigger(floor.Button(Floor.ButtonStairsUpper))
                 .WithTarget(floor.BinaryStateOutput(Floor.CombinedLampStairsCeiling))
                 .WithOnDuration(TimeSpan.FromSeconds(10));
 
@@ -102,53 +148,6 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithOffBetweenRange(TimeSpan.FromHours(23), TimeSpan.FromHours(4));
             
             floor.SetupAutomaticRollerShutters().WithRollerShutter(floor.RollerShutter(Floor.StairwayRollerShutter));
-        }
-
-        private enum Floor
-        {
-            StairwayMotionDetector,
-            StairwayTemperatureAndHumiditySensor,
-
-            StairwayLampWall,
-            StairwayLampCeiling,
-            CombinedStairwayLamp,
-
-            StairwayRollerShutter,
-
-            LowerFloorTemperatureSensor,
-            LowerFloorHumiditySensor,
-            LowerFloorMotionDetector,
-
-            StairsLowerMotionDetector,
-            StairsUpperMotionDetector,
-
-            ButtonLowerFloorUpper,
-            ButtonLowerFloorLower,
-            ButtonLowerFloorAtBathroom,
-            ButtonLowerFloorAtKitchen,
-            ButtonStairway,
-            ButtonStairsLowerUpper,
-            ButtonStairsLowerLower,
-            ButtonStairsUpper,
-
-            Lamp1,
-            Lamp2,
-            Lamp3,
-            CombinedLamps,
-
-            LampStairsCeiling1,
-            LampStairsCeiling2,
-            LampStairsCeiling3,
-            LampStairsCeiling4,
-            CombinedLampStairsCeiling,
-
-            LampStairs1,
-            LampStairs2,
-            LampStairs3,
-            LampStairs4,
-            LampStairs5,
-            LampStairs6,
-            CombinedLampStairs
         }
     }
 }

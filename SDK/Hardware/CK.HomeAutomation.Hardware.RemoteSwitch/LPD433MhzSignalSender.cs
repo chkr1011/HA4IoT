@@ -1,73 +1,65 @@
 ﻿using System;
 using Windows.Data.Json;
+using CK.HomeAutomation.Hardware.I2CHardwareBridge;
 using CK.HomeAutomation.Networking;
 
 namespace CK.HomeAutomation.Hardware.RemoteSwitch
 {
-    public class LPD433MhzSignalSender : ILPD433MhzSignalSender
+    public class LPD433MHzSignalSender : ILPD433MHzSignalSender
     {
-        private const byte ActionSendLpd433Signal = 2;
+        private readonly I2CHardwareBridge.I2CHardwareBridge _i2CHardwareBridge;
+        private readonly byte _pin;
 
-        private readonly int _address;
-        private readonly II2cBusAccessor _i2CBus;
-        
-        public LPD433MhzSignalSender(II2cBusAccessor i2CBus, int address, IHttpRequestController httpApiController)
+        public LPD433MHzSignalSender(I2CHardwareBridge.I2CHardwareBridge i2CHardwareBridge, byte pin, IHttpRequestController httpApiController)
         {
-            if (i2CBus == null) throw new ArgumentNullException(nameof(i2CBus));
+            if (i2CHardwareBridge == null) throw new ArgumentNullException(nameof(i2CHardwareBridge));
             if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
 
-            _i2CBus = i2CBus;
-            _address = address;
-
-            httpApiController.Handle(HttpMethod.Post, "433Mhz").WithRequiredJsonBody().Using(ApiPost);
-        }
-
-        public void Send(LPD433MhzCodeSequence codeSequence)
-        {
-            foreach (var code in codeSequence.Codes)
-            {
-                Send(code.Code, code.Length);
-            }
+            _i2CHardwareBridge = i2CHardwareBridge;
+            _pin = pin;
+            httpApiController.Handle(HttpMethod.Post, "433MHz").WithRequiredJsonBody().Using(ApiPost);
         }
 
         private void ApiPost(HttpContext context)
         {
-            JsonArray sequence = context.Request.JsonBody.GetNamedArray("sequence", null);
-            if (sequence == null)
+            JsonArray sequence = context.Request.JsonBody.GetNamedArray("sequence", new JsonArray());
+            if (sequence.Count == 0)
             {
                 return;
             }
 
-            var codeSequence = new LPD433MhzCodeSequence();
+            var codeSequence = new LPD433MHzCodeSequence();
             foreach (IJsonValue item in sequence)
             {
                 var code = item.GetObject();
 
-                ulong value = (ulong)code.GetNamedNumber("value", 0);
-                int length = (int)code.GetNamedNumber("length", 0);
+                uint value = (uint)code.GetNamedNumber("value", 0);
+                byte length = (byte)code.GetNamedNumber("length", 0);
+                byte repeats = (byte)code.GetNamedNumber("repeats", 1);
 
                 if (value == 0 || length == 0)
                 {
                     throw new InvalidOperationException("Value or length is null.");
                 }
 
-                codeSequence.WithCode(new LPD433MhzCode(value, length));
+                codeSequence.WithCode(new LPD433MHzCode(value, length, repeats));
             }
 
             Send(codeSequence);
         }
 
-        private void Send(ulong code, int length)
+        public void Send(LPD433MHzCodeSequence codeSequence)
         {
-            var codeBuffer = BitConverter.GetBytes(code);
+            foreach (var code in codeSequence.Codes)
+            {
+                Send(code);
+            }
+        }
 
-            var package = new byte[6];
-            package[0] = ActionSendLpd433Signal;
-
-            Array.Copy(codeBuffer, 0, package, 1, 4); // The code.
-            package[5] = (byte)length;
-
-            _i2CBus.Execute(_address, bus => bus.Write(package), false);
+        private void Send(LPD433MHzCode code)
+        {
+            var command = new SendLDP433MhzSignalCommand().WithPin(_pin).WithCode(code.Value).WithLength(code.Length).WithRepeats(code.Repeats);
+            _i2CHardwareBridge.ExecuteCommand(command);
         }
     }
 }

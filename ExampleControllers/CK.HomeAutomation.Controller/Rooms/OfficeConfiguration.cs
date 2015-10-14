@@ -1,5 +1,4 @@
 ﻿using CK.HomeAutomation.Actuators;
-using CK.HomeAutomation.Core;
 using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.DHT22;
 using CK.HomeAutomation.Hardware.GenericIOBoard;
@@ -19,6 +18,7 @@ namespace CK.HomeAutomation.Controller.Rooms
             const int SensorID = 6;
 
             var office = home.AddRoom(Room.Office)
+                .WithMotionDetector(Office.MotionDetector, input4.GetInput(13))
                 .WithTemperatureSensor(Office.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorID))
                 .WithHumiditySensor(Office.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorID))
                 .WithLamp(Office.LightCeilingFrontRight, hsrel8.GetOutput(8).WithInvertedState())
@@ -82,6 +82,14 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithActuator(lightsCouchOnly, BinaryActuatorState.On)
                 .WithActuator(lightsOther, BinaryActuatorState.Off)
                 .ConnectApplyStateWith(office.Actuator<Button>(Office.ButtonLowerRight));
+
+            office.Button(Office.ButtonUpperLeft).WithLongAction(() =>
+            {
+                light.TurnOff();
+                office.Socket(Office.SocketRearLeftEdge).TurnOff();
+                office.Socket(Office.SocketRearLeft).TurnOff();
+                office.Socket(Office.SocketFrontLeft).TurnOff();
+            });
         }
 
         private enum Office

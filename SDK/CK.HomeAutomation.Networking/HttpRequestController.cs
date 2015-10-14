@@ -63,11 +63,22 @@ namespace CK.HomeAutomation.Networking
                         continue;
                     }
                 }
-                
-                handler.Action(e.Context);
-                e.IsHandled = true;
 
+                InvokeHandlerAction(handler, e.Context);
+                e.IsHandled = true;
                 return;
+            }
+        }
+
+        private void InvokeHandlerAction(HttpRequestDispatcherAction handler, HttpContext context)
+        {
+            try
+            {
+                handler.Action(context);
+            }
+            catch (BadRequestException)
+            {
+                context.Response.StatusCode = HttpStatusCode.BadRequest;
             }
         }
     }

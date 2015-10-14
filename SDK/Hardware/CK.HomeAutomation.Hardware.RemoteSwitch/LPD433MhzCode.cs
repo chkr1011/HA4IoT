@@ -1,15 +1,18 @@
 ﻿namespace CK.HomeAutomation.Hardware.RemoteSwitch
 {
-    public class LPD433MhzCode
+    public class LPD433MHzCode
     {
-        public LPD433MhzCode(ulong code, int length)
+        public LPD433MHzCode(uint value, byte length, byte repeats)
         {
-            Code = code;
+            Value = value;
             Length = length;
+            Repeats = repeats;
         }
 
-        public ulong Code { get; }
+        public uint Value { get; }
 
-        public int Length { get; }
+        public byte Length { get; }
+
+        public byte Repeats { get; }
     }
 }

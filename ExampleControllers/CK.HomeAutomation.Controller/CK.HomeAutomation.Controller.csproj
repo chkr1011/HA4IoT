@@ -135,6 +135,10 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\CK.HomeAutomation.Hardware.I2CHardwareBridge\CK.HomeAutomation.Hardware.I2CHardwareBridge.csproj">
+      <Project>{8BF16E28-A01D-47E9-A5C4-CC93E347AAF4}</Project>
+      <Name>CK.HomeAutomation.Hardware.I2CHardwareBridge</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SDK\CK.HomeAutomation.Actuators\CK.HomeAutomation.Actuators.csproj">
       <Project>{808abecf-d9c2-4ab2-95d8-eaf228b44576}</Project>
       <Name>CK.HomeAutomation.Actuators</Name>

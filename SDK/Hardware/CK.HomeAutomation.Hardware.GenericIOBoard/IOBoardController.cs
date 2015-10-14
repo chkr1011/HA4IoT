@@ -9,13 +9,14 @@ namespace CK.HomeAutomation.Hardware.GenericIOBoard
     {
         private readonly byte[] _committedState;
         private readonly byte[] _state;
+        private byte[] _peekedState;
 
         private readonly INotificationHandler _notificationHandler;
         private readonly Dictionary<int, IOBoardPort> _openPorts = new Dictionary<int, IOBoardPort>();
-        private readonly IDeviceDriver _portExpanderDriver;
+        private readonly IPortExpanderDriver _portExpanderDriver;
         private readonly object _syncRoot = new object();
 
-        protected IOBoardController(string id, IDeviceDriver portExpanderDriver, INotificationHandler notificationHandler)
+        protected IOBoardController(string id, IPortExpanderDriver portExpanderDriver, INotificationHandler notificationHandler)
         {
             if (portExpanderDriver == null) throw new ArgumentNullException(nameof(portExpanderDriver));
             if (notificationHandler == null) throw new ArgumentNullException(nameof(notificationHandler));
@@ -86,18 +87,43 @@ namespace CK.HomeAutomation.Hardware.GenericIOBoard
                 _portExpanderDriver.Write(_state);
                 Array.Copy(_state, _committedState, _state.Length);
 
-                _notificationHandler.PublishFrom(this, NotificationType.Verbose, "'{0}' commited state.", Id);
+                _notificationHandler.PublishFrom(this, NotificationType.Verbose, "'{0}' committed state.", Id);
             }
         }
 
+        /// <summary>
+        /// Reads the current state from the port expander but does not fire any events.
+        /// Call <see cref="FetchState"/> after all port expanders are polled (peeked) to fire the events.
+        /// </summary>
+        public void PeekState()
+        {
+            lock (_syncRoot)
+            {
+                if (_peekedState != null)
+                {
+                    _notificationHandler.PublishFrom(this, NotificationType.Warning, "Peeking state while previous peeked state is not processed.");
+                }
+
+                _peekedState = _portExpanderDriver.Read();
+            }
+        }
+
+        /// <summary>
+        /// Compares the peeked state and the previous state and fires events if the state has changed.
+        /// This method calls method <see cref="PeekState"/> automatically if the state is not peeked.
+        /// </summary>
         public void FetchState()
         {
             lock (_syncRoot)
             {
-                // TODO: Consider add PeekState() which will read the state but will not fire events. This can be done using another method.
-                // TODO: This will ensure that every state is read before time consuming actions (triggered by events) will be executed.
+                if (_peekedState == null)
+                {
+                    PeekState();
+                }
 
-                byte[] newState = _portExpanderDriver.Read();
+                byte[] newState = _peekedState;
+                _peekedState = null;
+
                 if (newState.SequenceEqual(_committedState))
                 {
                     return;

@@ -68,6 +68,12 @@ namespace CK.HomeAutomation.Actuators
                     bool stateIsAlreadyActive = i == _index;
                     if (stateIsAlreadyActive && _turnOffIfStateIsAppliedTwice)
                     {
+                        if (state.Id == BinaryActuatorState.Off.ToString())
+                        {
+                            // The state is already "Off".
+                            return;
+                        }
+
                         TurnOff();
                         return;
                     }
@@ -133,7 +139,7 @@ namespace CK.HomeAutomation.Actuators
             return configuration;
         }
 
-        protected override void ApiPost(ApiRequestContext context)
+        public override void ApiPost(ApiRequestContext context)
         {
             if (!context.Request.ContainsKey("state"))
             {

@@ -35,7 +35,7 @@ namespace CK.HomeAutomation.Actuators
             context.Response.SetNamedValue("state", JsonValue.CreateBooleanValue(IsMotionDetected));
         }
 
-        protected override void ApiPost(ApiRequestContext context)
+        public override void ApiPost(ApiRequestContext context)
         {
             base.ApiPost(context);
             string action = context.Request.GetNamedString("action");

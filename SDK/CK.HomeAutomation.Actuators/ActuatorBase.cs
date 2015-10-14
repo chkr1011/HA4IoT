@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using Windows.Data.Json;
-using Windows.UI.Xaml.Automation.Peers;
 using CK.HomeAutomation.Networking;
 using CK.HomeAutomation.Notifications;
 
@@ -19,8 +17,9 @@ namespace CK.HomeAutomation.Actuators
 
             Id = id;
             NotificationHandler = notificationHandler;
-            
-            ExposeToApi(httpApiController);
+            HttpApiController = httpApiController;
+
+            ExposeToApi();
         }
 
         public string Id { get; }
@@ -40,15 +39,17 @@ namespace CK.HomeAutomation.Actuators
                 }
 
                 _isEnabled = value;
-                IsEnabledChanged?.Invoke(this, EventArgs.Empty);
+                IsEnabledChanged?.Invoke(this, new ActuatorIsEnabledChangedEventArgs(!value, value));
             }
         }
 
         protected INotificationHandler NotificationHandler { get; }
 
-        public event EventHandler IsEnabledChanged;
+        protected IHttpRequestController HttpApiController { get; }
 
-        protected virtual void ApiPost(ApiRequestContext context)
+        public event EventHandler<ActuatorIsEnabledChangedEventArgs> IsEnabledChanged;
+
+        public virtual void ApiPost(ApiRequestContext context)
         {
             if (context.Request.ContainsKey("isEnabled"))
             {
@@ -71,9 +72,9 @@ namespace CK.HomeAutomation.Actuators
             return configuration;
         }
 
-        private void ExposeToApi(IHttpRequestController httpApiController)
+        private void ExposeToApi()
         {
-            httpApiController.Handle(HttpMethod.Post, "actuator")
+            HttpApiController.Handle(HttpMethod.Post, "actuator")
                 .WithSegment(Id)
                 .WithRequiredJsonBody()
                 .Using(c =>
@@ -84,7 +85,7 @@ namespace CK.HomeAutomation.Actuators
                     c.Response.Body = new JsonBody(context.Response);
                 });
 
-            httpApiController.Handle(HttpMethod.Get, "actuator")
+            HttpApiController.Handle(HttpMethod.Get, "actuator")
                 .WithSegment(Id)
                 .Using(c =>
                 {

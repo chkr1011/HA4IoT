@@ -3,7 +3,7 @@ appConfiguration.controllerAddress = "";
 //appConfiguration.controllerAddress = "192.168.1.15";
 
 // The interval which should be used to poll the current state from the Pi2.
-appConfiguration.pollInterval = 500;
+appConfiguration.pollInterval = 250;
 
 // Indicates whether the overview of all sensor (temperature and humidity) should be shown.
 appConfiguration.showSensorsOverview = true;
@@ -14,13 +14,17 @@ appConfiguration.showRollerShuttersOverview = true;
 // Indicates whether the overview of all motion detectors should be shown.
 appConfiguration.showMotionDetectorsOverview = true;
 
+// Indicates whether the overview of all windows should be shown.
+appConfiguration.showWindowsOverview = true;
+
 // Indicates whether the values from the weather station should be shown.
 appConfiguration.showWeatherStation = true;
 
 // Supported values for an actuator configuration:
-// caption: "The caption (the id is default)
-// image: "The name of the image"
-// sortValue: 1 (The value which is used to sort the actuators)
+// caption:         The caption (the id is default)
+// overviewCaption: The caption which is used at the overview
+// image:           The name of the image
+// sortValue:       The number which is used to sort the actuators
 appConfiguration.actuatorExtender = function (actuator) {
     switch (actuator.id) {
         case "Bedroom.Fan":
@@ -33,6 +37,13 @@ appConfiguration.actuatorExtender = function (actuator) {
         case "Bedroom.SocketWindowLeft":
             {
                 actuator.image = "Poison";
+                break;
+            }
+
+        case "Bedroom.LampBedLeft":
+        case "Bedroom.LampBedRight":
+            {
+                actuator.image = "Night-Lamp";
                 break;
             }
 
@@ -70,24 +81,159 @@ appConfiguration.actuatorExtender = function (actuator) {
         case "LivingRoom.WindowLeft":
             {
                 actuator.caption = "Fenster / links";
+                actuator.overviewCaption = "Wohnzimmer / links";
                 break;
             }
 
         case "LivingRoom.WindowRight":
             {
                 actuator.caption = "Fenster / rechts";
+                actuator.overviewCaption = "Wohnzimmer / rechts";
                 break;
             }
 
         case "Bedroom.RollerShutterLeft":
             {
                 actuator.caption = "Rollo / links";
+                actuator.overviewCaption = "Schlafzimmer / links";
                 break;
             }
 
         case "Bedroom.RollerShutterRight":
             {
                 actuator.caption = "Rollo / rechts";
+                actuator.overviewCaption = "Schlafzimmer / rechts";
+                break;
+            }
+
+        case "LivingRoom.MotionDetector":
+        case "LivingRoom.TemperatureSensor":
+        case "LivingRoom.HumiditySensor":
+            {
+                actuator.overviewCaption = "Wohnzimmer";
+                break;
+            }
+
+        case "Kitchen.MotionDetector":
+        case "Kitchen.TemperatureSensor":
+        case "Kitchen.HumiditySensor":
+            {
+                actuator.overviewCaption = "Küche";
+                break;
+            }
+
+        case "Bedroom.MotionDetector":
+        case "Bedroom.TemperatureSensor":
+        case "Bedroom.HumiditySensor":
+            {
+                actuator.overviewCaption = "Schlafzimmer";
+                break;
+            }
+
+        case "ReadingRoom.Window":
+        case "ReadingRoom.RollerShutter":
+        case "ReadingRoom.TemperatureSensor":
+        case "ReadingRoom.HumiditySensor":
+            {
+                actuator.overviewCaption = "Lesezimmer";
+                break;
+            }
+
+        case "ChildrensRoom.Window":
+        case "ChildrensRoom.RollerShutter":
+        case "ChildrensRoom.TemperatureSensor":
+        case "ChildrensRoom.HumiditySensor":
+            {
+                actuator.overviewCaption = "Kinderzimmer";
+                break;
+            }
+
+        case "UpperBathroom.TemperatureSensor":
+        case "UpperBathroom.HumiditySensor":
+            {
+                actuator.overviewCaption = "Bad / oben";
+                break;
+            }
+
+        case "LowerBathroom.Window":
+        case "LowerBathroom.TemperatureSensor":
+        case "LowerBathroom.HumiditySensor":
+            {
+                actuator.overviewCaption = "Bad / unten";
+                break;
+            }
+
+        case "Garden.SocketPavillion":
+            {
+                actuator.caption = "Pavillion";
+                break;
+            }
+
+        case "Garden.SpotlightRoof":
+            {
+                actuator.caption = "Strahler Dach";
+                break;
+            }
+
+        case "Garden.LampTerrace":
+            {
+                actuator.caption = "Terasse";
+                break;
+            }
+
+        case "Garden.LampTap":
+            {
+                actuator.caption = "Wasserhahn";
+                break;
+            }
+
+        case "Garden.LampRearArea":
+            {
+                actuator.caption = "Tiere";
+                break;
+            }
+
+        case "Garden.LampGarage":
+            {
+                actuator.caption = "Garage";
+                break;
+            }
+
+        case "Garden.LampParkingLot1":
+            {
+                actuator.caption = "Parkplatz (1)";
+                break;
+            }
+
+        case "Garden.LampParkingLot2":
+            {
+                actuator.caption = "Parkplatz (2)";
+                break;
+            }
+
+        case "Garden.LampParkingLot3":
+            {
+                actuator.caption = "Parkplatz (3)";
+                break;
+            }
+
+        case "Garden.StateMachine":
+            {
+                actuator.caption = "Vorlage";
+                actuator.image = "Favorites";
+                actuator.displayVertical = true;
+                break;
+            }
+
+        case "ExampleRoom.CeilingFan":
+            {
+                actuator.image = "Fan";
+                break;
+            }
+
+        case "ExampleRoom.BathroomFan":
+            {
+                actuator.image = "Air";
                 break;
             }
     }
@@ -110,7 +256,7 @@ appConfiguration.roomExtender = function (room) {
 }
 
 friendlyNameLookup = [
-	  { key: "Off", value: "Aus" },
+	{ key: "Off", value: "Aus" },
     { key: "On", value: "An" },
     { key: "RollerShutter", value: "Rollo" },
     { key: "Window", value: "Fenster" },
@@ -125,6 +271,7 @@ friendlyNameLookup = [
     { key: "UpperBathroom", value: "Badezimmer (oben)" },
     { key: "LowerBathroom", value: "Badezimmer (unten)" },
     { key: "Storeroom", value: "Abstellkammer" },
+    { key: "Garden", value: "Garten" },
 
     { key: "Bedroom.Fan", value: "Ventilator" },
     { key: "Bedroom.SocketWindowLeft", value: "Mückenstecker" },
@@ -199,5 +346,18 @@ friendlyNameLookup = [
 	{ key: "LivingRoom.SocketWindowLeftUpper", value: "Fenster l. oben" },
 	{ key: "LivingRoom.SocketWindowMiddleLower", value: "Fenster m. unten" },
 	{ key: "LivingRoom.SocketWindowRightLower", value: "Fenster r. unten" },
-	{ key: "LivingRoom.SocketWindowRightUpper", value: "Fenster r. oben" }
+	{ key: "LivingRoom.SocketWindowRightUpper", value: "Fenster r. oben" },
+
+    { key: "ExampleRoom.LedStripRemote", value: "LED Strip" },
+    { key: "ExampleRoom.LedStripRemote.green1", value: "Green" },
+    { key: "ExampleRoom.LedStripRemote.red1", value: "Red" },
+    { key: "ExampleRoom.LedStripRemote.blue1", value: "Blue" },
+    { key: "ExampleRoom.LedStripRemote.on", value: "An" },
+    { key: "ExampleRoom.LedStripRemote.off", value: "Aus" },
+    { key: "ExampleRoom.LedStripRemote.white", value: "White" },
+
+    { key: "ExampleRoom.CeilingFan", value: "Ceiling fan" },
+    { key: "ExampleRoom.CeilingFan.Off", value: "Stop" },
+    { key: "ExampleRoom.CeilingFan.1", value: "Slow" },
+    { key: "ExampleRoom.CeilingFan.2", value: "Fast" }
 ];

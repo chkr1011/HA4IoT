@@ -1,13 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace CK.HomeAutomation.Hardware.RemoteSwitch
 {
-    public class LPD433MhzCodeSequence
+    public class LPD433MHzCodeSequence
     {
-        public IList<LPD433MhzCode> Codes { get; } = new List<LPD433MhzCode>();
+        public IList<LPD433MHzCode> Codes { get; } = new List<LPD433MHzCode>();
 
-        public LPD433MhzCodeSequence WithCode(LPD433MhzCode code)
+        public LPD433MHzCodeSequence WithCode(LPD433MHzCode code)
         {
+            if (code == null) throw new ArgumentNullException(nameof(code));
+
             Codes.Add(code);
             return this;
         }
