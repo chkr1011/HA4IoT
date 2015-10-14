@@ -5,14 +5,40 @@ namespace CK.HomeAutomation.Actuators.Connectors
 {
     public static class BinaryStateActuatorWithButtonConnector
     {
-        public static IBinaryStateOutputActuator ConnectToggleWith(this IBinaryStateOutputActuator actuator, Button button)
+        public static IBinaryStateOutputActuator ConnectToggleActionWith(this IBinaryStateOutputActuator actuator, IButton button, ButtonPressedDuration pressedDuration = ButtonPressedDuration.Short)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
             if (button == null) throw new ArgumentNullException(nameof(button));
 
-            button.PressedShort += (s, e) => actuator.Toggle();
+            ConnectToggleAction(button, actuator, pressedDuration);
 
             return actuator;
+        }
+
+        public static IButton ConnectToggleActionWith(this IButton button, IBinaryStateOutputActuator actuator, ButtonPressedDuration pressedDuration = ButtonPressedDuration.Short)
+        {
+            if (actuator == null) throw new ArgumentNullException(nameof(actuator));
+            if (button == null) throw new ArgumentNullException(nameof(button));
+
+            ConnectToggleAction(button, actuator, pressedDuration);
+
+            return button;
+        }
+
+        private static void ConnectToggleAction(IButton button, IBinaryStateOutputActuator actuator, ButtonPressedDuration pressedDuration)
+        {
+            if (pressedDuration == ButtonPressedDuration.Short)
+            {
+                button.PressedShort += (s, e) => actuator.Toggle();
+            }
+            else if (pressedDuration == ButtonPressedDuration.Long)
+            {
+                button.PressedLong += (s, e) => actuator.Toggle();
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
     }
 }
