@@ -124,7 +124,7 @@
     <Content Include="Properties\CK.HomeAutomation.Hardware.CCTools.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\CK.HomeAutomation.Hardware.PortExpanderDrivers\CK.HomeAutomation.Hardware.PortExpanderDrivers.csproj">
+    <ProjectReference Include="..\CK.HomeAutomation.Hardware.PortExpanderDrivers\CK.HomeAutomation.Hardware.PortExpanderDrivers.csproj">
       <Project>{B95B45D4-6E3D-4147-9838-5D4A262EA328}</Project>
       <Name>CK.HomeAutomation.Hardware.PortExpanderDrivers</Name>
     </ProjectReference>
