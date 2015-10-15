@@ -227,6 +227,7 @@ appConfiguration.actuatorExtender = function (actuator) {
 
         case "ExampleRoom.CeilingFan":
             {
+				actuator.displayVertical = true;
                 actuator.image = "Fan";
                 break;
             }
