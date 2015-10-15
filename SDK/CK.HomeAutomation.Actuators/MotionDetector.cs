@@ -38,15 +38,18 @@ namespace CK.HomeAutomation.Actuators
         public override void ApiPost(ApiRequestContext context)
         {
             base.ApiPost(context);
-            string action = context.Request.GetNamedString("action");
-
-            if (action.Equals("detected", StringComparison.OrdinalIgnoreCase))
+            
+            if (context.Request.ContainsKey("action"))
             {
-                OnMotionDetected();
-            }
-            else if (action.Equals("detectionCompleted", StringComparison.OrdinalIgnoreCase))
-            {
-                OnDetectionCompleted();
+                string action = context.Request.GetNamedString("action");
+                if (action.Equals("detected", StringComparison.OrdinalIgnoreCase))
+                {
+                    OnMotionDetected();
+                }
+                else if (action.Equals("detectionCompleted", StringComparison.OrdinalIgnoreCase))
+                {
+                    OnDetectionCompleted();
+                }
             }
         }
 
@@ -90,7 +93,7 @@ namespace CK.HomeAutomation.Actuators
         {
             if (!IsEnabled)
             {
-                notificationHandler.PublishFrom(this, NotificationType.Info, "'{0}' disabled for 1 hour.");
+                notificationHandler.PublishFrom(this, NotificationType.Info, "'{0}' disabled for 1 hour.", Id);
                 _autoEnableAction = timer.In(TimeSpan.FromHours(1)).Do(() => IsEnabled = true);
             }
             else
