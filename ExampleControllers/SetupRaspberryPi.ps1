@@ -6,6 +6,8 @@ Set-Item WSMan:\localhost\Client\TrustedHosts -Value 192.168.1.15
 #Enter-PSSession -ComputerName minwinpc -Credential minwinpc\Administrator
 Enter-PSSession -ComputerName 192.168.1.15 -Credential 192.168.1.15\Administrator
 
+#net user Administrator [new password]
+
 get-date
 tzutil /s "W. Europe Standard Time"
 #set-date "2015/08/7 21:59"
