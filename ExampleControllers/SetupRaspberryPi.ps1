@@ -12,7 +12,7 @@ get-date
 tzutil /s "W. Europe Standard Time"
 #set-date "2015/08/7 21:59"
 w32tm /resync
-setcomputername MyHome
+setcomputername HA4IoT
 #setcomputername CK.HA.Cellar
 setbootoption.exe headless
 

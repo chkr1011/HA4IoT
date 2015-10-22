@@ -17,53 +17,53 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App", "App", "{20B098BA-1C6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hardware", "Hardware", "{A1F8CE2B-E00D-445B-9E31-A093BD676A1B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.App", "App\CK.HomeAutomation.App\CK.HomeAutomation.App.csproj", "{0E8A3855-D428-4CA2-B752-486B61056933}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.App", "App\HA4IoT.App\HA4IoT.App.csproj", "{0E8A3855-D428-4CA2-B752-486B61056933}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Controller", "ExampleControllers\CK.HomeAutomation.Controller\CK.HomeAutomation.Controller.csproj", "{D3634558-2746-441F-BC09-454B1EC7DC1D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller", "ExampleControllers\HA4IoT.Controller.Main\HA4IoT.Controller.Main.csproj", "{D3634558-2746-441F-BC09-454B1EC7DC1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Controller.Cellar", "ExampleControllers\CK.HomeAutomation.Controller.Cellar\CK.HomeAutomation.Controller.Cellar.csproj", "{2ECC3769-3EDB-4646-86EE-91FBDACBA972}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Cellar", "ExampleControllers\HA4IoT.Controller.Cellar\HA4IoT.Controller.Cellar.csproj", "{2ECC3769-3EDB-4646-86EE-91FBDACBA972}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Controller.Empty", "ExampleControllers\CK.HomeAutomation.Controller.Empty\CK.HomeAutomation.Controller.Empty.csproj", "{171A1B71-EC5A-42BC-A3D9-0252B157F70A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Empty", "ExampleControllers\HA4IoT.Controller.Demo\HA4IoT.Controller.Demo.csproj", "{171A1B71-EC5A-42BC-A3D9-0252B157F70A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Actuators", "SDK\CK.HomeAutomation.Actuators\CK.HomeAutomation.Actuators.csproj", "{808ABECF-D9C2-4AB2-95D8-EAF228B44576}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Actuators", "SDK\HA4IoT.Actuators\HA4IoT.Actuators.csproj", "{808ABECF-D9C2-4AB2-95D8-EAF228B44576}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Actuators.Tests", "SDK\CK.HomeAutomation.Actuators.Tests\CK.HomeAutomation.Actuators.Tests.csproj", "{22C0304B-1F66-4682-93A3-EBC7655708F7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Actuators.Tests", "SDK\HA4IoT.Actuators.Tests\HA4IoT.Actuators.Tests.csproj", "{22C0304B-1F66-4682-93A3-EBC7655708F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Core", "SDK\CK.HomeAutomation.Core\CK.HomeAutomation.Core.csproj", "{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Core", "SDK\HA4IoT.Core\HA4IoT.Core.csproj", "{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Hardware", "SDK\CK.HomeAutomation.Hardware\CK.HomeAutomation.Hardware.csproj", "{287A9BD0-4037-4ADD-986F-54056F059EAE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Hardware", "SDK\HA4IoT.Hardware\HA4IoT.Hardware.csproj", "{287A9BD0-4037-4ADD-986F-54056F059EAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Hardware.Tests", "SDK\CK.HomeAutomation.Hardware.Tests\CK.HomeAutomation.Hardware.Tests.csproj", "{02CBC16A-2BDA-4789-AE84-BC2679C1185B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Hardware.Tests", "SDK\HA4IoT.Hardware.Tests\HA4IoT.Hardware.Tests.csproj", "{02CBC16A-2BDA-4789-AE84-BC2679C1185B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Networking", "SDK\CK.HomeAutomation.Networking\CK.HomeAutomation.Networking.csproj", "{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Networking", "SDK\HA4IoT.Networking\HA4IoT.Networking.csproj", "{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Notifications", "SDK\CK.HomeAutomation.Notifications\CK.HomeAutomation.Notifications.csproj", "{15DB669D-AF71-4E89-9748-0290A2E5D291}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Notifications", "SDK\HA4IoT.Notifications\HA4IoT.Notifications.csproj", "{15DB669D-AF71-4E89-9748-0290A2E5D291}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Telemetry", "SDK\CK.HomeAutomation.Telemetry\CK.HomeAutomation.Telemetry.csproj", "{97F3345C-33B6-4779-9212-5FFBCEEF3F96}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Telemetry", "SDK\HA4IoT.Telemetry\HA4IoT.Telemetry.csproj", "{97F3345C-33B6-4779-9212-5FFBCEEF3F96}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Tests.Mockups", "SDK\CK.HomeAutomation.Tests.Mockups\CK.HomeAutomation.Tests.Mockups.csproj", "{238AD610-4F9B-4652-81DB-A8FC215F61A5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Tests.Mockups", "SDK\HA4IoT.Tests.Mockups\HA4IoT.Tests.Mockups.csproj", "{238AD610-4F9B-4652-81DB-A8FC215F61A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.TraceViewer", "SDK\CK.HomeAutomation.TraceViewer\CK.HomeAutomation.TraceViewer.csproj", "{1948D9A6-707C-463B-8A16-D0A4020C4896}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.TraceViewer", "SDK\HA4IoT.TraceViewer\HA4IoT.TraceViewer.csproj", "{1948D9A6-707C-463B-8A16-D0A4020C4896}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Hardware.CCTools", "SDK\Hardware\CK.HomeAutomation.Hardware.CCTools\CK.HomeAutomation.Hardware.CCTools.csproj", "{B0A7EF01-9382-422C-81AF-C90DC5A7AFFD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Hardware.CCTools", "SDK\Hardware\HA4IoT.Hardware.CCTools\HA4IoT.Hardware.CCTools.csproj", "{B0A7EF01-9382-422C-81AF-C90DC5A7AFFD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Hardware.DHT22", "SDK\Hardware\CK.HomeAutomation.Hardware.DHT22\CK.HomeAutomation.Hardware.DHT22.csproj", "{C838FE97-95A5-4D11-8F4E-19257B1D062A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Hardware.DHT22", "SDK\Hardware\HA4IoT.Hardware.DHT22\HA4IoT.Hardware.DHT22.csproj", "{C838FE97-95A5-4D11-8F4E-19257B1D062A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Hardware.GenericIOBoard", "SDK\Hardware\CK.HomeAutomation.Hardware.GenericIOBoard\CK.HomeAutomation.Hardware.GenericIOBoard.csproj", "{74BECF44-F00B-40F1-9220-06C4C7F2220F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Hardware.GenericIOBoard", "SDK\Hardware\HA4IoT.Hardware.GenericIOBoard\HA4IoT.Hardware.GenericIOBoard.csproj", "{74BECF44-F00B-40F1-9220-06C4C7F2220F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Hardware.OpenWeatherMapWeatherStation", "SDK\Hardware\CK.HomeAutomation.Hardware.OpenWeatherMapWeatherStation\CK.HomeAutomation.Hardware.OpenWeatherMapWeatherStation.csproj", "{25A0003B-E68E-481A-92AD-F4BDABC65700}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Hardware.OpenWeatherMapWeatherStation", "SDK\Hardware\HA4IoT.Hardware.OpenWeatherMapWeatherStation\HA4IoT.Hardware.OpenWeatherMapWeatherStation.csproj", "{25A0003B-E68E-481A-92AD-F4BDABC65700}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Hardware.Pi2", "SDK\Hardware\CK.HomeAutomation.Hardware.Pi2\CK.HomeAutomation.Hardware.Pi2.csproj", "{39819B8F-40F8-418A-AD3A-92A8C8D63268}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Hardware.Pi2", "SDK\Hardware\HA4IoT.Hardware.Pi2\HA4IoT.Hardware.Pi2.csproj", "{39819B8F-40F8-418A-AD3A-92A8C8D63268}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Hardware.RemoteSwitch", "SDK\Hardware\CK.HomeAutomation.Hardware.RemoteSwitch\CK.HomeAutomation.Hardware.RemoteSwitch.csproj", "{BADA2E47-5626-4E9E-92A7-8F712D084493}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Hardware.RemoteSwitch", "SDK\Hardware\HA4IoT.Hardware.RemoteSwitch\HA4IoT.Hardware.RemoteSwitch.csproj", "{BADA2E47-5626-4E9E-92A7-8F712D084493}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Hardware.PortExpanderDrivers", "SDK\Hardware\CK.HomeAutomation.Hardware.PortExpanderDrivers\CK.HomeAutomation.Hardware.PortExpanderDrivers.csproj", "{B95B45D4-6E3D-4147-9838-5D4A262EA328}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Hardware.PortExpanderDrivers", "SDK\Hardware\HA4IoT.Hardware.PortExpanderDrivers\HA4IoT.Hardware.PortExpanderDrivers.csproj", "{B95B45D4-6E3D-4147-9838-5D4A262EA328}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Hardware.RemoteSwitch.Tests", "SDK\Hardware\CK.HomeAutomation.Hardware.RemoteSwitch.Tests\CK.HomeAutomation.Hardware.RemoteSwitch.Tests.csproj", "{4558BE1E-0A43-40FC-A697-3732398FB126}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Hardware.RemoteSwitch.Tests", "SDK\Hardware\HA4IoT.Hardware.RemoteSwitch.Tests\HA4IoT.Hardware.RemoteSwitch.Tests.csproj", "{4558BE1E-0A43-40FC-A697-3732398FB126}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CK.HomeAutomation.Hardware.I2CHardwareBridge.Firmware", "SDK\Hardware\CK.HomeAutomation.Hardware.I2CHardwareBridge.Firmware\CK.HomeAutomation.Hardware.I2CHardwareBridge.Firmware.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HA4IoT.Hardware.I2CHardwareBridge.Firmware", "SDK\Hardware\HA4IoT.Hardware.I2CHardwareBridge.Firmware\HA4IoT.Hardware.I2CHardwareBridge.Firmware.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.HomeAutomation.Hardware.I2CHardwareBridge", "SDK\Hardware\CK.HomeAutomation.Hardware.I2CHardwareBridge\CK.HomeAutomation.Hardware.I2CHardwareBridge.csproj", "{8BF16E28-A01D-47E9-A5C4-CC93E347AAF4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Hardware.I2CHardwareBridge", "SDK\Hardware\HA4IoT.Hardware.I2CHardwareBridge\HA4IoT.Hardware.I2CHardwareBridge.csproj", "{8BF16E28-A01D-47E9-A5C4-CC93E347AAF4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
