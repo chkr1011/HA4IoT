@@ -1,4 +1,4 @@
 ﻿<button class="btn btn-default" style="min-width: 60px;" ng-class="{'btn-danger': actuator.state.stateBool==true}" ng-click="toggleState(actuator)">
-    <span ng-if="actuator.state.stateBool==true">An</span>
-    <span ng-if="actuator.state.stateBool==false">Aus</span>
+    <span ng-if="actuator.state.stateBool==true">{{ haCtrl.getUILocalization('UI.On') }}</span>
+    <span ng-if="actuator.state.stateBool==false">{{ haCtrl.getUILocalization('UI.Off') }}</span>
 </button>

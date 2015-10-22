@@ -2,8 +2,26 @@
     <div class="panel-heading" ng-click="haCtrl.setActivePanel('bottomBar')">
         <h1 class="panel-title pointer">
             <span class="glyphicon glyphicon-signal" ng-class="{'text-danger': haCtrl.errorMessage!='', 'text-success': haCtrl.errorMessage===''}" aria-hidden="true"></span>
-            <span class="text-danger">{{haCtrl.errorMessage}}</span>
-            <span style="margin-left: 10px;">Version: {{haCtrl.version}}</span>
         </h1>
     </div>
+    <table class="table table-striped" ng-show="haCtrl.activePanel=='bottomBar'">
+        <tbody>
+            <tr>
+                <td>
+                    HA4IoT
+                </td>
+                <td class="rightTextAligned">
+                    (c) Christian Kratky
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    App version
+                </td>
+                <td class="rightTextAligned">
+                    {{haCtrl.version}}
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>

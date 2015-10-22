@@ -1,8 +1,9 @@
 ﻿<div class="btn-group" role="group">
-    <div class="progress">
-        <div class="progress-bar progress-bar-default" ng-class="{'active progress-bar-striped' : actuator.state.state!='Stopped', 'progress-bar-success' : actuator.state.position > (15467-3000)}" ng-style="{width: ((actuator.state.position / (15467))*100) + '%'}">
+    <div class="progress" style="height: 12px; margin-bottom: 6px;">
+        <div style="" class="progress-bar progress-bar-default" ng-class="{'active progress-bar-striped' : actuator.state.state!='Stopped', 'progress-bar-success' : actuator.state.position > (15467-3000)}" ng-style="{width: ((actuator.state.position / (15467))*100) + '%'}">
         </div>
     </div>
+
     <button class="btn btn-default" ng-class="{'btn-danger': actuator.state.state=='MovingUp'}" ng-click="setState(actuator, 'MovingUp')">
         <span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span>
     </button>
