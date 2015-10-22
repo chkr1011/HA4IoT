@@ -1,6 +1,6 @@
-﻿namespace CK.HomeAutomation.Hardware
+﻿namespace CK.HomeAutomation.Hardware.Test
 {
-    public class DummyOutputPort : DummyPort, IBinaryOutput
+    public class TestOutputPort : TestPort, IBinaryOutput
     {
         public new IBinaryOutput WithInvertedState()
         {

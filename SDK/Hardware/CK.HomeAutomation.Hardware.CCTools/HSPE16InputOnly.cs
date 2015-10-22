@@ -4,7 +4,7 @@ using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Hardware.CCTools
 {
-    public class HSPE16InputOnly : IOBoardController, IInputController
+    public class HSPE16InputOnly : IOBoardController, IBinaryInputController
     {
         public HSPE16InputOnly(string id, int address, II2cBusAccessor i2cBus, INotificationHandler notificationHandler)
             : base(id, new MAX7311Driver(address, i2cBus), notificationHandler)

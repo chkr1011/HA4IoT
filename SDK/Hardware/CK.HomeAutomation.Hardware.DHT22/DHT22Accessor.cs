@@ -27,6 +27,7 @@ namespace CK.HomeAutomation.Hardware.DHT22
         public DHT22TemperatureSensor GetTemperatureSensor(byte pin)
         {
             _openPins.Add(pin);
+            _temperatures[pin] = 0.0F;
 
             return new DHT22TemperatureSensor(pin, this);
         }
@@ -39,6 +40,7 @@ namespace CK.HomeAutomation.Hardware.DHT22
         public DHT22HumiditySensor GetHumiditySensor(byte pin)
         {
             _openPins.Add(pin);
+            _humidities[pin] = 0.0F;
 
             return new DHT22HumiditySensor(pin, this);
         }

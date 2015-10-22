@@ -4,7 +4,7 @@ using CK.HomeAutomation.Core.Timer;
 
 namespace CK.HomeAutomation.Hardware.RemoteSwitch
 {
-    public class RemoteSwitchController : IOutputController
+    public class RemoteSwitchController : IBinaryOutputController
     {
         private readonly object _syncRoot = new object();
 

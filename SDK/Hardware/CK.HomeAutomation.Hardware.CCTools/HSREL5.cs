@@ -4,7 +4,7 @@ using CK.HomeAutomation.Notifications;
 
 namespace CK.HomeAutomation.Hardware.CCTools
 {
-    public class HSREL5 : IOBoardController, IOutputController
+    public class HSREL5 : IOBoardController, IBinaryOutputController
     {
         public HSREL5(string id, int address, II2cBusAccessor bus, INotificationHandler notificationHandler)
             : base(id, new PCF8574Driver(address, bus), notificationHandler)

@@ -3,7 +3,7 @@ using Windows.Devices.Gpio;
 
 namespace CK.HomeAutomation.Hardware.Pi2
 {
-    public class Pi2PortController : IOutputController, IInputController
+    public class Pi2PortController : IBinaryOutputController, IBinaryInputController
     {
         private readonly GpioController _gpioController = GpioController.GetDefault();
         private readonly Dictionary<int, Pi2Port> _openPorts = new Dictionary<int, Pi2Port>();

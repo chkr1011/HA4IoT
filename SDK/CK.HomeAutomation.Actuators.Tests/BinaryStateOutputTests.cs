@@ -1,4 +1,5 @@
 ﻿using CK.HomeAutomation.Hardware;
+using CK.HomeAutomation.Hardware.Test;
 using CK.HomeAutomation.Tests.Mockups;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -11,7 +12,7 @@ namespace CK.HomeAutomation.Actuators.Tests
         [TestMethod]
         public void Written_ON_ShouldBeResultIn_HIGH_Port()
         {
-            var port = new DummyOutputPort();
+            var port = new TestOutputPort();
             var output = new BinaryStateOutput("test", port, new TestHttpRequestController(), new TestNotificationHandler());
 
             output.TurnOn();
@@ -22,7 +23,7 @@ namespace CK.HomeAutomation.Actuators.Tests
         [TestMethod]
         public void Written_OFF_ShouldBeResultIn_LOW_Port()
         {
-            var port = new DummyOutputPort();
+            var port = new TestOutputPort();
             var output = new BinaryStateOutput("test", port, new TestHttpRequestController(), new TestNotificationHandler());
 
             output.TurnOff();
