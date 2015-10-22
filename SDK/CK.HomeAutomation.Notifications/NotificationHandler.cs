@@ -31,7 +31,15 @@ namespace CK.HomeAutomation.Notifications
 
         public void Publish(NotificationType type, string text, params object[] parameters)
         {
-            text = string.Format(text, parameters);
+            try
+            {
+                text = string.Format(text, parameters);
+            }
+            catch (FormatException)
+            {
+                text = text + " (" + string.Join(",", parameters) + ")";
+            }
+            
             PrintNotification(type, text);
 
             lock (_syncRoot)

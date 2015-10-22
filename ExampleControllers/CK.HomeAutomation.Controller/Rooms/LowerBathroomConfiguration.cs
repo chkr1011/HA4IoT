@@ -10,7 +10,7 @@ namespace CK.HomeAutomation.Controller.Rooms
         public enum LowerBathroom
         {
             TemperatureSensor,
-            HumditySensor,
+            HumiditySensor,
             MotionDetector,
 
             LightCeilingDoor,
@@ -29,12 +29,12 @@ namespace CK.HomeAutomation.Controller.Rooms
             var hspe16_FloorAndLowerBathroom = ioBoardManager.GetOutputBoard(Device.LowerFloorAndLowerBathroomHSPE16);
             var input3 = ioBoardManager.GetInputBoard(Device.Input3);
 
-            const int SensorID = 5;
+            const int SensorPin = 3; //5;
 
             var bathroom = home.AddRoom(Room.LowerBathroom)
                 .WithMotionDetector(LowerBathroom.MotionDetector, input3.GetInput(15))
-                .WithTemperatureSensor(LowerBathroom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorID))
-                .WithHumiditySensor(LowerBathroom.HumditySensor, dht22Accessor.GetHumiditySensor(SensorID))
+                .WithTemperatureSensor(LowerBathroom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorPin))
+                .WithHumiditySensor(LowerBathroom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorPin))
                 .WithLamp(LowerBathroom.LightCeilingDoor, hspe16_FloorAndLowerBathroom.GetOutput(0).WithInvertedState())
                 .WithLamp(LowerBathroom.LightCeilingMiddle, hspe16_FloorAndLowerBathroom.GetOutput(1).WithInvertedState())
                 .WithLamp(LowerBathroom.LightCeilingWindow, hspe16_FloorAndLowerBathroom.GetOutput(2).WithInvertedState())

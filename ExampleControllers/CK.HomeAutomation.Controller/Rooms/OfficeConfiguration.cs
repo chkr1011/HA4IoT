@@ -8,6 +8,44 @@ namespace CK.HomeAutomation.Controller.Rooms
 {
     internal class OfficeConfiguration
     {
+        private enum Office
+        {
+            TemperatureSensor,
+            HumiditySensor,
+            MotionDetector,
+
+            LightCeilingFrontLeft,
+            LightCeilingFrontMiddle,
+            LightCeilingFrontRight,
+            LightCeilingMiddleLeft,
+            LightCeilingMiddleMiddle,
+            LightCeilingMiddleRight,
+            LightCeilingRearLeft,
+            LightCeilingRearRight,
+
+            SocketFrontLeft,
+            SocketFrontRight,
+            SocketWindowLeft,
+            SocketWindowRight,
+            SocketRearRight,
+            SocketRearLeft,
+            SocketRearLeftEdge,
+            RemoteSocketDesk,
+
+            ButtonUpperLeft,
+            ButtonUpperRight,
+            ButtonLowerLeft,
+            ButtonLowerRight,
+
+            CombinedCeilingLights,
+            CombinedCeilingLightsCouchOnly,
+            CombinedCeilingLightsDeskOnly,
+            CombinedCeilingLightsOther,
+
+            WindowLeft,
+            WindowRight
+        }
+
         public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Accessor dht22Accessor, RemoteSwitchController remoteSwitchController)
         {
             var hsrel8 = ccToolsController.CreateHSREL8(Device.OfficeHSREL8, 20);
@@ -15,12 +53,12 @@ namespace CK.HomeAutomation.Controller.Rooms
             var input4 = ioBoardManager.GetInputBoard(Device.Input4);
             var input5 = ioBoardManager.GetInputBoard(Device.Input5);
 
-            const int SensorID = 6;
+            const int SensorPin = 2; //6;
 
             var office = home.AddRoom(Room.Office)
                 .WithMotionDetector(Office.MotionDetector, input4.GetInput(13))
-                .WithTemperatureSensor(Office.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorID))
-                .WithHumiditySensor(Office.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorID))
+                .WithTemperatureSensor(Office.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorPin))
+                .WithHumiditySensor(Office.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorPin))
                 .WithLamp(Office.LightCeilingFrontRight, hsrel8.GetOutput(8).WithInvertedState())
                 .WithLamp(Office.LightCeilingFrontMiddle, hspe8.GetOutput(2).WithInvertedState())
                 .WithLamp(Office.LightCeilingFrontLeft, hspe8.GetOutput(0).WithInvertedState())
@@ -39,7 +77,9 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithButton(Office.ButtonUpperLeft, input5.GetInput(0))
                 .WithButton(Office.ButtonLowerLeft, input5.GetInput(1))
                 .WithButton(Office.ButtonLowerRight, input4.GetInput(14))
-                .WithButton(Office.ButtonUpperRight, input4.GetInput(15));
+                .WithButton(Office.ButtonUpperRight, input4.GetInput(15))
+                .WithWindow(Office.WindowLeft, w => w.WithLeftCasement(input4.GetInput(11)).WithRightCasement(input4.GetInput(12), input4.GetInput(10)))
+                .WithWindow(Office.WindowRight, w => w.WithLeftCasement(input4.GetInput(8)).WithRightCasement(input4.GetInput(9), input5.GetInput(8)));
 
             office.WithSocket(Office.RemoteSocketDesk, remoteSwitchController.GetOutput(0));
 
@@ -90,41 +130,6 @@ namespace CK.HomeAutomation.Controller.Rooms
                 office.Socket(Office.SocketRearLeft).TurnOff();
                 office.Socket(Office.SocketFrontLeft).TurnOff();
             });
-        }
-
-        private enum Office
-        {
-            TemperatureSensor,
-            HumiditySensor,
-            MotionDetector,
-
-            LightCeilingFrontLeft,
-            LightCeilingFrontMiddle,
-            LightCeilingFrontRight,
-            LightCeilingMiddleLeft,
-            LightCeilingMiddleMiddle,
-            LightCeilingMiddleRight,
-            LightCeilingRearLeft,
-            LightCeilingRearRight,
-
-            SocketFrontLeft,
-            SocketFrontRight,
-            SocketWindowLeft,
-            SocketWindowRight,
-            SocketRearRight,
-            SocketRearLeft,
-            SocketRearLeftEdge,
-            RemoteSocketDesk,
-
-            ButtonUpperLeft,
-            ButtonUpperRight,
-            ButtonLowerLeft,
-            ButtonLowerRight,
-
-            CombinedCeilingLights,
-            CombinedCeilingLightsCouchOnly,
-            CombinedCeilingLightsDeskOnly,
-            CombinedCeilingLightsOther
         }
     }
 }

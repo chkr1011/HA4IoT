@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace CK.HomeAutomation.Hardware
+namespace CK.HomeAutomation.Hardware.Test
 {
-    public class DummyPort
+    public class TestPort
     {
         private readonly object _syncRoot = new object();
         private BinaryState _state = BinaryState.Low;
@@ -43,7 +43,7 @@ namespace CK.HomeAutomation.Hardware
             }
         }
         
-        public DummyPort WithInvertedState()
+        public TestPort WithInvertedState()
         {
             _stateIsInverted = true;
             return this;

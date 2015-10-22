@@ -32,11 +32,11 @@ namespace CK.HomeAutomation.Controller.Rooms
             var hsrel5 = ccToolsController.CreateHSREL5(Device.ChildrensRoomHSREL5, 63);
             var input0 = ioBoardManager.GetInputBoard(Device.Input0);
 
-            const int SensorID = 3;
+            const int SensorPin = 7; //3;
 
             var childrensRoom = home.AddRoom(Room.ChildrensRoom)
-                .WithTemperatureSensor(ChildrensRoom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorID))
-                .WithHumiditySensor(ChildrensRoom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorID))
+                .WithTemperatureSensor(ChildrensRoom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorPin))
+                .WithHumiditySensor(ChildrensRoom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorPin))
                 .WithLamp(ChildrensRoom.LightCeilingMiddle, hsrel5.GetOutput(6).WithInvertedState())
                 .WithRollerShutter(ChildrensRoom.RollerShutter, hsrel5.GetOutput(4), hsrel5.GetOutput(3), RollerShutter.DefaultMaxMovingDuration, 20000)
                 .WithSocket(ChildrensRoom.SocketWindow, hsrel5.GetOutput(0))

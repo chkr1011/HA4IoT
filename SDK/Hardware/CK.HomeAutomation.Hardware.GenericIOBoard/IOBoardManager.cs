@@ -31,14 +31,14 @@ namespace CK.HomeAutomation.Hardware.GenericIOBoard
             _ioBoards.Add(id, ioBoard);
         }
 
-        public IInputController GetInputBoard(Enum id)
+        public IBinaryInputController GetInputBoard(Enum id)
         {
-            return (IInputController) _ioBoards[id];
+            return (IBinaryInputController) _ioBoards[id];
         }
 
-        public IOutputController GetOutputBoard(Enum id)
+        public IBinaryOutputController GetOutputBoard(Enum id)
         {
-            return (IOutputController) _ioBoards[id];
+            return (IBinaryOutputController) _ioBoards[id];
         }
 
         public void PollInputBoardStates()

@@ -118,20 +118,20 @@
     <Compile Include="BinaryState.cs" />
     <Compile Include="BinaryStateChangedEventArgs.cs" />
     <Compile Include="ByteExtensions.cs" />
-    <Compile Include="DummyInputPort.cs" />
-    <Compile Include="DummyOutputPort.cs" />
-    <Compile Include="DummyPort.cs" />
     <Compile Include="I2cBusAccessor.cs" />
     <Compile Include="IBinaryInput.cs" />
     <Compile Include="IBinaryOutput.cs" />
     <Compile Include="IPortExpanderDriver.cs" />
     <Compile Include="II2cBusAccessor.cs" />
-    <Compile Include="IInputController.cs" />
+    <Compile Include="IBinaryInputController.cs" />
     <Compile Include="InterruptMonitor.cs" />
-    <Compile Include="IOutputController.cs" />
+    <Compile Include="IBinaryOutputController.cs" />
     <Compile Include="ISingleValueSensor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SingleValueSensorValueChangedEventArgs.cs" />
+    <Compile Include="Test\TestInputPort.cs" />
+    <Compile Include="Test\TestOutputPort.cs" />
+    <Compile Include="Test\TestPort.cs" />
     <Content Include="Properties\CK.HomeAutomation.Hardware.rd.xml" />
   </ItemGroup>
   <ItemGroup>

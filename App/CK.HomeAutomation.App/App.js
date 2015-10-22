@@ -1,19 +1,5 @@
 setupController();
 
-function getFriendlyName(key) {
-
-    var result = key;
-
-    $.each(friendlyNameLookup, function (i, entry) {
-        if (entry.key === key) {
-            result = entry.value;
-            return;
-        }
-    });
-
-    return result;
-}
-
 function getApiUrl() {
     if (appConfiguration.controllerAddress === "") {
         return "/api/";
@@ -32,6 +18,7 @@ function getVersion(callback) {
 }
 
 function setupController() {
+
     var app = angular.module("app", []);
     app.controller("HomeAutomationController", [
       "$scope", "$http",
@@ -54,8 +41,12 @@ function setupController() {
           c.version = "-";
 
           getVersion(function (version) {
-              c.version = version
+              c.version = version;
           });
+
+          c.getUILocalization = function(key) {
+              return getUILocalization(key);
+          };
 
           c.generateRooms = function () {
               $http.get(getApiUrl() + "configuration").success(function (data) {
@@ -214,7 +205,7 @@ function setupController() {
 }
 
 function configureRoom(room) {
-    room.caption = getFriendlyName(room.id);
+    room.caption = getActuatorLocalization(room.id);
     room.sortValue = -1;
     room.hide = false;
 
@@ -230,7 +221,7 @@ function binaryActuatorStateUpdater(actuator, newState) {
 }
 
 function configureActuator(room, actuator, i) {
-    actuator.caption = getFriendlyName(actuator.id);
+    actuator.caption = getActuatorLocalization(actuator.id);
     actuator.sortValue = 0;
     actuator.hide = false;
     actuator.image = actuator.type;
@@ -256,7 +247,7 @@ function configureActuator(room, actuator, i) {
 
         case "RollerShutter":
             {
-                actuator.caption = getFriendlyName("RollerShutter");
+                actuator.caption = getUILocalization("UI.RollerShutter");
                 actuator.template = "Views/RollerShutterTemplate.html";
                 actuator.sortValue = -4;
                 break;
@@ -264,7 +255,7 @@ function configureActuator(room, actuator, i) {
 
         case "Window":
             {
-                actuator.caption = getFriendlyName("Window");
+                actuator.caption = getUILocalization("UI.Window");
                 actuator.template = "Views/WindowTemplate.html";
                 actuator.sortValue = -4;
                 break;
@@ -277,7 +268,7 @@ function configureActuator(room, actuator, i) {
 
                 var extendedStates = [];
                 $.each(actuator.states, function (i, state) {
-                    extendedStates.push({ value: state, caption: getFriendlyName(actuator.id + "." + state) });
+                    extendedStates.push({ value: state, caption: getActuatorLocalization(actuator.id + "." + state) });
                 });
 
                 actuator.states = extendedStates;
@@ -287,7 +278,7 @@ function configureActuator(room, actuator, i) {
         case "TemperatureSensor":
             {
                 actuator.template = "Views/TemperatureSensorTemplate.html";
-                actuator.caption = "Temperatur";
+                actuator.caption = getUILocalization("UI.Temperature");
                 actuator.sortValue = -10;
                 break;
             }
@@ -295,7 +286,7 @@ function configureActuator(room, actuator, i) {
         case "HumiditySensor":
             {
                 actuator.template = "Views/HumiditySensorTemplate.html";
-                actuator.caption = "Luftfeuchtigkeit";
+                actuator.caption = getUILocalization("UI.Humidity");
                 actuator.sortValue = -9;
                 break;
             }
@@ -303,7 +294,7 @@ function configureActuator(room, actuator, i) {
         case "MotionDetector":
             {
                 actuator.template = "Views/MotionDetectorTemplate.html";
-                actuator.caption = "Bewegung";
+                actuator.caption = getUILocalization("UI.MotionDetector");
                 actuator.sortValue = -8;
                 break;
             }
@@ -324,7 +315,7 @@ function configureActuator(room, actuator, i) {
 
                 var extendedButtons = [];
                 $.each(actuator.buttons, function (i, button) {
-                    extendedButtons.push({ id: button, caption: getFriendlyName(actuator.id + "." + button) });
+                    extendedButtons.push({ id: button, caption: getActuatorLocalization(actuator.id + "." + button) });
                 });
 
                 actuator.buttons = extendedButtons;
@@ -344,15 +335,23 @@ function configureActuator(room, actuator, i) {
 }
 
 function getJSON(controller, url, callback) {
-    // $.getJSON will not work due to cross site scripting.
+    //$.getJSON({
+    //    url: url,
+    //    timeout: 2500
+    //}).success(function(result) {
+    //    controller.errorMessage = "";
+    //    callback(result);
+    //}).fail(function(jqXHR, textStatus, errorThrown) {
+    //    alert(textStatus);
+    //});
+
     $.ajax({
         method: "GET",
         url: url,
-        crossDomain: true,
         timeout: 2500
-    }).success(function (data) {
+    }).success(function (result) {
         controller.errorMessage = "";
-        callback(data);
+        callback(result);
     }).fail(function (jqXHR, textStatus, errorThrown) {
         controller.errorMessage = textStatus;
     });

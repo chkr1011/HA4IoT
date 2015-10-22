@@ -95,12 +95,6 @@ namespace CK.HomeAutomation.Controller.Empty
             // Setup the controller which creates ports for wireless sockets (433Mhz).
             var remoteSwitchController = new RemoteSwitchController(remoteSwitchSender, Timer);
 
-            ////var brennenstuhlCodes = new BrennenstuhlCodeSequenceProvider();
-            ////remoteSwitchController.Register(
-            ////    0,
-            ////    brennenstuhlCodes.GetSequence(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A, RemoteSwitchCommand.TurnOn),
-            ////    brennenstuhlCodes.GetSequence(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A, RemoteSwitchCommand.TurnOff));
-
             var intertechnoCodes = new IntertechnoCodeSequenceProvider();
             remoteSwitchController.Register(
                 0,

@@ -1,5 +1,5 @@
 ﻿<span class="glyphicon glyphicon-record text-danger" ng-if="actuator.state.state==true" style="margin-right: 10px"></span>
 <button class="btn btn-primary" style="min-width: 60px;" ng-class="{'btn-success': actuator.state.isEnabled==true}" ng-click="toggleIsEnabled(actuator)">
-    <span ng-if="actuator.state.isEnabled==true">Aktiv</span>
-    <span ng-if="actuator.state.isEnabled==false">Aus</span>
+    <span ng-if="actuator.state.isEnabled==true">{{ haCtrl.getUILocalization('UI.MotionDetectorEnabled') }}</span>
+    <span ng-if="actuator.state.isEnabled==false">{{ haCtrl.getUILocalization('UI.MotionDetectorDisabled') }}</span>
 </button>

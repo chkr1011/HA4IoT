@@ -1,6 +1,6 @@
 ﻿namespace CK.HomeAutomation.Hardware
 {
-    public interface IInputController
+    public interface IBinaryInputController
     {
         IBinaryInput GetInput(int number);
     }

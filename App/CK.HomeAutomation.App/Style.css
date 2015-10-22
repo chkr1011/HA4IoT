@@ -104,7 +104,6 @@ body {
     margin-top: 75px;
     position: absolute;
     text-align: center;
-    text-transform: uppercase;
     top: calc(50% - 50px);
     width: 100%;
 }
@@ -137,6 +136,5 @@ body {
 
 @keyframes rotate {
     from { transform: rotate(0deg) translate3d(0, 0, 0) }
-
     to { transform: rotate(359deg) translate3d(0, 0, 0) }
 }

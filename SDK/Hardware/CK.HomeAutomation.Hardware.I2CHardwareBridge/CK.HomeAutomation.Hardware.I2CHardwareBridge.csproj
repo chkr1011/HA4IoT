@@ -122,7 +122,7 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SDK\CK.HomeAutomation.Hardware\CK.HomeAutomation.Hardware.csproj">
+    <ProjectReference Include="..\..\CK.HomeAutomation.Hardware\CK.HomeAutomation.Hardware.csproj">
       <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
       <Name>CK.HomeAutomation.Hardware</Name>
     </ProjectReference>
