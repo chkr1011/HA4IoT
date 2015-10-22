@@ -1,7 +1,6 @@
 ﻿using System;
 using CK.HomeAutomation.Actuators;
 using CK.HomeAutomation.Actuators.Automations;
-using CK.HomeAutomation.Core;
 using CK.HomeAutomation.Hardware;
 using CK.HomeAutomation.Hardware.CCTools;
 using CK.HomeAutomation.Hardware.DHT22;
@@ -11,16 +10,32 @@ namespace CK.HomeAutomation.Controller.Rooms
 {
     internal class UpperBathroomConfiguration
     {
+        private enum UpperBathroom
+        {
+            TemperatureSensor,
+            HumiditySensor,
+            MotionDetector,
+
+            LightCeilingDoor,
+            LightCeilingEdge,
+            LightCeilingMirrorCabinet,
+            LampMirrorCabinet,
+
+            Fan,
+
+            CombinedCeilingLights
+        }
+
         public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Accessor dht22Accessor)
         {
             var hsrel5 = ccToolsController.CreateHSREL5(Device.UpperBathroomHSREL5, 61);
             var input5 = ioBoardManager.GetInputBoard(Device.Input5);
 
-            const int SensorID = 7;
+            const int SensorPin = 4; //7;
 
             var bathroom = home.AddRoom(Room.UpperBathroom)
-                .WithTemperatureSensor(UpperBathroom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorID))
-                .WithHumiditySensor(UpperBathroom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorID))
+                .WithTemperatureSensor(UpperBathroom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorPin))
+                .WithHumiditySensor(UpperBathroom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorPin))
                 .WithMotionDetector(UpperBathroom.MotionDetector, input5.GetInput(15))
                 .WithLamp(UpperBathroom.LightCeilingDoor, hsrel5.GetOutput(0))
                 .WithLamp(UpperBathroom.LightCeilingEdge, hsrel5.GetOutput(1))
@@ -52,22 +67,6 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithFastDuration(TimeSpan.FromMinutes(12))
                 .WithMotionDetector(bathroom.MotionDetector(UpperBathroom.MotionDetector))
                 .WithActuator(fan);
-        }
-
-        private enum UpperBathroom
-        {
-            TemperatureSensor,
-            HumiditySensor,
-            MotionDetector,
-
-            LightCeilingDoor,
-            LightCeilingEdge,
-            LightCeilingMirrorCabinet,
-            LampMirrorCabinet,
-
-            Fan,
-
-            CombinedCeilingLights
         }
     }
 }

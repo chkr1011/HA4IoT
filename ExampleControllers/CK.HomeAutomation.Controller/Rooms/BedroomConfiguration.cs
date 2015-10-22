@@ -9,6 +9,48 @@ namespace CK.HomeAutomation.Controller.Rooms
 {
     internal class BedroomConfiguration
     {
+        private enum Bedroom
+        {
+            TemperatureSensor,
+            HumiditySensor,
+            MotionDetector,
+
+            LightCeiling,
+            LightCeilingWindow,
+            LightCeilingWall,
+
+            LampBedLeft,
+            LampBedRight,
+
+            SocketWindowLeft,
+            SocketWindowRight,
+            SocketWall,
+            SocketWallEdge,
+            SocketBedLeft,
+            SocketBedRight,
+
+            ButtonDoor,
+            ButtonWindowUpper,
+            ButtonWindowLower,
+
+            ButtonBedLeftInner,
+            ButtonBedLeftOuter,
+            ButtonBedRightInner,
+            ButtonBedRightOuter,
+
+            RollerShutterButtonsUpper,
+            RollerShutterButtonsLower,
+            RollerShutterLeft,
+            RollerShutterRight,
+
+            Fan,
+
+            CombinedCeilingLights,
+
+            WindowLeft,
+            WindowRight
+        }
+
         public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Accessor dht22Accessor)
         {
             var hsrel5 = ccToolsController.CreateHSREL5(Device.BedroomHSREL5, 38);
@@ -16,11 +58,11 @@ namespace CK.HomeAutomation.Controller.Rooms
             var input5 = ioBoardManager.GetInputBoard(Device.Input5);
             var input4 = ioBoardManager.GetInputBoard(Device.Input4);
 
-            const int SensorID = 8;
+            const int SensorPin = 6; //8;
 
             var bedroom = home.AddRoom(Room.Bedroom)
-                .WithTemperatureSensor(Bedroom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorID))
-                .WithHumiditySensor(Bedroom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorID))
+                .WithTemperatureSensor(Bedroom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorPin))
+                .WithHumiditySensor(Bedroom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorPin))
                 .WithMotionDetector(Bedroom.MotionDetector, input5.GetInput(12))
                 .WithLamp(Bedroom.LightCeiling, hsrel5.GetOutput(5).WithInvertedState())
                 .WithLamp(Bedroom.LightCeilingWindow, hsrel5.GetOutput(6).WithInvertedState())
@@ -40,10 +82,12 @@ namespace CK.HomeAutomation.Controller.Rooms
                 .WithButton(Bedroom.ButtonBedLeftOuter, input4.GetInput(0))
                 .WithButton(Bedroom.ButtonBedRightInner, input4.GetInput(1))
                 .WithButton(Bedroom.ButtonBedRightOuter, input4.GetInput(3))
-                .WithRollerShutter(Bedroom.RollerShutterLeft, hsrel8.GetOutput(6), hsrel8.GetOutput(5), TimeSpan.FromSeconds(22), 20000)
-                .WithRollerShutter(Bedroom.RollerShutterRight, hsrel8.GetOutput(3), hsrel8.GetOutput(4), TimeSpan.FromSeconds(22), 20000)
+                .WithRollerShutter(Bedroom.RollerShutterLeft, hsrel8.GetOutput(6), hsrel8.GetOutput(5), TimeSpan.FromSeconds(20), 17000)
+                .WithRollerShutter(Bedroom.RollerShutterRight, hsrel8.GetOutput(3), hsrel8.GetOutput(4), TimeSpan.FromSeconds(20), 17000)
                 .WithRollerShutterButtons(Bedroom.RollerShutterButtonsUpper, input5.GetInput(6), input5.GetInput(7))
-                .WithRollerShutterButtons(Bedroom.RollerShutterButtonsLower, input5.GetInput(4), input5.GetInput(5));
+                .WithRollerShutterButtons(Bedroom.RollerShutterButtonsLower, input5.GetInput(4), input5.GetInput(5))
+                .WithWindow(Bedroom.WindowLeft, w => w.WithCenterCasement(input5.GetInput(2)))
+                .WithWindow(Bedroom.WindowRight, w => w.WithCenterCasement(input5.GetInput(3)));
 
             bedroom.RollerShutter(Bedroom.RollerShutterLeft)
                 .ConnectWith(bedroom.RollerShutterButtons(Bedroom.RollerShutterButtonsUpper));
@@ -100,45 +144,6 @@ namespace CK.HomeAutomation.Controller.Rooms
             bedroom.Button(Bedroom.ButtonBedRightInner).WithLongAction(() => bedroom.BinaryStateOutput(Bedroom.CombinedCeilingLights).Toggle());
             bedroom.Button(Bedroom.ButtonBedRightOuter).WithShortAction(() => bedroom.StateMachine(Bedroom.Fan).ApplyNextState());
             bedroom.Button(Bedroom.ButtonBedRightOuter).WithLongAction(() => bedroom.StateMachine(Bedroom.Fan).TurnOff());
-        }
-
-        private enum Bedroom
-        {
-            TemperatureSensor,
-            HumiditySensor,
-            MotionDetector,
-
-            LightCeiling,
-            LightCeilingWindow,
-            LightCeilingWall,
-
-            LampBedLeft,
-            LampBedRight,
-
-            SocketWindowLeft,
-            SocketWindowRight,
-            SocketWall,
-            SocketWallEdge,
-            SocketBedLeft,
-            SocketBedRight,
-
-            ButtonDoor,
-            ButtonWindowUpper,
-            ButtonWindowLower,
-
-            ButtonBedLeftInner,
-            ButtonBedLeftOuter,
-            ButtonBedRightInner,
-            ButtonBedRightOuter,
-
-            RollerShutterButtonsUpper,
-            RollerShutterButtonsLower,
-            RollerShutterLeft,
-            RollerShutterRight,
-
-            Fan,
-
-            CombinedCeilingLights
         }
     }
 }

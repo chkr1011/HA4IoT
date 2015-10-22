@@ -64,15 +64,15 @@ namespace CK.HomeAutomation.Controller.Rooms
             var input2 = ioBoardManager.GetInputBoard(Device.Input2);
             var input4 = ioBoardManager.GetInputBoard(Device.Input4);
 
-            const int SensorID = 4;
+            const int SensorPin = 5; //4;
 
             var floor = home.AddRoom(Room.Floor)
                 .WithMotionDetector(Floor.StairwayMotionDetector, input2.GetInput(1))
                 .WithMotionDetector(Floor.StairsLowerMotionDetector, input4.GetInput(7))
                 .WithMotionDetector(Floor.StairsUpperMotionDetector, input4.GetInput(6))
                 .WithMotionDetector(Floor.LowerFloorMotionDetector, input1.GetInput(4))
-                .WithTemperatureSensor(Floor.LowerFloorTemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorID))
-                .WithHumiditySensor(Floor.LowerFloorHumiditySensor, dht22Accessor.GetHumiditySensor(SensorID))
+                .WithTemperatureSensor(Floor.LowerFloorTemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorPin))
+                .WithHumiditySensor(Floor.LowerFloorHumiditySensor, dht22Accessor.GetHumiditySensor(SensorPin))
                 .WithLamp(Floor.LampStairsCeiling1, hspe8UpperFloor.GetOutput(4).WithInvertedState())
                 .WithLamp(Floor.LampStairsCeiling2, hspe8UpperFloor.GetOutput(5).WithInvertedState())
                 .WithLamp(Floor.LampStairsCeiling3, hspe8UpperFloor.GetOutput(7).WithInvertedState())

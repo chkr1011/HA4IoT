@@ -74,24 +74,16 @@ namespace CK.HomeAutomation.Controller
 
         private RemoteSwitchController SetupRemoteSwitchController(I2CHardwareBridge i2CHardwareBridge)
         {
-            // TODO: PD7+3
-            var ldp433MHzSender = new LPD433MHzSignalSender(i2CHardwareBridge, 10, HttpApiController);
+            const int LDP433MhzSenderPin = 10;
+
+            var ldp433MHzSender = new LPD433MHzSignalSender(i2CHardwareBridge, LDP433MhzSenderPin, HttpApiController);
             var remoteSwitchController = new RemoteSwitchController(ldp433MHzSender, Timer);
-
-            var intertechnoCodes = new IntertechnoCodeSequenceProvider();
+            
             var brennenstuhlCodes = new BrennenstuhlCodeSequenceProvider();
-
             remoteSwitchController.Register(
                 0,
-                intertechnoCodes.GetSequence(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1, RemoteSwitchCommand.TurnOn),
-                intertechnoCodes.GetSequence(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1, RemoteSwitchCommand.TurnOff));
-
-            //remoteSwitchController.Register(
-            //    1,
-            //    brennenstuhlCodes.GetSequence(BrennenstuhlCodeSequenceProvider.SystemCode.AllOn, BrennenstuhlCodeSequenceProvider.UnitCode.A,
-            //        RemoteSwitchCommand.TurnOn),
-            //    brennenstuhlCodes.GetSequence(BrennenstuhlCodeSequenceProvider.SystemCode.AllOn, BrennenstuhlCodeSequenceProvider.UnitCode.A,
-            //        RemoteSwitchCommand.TurnOff));
+                brennenstuhlCodes.GetSequence(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A, RemoteSwitchCommand.TurnOn),
+                brennenstuhlCodes.GetSequence(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A, RemoteSwitchCommand.TurnOff));
 
             return remoteSwitchController;
         }

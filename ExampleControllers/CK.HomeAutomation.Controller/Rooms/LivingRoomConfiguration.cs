@@ -42,11 +42,11 @@ namespace CK.HomeAutomation.Controller.Rooms
             var input0 = ioBoardManager.GetInputBoard(Device.Input0);
             var input1 = ioBoardManager.GetInputBoard(Device.Input1);
 
-            const int SensorID = 0;
+            const int SensorPin = 12; // 0;
 
             var livingRoom = home.AddRoom(Room.LivingRoom)
-                .WithTemperatureSensor(LivingRoom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorID))
-                .WithHumiditySensor(LivingRoom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorID))
+                .WithTemperatureSensor(LivingRoom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorPin))
+                .WithHumiditySensor(LivingRoom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorPin))
                 .WithLamp(LivingRoom.LampCouch, hsrel8.GetOutput(8).WithInvertedState())
                 .WithLamp(LivingRoom.LampDiningTable, hsrel8.GetOutput(9).WithInvertedState())
                 .WithSocket(LivingRoom.SocketWindowLeftLower, hsrel8.GetOutput(1))
