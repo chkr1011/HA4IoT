@@ -1,7 +1,7 @@
 ﻿using System;
 using Windows.Devices.I2c;
 
-namespace HA4IoT.Hardware
+namespace HA4IoT.Contracts.Hardware
 {
     public interface II2cBusAccessor
     {

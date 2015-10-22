@@ -4,7 +4,7 @@ using Windows.Data.Json;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using Windows.Storage.Streams;
-using HA4IoT.Actuators.Contracts;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Core;
 using HA4IoT.Core.Timer;
 using HA4IoT.Networking;

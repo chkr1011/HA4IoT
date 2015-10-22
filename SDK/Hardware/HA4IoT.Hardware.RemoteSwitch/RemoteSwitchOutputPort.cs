@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Hardware.RemoteSwitch
 {

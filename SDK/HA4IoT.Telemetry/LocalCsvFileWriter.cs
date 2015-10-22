@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using Windows.Storage;
-using HA4IoT.Actuators.Contracts;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Notifications;
 
 namespace HA4IoT.Telemetry

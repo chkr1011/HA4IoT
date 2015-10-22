@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Windows.Devices.Gpio;
+using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Hardware.Pi2
 {

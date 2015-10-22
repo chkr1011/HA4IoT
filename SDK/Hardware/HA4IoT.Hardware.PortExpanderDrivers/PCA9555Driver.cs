@@ -1,4 +1,6 @@
-﻿namespace HA4IoT.Hardware.PortExpanderDrivers
+﻿using HA4IoT.Contracts.Hardware;
+
+namespace HA4IoT.Hardware.PortExpanderDrivers
 {
     public class PCA9555Driver : MAX7311Driver
     {

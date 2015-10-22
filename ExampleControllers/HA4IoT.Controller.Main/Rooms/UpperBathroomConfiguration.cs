@@ -1,6 +1,7 @@
 ﻿using System;
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Automations;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.DHT22;

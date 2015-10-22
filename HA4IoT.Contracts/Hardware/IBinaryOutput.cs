@@ -1,4 +1,4 @@
-﻿namespace HA4IoT.Hardware
+﻿namespace HA4IoT.Contracts.Hardware
 {
     public interface IBinaryOutput
     {

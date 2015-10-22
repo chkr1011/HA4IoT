@@ -1,5 +1,5 @@
 ﻿using System;
-using HA4IoT.Actuators.Contracts;
+using HA4IoT.Contracts.Actuators;
 
 namespace HA4IoT.Actuators.Connectors
 {

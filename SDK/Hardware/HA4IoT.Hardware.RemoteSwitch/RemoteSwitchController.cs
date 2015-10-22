@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core.Timer;
 
 namespace HA4IoT.Hardware.RemoteSwitch

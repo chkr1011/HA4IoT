@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HA4IoT.Actuators.Conditions;
 using HA4IoT.Actuators.Conditions.Specialized;
-using HA4IoT.Actuators.Contracts;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Core.Timer;
 
 namespace HA4IoT.Actuators.Automations

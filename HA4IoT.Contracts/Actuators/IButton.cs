@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HA4IoT.Actuators.Contracts
+namespace HA4IoT.Contracts.Actuators
 {
     public interface IButton : IActuatorBase
     {

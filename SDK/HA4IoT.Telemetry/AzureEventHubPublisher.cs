@@ -4,7 +4,7 @@ using Windows.Data.Json;
 using Windows.Web.Http;
 using Windows.Web.Http.Headers;
 using HA4IoT.Actuators;
-using HA4IoT.Actuators.Contracts;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Notifications;
 
 namespace HA4IoT.Telemetry

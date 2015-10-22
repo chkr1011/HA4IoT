@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Hardware.Test;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 

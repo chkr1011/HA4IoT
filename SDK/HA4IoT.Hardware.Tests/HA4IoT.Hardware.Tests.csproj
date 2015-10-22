@@ -128,6 +128,10 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
+      <Project>{551337E7-D1EF-4145-92B4-F7086F7665A6}</Project>
+      <Name>HA4IoT.Contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
       <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
       <Name>HA4IoT.Hardware</Name>

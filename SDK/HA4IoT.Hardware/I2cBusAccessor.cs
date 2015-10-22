@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.Devices.Enumeration;
 using Windows.Devices.I2c;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Notifications;
 
 namespace HA4IoT.Hardware

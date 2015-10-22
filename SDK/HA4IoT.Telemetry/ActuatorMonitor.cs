@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using HA4IoT.Actuators;
-using HA4IoT.Actuators.Contracts;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Notifications;
 
 namespace HA4IoT.Telemetry

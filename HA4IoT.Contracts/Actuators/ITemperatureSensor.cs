@@ -1,9 +1,9 @@
 ﻿using System;
-using HA4IoT.Hardware;
+using HA4IoT.Contracts.Hardware;
 
-namespace HA4IoT.Actuators.Contracts
+namespace HA4IoT.Contracts.Actuators
 {
-    public interface IHumiditySensor
+    public interface ITemperatureSensor
     {
         event EventHandler<SingleValueSensorValueChangedEventArgs> ValueChanged;
 

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
 using Windows.Data.Json;
 using Windows.Storage;
 using HA4IoT.Actuators;
-using HA4IoT.Actuators.Contracts;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Controller.Main.Rooms;
 using HA4IoT.Core;
 using HA4IoT.Hardware;

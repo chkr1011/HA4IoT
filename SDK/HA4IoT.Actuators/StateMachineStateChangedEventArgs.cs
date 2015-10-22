@@ -1,4 +1,6 @@
-﻿namespace HA4IoT.Actuators
+﻿using HA4IoT.Contracts.Actuators;
+
+namespace HA4IoT.Actuators
 {
     public class StateMachineStateChangedEventArgs : ValueChangedEventArgsBase<string>
     {

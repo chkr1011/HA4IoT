@@ -1,7 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using HA4IoT.Actuators.Automations;
-using HA4IoT.Actuators.Contracts;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 

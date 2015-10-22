@@ -1,4 +1,5 @@
-﻿using HA4IoT.Hardware.GenericIOBoard;
+﻿using HA4IoT.Contracts.Hardware;
+using HA4IoT.Hardware.GenericIOBoard;
 using HA4IoT.Hardware.PortExpanderDrivers;
 using HA4IoT.Notifications;
 

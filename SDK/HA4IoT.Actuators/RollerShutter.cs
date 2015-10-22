@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Data.Json;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core.Timer;
 using HA4IoT.Hardware;
 using HA4IoT.Networking;

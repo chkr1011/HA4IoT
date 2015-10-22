@@ -1,6 +1,6 @@
 using System;
 
-namespace HA4IoT.Actuators
+namespace HA4IoT.Contracts
 {
     public struct Daylight
     {
