@@ -7,8 +7,8 @@
     <ProjectGuid>{15DB669D-AF71-4E89-9748-0290A2E5D291}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CK.HomeAutomation.Notifications</RootNamespace>
-    <AssemblyName>CK.HomeAutomation.Notifications</AssemblyName>
+    <RootNamespace>HA4IoT.Notifications</RootNamespace>
+    <AssemblyName>HA4IoT.Notifications</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>

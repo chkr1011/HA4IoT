@@ -1,6 +1,6 @@
 ﻿using Windows.ApplicationModel.Background;
 
-namespace CK.HomeAutomation.Controller.Cellar
+namespace HA4IoT.Controller.Cellar
 {
     public sealed class StartupTask : IBackgroundTask
     {

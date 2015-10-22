@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Devices.Gpio;
 using Windows.Storage;
-using CK.HomeAutomation.Core.Timer;
-using CK.HomeAutomation.Networking;
-using CK.HomeAutomation.Notifications;
+using HA4IoT.Core.Timer;
+using HA4IoT.Networking;
+using HA4IoT.Notifications;
 
-namespace CK.HomeAutomation.Core
+namespace HA4IoT.Core
 {
     public abstract class BaseController
     {

@@ -1,7 +1,7 @@
 ﻿using System;
-using CK.HomeAutomation.Core.Timer;
+using HA4IoT.Core.Timer;
 
-namespace CK.HomeAutomation.Actuators.Conditions.Specialized
+namespace HA4IoT.Actuators.Conditions.Specialized
 {
     public class TimeRangeCondition : Condition
     {

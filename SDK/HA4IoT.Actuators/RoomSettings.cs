@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Windows.Data.Json;
-using CK.HomeAutomation.Core;
-using CK.HomeAutomation.Networking;
+using HA4IoT.Networking;
 
-namespace CK.HomeAutomation.Actuators
+namespace HA4IoT.Actuators
 {
     public class RoomSettings
     {

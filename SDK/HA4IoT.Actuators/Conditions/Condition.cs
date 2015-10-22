@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CK.HomeAutomation.Actuators.Conditions
+namespace HA4IoT.Actuators.Conditions
 {
     public class Condition
     {

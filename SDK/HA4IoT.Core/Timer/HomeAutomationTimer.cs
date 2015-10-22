@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
-using CK.HomeAutomation.Notifications;
+using HA4IoT.Notifications;
 
-namespace CK.HomeAutomation.Core.Timer
+namespace HA4IoT.Core.Timer
 {
     public class HomeAutomationTimer : IHomeAutomationTimer
     {

@@ -7,8 +7,8 @@
     <ProjectGuid>{238AD610-4F9B-4652-81DB-A8FC215F61A5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CK.HomeAutomation.Tests.Mockups</RootNamespace>
-    <AssemblyName>CK.HomeAutomation.Tests.Mockups</AssemblyName>
+    <RootNamespace>HA4IoT.Tests.Mockups</RootNamespace>
+    <AssemblyName>HA4IoT.Tests.Mockups</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
@@ -123,21 +123,21 @@
     <Content Include="Properties\CK.HomeAutomation.Tests.Mockups.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CK.HomeAutomation.Actuators\CK.HomeAutomation.Actuators.csproj">
+    <ProjectReference Include="..\HA4IoT.Actuators\HA4IoT.Actuators.csproj">
       <Project>{808ABECF-D9C2-4AB2-95D8-EAF228B44576}</Project>
-      <Name>CK.HomeAutomation.Actuators</Name>
+      <Name>HA4IoT.Actuators</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CK.HomeAutomation.Core\CK.HomeAutomation.Core.csproj">
-      <Project>{2bbef090-4fee-4fb7-9cf1-f6597f2c53ea}</Project>
-      <Name>CK.HomeAutomation.Core</Name>
+    <ProjectReference Include="..\HA4IoT.Core\HA4IoT.Core.csproj">
+      <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
+      <Name>HA4IoT.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CK.HomeAutomation.Networking\CK.HomeAutomation.Networking.csproj">
+    <ProjectReference Include="..\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
-      <Name>CK.HomeAutomation.Networking</Name>
+      <Name>HA4IoT.Networking</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CK.HomeAutomation.Notifications\CK.HomeAutomation.Notifications.csproj">
+    <ProjectReference Include="..\HA4IoT.Notifications\HA4IoT.Notifications.csproj">
       <Project>{15DB669D-AF71-4E89-9748-0290A2E5D291}</Project>
-      <Name>CK.HomeAutomation.Notifications</Name>
+      <Name>HA4IoT.Notifications</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

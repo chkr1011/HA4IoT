@@ -7,8 +7,8 @@
     <ProjectGuid>{1948D9A6-707C-463B-8A16-D0A4020C4896}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CK.HomeAutomation.TraceViewer</RootNamespace>
-    <AssemblyName>CK.HomeAutomation.TraceViewer</AssemblyName>
+    <RootNamespace>HA4IoT.TraceViewer</RootNamespace>
+    <AssemblyName>HA4IoT.TraceViewer</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

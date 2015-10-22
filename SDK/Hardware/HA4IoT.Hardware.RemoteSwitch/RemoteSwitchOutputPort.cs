@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CK.HomeAutomation.Hardware.RemoteSwitch
+namespace HA4IoT.Hardware.RemoteSwitch
 {
     public class RemoteSwitchOutputPort : IBinaryOutput
     {

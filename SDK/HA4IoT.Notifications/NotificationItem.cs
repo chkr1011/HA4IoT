@@ -1,4 +1,4 @@
-﻿namespace CK.HomeAutomation.Notifications
+﻿namespace HA4IoT.Notifications
 {
     internal sealed class NotificationItem
     {

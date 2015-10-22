@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using CK.HomeAutomation.Actuators.Contracts;
-using CK.HomeAutomation.Core.Timer;
+using HA4IoT.Actuators.Contracts;
+using HA4IoT.Core.Timer;
 
-namespace CK.HomeAutomation.Actuators.Automations
+namespace HA4IoT.Actuators.Automations
 {
     public class AutomaticRollerShutterAutomation
     {

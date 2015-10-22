@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace CK.HomeAutomation.Networking
+namespace HA4IoT.Networking
 {
     public class MappedFolderController : HttpRequestController
     {

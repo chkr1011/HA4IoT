@@ -1,6 +1,6 @@
-﻿using CK.HomeAutomation.Actuators.Conditions;
+﻿using HA4IoT.Actuators.Conditions;
 
-namespace CK.HomeAutomation.Actuators.Tests
+namespace HA4IoT.Actuators.Tests
 {
     public class NotFulfilledTestCondition : Condition
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace CK.HomeAutomation.Networking
+namespace HA4IoT.Networking
 {
     public class PlainTextBody : IBody
     {

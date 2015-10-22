@@ -1,6 +1,6 @@
 ﻿using Windows.Devices.I2c;
 
-namespace CK.HomeAutomation.Hardware.I2CHardwareBridge
+namespace HA4IoT.Hardware.I2CHardwareBridge
 {
     public abstract class I2CHardwareBridgeCommand
     {

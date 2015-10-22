@@ -1,7 +1,7 @@
 ﻿
-using CK.HomeAutomation.Actuators.Contracts;
+using HA4IoT.Actuators.Contracts;
 
-namespace CK.HomeAutomation.Actuators.Connectors
+namespace HA4IoT.Actuators.Connectors
 {
     public static class StateMachineWithButtonConnector
     {

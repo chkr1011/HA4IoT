@@ -1,6 +1,6 @@
-﻿using CK.HomeAutomation.Notifications;
+﻿using HA4IoT.Notifications;
 
-namespace CK.HomeAutomation.Tests.Mockups
+namespace HA4IoT.Tests.Mockups
 {
     public class TestNotificationHandler : INotificationHandler
     {

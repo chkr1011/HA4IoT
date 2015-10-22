@@ -1,4 +1,4 @@
-﻿namespace CK.HomeAutomation.Actuators
+﻿namespace HA4IoT.Actuators
 {
     public class ActuatorIsEnabledChangedEventArgs : ValueChangedEventArgsBase<bool>
     {

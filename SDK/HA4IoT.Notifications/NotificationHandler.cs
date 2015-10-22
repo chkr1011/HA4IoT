@@ -6,7 +6,7 @@ using Windows.Networking;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 
-namespace CK.HomeAutomation.Notifications
+namespace HA4IoT.Notifications
 {
     public class NotificationHandler : INotificationHandler
     {

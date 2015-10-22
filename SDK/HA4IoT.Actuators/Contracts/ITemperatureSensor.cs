@@ -1,7 +1,7 @@
 ﻿using System;
-using CK.HomeAutomation.Hardware;
+using HA4IoT.Hardware;
 
-namespace CK.HomeAutomation.Actuators.Contracts
+namespace HA4IoT.Actuators.Contracts
 {
     public interface ITemperatureSensor
     {

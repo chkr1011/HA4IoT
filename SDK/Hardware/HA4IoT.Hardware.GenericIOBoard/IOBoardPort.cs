@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CK.HomeAutomation.Hardware.GenericIOBoard
+namespace HA4IoT.Hardware.GenericIOBoard
 {
     public class IOBoardPort : IBinaryInput, IBinaryOutput
     {

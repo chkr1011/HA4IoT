@@ -1,7 +1,7 @@
 ﻿using System;
-using CK.HomeAutomation.Hardware;
+using HA4IoT.Hardware;
 
-namespace CK.HomeAutomation.Actuators
+namespace HA4IoT.Actuators
 {
     public class Casement
     {

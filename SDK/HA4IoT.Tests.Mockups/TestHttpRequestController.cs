@@ -1,6 +1,6 @@
-﻿using CK.HomeAutomation.Networking;
+﻿using HA4IoT.Networking;
 
-namespace CK.HomeAutomation.Tests.Mockups
+namespace HA4IoT.Tests.Mockups
 {
     public class TestHttpRequestController : IHttpRequestController
     {

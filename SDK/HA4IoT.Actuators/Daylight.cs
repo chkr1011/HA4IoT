@@ -1,6 +1,6 @@
 using System;
 
-namespace CK.HomeAutomation.Actuators
+namespace HA4IoT.Actuators
 {
     public struct Daylight
     {

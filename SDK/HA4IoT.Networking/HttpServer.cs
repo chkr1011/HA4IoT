@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +8,7 @@ using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 using Buffer = Windows.Storage.Streams.Buffer;
 
-namespace CK.HomeAutomation.Networking
+namespace HA4IoT.Networking
 {
     public class HttpServer
     {

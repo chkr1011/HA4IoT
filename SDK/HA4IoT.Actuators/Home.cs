@@ -4,13 +4,13 @@ using Windows.Data.Json;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using Windows.Storage.Streams;
-using CK.HomeAutomation.Actuators.Contracts;
-using CK.HomeAutomation.Core;
-using CK.HomeAutomation.Core.Timer;
-using CK.HomeAutomation.Networking;
-using CK.HomeAutomation.Notifications;
+using HA4IoT.Actuators.Contracts;
+using HA4IoT.Core;
+using HA4IoT.Core.Timer;
+using HA4IoT.Networking;
+using HA4IoT.Notifications;
 
-namespace CK.HomeAutomation.Actuators
+namespace HA4IoT.Actuators
 {
     public class Home
     {

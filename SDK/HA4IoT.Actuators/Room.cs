@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Windows.Data.Json;
-using CK.HomeAutomation.Actuators.Automations;
-using CK.HomeAutomation.Actuators.Contracts;
-using CK.HomeAutomation.Hardware;
-using CK.HomeAutomation.Networking;
+using HA4IoT.Actuators.Automations;
+using HA4IoT.Actuators.Contracts;
+using HA4IoT.Hardware;
+using HA4IoT.Networking;
 
-namespace CK.HomeAutomation.Actuators
+namespace HA4IoT.Actuators
 {
     public class Room
     {

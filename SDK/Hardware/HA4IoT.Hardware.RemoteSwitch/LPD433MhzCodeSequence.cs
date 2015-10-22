@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CK.HomeAutomation.Hardware.RemoteSwitch
+namespace HA4IoT.Hardware.RemoteSwitch
 {
     public class LPD433MHzCodeSequence
     {

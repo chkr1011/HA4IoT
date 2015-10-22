@@ -2,10 +2,10 @@
 using System.IO;
 using System.Threading.Tasks;
 using Windows.Storage;
-using CK.HomeAutomation.Actuators.Contracts;
-using CK.HomeAutomation.Notifications;
+using HA4IoT.Actuators.Contracts;
+using HA4IoT.Notifications;
 
-namespace CK.HomeAutomation.Telemetry
+namespace HA4IoT.Telemetry
 {
     public class LocalCsvFileWriter : ActuatorMonitor
     {

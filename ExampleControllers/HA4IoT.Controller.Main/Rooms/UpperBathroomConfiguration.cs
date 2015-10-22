@@ -1,12 +1,12 @@
 ﻿using System;
-using CK.HomeAutomation.Actuators;
-using CK.HomeAutomation.Actuators.Automations;
-using CK.HomeAutomation.Hardware;
-using CK.HomeAutomation.Hardware.CCTools;
-using CK.HomeAutomation.Hardware.DHT22;
-using CK.HomeAutomation.Hardware.GenericIOBoard;
+using HA4IoT.Actuators;
+using HA4IoT.Actuators.Automations;
+using HA4IoT.Hardware;
+using HA4IoT.Hardware.CCTools;
+using HA4IoT.Hardware.DHT22;
+using HA4IoT.Hardware.GenericIOBoard;
 
-namespace CK.HomeAutomation.Controller.Rooms
+namespace HA4IoT.Controller.Main.Rooms
 {
     internal class UpperBathroomConfiguration
     {

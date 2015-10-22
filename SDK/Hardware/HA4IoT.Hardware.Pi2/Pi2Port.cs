@@ -1,7 +1,7 @@
 ﻿using System;
 using Windows.Devices.Gpio;
 
-namespace CK.HomeAutomation.Hardware.Pi2
+namespace HA4IoT.Hardware.Pi2
 {
     public class Pi2Port : IBinaryOutput, IBinaryInput
     {

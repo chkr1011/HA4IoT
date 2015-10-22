@@ -1,4 +1,4 @@
-﻿namespace CK.HomeAutomation.Hardware.RemoteSwitch.Codes
+﻿namespace HA4IoT.Hardware.RemoteSwitch.Codes
 {
     public enum IntertechnoUnitCode
     {

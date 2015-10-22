@@ -1,4 +1,4 @@
-﻿namespace CK.HomeAutomation.Controller
+﻿namespace HA4IoT.Controller.Main
 {
     internal enum Device
     {

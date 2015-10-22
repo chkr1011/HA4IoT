@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CK.HomeAutomation.Hardware.I2CHardwareBridge
+namespace HA4IoT.Hardware.I2CHardwareBridge
 {
     public class I2CHardwareBridge
     {

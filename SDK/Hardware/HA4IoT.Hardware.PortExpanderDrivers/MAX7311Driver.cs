@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CK.HomeAutomation.Hardware.PortExpanderDrivers
+namespace HA4IoT.Hardware.PortExpanderDrivers
 {
     public class MAX7311Driver : IPortExpanderDriver
     {

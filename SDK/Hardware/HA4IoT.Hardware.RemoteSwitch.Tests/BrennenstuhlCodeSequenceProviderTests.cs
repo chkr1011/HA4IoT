@@ -1,9 +1,9 @@
 ﻿using System.Linq;
-using CK.HomeAutomation.Hardware.RemoteSwitch.Codes;
 using FluentAssertions;
+using HA4IoT.Hardware.RemoteSwitch.Codes;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
-namespace CK.HomeAutomation.Hardware.RemoteSwitch.Tests
+namespace HA4IoT.Hardware.RemoteSwitch.Tests
 {
     [TestClass]
     public class BrennenstuhlCodeSequenceProviderTests

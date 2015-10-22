@@ -7,8 +7,8 @@
     <ProjectGuid>{39819B8F-40F8-418A-AD3A-92A8C8D63268}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CK.HomeAutomation.Hardware.Pi2</RootNamespace>
-    <AssemblyName>CK.HomeAutomation.Hardware.Pi2</AssemblyName>
+    <RootNamespace>HA4IoT.Hardware.Pi2</RootNamespace>
+    <AssemblyName>HA4IoT.Hardware.Pi2</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
@@ -119,19 +119,15 @@
     <Content Include="Properties\CK.HomeAutomation.Hardware.Pi2.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\CK.HomeAutomation.Core\CK.HomeAutomation.Core.csproj">
-      <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
-      <Name>CK.HomeAutomation.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\CK.HomeAutomation.Hardware\CK.HomeAutomation.Hardware.csproj">
-      <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
-      <Name>CK.HomeAutomation.Hardware</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <SDKReference Include="WindowsIoT, Version=10.0.10240.0">
       <Name>Windows IoT Extensions for the UWP</Name>
     </SDKReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
+      <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
+      <Name>HA4IoT.Hardware</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

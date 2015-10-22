@@ -1,11 +1,11 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("CK.HomeAutomation.Hardware.RemoteSwitch")]
+[assembly: AssemblyTitle("HA4IoT.Hardware.RemoteSwitch")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Christian Kratky")]
-[assembly: AssemblyProduct("CK.HomeAutomation")]
+[assembly: AssemblyProduct("HA4IoT")]
 [assembly: AssemblyCopyright("Copyright © Christian Kratky 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

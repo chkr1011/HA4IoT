@@ -1,4 +1,4 @@
-﻿namespace CK.HomeAutomation.Hardware.DHT22
+﻿namespace HA4IoT.Hardware.DHT22
 {
     public class DHT22HumiditySensor : DHT22SensorBase
     {

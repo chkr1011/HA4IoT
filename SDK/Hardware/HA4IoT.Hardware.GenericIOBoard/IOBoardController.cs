@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CK.HomeAutomation.Notifications;
+using HA4IoT.Notifications;
 
-namespace CK.HomeAutomation.Hardware.GenericIOBoard
+namespace HA4IoT.Hardware.GenericIOBoard
 {
     public abstract class IOBoardController
     {

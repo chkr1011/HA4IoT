@@ -7,8 +7,8 @@
     <ProjectGuid>{8BF16E28-A01D-47E9-A5C4-CC93E347AAF4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CK.HomeAutomation.Hardware.I2CHardwareBridge</RootNamespace>
-    <AssemblyName>CK.HomeAutomation.Hardware.I2CHardwareBridge</AssemblyName>
+    <RootNamespace>HA4IoT.Hardware.I2CHardwareBridge</RootNamespace>
+    <AssemblyName>HA4IoT.Hardware.I2CHardwareBridge</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
@@ -122,9 +122,9 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\CK.HomeAutomation.Hardware\CK.HomeAutomation.Hardware.csproj">
+    <ProjectReference Include="..\..\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
       <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
-      <Name>CK.HomeAutomation.Hardware</Name>
+      <Name>HA4IoT.Hardware</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

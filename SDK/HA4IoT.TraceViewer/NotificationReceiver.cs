@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CK.HomeAutomation.TraceViewer
+namespace HA4IoT.TraceViewer
 {
     public class ControllerNotificationReceiver
     {

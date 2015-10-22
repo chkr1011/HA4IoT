@@ -1,7 +1,7 @@
 ﻿using System;
 using Windows.Data.Json;
 
-namespace CK.HomeAutomation.Actuators
+namespace HA4IoT.Actuators
 {
     public class ApiRequestContext
     {

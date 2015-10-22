@@ -1,8 +1,8 @@
-﻿using CK.HomeAutomation.Actuators.Conditions;
-using FluentAssertions;
+﻿using FluentAssertions;
+using HA4IoT.Actuators.Conditions;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
-namespace CK.HomeAutomation.Actuators.Tests
+namespace HA4IoT.Actuators.Tests
 {
     [TestClass]
     public class ConditionsValidatorTests

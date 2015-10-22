@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.Devices.I2c;
 
-namespace CK.HomeAutomation.Hardware.I2CHardwareBridge
+namespace HA4IoT.Hardware.I2CHardwareBridge
 {
     public class SendInfraredSignalCommand : I2CHardwareBridgeCommand
     {

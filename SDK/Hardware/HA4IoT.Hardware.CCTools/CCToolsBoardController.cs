@@ -1,8 +1,8 @@
 ﻿using System;
-using CK.HomeAutomation.Hardware.GenericIOBoard;
-using CK.HomeAutomation.Notifications;
+using HA4IoT.Hardware.GenericIOBoard;
+using HA4IoT.Notifications;
 
-namespace CK.HomeAutomation.Hardware.CCTools
+namespace HA4IoT.Hardware.CCTools
 {
     public class CCToolsBoardController
     {

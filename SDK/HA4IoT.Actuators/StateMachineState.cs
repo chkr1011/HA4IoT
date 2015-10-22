@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using CK.HomeAutomation.Actuators.Contracts;
-using CK.HomeAutomation.Hardware;
+using HA4IoT.Actuators.Contracts;
+using HA4IoT.Hardware;
 
-namespace CK.HomeAutomation.Actuators
+namespace HA4IoT.Actuators
 {
     public class StateMachineState
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CK.HomeAutomation.Networking
+namespace HA4IoT.Networking
 {
     public class HttpRequestDispatcherAction
     {

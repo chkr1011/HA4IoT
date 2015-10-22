@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CK.HomeAutomation.Hardware.DHT22
+namespace HA4IoT.Hardware.DHT22
 {
     public abstract class DHT22SensorBase : ISingleValueSensor
     {

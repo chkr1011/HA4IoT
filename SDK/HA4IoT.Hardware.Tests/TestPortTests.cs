@@ -1,8 +1,8 @@
-﻿using CK.HomeAutomation.Hardware.Test;
-using FluentAssertions;
+﻿using FluentAssertions;
+using HA4IoT.Hardware.Test;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
-namespace CK.HomeAutomation.Hardware.Tests
+namespace HA4IoT.Hardware.Tests
 {
     [TestClass]
     public class TestPortTests

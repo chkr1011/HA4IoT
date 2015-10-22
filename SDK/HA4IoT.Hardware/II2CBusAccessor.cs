@@ -1,7 +1,7 @@
 ﻿using System;
 using Windows.Devices.I2c;
 
-namespace CK.HomeAutomation.Hardware
+namespace HA4IoT.Hardware
 {
     public interface II2cBusAccessor
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CK.HomeAutomation.Actuators.Connectors
+namespace HA4IoT.Actuators.Connectors
 {
     public static class RollerShutterWithRollerShutterButtonsConnector
     {

@@ -1,10 +1,10 @@
-﻿using CK.HomeAutomation.Hardware;
-using CK.HomeAutomation.Hardware.Test;
-using CK.HomeAutomation.Tests.Mockups;
-using FluentAssertions;
+﻿using FluentAssertions;
+using HA4IoT.Hardware;
+using HA4IoT.Hardware.Test;
+using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
-namespace CK.HomeAutomation.Actuators.Tests
+namespace HA4IoT.Actuators.Tests
 {
     [TestClass]
     public class BinaryStateOutputTests

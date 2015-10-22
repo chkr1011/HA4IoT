@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CK.HomeAutomation.Hardware.Test
+namespace HA4IoT.Hardware.Test
 {
     public class TestPort
     {

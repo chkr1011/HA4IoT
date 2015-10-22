@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.Devices.Enumeration;
 using Windows.Devices.I2c;
-using CK.HomeAutomation.Notifications;
+using HA4IoT.Notifications;
 
-namespace CK.HomeAutomation.Hardware
+namespace HA4IoT.Hardware
 {
     public class I2cBusAccessor : II2cBusAccessor
     {

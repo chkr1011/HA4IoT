@@ -7,8 +7,8 @@
     <ProjectGuid>{B95B45D4-6E3D-4147-9838-5D4A262EA328}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CK.HomeAutomation.Hardware.PortExpanderDrivers</RootNamespace>
-    <AssemblyName>CK.HomeAutomation.Hardware.PortExpanderDrivers</AssemblyName>
+    <RootNamespace>HA4IoT.Hardware.PortExpanderDrivers</RootNamespace>
+    <AssemblyName>HA4IoT.Hardware.PortExpanderDrivers</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
@@ -116,15 +116,15 @@
     <Content Include="Properties\CK.HomeAutomation.Hardware.PortExpanderDrivers.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\CK.HomeAutomation.Hardware\CK.HomeAutomation.Hardware.csproj">
-      <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
-      <Name>CK.HomeAutomation.Hardware</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <SDKReference Include="WindowsIoT, Version=10.0.10240.0">
       <Name>Windows IoT Extensions for the UWP</Name>
     </SDKReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
+      <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
+      <Name>HA4IoT.Hardware</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

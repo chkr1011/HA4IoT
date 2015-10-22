@@ -1,4 +1,4 @@
-﻿namespace CK.HomeAutomation.Controller.Rooms
+﻿namespace HA4IoT.Controller.Main.Rooms
 {
     internal enum Room
     {

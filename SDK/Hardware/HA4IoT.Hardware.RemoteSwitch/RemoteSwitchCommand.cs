@@ -1,4 +1,4 @@
-﻿namespace CK.HomeAutomation.Hardware.RemoteSwitch
+﻿namespace HA4IoT.Hardware.RemoteSwitch
 {
     public enum RemoteSwitchCommand
     {

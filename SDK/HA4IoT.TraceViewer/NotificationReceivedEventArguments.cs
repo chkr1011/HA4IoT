@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CK.HomeAutomation.TraceViewer
+namespace HA4IoT.TraceViewer
 {
     public class ControllerNotificationReceivedEventArguments : EventArgs
     {

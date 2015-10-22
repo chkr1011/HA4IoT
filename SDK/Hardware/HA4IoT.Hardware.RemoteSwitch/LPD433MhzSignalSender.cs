@@ -1,9 +1,9 @@
 ﻿using System;
 using Windows.Data.Json;
-using CK.HomeAutomation.Hardware.I2CHardwareBridge;
-using CK.HomeAutomation.Networking;
+using HA4IoT.Hardware.I2CHardwareBridge;
+using HA4IoT.Networking;
 
-namespace CK.HomeAutomation.Hardware.RemoteSwitch
+namespace HA4IoT.Hardware.RemoteSwitch
 {
     public class LPD433MHzSignalSender : ILPD433MHzSignalSender
     {

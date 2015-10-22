@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CK.HomeAutomation.Actuators.Animations
+namespace HA4IoT.Actuators.Animations
 {
     public class Frame
     {

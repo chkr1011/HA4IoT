@@ -1,7 +1,7 @@
 ﻿using System;
-using CK.HomeAutomation.Core.Timer;
+using HA4IoT.Core.Timer;
 
-namespace CK.HomeAutomation.Tests.Mockups
+namespace HA4IoT.Tests.Mockups
 {
     public class TestHomeAutomationTimer : IHomeAutomationTimer
     {

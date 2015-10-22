@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Windows.Data.Json;
-using CK.HomeAutomation.Networking;
-using CK.HomeAutomation.Notifications;
+using HA4IoT.Networking;
+using HA4IoT.Notifications;
 
-namespace CK.HomeAutomation.Hardware.GenericIOBoard
+namespace HA4IoT.Hardware.GenericIOBoard
 {
     public class IOBoardManager
     {

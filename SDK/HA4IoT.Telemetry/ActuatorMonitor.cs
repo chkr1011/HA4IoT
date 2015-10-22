@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
-using CK.HomeAutomation.Actuators;
-using CK.HomeAutomation.Actuators.Contracts;
-using CK.HomeAutomation.Notifications;
+using HA4IoT.Actuators;
+using HA4IoT.Actuators.Contracts;
+using HA4IoT.Notifications;
 
-namespace CK.HomeAutomation.Telemetry
+namespace HA4IoT.Telemetry
 {
     public abstract class ActuatorMonitor
     {

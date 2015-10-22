@@ -7,8 +7,8 @@
     <ProjectGuid>{97F3345C-33B6-4779-9212-5FFBCEEF3F96}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CK.HomeAutomation.Telemetry</RootNamespace>
-    <AssemblyName>CK.HomeAutomation.Telemetry</AssemblyName>
+    <RootNamespace>HA4IoT.Telemetry</RootNamespace>
+    <AssemblyName>HA4IoT.Telemetry</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
@@ -120,17 +120,17 @@
     <Content Include="Properties\CK.HomeAutomation.Telemetry.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CK.HomeAutomation.Actuators\CK.HomeAutomation.Actuators.csproj">
+    <ProjectReference Include="..\HA4IoT.Actuators\HA4IoT.Actuators.csproj">
       <Project>{808ABECF-D9C2-4AB2-95D8-EAF228B44576}</Project>
-      <Name>CK.HomeAutomation.Actuators</Name>
+      <Name>HA4IoT.Actuators</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CK.HomeAutomation.Hardware\CK.HomeAutomation.Hardware.csproj">
+    <ProjectReference Include="..\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
       <Project>{287a9bd0-4037-4add-986f-54056f059eae}</Project>
-      <Name>CK.HomeAutomation.Hardware</Name>
+      <Name>HA4IoT.Hardware</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CK.HomeAutomation.Notifications\CK.HomeAutomation.Notifications.csproj">
+    <ProjectReference Include="..\HA4IoT.Notifications\HA4IoT.Notifications.csproj">
       <Project>{15DB669D-AF71-4E89-9748-0290A2E5D291}</Project>
-      <Name>CK.HomeAutomation.Notifications</Name>
+      <Name>HA4IoT.Notifications</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

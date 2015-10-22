@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using CK.HomeAutomation.Core.Timer;
-using CK.HomeAutomation.Hardware.I2CHardwareBridge;
+using HA4IoT.Core.Timer;
+using HA4IoT.Hardware.I2CHardwareBridge;
 
-namespace CK.HomeAutomation.Hardware.DHT22
+namespace HA4IoT.Hardware.DHT22
 {
     public class DHT22Accessor
     {

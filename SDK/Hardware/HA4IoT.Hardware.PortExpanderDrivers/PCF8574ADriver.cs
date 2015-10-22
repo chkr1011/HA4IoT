@@ -1,4 +1,4 @@
-﻿namespace CK.HomeAutomation.Hardware.PortExpanderDrivers
+﻿namespace HA4IoT.Hardware.PortExpanderDrivers
 {
     public class PCF8574ADriver : PCF8574Driver
     { 

@@ -1,4 +1,4 @@
-﻿namespace CK.HomeAutomation.TraceViewer
+﻿namespace HA4IoT.TraceViewer
 {
     public enum NotificationType
     {

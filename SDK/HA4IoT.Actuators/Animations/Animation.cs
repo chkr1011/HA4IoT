@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CK.HomeAutomation.Core.Timer;
+using HA4IoT.Core.Timer;
 
-namespace CK.HomeAutomation.Actuators.Animations
+namespace HA4IoT.Actuators.Animations
 {
     public class Animation
     {

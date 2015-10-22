@@ -4,14 +4,14 @@ using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Storage;
 using Windows.Web.Http;
-using CK.HomeAutomation.Actuators;
-using CK.HomeAutomation.Actuators.Contracts;
-using CK.HomeAutomation.Core.Timer;
-using CK.HomeAutomation.Networking;
-using CK.HomeAutomation.Notifications;
-using HttpMethod = CK.HomeAutomation.Networking.HttpMethod;
+using HA4IoT.Actuators;
+using HA4IoT.Actuators.Contracts;
+using HA4IoT.Core.Timer;
+using HA4IoT.Networking;
+using HA4IoT.Notifications;
+using HttpMethod = HA4IoT.Networking.HttpMethod;
 
-namespace CK.HomeAutomation.Hardware.OpenWeatherMapWeatherStation
+namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 {
     public class OWMWeatherStation : IWeatherStation
     {

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
-using CK.HomeAutomation.Core.Timer;
-using CK.HomeAutomation.Hardware;
-using CK.HomeAutomation.Networking;
-using CK.HomeAutomation.Notifications;
+using HA4IoT.Core.Timer;
+using HA4IoT.Hardware;
+using HA4IoT.Networking;
+using HA4IoT.Notifications;
 
-namespace CK.HomeAutomation.Actuators
+namespace HA4IoT.Actuators
 {
     public class Button : ButtonBase
     {

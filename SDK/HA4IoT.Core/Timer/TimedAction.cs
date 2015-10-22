@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CK.HomeAutomation.Core.Timer
+namespace HA4IoT.Core.Timer
 {
     public class TimedAction
     {

@@ -7,8 +7,8 @@
     <ProjectGuid>{74BECF44-F00B-40F1-9220-06C4C7F2220F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CK.HomeAutomation.Hardware.GenericIOBoard</RootNamespace>
-    <AssemblyName>CK.HomeAutomation.Hardware.GenericIOBoard</AssemblyName>
+    <RootNamespace>HA4IoT.Hardware.GenericIOBoard</RootNamespace>
+    <AssemblyName>HA4IoT.Hardware.GenericIOBoard</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
@@ -121,17 +121,17 @@
     <Content Include="Properties\CK.HomeAutomation.Hardware.GenericIOBoard.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\CK.HomeAutomation.Hardware\CK.HomeAutomation.Hardware.csproj">
+    <ProjectReference Include="..\..\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
       <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
-      <Name>CK.HomeAutomation.Hardware</Name>
+      <Name>HA4IoT.Hardware</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\CK.HomeAutomation.Networking\CK.HomeAutomation.Networking.csproj">
+    <ProjectReference Include="..\..\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
-      <Name>CK.HomeAutomation.Networking</Name>
+      <Name>HA4IoT.Networking</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\CK.HomeAutomation.Notifications\CK.HomeAutomation.Notifications.csproj">
+    <ProjectReference Include="..\..\HA4IoT.Notifications\HA4IoT.Notifications.csproj">
       <Project>{15DB669D-AF71-4E89-9748-0290A2E5D291}</Project>
-      <Name>CK.HomeAutomation.Notifications</Name>
+      <Name>HA4IoT.Notifications</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

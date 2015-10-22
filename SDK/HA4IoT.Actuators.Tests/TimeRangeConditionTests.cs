@@ -1,11 +1,11 @@
 ﻿using System;
-using CK.HomeAutomation.Actuators.Conditions;
-using CK.HomeAutomation.Actuators.Conditions.Specialized;
-using CK.HomeAutomation.Tests.Mockups;
 using FluentAssertions;
+using HA4IoT.Actuators.Conditions;
+using HA4IoT.Actuators.Conditions.Specialized;
+using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
-namespace CK.HomeAutomation.Actuators.Tests
+namespace HA4IoT.Actuators.Tests
 {
     [TestClass]
     public class TimeRangeConditionTests

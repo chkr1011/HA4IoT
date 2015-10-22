@@ -1,4 +1,4 @@
-﻿namespace CK.HomeAutomation.Networking
+﻿namespace HA4IoT.Networking
 {
     public interface IHttpRequestDispatcher
     {

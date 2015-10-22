@@ -1,11 +1,11 @@
 ﻿using System;
-using CK.HomeAutomation.Actuators.Automations;
-using CK.HomeAutomation.Actuators.Contracts;
-using CK.HomeAutomation.Tests.Mockups;
 using FluentAssertions;
+using HA4IoT.Actuators.Automations;
+using HA4IoT.Actuators.Contracts;
+using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
-namespace CK.HomeAutomation.Actuators.Tests
+namespace HA4IoT.Actuators.Tests
 {
     [TestClass]
     public class AutomaticTurnOnAndOffAutomationTests

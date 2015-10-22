@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.Data.Json;
 using Windows.Devices.Gpio;
-using CK.HomeAutomation.Core.Timer;
-using CK.HomeAutomation.Networking;
+using HA4IoT.Core.Timer;
+using HA4IoT.Networking;
 
-namespace CK.HomeAutomation.Core
+namespace HA4IoT.Core
 {
     public class HealthMonitor
     {

@@ -7,8 +7,8 @@
     <ProjectGuid>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CK.HomeAutomation.Networking</RootNamespace>
-    <AssemblyName>CK.HomeAutomation.Networking</AssemblyName>
+    <RootNamespace>HA4IoT.Networking</RootNamespace>
+    <AssemblyName>HA4IoT.Networking</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>

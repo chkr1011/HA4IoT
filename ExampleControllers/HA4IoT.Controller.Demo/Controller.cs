@@ -2,23 +2,23 @@
 using System.IO;
 using Windows.Data.Json;
 using Windows.Storage;
-using CK.HomeAutomation.Actuators;
-using CK.HomeAutomation.Actuators.Connectors;
-using CK.HomeAutomation.Actuators.Contracts;
-using CK.HomeAutomation.Core;
-using CK.HomeAutomation.Hardware;
-using CK.HomeAutomation.Hardware.CCTools;
-using CK.HomeAutomation.Hardware.DHT22;
-using CK.HomeAutomation.Hardware.GenericIOBoard;
-using CK.HomeAutomation.Hardware.I2CHardwareBridge;
-using CK.HomeAutomation.Hardware.OpenWeatherMapWeatherStation;
-using CK.HomeAutomation.Hardware.Pi2;
-using CK.HomeAutomation.Hardware.RemoteSwitch;
-using CK.HomeAutomation.Hardware.RemoteSwitch.Codes;
-using CK.HomeAutomation.Notifications;
-using CK.HomeAutomation.Telemetry;
+using HA4IoT.Actuators;
+using HA4IoT.Actuators.Connectors;
+using HA4IoT.Actuators.Contracts;
+using HA4IoT.Core;
+using HA4IoT.Hardware;
+using HA4IoT.Hardware.CCTools;
+using HA4IoT.Hardware.DHT22;
+using HA4IoT.Hardware.GenericIOBoard;
+using HA4IoT.Hardware.I2CHardwareBridge;
+using HA4IoT.Hardware.OpenWeatherMapWeatherStation;
+using HA4IoT.Hardware.Pi2;
+using HA4IoT.Hardware.RemoteSwitch;
+using HA4IoT.Hardware.RemoteSwitch.Codes;
+using HA4IoT.Notifications;
+using HA4IoT.Telemetry;
 
-namespace CK.HomeAutomation.Controller.Empty
+namespace HA4IoT.Controller.Empty
 {
     internal class Controller : BaseController
     {

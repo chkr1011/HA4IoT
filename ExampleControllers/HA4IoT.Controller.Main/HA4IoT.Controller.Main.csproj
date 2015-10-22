@@ -7,8 +7,8 @@
     <ProjectGuid>{D3634558-2746-441F-BC09-454B1EC7DC1D}</ProjectGuid>
     <OutputType>winmdobj</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CK.HomeAutomation.Controller</RootNamespace>
-    <AssemblyName>CK.HomeAutomation.Controller</AssemblyName>
+    <RootNamespace>HA4IoT.Controller.Main</RootNamespace>
+    <AssemblyName>HA4IoT.Controller.Main</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
@@ -94,6 +94,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <None Include="HA4IoT.Controller.Main_TemporaryKey.pfx" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
@@ -117,7 +118,6 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="CK.HomeAutomation.Controller_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\Default.rd.xml" />
@@ -135,57 +135,57 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SDK\Hardware\CK.HomeAutomation.Hardware.I2CHardwareBridge\CK.HomeAutomation.Hardware.I2CHardwareBridge.csproj">
+    <ProjectReference Include="..\..\SDK\HA4IoT.Actuators\HA4IoT.Actuators.csproj">
+      <Project>{808ABECF-D9C2-4AB2-95D8-EAF228B44576}</Project>
+      <Name>HA4IoT.Actuators</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Core\HA4IoT.Core.csproj">
+      <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
+      <Name>HA4IoT.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
+      <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
+      <Name>HA4IoT.Hardware</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Networking\HA4IoT.Networking.csproj">
+      <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
+      <Name>HA4IoT.Networking</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Notifications\HA4IoT.Notifications.csproj">
+      <Project>{15DB669D-AF71-4E89-9748-0290A2E5D291}</Project>
+      <Name>HA4IoT.Notifications</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Telemetry\HA4IoT.Telemetry.csproj">
+      <Project>{97F3345C-33B6-4779-9212-5FFBCEEF3F96}</Project>
+      <Name>HA4IoT.Telemetry</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.CCTools\HA4IoT.Hardware.CCTools.csproj">
+      <Project>{B0A7EF01-9382-422C-81AF-C90DC5A7AFFD}</Project>
+      <Name>HA4IoT.Hardware.CCTools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.DHT22\HA4IoT.Hardware.DHT22.csproj">
+      <Project>{C838FE97-95A5-4D11-8F4E-19257B1D062A}</Project>
+      <Name>HA4IoT.Hardware.DHT22</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.GenericIOBoard\HA4IoT.Hardware.GenericIOBoard.csproj">
+      <Project>{74BECF44-F00B-40F1-9220-06C4C7F2220F}</Project>
+      <Name>HA4IoT.Hardware.GenericIOBoard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.I2CHardwareBridge\HA4IoT.Hardware.I2CHardwareBridge.csproj">
       <Project>{8BF16E28-A01D-47E9-A5C4-CC93E347AAF4}</Project>
-      <Name>CK.HomeAutomation.Hardware.I2CHardwareBridge</Name>
+      <Name>HA4IoT.Hardware.I2CHardwareBridge</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SDK\CK.HomeAutomation.Actuators\CK.HomeAutomation.Actuators.csproj">
-      <Project>{808abecf-d9c2-4ab2-95d8-eaf228b44576}</Project>
-      <Name>CK.HomeAutomation.Actuators</Name>
+    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.OpenWeatherMapWeatherStation\HA4IoT.Hardware.OpenWeatherMapWeatherStation.csproj">
+      <Project>{25A0003B-E68E-481A-92AD-F4BDABC65700}</Project>
+      <Name>HA4IoT.Hardware.OpenWeatherMapWeatherStation</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SDK\CK.HomeAutomation.Core\CK.HomeAutomation.Core.csproj">
-      <Project>{2bbef090-4fee-4fb7-9cf1-f6597f2c53ea}</Project>
-      <Name>CK.HomeAutomation.Core</Name>
+    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.Pi2\HA4IoT.Hardware.Pi2.csproj">
+      <Project>{39819B8F-40F8-418A-AD3A-92A8C8D63268}</Project>
+      <Name>HA4IoT.Hardware.Pi2</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SDK\CK.HomeAutomation.Hardware\CK.HomeAutomation.Hardware.csproj">
-      <Project>{287a9bd0-4037-4add-986f-54056f059eae}</Project>
-      <Name>CK.HomeAutomation.Hardware</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\CK.HomeAutomation.Networking\CK.HomeAutomation.Networking.csproj">
-      <Project>{d4e0a3f9-6521-4aee-815a-e2a60323fb63}</Project>
-      <Name>CK.HomeAutomation.Networking</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\CK.HomeAutomation.Notifications\CK.HomeAutomation.Notifications.csproj">
-      <Project>{15db669d-af71-4e89-9748-0290a2e5d291}</Project>
-      <Name>CK.HomeAutomation.Notifications</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\CK.HomeAutomation.Telemetry\CK.HomeAutomation.Telemetry.csproj">
-      <Project>{97f3345c-33b6-4779-9212-5ffbceef3f96}</Project>
-      <Name>CK.HomeAutomation.Telemetry</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\CK.HomeAutomation.Hardware.CCTools\CK.HomeAutomation.Hardware.CCTools.csproj">
-      <Project>{b0a7ef01-9382-422c-81af-c90dc5a7affd}</Project>
-      <Name>CK.HomeAutomation.Hardware.CCTools</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\CK.HomeAutomation.Hardware.DHT22\CK.HomeAutomation.Hardware.DHT22.csproj">
-      <Project>{c838fe97-95a5-4d11-8f4e-19257b1d062a}</Project>
-      <Name>CK.HomeAutomation.Hardware.DHT22</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\CK.HomeAutomation.Hardware.GenericIOBoard\CK.HomeAutomation.Hardware.GenericIOBoard.csproj">
-      <Project>{74becf44-f00b-40f1-9220-06c4c7f2220f}</Project>
-      <Name>CK.HomeAutomation.Hardware.GenericIOBoard</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\CK.HomeAutomation.Hardware.OpenWeatherMapWeatherStation\CK.HomeAutomation.Hardware.OpenWeatherMapWeatherStation.csproj">
-      <Project>{25a0003b-e68e-481a-92ad-f4bdabc65700}</Project>
-      <Name>CK.HomeAutomation.Hardware.OpenWeatherMapWeatherStation</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\CK.HomeAutomation.Hardware.Pi2\CK.HomeAutomation.Hardware.Pi2.csproj">
-      <Project>{39819b8f-40f8-418a-ad3a-92a8c8d63268}</Project>
-      <Name>CK.HomeAutomation.Hardware.Pi2</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\CK.HomeAutomation.Hardware.RemoteSwitch\CK.HomeAutomation.Hardware.RemoteSwitch.csproj">
-      <Project>{bada2e47-5626-4e9e-92a7-8f712d084493}</Project>
-      <Name>CK.HomeAutomation.Hardware.RemoteSwitch</Name>
+    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.RemoteSwitch\HA4IoT.Hardware.RemoteSwitch.csproj">
+      <Project>{BADA2E47-5626-4E9E-92A7-8F712D084493}</Project>
+      <Name>HA4IoT.Hardware.RemoteSwitch</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

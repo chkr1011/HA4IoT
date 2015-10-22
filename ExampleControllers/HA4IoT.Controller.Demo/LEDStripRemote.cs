@@ -1,7 +1,7 @@
 ﻿using System;
-using CK.HomeAutomation.Hardware.I2CHardwareBridge;
+using HA4IoT.Hardware.I2CHardwareBridge;
 
-namespace CK.HomeAutomation.Controller.Empty
+namespace HA4IoT.Controller.Empty
 {
     internal class LEDStripRemote
     {

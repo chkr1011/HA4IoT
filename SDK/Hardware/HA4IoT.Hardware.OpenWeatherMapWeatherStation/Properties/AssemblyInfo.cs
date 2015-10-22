@@ -2,11 +2,11 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("CK.HomeAutomation.OpenWeatherMapWeatherStation")]
+[assembly: AssemblyTitle("HA4IoT.OpenWeatherMapWeatherStation")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("CK.HomeAutomation.Actuators")]
+[assembly: AssemblyCompany("Christian Kratky")]
+[assembly: AssemblyProduct("HA4IoT")]
 [assembly: AssemblyCopyright("Copyright © Christian Kratky 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

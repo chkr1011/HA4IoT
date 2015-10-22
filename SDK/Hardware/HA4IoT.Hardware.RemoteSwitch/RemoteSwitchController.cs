@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using CK.HomeAutomation.Core.Timer;
+using HA4IoT.Core.Timer;
 
-namespace CK.HomeAutomation.Hardware.RemoteSwitch
+namespace HA4IoT.Hardware.RemoteSwitch
 {
     public class RemoteSwitchController : IBinaryOutputController
     {

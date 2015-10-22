@@ -1,7 +1,7 @@
 ﻿using System;
-using CK.HomeAutomation.Actuators.Contracts;
+using HA4IoT.Actuators.Contracts;
 
-namespace CK.HomeAutomation.Hardware.OpenWeatherMapWeatherStation
+namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 {
     public class WeatherStationTemperatureSensor : ITemperatureSensor
     {

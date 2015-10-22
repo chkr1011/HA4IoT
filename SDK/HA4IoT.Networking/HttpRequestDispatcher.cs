@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CK.HomeAutomation.Networking
+namespace HA4IoT.Networking
 {
     public class HttpRequestDispatcher : IHttpRequestDispatcher
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CK.HomeAutomation.Actuators.Conditions
+namespace HA4IoT.Actuators.Conditions
 {
     public class RelatedCondition
     {

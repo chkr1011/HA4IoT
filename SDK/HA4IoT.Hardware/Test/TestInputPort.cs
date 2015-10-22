@@ -1,4 +1,4 @@
-﻿namespace CK.HomeAutomation.Hardware.Test
+﻿namespace HA4IoT.Hardware.Test
 {
     public class TestInputPort : TestPort, IBinaryInput
     {

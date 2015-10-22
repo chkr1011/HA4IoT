@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CK.HomeAutomation.Hardware
+namespace HA4IoT.Hardware
 {
     public class BinaryStateChangedEventArgs : EventArgs
     {

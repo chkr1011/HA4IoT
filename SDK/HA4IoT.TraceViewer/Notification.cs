@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace CK.HomeAutomation.TraceViewer
+namespace HA4IoT.TraceViewer
 {
     public class Notification
     {

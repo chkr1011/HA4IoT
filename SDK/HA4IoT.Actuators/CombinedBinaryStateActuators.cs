@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CK.HomeAutomation.Actuators.Animations;
-using CK.HomeAutomation.Actuators.Contracts;
-using CK.HomeAutomation.Core.Timer;
-using CK.HomeAutomation.Networking;
-using CK.HomeAutomation.Notifications;
+using HA4IoT.Actuators.Contracts;
+using HA4IoT.Core.Timer;
+using HA4IoT.Networking;
+using HA4IoT.Notifications;
 
-namespace CK.HomeAutomation.Actuators
+namespace HA4IoT.Actuators
 {
     public class CombinedBinaryStateActuators : ActuatorBase, IBinaryStateOutputActuator
     {

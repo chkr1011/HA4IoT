@@ -7,8 +7,8 @@
     <ProjectGuid>{B0A7EF01-9382-422C-81AF-C90DC5A7AFFD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CK.HomeAutomation.Hardware.CCTools</RootNamespace>
-    <AssemblyName>CK.HomeAutomation.Hardware.CCTools</AssemblyName>
+    <RootNamespace>HA4IoT.Hardware.CCTools</RootNamespace>
+    <AssemblyName>HA4IoT.Hardware.CCTools</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
@@ -124,35 +124,27 @@
     <Content Include="Properties\CK.HomeAutomation.Hardware.CCTools.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CK.HomeAutomation.Hardware.PortExpanderDrivers\CK.HomeAutomation.Hardware.PortExpanderDrivers.csproj">
-      <Project>{B95B45D4-6E3D-4147-9838-5D4A262EA328}</Project>
-      <Name>CK.HomeAutomation.Hardware.PortExpanderDrivers</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\CK.HomeAutomation.Core\CK.HomeAutomation.Core.csproj">
-      <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
-      <Name>CK.HomeAutomation.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CK.HomeAutomation.Hardware.GenericIOBoard\CK.HomeAutomation.Hardware.GenericIOBoard.csproj">
-      <Project>{74BECF44-F00B-40F1-9220-06C4C7F2220F}</Project>
-      <Name>CK.HomeAutomation.Hardware.GenericIOBoard</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\CK.HomeAutomation.Hardware\CK.HomeAutomation.Hardware.csproj">
-      <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
-      <Name>CK.HomeAutomation.Hardware</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\CK.HomeAutomation.Networking\CK.HomeAutomation.Networking.csproj">
-      <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
-      <Name>CK.HomeAutomation.Networking</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\CK.HomeAutomation.Notifications\CK.HomeAutomation.Notifications.csproj">
-      <Project>{15DB669D-AF71-4E89-9748-0290A2E5D291}</Project>
-      <Name>CK.HomeAutomation.Notifications</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <SDKReference Include="WindowsIoT, Version=10.0.10240.0">
       <Name>Windows IoT Extensions for the UWP</Name>
     </SDKReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
+      <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
+      <Name>HA4IoT.Hardware</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\HA4IoT.Notifications\HA4IoT.Notifications.csproj">
+      <Project>{15DB669D-AF71-4E89-9748-0290A2E5D291}</Project>
+      <Name>HA4IoT.Notifications</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HA4IoT.Hardware.GenericIOBoard\HA4IoT.Hardware.GenericIOBoard.csproj">
+      <Project>{74BECF44-F00B-40F1-9220-06C4C7F2220F}</Project>
+      <Name>HA4IoT.Hardware.GenericIOBoard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HA4IoT.Hardware.PortExpanderDrivers\HA4IoT.Hardware.PortExpanderDrivers.csproj">
+      <Project>{B95B45D4-6E3D-4147-9838-5D4A262EA328}</Project>
+      <Name>HA4IoT.Hardware.PortExpanderDrivers</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

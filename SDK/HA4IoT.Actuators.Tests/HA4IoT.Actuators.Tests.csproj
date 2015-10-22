@@ -7,8 +7,8 @@
     <ProjectGuid>{22C0304B-1F66-4682-93A3-EBC7655708F7}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CK.HomeAutomation.Actuators.Tests</RootNamespace>
-    <AssemblyName>CK.HomeAutomation.Actuators.Tests</AssemblyName>
+    <RootNamespace>HA4IoT.Actuators.Tests</RootNamespace>
+    <AssemblyName>HA4IoT.Actuators.Tests</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
@@ -91,6 +91,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!--A reference to the entire .Net Framework and Windows SDK are automatically included-->
+    <None Include="HA4IoT.Actuators.Tests_TemporaryKey.pfx" />
     <None Include="project.json" />
     <SDKReference Include="MSTestFramework.Universal, Version=$(UnitTestPlatformVersion)" />
     <SDKReference Include="TestPlatform.Universal, Version=$(UnitTestPlatformVersion)" />
@@ -118,7 +119,6 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="CK.HomeAutomation.Actuators.Tests_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\UnitTestApp.rd.xml" />
@@ -131,33 +131,33 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CK.HomeAutomation.Actuators\CK.HomeAutomation.Actuators.csproj">
-      <Project>{808ABECF-D9C2-4AB2-95D8-EAF228B44576}</Project>
-      <Name>CK.HomeAutomation.Actuators</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CK.HomeAutomation.Core\CK.HomeAutomation.Core.csproj">
-      <Project>{2bbef090-4fee-4fb7-9cf1-f6597f2c53ea}</Project>
-      <Name>CK.HomeAutomation.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CK.HomeAutomation.Hardware\CK.HomeAutomation.Hardware.csproj">
-      <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
-      <Name>CK.HomeAutomation.Hardware</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CK.HomeAutomation.Networking\CK.HomeAutomation.Networking.csproj">
-      <Project>{d4e0a3f9-6521-4aee-815a-e2a60323fb63}</Project>
-      <Name>CK.HomeAutomation.Networking</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CK.HomeAutomation.Notifications\CK.HomeAutomation.Notifications.csproj">
-      <Project>{15db669d-af71-4e89-9748-0290a2e5d291}</Project>
-      <Name>CK.HomeAutomation.Notifications</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CK.HomeAutomation.Tests.Mockups\CK.HomeAutomation.Tests.Mockups.csproj">
-      <Project>{238AD610-4F9B-4652-81DB-A8FC215F61A5}</Project>
-      <Name>CK.HomeAutomation.Tests.Mockups</Name>
-    </ProjectReference>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+    <ProjectReference Include="..\HA4IoT.Actuators\HA4IoT.Actuators.csproj">
+      <Project>{808ABECF-D9C2-4AB2-95D8-EAF228B44576}</Project>
+      <Name>HA4IoT.Actuators</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HA4IoT.Core\HA4IoT.Core.csproj">
+      <Project>{2bbef090-4fee-4fb7-9cf1-f6597f2c53ea}</Project>
+      <Name>HA4IoT.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
+      <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
+      <Name>HA4IoT.Hardware</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HA4IoT.Networking\HA4IoT.Networking.csproj">
+      <Project>{d4e0a3f9-6521-4aee-815a-e2a60323fb63}</Project>
+      <Name>HA4IoT.Networking</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HA4IoT.Notifications\HA4IoT.Notifications.csproj">
+      <Project>{15db669d-af71-4e89-9748-0290a2e5d291}</Project>
+      <Name>HA4IoT.Notifications</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HA4IoT.Tests.Mockups\HA4IoT.Tests.Mockups.csproj">
+      <Project>{238AD610-4F9B-4652-81DB-A8FC215F61A5}</Project>
+      <Name>HA4IoT.Tests.Mockups</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

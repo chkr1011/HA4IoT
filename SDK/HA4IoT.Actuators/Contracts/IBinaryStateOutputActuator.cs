@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CK.HomeAutomation.Actuators.Contracts
+namespace HA4IoT.Actuators.Contracts
 {
     public interface IBinaryStateOutputActuator
     {

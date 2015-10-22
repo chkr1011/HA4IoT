@@ -1,8 +1,8 @@
 ﻿using System;
-using CK.HomeAutomation.Actuators;
-using CK.HomeAutomation.Actuators.Contracts;
+using HA4IoT.Actuators;
+using HA4IoT.Actuators.Contracts;
 
-namespace CK.HomeAutomation.Tests.Mockups
+namespace HA4IoT.Tests.Mockups
 {
     public class TestButton : IButton
     {
