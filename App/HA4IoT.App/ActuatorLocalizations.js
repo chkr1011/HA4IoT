@@ -1,445 +1,460 @@
 ﻿var actuatorLocalizations = [
   // Example
   {
-    "key": "k",
-    "value": "v"
+      "key": "k",
+      "value": "v"
   },
 
   // Actuator translations
   {
-    "key": "Bedroom",
-    "value": "Schlafzimmer"
+      "key": "Bedroom",
+      "value": "Schlafzimmer"
   },
   {
-    "key": "LivingRoom",
-    "value": "Wohnzimmer"
+      "key": "LivingRoom",
+      "value": "Wohnzimmer"
   },
   {
-    "key": "Office",
-    "value": "Büro"
+      "key": "Office",
+      "value": "Büro"
   },
   {
-    "key": "Kitchen",
-    "value": "Küche"
+      "key": "Kitchen",
+      "value": "Küche"
   },
   {
-    "key": "Floor",
-    "value": "Flur / Treppenhaus"
+      "key": "Floor",
+      "value": "Flur / Treppenhaus"
   },
   {
-    "key": "ChildrensRoom",
-    "value": "Kinderzimmer"
+      "key": "ChildrensRoom",
+      "value": "Kinderzimmer"
   },
   {
-    "key": "ReadingRoom",
-    "value": "Lesezimmer"
+      "key": "ReadingRoom",
+      "value": "Lesezimmer"
   },
   {
-    "key": "UpperBathroom",
-    "value": "Badezimmer (oben)"
+      "key": "UpperBathroom",
+      "value": "Badezimmer (oben)"
   },
   {
-    "key": "LowerBathroom",
-    "value": "Badezimmer (unten)"
+      "key": "LowerBathroom",
+      "value": "Badezimmer (unten)"
   },
   {
-    "key": "Storeroom",
-    "value": "Abstellkammer"
+      "key": "Storeroom",
+      "value": "Abstellkammer"
   },
   {
-    "key": "Garden",
-    "value": "Garten"
+      "key": "Garden",
+      "value": "Garten"
   },
   {
-    "key": "RollerShutter",
-    "value": "Rollo"
+      "key": "RollerShutter",
+      "value": "Rollo"
   },
   {
-    "key": "Window",
-    "value": "Fenster"
-  },
-
-  {
-    "key": "Bedroom",
-    "value": "Schlafzimmer"
+      "key": "Window",
+      "value": "Fenster"
   },
   {
-    "key": "LivingRoom",
-    "value": "Wohnzimmer"
+      "key": "Bedroom",
+      "value": "Schlafzimmer"
   },
   {
-    "key": "Office",
-    "value": "Büro"
+      "key": "LivingRoom",
+      "value": "Wohnzimmer"
   },
   {
-    "key": "Kitchen",
-    "value": "Küche"
+      "key": "Office",
+      "value": "Büro"
   },
   {
-    "key": "Floor",
-    "value": "Flur / Treppenhaus"
+      "key": "Kitchen",
+      "value": "Küche"
   },
   {
-    "key": "ChildrensRoom",
-    "value": "Kinderzimmer"
+      "key": "Floor",
+      "value": "Flur / Treppenhaus"
   },
   {
-    "key": "ReadingRoom",
-    "value": "Lesezimmer"
+      "key": "ChildrensRoom",
+      "value": "Kinderzimmer"
   },
   {
-    "key": "UpperBathroom",
-    "value": "Badezimmer (oben)"
+      "key": "ReadingRoom",
+      "value": "Lesezimmer"
   },
   {
-    "key": "LowerBathroom",
-    "value": "Badezimmer (unten)"
+      "key": "UpperBathroom",
+      "value": "Badezimmer (oben)"
   },
   {
-    "key": "Storeroom",
-    "value": "Abstellkammer"
+      "key": "LowerBathroom",
+      "value": "Badezimmer (unten)"
   },
   {
-    "key": "Garden",
-    "value": "Garten"
+      "key": "Storeroom",
+      "value": "Abstellkammer"
+  },
+  {
+      "key": "Garden",
+      "value": "Garten"
   },
   // Bedroom
   {
-    "key": "Bedroom.Fan",
-    "value": "Ventilator"
+      "key": "Bedroom.Fan.Off",
+      "value": "Aus"
   },
   {
-    "key": "Bedroom.SocketWindowLeft",
-    "value": "Mückenstecker"
+      "key": "Bedroom.Fan.1",
+      "value": "Stufe 1"
   },
   {
-    "key": "Bedroom.LightCeiling",
-    "value": "Licht"
+      "key": "Bedroom.Fan.2",
+      "value": "Stufe 2"
   },
   {
-    "key": "Bedroom.LightCeilingWindow",
-    "value": "Strahler / Fenster"
+      "key": "Bedroom.Fan.3",
+      "value": "Stufe 3"
   },
   {
-    "key": "Bedroom.LightCeilingWall",
-    "value": "Strahler / Wand"
+      "key": "Bedroom.Fan",
+      "value": "Ventilator"
   },
   {
-    "key": "Bedroom.SocketWindowRight",
-    "value": "LED-Band"
+      "key": "Bedroom.SocketWindowLeft",
+      "value": "Mückenstecker"
   },
   {
-    "key": "Bedroom.SocketWall",
-    "value": "Wand"
+      "key": "Bedroom.LightCeiling",
+      "value": "Licht"
   },
   {
-    "key": "Bedroom.SocketWallEdge",
-    "value": "Ecke"
+      "key": "Bedroom.LightCeilingWindow",
+      "value": "Strahler / Fenster"
   },
   {
-    "key": "Bedroom.SocketBedLeft",
-    "value": "Bett / links"
+      "key": "Bedroom.LightCeilingWall",
+      "value": "Strahler / Wand"
   },
   {
-    "key": "Bedroom.SocketBedRight",
-    "value": "Bett / rechts"
+      "key": "Bedroom.SocketWindowRight",
+      "value": "LED-Band"
   },
   {
-    "key": "Bedroom.LampBedRight",
-    "value": "Bett / rechts"
+      "key": "Bedroom.SocketWall",
+      "value": "Wand"
   },
   {
-    "key": "Bedroom.LampBedLeft",
-    "value": "Bett / links"
+      "key": "Bedroom.SocketWallEdge",
+      "value": "Ecke"
+  },
+  {
+      "key": "Bedroom.SocketBedLeft",
+      "value": "Bett / links"
+  },
+  {
+      "key": "Bedroom.SocketBedRight",
+      "value": "Bett / rechts"
+  },
+  {
+      "key": "Bedroom.LampBedRight",
+      "value": "Bett / rechts"
+  },
+  {
+      "key": "Bedroom.LampBedLeft",
+      "value": "Bett / links"
   },
   // Office
   {
-    "key": "Office.LightCeilingFrontLeft",
-    "value": "Fenster links"
+      "key": "Office.LightCeilingFrontLeft",
+      "value": "Fenster links"
   },
   {
-    "key": "Office.LightCeilingFrontMiddle",
-    "value": "Fenster mitte"
+      "key": "Office.LightCeilingFrontMiddle",
+      "value": "Fenster mitte"
   },
   {
-    "key": "Office.LightCeilingFrontRight",
-    "value": "Fenster rechts"
+      "key": "Office.LightCeilingFrontRight",
+      "value": "Fenster rechts"
   },
   {
-    "key": "Office.LightCeilingMiddleLeft",
-    "value": "Mitte links"
+      "key": "Office.LightCeilingMiddleLeft",
+      "value": "Mitte links"
   },
   {
-    "key": "Office.LightCeilingMiddleMiddle",
-    "value": "Mitte"
+      "key": "Office.LightCeilingMiddleMiddle",
+      "value": "Mitte"
   },
   {
-    "key": "Office.LightCeilingMiddleRight",
-    "value": "Mitte rechts"
+      "key": "Office.LightCeilingMiddleRight",
+      "value": "Mitte rechts"
   },
   {
-    "key": "Office.LightCeilingRearLeft",
-    "value": "Schrank"
+      "key": "Office.LightCeilingRearLeft",
+      "value": "Schrank"
   },
   {
-    "key": "Office.LightCeilingRearRight",
-    "value": "Über Couch"
+      "key": "Office.LightCeilingRearRight",
+      "value": "Über Couch"
   },
   {
-    "key": "Office.SocketWindowLeft",
-    "value": "Fenster links"
+      "key": "Office.SocketWindowLeft",
+      "value": "Fenster links"
   },
   {
-    "key": "Office.SocketWindowRight",
-    "value": "Fenster rechts"
+      "key": "Office.SocketWindowRight",
+      "value": "Fenster rechts"
   },
   {
-    "key": "Office.CombinedCeilingLights",
-    "value": "Vorlage"
+      "key": "Office.CombinedCeilingLights",
+      "value": "Vorlage"
   },
   {
-    "key": "Office.SocketFrontLeft",
-    "value": "Schräge links"
+      "key": "Office.SocketFrontLeft",
+      "value": "Schräge links"
   },
   {
-    "key": "Office.SocketFrontRight",
-    "value": "Schräge rechts"
+      "key": "Office.SocketFrontRight",
+      "value": "Schräge rechts"
   },
   {
-    "key": "Office.CombinedCeilingLights.DeskOnly",
-    "value": "Schreibtisch"
+      "key": "Office.CombinedCeilingLights.DeskOnly",
+      "value": "Schreibtisch"
   },
   {
-    "key": "Office.CombinedCeilingLights.CouchOnly",
-    "value": "Couch"
+      "key": "Office.CombinedCeilingLights.CouchOnly",
+      "value": "Couch"
   },
   {
-    "key": "Office.CombinedCeilingLights.Off",
-    "value": "Aus"
+      "key": "Office.CombinedCeilingLights.Off",
+      "value": "Aus"
   },
   {
-    "key": "Office.CombinedCeilingLights.On",
-    "value": "An"
+      "key": "Office.CombinedCeilingLights.On",
+      "value": "An"
   },
   {
-    "key": "Office.RemoteSocketDesk",
-    "value": "Funksteckdose Schreibtisch"
+      "key": "Office.RemoteSocketDesk",
+      "value": "Schreibtisch"
   },
   {
-    "key": "Office.SocketRearLeft",
-    "value": "Wand links"
+      "key": "Office.SocketRearLeft",
+      "value": "Wand links"
   },
   {
-    "key": "Office.SocketRearLeftEdge",
-    "value": "Wand links - Ecke"
+      "key": "Office.SocketRearLeftEdge",
+      "value": "Wand links - Ecke"
   },
   {
-    "key": "Office.SocketRearRight",
-    "value": "Wand rechts"
+      "key": "Office.SocketRearRight",
+      "value": "Wand rechts"
   },
   // Reading room
   {
-    "key": "ReadingRoom.LightCeilingMiddle",
-    "value": "Licht"
+      "key": "ReadingRoom.LightCeilingMiddle",
+      "value": "Licht"
   },
   {
-    "key": "ReadingRoom.SocketWallLeft",
-    "value": "Schräge links"
+      "key": "ReadingRoom.SocketWallLeft",
+      "value": "Schräge links"
   },
   {
-    "key": "ReadingRoom.SocketWallRight",
-    "value": "Schräge rechts"
+      "key": "ReadingRoom.SocketWallRight",
+      "value": "Schräge rechts"
   },
   {
-    "key": "ReadingRoom.SocketWindow",
-    "value": "Fenster"
+      "key": "ReadingRoom.SocketWindow",
+      "value": "Fenster"
   },
   // Childrens room
   {
-    "key": "ChildrensRoom.LightCeilingMiddle",
-    "value": "Licht"
+      "key": "ChildrensRoom.LightCeilingMiddle",
+      "value": "Licht"
   },
   {
-    "key": "ChildrensRoom.SocketWallLeft",
-    "value": "Schräge links"
+      "key": "ChildrensRoom.SocketWallLeft",
+      "value": "Schräge links"
   },
   {
-    "key": "ChildrensRoom.SocketWallRight",
-    "value": "Schräge rechts"
+      "key": "ChildrensRoom.SocketWallRight",
+      "value": "Schräge rechts"
   },
   {
-    "key": "ChildrensRoom.SocketWindow",
-    "value": "Fenster"
+      "key": "ChildrensRoom.SocketWindow",
+      "value": "Fenster"
   },
   // Upper bathroom
   {
-    "key": "UpperBathroom.LightCeilingDoor",
-    "value": "Tür"
+      "key": "UpperBathroom.LightCeilingDoor",
+      "value": "Tür"
   },
   {
-    "key": "UpperBathroom.LightCeilingEdge",
-    "value": "Ecke"
+      "key": "UpperBathroom.LightCeilingEdge",
+      "value": "Ecke"
   },
   {
-    "key": "UpperBathroom.LightCeilingMirrorCabinet",
-    "value": "Über Spiegelschrank"
+      "key": "UpperBathroom.LightCeilingMirrorCabinet",
+      "value": "Über Spiegelschrank"
   },
   {
-    "key": "UpperBathroom.LampMirrorCabinet",
-    "value": "Spiegelschrank"
+      "key": "UpperBathroom.LampMirrorCabinet",
+      "value": "Spiegelschrank"
   },
   {
-    "key": "UpperBathroom.Fan",
-    "value": "Abzug"
+      "key": "UpperBathroom.Fan",
+      "value": "Abzug"
   },
   {
-    "key": "UpperBathroom.Fan.Off",
-    "value": "Aus"
+      "key": "UpperBathroom.Fan.Off",
+      "value": "Aus"
   },
   {
-    "key": "UpperBathroom.Fan.1",
-    "value": "1"
+      "key": "UpperBathroom.Fan.1",
+      "value": "1"
   },
   {
-    "key": "UpperBathroom.Fan.2",
-    "value": "2"
+      "key": "UpperBathroom.Fan.2",
+      "value": "2"
   },
   // Lower bathroom
   {
-    "key": "LowerBathroom.LightCeilingDoor",
-    "value": "Tür"
+      "key": "LowerBathroom.LightCeilingDoor",
+      "value": "Tür"
   },
   {
-    "key": "LowerBathroom.LightCeilingMiddle",
-    "value": "Mitte"
+      "key": "LowerBathroom.LightCeilingMiddle",
+      "value": "Mitte"
   },
   {
-    "key": "LowerBathroom.LightCeilingWindow",
-    "value": "Fenster"
+      "key": "LowerBathroom.LightCeilingWindow",
+      "value": "Fenster"
   },
   {
-    "key": "LowerBathroom.LampMirror",
-    "value": "Spiegel"
-  },
-
-  {
-    "key": "Storeroom.LightCeiling",
-    "value": "Licht"
-  },
-  {
-    "key": "Storeroom.CatLitterBoxFan",
-    "value": "Katzenklo-Lüftung"
-  },
-  {
-    "key": "Storeroom.CirculatingPump",
-    "value": "Zirkulationspumpe"
+      "key": "LowerBathroom.LampMirror",
+      "value": "Spiegel"
   },
 
   {
-    "key": "Kitchen.LightCeilingDoor",
-    "value": "Strahler / Tür"
+      "key": "Storeroom.LightCeiling",
+      "value": "Licht"
   },
   {
-    "key": "Kitchen.LightCeilingMiddle",
-    "value": "Licht"
+      "key": "Storeroom.CatLitterBoxFan",
+      "value": "Katzenklo-Lüftung"
   },
   {
-    "key": "Kitchen.LightCeilingPassageInner",
-    "value": "Durchgang / innen"
-  },
-  {
-    "key": "Kitchen.LightCeilingPassageOuter",
-    "value": "Durchgang / außen"
-  },
-  {
-    "key": "Kitchen.LightCeilingWall",
-    "value": "Strahler / Wand"
-  },
-  {
-    "key": "Kitchen.LightCeilingWindow",
-    "value": "Strahler / Fenster"
-  },
-  {
-    "key": "Kitchen.SocketWall",
-    "value": "Wand"
+      "key": "Storeroom.CirculatingPump",
+      "value": "Zirkulationspumpe"
   },
 
   {
-    "key": "LivingRoom.LampCouch",
-    "value": "Couch"
+      "key": "Kitchen.LightCeilingDoor",
+      "value": "Strahler / Tür"
   },
   {
-    "key": "LivingRoom.LampDiningTable",
-    "value": "Esstisch"
+      "key": "Kitchen.LightCeilingMiddle",
+      "value": "Licht"
   },
   {
-    "key": "LivingRoom.SocketWallRightEdgeRight",
-    "value": "Stehlampe"
+      "key": "Kitchen.LightCeilingPassageInner",
+      "value": "Durchgang / innen"
   },
   {
-    "key": "LivingRoom.SocketWindowLeftLower",
-    "value": "Fenster l. unten"
+      "key": "Kitchen.LightCeilingPassageOuter",
+      "value": "Durchgang / außen"
   },
   {
-    "key": "LivingRoom.SocketWindowLeftUpper",
-    "value": "Fenster l. oben"
+      "key": "Kitchen.LightCeilingWall",
+      "value": "Strahler / Wand"
   },
   {
-    "key": "LivingRoom.SocketWindowMiddleLower",
-    "value": "Fenster m. unten"
+      "key": "Kitchen.LightCeilingWindow",
+      "value": "Strahler / Fenster"
   },
   {
-    "key": "LivingRoom.SocketWindowRightLower",
-    "value": "Fenster r. unten"
-  },
-  {
-    "key": "LivingRoom.SocketWindowRightUpper",
-    "value": "Fenster r. oben"
+      "key": "Kitchen.SocketWall",
+      "value": "Wand"
   },
 
   {
-    "key": "ExampleRoom.LedStripRemote",
-    "value": "LED Strip"
+      "key": "LivingRoom.LampCouch",
+      "value": "Couch"
   },
   {
-    "key": "ExampleRoom.LedStripRemote.green1",
-    "value": "Green"
+      "key": "LivingRoom.LampDiningTable",
+      "value": "Esstisch"
   },
   {
-    "key": "ExampleRoom.LedStripRemote.red1",
-    "value": "Red"
+      "key": "LivingRoom.SocketWallRightEdgeRight",
+      "value": "Stehlampe"
   },
   {
-    "key": "ExampleRoom.LedStripRemote.blue1",
-    "value": "Blue"
+      "key": "LivingRoom.SocketWindowLeftLower",
+      "value": "Fenster l. unten"
   },
   {
-    "key": "ExampleRoom.LedStripRemote.on",
-    "value": "An"
+      "key": "LivingRoom.SocketWindowLeftUpper",
+      "value": "Fenster l. oben"
   },
   {
-    "key": "ExampleRoom.LedStripRemote.off",
-    "value": "Aus"
+      "key": "LivingRoom.SocketWindowMiddleLower",
+      "value": "Fenster m. unten"
   },
   {
-    "key": "ExampleRoom.LedStripRemote.white",
-    "value": "White"
+      "key": "LivingRoom.SocketWindowRightLower",
+      "value": "Fenster r. unten"
+  },
+  {
+      "key": "LivingRoom.SocketWindowRightUpper",
+      "value": "Fenster r. oben"
   },
 
   {
-    "key": "ExampleRoom.CeilingFan",
-    "value": "Ceiling fan"
+      "key": "ExampleRoom.LedStripRemote",
+      "value": "LED Strip"
   },
   {
-    "key": "ExampleRoom.CeilingFan.Off",
-    "value": "Stop"
+      "key": "ExampleRoom.LedStripRemote.green1",
+      "value": "Green"
   },
   {
-    "key": "ExampleRoom.CeilingFan.1",
-    "value": "Slow"
+      "key": "ExampleRoom.LedStripRemote.red1",
+      "value": "Red"
   },
   {
-    "key": "ExampleRoom.CeilingFan.2",
-    "value": "Fast"
+      "key": "ExampleRoom.LedStripRemote.blue1",
+      "value": "Blue"
+  },
+  {
+      "key": "ExampleRoom.LedStripRemote.on",
+      "value": "An"
+  },
+  {
+      "key": "ExampleRoom.LedStripRemote.off",
+      "value": "Aus"
+  },
+  {
+      "key": "ExampleRoom.LedStripRemote.white",
+      "value": "White"
+  },
+
+  {
+      "key": "ExampleRoom.CeilingFan",
+      "value": "Ceiling fan"
+  },
+  {
+      "key": "ExampleRoom.CeilingFan.Off",
+      "value": "Stop"
+  },
+  {
+      "key": "ExampleRoom.CeilingFan.1",
+      "value": "Slow"
+  },
+  {
+      "key": "ExampleRoom.CeilingFan.2",
+      "value": "Fast"
   }
 ]

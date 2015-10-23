@@ -18,6 +18,27 @@ appConfiguration.showWeatherStation = true;
 // sortValue:       The number which is used to sort the actuators
 appConfiguration.actuatorExtender = function (actuator) {
     switch (actuator.id) {
+
+        case "Floor.StairwayRollerShutter":
+            {
+                actuator.overviewCaption = "Flur";
+                break;
+            }
+
+        case "Bedroom.WindowLeft":
+            {
+                actuator.caption = "Fenster links";
+                actuator.overviewCaption = "Schlafzimmer links";
+                break;
+            }
+
+        case "Bedroom.WindowRight":
+            {
+                actuator.caption = "Fenster rechts";
+                actuator.overviewCaption = "Schlafzimmer rechts";
+                break;
+            }
+
         case "Bedroom.Fan":
             {
                 actuator.image = "Fan";
@@ -69,31 +90,45 @@ appConfiguration.actuatorExtender = function (actuator) {
                 break;
             }
 
+        case "Office.WindowLeft":
+            {
+                actuator.caption = "Fenster links";
+                actuator.overviewCaption = "Büro links";
+                break;
+            }
+
+        case "Office.WindowRight":
+            {
+                actuator.caption = "Fenster rechts";
+                actuator.overviewCaption = "Büro rechts";
+                break;
+            }
+
         case "LivingRoom.WindowLeft":
             {
-                actuator.caption = "Fenster / links";
-                actuator.overviewCaption = "Wohnzimmer / links";
+                actuator.caption = "Fenster links";
+                actuator.overviewCaption = "Wohnzimmer links";
                 break;
             }
 
         case "LivingRoom.WindowRight":
             {
-                actuator.caption = "Fenster / rechts";
-                actuator.overviewCaption = "Wohnzimmer / rechts";
+                actuator.caption = "Rollo rechts";
+                actuator.overviewCaption = "Wohnzimmer rechts";
                 break;
             }
 
         case "Bedroom.RollerShutterLeft":
             {
-                actuator.caption = "Rollo / links";
-                actuator.overviewCaption = "Schlafzimmer / links";
+                actuator.caption = "Rollo links";
+                actuator.overviewCaption = "Schlafzimmer links";
                 break;
             }
 
         case "Bedroom.RollerShutterRight":
             {
-                actuator.caption = "Rollo / rechts";
-                actuator.overviewCaption = "Schlafzimmer / rechts";
+                actuator.caption = "Rollo rechts";
+                actuator.overviewCaption = "Schlafzimmer rechts";
                 break;
             }
 
@@ -108,6 +143,8 @@ appConfiguration.actuatorExtender = function (actuator) {
         case "Kitchen.MotionDetector":
         case "Kitchen.TemperatureSensor":
         case "Kitchen.HumiditySensor":
+        case "Kitchen.RollerShutter":
+        case "Kitchen.Window":
             {
                 actuator.overviewCaption = "Küche";
                 break;
@@ -153,13 +190,15 @@ appConfiguration.actuatorExtender = function (actuator) {
                 break;
             }
 
+        case "UpperBathroom.MotionDetector":
         case "UpperBathroom.TemperatureSensor":
         case "UpperBathroom.HumiditySensor":
             {
-                actuator.overviewCaption = "Bad / oben";
+                actuator.overviewCaption = "Bad oben";
                 break;
             }
 
+        case "Office.MotionDetector":
         case "Office.TemperatureSensor":
         case "Office.HumiditySensor":
             {
@@ -167,11 +206,12 @@ appConfiguration.actuatorExtender = function (actuator) {
                 break;
             }
 
+        case "LowerBathroom.MotionDetector":
         case "LowerBathroom.Window":
         case "LowerBathroom.TemperatureSensor":
         case "LowerBathroom.HumiditySensor":
             {
-                actuator.overviewCaption = "Bad / unten";
+                actuator.overviewCaption = "Bad unten";
                 break;
             }
 
