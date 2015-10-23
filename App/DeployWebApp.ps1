@@ -11,39 +11,47 @@ if ($newIP)
 	$ip = $newIP;
 }
 
-$package = Get-ChildItem("\\$ip\c$\Users\DefaultAccount\AppData\Local\Packages\CK.HomeAutomation.Controller*") -name
-Write-Host("Found package: " + $package)
+$repeat = 1
 
-if (!$package)
+while($repeat)
 {
-	Write-Host "No package found!"
-	return
+	$package = Get-ChildItem("\\$ip\c$\Users\DefaultAccount\AppData\Local\Packages\CK.HomeAutomation.Controller*") -name
+	Write-Host("Found package: " + $package)
+
+	if (!$package)
+	{
+		Write-Host "No package found!"
+		return
+	}
+
+	Write-Host "Clear remote directory (y/n)?"
+	$clearRemoteDirectory = Read-Host
+
+	$sourceDir = ".\HA4IoT.App"
+	$remoteDir = "\\$ip\c$\Users\DefaultAccount\AppData\Local\Packages\$package\LocalState\app"
+
+	Write-Host "Deploying to $remoteDir..."
+
+	New-Item -ItemType directory -Path $remoteDir -ea SilentlyContinue
+
+	if ($clearRemoteDirectory -eq "y")
+	{
+		Write-Host "Cleaning remote directory..."
+		Remove-Item $remoteDir\* -Recurse -Force -Exclude "Configuration.js"
+	}
+
+	Write-Host "Copying files to remote directory..."
+	Copy-Item $sourceDir\* $remoteDir -Recurse -Force
+
+	Write-Host "Cleaning up remote directory..."
+	Remove-Item $remoteDir\bin -Recurse -Force -ea SilentlyContinue
+	Remove-Item $remoteDir\Properties -Recurse -Force -ea SilentlyContinue
+	Remove-Item $remoteDir\*.config -Force -ea SilentlyContinue
+	Remove-Item $remoteDir\*.csproj -Force -ea SilentlyContinue
+
+	Write-Host "Deployment completed. Repeat deploy? (y/n)"
+	if ((Read-Host) -eq "n")
+	{
+		return
+	}
 }
-
-Write-Host "Clear remote directory (y/n)?"
-$clearRemoteDirectory = Read-Host
-
-$sourceDir = ".\CK.HomeAutomation.App"
-$remoteDir = "\\$ip\c$\Users\DefaultAccount\AppData\Local\Packages\$package\LocalState\app"
-
-Write-Host "Deploying to $remoteDir..."
-
-New-Item -ItemType directory -Path $remoteDir -ea SilentlyContinue
-
-if ($clearRemoteDirectory -eq "y")
-{
-	Write-Host "Cleaning remote directory..."
-	Remove-Item $remoteDir\* -Recurse -Force -Exclude "Configuration.js"
-}
-
-Write-Host "Copying files to remote directory..."
-Copy-Item $sourceDir\* $remoteDir -Recurse -Force
-
-Write-Host "Cleaning up remote directory..."
-Remove-Item $remoteDir\bin -Recurse -Force -ea SilentlyContinue
-Remove-Item $remoteDir\Properties -Recurse -Force -ea SilentlyContinue
-Remove-Item $remoteDir\*.config -Force -ea SilentlyContinue
-Remove-Item $remoteDir\*.csproj -Force -ea SilentlyContinue
-
-Write-Host "Deployment completed. (Press any key to close)"
-Read-Host
