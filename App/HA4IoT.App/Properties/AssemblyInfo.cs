@@ -3,7 +3,7 @@
 [assembly: AssemblyTitle("HA4IoT.App")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Christian Kratky")]
 [assembly: AssemblyProduct("HA4IoT")]
 [assembly: AssemblyCopyright("Copyright © Christian Kratky 2015")]
 [assembly: AssemblyTrademark("")]

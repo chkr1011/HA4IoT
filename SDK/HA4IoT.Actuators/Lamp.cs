@@ -1,5 +1,4 @@
 ﻿using HA4IoT.Contracts.Hardware;
-using HA4IoT.Hardware;
 using HA4IoT.Networking;
 using HA4IoT.Notifications;
 

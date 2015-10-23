@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("HA4IoT.Controller.Cellar")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Christian Kratky")]
 [assembly: AssemblyProduct("HA4IoT")]
 [assembly: AssemblyCopyright("Copyright © Christian Kratky 2015")]
 [assembly: AssemblyTrademark("")]

@@ -162,7 +162,7 @@
     <Compile Include="BinaryStateOutput.cs" />
     <Compile Include="VirtualButtonGroup.cs" />
     <Compile Include="Window.cs" />
-    <Content Include="Properties\CK.HomeAutomation.Actuators.rd.xml" />
+    <Content Include="Properties\HA4IoT.Actuators.rd.xml" />
   </ItemGroup>
   <ItemGroup>
     <SDKReference Include="WindowsIoT, Version=10.0.10240.0">
@@ -170,17 +170,13 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
+    <ProjectReference Include="..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{551337e7-d1ef-4145-92b4-f7086f7665a6}</Project>
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Core\HA4IoT.Core.csproj">
       <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
       <Name>HA4IoT.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
-      <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
-      <Name>HA4IoT.Hardware</Name>
     </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>

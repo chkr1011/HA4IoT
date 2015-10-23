@@ -118,10 +118,10 @@
     <Compile Include="IOBoardPort.cs" />
     <Compile Include="IOBoardStateChangedEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Content Include="Properties\CK.HomeAutomation.Hardware.GenericIOBoard.rd.xml" />
+    <Content Include="Properties\HA4IoT.Hardware.GenericIOBoard.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
+    <ProjectReference Include="..\..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{551337E7-D1EF-4145-92B4-F7086F7665A6}</Project>
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>

@@ -136,7 +136,7 @@
     <Compile Include="RequestReceivedEventArgs.cs" />
     <Compile Include="StatusDescriptionProvider.cs" />
     <Compile Include="PlainTextBody.cs" />
-    <Content Include="Properties\CK.HomeAutomation.Networking.rd.xml" />
+    <Content Include="Properties\HA4IoT.Networking.rd.xml" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

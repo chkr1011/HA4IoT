@@ -65,7 +65,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HA4IoT.Hardware.I2CHardware
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Hardware.I2CHardwareBridge", "SDK\Hardware\HA4IoT.Hardware.I2CHardwareBridge\HA4IoT.Hardware.I2CHardwareBridge.csproj", "{8BF16E28-A01D-47E9-A5C4-CC93E347AAF4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Contracts", "HA4IoT.Contracts\HA4IoT.Contracts.csproj", "{551337E7-D1EF-4145-92B4-F7086F7665A6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Contracts", "SDK\HA4IoT.Contracts\HA4IoT.Contracts.csproj", "{551337E7-D1EF-4145-92B4-F7086F7665A6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

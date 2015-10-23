@@ -119,7 +119,7 @@
     <Compile Include="NotificationItem.cs" />
     <Compile Include="NotificationType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Content Include="Properties\CK.HomeAutomation.Notifications.rd.xml" />
+    <Content Include="Properties\HA4IoT.Notifications.rd.xml" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

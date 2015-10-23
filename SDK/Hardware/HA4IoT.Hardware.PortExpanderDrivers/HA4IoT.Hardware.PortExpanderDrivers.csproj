@@ -113,7 +113,7 @@
     <Compile Include="PCF8574ADriver.cs" />
     <Compile Include="PCF8574Driver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Content Include="Properties\CK.HomeAutomation.Hardware.PortExpanderDrivers.rd.xml" />
+    <Content Include="Properties\HA4IoT.Hardware.PortExpanderDrivers.rd.xml" />
   </ItemGroup>
   <ItemGroup>
     <SDKReference Include="WindowsIoT, Version=10.0.10240.0">
@@ -121,13 +121,9 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
+    <ProjectReference Include="..\..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{551337E7-D1EF-4145-92B4-F7086F7665A6}</Project>
       <Name>HA4IoT.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
-      <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
-      <Name>HA4IoT.Hardware</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
