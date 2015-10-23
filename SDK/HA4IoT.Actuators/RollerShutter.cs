@@ -13,7 +13,7 @@ namespace HA4IoT.Actuators
     {
         private readonly TimeSpan _autoOffTimeout;
         private readonly IBinaryOutput _directionGpioPin;
-        private readonly int _maxPosition;
+        private readonly int _positionMax;
         private readonly Stopwatch _movingDuration = new Stopwatch();
         private readonly IBinaryOutput _powerGpioPin;
         private readonly IHomeAutomationTimer _timer;
@@ -39,7 +39,7 @@ namespace HA4IoT.Actuators
             _powerGpioPin = powerOutput;
             _directionGpioPin = directionOutput;
             _autoOffTimeout = autoOffTimeout;
-            _maxPosition = maxPosition;
+            _positionMax = maxPosition;
             _timer = timer;
 
             //TODO: StartMoveUp();
@@ -49,7 +49,7 @@ namespace HA4IoT.Actuators
 
         public static TimeSpan DefaultMaxMovingDuration { get; } = TimeSpan.FromSeconds(20);
         public RollerShutterState State { get; private set; }
-        public bool IsClosed => _position == _maxPosition;
+        public bool IsClosed => _position == _positionMax;
 
         public void StartMoveUp()
         {
@@ -93,6 +93,7 @@ namespace HA4IoT.Actuators
         {
             context.Response.SetNamedValue("state", JsonValue.CreateStringValue(State.ToString()));
             context.Response.SetNamedValue("position", JsonValue.CreateNumberValue(_position));
+            context.Response.SetNamedValue("positionMax", JsonValue.CreateNumberValue(_positionMax));
         }
 
         public override void ApiPost(ApiRequestContext context)
@@ -149,9 +150,9 @@ namespace HA4IoT.Actuators
                 _position = 0;
             }
 
-            if (_position > _maxPosition)
+            if (_position > _positionMax)
             {
-                _position = _maxPosition;
+                _position = _positionMax;
             }
         }
     }
