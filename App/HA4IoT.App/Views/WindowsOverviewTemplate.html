@@ -7,7 +7,7 @@
     </div>
     <table class="table table-striped" ng-show="haCtrl.activePanel=='windowsOverview'">
         <tbody>
-            <tr ng-repeat="actuator in haCtrl.windows | orderBy:['id']">
+            <tr ng-repeat="actuator in haCtrl.windows | orderBy:['overviewCaption']">
                 <td style="vertical-align: middle;">
                     <span><img class="icon" ng-src="Images/Window.png" />{{actuator.overviewCaption}}</span>
                 </td>

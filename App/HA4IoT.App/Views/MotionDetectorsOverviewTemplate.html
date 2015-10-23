@@ -7,7 +7,7 @@
     </div>
     <table class="table table-striped" ng-show="haCtrl.activePanel=='motionDetectorsOverview'">
         <tbody>
-            <tr ng-repeat="actuator in haCtrl.motionDetectors | orderBy:['id']">
+            <tr ng-repeat="actuator in haCtrl.motionDetectors | orderBy:['overviewCaption']">
                 <td style="vertical-align: middle;">
                     <span><img class="icon" ng-src="Images/{{actuator.image}}.png" />{{actuator.overviewCaption}}</span>
                 </td>
