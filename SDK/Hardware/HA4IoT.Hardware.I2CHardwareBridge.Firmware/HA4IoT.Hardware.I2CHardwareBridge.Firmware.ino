@@ -1,4 +1,3 @@
-
 #include <Wire.h>
 #include "InfraredController.h"
 #include "Dht22Controller.h"
@@ -22,20 +21,6 @@ uint8_t _lastAction = 0;
 
 void setup() {
 
-Serial.begin(9600);
-  Serial.println("0=" + String(PD7+5)); // D12
-  Serial.println("1=" + String(PD7+4)); // D11
-  Serial.println("2=" + String(PD7+2)); // D9
-  Serial.println("3=" + String(PD7));
-  Serial.println("4=" + String(PD5));
-  Serial.println("5=" + String(PD3));
-  Serial.println("6=" + String(PD2));
-  Serial.println("7=" + String(PD4));
-  Serial.println("8=" + String(PD6));
-  Serial.println("9=" + String(PD7+6));
-
-  Serial.println("PD13=" + String(PD13));
-  
 	pinMode(LED, OUTPUT);
 	digitalWrite(LED, HIGH);
 
@@ -84,7 +69,7 @@ void handleI2CWrite(int dataLength)
 
 #if (DEBUG)
 	if (dataLength > 32) { 
-		Serial.println("Received too large package");
+		Serial.println(F("Received too large package"));
 		return;
 	}
 #endif
@@ -127,4 +112,3 @@ void handleI2CWrite(int dataLength)
 void loop() { 
 	DHT22Controller_loop();
 }
-
