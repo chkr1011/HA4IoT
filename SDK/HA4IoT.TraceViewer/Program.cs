@@ -49,7 +49,7 @@ namespace HA4IoT.TraceViewer
 
                 case NotificationType.Warning:
                 {
-                    color = ConsoleColor.DarkYellow;
+                    color = ConsoleColor.Yellow;
                     break;
                 }
 
