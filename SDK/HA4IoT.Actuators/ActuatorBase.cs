@@ -6,7 +6,7 @@ using HA4IoT.Notifications;
 
 namespace HA4IoT.Actuators
 {
-    public abstract class ActuatorBase
+    public abstract class ActuatorBase : IActuatorBase
     {
         private bool _isEnabled = true;
 
