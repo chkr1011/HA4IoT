@@ -21,7 +21,7 @@
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
       <Extensions>
-        <Extension Category="windows.backgroundTasks" EntryPoint="CK.HomeAutomation.Controller.Empty.StartupTask">
+        <Extension Category="windows.backgroundTasks" EntryPoint="HA4IoT.Controller.Demo.StartupTask">
           <BackgroundTasks>
             <iot:Task Type="startup" />
           </BackgroundTasks>

@@ -23,6 +23,6 @@ netsh interface ip set dns "Ethernet" static 192.168.1.1
 iotstartup startup
 iotstartup remove headless ZWave
 #iotstartup remove headless "CK.HomeAutomation.Controller"
-iotstartup add headless "CK.HomeAutomation.Controller"
+iotstartup add headless "HA4IoT.Controller."
 
 Exit-PSSession

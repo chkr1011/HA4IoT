@@ -1,7 +1,7 @@
 ﻿using System;
 using HA4IoT.Hardware.I2CHardwareBridge;
 
-namespace HA4IoT.Controller.Empty
+namespace HA4IoT.Controller.Demo
 {
     internal class LEDStripRemote
     {

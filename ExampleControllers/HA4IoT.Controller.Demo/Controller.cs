@@ -19,7 +19,7 @@ using HA4IoT.Hardware.RemoteSwitch.Codes;
 using HA4IoT.Notifications;
 using HA4IoT.Telemetry;
 
-namespace HA4IoT.Controller.Empty
+namespace HA4IoT.Controller.Demo
 {
     internal class Controller : BaseController
     {

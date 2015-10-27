@@ -7,8 +7,8 @@
     <ProjectGuid>{171A1B71-EC5A-42BC-A3D9-0252B157F70A}</ProjectGuid>
     <OutputType>winmdobj</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HA4IoT.Controller.Empty</RootNamespace>
-    <AssemblyName>HA4IoT.Controller.Empty</AssemblyName>
+    <RootNamespace>HA4IoT.Controller.Demo</RootNamespace>
+    <AssemblyName>HA4IoT.Controller.Demo</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
