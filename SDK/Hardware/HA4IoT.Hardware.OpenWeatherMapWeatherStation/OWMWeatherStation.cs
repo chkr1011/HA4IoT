@@ -127,8 +127,16 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
                 return;
             }
 
-            var values = JsonObject.Parse(File.ReadAllText(filename));
-            Update(values);
+            try
+            {
+                var values = JsonObject.Parse(File.ReadAllText(filename));
+                Update(values);
+            }
+            catch (Exception)
+            {
+                _notificationHandler.PublishFrom(this, NotificationType.Warning, "Unable to load persisted weather station values.");
+                File.Delete(filename);
+            }
         }
     }
 }
