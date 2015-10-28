@@ -153,19 +153,17 @@ function setupController() {
                   tag = "on";
               }
 
-              invokeActuator(actuator.id, {
-                  state: tag
-              }, function () {
-                  actuator.state.stateBool = newState;
-              });
+              invokeActuator(actuator.id, { state: tag }, function () { actuator.state.stateBool = newState; });
           };
 
           $scope.invokeVirtualButton = function (actuator) {
               invokeActuator(actuator.id, {});
+              c.pollStatus();
           }
 
           $scope.invokeVirtualButtonGroup = function (actuator, button) {
               invokeActuator(actuator, { button: button });
+              c.pollStatus();
           }
 
           $scope.toggleIsEnabled = function (actuator) {
@@ -358,13 +356,10 @@ function getJSON(controller, url, callback) {
 };
 
 function invokeActuator(id, request, successCallback) {
+    var url = getApiUrl() + "actuator/" + id + "?body=" + JSON.stringify(request);
+
     // The hack with the body as query is required to allow cross site calls.
-    $.ajax({
-        method: "POST",
-        url: getApiUrl() + "actuator/" + id + "?body=" + JSON.stringify(request),
-        crossDomain: true,
-        timeout: 2500
-    }).success(function () {
+    $.ajax({ method: "POST", url: url, timeout: 2500 }).success(function () {
         if (successCallback != null) {
             successCallback();
         }
