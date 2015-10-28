@@ -73,7 +73,6 @@
     <ClInclude Include="Dht22Controller.h" />
     <ClInclude Include="Dht22Reader.h" />
     <ClInclude Include="Infrared.h" />
-    <ClInclude Include="RCSwitch.h" />
     <ClInclude Include="InfraredController.h" />
     <ClInclude Include="__vm\.CK.HomeAutomation.Hardware.I2CHardwareBridge.Firmware.vsarduino.h" />
     <ClInclude Include="__vm\.CK.HomeAutomation.Hardware.I2CHardwareBridge.vsarduino.h" />
@@ -89,7 +88,6 @@
     <ClCompile Include="InfraredController.cpp" />
     <ClCompile Include="InfraredReceiver.cpp" />
     <ClCompile Include="InfraredSender.cpp" />
-    <ClCompile Include="RCSwitch.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
