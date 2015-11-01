@@ -45,7 +45,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             var combinedLights =
                 bathroom.CombineActuators(UpperBathroom.CombinedCeilingLights)
-                    .WithMaster(bathroom.Lamp(UpperBathroom.LightCeilingDoor))
+                    .WithActuator(bathroom.Lamp(UpperBathroom.LightCeilingDoor))
                     .WithActuator(bathroom.Lamp(UpperBathroom.LightCeilingEdge))
                     .WithActuator(bathroom.Lamp(UpperBathroom.LightCeilingMirrorCabinet))
                     .WithActuator(bathroom.Lamp(UpperBathroom.LampMirrorCabinet));

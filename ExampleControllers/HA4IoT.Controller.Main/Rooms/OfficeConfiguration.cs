@@ -93,7 +93,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithActuator(office.Actuator<Lamp>(Office.LightCeilingMiddleLeft));
 
             var lightsOther = office.CombineActuators(Office.CombinedCeilingLightsOther)
-                .WithMaster(office.Actuator<Lamp>(Office.LightCeilingFrontRight))
+                .WithActuator(office.Actuator<Lamp>(Office.LightCeilingFrontRight))
                 .WithActuator(office.Actuator<Lamp>(Office.LightCeilingMiddleMiddle))
                 .WithActuator(office.Actuator<Lamp>(Office.LightCeilingMiddleRight))
                 .WithActuator(office.Actuator<Lamp>(Office.LightCeilingRearLeft));

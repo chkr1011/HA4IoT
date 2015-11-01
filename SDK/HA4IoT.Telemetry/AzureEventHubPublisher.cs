@@ -44,11 +44,11 @@ namespace HA4IoT.Telemetry
         protected override void OnBinaryStateActuatorStateChanged(IBinaryStateOutputActuator actuator, TimeSpan previousStateDuration)
         {
             JsonObject startData = CreateDataPackage(actuator.Id, EventType.OutputActuatorStateChanged);
-            startData.SetNamedValue("state", JsonValue.CreateStringValue(actuator.State.ToString()));
+            startData.SetNamedValue("state", JsonValue.CreateStringValue(actuator.GetState().ToString()));
             startData.SetNamedValue("kind", JsonValue.CreateStringValue("Start"));
             Task.Run(() => SendToAzureEventHubAsync(startData));
 
-            BinaryActuatorState previousState = actuator.State == BinaryActuatorState.On ? BinaryActuatorState.Off : BinaryActuatorState.On;
+            BinaryActuatorState previousState = actuator.GetState() == BinaryActuatorState.On ? BinaryActuatorState.Off : BinaryActuatorState.On;
             JsonObject endData = CreateDataPackage(actuator.Id, EventType.OutputActuatorStateChanged);
             endData.SetNamedValue("state", JsonValue.CreateStringValue(previousState.ToString()));
             endData.SetNamedValue("kind", JsonValue.CreateStringValue("End"));

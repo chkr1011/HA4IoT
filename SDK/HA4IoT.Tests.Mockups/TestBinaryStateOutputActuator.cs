@@ -9,7 +9,12 @@ namespace HA4IoT.Tests.Mockups
         public string Id { get; set; }
         public BinaryActuatorState State { get; private set; }
 
-        public void SetState(BinaryActuatorState state, bool commit = true)
+        public BinaryActuatorState GetState()
+        {
+            return State;
+        }
+
+        public void SetState(BinaryActuatorState state, params IParameter[] parameters)
         {
             if (state == State)
             {
@@ -25,28 +30,6 @@ namespace HA4IoT.Tests.Mockups
             }
 
             StateChanged?.Invoke(this, new BinaryActuatorStateChangedEventArgs(oldState, state));
-        }
-
-        public void Toggle(bool commit = true)
-        {
-            if (State == BinaryActuatorState.Off)
-            {
-                TurnOn();
-            }
-            else
-            {
-                TurnOff();
-            }
-        }
-
-        public void TurnOff(bool commit = true)
-        {
-            SetState(BinaryActuatorState.Off);
-        }
-
-        public void TurnOn(bool commit = true)
-        {
-            SetState(BinaryActuatorState.On);
         }
 
         public TestBinaryStateOutputActuator WithOnState()

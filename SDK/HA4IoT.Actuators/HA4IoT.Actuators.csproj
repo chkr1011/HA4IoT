@@ -114,7 +114,9 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Animations\AnimateParameter.cs" />
     <Compile Include="Animations\Animation.cs" />
+    <Compile Include="PendingBinaryStateOutputActuatorState.cs" />
     <Compile Include="Animations\DirectionAnimation.cs" />
     <Compile Include="Animations\Frame.cs" />
     <Compile Include="ApiRequestContext.cs" />
@@ -123,6 +125,7 @@
     <Compile Include="Automations\AutomaticRollerShutterAutomation.cs" />
     <Compile Include="Automations\AutomaticTurnOnAndOffAutomation.cs" />
     <Compile Include="Automations\Automation.cs" />
+    <Compile Include="BinaryStateOutputActuatorBase.cs" />
     <Compile Include="ButtonBase.cs" />
     <Compile Include="Casement.cs" />
     <Compile Include="CasementState.cs" />
@@ -132,6 +135,8 @@
     <Compile Include="Conditions\ConditionsValidator.cs" />
     <Compile Include="Conditions\RelatedCondition.cs" />
     <Compile Include="Conditions\Specialized\TimeRangeCondition.cs" />
+    <Compile Include="DoNotCommitStateParameter.cs" />
+    <Compile Include="ForceUpdateStateParameter.cs" />
     <Compile Include="Home.cs" />
     <Compile Include="Room.cs" />
     <Compile Include="SingleValueSensorBase.cs" />
@@ -146,7 +151,7 @@
     <Compile Include="RollerShutterButtons.cs" />
     <Compile Include="RollerShutterState.cs" />
     <Compile Include="Button.cs" />
-    <Compile Include="CombinedBinaryStateActuators.cs" />
+    <Compile Include="LogicalBinaryStateOutputActuator.cs" />
     <Compile Include="HumiditySensor.cs" />
     <Compile Include="StateMachineStateChangedEventArgs.cs" />
     <Compile Include="TemperatureSensor.cs" />
@@ -159,7 +164,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoomSettings.cs" />
     <Compile Include="Socket.cs" />
-    <Compile Include="BinaryStateOutput.cs" />
+    <Compile Include="BinaryStateOutputActuator.cs" />
     <Compile Include="VirtualButtonGroup.cs" />
     <Compile Include="Window.cs" />
     <Content Include="Properties\HA4IoT.Actuators.rd.xml" />

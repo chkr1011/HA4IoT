@@ -4,7 +4,7 @@ using HA4IoT.Notifications;
 
 namespace HA4IoT.Actuators
 {
-    public class Socket : BinaryStateOutput
+    public class Socket : BinaryStateOutputActuator
     {
         public Socket(string id, IBinaryOutput output, IHttpRequestController httpRequestController, INotificationHandler notificationHandler)
             : base(id, output, httpRequestController, notificationHandler)

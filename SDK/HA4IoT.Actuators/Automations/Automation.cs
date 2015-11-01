@@ -110,7 +110,7 @@ namespace HA4IoT.Actuators.Automations
 
             actuator.StateChanged += (s, e) =>
             {
-                if (actuator.State == desiredState)
+                if (actuator.GetState() == desiredState)
                 {
                     Trigger();
                 }

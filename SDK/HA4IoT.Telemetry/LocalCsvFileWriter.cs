@@ -28,7 +28,7 @@ namespace HA4IoT.Telemetry
                 try
                 {
                     // Template: {ISO_TIMESTAMP},{ACTUATOR_ID},{NEW_STATE}
-                    string newLine = DateTime.Now.ToString("O") + "," + actuator.Id + "," + actuator.State;
+                    string newLine = DateTime.Now.ToString("O") + "," + actuator.Id + "," + actuator.GetState();
                     File.AppendAllText(_filename, newLine + Environment.NewLine);
                 }
                 catch (Exception exception)

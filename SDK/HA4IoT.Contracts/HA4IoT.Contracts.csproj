@@ -112,9 +112,11 @@
     <Compile Include="Actuators\BinaryActuatorStateChangedEventArgs.cs" />
     <Compile Include="Actuators\IActuatorBase.cs" />
     <Compile Include="Actuators\IBinaryStateOutputActuator.cs" />
+    <Compile Include="Actuators\IBinaryStateOutputActuatorExtensions.cs" />
     <Compile Include="Actuators\IButton.cs" />
     <Compile Include="Actuators\IHumiditySensor.cs" />
     <Compile Include="Actuators\IMotionDetector.cs" />
+    <Compile Include="Actuators\IParameter.cs" />
     <Compile Include="Actuators\ITemperatureSensor.cs" />
     <Compile Include="Actuators\IWeatherStation.cs" />
     <Compile Include="Actuators\ValueChangedEventArgsBase.cs" />

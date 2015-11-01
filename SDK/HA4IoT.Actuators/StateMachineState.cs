@@ -65,7 +65,7 @@ namespace HA4IoT.Actuators
 
             foreach (var actuator in _actuators)
             {
-                actuator.Item1.SetState(actuator.Item2, false);
+                actuator.Item1.SetState(actuator.Item2, new DoNotCommitStateParameter());
             }
 
             if (commit)

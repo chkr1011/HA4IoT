@@ -8,14 +8,8 @@ namespace HA4IoT.Contracts.Actuators
 
         string Id { get; }
 
-        BinaryActuatorState State { get; }
+        BinaryActuatorState GetState();
 
-        void SetState(BinaryActuatorState state, bool commit = true);
-
-        void Toggle(bool commit = true);
-
-        void TurnOff(bool commit = true);
-
-        void TurnOn(bool commit = true);
+        void SetState(BinaryActuatorState state, params IParameter[] parameters);
     }
 }

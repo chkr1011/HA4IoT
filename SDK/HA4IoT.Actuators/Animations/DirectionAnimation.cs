@@ -7,10 +7,10 @@ namespace HA4IoT.Actuators.Animations
 {
     public class DirectionAnimation : Animation
     {
-        private CombinedBinaryStateActuators _actuator;
+        private LogicalBinaryStateOutputActuator _actuator;
         private bool _isForward = true;
         private BinaryActuatorState _targetState;
-        private TimeSpan _duration = TimeSpan.FromSeconds(1);
+        private TimeSpan _duration = TimeSpan.FromMilliseconds(250);
         
         public DirectionAnimation(IHomeAutomationTimer timer) : base(timer)
         {
@@ -34,6 +34,12 @@ namespace HA4IoT.Actuators.Animations
             return this;
         }
 
+        public DirectionAnimation WithTargetState(BinaryActuatorState state)
+        {
+            _targetState = state;
+            return this;
+        }
+
         public DirectionAnimation WithTargetOnState()
         {
             _targetState = BinaryActuatorState.On;
@@ -46,7 +52,7 @@ namespace HA4IoT.Actuators.Animations
             return this;
         }
 
-        public DirectionAnimation WithActuator(CombinedBinaryStateActuators actuator)
+        public DirectionAnimation WithActuator(LogicalBinaryStateOutputActuator actuator)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
@@ -56,6 +62,11 @@ namespace HA4IoT.Actuators.Animations
 
         public override void Start()
         {
+            if (_actuator.Actuators.Count < 2)
+            {
+                return;
+            }
+
             Frames.Clear();
             
             var orderedActuators = new List<IBinaryStateOutputActuator>(_actuator.Actuators);
@@ -64,46 +75,17 @@ namespace HA4IoT.Actuators.Animations
                 orderedActuators.Reverse();
             }
 
-            double frameLength = _duration.TotalMilliseconds/orderedActuators.Count;
+            double frameLength = _duration.TotalMilliseconds/(orderedActuators.Count - 1);
 
-            if (_targetState == BinaryActuatorState.On)
+            for (int i = 0; i < orderedActuators.Count; i++)
             {
-                WithFrame(CreateFrame(orderedActuators, BinaryActuatorState.Off).WithStartTime(TimeSpan.Zero));
+                var actuator = orderedActuators[i];
+                var offset = TimeSpan.FromMilliseconds(frameLength * i);
 
-                for (int i = 0; i < orderedActuators.Count; i++)
-                {
-                    var actuator = orderedActuators[i];
-                    WithFrame(new Frame().WithAction(() => actuator.SetState(BinaryActuatorState.On)).WithStartTime(TimeSpan.FromMilliseconds(frameLength * i)));
-                }
-
-                WithFrame(CreateFrame(orderedActuators, BinaryActuatorState.On).WithStartTime(_duration));
+                WithFrame(new Frame().WithTargetState(actuator, _targetState).WithStartTime(offset));
             }
-            else
-            {
-                WithFrame(CreateFrame(orderedActuators, BinaryActuatorState.Off).WithStartTime(TimeSpan.Zero));
 
-                for (int i = 0; i < orderedActuators.Count; i++)
-                {
-                    var actuator = orderedActuators[i];
-                    WithFrame(new Frame().WithAction(() => actuator.SetState(BinaryActuatorState.Off)).WithStartTime(TimeSpan.FromMilliseconds(frameLength * i)));
-                }
-
-                WithFrame(CreateFrame(orderedActuators, BinaryActuatorState.On).WithStartTime(_duration));
-            }
-            
             base.Start();
-        }
-
-        private Frame CreateFrame(ICollection<IBinaryStateOutputActuator> actuators, BinaryActuatorState state)
-        {
-            var frame = new Frame();
-
-            foreach (var actuator in actuators)
-            {
-                frame.WithAction(() => actuator.SetState(state));
-            }
-
-            return frame;
         }
     }
 }

@@ -147,9 +147,9 @@ namespace HA4IoT.Actuators
             return actuator;
         }
 
-        public CombinedBinaryStateActuators CombineActuators(Enum id)
+        public LogicalBinaryStateOutputActuator CombineActuators(Enum id)
         {
-            var actuator = new CombinedBinaryStateActuators(GenerateId(id), _home.HttpApiController,
+            var actuator = new LogicalBinaryStateOutputActuator(GenerateId(id), _home.HttpApiController,
                 _home.NotificationHandler, _home.Timer);
 
             WithActuator(id, actuator);

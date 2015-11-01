@@ -68,7 +68,7 @@ namespace HA4IoT.Actuators
         {
             var configuration = new JsonObject();
             configuration.SetNamedValue("id", JsonValue.CreateStringValue(Id));
-            configuration.SetNamedValue("type", JsonValue.CreateStringValue(GetType().Name));
+            configuration.SetNamedValue("type", JsonValue.CreateStringValue(GetType().FullName));
 
             return configuration;
         }

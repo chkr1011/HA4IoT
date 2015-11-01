@@ -28,20 +28,22 @@ namespace HA4IoT.Actuators.Automations
             WithOnDuration(TimeSpan.FromMinutes(1));
         }
 
-        public AutomaticTurnOnAndOffAutomation WithTrigger(IMotionDetector motionDetector)
+        public AutomaticTurnOnAndOffAutomation WithTrigger(IMotionDetector motionDetector, params IParameter[] parameters)
         {
             if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
             motionDetector.MotionDetected += (s, e) => Trigger();
             motionDetector.DetectionCompleted += (s, e) => StartTimeout();
             motionDetector.IsEnabledChanged += CancelTimeoutIfMotionDetectorDeactivated;
-
+            
             return this;
         }
 
-        public AutomaticTurnOnAndOffAutomation WithTrigger(IButton button, ButtonPressedDuration duration = ButtonPressedDuration.Short)
+        public AutomaticTurnOnAndOffAutomation WithTrigger(IButton button, ButtonPressedDuration duration = ButtonPressedDuration.Short, params IParameter[] parameters)
         {
             if (button == null) throw new ArgumentNullException(nameof(button));
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
             if (duration == ButtonPressedDuration.Short)
             {
@@ -129,7 +131,7 @@ namespace HA4IoT.Actuators.Automations
             if (actuators == null) throw new ArgumentNullException(nameof(actuators));
 
             _disablingConditionsValidator.WithCondition(ConditionRelation.Or,
-                new Condition().WithExpression(() => actuators.Any(a => a.State == BinaryActuatorState.On)));
+                new Condition().WithExpression(() => actuators.Any(a => a.GetState() == BinaryActuatorState.On)));
 
             return this;
         }

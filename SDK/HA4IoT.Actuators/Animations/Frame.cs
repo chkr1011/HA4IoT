@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using HA4IoT.Contracts.Actuators;
 
 namespace HA4IoT.Actuators.Animations
 {
     public class Frame
     {
-        private readonly List<Action> _actions = new List<Action>();
+        private readonly List<PendingBinaryStateOutputActuatorState> _states = new List<PendingBinaryStateOutputActuatorState>();
 
         public TimeSpan StartTime { get; private set; }
 
@@ -15,19 +16,19 @@ namespace HA4IoT.Actuators.Animations
             return this;
         }
 
-        public Frame WithAction(Action action)
+        public Frame WithTargetState(IBinaryStateOutputActuator actuator, BinaryActuatorState state)
         {
-            if (action == null) throw new ArgumentNullException(nameof(action));
+            if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
-            _actions.Add(action);
+            _states.Add(new PendingBinaryStateOutputActuatorState().WithActuator(actuator).WithState(state));
             return this;
         }
 
         public void Apply()
         {
-            foreach (var action in _actions)
+            foreach (var state in _states)
             {
-                action.Invoke();
+                state.Apply();
             }
         }
     }
