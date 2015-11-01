@@ -456,5 +456,106 @@
   {
       "key": "ExampleRoom.CeilingFan.2",
       "value": "Fast"
-  }
+  },
+  // Overview
+{
+    "key": "Kitchen.MotionDetector.Overview",
+    "value": "Küche"
+},
+{
+    "key": "Kitchen.TemperatureSensor.Overview",
+    "value": "Küche"
+},
+{
+    "key": "Kitchen.HumiditySensor.Overview",
+    "value": "Küche"
+},
+{
+    "key": "Kitchen.RollerShutter.Overview",
+    "value": "Küche"
+},
+{
+    "key": "Kitchen.Window.Overview",
+    "value": "Küche"
+},
+{
+    "key": "ChildrensRoom.MotionDetector.Overview",
+    "value": "Kinderzimmer"
+},
+{
+    "key": "ChildrensRoom.TemperatureSensor.Overview",
+    "value": "Kinderzimmer"
+},
+{
+    "key": "ChildrensRoom.HumiditySensor.Overview",
+    "value": "Kinderzimmer"
+},
+{
+    "key": "ChildrensRoom.RollerShutter.Overview",
+    "value": "Kinderzimmer"
+},
+{
+    "key": "ChildrensRoom.Window.Overview",
+    "value": "Kinderzimmer"
+},
+{
+    "key": "ReadingRoom.MotionDetector.Overview",
+    "value": "Lesezimmer"
+},
+{
+    "key": "ReadingRoom.TemperatureSensor.Overview",
+    "value": "Lesezimmer"
+},
+{
+    "key": "ReadingRoom.HumiditySensor.Overview",
+    "value": "Lesezimmer"
+},
+{
+    "key": "ReadingRoom.RollerShutter.Overview",
+    "value": "Lesezimmer"
+},
+{
+    "key": "ReadingRoom.Window.Overview",
+    "value": "Lesezimmer"
+},
+{
+    "key": "LowerBathroom.MotionDetector.Overview",
+    "value": "Bad unten"
+},
+{
+    "key": "LowerBathroom.TemperatureSensor.Overview",
+    "value": "Bad unten"
+},
+{
+    "key": "LowerBathroom.HumiditySensor.Overview",
+    "value": "Bad unten"
+},
+{
+    "key": "LowerBathroom.RollerShutter.Overview",
+    "value": "Bad unten"
+},
+{
+    "key": "LowerBathroom.Window.Overview",
+    "value": "Bad unten"
+},
+{
+    "key": "UpperBathroom.MotionDetector.Overview",
+    "value": "Bad oben"
+},
+{
+    "key": "UpperBathroom.TemperatureSensor.Overview",
+    "value": "Bad oben"
+},
+{
+    "key": "UpperBathroom.HumiditySensor.Overview",
+    "value": "Bad oben"
+},
+{
+    "key": "UpperBathroom.RollerShutter.Overview",
+    "value": "Bad oben"
+},
+{
+    "key": "UpperBathroom.Window.Overview",
+    "value": "Bad oben"
+}
 ]

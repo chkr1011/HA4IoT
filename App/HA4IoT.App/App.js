@@ -44,7 +44,7 @@ function setupController() {
               c.version = version;
           });
 
-          c.getUILocalization = function(key) {
+          c.getUILocalization = function (key) {
               return getUILocalization(key);
           };
 
@@ -60,14 +60,14 @@ function setupController() {
 
                               configureActuator(room, actuator, i);
 
-                              if (actuator.type === "TemperatureSensor" ||
-                                actuator.type === "HumiditySensor") {
+                              if (actuator.type === "HA4IoT.Actuators.TemperatureSensor" ||
+                                actuator.type === "HA4IoT.Actuators.HumiditySensor") {
                                   c.sensors.push(actuator);
-                              } else if (actuator.type === "RollerShutter") {
+                              } else if (actuator.type === "HA4IoT.Actuators.RollerShutter") {
                                   c.rollerShutters.push(actuator);
-                              } else if (actuator.type === "MotionDetector") {
+                              } else if (actuator.type === "HA4IoT.Actuators.MotionDetector") {
                                   c.motionDetectors.push(actuator);
-                              } else if (actuator.type === "Window") {
+                              } else if (actuator.type === "HA4IoT.Actuators.Window") {
                                   c.windows.push(actuator);
                               }
                           }
@@ -219,23 +219,23 @@ function binaryActuatorStateUpdater(actuator, newState) {
 }
 
 function configureActuator(room, actuator, i) {
+    actuator.image = actuator.type;
     actuator.caption = getActuatorLocalization(actuator.id);
+    actuator.overviewCaption = getActuatorLocalization(actuator.id + ".Overview");
     actuator.sortValue = 0;
     actuator.hide = false;
-    actuator.image = actuator.type;
-
-    actuator.state = {};
     actuator.displayVertical = false;
-
+    actuator.state = {};
+    
     switch (actuator.type) {
-        case "Lamp":
+        case "HA4IoT.Actuators.Lamp":
             {
                 actuator.template = "Views/ToggleTemplate.html";
                 actuator.updateState = binaryActuatorStateUpdater;
                 actuator.sortValue = -7;
                 break;
             }
-        case "Socket":
+        case "HA4IoT.Actuators.Socket":
             {
                 actuator.template = "Views/ToggleTemplate.html";
                 actuator.updateState = binaryActuatorStateUpdater;
@@ -243,7 +243,7 @@ function configureActuator(room, actuator, i) {
                 break;
             }
 
-        case "RollerShutter":
+        case "HA4IoT.Actuators.RollerShutter":
             {
                 actuator.caption = getUILocalization("UI.RollerShutter");
                 actuator.template = "Views/RollerShutterTemplate.html";
@@ -251,7 +251,7 @@ function configureActuator(room, actuator, i) {
                 break;
             }
 
-        case "Window":
+        case "HA4IoT.Actuators.Window":
             {
                 actuator.caption = getUILocalization("UI.Window");
                 actuator.template = "Views/WindowTemplate.html";
@@ -259,7 +259,7 @@ function configureActuator(room, actuator, i) {
                 break;
             }
 
-        case "StateMachine":
+        case "HA4IoT.Actuators.StateMachine":
             {
                 actuator.template = "Views/StateMachineTemplate.html";
                 actuator.sortValue = -5;
@@ -273,7 +273,7 @@ function configureActuator(room, actuator, i) {
                 break;
             }
 
-        case "TemperatureSensor":
+        case "HA4IoT.Actuators.TemperatureSensor":
             {
                 actuator.template = "Views/TemperatureSensorTemplate.html";
                 actuator.caption = getUILocalization("UI.Temperature");
@@ -281,7 +281,7 @@ function configureActuator(room, actuator, i) {
                 break;
             }
 
-        case "HumiditySensor":
+        case "HA4IoT.Actuators.HumiditySensor":
             {
                 actuator.template = "Views/HumiditySensorTemplate.html";
                 actuator.caption = getUILocalization("UI.Humidity");
@@ -289,7 +289,7 @@ function configureActuator(room, actuator, i) {
                 break;
             }
 
-        case "MotionDetector":
+        case "HA4IoT.Actuators.MotionDetector":
             {
                 actuator.template = "Views/MotionDetectorTemplate.html";
                 actuator.caption = getUILocalization("UI.MotionDetector");
@@ -297,18 +297,17 @@ function configureActuator(room, actuator, i) {
                 break;
             }
 
-        case "VirtualButton":
+        case "HA4IoT.Actuators.VirtualButton":
             {
                 actuator.template = "Views/VirtualButtonTemplate.html";
-                actuator.image = "Button";
                 actuator.sortValue = -1;
                 break;
             }
 
-        case "VirtualButtonGroup":
+        case "HA4IoT.Actuators.VirtualButtonGroup":
             {
                 actuator.template = "Views/VirtualButtonGroupTemplate.html";
-                actuator.image = "Button";
+                actuator.image = "HA4IoT.Actuators.VirtualButton";
                 actuator.sortValue = -1;
 
                 var extendedButtons = [];

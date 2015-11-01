@@ -140,16 +140,6 @@ appConfiguration.actuatorExtender = function (actuator) {
                 break;
             }
 
-        case "Kitchen.MotionDetector":
-        case "Kitchen.TemperatureSensor":
-        case "Kitchen.HumiditySensor":
-        case "Kitchen.RollerShutter":
-        case "Kitchen.Window":
-            {
-                actuator.overviewCaption = "Küche";
-                break;
-            }
-
         case "Floor.LowerFloorTemperatureSensor":
         case "Floor.LowerFloorHumiditySensor":
         case "Floor.LowerFloorMotionDetector":
@@ -172,46 +162,11 @@ appConfiguration.actuatorExtender = function (actuator) {
                 break;
             }
 
-        case "ReadingRoom.Window":
-        case "ReadingRoom.RollerShutter":
-        case "ReadingRoom.TemperatureSensor":
-        case "ReadingRoom.HumiditySensor":
-            {
-                actuator.overviewCaption = "Lesezimmer";
-                break;
-            }
-
-        case "ChildrensRoom.Window":
-        case "ChildrensRoom.RollerShutter":
-        case "ChildrensRoom.TemperatureSensor":
-        case "ChildrensRoom.HumiditySensor":
-            {
-                actuator.overviewCaption = "Kinderzimmer";
-                break;
-            }
-
-        case "UpperBathroom.MotionDetector":
-        case "UpperBathroom.TemperatureSensor":
-        case "UpperBathroom.HumiditySensor":
-            {
-                actuator.overviewCaption = "Bad oben";
-                break;
-            }
-
         case "Office.MotionDetector":
         case "Office.TemperatureSensor":
         case "Office.HumiditySensor":
             {
                 actuator.overviewCaption = "Büro";
-                break;
-            }
-
-        case "LowerBathroom.MotionDetector":
-        case "LowerBathroom.Window":
-        case "LowerBathroom.TemperatureSensor":
-        case "LowerBathroom.HumiditySensor":
-            {
-                actuator.overviewCaption = "Bad unten";
                 break;
             }
 
