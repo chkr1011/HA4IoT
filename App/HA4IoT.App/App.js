@@ -208,14 +208,6 @@ function configureRoom(room) {
     appConfiguration.roomExtender(room);
 }
 
-////function binaryActuatorStateUpdater(actuator, newState) {
-////    if (newState.state === "On") {
-////        actuator.state.stateBool = true;
-////    } else {
-////        actuator.state.stateBool = false;
-////    }
-////}
-
 function configureActuator(room, actuator, i) {
     actuator.image = actuator.type;
     actuator.caption = getActuatorLocalization(actuator.id);
@@ -229,14 +221,12 @@ function configureActuator(room, actuator, i) {
         case "HA4IoT.Actuators.Lamp":
             {
                 actuator.template = "Views/ToggleTemplate.html";
-                ////actuator.updateState = binaryActuatorStateUpdater;
                 actuator.sortValue = -7;
                 break;
             }
         case "HA4IoT.Actuators.Socket":
             {
                 actuator.template = "Views/ToggleTemplate.html";
-                ////actuator.updateState = binaryActuatorStateUpdater;
                 actuator.sortValue = -6;
                 break;
             }
@@ -323,8 +313,6 @@ function configureActuator(room, actuator, i) {
                 return;
             }
     }
-
-    actuator.overviewCaption = actuator.caption;
 
     appConfiguration.actuatorExtender(actuator);
 }

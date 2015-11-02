@@ -97,63 +97,6 @@ appConfiguration.actuatorExtender = function (actuator) {
                 break;
             }
 
-        case "Office.WindowRight":
-            {
-                actuator.caption = "Fenster rechts";
-                actuator.overviewCaption = "Büro rechts";
-                break;
-            }
-
-        case "LivingRoom.WindowLeft":
-            {
-                actuator.caption = "Fenster links";
-                actuator.overviewCaption = "Wohnzimmer links";
-                break;
-            }
-
-        case "LivingRoom.WindowRight":
-            {
-                actuator.caption = "Rollo rechts";
-                actuator.overviewCaption = "Wohnzimmer rechts";
-                break;
-            }
-
-        case "Bedroom.RollerShutterLeft":
-            {
-                actuator.caption = "Rollo links";
-                actuator.overviewCaption = "Schlafzimmer links";
-                break;
-            }
-
-        case "Bedroom.RollerShutterRight":
-            {
-                actuator.caption = "Rollo rechts";
-                actuator.overviewCaption = "Schlafzimmer rechts";
-                break;
-            }
-
-        case "LivingRoom.MotionDetector":
-        case "LivingRoom.TemperatureSensor":
-        case "LivingRoom.HumiditySensor":
-            {
-                actuator.overviewCaption = "Wohnzimmer";
-                break;
-            }
-
-        case "Floor.LowerFloorTemperatureSensor":
-        case "Floor.LowerFloorHumiditySensor":
-        case "Floor.LowerFloorMotionDetector":
-            {
-                actuator.overviewCaption = "Flur";
-                break;
-            }
-
-        case "Floor.StairwayMotionDetector":
-            {
-                actuator.overviewCaption = "Treppenhaus";
-                break;
-            }
-
         case "Bedroom.MotionDetector":
         case "Bedroom.TemperatureSensor":
         case "Bedroom.HumiditySensor":

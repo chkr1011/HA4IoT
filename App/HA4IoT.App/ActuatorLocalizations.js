@@ -557,5 +557,85 @@
 {
     "key": "UpperBathroom.Window.Overview",
     "value": "Bad oben"
+},
+{
+    "key": "Office.WindowRight",
+    "value": "Fenster rechts"
+},
+{
+    "key": "Office.WindowRight.Overview",
+    "value": "Büro rechts"
+},
+{
+    "key": "LivingRoom.WindowLeft",
+    "value": "Fenster links"
+},
+{
+    "key": "LivingRoom.WindowLeft.Overview",
+    "value": "Wohnzimmer links"
+},
+{
+    "key": "Bedroom.RollerShutterLeft",
+    "value": "Rollo links"
+},
+{
+    "key": "Bedroom.RollerShutterLeft.Overview",
+    "value": "Schlafzimmer links"
+},
+{
+    "key": "Bedroom.RollerShutterRight",
+    "value": "Rollo rechts"
+},
+{
+    "key": "Bedroom.RollerShutterRight.Overview",
+    "value": "Schlafzimmer rechts"
+},
+{
+    "key": "LivingRoom.MotionDetector.Overview",
+    "value": "Wohnzimmer"
+},
+{
+    "key": "LivingRoom.TemperatureSensor.Overview",
+    "value": "Wohnzimmer"
+},
+{
+    "key": "LivingRoom.HumiditySensor.Overview",
+    "value": "Wohnzimmer"
+},
+{
+    "key": "Floor.LowerFloorTemperatureSensor.Overview",
+    "value": "Flur"
+},
+{
+    "key": "Floor.LowerFloorHumiditySensor.Overview",
+    "value": "Flur"
+},
+{
+    "key": "Floor.LowerFloorMotionDetector",
+    "value": "Flur"
+},
+{
+    "key": "Floor.StairwayMotionDetector.Overview",
+    "value": "Treppenhaus"
+},
+{
+    "key": "LivingRoom.WindowRight.Overview",
+    "value": "Wohnzimmer rechts"
+},
+{
+    "key": "LivingRoom.WindowRight",
+    "value": "Rollo rechts"
+},
+{
+    "key": "",
+    "value": ""
+},
+{
+    "key": "",
+    "value": ""
+},
+{
+    "key": "",
+    "value": ""
 }
 ]
