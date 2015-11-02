@@ -7,7 +7,7 @@ namespace HA4IoT.Networking
 {
     internal sealed class HttpRequestParser
     {
-        private readonly List<string> _headers = new List<string>();
+        private readonly List<HttpHeader> _headers = new List<HttpHeader>();
         private readonly List<string> _lines = new List<string>();
         private readonly string _request;
         private string _body;
@@ -45,7 +45,7 @@ namespace HA4IoT.Networking
                 JsonObject jsonBody;
                 JsonObject.TryParse(_body, out jsonBody);
 
-                request = new HttpRequest(_method, _uri, _query, _body, jsonBody);
+                request = new HttpRequest(_method, _uri, _query, _headers, _body, jsonBody);
                 return true;
             }
             catch (Exception)
@@ -73,7 +73,18 @@ namespace HA4IoT.Networking
                     break;
                 }
 
-                _headers.Add(line);
+                if (!line.Contains(":"))
+                {
+                    _headers.Add(HttpHeader.Create().WithName(line));
+                }
+                else
+                {
+                    var indexOfDelimiter = line.IndexOf(":");
+                    var headerName = line.Substring(0, indexOfDelimiter);
+                    var headerValue = line.Substring(indexOfDelimiter + 1);
+
+                    _headers.Add(HttpHeader.Create().WithName(headerName).WithValue(headerValue));
+                }
             }
         }
 

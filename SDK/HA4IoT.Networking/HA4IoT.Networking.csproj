@@ -117,6 +117,7 @@
     <Compile Include="BadRequestException.cs" />
     <Compile Include="BinaryBody.cs" />
     <Compile Include="HttpContext.cs" />
+    <Compile Include="HttpHeader.cs" />
     <Compile Include="MappedFolderController.cs" />
     <Compile Include="IBody.cs" />
     <Compile Include="IHttpRequestController.cs" />
