@@ -147,11 +147,23 @@ namespace HA4IoT.Controller.Main.Rooms
             {
                 if (combinedLights.GetState() == BinaryActuatorState.On)
                 {
-                    combinedLights.TurnOff(new AnimateParameter());
+                    combinedLights.TurnOff(new AnimateParameter().WithReversedOrder());
                 }
                 else
                 {
                     combinedLights.TurnOn(new AnimateParameter());
+                }
+            };
+
+            floor.Button(Floor.ButtonStairsLowerUpper).PressedShort += (s, e) =>
+            {
+                if (combinedLights.GetState() == BinaryActuatorState.On)
+                {
+                    combinedLights.TurnOff(new AnimateParameter());
+                }
+                else
+                {
+                    combinedLights.TurnOn(new AnimateParameter().WithReversedOrder());
                 }
             };
         }

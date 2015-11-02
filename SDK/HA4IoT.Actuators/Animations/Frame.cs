@@ -10,6 +10,8 @@ namespace HA4IoT.Actuators.Animations
 
         public TimeSpan StartTime { get; private set; }
 
+        public bool IsApplied { get; private set; }
+
         public Frame WithStartTime(TimeSpan startTime)
         {
             StartTime = startTime;
@@ -30,6 +32,8 @@ namespace HA4IoT.Actuators.Animations
             {
                 state.Apply();
             }
+
+            IsApplied = true;
         }
     }
 }

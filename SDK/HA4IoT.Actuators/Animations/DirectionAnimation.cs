@@ -28,7 +28,7 @@ namespace HA4IoT.Actuators.Animations
             return this;
         }
 
-        public DirectionAnimation WithBackwardsDirection()
+        public DirectionAnimation WithReversed()
         {
             _isForward = false;
             return this;
@@ -85,6 +85,13 @@ namespace HA4IoT.Actuators.Animations
                 WithFrame(new Frame().WithTargetState(actuator, _targetState).WithStartTime(offset));
             }
 
+            var lastFrame = new Frame().WithStartTime(_duration);
+            foreach (var actuator in _actuator.Actuators)
+            {
+                lastFrame.WithTargetState(actuator, _targetState);
+            }
+
+            WithFrame(lastFrame);
             base.Start();
         }
     }

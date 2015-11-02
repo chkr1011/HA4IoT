@@ -47,17 +47,17 @@ namespace HA4IoT.Actuators.Animations
 
         private void ApplyFrame()
         {
-            for (int i = Frames.Count - 1; i >= 0; i--)
+            foreach (var frame in Frames)
             {
-                var frame = Frames[i];
-                if (frame.StartTime <= _position)
+                if (frame.IsApplied || frame.StartTime > _position)
                 {
-                    frame.Apply();
-                    break;
+                    continue;
                 }
+
+                frame.Apply();
             }
 
-            if (_position > Frames.Last().StartTime)
+            if (Frames.Last().IsApplied)
             {
                 Stop();
             }

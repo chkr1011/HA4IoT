@@ -30,14 +30,20 @@ namespace HA4IoT.Actuators
 
             BinaryActuatorState oldState = GetStateInternal();
 
-            var animationParameter = parameters.SingleOrDefault(p => p is AnimateParameter);
+            var animationParameter = parameters.SingleOrDefault(p => p is AnimateParameter) as AnimateParameter;
             if (animationParameter != null)
             {
                 var directionAnimation = new DirectionAnimation(_timer);
                 directionAnimation.WithActuator(this);
                 directionAnimation.WithTargetState(newState);
-                directionAnimation.Start();
 
+                if (animationParameter.Reverse)
+                {
+                    directionAnimation.WithReversed();
+                }
+
+                directionAnimation.Start();
+                
                 OnStateChanged(oldState, newState);
                 return;
             }
