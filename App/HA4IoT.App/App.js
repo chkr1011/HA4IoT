@@ -146,14 +146,12 @@ function setupController() {
           };
 
           $scope.toggleState = function (actuator) {
-              var newState = !actuator.state.stateBool;
-
-              var tag = "off";
-              if (newState === true) {
-                  tag = "on";
+              var newState = "On";
+              if (actuator.state.state === "On") {
+                  newState = "Off";
               }
 
-              invokeActuator(actuator.id, { state: tag }, function () { actuator.state.stateBool = newState; });
+              invokeActuator(actuator.id, { state: newState }, function () { actuator.state.state = newState; });
           };
 
           $scope.invokeVirtualButton = function (actuator) {
@@ -210,13 +208,13 @@ function configureRoom(room) {
     appConfiguration.roomExtender(room);
 }
 
-function binaryActuatorStateUpdater(actuator, newState) {
-    if (newState.state === "On") {
-        actuator.state.stateBool = true;
-    } else {
-        actuator.state.stateBool = false;
-    }
-}
+////function binaryActuatorStateUpdater(actuator, newState) {
+////    if (newState.state === "On") {
+////        actuator.state.stateBool = true;
+////    } else {
+////        actuator.state.stateBool = false;
+////    }
+////}
 
 function configureActuator(room, actuator, i) {
     actuator.image = actuator.type;
@@ -231,14 +229,14 @@ function configureActuator(room, actuator, i) {
         case "HA4IoT.Actuators.Lamp":
             {
                 actuator.template = "Views/ToggleTemplate.html";
-                actuator.updateState = binaryActuatorStateUpdater;
+                ////actuator.updateState = binaryActuatorStateUpdater;
                 actuator.sortValue = -7;
                 break;
             }
         case "HA4IoT.Actuators.Socket":
             {
                 actuator.template = "Views/ToggleTemplate.html";
-                actuator.updateState = binaryActuatorStateUpdater;
+                ////actuator.updateState = binaryActuatorStateUpdater;
                 actuator.sortValue = -6;
                 break;
             }

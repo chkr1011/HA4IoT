@@ -68,10 +68,7 @@ namespace HA4IoT.Actuators
 
         public override void ApiGet(ApiRequestContext context)
         {
-            bool isOn = GetStateInternal() == BinaryActuatorState.On;
-
             context.Response["state"] = JsonValue.CreateStringValue(GetStateInternal().ToString());
-            context.Response["stateBool"] = JsonValue.CreateBooleanValue(isOn);
             base.ApiGet(context);
         }
         
