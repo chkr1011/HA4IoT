@@ -24,11 +24,14 @@ namespace HA4IoT.Networking
 
                 if (File.Exists(filename))
                 {
-
                     byte[] fileContent = File.ReadAllBytes(filename);
                     string mimeType = _mimeTypeProvider.GetMimeTypeFromFile(filename);
 
                     c.Response.Body = new BinaryBody(fileContent).WithMimeType(mimeType);
+                }
+                else
+                {
+                    c.Response.StatusCode = HttpStatusCode.NotFound;
                 }
             });
         }
