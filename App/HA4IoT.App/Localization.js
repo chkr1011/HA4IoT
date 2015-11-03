@@ -1,20 +1,19 @@
 ﻿function getUILocalization(key) {
-    return getLocalizationFromSource(key, uiLocalizations);
+    var result = uiLocalizations[key];
+
+    if (result === undefined) {
+        result = "#" + key;
+    }
+
+    return result;
 }
 
 function getActuatorLocalization(key) {
-    return getLocalizationFromSource(key, actuatorLocalizations);
-}
+    var result = actuatorLocalizations[key];
 
-function getLocalizationFromSource(key, source) {
-    var result = "#" + key;
-
-    $.each(source, function (i, entry) {
-        if (entry.key === key) {
-            result = entry.value;
-            return;
-        }
-    });
+    if (result === undefined) {
+        result = "#" + key;
+    }
 
     return result;
 }

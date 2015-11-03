@@ -1,12 +1,7 @@
 setupController();
 
-function getApiUrl() {
-    if (appConfiguration.controllerAddress === "") {
-        return "/api/";
-    } else {
-        return "http://" + appConfiguration.controllerAddress + "/api/";
-    }
-}
+var actuatorLocalizations = [];
+var uiLocalizations = [];
 
 function getVersion(callback) {
     $.get("cache.manifest", function (data) {
@@ -15,6 +10,22 @@ function getVersion(callback) {
 
         callback(results[1]);
     });
+}
+
+function loadUILocalizations(callback) {
+    $.getJSON("/app/UILocalizations.json").success(function (result) {
+        uiLocalizations = result;
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+        alert(textStatus);
+    }).always(function () { callback(); });
+}
+
+function loadActuatorLocalizations(callback) {
+    $.getJSON("/app/ActuatorLocalizations.json").success(function (result) {
+        actuatorLocalizations = result;
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        alert(textStatus);
+    }).always(function () { callback(); });
 }
 
 function setupController() {
@@ -49,7 +60,8 @@ function setupController() {
           };
 
           c.generateRooms = function () {
-              $http.get(getApiUrl() + "configuration").success(function (data) {
+
+              $http.get("/api/configuration").success(function (data) {
 
                   $.each(data, function (roomIndex, room) {
                       configureRoom(room);
@@ -119,7 +131,7 @@ function setupController() {
           }
 
           c.pollStatus = function () {
-              getJSON(c, getApiUrl() + "status?" + c.latestStateHash, function (
+              getJSON(c, "/api/status?" + c.latestStateHash, function (
                 data) {
 
                   if (c.latestStateHash === data._hash) {
@@ -195,7 +207,9 @@ function setupController() {
               });
           };
 
-          c.generateRooms();
+          loadUILocalizations(function() { loadActuatorLocalizations(function() { c.generateRooms(); }) });
+
+          //c.generateRooms();
       }
     ]);
 }
@@ -341,7 +355,7 @@ function getJSON(controller, url, callback) {
 };
 
 function invokeActuator(id, request, successCallback) {
-    var url = getApiUrl() + "actuator/" + id + "?body=" + JSON.stringify(request);
+    var url = "/api/actuator/" + id + "?body=" + JSON.stringify(request);
 
     // The hack with the body as query is required to allow cross site calls.
     $.ajax({ method: "POST", url: url, timeout: 2500 }).success(function () {
