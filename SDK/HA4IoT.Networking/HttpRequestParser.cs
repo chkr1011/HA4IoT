@@ -7,7 +7,7 @@ namespace HA4IoT.Networking
 {
     internal sealed class HttpRequestParser
     {
-        private readonly List<HttpHeader> _headers = new List<HttpHeader>();
+        private readonly HttpHeaderCollection _headers = new HttpHeaderCollection();
         private readonly List<string> _lines = new List<string>();
         private readonly string _request;
         private string _body;
@@ -18,6 +18,8 @@ namespace HA4IoT.Networking
 
         public HttpRequestParser(string request)
         {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+
             _request = request;
         }
 
@@ -80,8 +82,8 @@ namespace HA4IoT.Networking
                 else
                 {
                     var indexOfDelimiter = line.IndexOf(":");
-                    var headerName = line.Substring(0, indexOfDelimiter);
-                    var headerValue = line.Substring(indexOfDelimiter + 1);
+                    var headerName = line.Substring(0, indexOfDelimiter).Trim();
+                    var headerValue = line.Substring(indexOfDelimiter + 1).Trim();
 
                     _headers.Add(HttpHeader.Create().WithName(headerName).WithValue(headerValue));
                 }

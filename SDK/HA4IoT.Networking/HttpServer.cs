@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
@@ -80,31 +79,28 @@ namespace HA4IoT.Networking
                 var statusDescription = _statusDescriptionProvider.GetDescription(context.Response.StatusCode);
 
                 var responseText = new StringBuilder();
-                responseText.AppendFormat("HTTP/1.1 {0} {1}", (int)context.Response.StatusCode, statusDescription + Environment.NewLine);
-                responseText.AppendLine("Access-Control-Allow-Origin:*");
+                responseText.AppendLine("HTTP/1.1 " + (int)context.Response.StatusCode + " " + statusDescription);
+                //responseText.AppendLine("Access-Control-Allow-Origin:*");
                 responseText.AppendLine("Connection:close");
 
                 byte[] content;
-                string mimeType;
                 if (context.Response.Body != null)
                 {
                     content = context.Response.Body.ToByteArray();
-                    mimeType = context.Response.Body.MimeType;
+                    context.Response.Headers.Add("Content-Type", context.Response.Body.MimeType);
+
+                    if (GetClientSupportsCompression(context.Request))
+                    {
+                        content = Compress(content);
+                        context.Response.Headers.Add("Content-Encoding", "gzip");
+                    }
                 }
                 else
                 {
                     content = new byte[0];
-                    mimeType = string.Empty;
                 }
 
-                if (GetClientSupportsCompression(context.Request))
-                {
-                    content = Compress(content);
-                    context.Response.Headers.Add(HttpHeader.Create().WithName("Content-Encoding").WithValue("gzip"));
-                }
-
-                context.Response.Headers.Add(HttpHeader.Create().WithName("Content-Type").WithValue(mimeType));
-                context.Response.Headers.Add(HttpHeader.Create().WithName("Content-Length").WithValue(content.Length.ToString()));
+                context.Response.Headers.Add("Content-Length", content.Length);
 
                 foreach (var header in context.Response.Headers)
                 {
@@ -112,14 +108,17 @@ namespace HA4IoT.Networking
                 }
 
                 responseText.AppendLine();
-
+                
                 using (var dataWriter = new DataWriter(client.OutputStream))
                 {
                     dataWriter.WriteString(responseText.ToString());
                     await dataWriter.StoreAsync();
 
-                    dataWriter.WriteBytes(content);
-                    await dataWriter.StoreAsync();
+                    if (content.Length > 0)
+                    {
+                        dataWriter.WriteBytes(content);
+                        await dataWriter.StoreAsync();
+                    }
                 }
             }
             catch (Exception exception)
@@ -157,8 +156,13 @@ namespace HA4IoT.Networking
 
         private bool GetClientSupportsCompression(HttpRequest request)
         {
-            var header = request.Headers.FirstOrDefault(h => h.Name.Equals("Accept-Encoding", StringComparison.OrdinalIgnoreCase));
-            return header?.Value.IndexOf("gzip", StringComparison.OrdinalIgnoreCase) > -1;
+            string headerValue;
+            if (request.Headers.TryGetValue("Accept-Encoding", out headerValue))
+            {
+                return headerValue.IndexOf("gzip", StringComparison.OrdinalIgnoreCase) > -1;
+            }
+
+            return false;
         }
 
         private JsonObject ExceptionToJson(Exception exception)

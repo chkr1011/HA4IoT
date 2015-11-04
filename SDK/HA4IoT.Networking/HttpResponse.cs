@@ -6,6 +6,6 @@ namespace HA4IoT.Networking
     {
         public HttpStatusCode StatusCode { get; set; } = HttpStatusCode.OK;
         public IBody Body { get; set; }
-        public IList<HttpHeader> Headers { get; } = new List<HttpHeader>();
+        public HttpHeaderCollection Headers { get; } = new HttpHeaderCollection();
     }
 }
