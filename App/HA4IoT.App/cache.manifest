@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Version 1.6.56
+# Version 1.6.64
 
 CACHE:
 
@@ -23,12 +23,12 @@ fonts/glyphicons-halflings-regular.eot
 fonts/glyphicons-halflings-regular.woff
 fonts/glyphicons-halflings-regular.woff2
 
-Images/Socket.png
-Images/Lamp.png
-Images/RollerShutter.png
-Images/TemperatureSensor.png
-Images/HumiditySensor.png
-Images/MotionDetector.png
+Images/HA4IoT.Actuators.Socket.png
+Images/HA4IoT.Actuators.Lamp.png
+Images/HA4IoT.Actuators.RollerShutter.png
+Images/HA4IoT.Actuators.TemperatureSensor.png
+Images/HA4IoT.Actuators.HumiditySensor.png
+Images/HA4IoT.Actuators.MotionDetector.png
 
 NETWORK:
 *

@@ -36,8 +36,6 @@ function setupController() {
       function ($scope, $http) {
           var c = this;
 
-          c.latestStateHash = "";
-
           c.appConfiguration = appConfiguration;
           c.rooms = [];
 
@@ -131,15 +129,7 @@ function setupController() {
           }
 
           c.pollStatus = function () {
-              getJSON(c, "/api/status?" + c.latestStateHash, function (
-                data) {
-
-                  if (c.latestStateHash === data._hash) {
-                      // The state has not changed. Skip update.
-                      return;
-                  }
-
-                  c.latestStateHash = data._hash;
+              getJSON(c, "/api/status", function (data) {
 
                   $.each(data, function (id, state) {
                       c.updateStatus(id, state);
@@ -208,8 +198,6 @@ function setupController() {
           };
 
           loadUILocalizations(function() { loadActuatorLocalizations(function() { c.generateRooms(); }) });
-
-          //c.generateRooms();
       }
     ]);
 }
