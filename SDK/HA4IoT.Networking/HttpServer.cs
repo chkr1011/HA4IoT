@@ -25,54 +25,87 @@ namespace HA4IoT.Networking
 
         public event EventHandler<RequestReceivedEventArgs> RequestReceived;
 
-        private async void HandleConnection(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
+        private void HandleConnection(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
-            using (args.Socket)
+            Task.Run(() => HandleRequests(args.Socket));
+        }
+
+        private async Task HandleRequests(StreamSocket client)
+        {
+            using (client)
             {
-                HttpContext context = null;
-                try
+                await HandleRequest(client);
+            }
+        }
+
+        private async Task HandleRequest(StreamSocket client)
+        {
+            HttpContext context = null;
+            try
+            {
+                HttpRequest request = await ReadRequest(client);
+                if (request == null)
                 {
-                    HttpRequest request = await ReadRequest(args.Socket);
-                    if (request != null)
+                    return;
+                }
+
+                context = new HttpContext(request, new HttpResponse());
+
+                EventHandler<RequestReceivedEventArgs> handler = RequestReceived;
+                if (handler == null)
+                {
+                    context.Response.StatusCode = HttpStatusCode.NotImplemented;
+                }
+                else
+                {
+                    var eventArgs = new RequestReceivedEventArgs(context);
+                    handler.Invoke(this, eventArgs);
+
+                    if (!eventArgs.IsHandled)
                     {
-                        context = new HttpContext(request, new HttpResponse());
-
-                        EventHandler<RequestReceivedEventArgs> handler = RequestReceived;
-                        if (handler == null)
-                        {
-                            context.Response.StatusCode = HttpStatusCode.NotImplemented;
-                        }
-                        else
-                        {
-                            var eventArgs = new RequestReceivedEventArgs(context);
-                            handler.Invoke(this, eventArgs);
-
-                            if (!eventArgs.IsHandled)
-                            {
-                                context.Response.StatusCode = HttpStatusCode.BadRequest;
-                            }
-                        }
+                        context.Response.StatusCode = HttpStatusCode.BadRequest;
                     }
                 }
-                catch (Exception exception)
+
+                ////if (GetConnectionMustBeClosed(context))
+                ////{
+                ////    return;
+                ////}
+            }
+            catch (Exception exception)
+            {
+                if (context != null)
                 {
-                    if (context != null)
-                    {
-                        context.Response.StatusCode = HttpStatusCode.InternalServerError;
-                        context.Response.Body = new JsonBody(ExceptionToJson(exception));
-                    }
+                    context.Response.StatusCode = HttpStatusCode.InternalServerError;
+                    context.Response.Body = new JsonBody(ExceptionToJson(exception));
                 }
-                finally
+            }
+            finally
+            {
+                if (context != null)
                 {
-                    if (context != null)
-                    {
-                        await SendResponse(args.Socket, context);
-                    }
+                    await TrySendResponse(client, context);
                 }
             }
         }
 
-        private async Task SendResponse(StreamSocket client, HttpContext context)
+        private bool GetConnectionMustBeClosed(HttpContext context)
+        {
+            string headerValue;
+            if (!context.Request.Headers.TryGetValue("Connection", out headerValue))
+            {
+                return true;
+            }
+
+            if (headerValue.Equals("keep-alive", StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private async Task<bool> TrySendResponse(StreamSocket client, HttpContext context)
         {
             try
             {
@@ -80,10 +113,9 @@ namespace HA4IoT.Networking
 
                 var responseText = new StringBuilder();
                 responseText.AppendLine("HTTP/1.1 " + (int)context.Response.StatusCode + " " + statusDescription);
-                //responseText.AppendLine("Access-Control-Allow-Origin:*");
                 responseText.AppendLine("Connection:close");
 
-                byte[] content;
+                byte[] content = new byte[0];
                 if (context.Response.Body != null)
                 {
                     content = context.Response.Body.ToByteArray();
@@ -94,10 +126,6 @@ namespace HA4IoT.Networking
                         content = Compress(content);
                         context.Response.Headers.Add("Content-Encoding", "gzip");
                     }
-                }
-                else
-                {
-                    content = new byte[0];
                 }
 
                 context.Response.Headers.Add("Content-Length", content.Length);
@@ -120,10 +148,13 @@ namespace HA4IoT.Networking
                         await dataWriter.StoreAsync();
                     }
                 }
+
+                return true;
             }
             catch (Exception exception)
             {
                 Debug.WriteLine("Failed to send HTTP response. " + exception.Message);
+                return false;
             }
         }
 
@@ -142,16 +173,24 @@ namespace HA4IoT.Networking
 
         private async Task<HttpRequest> ReadRequest(StreamSocket client)
         {
-            IBuffer buffer = new Buffer(2048);
-            await client.InputStream.ReadAsync(buffer, buffer.Capacity, InputStreamOptions.Partial);
+            try
+            {
+                IBuffer buffer = new Buffer(2048);
+                await client.InputStream.ReadAsync(buffer, buffer.Capacity, InputStreamOptions.Partial);
 
-            var binaryRequest = buffer.ToArray();
-            var requestText = Encoding.ASCII.GetString(binaryRequest, 0, binaryRequest.Length);
+                var binaryRequest = buffer.ToArray();
+                var requestText = Encoding.ASCII.GetString(binaryRequest, 0, binaryRequest.Length);
 
-            HttpRequest request;
-            new HttpRequestParser(requestText).TryParse(out request);
+                HttpRequest request;
+                new HttpRequestParser(requestText).TryParse(out request);
 
-            return request;
+                return request;
+            }
+            catch (Exception exception)
+            {
+                Debug.WriteLine("Failed to read HTTP request. " + exception.Message);
+                return null;
+            }
         }
 
         private bool GetClientSupportsCompression(HttpRequest request)
