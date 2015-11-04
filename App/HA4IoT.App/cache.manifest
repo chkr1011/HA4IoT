@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Version 1.6.64
+# Version 1.6.71
 
 CACHE:
 
@@ -7,8 +7,10 @@ index.html
 App.js
 Style.css
 Configuration.js
-Localization.json
-UILocalization.json
+Localization.js
+
+ActuatorLocalizations.json
+UILocalizations.json
 
 Scripts/jquery-2.1.4.min.js
 Scripts/bootstrap.min.js
@@ -23,6 +25,13 @@ fonts/glyphicons-halflings-regular.eot
 fonts/glyphicons-halflings-regular.woff
 fonts/glyphicons-halflings-regular.woff2
 
+Images/Wifi.png
+Images/Cat.png
+Images/Fan.png
+Images/Air.png
+Images/WaterPump.png
+Images/Sunrise.png
+Images/Sunset.png
 Images/HA4IoT.Actuators.Socket.png
 Images/HA4IoT.Actuators.Lamp.png
 Images/HA4IoT.Actuators.RollerShutter.png
