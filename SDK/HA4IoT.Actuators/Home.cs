@@ -30,7 +30,7 @@ namespace HA4IoT.Actuators
             NotificationHandler = notificationHandler;
 
             httpApiController.Handle(HttpMethod.Get, "configuration").Using(c => c.Response.Body = new JsonBody(GetConfigurationAsJSON()));
-            httpApiController.Handle(HttpMethod.Get, "status").Using(c => c.Response.Body = new JsonBody(GetStatusAsJSON(c.Request)));
+            httpApiController.Handle(HttpMethod.Get, "status").Using(HandleStatusRequest);
             httpApiController.Handle(HttpMethod.Get, "health").Using(c => c.Response.Body = new JsonBody(_healthMonitor.ApiGet()));
         }
 
@@ -62,7 +62,27 @@ namespace HA4IoT.Actuators
             NotificationHandler.PublishFrom(this, NotificationType.Info, "Registered actuators = {0}, Rooms = {1}.", Actuators.Count, _rooms.Count);
         }
 
-        private JsonObject GetStatusAsJSON(HttpRequest request)
+        private void HandleStatusRequest(HttpContext httpContext)
+        {
+            var currentStatus = GetStatusAsJSON();
+            var currentHash = "\"" + GenerateHash(currentStatus.Stringify()) + "\"";
+
+            string clientHash;
+            if (httpContext.Request.Headers.TryGetValue("If-None-Match", out clientHash))
+            {
+                if (clientHash.Equals(currentHash))
+                {
+                    httpContext.Response.StatusCode = HttpStatusCode.NotModified;
+                    return;
+                }
+            }
+
+            httpContext.Response.StatusCode = HttpStatusCode.OK;
+            httpContext.Response.Headers.Add("Etag", currentHash);
+            httpContext.Response.Body = new JsonBody(currentStatus);
+        }
+
+        private JsonObject GetStatusAsJSON()
         {
             var result = new JsonObject();
             foreach (var actuator in Actuators.Values)
@@ -76,16 +96,6 @@ namespace HA4IoT.Actuators
             if (WeatherStation != null)
             {
                 result.SetNamedValue("weatherStation", WeatherStation.ApiGet());
-            }
-
-            string jsonText = result.Stringify();
-            string hash = GenerateHash(jsonText);
-            result.SetNamedValue("_hash", JsonValue.CreateStringValue(hash));
-
-            if (string.Equals(request.Query, hash))
-            {
-                result = new JsonObject();
-                result.SetNamedValue("_hash", JsonValue.CreateStringValue(hash));
             }
 
             return result;
