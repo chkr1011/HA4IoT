@@ -15,26 +15,6 @@ appConfiguration.showWeatherStation = true;
 appConfiguration.actuatorExtender = function (actuator) {
     switch (actuator.id) {
 
-        case "Floor.StairwayRollerShutter":
-            {
-                actuator.overviewCaption = "Flur";
-                break;
-            }
-
-        case "Bedroom.WindowLeft":
-            {
-                actuator.caption = "Fenster links";
-                actuator.overviewCaption = "Schlafzimmer links";
-                break;
-            }
-
-        case "Bedroom.WindowRight":
-            {
-                actuator.caption = "Fenster rechts";
-                actuator.overviewCaption = "Schlafzimmer rechts";
-                break;
-            }
-
         case "Bedroom.Fan":
             {
                 actuator.image = "Fan";
@@ -58,7 +38,7 @@ appConfiguration.actuatorExtender = function (actuator) {
         case "Office.CombinedCeilingLights":
             {
                 actuator.displayVertical = true;
-                actuator.image = "Lamp";
+                actuator.image = "HA4IoT.Actuators.Lamp";
                 break;
             }
 
@@ -86,83 +66,7 @@ appConfiguration.actuatorExtender = function (actuator) {
                 break;
             }
 
-        case "Office.WindowLeft":
-            {
-                actuator.caption = "Fenster links";
-                actuator.overviewCaption = "Büro links";
-                break;
-            }
-
-        case "Bedroom.MotionDetector":
-        case "Bedroom.TemperatureSensor":
-        case "Bedroom.HumiditySensor":
-            {
-                actuator.overviewCaption = "Schlafzimmer";
-                break;
-            }
-
-        case "Office.MotionDetector":
-        case "Office.TemperatureSensor":
-        case "Office.HumiditySensor":
-            {
-                actuator.overviewCaption = "Büro";
-                break;
-            }
-
-        case "Garden.SocketPavillion":
-            {
-                actuator.caption = "Pavillion";
-                break;
-            }
-
-        case "Garden.SpotlightRoof":
-            {
-                actuator.caption = "Strahler Dach";
-                break;
-            }
-
-        case "Garden.LampTerrace":
-            {
-                actuator.caption = "Terasse";
-                break;
-            }
-
-        case "Garden.LampTap":
-            {
-                actuator.caption = "Wasserhahn";
-                break;
-            }
-
-        case "Garden.LampRearArea":
-            {
-                actuator.caption = "Tiere";
-                break;
-            }
-
-        case "Garden.LampGarage":
-            {
-                actuator.caption = "Garage";
-                break;
-            }
-
-        case "Garden.LampParkingLot1":
-            {
-                actuator.caption = "Parkplatz (1)";
-                break;
-            }
-
-        case "Garden.LampParkingLot2":
-            {
-                actuator.caption = "Parkplatz (2)";
-                break;
-            }
-
-        case "Garden.LampParkingLot3":
-            {
-                actuator.caption = "Parkplatz (3)";
-                break;
-            }
-
+     
         case "Garden.StateMachine":
             {
                 actuator.caption = "Vorlage";
