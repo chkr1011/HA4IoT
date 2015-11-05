@@ -204,7 +204,6 @@ function setupController() {
 
 function configureRoom(room) {
     room.caption = getActuatorLocalization(room.id);
-    room.sortValue = -1;
     room.hide = false;
 
     appConfiguration.roomExtender(room);
@@ -212,9 +211,9 @@ function configureRoom(room) {
 
 function configureActuator(room, actuator, i) {
     actuator.image = actuator.type;
+    actuator.sortValue = 0;
     actuator.caption = getActuatorLocalization(actuator.id);
     actuator.overviewCaption = getActuatorLocalization(actuator.id + ".Overview");
-    actuator.sortValue = 0;
     actuator.hide = false;
     actuator.displayVertical = false;
     actuator.state = {};
@@ -320,16 +319,6 @@ function configureActuator(room, actuator, i) {
 }
 
 function getJSON(controller, url, callback) {
-    //$.getJSON({
-    //    url: url,
-    //    timeout: 2500
-    //}).success(function(result) {
-    //    controller.errorMessage = "";
-    //    callback(result);
-    //}).fail(function(jqXHR, textStatus, errorThrown) {
-    //    alert(textStatus);
-    //});
-
     $.ajax({
         method: "GET",
         url: url,

@@ -91,17 +91,4 @@ appConfiguration.actuatorExtender = function (actuator) {
 };
 
 appConfiguration.roomExtender = function (room) {
-    switch (room.id) {
-        case "Bedroom":
-            {
-                room.sortValue = 1;
-                break;
-            }
-
-        case "Office":
-            {
-                room.sortValue = 2;
-                break;
-            }
-    }
 }
