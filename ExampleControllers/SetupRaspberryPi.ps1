@@ -25,4 +25,7 @@ iotstartup remove headless ZWave
 #iotstartup remove headless "CK.HomeAutomation.Controller"
 iotstartup add headless "HA4IoT.Controller."
 
+#Install Node.js
+#& 'C:\Program Files (x86)\Node.js (chakra)\CopyNodeChakra.ps1' -arch ARM -ip 192.168.1.15
+
 Exit-PSSession
