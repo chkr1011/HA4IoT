@@ -1,0 +1,16 @@
+﻿{
+  "UI.On": "An",
+  "UI.Off": "Aus",
+  "UI.WindowClosed": "Geschlossen",
+  "UI.WindowOpen": "Offen",
+  "UI.WindowTilt": "Kipp",
+  "UI.Window": "Fenster",
+  "UI.RollerShutter": "Rollo",
+  "UI.Temperature": "Temperatur",
+  "UI.Humidity": "Luftfeuchtigkeit",
+  "UI.MotionDetector": "Bewegung",
+  "UI.MotionDetectorDisabled": "Aus",
+  "UI.MotionDetectorEnabled": "Aktiv",
+  "UI.Sunrise": "Sonnenaufgang",
+  "UI.Sunset": "Sonnenuntergang"
+}

@@ -1,0 +1,18 @@
+﻿<div class="panel panel-default row" id="sensorsOverview">
+    <div class="panel-heading pointer" ng-click="haCtrl.setActivePanel('sensorsOverview')">
+        <div>
+            <span class="glyphicon glyphicon-th-list"></span>
+            <span class="panel-title">Sensoren</span>
+        </div>
+    </div>
+    <table class="table table-striped" ng-show="haCtrl.activePanel=='sensorsOverview'">
+        <tbody>
+            <tr ng-repeat="actuator in haCtrl.sensors | orderBy:['overviewCaption']">
+                <td style="vertical-align: middle;">
+                    <span><img class="icon" ng-src="Images/{{actuator.image}}.png" />{{actuator.overviewCaption}}</span>
+                </td>
+                <td class="rightTextAligned" ng-include="actuator.template"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

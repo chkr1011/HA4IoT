@@ -1,0 +1,16 @@
+﻿<div class="row panel panel-default" id="rollerShuttersOverview">
+    <div class="panel-heading pointer" ng-click="haCtrl.setActivePanel('rollerShuttersOverview')">
+        <div>
+            <span class="glyphicon glyphicon-th-list"></span>
+            <span class="panel-title">Rolladen</span>
+        </div>
+    </div>
+    <table class="table table-striped" ng-show="haCtrl.activePanel=='rollerShuttersOverview'">
+        <tr ng-repeat="actuator in haCtrl.rollerShutters | orderBy:['overviewCaption']">
+            <td style="vertical-align: middle;">
+                <span><img class="icon" ng-src="Images/{{actuator.image}}.png" />{{actuator.overviewCaption}}</span>
+            </td>
+            <td style="text-align: right;" ng-include="actuator.template"></td>
+        </tr>
+    </table>
+</div>

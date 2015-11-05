@@ -12,7 +12,7 @@ get-date
 tzutil /s "W. Europe Standard Time"
 #set-date "2015/08/7 21:59"
 w32tm /resync
-setcomputername MyHome
+setcomputername HA4IoT
 #setcomputername CK.HA.Cellar
 setbootoption.exe headless
 
@@ -23,6 +23,9 @@ netsh interface ip set dns "Ethernet" static 192.168.1.1
 iotstartup startup
 iotstartup remove headless ZWave
 #iotstartup remove headless "CK.HomeAutomation.Controller"
-iotstartup add headless "CK.HomeAutomation.Controller"
+iotstartup add headless "HA4IoT.Controller."
+
+#Install Node.js
+#& 'C:\Program Files (x86)\Node.js (chakra)\CopyNodeChakra.ps1' -arch ARM -ip 192.168.1.15
 
 Exit-PSSession
