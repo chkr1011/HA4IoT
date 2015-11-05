@@ -27,7 +27,7 @@ while($repeat)
 	Write-Host "Clear remote directory (y/n)?"
 	$clearRemoteDirectory = Read-Host
 
-	$sourceDir = ".\HA4IoT.App"
+	$sourceDir = ".\HA4IoT.WebApp"
 	$remoteDir = "\\$ip\c$\Users\DefaultAccount\AppData\Local\Packages\$package\LocalState\app"
 
 	Write-Host "Deploying to $remoteDir..."
@@ -37,7 +37,7 @@ while($repeat)
 	if ($clearRemoteDirectory -eq "y")
 	{
 		Write-Host "Cleaning remote directory..."
-		Remove-Item $remoteDir\* -Recurse -Force -Exclude "Configuration.js"
+		Remove-Item $remoteDir\* -Recurse -Force
 	}
 
 	Write-Host "Copying files to remote directory..."
