@@ -46,6 +46,19 @@ var HumiditySensor = React.createClass({
   }
 });
 
+var Socket = React.createClass({
+  render: function() {
+    return (
+      <View style={{flexDirection: 'row'}}>
+        <SwitchIOS value={this.props.state === "On"}/>
+        <Text style={{marginTop: 6, marginLeft: 6}}>
+          {this.props.id}
+        </Text>
+      </View>
+    )
+  }
+});
+
 var Actuator = React.createClass({
   getComponentForType: function() {
     switch (this.props.type) {
@@ -61,6 +74,10 @@ var Actuator = React.createClass({
       case 'HA4IoT.Actuators.HumiditySensor':
         return <HumiditySensor id={this.props.id}
                                humidity={this.props.status.value} />;
+        break;
+
+      case 'HA4IoT.Actuators.Socket':
+        return <Socket id={this.props.id} state={this.props.status.state} />;
         break;
 
       default:
