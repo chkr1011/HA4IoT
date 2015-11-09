@@ -22,7 +22,7 @@ var Lamp = React.createClass({
     return (
       <View style={{flexDirection: 'row'}}>
         <SwitchIOS value={this.props.state === "On"}/>
-        <Text style={{marginTop: 6, marginLeft: 6}}>
+        <Text style={styles.lampText}>
           {this.props.id}
         </Text>
       </View>
@@ -50,12 +50,44 @@ var Socket = React.createClass({
   render: function() {
     return (
       <View style={{flexDirection: 'row'}}>
-        <SwitchIOS value={this.props.state === "On"}/>
-        <Text style={{marginTop: 6, marginLeft: 6}}>
+        <SwitchIOS value={this.props.state === 'On'}/>
+        <Text style={styles.socketText}>
           {this.props.id}
         </Text>
       </View>
     )
+  }
+});
+
+var MotionDetector = React.createClass({
+  render: function() {
+    return (
+      <View style={{flexDirection: 'row'}}>
+        <SwitchIOS value={this.props.state === 'On'} disabled={true} />
+        <Text style={styles.motionDetectorText}>
+          {this.props.id}
+        </Text>
+      </View>
+    );
+  }
+});
+
+var Button = React.createClass({
+  render: function() {
+    var buttonStyle = this.props.isEnabled
+                    ? styles.buttonEnabled
+                    : styles.buttonDisabled;
+    var buttonText = this.props.isEnabled
+                   ? 'On'
+                   : 'Off';
+    return (
+      <View style={{flexDirection: 'row'}}>
+        <View style={buttonStyle}>
+          <Text>{buttonText}</Text>
+        </View>
+        <Text style={styles.buttonText}>{this.props.id}</Text>
+      </View>
+    );
   }
 });
 
@@ -78,6 +110,17 @@ var Actuator = React.createClass({
 
       case 'HA4IoT.Actuators.Socket':
         return <Socket id={this.props.id} state={this.props.status.state} />;
+        break;
+
+      case 'HA4IoT.Actuators.MotionDetector':
+        return <MotionDetector id={this.props.id}
+                               isEnabled={this.props.status.isEnabled}
+                               state={this.props.status.state} />;
+        break;
+
+      case 'HA4IoT.Actuators.Button':
+        return <Button id={this.props.id}
+                       isEnabled={this.props.status.isEnabled} />;
         break;
 
       default:
@@ -153,6 +196,40 @@ var styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: '#cccccc',
     height: 50
+  },
+  buttonText: {
+    marginTop: 4,
+    marginLeft: 8
+  },
+  buttonEnabled: {
+    backgroundColor: '#11FF11',
+    borderWidth: 2,
+    borderColor: '#22EE22',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 50,
+    height: 25
+  },
+  buttonDisabled: {
+    backgroundColor: '#FF1111',
+    borderWidth: 2,
+    borderColor: '#EE2222',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 50,
+    height: 25
+  },
+  lampText: {
+    marginTop: 6,
+    marginLeft: 6
+  },
+  socketText: {
+    marginTop: 6,
+    marginLeft: 6
+  },
+  motionDetectorText: {
+    marginTop: 6,
+    marginLeft: 6
   }
 });
 
