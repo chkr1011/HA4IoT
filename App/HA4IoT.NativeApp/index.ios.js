@@ -14,8 +14,7 @@ var {
   Text,
   View
 } = React;
-var exampleConfig = require('./Configuration.js');
-var exampleStatus = require('./Status.js');
+var API = require('./API.js');
 
 var Lamp = React.createClass({
   render: function() {
@@ -157,9 +156,16 @@ var Room = React.createClass({
 var HomeAutomationClient = React.createClass({
   getInitialState: function() {
     return {
-      configuration: exampleConfig,
-      status: exampleStatus
+      configuration: {},
+      status: {}
     }
+  },
+
+  componentWillMount: function() {
+    API.getConfiguration()
+       .then((config) => this.setState({configuration: config}));
+    API.getStatus()
+       .then((status) => this.setState({status: status}));
   },
 
   render: function() {
