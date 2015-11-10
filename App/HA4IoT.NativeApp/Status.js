@@ -76,7 +76,7 @@ var exampleStatus = {
   },
   "Bedroom.RollerShutterLeft": {
     "state": "Stopped",
-    "position": 17000,
+    "position": 8500,
     "positionMax": 17000
   },
   "Bedroom.RollerShutterRight": {

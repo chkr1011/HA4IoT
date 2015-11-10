@@ -8,8 +8,10 @@ var React = require('react-native');
 var {
   AppRegistry,
   ListView,
-  StyleSheet,
+  ProgressViewIOS,
   ScrollView,
+  SegmentedControlIOS,
+  StyleSheet,
   SwitchIOS,
   Text,
   View
@@ -90,6 +92,28 @@ var Button = React.createClass({
   }
 });
 
+var RollerShutter = React.createClass({
+  values: ['Up', 'Stopped', 'Down'],
+
+  render: function() {
+    var selectedIndex = this.values.indexOf(this.props.state);
+    return (
+      <View>
+        <Text style={{marginBottom: 5}}>{this.props.id}</Text>
+        <ProgressViewIOS progress={this.props.position / this.props.positionMax}
+                         width={200}
+                         height={10}
+                         progressTintColor='#11EE11'
+                         trackTintColor='#DDDDDD' />
+        <SegmentedControlIOS values={this.values}
+                             selectedIndex={selectedIndex}
+                             width={200}
+                             marginTop={5} />
+      </View>
+    );
+  }
+});
+
 var Actuator = React.createClass({
   getComponentForType: function() {
     switch (this.props.type) {
@@ -122,6 +146,13 @@ var Actuator = React.createClass({
                        isEnabled={this.props.status.isEnabled} />;
         break;
 
+      case 'HA4IoT.Actuators.RollerShutter':
+        return <RollerShutter id={this.props.id}
+                              state={this.props.status.state}
+                              position={this.props.status.position}
+                              positionMax={this.props.status.positionMax} />;
+        break;
+
       default:
         return <Text>Implement me! ({this.props.type})</Text>;
         break;
@@ -140,6 +171,7 @@ var Actuator = React.createClass({
 var Room = React.createClass({
   render: function() {
     var actuators = this.props.config.actuators
+                        .filter((a) => a.type !== 'HA4IoT.Actuators.Button')
                         .map((a) =>
                           <Actuator id={a.id}
                                     type={a.type}
@@ -197,11 +229,9 @@ var styles = StyleSheet.create({
   actuatorRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 5,
-    marginRight: 5,
+    padding: 5,
     borderTopWidth: 1,
     borderColor: '#cccccc',
-    height: 50
   },
   buttonText: {
     marginTop: 4,
