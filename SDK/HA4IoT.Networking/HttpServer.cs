@@ -114,6 +114,7 @@ namespace HA4IoT.Networking
                 var responseText = new StringBuilder();
                 responseText.AppendLine("HTTP/1.1 " + (int)context.Response.StatusCode + " " + statusDescription);
                 responseText.AppendLine("Connection:close");
+                responseText.AppendLine("Access-Control-Allow-Origin:*");
 
                 byte[] content = new byte[0];
                 if (context.Response.Body != null)
