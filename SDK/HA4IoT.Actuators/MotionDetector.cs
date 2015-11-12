@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.Data.Json;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core.Timer;
@@ -11,6 +12,7 @@ namespace HA4IoT.Actuators
     public class MotionDetector : ActuatorBase, IMotionDetector
     {
         private TimedAction _autoEnableAction;
+        private MotionDetectorState _state = MotionDetectorState.Idle;
 
         public MotionDetector(string id, IBinaryInput input, IHomeAutomationTimer timer, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
             : base(id, httpApiController, notificationHandler)
@@ -27,12 +29,18 @@ namespace HA4IoT.Actuators
 
         public event EventHandler MotionDetected;
         public event EventHandler DetectionCompleted;
-        public bool IsMotionDetected { get; private set; }
+        public event EventHandler<MotionDetectorStateChangedEventArgs> StateChanged;
+
+        public MotionDetectorState GetState()
+        {
+            return _state;
+        }
 
         public override void ApiGet(ApiRequestContext context)
         {
             base.ApiGet(context);
-            context.Response.SetNamedValue("state", JsonValue.CreateBooleanValue(IsMotionDetected));
+
+            context.Response.SetNamedValue("state", JsonValue.CreateStringValue(_state.ToString()));
         }
 
         public override void ApiPost(ApiRequestContext context)
@@ -44,11 +52,11 @@ namespace HA4IoT.Actuators
                 string action = context.Request.GetNamedString("action");
                 if (action.Equals("detected", StringComparison.OrdinalIgnoreCase))
                 {
-                    OnMotionDetected();
+                    UpdateState(MotionDetectorState.MotionDetected);
                 }
                 else if (action.Equals("detectionCompleted", StringComparison.OrdinalIgnoreCase))
                 {
-                    OnDetectionCompleted();
+                    UpdateState(MotionDetectorState.Idle);
                 }
             }
         }
@@ -59,36 +67,38 @@ namespace HA4IoT.Actuators
             // The signal is set to false if motion is detected.
             if (eventArgs.NewState == BinaryState.Low)
             {
-                OnMotionDetected();
+                UpdateState(MotionDetectorState.MotionDetected);
             }
             else
             {
-                OnDetectionCompleted();
+                UpdateState(MotionDetectorState.Idle);
             }
         }
 
-        private void OnMotionDetected()
+        private void UpdateState(MotionDetectorState newState)
         {
-            IsMotionDetected = true;
+            MotionDetectorState oldState = _state;
+            _state = newState;
 
-            if (IsEnabled)
+            if (!IsEnabled)
+            {
+                return;
+            }
+
+            if (newState == MotionDetectorState.MotionDetected)
             {
                 NotificationHandler.PublishFrom(this, NotificationType.Info, "Motion detected at '{0}'.", Id);
                 MotionDetected?.Invoke(this, EventArgs.Empty);
             }
-        }
-
-        private void OnDetectionCompleted()
-        {
-            IsMotionDetected = false;
-
-            if (IsEnabled)
+            else
             {
                 NotificationHandler.PublishFrom(this, NotificationType.Info, "Detection completed at '{0}'.", Id);
                 DetectionCompleted?.Invoke(this, EventArgs.Empty);
             }
+
+            StateChanged?.Invoke(this, new MotionDetectorStateChangedEventArgs(oldState, newState));
         }
-        
+
         private void HandleIsEnabledStateChanged(IHomeAutomationTimer timer, INotificationHandler notificationHandler)
         {
             if (!IsEnabled)

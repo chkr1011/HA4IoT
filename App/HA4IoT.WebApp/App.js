@@ -61,7 +61,7 @@ function setupController() {
 
               $http.get("/api/configuration").success(function (data) {
 
-                  $.each(data, function (roomIndex, room) {
+                  $.each(data.rooms, function (roomIndex, room) {
                       configureRoom(room);
 
                       if (!room.hide) {

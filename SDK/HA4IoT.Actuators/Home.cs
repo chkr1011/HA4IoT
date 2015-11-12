@@ -16,6 +16,7 @@ namespace HA4IoT.Actuators
     {
         private readonly HealthMonitor _healthMonitor;
         private readonly Dictionary<Enum, Room> _rooms = new Dictionary<Enum, Room>();
+        private readonly HashAlgorithmProvider _hashAlgorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha1);
 
         public Home(IHomeAutomationTimer timer, HealthMonitor healthMonitor, IWeatherStation weatherStation, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
         {
@@ -29,7 +30,7 @@ namespace HA4IoT.Actuators
             HttpApiController = httpApiController;
             NotificationHandler = notificationHandler;
 
-            httpApiController.Handle(HttpMethod.Get, "configuration").Using(c => c.Response.Body = new JsonBody(GetConfigurationAsJSON()));
+            httpApiController.Handle(HttpMethod.Get, "configuration").Using(c => c.Response.Body = new JsonBody(GetConfigurationAsJson()));
             httpApiController.Handle(HttpMethod.Get, "status").Using(HandleStatusRequest);
             httpApiController.Handle(HttpMethod.Get, "health").Using(c => c.Response.Body = new JsonBody(_healthMonitor.ApiGet()));
         }
@@ -64,8 +65,8 @@ namespace HA4IoT.Actuators
 
         private void HandleStatusRequest(HttpContext httpContext)
         {
-            var currentStatus = GetStatusAsJSON();
-            var currentHash = "\"" + GenerateHash(currentStatus.Stringify()) + "\"";
+            var currentStatus = GetStatusAsJson().Stringify();
+            var currentHash = "\"" + GenerateHash(currentStatus) + "\"";
 
             string clientHash;
             if (httpContext.Request.Headers.TryGetValue("If-None-Match", out clientHash))
@@ -79,12 +80,17 @@ namespace HA4IoT.Actuators
 
             httpContext.Response.StatusCode = HttpStatusCode.OK;
             httpContext.Response.Headers.Add("Etag", currentHash);
-            httpContext.Response.Body = new JsonBody(currentStatus);
+
+            // Prevent the JsonObject from performing two redundant "Stringify" calls by using the plain text body with JSON mime type.
+            httpContext.Response.Body = new PlainTextBody().WithContent(currentStatus).WithMimeType(JsonBody.DefaultMimeType);
         }
 
-        private JsonObject GetStatusAsJSON()
+        private JsonObject GetStatusAsJson()
         {
             var result = new JsonObject();
+            result.SetNamedValue("type", JsonValue.CreateStringValue("HA4IoT.Status"));
+            result.SetNamedValue("version", JsonValue.CreateNumberValue(1));
+
             foreach (var actuator in Actuators.Values)
             {
                 var context = new ApiRequestContext(new JsonObject(), new JsonObject());
@@ -101,23 +107,27 @@ namespace HA4IoT.Actuators
             return result;
         }
 
-        private JsonObject GetConfigurationAsJSON()
+        private JsonObject GetConfigurationAsJson()
         {
-            JsonObject state = new JsonObject();
+            var configuration = new JsonObject();
+            configuration.SetNamedValue("type", JsonValue.CreateStringValue("HA4IoT.Configuration"));
+            configuration.SetNamedValue("version", JsonValue.CreateNumberValue(1));
+            
+            var rooms = new JsonArray();
             foreach (var room in _rooms.Values)
             {
-                JsonObject roomConfiguration = room.GetConfigurationAsJSON();
-                state.SetNamedValue(room.Id, roomConfiguration);
+                rooms.Add(room.GetConfigurationAsJSON());
             }
 
-            return state;
+            configuration.SetNamedValue("rooms", rooms);
+
+            return configuration;
         }
 
         private string GenerateHash(string input)
         {
             IBuffer buffer = CryptographicBuffer.ConvertStringToBinary(input, BinaryStringEncoding.Utf8);
-            HashAlgorithmProvider hashAlgorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha1);
-            IBuffer hashBuffer = hashAlgorithm.HashData(buffer);
+            IBuffer hashBuffer = _hashAlgorithm.HashData(buffer);
 
             return CryptographicBuffer.EncodeToBase64String(hashBuffer);
         }
