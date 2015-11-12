@@ -14,8 +14,10 @@ var {
   StyleSheet,
   SwitchIOS,
   Text,
+  TouchableOpacity,
   View
 } = React;
+var Collapsible = require('react-native-collapsible');
 var API = require('./API.js');
 
 var Lamp = React.createClass({
@@ -130,7 +132,8 @@ var Actuator = React.createClass({
         break;
 
       default:
-        return <Text>Implement me! ({this.props.type})</Text>;
+        var text = `Implement me! (${this.props.type})`;
+        return <Text>{text}</Text>;
         break;
     }
   },
@@ -150,6 +153,14 @@ var Room = React.createClass({
     'HA4IoT.Actuators.RollerShutterButtons'
   ],
 
+  getInitialState: function() {
+    return {collapsed: true}
+  },
+
+  updateCollapsed: function() {
+    this.setState({collapsed: !this.state.collapsed});
+  },
+
   render: function() {
     var actuators = this.props.config.actuators
                         .filter((a) => !this.filteredActuators.includes(a.type))
@@ -159,9 +170,13 @@ var Room = React.createClass({
                                     type={a.type}
                                     status={this.props.status[a.id]} />)
       return (
-        <View style={{marginBottom: 30}}>
-          <Text style={styles.roomHeader}>{this.props.title}</Text>
-          {actuators}
+        <View style={{marginBottom: 15}}>
+          <TouchableOpacity onPress={this.updateCollapsed}>
+            <Text style={styles.roomHeader}>{this.props.title}</Text>
+          </TouchableOpacity>
+          <Collapsible collapsed={this.state.collapsed}>
+            {actuators}
+          </Collapsible>
         </View>
       );
   }
