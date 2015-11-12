@@ -17,12 +17,20 @@ namespace HA4IoT.Hardware.RemoteSwitch
 
             _i2CHardwareBridge = i2CHardwareBridge;
             _pin = pin;
+
             httpApiController.Handle(HttpMethod.Post, "433MHz").WithRequiredJsonBody().Using(ApiPost);
         }
 
         private void ApiPost(HttpContext context)
         {
-            JsonArray sequence = context.Request.JsonBody.GetNamedArray("sequence", new JsonArray());
+            JsonObject requestData;
+            if (!JsonObject.TryParse(context.Request.Body, out requestData))
+            {
+                context.Response.StatusCode = HttpStatusCode.BadRequest;
+                return;
+            }
+
+            JsonArray sequence = requestData.GetNamedArray("sequence", new JsonArray());
             if (sequence.Count == 0)
             {
                 return;

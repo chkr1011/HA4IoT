@@ -76,43 +76,57 @@ namespace HA4IoT.Hardware.GenericIOBoard
             _httpApiController.Handle(HttpMethod.Put, "device")
                 .WithSegment(ioBoard.Id)
                 .WithRequiredJsonBody()
-                .Using(c => ApiPost(ioBoard, c.Request.JsonBody));
+                .Using(c => ApiPost(ioBoard, c));
 
             _httpApiController.Handle(HttpMethod.Patch, "device")
                 .WithSegment(ioBoard.Id)
                 .WithRequiredJsonBody()
-                .Using(c => ApplyJSONPortState(ioBoard, c.Request.JsonBody));
+                .Using(c => ApiPatch(ioBoard, c));
         }
 
         private JsonObject ApiGet(IOBoardController ioBoard)
         {
             var result = new JsonObject();
-            result.SetNamedValue("state", ByteArrayToJSONValue(ioBoard.GetState()));
-            result.SetNamedValue("committed-state", ByteArrayToJSONValue(ioBoard.GetCommittedState()));
+            result.SetNamedValue("state", ByteArrayToJsonValue(ioBoard.GetState()));
+            result.SetNamedValue("committed-state", ByteArrayToJsonValue(ioBoard.GetCommittedState()));
             return result;
         }
 
-        private void ApiPost(IOBoardController ioBoard, JsonObject value)
+        private void ApiPost(IOBoardController ioBoard, HttpContext httpContext)
         {
-            JsonArray state = value.GetNamedArray("state", null);
+            JsonObject requestData;
+            if (!JsonObject.TryParse(httpContext.Request.Body, out requestData))
+            {
+                httpContext.Response.StatusCode = HttpStatusCode.BadRequest;
+                return;
+            }
+
+            JsonArray state = requestData.GetNamedArray("state", null);
             if (state != null)
             {
-                byte[] buffer = JSONValueToByteArray(state);
+                byte[] buffer = JsonValueToByteArray(state);
                 ioBoard.SetState(buffer);
             }
 
-            var commit = value.GetNamedBoolean("commit", true);
+            var commit = requestData.GetNamedBoolean("commit", true);
             if (commit)
             {
                 ioBoard.CommitChanges();
             }
         }
 
-        private void ApplyJSONPortState(IOBoardController ioBoard, JsonObject value)
+        private void ApiPatch(IOBoardController ioBoard, HttpContext httpContext)
         {
-            int port = (int) value.GetNamedNumber("port", 0);
-            bool state = value.GetNamedBoolean("state", false);
-            bool commit = value.GetNamedBoolean("commit", true);
+            JsonObject requestData;
+            if (!JsonObject.TryParse(httpContext.Request.Body, out requestData))
+            {
+                httpContext.Response.StatusCode = HttpStatusCode.BadRequest;
+                return;
+            }
+
+            int port = (int)requestData.GetNamedNumber("port", 0);
+            bool state = requestData.GetNamedBoolean("state", false);
+            bool commit = requestData.GetNamedBoolean("commit", true);
 
             ioBoard.SetPortState(port, state ? BinaryState.High : BinaryState.Low);
 
@@ -122,7 +136,7 @@ namespace HA4IoT.Hardware.GenericIOBoard
             }
         }
 
-        private JsonArray ByteArrayToJSONValue(byte[] data)
+        private JsonArray ByteArrayToJsonValue(byte[] data)
         {
             var value = new JsonArray();
             foreach (var item in data)
@@ -133,7 +147,7 @@ namespace HA4IoT.Hardware.GenericIOBoard
             return value;
         }
 
-        private byte[] JSONValueToByteArray(JsonArray value)
+        private byte[] JsonValueToByteArray(JsonArray value)
         {
             return value.Select(item => (byte) item.GetNumber()).ToArray();
         }
