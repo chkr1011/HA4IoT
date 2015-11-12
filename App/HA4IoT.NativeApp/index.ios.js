@@ -173,7 +173,8 @@ var Room = React.createClass({
     var actuators = this.props.config.actuators
                         .filter((a) => a.type !== 'HA4IoT.Actuators.Button')
                         .map((a) =>
-                          <Actuator id={a.id}
+                          <Actuator key={a.id}
+                                    id={a.id}
                                     type={a.type}
                                     status={this.props.status[a.id]} />)
       return (
@@ -203,7 +204,8 @@ var HomeAutomationClient = React.createClass({
   render: function() {
     var roomComponents = Object.keys(this.state.configuration)
                                .map((room) =>
-                                 <Room title={room}
+                                 <Room key={room}
+                                       title={room}
                                        config={this.state.configuration[room]}
                                        status={this.state.status} />
                                );
