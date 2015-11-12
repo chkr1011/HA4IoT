@@ -195,10 +195,8 @@ var HomeAutomationClient = React.createClass({
   },
 
   componentWillMount: function() {
-    API.getConfiguration()
-       .then((config) => this.setState({configuration: config}));
-    API.getStatus()
-       .then((status) => this.setState({status: status}));
+    API.pollConfiguration((config) => this.setState({configuration: config}));
+    API.pollStatus((status) => this.setState({status: status}));
   },
 
   render: function() {
