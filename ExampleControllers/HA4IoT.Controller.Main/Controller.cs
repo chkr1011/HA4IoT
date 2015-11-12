@@ -67,8 +67,10 @@ namespace HA4IoT.Controller.Main
             var localCsvFileWriter = new LocalCsvFileWriter(NotificationHandler);
             localCsvFileWriter.ConnectActuators(home);
 
-            var ioBoardsInterruptMonitor = new InterruptMonitor(pi2PortController.GetInput(4));
-            Timer.Tick += (s, e) => ioBoardsInterruptMonitor.Poll();
+            var ioBoardsInterruptMonitor = new InterruptMonitor(pi2PortController.GetInput(4), NotificationHandler);
+            //Timer.Tick += (s, e) => ioBoardsInterruptMonitor.Poll();
+            ioBoardsInterruptMonitor.StartPollingTaskAsync();
+
             ioBoardsInterruptMonitor.InterruptDetected += (s, e) => ioBoardManager.PollInputBoardStates();
         }
 
