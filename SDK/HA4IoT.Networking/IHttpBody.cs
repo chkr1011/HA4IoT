@@ -1,6 +1,6 @@
 ﻿namespace HA4IoT.Networking
 {
-    public interface IBody
+    public interface IHttpBody
     {
         string MimeType { get; }
 

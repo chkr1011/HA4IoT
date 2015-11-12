@@ -3,11 +3,13 @@ using System.Text;
 
 namespace HA4IoT.Networking
 {
-    public class PlainTextBody : IBody
+    public class PlainTextBody : IHttpBody
     {
+        public const string DefaultMimeType = "text/plain; charset=utf-8";
+
         public StringBuilder Content { get; } = new StringBuilder();
 
-        public string MimeType { get; set; } = "text/plain; charset=utf-8";
+        public string MimeType { get; set; } = DefaultMimeType;
 
         public byte[] ToByteArray()
         {
@@ -19,6 +21,14 @@ namespace HA4IoT.Networking
             if (mimeType == null) throw new ArgumentNullException(nameof(mimeType));
 
             MimeType = mimeType;
+            return this;
+        }
+
+        public PlainTextBody WithContent(string content)
+        {
+            if (content == null) throw new ArgumentNullException(nameof(content));
+
+            Content.Append(content);
             return this;
         }
     }

@@ -44,7 +44,7 @@ namespace HA4IoT.Networking
                     continue;
                 }
 
-                if (e.Context.Request.PlainBody.Length == 0 && handler.IsJsonBodyRequired)
+                if (e.Context.Request.Body.Length == 0 && handler.IsJsonBodyRequired)
                 {
                     continue;
                 }
