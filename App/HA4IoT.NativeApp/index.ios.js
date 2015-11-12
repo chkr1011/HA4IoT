@@ -145,9 +145,14 @@ var Actuator = React.createClass({
 });
 
 var Room = React.createClass({
+  filteredActuators: [
+    'HA4IoT.Actuators.Button',
+    'HA4IoT.Actuators.RollerShutterButtons'
+  ],
+
   render: function() {
     var actuators = this.props.config.actuators
-                        .filter((a) => a.type !== 'HA4IoT.Actuators.Button')
+                        .filter((a) => !this.filteredActuators.includes(a.type))
                         .map((a) =>
                           <Actuator key={a.id}
                                     id={a.id}
