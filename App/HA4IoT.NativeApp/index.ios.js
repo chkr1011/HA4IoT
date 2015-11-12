@@ -73,25 +73,6 @@ var MotionDetector = React.createClass({
   }
 });
 
-var Button = React.createClass({
-  render: function() {
-    var buttonStyle = this.props.isEnabled
-                    ? styles.buttonEnabled
-                    : styles.buttonDisabled;
-    var buttonText = this.props.isEnabled
-                   ? 'On'
-                   : 'Off';
-    return (
-      <View style={{flexDirection: 'row'}}>
-        <View style={buttonStyle}>
-          <Text>{buttonText}</Text>
-        </View>
-        <Text style={styles.buttonText}>{this.props.id}</Text>
-      </View>
-    );
-  }
-});
-
 var RollerShutter = React.createClass({
   values: ['Up', 'Stopped', 'Down'],
 
@@ -139,11 +120,6 @@ var Actuator = React.createClass({
         return <MotionDetector id={this.props.id}
                                isEnabled={this.props.status.isEnabled}
                                state={this.props.status.state} />;
-        break;
-
-      case 'HA4IoT.Actuators.Button':
-        return <Button id={this.props.id}
-                       isEnabled={this.props.status.isEnabled} />;
         break;
 
       case 'HA4IoT.Actuators.RollerShutter':
