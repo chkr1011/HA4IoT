@@ -119,7 +119,7 @@ namespace HA4IoT.Actuators
             {
                 binaryState = BinaryState.High;
             }
-            else if (newState == RollerShutterState.MovingDown)
+            else if (newState == RollerShutterState.MovingUp)
             {
                 binaryState = BinaryState.Low;
             }

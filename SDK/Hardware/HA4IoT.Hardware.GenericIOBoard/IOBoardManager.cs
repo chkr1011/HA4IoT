@@ -73,7 +73,7 @@ namespace HA4IoT.Hardware.GenericIOBoard
         {
             _httpApiController.Handle(HttpMethod.Get, "device").WithSegment(ioBoard.Id).Using(c => c.Response.Body = new JsonBody(ApiGet(ioBoard)));
 
-            _httpApiController.Handle(HttpMethod.Put, "device")
+            _httpApiController.Handle(HttpMethod.Post, "device")
                 .WithSegment(ioBoard.Id)
                 .WithRequiredJsonBody()
                 .Using(c => ApiPost(ioBoard, c));
