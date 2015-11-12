@@ -1,10 +1,11 @@
 ﻿using System;
+using HA4IoT.Contracts.Actuators;
 
 namespace HA4IoT.Actuators.Connectors
 {
     public static class RollerShutterWithRollerShutterButtonsConnector
     {
-        public static RollerShutter ConnectWith(this RollerShutter rollerShutter, RollerShutterButtons buttons)
+        public static IRollerShutter ConnectWith(this IRollerShutter rollerShutter, RollerShutterButtons buttons)
         {
             if (rollerShutter == null) throw new ArgumentNullException(nameof(rollerShutter));
             if (buttons == null) throw new ArgumentNullException(nameof(buttons));
@@ -15,23 +16,23 @@ namespace HA4IoT.Actuators.Connectors
             return rollerShutter;
         }
 
-        private static void HandleBlindButtonPressedEvent(RollerShutter rollerShutter, RollerShutterButtonDirection direction)
+        private static void HandleBlindButtonPressedEvent(IRollerShutter rollerShutter, RollerShutterButtonDirection direction)
         {
-            if (direction == RollerShutterButtonDirection.Up && rollerShutter.State == RollerShutterState.MovingUp)
+            if (direction == RollerShutterButtonDirection.Up && rollerShutter.GetState() == RollerShutterState.MovingUp)
             {
-                rollerShutter.Stop();
+                rollerShutter.SetState(RollerShutterState.Stopped);
             }
-            else if (direction == RollerShutterButtonDirection.Down && rollerShutter.State == RollerShutterState.MovingDown)
+            else if (direction == RollerShutterButtonDirection.Down && rollerShutter.GetState() == RollerShutterState.MovingDown)
             {
-                rollerShutter.Stop();
+                rollerShutter.SetState(RollerShutterState.Stopped);
             }
             else if (direction == RollerShutterButtonDirection.Down)
             {
-                rollerShutter.StartMoveDown();
+                rollerShutter.SetState(RollerShutterState.MovingDown);
             }
             else if (direction == RollerShutterButtonDirection.Up)
             {
-                rollerShutter.StartMoveUp();
+                rollerShutter.SetState(RollerShutterState.MovingUp);
             }
             else
             {

@@ -2,12 +2,12 @@ namespace HA4IoT.Notifications
 {
     public enum NotificationType
     {
-        Verbose = 0,
+        Verbose,
 
-        Info = 1,
+        Info,
 
-        Warning = 2,
+        Warning,
 
-        Error = 3
+        Error
     }
 }

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Data.Json;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core.Timer;
 using HA4IoT.Networking;
@@ -9,7 +10,7 @@ using HA4IoT.Notifications;
 
 namespace HA4IoT.Actuators
 {
-    public class RollerShutter : ActuatorBase
+    public class RollerShutter : ActuatorBase, IRollerShutter
     {
         private readonly TimeSpan _autoOffTimeout;
         private readonly IBinaryOutput _directionGpioPin;
@@ -17,6 +18,8 @@ namespace HA4IoT.Actuators
         private readonly Stopwatch _movingDuration = new Stopwatch();
         private readonly IBinaryOutput _powerGpioPin;
         private readonly IHomeAutomationTimer _timer;
+
+        private RollerShutterState _state = RollerShutterState.Stopped;
 
         private TimedAction _autoOffTimer;
         private int _position;
@@ -47,51 +50,47 @@ namespace HA4IoT.Actuators
             timer.Tick += (s, e) => UpdatePosition(e);
         }
 
+        public event EventHandler<RollerShutterStateChangedEventArgs> StateChanged; 
+
         public static TimeSpan DefaultMaxMovingDuration { get; } = TimeSpan.FromSeconds(20);
-        public RollerShutterState State { get; private set; }
+
         public bool IsClosed => _position == _positionMax;
 
-        public void StartMoveUp()
+        public RollerShutterState GetState()
         {
-            _movingDuration.Restart();
-
-            StopInternal();
-            _directionGpioPin.Write(BinaryState.Low, false);
-            Start();
-
-            State = RollerShutterState.MovingUp;
-            NotificationHandler.PublishFrom(this, NotificationType.Info, "'{0}' started moving up.", Id);
+            return _state;
         }
 
-        public void StartMoveDown()
+        public void SetState(RollerShutterState newState)
         {
-            _movingDuration.Restart();
+            var oldState = _state;
 
-            StopInternal();
-            _directionGpioPin.Write(BinaryState.High, false);
-            Start();
-
-            State = RollerShutterState.MovingDown;
-            NotificationHandler.PublishFrom(this, NotificationType.Info, "'{0}' started moving down.", Id);
-        }
-
-        public void Stop()
-        {
-            _movingDuration.Stop();
-
-            StopInternal();
-            _directionGpioPin.Write(BinaryState.Low);
-
-            if (State != RollerShutterState.Stopped)
+            if (newState == RollerShutterState.MovingUp || newState == RollerShutterState.MovingDown)
             {
-                State = RollerShutterState.Stopped;
-                NotificationHandler.PublishFrom(this, NotificationType.Info, "'{0}' stopped moving (Duration: {1}ms).", Id, _movingDuration.ElapsedMilliseconds);
+                StartMove(newState);
             }
+            else
+            {
+                _movingDuration.Stop();
+
+                StopInternal();
+
+                // Ensure that the direction relay is not wasting energy.
+                _directionGpioPin.Write(BinaryState.Low);
+
+                if (oldState != RollerShutterState.Stopped)
+                {
+                    NotificationHandler.PublishFrom(this, NotificationType.Info, "'{0}' stopped moving (Duration: {1}ms).", Id, _movingDuration.ElapsedMilliseconds);
+                }
+            }
+
+            _state = newState;
+            OnStateChanged(oldState, newState);
         }
 
         public override void ApiGet(ApiRequestContext context)
         {
-            context.Response.SetNamedValue("state", JsonValue.CreateStringValue(State.ToString()));
+            context.Response.SetNamedValue("state", JsonValue.CreateStringValue(_state.ToString()));
             context.Response.SetNamedValue("position", JsonValue.CreateNumberValue(_position));
             context.Response.SetNamedValue("positionMax", JsonValue.CreateNumberValue(_positionMax));
         }
@@ -104,25 +103,44 @@ namespace HA4IoT.Actuators
             }
 
             var state = (RollerShutterState)Enum.Parse(typeof(RollerShutterState), context.Request.GetNamedString("state"), true);
+            SetState(state);
+        }
 
-            if (state == RollerShutterState.MovingDown)
+        private void StartMove(RollerShutterState newState)
+        {
+            if (_state != RollerShutterState.Stopped)
             {
-                StartMoveDown();
+                StopInternal();
+                Task.Delay(50).Wait();
             }
-            else if (state == RollerShutterState.MovingUp)
+
+            BinaryState binaryState;
+            if (newState == RollerShutterState.MovingDown)
             {
-                StartMoveUp();
+                binaryState = BinaryState.High;
+            }
+            else if (newState == RollerShutterState.MovingDown)
+            {
+                binaryState = BinaryState.Low;
             }
             else
             {
-                Stop();
+                throw new InvalidOperationException();
             }
+
+            _directionGpioPin.Write(binaryState, false);
+            Start();
+        }
+
+        private void OnStateChanged(RollerShutterState oldState, RollerShutterState newState)
+        {
+            NotificationHandler.PublishFrom(this, NotificationType.Info, "'{0}' changed state to '{1}'", Id, newState);
+            StateChanged?.Invoke(this, new RollerShutterStateChangedEventArgs(oldState, newState));
         }
 
         private void StopInternal()
         {
             _powerGpioPin.Write(BinaryState.Low);
-            Task.Delay(50).Wait();
         }
 
         private void Start()
@@ -131,16 +149,16 @@ namespace HA4IoT.Actuators
             _movingDuration.Restart();
 
             _autoOffTimer?.Cancel();
-            _autoOffTimer = _timer.In(_autoOffTimeout).Do(Stop);
+            _autoOffTimer = _timer.In(_autoOffTimeout).Do(() => SetState(RollerShutterState.Stopped));
         }
 
         private void UpdatePosition(TimerTickEventArgs timerTickEventArgs)
         {
-            if (State == RollerShutterState.MovingUp)
+            if (_state == RollerShutterState.MovingUp)
             {
                 _position -= (int)timerTickEventArgs.ElapsedTime.TotalMilliseconds;
             }
-            else if (State == RollerShutterState.MovingDown)
+            else if (_state == RollerShutterState.MovingDown)
             {
                 _position += (int)timerTickEventArgs.ElapsedTime.TotalMilliseconds;
             }

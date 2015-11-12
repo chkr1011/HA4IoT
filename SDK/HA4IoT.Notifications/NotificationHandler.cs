@@ -23,15 +23,18 @@ namespace HA4IoT.Notifications
 
         public void Publish(NotificationType type, string text, params object[] parameters)
         {
-            try
+            if (parameters != null && parameters.Any())
             {
-                text = string.Format(text, parameters);
+                try
+                {
+                    text = string.Format(text, parameters);
+                }
+                catch (FormatException)
+                {
+                    text = text + " (" + string.Join(",", parameters) + ")";
+                }
             }
-            catch (FormatException)
-            {
-                text = text + " (" + string.Join(",", parameters) + ")";
-            }
-            
+
             PrintNotification(type, text);
 
             lock (_syncRoot)
@@ -42,15 +45,8 @@ namespace HA4IoT.Notifications
 
         public void PublishFrom<TSender>(TSender sender, NotificationType type, string message, params object[] parameters) where TSender : class
         {
-            if (sender == null)
-            {
-                Publish(type, message, parameters);
-            }
-            else
-            {
-                string senderText = sender.GetType().Name;
-                Publish(type, senderText + ": " + message, parameters);
-            }
+            string senderText = typeof(TSender).Name;
+            Publish(type, senderText + ": " + message, parameters);
         }
 
         private async void SendAsync()

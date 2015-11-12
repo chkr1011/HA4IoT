@@ -116,7 +116,7 @@ namespace HA4IoT.Actuators
             var rooms = new JsonArray();
             foreach (var room in _rooms.Values)
             {
-                rooms.Add(room.GetConfigurationAsJSON());
+                rooms.Add(room.GetConfigurationAsJson());
             }
 
             configuration.SetNamedValue("rooms", rooms);

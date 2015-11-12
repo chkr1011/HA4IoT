@@ -90,7 +90,7 @@ namespace HA4IoT.Actuators.Automations
             return this;
         }
 
-        public AutomaticTurnOnAndOffAutomation WithTurnOnIfAllRollerShuttersClosed(params RollerShutter[] rollerShutters)
+        public AutomaticTurnOnAndOffAutomation WithTurnOnIfAllRollerShuttersClosed(params IRollerShutter[] rollerShutters)
         {
             if (rollerShutters == null) throw new ArgumentNullException(nameof(rollerShutters));
 

@@ -20,7 +20,7 @@ namespace HA4IoT.Actuators
             Id = id;
 
             _home = home;
-            _home.HttpApiController.Handle(HttpMethod.Get, "room").WithSegment(id).Using(c => c.Response.Body = new JsonBody(GetStatusAsJSON()));
+            _home.HttpApiController.Handle(HttpMethod.Get, "room").WithSegment(id).Using(c => c.Response.Body = new JsonBody(GetStatusAsJson()));
         }
 
         public string Id { get; }
@@ -233,7 +233,7 @@ namespace HA4IoT.Actuators
             return Actuator<StateMachine>(id);
         }
 
-        public JsonObject GetConfigurationAsJSON()
+        public JsonObject GetConfigurationAsJson()
         {
             JsonArray actuatorDescriptions = new JsonArray();
             foreach (var actuator in _ownActuators)
@@ -248,7 +248,7 @@ namespace HA4IoT.Actuators
             return configuration;
         }
 
-        public JsonObject GetStatusAsJSON()
+        public JsonObject GetStatusAsJson()
         {
             JsonObject state = new JsonObject();
             foreach (var actuator in _ownActuators)
