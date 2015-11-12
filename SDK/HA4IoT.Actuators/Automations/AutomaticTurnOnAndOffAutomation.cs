@@ -167,12 +167,7 @@ namespace HA4IoT.Actuators.Automations
 
         private void Trigger()
         {
-            if (_disablingConditionsValidator.Conditions.Any() && _disablingConditionsValidator.Validate() == ConditionState.Fulfilled)
-            {
-                return;
-            }
-
-            if (_enablingConditionsValidator.Conditions.Any() && _enablingConditionsValidator.Validate() == ConditionState.NotFulfilled)
+            if (!GetConditionsAreFulfilled())
             {
                 return;
             }
@@ -198,7 +193,27 @@ namespace HA4IoT.Actuators.Automations
 
         private void StartTimeout()
         {
+            if (!GetConditionsAreFulfilled())
+            {
+                return;
+            }
+
             _turnOffTimeout = _timer.In(_duration).Do(TurnOff);
+        }
+
+        private bool GetConditionsAreFulfilled()
+        {
+            if (_disablingConditionsValidator.Conditions.Any() && _disablingConditionsValidator.Validate() == ConditionState.Fulfilled)
+            {
+                return false;
+            }
+
+            if (_enablingConditionsValidator.Conditions.Any() && _enablingConditionsValidator.Validate() == ConditionState.NotFulfilled)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }
