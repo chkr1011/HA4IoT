@@ -97,6 +97,21 @@ var RollerShutter = React.createClass({
   }
 });
 
+var Window = React.createClass({
+  render: function() {
+    var windowStates = Object.keys(this.props.states).map((window) => {
+      var text = window + ': ' + this.props.states[window];
+      return <Text key={window}>{text}</Text>;
+    });
+    return (
+      <View>
+        <Text>{this.props.id}</Text>
+        {windowStates}
+      </View>
+    );
+  }
+});
+
 var Actuator = React.createClass({
   getComponentForType: function() {
     switch (this.props.type) {
@@ -129,6 +144,11 @@ var Actuator = React.createClass({
                               state={this.props.status.state}
                               position={this.props.status.position}
                               positionMax={this.props.status.positionMax} />;
+        break;
+
+      case 'HA4IoT.Actuators.Window':
+        return <Window id={this.props.id}
+                       states={this.props.status.state}/>;
         break;
 
       default:
