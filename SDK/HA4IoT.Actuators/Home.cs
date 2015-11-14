@@ -90,14 +90,17 @@ namespace HA4IoT.Actuators
             var result = new JsonObject();
             result.SetNamedValue("type", JsonValue.CreateStringValue("HA4IoT.Status"));
             result.SetNamedValue("version", JsonValue.CreateNumberValue(1));
-
+            
+            var status = new JsonObject();
             foreach (var actuator in Actuators.Values)
             {
                 var context = new ApiRequestContext(new JsonObject(), new JsonObject());
                 actuator.ApiGet(context);
 
-                result.SetNamedValue(actuator.Id, context.Response);
+                status.SetNamedValue(actuator.Id, context.Response);
             }
+
+            result.SetNamedValue("status", status);
 
             if (WeatherStation != null)
             {
@@ -112,11 +115,11 @@ namespace HA4IoT.Actuators
             var configuration = new JsonObject();
             configuration.SetNamedValue("type", JsonValue.CreateStringValue("HA4IoT.Configuration"));
             configuration.SetNamedValue("version", JsonValue.CreateNumberValue(1));
-            
-            var rooms = new JsonArray();
+
+            var rooms = new JsonObject();
             foreach (var room in _rooms.Values)
             {
-                rooms.Add(room.GetConfigurationAsJson());
+                rooms.SetNamedValue(room.Id, room.GetConfigurationAsJson());
             }
 
             configuration.SetNamedValue("rooms", rooms);
