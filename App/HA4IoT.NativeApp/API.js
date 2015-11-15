@@ -1,29 +1,20 @@
 'use strict';
 
-var exampleConfig = require('./Configuration.js');
-var exampleStatus = require('./Status.js');
+var statusUrl = 'http://192.168.1.15/api/status';
+var configUrl = 'http://192.168.1.15/api/configuration';
 
 var API = {
   getConfiguration: function() {
-    return new Promise(function(resolve, reject) {
-      resolve(exampleConfig);
-    });
-  },
-
-  pollConfiguration: function(callback) {
-    this.getConfiguration().then((result) => callback(result));
-    setTimeout(() => this.pollConfiguration(callback), 2000);
+    return fetch(configUrl).then((response) => response.json());
   },
 
   getStatus: function() {
-    return new Promise(function(resolve, reject) {
-      resolve(exampleStatus);
-    });
+    return fetch(statusUrl).then((response) => response.json());
   },
 
   pollStatus: function(callback) {
     this.getStatus().then((result) => callback(result));
-    setTimeout(() => this.pollStatus(callback), 2000);
+    setTimeout(() => this.pollStatus(callback), 250);
   }
 };
 

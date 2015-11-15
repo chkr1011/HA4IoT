@@ -205,23 +205,27 @@ var Room = React.createClass({
 var HomeAutomationClient = React.createClass({
   getInitialState: function() {
     return {
-      configuration: {},
-      status: {}
+      configuration: null,
+      status: null
     }
   },
 
   componentWillMount: function() {
-    API.pollConfiguration((config) => this.setState({configuration: config}));
+    API.getConfiguration().then((config) => this.setState({configuration: config}));
     API.pollStatus((status) => this.setState({status: status}));
   },
 
   render: function() {
-    var roomComponents = Object.keys(this.state.configuration)
+    if (this.state.configuration === null || this.state.status === null) {
+      return <Text>Loading...</Text>;
+    }
+
+    var roomComponents = Object.keys(this.state.configuration.rooms)
                                .map((room) =>
                                  <Room key={room}
                                        title={room}
-                                       config={this.state.configuration[room]}
-                                       status={this.state.status} />
+                                       config={this.state.configuration.rooms[room]}
+                                       status={this.state.status.status} />
                                );
     return (
       <View style={styles.container}>
