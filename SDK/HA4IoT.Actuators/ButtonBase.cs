@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Windows.Data.Json;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Networking;
 using HA4IoT.Notifications;
@@ -12,6 +14,8 @@ namespace HA4IoT.Actuators
         private readonly List<Action>  _actionsForPressedShort = new List<Action>();
         private readonly List<Action> _actionsForPressedLong = new List<Action>();
 
+        private ButtonState _state = ButtonState.Released;
+
         protected ButtonBase(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
             : base(id, httpApiController, notificationHandler)
         {
@@ -19,6 +23,25 @@ namespace HA4IoT.Actuators
 
         public event EventHandler PressedShort;
         public event EventHandler PressedLong;
+        public event EventHandler<ButtonStateChangedEventArgs> StateChanged;
+
+        public ButtonState GetState()
+        {
+            return _state;
+        }
+
+        protected void SetState(ButtonState newState)
+        {
+            var oldState = _state;
+            _state = newState;
+
+            if (!IsEnabled)
+            {
+                return;
+            }
+
+            StateChanged?.Invoke(this, new ButtonStateChangedEventArgs(oldState, newState));
+        }
 
         protected bool IsActionForPressedLongAttached => _actionsForPressedLong.Any() || PressedLong != null;
 
@@ -45,6 +68,13 @@ namespace HA4IoT.Actuators
             {
                 OnPressedShort();
             }
+        }
+
+        public override void ApiGet(ApiRequestContext context)
+        {
+            base.ApiGet(context);
+           
+            context.Response.SetNamedValue("state", JsonValue.CreateStringValue(_state.ToString()));
         }
 
         protected void OnPressedShort()

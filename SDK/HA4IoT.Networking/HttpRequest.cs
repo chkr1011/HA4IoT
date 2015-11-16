@@ -1,32 +1,27 @@
 using System;
-using Windows.Data.Json;
 
 namespace HA4IoT.Networking
 {
     public class HttpRequest
     {
-        public HttpRequest(HttpMethod method, string uri, string query, HttpHeaderCollection headers, string plainBody, JsonObject jsonBody)
+        public HttpRequest(HttpMethod method, string uri, string query, HttpHeaderCollection headers, string body)
         {
             if (uri == null) throw new ArgumentNullException(nameof(uri));
             if (headers == null) throw new ArgumentNullException(nameof(headers));
-            if (plainBody == null) throw new ArgumentNullException(nameof(plainBody));
+            if (body == null) throw new ArgumentNullException(nameof(body));
 
             Method = method;
             Uri = uri;
             Query = query;
 
             Headers = headers;
-
-            PlainBody = plainBody;
-            JsonBody = jsonBody;
+            Body = body;
         }
 
         public HttpMethod Method { get; }
         public string Uri { get; }
         public string Query { get; }
-        public string PlainBody { get; }
+        public string Body { get; }
         public HttpHeaderCollection Headers { get; }
-
-        public JsonObject JsonBody { get; private set; }
     }
 }

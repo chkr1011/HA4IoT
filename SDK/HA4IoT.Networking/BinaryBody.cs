@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace HA4IoT.Networking
 {
-    public class BinaryBody : IBody
+    public class BinaryBody : IHttpBody
     {
         public BinaryBody(IEnumerable<byte> content)
         {

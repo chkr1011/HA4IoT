@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
+using Windows.Data.Json;
 using Windows.Networking;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
@@ -12,34 +14,27 @@ namespace HA4IoT.Notifications
     {
         private readonly bool _isDebuggerAttached = Debugger.IsAttached;
         private readonly List<NotificationItem> _items = new List<NotificationItem>();
-
-        private readonly DatagramSocket _socket;
-
         private readonly object _syncRoot = new object();
-        private readonly DataWriter _writer;
 
         public NotificationHandler()
         {
-            _socket = new DatagramSocket();
-            _socket.Control.DontFragment = true;
-
-            IOutputStream streamReader = _socket.GetOutputStreamAsync(new HostName("255.255.255.255"), "19227").AsTask().Result;
-            _writer = new DataWriter(streamReader);
-
-            SendAsync();
+            Task.Factory.StartNew(SendAsync, TaskCreationOptions.LongRunning);
         }
 
         public void Publish(NotificationType type, string text, params object[] parameters)
         {
-            try
+            if (parameters != null && parameters.Any())
             {
-                text = string.Format(text, parameters);
+                try
+                {
+                    text = string.Format(text, parameters);
+                }
+                catch (FormatException)
+                {
+                    text = text + " (" + string.Join(",", parameters) + ")";
+                }
             }
-            catch (FormatException)
-            {
-                text = text + " (" + string.Join(",", parameters) + ")";
-            }
-            
+
             PrintNotification(type, text);
 
             lock (_syncRoot)
@@ -50,46 +45,74 @@ namespace HA4IoT.Notifications
 
         public void PublishFrom<TSender>(TSender sender, NotificationType type, string message, params object[] parameters) where TSender : class
         {
-            if (sender == null)
-            {
-                Publish(type, message, parameters);
-            }
-            else
-            {
-                string senderText = sender.GetType().Name;
-                Publish(type, senderText + ": " + message, parameters);
-            }
+            string senderText = typeof(TSender).Name;
+            Publish(type, senderText + ": " + message, parameters);
         }
 
         private async void SendAsync()
         {
-            while (true)
+            using (DatagramSocket socket = new DatagramSocket())
             {
-                List<NotificationItem> itemsToSend;
-                lock (_syncRoot)
+                socket.Control.DontFragment = true;
+
+                using (IOutputStream streamReader = socket.GetOutputStreamAsync(new HostName("255.255.255.255"), "19227").AsTask().Result)
+                using (var writer = new DataWriter(streamReader))
                 {
-                    itemsToSend = new List<NotificationItem>(_items);
-                    _items.Clear();
-                }
-
-                foreach (var notificationItem in itemsToSend)
-                {
-                    try
+                    while (true)
                     {
-                        string package = "CK.HA/1.0 " + ((int) notificationItem.Type) + " " + notificationItem.Message;
+                        try
+                        {
+                            var pendingItems = GetPendingItems();
+                            if (pendingItems.Any())
+                            {
+                                var package = CreatePackage(pendingItems);
 
-                        await _writer.FlushAsync();
-                        _writer.WriteString(package);
-                        await _writer.StoreAsync();
-                    }
-                    catch (Exception exception)
-                    {
-                        Debug.WriteLine("Could not send HC notification '" + notificationItem.Type + ":" + notificationItem.Message + "'. " + exception.Message);
+                                await writer.FlushAsync();
+                                writer.WriteString(package.Stringify());
+                                await writer.StoreAsync();
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            Debug.WriteLine("Could not send notifications. " + exception.Message);
+                        }
+
+                        await Task.Delay(100);
                     }
                 }
-
-                await Task.Delay(100);
             }
+        }
+
+        private List<NotificationItem> GetPendingItems()
+        {
+            List<NotificationItem> itemsToSend;
+            lock (_syncRoot)
+            {
+                itemsToSend = new List<NotificationItem>(_items);
+                _items.Clear();
+            }
+
+            return itemsToSend;
+        }
+
+        private JsonObject CreatePackage(ICollection<NotificationItem> notificationItems)
+        {
+            JsonArray notifications = new JsonArray();
+            foreach (var notificationItem in notificationItems)
+            {
+                var notification = new JsonObject();
+                notification.SetNamedValue("type", JsonValue.CreateStringValue(notificationItem.Type.ToString()));
+                notification.SetNamedValue("message", JsonValue.CreateStringValue(notificationItem.Message));
+
+                notifications.Add(notification);
+            }
+
+            JsonObject package = new JsonObject();
+            package.SetNamedValue("type", JsonValue.CreateStringValue("HA4IoT.Notifications"));
+            package.SetNamedValue("version", JsonValue.CreateNumberValue(1));
+            package.SetNamedValue("notifications", notifications);
+
+            return package;
         }
 
         private void PrintNotification(NotificationType type, string message)

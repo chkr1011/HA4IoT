@@ -10,6 +10,7 @@ using HA4IoT.Core.Timer;
 using HA4IoT.Networking;
 using HA4IoT.Notifications;
 using HttpMethod = HA4IoT.Networking.HttpMethod;
+using HttpStatusCode = HA4IoT.Networking.HttpStatusCode;
 
 namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 {
@@ -37,7 +38,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             _weatherDataSourceUrl = new Uri(string.Format("http://api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}&APPID={2}&units=metric", lat, lon, appId));
 
             httpApiController.Handle(HttpMethod.Get, "weatherStation").Using(c => c.Response.Body = new JsonBody(ApiGet()));
-            httpApiController.Handle(HttpMethod.Post, "weatherStation").WithRequiredJsonBody().Using(c => ApiPost(c.Request));
+            httpApiController.Handle(HttpMethod.Post, "weatherStation").WithRequiredJsonBody().Using(c => ApiPost(c));
 
             LoadPersistedValues();
             timer.Every(TimeSpan.FromMinutes(2.5)).Do(Update);
@@ -109,12 +110,19 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             return buffer.AddSeconds(unixTimeStamp).ToLocalTime();
         }
 
-        private void ApiPost(HttpRequest request)
+        private void ApiPost(HttpContext context)
         {
-            _temperature.UpdateValue((float) request.JsonBody.GetNamedNumber("temperature"));
-            _humidity.UpdateValue((float) request.JsonBody.GetNamedNumber("humidity"));
-            _sunrise = TimeSpan.Parse(request.JsonBody.GetNamedString("sunrise"));
-            _sunset = TimeSpan.Parse(request.JsonBody.GetNamedString("sunset"));
+            JsonObject requestData;
+            if (JsonObject.TryParse(context.Request.Body, out requestData))
+            {
+                context.Response.StatusCode = HttpStatusCode.BadRequest;
+                return;
+            }
+
+            _temperature.UpdateValue((float)requestData.GetNamedNumber("temperature"));
+            _humidity.UpdateValue((float)requestData.GetNamedNumber("humidity"));
+            _sunrise = TimeSpan.Parse(requestData.GetNamedString("sunrise"));
+            _sunset = TimeSpan.Parse(requestData.GetNamedString("sunset"));
 
             _lastFetched = DateTime.Now;
         }

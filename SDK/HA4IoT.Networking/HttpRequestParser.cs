@@ -43,11 +43,7 @@ namespace HA4IoT.Networking
                 ParseBody();
                 ParseQuery();
 
-                // TODO: Investigate the headers instead of trying to parse.
-                JsonObject jsonBody;
-                JsonObject.TryParse(_body, out jsonBody);
-
-                request = new HttpRequest(_method, _uri, _query, _headers, _body, jsonBody);
+                request = new HttpRequest(_method, _uri, _query, _headers, _body);
                 return true;
             }
             catch (Exception)

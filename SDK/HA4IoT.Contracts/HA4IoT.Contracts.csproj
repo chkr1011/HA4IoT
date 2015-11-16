@@ -110,6 +110,7 @@
     <Compile Include="Actuators\ActuatorIsEnabledChangedEventArgs.cs" />
     <Compile Include="Actuators\BinaryActuatorState.cs" />
     <Compile Include="Actuators\BinaryActuatorStateChangedEventArgs.cs" />
+    <Compile Include="Actuators\ButtonState.cs" />
     <Compile Include="Actuators\IActuatorBase.cs" />
     <Compile Include="Actuators\IBinaryStateOutputActuator.cs" />
     <Compile Include="Actuators\IBinaryStateOutputActuatorExtensions.cs" />
@@ -117,9 +118,14 @@
     <Compile Include="Actuators\IHumiditySensor.cs" />
     <Compile Include="Actuators\IMotionDetector.cs" />
     <Compile Include="Actuators\IParameter.cs" />
+    <Compile Include="Actuators\IRollerShutter.cs" />
     <Compile Include="Actuators\ITemperatureSensor.cs" />
     <Compile Include="Actuators\IWeatherStation.cs" />
+    <Compile Include="Actuators\MotionDetectorState.cs" />
+    <Compile Include="Actuators\RollerShutterState.cs" />
+    <Compile Include="Actuators\RollerShutterStateChangedEventArgs.cs" />
     <Compile Include="Actuators\ValueChangedEventArgsBase.cs" />
+    <Compile Include="ButtonStateChangedEventArgs.cs" />
     <Compile Include="Daylight.cs" />
     <Compile Include="Hardware\BinaryState.cs" />
     <Compile Include="Hardware\BinaryStateChangedEventArgs.cs" />
@@ -131,7 +137,9 @@
     <Compile Include="Hardware\IPortExpanderDriver.cs" />
     <Compile Include="Hardware\ISingleValueSensor.cs" />
     <Compile Include="Hardware\SingleValueSensorValueChangedEventArgs.cs" />
+    <Compile Include="MotionDetectorStateChangedEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Actuators\RollerShutterButtonDirection.cs" />
     <Content Include="Properties\HA4IoT.Contracts.rd.xml" />
   </ItemGroup>
   <ItemGroup>
