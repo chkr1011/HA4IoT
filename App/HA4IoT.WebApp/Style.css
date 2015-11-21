@@ -118,8 +118,7 @@ body {
 }
 
 .sensorValue {
-    font-family: "Consolas";
-    font-size: 12px;
+    font-size: 16px;
     width: 60px;
     margin-left: 10px;
 }

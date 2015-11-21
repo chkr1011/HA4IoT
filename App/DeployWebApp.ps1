@@ -16,14 +16,13 @@ $repeat = 1
 while($repeat)
 {
 	$package = Get-ChildItem("\\$ip\c$\Users\DefaultAccount\AppData\Local\Packages\HA4IoT.Controller*") -name
-	Write-Host("Found package: " + $package)
-
 	if (!$package)
 	{
 		Write-Host "No package found!"
 		return
 	}
 
+	Write-Host("Found package: " + $package)
 	Write-Host "Clear remote directory (y/n)?"
 	$clearRemoteDirectory = Read-Host
 
