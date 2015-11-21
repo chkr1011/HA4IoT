@@ -38,25 +38,25 @@ namespace HA4IoT.Hardware.CCTools
             return device;
         }
 
-        public HSPE8 CreateHSPE8OutputOnly(Enum id, int address)
+        public HSPE8 CreateHSPE8OutputOnly(Enum id, int i2CAddress)
         {
-            var device = new HSPE8(id.ToString(), address, _i2CBus, _notificationHandler);
+            var device = new HSPE8(id.ToString(), i2CAddress, _i2CBus, _notificationHandler);
             _ioBoardManager.Add(id, device);
 
             return device;
         }
 
-        public HSREL5 CreateHSREL5(Enum id, int address)
+        public HSREL5 CreateHSREL5(Enum id, int i2CAddress)
         {
-            var device = new HSREL5(id.ToString(), address, _i2CBus, _notificationHandler);
+            var device = new HSREL5(id.ToString(), i2CAddress, _i2CBus, _notificationHandler);
             _ioBoardManager.Add(id, device);
 
             return device;
         }
 
-        public HSREL8 CreateHSREL8(Enum id, int address)
+        public HSREL8 CreateHSREL8(Enum id, int i2CAddress)
         {
-            var device = new HSREL8(id.ToString(), address, _i2CBus, _notificationHandler);
+            var device = new HSREL8(id.ToString(), i2CAddress, _i2CBus, _notificationHandler);
             _ioBoardManager.Add(id, device);
 
             return device;
