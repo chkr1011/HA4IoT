@@ -66,6 +66,17 @@ appConfiguration.actuatorExtender = function (actuator) {
                 break;
             }
 
+        case "LivingRoom.SocketWallRightEdgeRight":
+            {
+                actuator.image = "HA4IoT.Actuators.Lamp";
+                break;
+            }
+
+        case "LivingRoom.SocketWallLeftEdgeLeft":
+            {
+                actuator.image = "HA4IoT.Actuators.Lamp";
+                break;
+            }
      
         case "Garden.StateMachine":
             {

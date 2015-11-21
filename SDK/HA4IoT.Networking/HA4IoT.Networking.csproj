@@ -120,7 +120,7 @@
     <Compile Include="HttpHeader.cs" />
     <Compile Include="HttpHeaderCollection.cs" />
     <Compile Include="MappedFolderController.cs" />
-    <Compile Include="IBody.cs" />
+    <Compile Include="IHttpBody.cs" />
     <Compile Include="IHttpRequestController.cs" />
     <Compile Include="HttpRequestController.cs" />
     <Compile Include="HttpMethod.cs" />

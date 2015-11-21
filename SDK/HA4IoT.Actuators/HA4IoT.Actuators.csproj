@@ -145,11 +145,8 @@
     <Compile Include="Connectors\StateMachineWithButtonConnector.cs" />
     <Compile Include="ActuatorBase.cs" />
     <Compile Include="Connectors\RollerShutterWithRollerShutterButtonsConnector.cs" />
-    <Compile Include="RollerShutterPositionTracker.cs" />
     <Compile Include="RollerShutter.cs" />
-    <Compile Include="RollerShutterButtonDirection.cs" />
     <Compile Include="RollerShutterButtons.cs" />
-    <Compile Include="RollerShutterState.cs" />
     <Compile Include="Button.cs" />
     <Compile Include="LogicalBinaryStateOutputActuator.cs" />
     <Compile Include="HumiditySensor.cs" />

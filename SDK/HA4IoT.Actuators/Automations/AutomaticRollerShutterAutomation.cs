@@ -8,7 +8,7 @@ namespace HA4IoT.Actuators.Automations
 {
     public class AutomaticRollerShutterAutomation
     {
-        private readonly List<RollerShutter> _rollerShutters = new List<RollerShutter>();
+        private readonly List<IRollerShutter> _rollerShutters = new List<IRollerShutter>();
         private readonly IHomeAutomationTimer _timer;
         private readonly IWeatherStation _weatherStation;
 
@@ -41,7 +41,7 @@ namespace HA4IoT.Actuators.Automations
 
         public bool IsEnabled { get; set; }
 
-        public AutomaticRollerShutterAutomation WithRollerShutter(RollerShutter rollerShutter)
+        public AutomaticRollerShutterAutomation WithRollerShutter(IRollerShutter rollerShutter)
         {
             if (rollerShutter == null) throw new ArgumentNullException(nameof(rollerShutter));
 
@@ -110,7 +110,7 @@ namespace HA4IoT.Actuators.Automations
         {
             foreach (var rollerShutter in _rollerShutters)
             {
-                rollerShutter.StartMoveUp();
+                rollerShutter.SetState(RollerShutterState.MovingUp);
             }
         }
 
@@ -118,7 +118,7 @@ namespace HA4IoT.Actuators.Automations
         {
             foreach (var rollerShutter in _rollerShutters)
             {
-                rollerShutter.StartMoveDown();
+                rollerShutter.SetState(RollerShutterState.MovingDown);
             }
         }
 

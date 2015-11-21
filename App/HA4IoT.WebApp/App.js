@@ -60,8 +60,8 @@ function setupController() {
           c.generateRooms = function () {
 
               $http.get("/api/configuration").success(function (data) {
-
-                  $.each(data, function (roomIndex, room) {
+                  $.each(data.rooms, function (roomId, room) {
+                      room.id = roomId;
                       configureRoom(room);
 
                       if (!room.hide) {
@@ -131,7 +131,7 @@ function setupController() {
           c.pollStatus = function () {
               getJSON(c, "/api/status", function (data) {
 
-                  $.each(data, function (id, state) {
+                  $.each(data.status, function (id, state) {
                       c.updateStatus(id, state);
                   });
 
@@ -143,7 +143,7 @@ function setupController() {
               });
 
               setTimeout(function () {
-                  c.pollStatus();
+                 c.pollStatus();
               }, c.appConfiguration.pollInterval);
           };
 

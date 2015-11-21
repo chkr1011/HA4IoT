@@ -1,4 +1,4 @@
-﻿<h4>
-    <span ng-class="{'text-danger':actuator.state.value>=70,'text-warning':actuator.state.value>=60,'text-success':actuator.state.value<=60}" class="glyphicon glyphicon-tint" style="margin-left: 10px"></span>
+﻿<span>
+    <span class="label" ng-class="{'label-danger':actuator.state.value>=70,'label-warning':actuator.state.value>=60,'label-success':actuator.state.value<=60}" style="margin-left: 10px">Schimmel</span>
     <span class="sensorValue">{{(actuator.state.value | number:1) + '%' }}</span>
-</h4>
+</span>

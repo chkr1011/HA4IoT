@@ -80,7 +80,14 @@ namespace HA4IoT.Actuators
                 .WithRequiredJsonBody()
                 .Using(c =>
                 {
-                    var context = new ApiRequestContext(c.Request.JsonBody, new JsonObject());
+                    JsonObject requestData;
+                    if (!JsonObject.TryParse(c.Request.Body, out requestData))
+                    {
+                        c.Response.StatusCode = HttpStatusCode.BadRequest;
+                        return;
+                    }
+
+                    var context = new ApiRequestContext(requestData, new JsonObject());
                     ApiPost(context);
 
                     c.Response.Body = new JsonBody(context.Response);
@@ -90,7 +97,13 @@ namespace HA4IoT.Actuators
                 .WithSegment(Id)
                 .Using(c =>
                 {
-                    var context = new ApiRequestContext(c.Request.JsonBody, new JsonObject());
+                    JsonObject requestData;
+                    if (!JsonObject.TryParse(c.Request.Body, out requestData))
+                    {
+                        requestData = new JsonObject();
+                    }
+
+                    var context = new ApiRequestContext(requestData, new JsonObject());
                     ApiGet(context);
 
                     c.Response.Body = new JsonBody(context.Response);

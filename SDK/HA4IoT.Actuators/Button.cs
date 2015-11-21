@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core.Timer;
 using HA4IoT.Networking;
@@ -10,7 +11,7 @@ namespace HA4IoT.Actuators
     public class Button : ButtonBase
     {
         private readonly Stopwatch _stopwatch = new Stopwatch();
-        
+
         public Button(string id, IBinaryInput input, IHttpRequestController httpApiController, INotificationHandler notificationHandler, IHomeAutomationTimer timer)
             : base(id, httpApiController, notificationHandler)
         {
@@ -25,13 +26,26 @@ namespace HA4IoT.Actuators
 
         private void HandleInputStateChanged(object sender, BinaryStateChangedEventArgs e)
         {
+            bool buttonIsPressed = e.NewState == BinaryState.High;
+            bool buttonIsReleased = e.NewState == BinaryState.Low;
+
+            if (buttonIsReleased)
+            {
+                SetState(ButtonState.Released);
+            }
+            else if (buttonIsPressed)
+            {
+                SetState(ButtonState.Pressed);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+
             if (!IsEnabled)
             {
                 return;
             }
-
-            bool buttonIsPressed = e.NewState == BinaryState.High;
-            bool buttonIsReleased = e.NewState == BinaryState.Low;
 
             if (buttonIsPressed)
             {
@@ -44,7 +58,7 @@ namespace HA4IoT.Actuators
                     _stopwatch.Restart();
                 }
             }
-            else if (buttonIsReleased)
+            else
             {
                 if (!_stopwatch.IsRunning)
                 {

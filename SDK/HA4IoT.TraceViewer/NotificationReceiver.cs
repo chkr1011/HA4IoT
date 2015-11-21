@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.TraceViewer
 {
@@ -34,8 +36,8 @@ namespace HA4IoT.TraceViewer
                         IPEndPoint remoteEndPoint = null;
                         byte[] buffer = _udpClient.Receive(ref remoteEndPoint);
 
-                        string package = Encoding.ASCII.GetString(buffer);
-                        OnNotificationReceived(remoteEndPoint, package);
+                        string data = Encoding.ASCII.GetString(buffer);
+                        OnDataReceived(remoteEndPoint, data);
                     }
                 },
                 _cancellationTokenSource.Token,
@@ -52,32 +54,61 @@ namespace HA4IoT.TraceViewer
             _cancellationTokenSource.Cancel(false);
         }
 
-        private void OnNotificationReceived(IPEndPoint remotEndPoint, string package)
+        private void OnDataReceived(IPEndPoint remotEndPoint, string data)
         {
-            Notification notification;
-            if (TryParseNotification(remotEndPoint, package, out notification))
+            List<Notification> notifications;
+            if (!TryParseNotifications(remotEndPoint, data, out notifications))
+            {
+                return;
+            }
+
+            foreach (var notification in notifications)
             {
                 NotificationReceived?.Invoke(this, new ControllerNotificationReceivedEventArguments(notification));
             }
         }
 
-        private bool TryParseNotification(IPEndPoint remotEndPoint, string package, out Notification notification)
+        private bool TryParseNotifications(IPEndPoint remotEndPoint, string data, out List<Notification> notifications)
         {
-            if (string.IsNullOrEmpty(package) || !package.StartsWith("CK.HA/1.0"))
+            try
             {
-                notification = null;
-                return false;
+                JObject package = JObject.Parse(data);
+                string type = package.Property("type").Value.ToString();
+                int version = (int)package.Property("version").Value;
+
+                notifications = new List<Notification>();
+                foreach (var notification in package.Property("notifications").Value)
+                {
+                    var item = notification.ToObject<JObject>();
+
+                    string typeText = item.Property("type").Value.ToString();
+                    string message = item.Property("message").Value.ToString();
+
+                    var typeValue = (NotificationType)Enum.Parse(typeof (NotificationType), typeText);                   
+                    notifications.Add(new Notification(DateTime.Now, remotEndPoint.Address, typeValue, message));
+                }
+
+                return true;
             }
+            catch
+            {
+                if (string.IsNullOrEmpty(data) || !data.StartsWith("CK.HA/1.0"))
+                {
+                    notifications = null;
+                    return false;
+                }
 
-            Match match = _parser.Match(package);
-            string type = match.Groups["type"].Value;
-            string message = match.Groups["message"].Value;
+                Match match = _parser.Match(data);
+                string type = match.Groups["type"].Value;
+                string message = match.Groups["message"].Value;
 
-            int typeID = int.Parse(type);
-            NotificationType typeValue = (NotificationType)typeID;
+                int typeID = int.Parse(type);
+                NotificationType typeValue = (NotificationType)typeID;
 
-            notification = new Notification(DateTime.Now, remotEndPoint.Address, typeValue, message);
-            return true;
+                notifications = new List<Notification>();
+                notifications.Add(new Notification(DateTime.Now, remotEndPoint.Address, typeValue, message));
+                return true;
+            }
         }
     }
 }
