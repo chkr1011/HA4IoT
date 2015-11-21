@@ -117,6 +117,13 @@ body {
     cursor: pointer;
 }
 
+.sensorValue {
+    font-family: "Consolas";
+    font-size: 12px;
+    width: 60px;
+    margin-left: 10px;
+}
+
 .loadingAnimation {
     animation: rotate 1s infinite linear;
     border-bottom: 7px solid white;
