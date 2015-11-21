@@ -32,16 +32,16 @@ namespace HA4IoT.Controller.Main.Rooms
             var hsrel5 = ccToolsController.CreateHSREL5(Device.ChildrensRoomHSREL5, 63);
             var input0 = ioBoardManager.GetInputBoard(Device.Input0);
 
-            const int SensorPin = 7; //3;
+            const int SensorPin = 7;
 
             var childrensRoom = home.AddRoom(Room.ChildrensRoom)
                 .WithTemperatureSensor(ChildrensRoom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(ChildrensRoom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorPin))
-                .WithLamp(ChildrensRoom.LightCeilingMiddle, hsrel5.GetOutput(6).WithInvertedState())
-                .WithRollerShutter(ChildrensRoom.RollerShutter, hsrel5.GetOutput(4), hsrel5.GetOutput(3), RollerShutter.DefaultMaxMovingDuration, 20000)
-                .WithSocket(ChildrensRoom.SocketWindow, hsrel5.GetOutput(0))
-                .WithSocket(ChildrensRoom.SocketWallLeft, hsrel5.GetOutput(1))
-                .WithSocket(ChildrensRoom.SocketWallRight, hsrel5.GetOutput(2))
+                .WithLamp(ChildrensRoom.LightCeilingMiddle, hsrel5[HSREL5Output.GPIO2].WithInvertedState())
+                .WithRollerShutter(ChildrensRoom.RollerShutter, hsrel5[HSREL5Output.Relay4], hsrel5[HSREL5Output.Relay3], RollerShutter.DefaultMaxMovingDuration, 20000)
+                .WithSocket(ChildrensRoom.SocketWindow, hsrel5[HSREL5Output.Relay0])
+                .WithSocket(ChildrensRoom.SocketWallLeft, hsrel5[HSREL5Output.Relay1])
+                .WithSocket(ChildrensRoom.SocketWallRight, hsrel5[HSREL5Output.Relay2])
                 .WithButton(ChildrensRoom.Button, input0.GetInput(0))
                 .WithWindow(ChildrensRoom.Window, w => w.WithCenterCasement(input0.GetInput(5), input0.GetInput(4)))
                 .WithRollerShutterButtons(ChildrensRoom.RollerShutterButtons, input0.GetInput(1), input0.GetInput(2));
