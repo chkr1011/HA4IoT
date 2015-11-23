@@ -41,7 +41,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Telemetry", "SDK\HA4
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Tests.Mockups", "SDK\HA4IoT.Tests.Mockups\HA4IoT.Tests.Mockups.csproj", "{238AD610-4F9B-4652-81DB-A8FC215F61A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.TraceViewer", "SDK\HA4IoT.TraceViewer\HA4IoT.TraceViewer.csproj", "{1948D9A6-707C-463B-8A16-D0A4020C4896}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.TraceViewer", "Tools\HA4IoT.TraceViewer\HA4IoT.TraceViewer.csproj", "{1948D9A6-707C-463B-8A16-D0A4020C4896}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Hardware.CCTools", "SDK\Hardware\HA4IoT.Hardware.CCTools\HA4IoT.Hardware.CCTools.csproj", "{B0A7EF01-9382-422C-81AF-C90DC5A7AFFD}"
 EndProject
