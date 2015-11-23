@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Notifications;
 using HA4IoT.Core.Timer;
 using HA4IoT.Networking;
-using HA4IoT.Notifications;
 
-namespace HA4IoT.Actuators
+namespace HA4IoT.Actuators.RollerShutters
 {
     public class RollerShutter : ActuatorBase, IRollerShutter
     {
@@ -80,7 +80,8 @@ namespace HA4IoT.Actuators
 
                 if (oldState != RollerShutterState.Stopped)
                 {
-                    NotificationHandler.PublishFrom(this, NotificationType.Info, "'{0}' stopped moving (Duration: {1}ms).", Id, _movingDuration.ElapsedMilliseconds);
+                    NotificationHandler.Info(Id + ": Stopped (Duration: " +
+                                             _movingDuration.ElapsedMilliseconds + "ms)");
                 }
             }
 
@@ -134,8 +135,8 @@ namespace HA4IoT.Actuators
 
         private void OnStateChanged(RollerShutterState oldState, RollerShutterState newState)
         {
-            NotificationHandler.PublishFrom(this, NotificationType.Info, "'{0}' changed state to '{1}'", Id, newState);
             StateChanged?.Invoke(this, new RollerShutterStateChangedEventArgs(oldState, newState));
+            NotificationHandler.Info(Id + ": " + oldState + "->" + newState);
         }
 
         private void StopInternal()
