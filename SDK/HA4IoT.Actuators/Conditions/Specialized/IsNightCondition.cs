@@ -1,5 +1,4 @@
 ﻿using System;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Core.Timer;
 
@@ -11,8 +10,8 @@ namespace HA4IoT.Actuators.Conditions.Specialized
         {
             if (weatherStation == null) throw new ArgumentNullException(nameof(weatherStation));
 
-            WithStart(() => weatherStation.Daylight.Sunrise);
-            WithEnd(() => weatherStation.Daylight.Sunset);
+            WithStart(() => weatherStation.Daylight.Sunset);
+            WithEnd(() => weatherStation.Daylight.Sunrise);
         }
     }
 }

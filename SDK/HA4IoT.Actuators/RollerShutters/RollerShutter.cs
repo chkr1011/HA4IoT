@@ -8,7 +8,7 @@ using HA4IoT.Contracts.Notifications;
 using HA4IoT.Core.Timer;
 using HA4IoT.Networking;
 
-namespace HA4IoT.Actuators.RollerShutters
+namespace HA4IoT.Actuators
 {
     public class RollerShutter : ActuatorBase, IRollerShutter
     {

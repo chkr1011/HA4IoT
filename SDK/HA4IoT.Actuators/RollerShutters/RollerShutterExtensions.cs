@@ -4,7 +4,7 @@ using HA4IoT.Actuators.Automations;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 
-namespace HA4IoT.Actuators.RollerShutters
+namespace HA4IoT.Actuators
 {
     public static class RollerShutterExtensions
     {

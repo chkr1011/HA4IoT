@@ -1,6 +1,5 @@
 ﻿using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
-using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.DHT22;
 using HA4IoT.Hardware.GenericIOBoard;

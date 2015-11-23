@@ -116,7 +116,6 @@
   <ItemGroup>
     <Compile Include="BaseController.cs" />
     <Compile Include="HealthMonitor.cs" />
-    <Compile Include="ServiceLocator.cs" />
     <Compile Include="Timer\IHomeAutomationTimer.cs" />
     <Compile Include="Timer\TimedAction.cs" />
     <Compile Include="Timer\Timeout.cs" />

@@ -1,7 +1,6 @@
 ﻿using System;
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Animations;
-using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Hardware.CCTools;

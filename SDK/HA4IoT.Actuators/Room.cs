@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Windows.Data.Json;
 using HA4IoT.Actuators.Automations;
-using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Networking;
