@@ -7,18 +7,29 @@ using Windows.Data.Json;
 using Windows.Networking;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
+using HA4IoT.Contracts.Notifications;
+using HA4IoT.Networking;
 
 namespace HA4IoT.Notifications
 {
     public class NotificationHandler : INotificationHandler
     {
         private readonly bool _isDebuggerAttached = Debugger.IsAttached;
-        private readonly List<NotificationItem> _items = new List<NotificationItem>();
-        private readonly object _syncRoot = new object();
 
+        private readonly object _syncRoot = new object();
+        private readonly List<NotificationItem> _items = new List<NotificationItem>();
+        private readonly List<NotificationItem> _history = new List<NotificationItem>();
+        
         public NotificationHandler()
         {
             Task.Factory.StartNew(SendAsync, TaskCreationOptions.LongRunning);
+        }
+
+        public void ExposeToApi(IHttpRequestController apiRequestController)
+        {
+            if (apiRequestController == null) throw new ArgumentNullException(nameof(apiRequestController));
+
+            apiRequestController.Handle(HttpMethod.Get, "notifications").Using(HandleApiGet);
         }
 
         public void Publish(NotificationType type, string text, params object[] parameters)
@@ -39,14 +50,47 @@ namespace HA4IoT.Notifications
 
             lock (_syncRoot)
             {
-                _items.Add(new NotificationItem(type, text));
+                var notification = new NotificationItem(DateTime.Now, type, text);
+
+                _items.Add(notification);
+
+                if (notification.Type != NotificationType.Verbose)
+                {
+                    _history.Add(notification);
+                    if (_history.Count > 50)
+                    {
+                        _history.RemoveAt(0);
+                    }
+                }
             }
         }
 
-        public void PublishFrom<TSender>(TSender sender, NotificationType type, string message, params object[] parameters) where TSender : class
+        public void Info(string message, params object[] parameters)
         {
-            string senderText = typeof(TSender).Name;
-            Publish(type, senderText + ": " + message, parameters);
+            Publish(NotificationType.Info, message, parameters);
+        }
+
+        public void Warning(string message, params object[] parameters)
+        {
+            Publish(NotificationType.Warning, message, parameters);
+        }
+
+        public void Error(string message, params object[] parameters)
+        {
+            Publish(NotificationType.Error, message, parameters);
+        }
+
+        public void Verbose(string message, params object[] parameters)
+        {
+            Publish(NotificationType.Verbose, message, parameters);
+        }
+
+        private void HandleApiGet(HttpContext httpContext)
+        {
+            lock (_syncRoot)
+            {
+                httpContext.Response.Body = new JsonBody(CreatePackage(_history));
+            }
         }
 
         private async void SendAsync()
@@ -98,13 +142,9 @@ namespace HA4IoT.Notifications
         private JsonObject CreatePackage(ICollection<NotificationItem> notificationItems)
         {
             JsonArray notifications = new JsonArray();
-            foreach (var notificationItem in notificationItems)
+            foreach (var notification in notificationItems)
             {
-                var notification = new JsonObject();
-                notification.SetNamedValue("type", JsonValue.CreateStringValue(notificationItem.Type.ToString()));
-                notification.SetNamedValue("message", JsonValue.CreateStringValue(notificationItem.Message));
-
-                notifications.Add(notification);
+                notifications.Add(notification.ToJsonObject());
             }
 
             JsonObject package = new JsonObject();
