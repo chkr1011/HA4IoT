@@ -1,6 +1,7 @@
 ﻿using System;
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Animations;
+using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Hardware.CCTools;
@@ -120,7 +121,7 @@ namespace HA4IoT.Controller.Main.Rooms
             SetupStairsCeilingLamps(floor, hspe8UpperFloor);
             SetupStairsLamps(floor, home.WeatherStation, hspe16_FloorAndLowerBathroom);
             
-            floor.SetupAutomaticRollerShutters().WithRollerShutter(floor.RollerShutter(Floor.StairwayRollerShutter));
+            floor.SetupAutomaticRollerShutters().WithRollerShutters(floor.RollerShutter(Floor.StairwayRollerShutter));
         }
 
         private void SetupStairsCeilingLamps(Actuators.Room floor, IBinaryOutputController hspe8UpperFloor)

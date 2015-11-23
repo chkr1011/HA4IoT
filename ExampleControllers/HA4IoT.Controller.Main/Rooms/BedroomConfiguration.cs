@@ -1,6 +1,7 @@
 ﻿using System;
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
+using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.DHT22;
@@ -109,10 +110,10 @@ namespace HA4IoT.Controller.Main.Rooms
             });
 
             bedroom.SetupAutomaticRollerShutters()
-                .WithRollerShutter(bedroom.RollerShutter(Bedroom.RollerShutterLeft))
-                .WithRollerShutter(bedroom.RollerShutter(Bedroom.RollerShutterRight))
+                .WithRollerShutters(bedroom.GetAllRollerShutters())
                 .WithDoNotOpenBefore(TimeSpan.FromHours(7).Add(TimeSpan.FromMinutes(15)))
-                .WithCloseIfOutsideTemperatureIsGreaterThan(28);
+                .WithCloseIfOutsideTemperatureIsGreaterThan(24)
+                .WithDoNotOpenIfOutsideTemperatureIsBelowThan(3);
 
             bedroom.SetupAutomaticTurnOnAndOffAction()
                 .WithTrigger(bedroom.MotionDetector(Bedroom.MotionDetector))

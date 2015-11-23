@@ -1,5 +1,6 @@
 ﻿using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
+using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.DHT22;
 using HA4IoT.Hardware.GenericIOBoard;
@@ -48,7 +49,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             childrensRoom.Lamp(ChildrensRoom.LightCeilingMiddle).ConnectToggleActionWith(childrensRoom.Button(ChildrensRoom.Button));
 
-            childrensRoom.SetupAutomaticRollerShutters().WithRollerShutter(childrensRoom.RollerShutter(ChildrensRoom.RollerShutter));
+            childrensRoom.SetupAutomaticRollerShutters().WithRollerShutters(childrensRoom.RollerShutter(ChildrensRoom.RollerShutter));
             childrensRoom.RollerShutter(ChildrensRoom.RollerShutter)
                 .ConnectWith(childrensRoom.RollerShutterButtons(ChildrensRoom.RollerShutterButtons));
         }

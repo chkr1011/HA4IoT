@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using HA4IoT.Actuators;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Notifications;
 using HA4IoT.Notifications;
 
 namespace HA4IoT.Telemetry
@@ -42,7 +45,7 @@ namespace HA4IoT.Telemetry
                 {
                     sensor.ValueChanged += (s, e) =>
                     {
-                        OnSensorValueChanged(sensor);
+                        OnSensorValueChanged(sensor, e);
                     };
 
                     continue;
@@ -83,7 +86,7 @@ namespace HA4IoT.Telemetry
         {
         }
 
-        protected virtual void OnBinaryStateActuatorStateChanged(IBinaryStateOutputActuator actuator, TimeSpan previousStateDuration)
+        protected virtual void OnBinaryStateActuatorStateChanged(IBinaryStateOutputActuator actuator, BinaryActuatorStateChangedEventArgs eventArgs, TimeSpan previousStateDuration)
         {
         }
 
@@ -91,7 +94,7 @@ namespace HA4IoT.Telemetry
         {
         }
 
-        protected virtual void OnSensorValueChanged(SingleValueSensorBase sensor)
+        protected virtual void OnSensorValueChanged(SingleValueSensorBase sensor, SingleValueSensorValueChangedEventArgs eventArgs)
         {
         }
 
@@ -103,7 +106,7 @@ namespace HA4IoT.Telemetry
                 TimeSpan previousStateDuration = stopwatch.Elapsed;
                 stopwatch.Restart();
 
-                OnBinaryStateActuatorStateChanged(binaryStateOutputActuator, previousStateDuration);
+                OnBinaryStateActuatorStateChanged(binaryStateOutputActuator, e, previousStateDuration);
             };
         }
 

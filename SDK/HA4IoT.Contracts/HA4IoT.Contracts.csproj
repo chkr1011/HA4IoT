@@ -137,7 +137,9 @@
     <Compile Include="Hardware\IPortExpanderDriver.cs" />
     <Compile Include="Hardware\ISingleValueSensor.cs" />
     <Compile Include="Hardware\SingleValueSensorValueChangedEventArgs.cs" />
+    <Compile Include="Notifications\INotificationHandler.cs" />
     <Compile Include="MotionDetectorStateChangedEventArgs.cs" />
+    <Compile Include="Notifications\NotificationType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Actuators\RollerShutterButtonDirection.cs" />
     <Content Include="Properties\HA4IoT.Contracts.rd.xml" />

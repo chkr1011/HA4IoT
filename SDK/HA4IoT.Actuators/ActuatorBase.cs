@@ -1,8 +1,8 @@
 ﻿using System;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Notifications;
 using HA4IoT.Networking;
-using HA4IoT.Notifications;
 
 namespace HA4IoT.Actuators
 {
@@ -55,7 +55,7 @@ namespace HA4IoT.Actuators
             if (context.Request.ContainsKey("isEnabled"))
             {
                 IsEnabled = context.Request.GetNamedBoolean("isEnabled", false);
-                NotificationHandler.PublishFrom(this, NotificationType.Info, "'{0}' {1}.", Id, IsEnabled ? "enabled" : "disabled");
+                NotificationHandler.Info("'{0}' {1}.", Id, IsEnabled ? "enabled" : "disabled");
             }
         }
 

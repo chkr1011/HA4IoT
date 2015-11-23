@@ -5,10 +5,10 @@ using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using Windows.Storage.Streams;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Notifications;
 using HA4IoT.Core;
 using HA4IoT.Core.Timer;
 using HA4IoT.Networking;
-using HA4IoT.Notifications;
 
 namespace HA4IoT.Actuators
 {
@@ -60,7 +60,7 @@ namespace HA4IoT.Actuators
 
         public void PublishStatisticsNotification()
         {
-            NotificationHandler.PublishFrom(this, NotificationType.Info, "Registered actuators = {0}, Rooms = {1}.", Actuators.Count, _rooms.Count);
+            NotificationHandler.Info("Registered actuators = {0}, Rooms = {1}.", Actuators.Count, _rooms.Count);
         }
 
         private void HandleStatusRequest(HttpContext httpContext)
@@ -79,7 +79,7 @@ namespace HA4IoT.Actuators
             }
 
             httpContext.Response.StatusCode = HttpStatusCode.OK;
-            httpContext.Response.Headers.Add("Etag", currentHash);
+            httpContext.Response.Headers.Add("ETag", currentHash);
 
             // Prevent the JsonObject from performing two redundant "Stringify" calls by using the plain text body with JSON mime type.
             httpContext.Response.Body = new PlainTextBody().WithContent(currentStatus).WithMimeType(JsonBody.DefaultMimeType);

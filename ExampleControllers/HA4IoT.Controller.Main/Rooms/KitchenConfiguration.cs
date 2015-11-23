@@ -1,5 +1,6 @@
 ﻿using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
+using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.DHT22;
 using HA4IoT.Hardware.GenericIOBoard;
@@ -65,7 +66,7 @@ namespace HA4IoT.Controller.Main.Rooms
             kitchen.Lamp(Kitchen.LightCeilingMiddle).ConnectToggleActionWith(kitchen.Button(Kitchen.ButtonKitchenette));
             kitchen.Lamp(Kitchen.LightCeilingMiddle).ConnectToggleActionWith(kitchen.Button(Kitchen.ButtonPassage));
 
-            kitchen.SetupAutomaticRollerShutters().WithRollerShutter(kitchen.RollerShutter(Kitchen.RollerShutter));
+            kitchen.SetupAutomaticRollerShutters().WithRollerShutters(kitchen.RollerShutter(Kitchen.RollerShutter));
             kitchen.RollerShutter(Kitchen.RollerShutter).ConnectWith(kitchen.RollerShutterButtons(Kitchen.RollerShutterButtons));
 
             kitchen.CombineActuators(Kitchen.CombinedAutomaticLights)

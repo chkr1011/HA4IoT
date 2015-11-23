@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Notifications;
 using HA4IoT.Notifications;
 
 namespace HA4IoT.Hardware.GenericIOBoard
@@ -88,7 +90,7 @@ namespace HA4IoT.Hardware.GenericIOBoard
                 _portExpanderDriver.Write(_state);
                 Array.Copy(_state, _committedState, _state.Length);
 
-                _notificationHandler.PublishFrom(this, NotificationType.Verbose, "'{0}' committed state.", Id);
+                _notificationHandler.Verbose(Id + ": Committed state");
             }
         }
 
@@ -102,7 +104,7 @@ namespace HA4IoT.Hardware.GenericIOBoard
             {
                 if (_peekedState != null)
                 {
-                    _notificationHandler.PublishFrom(this, NotificationType.Warning, "Peeking state while previous peeked state is not processed.");
+                    _notificationHandler.Warning("Peeking state while previous peeked state is not processed at " + Id + "'.");
                 }
 
                 _peekedState = _portExpanderDriver.Read();
@@ -135,8 +137,9 @@ namespace HA4IoT.Hardware.GenericIOBoard
                 Array.Copy(newState, _state, _state.Length);
                 Array.Copy(newState, _committedState, _committedState.Length);
 
-                _notificationHandler.PublishFrom(this, NotificationType.Verbose, "'{0}' fetched different state (Old/New: {1}/{2}).", Id,
-                    ByteExtensions.ToString(oldState), ByteExtensions.ToString(newState));
+                _notificationHandler.Verbose("'" + Id + "' fetched different state (" +
+                                             ByteExtensions.ToString(oldState) + "->" +
+                                             ByteExtensions.ToString(newState) + ").");
 
                 StateChanged?.Invoke(this, new IOBoardStateChangedEventArgs(oldState, newState));
             }

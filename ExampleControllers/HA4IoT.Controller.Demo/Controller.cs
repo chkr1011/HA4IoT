@@ -6,6 +6,7 @@ using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Notifications;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
@@ -18,6 +19,7 @@ using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
 using HA4IoT.Notifications;
 using HA4IoT.Telemetry;
+using HA4IoT.Telemetry.Csv;
 
 namespace HA4IoT.Controller.Demo
 {
@@ -203,13 +205,13 @@ namespace HA4IoT.Controller.Demo
                 string appId = configuration.GetNamedString("appID");
 
                 var weatherStation = new OWMWeatherStation(lat, lon, appId, Timer, HttpApiController, NotificationHandler);
-                NotificationHandler.PublishFrom(this, NotificationType.Info, "WeatherStation initialized successfully");
+                NotificationHandler.Info("WeatherStation initialized successfully");
 
                 return weatherStation;
             }
             catch (Exception exception)
             {
-                NotificationHandler.PublishFrom(this, NotificationType.Warning, "Unable to create weather station. " + exception.Message);
+                NotificationHandler.Warning("Unable to create weather station. " + exception.Message);
             }
 
             return null;

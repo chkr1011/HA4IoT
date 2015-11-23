@@ -15,8 +15,8 @@ using HA4IoT.Hardware.OpenWeatherMapWeatherStation;
 using HA4IoT.Hardware.Pi2;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
-using HA4IoT.Notifications;
-using HA4IoT.Telemetry;
+using HA4IoT.Telemetry.Azure;
+using HA4IoT.Telemetry.Csv;
 
 namespace HA4IoT.Controller.Main
 {
@@ -66,6 +66,7 @@ namespace HA4IoT.Controller.Main
 
             var localCsvFileWriter = new LocalCsvFileWriter(NotificationHandler);
             localCsvFileWriter.ConnectActuators(home);
+            localCsvFileWriter.ExposeToApi(HttpApiController);
 
             var ioBoardsInterruptMonitor = new InterruptMonitor(pi2PortController.GetInput(4), NotificationHandler);
             //Timer.Tick += (s, e) => ioBoardsInterruptMonitor.Poll();
@@ -103,11 +104,11 @@ namespace HA4IoT.Controller.Main
                     NotificationHandler);
 
                 azureEventHubPublisher.ConnectActuators(home);
-                NotificationHandler.PublishFrom(this, NotificationType.Info, "AzureEventHubPublisher initialized successfully.");
+                NotificationHandler.Info("AzureEventHubPublisher initialized successfully.");
             }
             catch (Exception exception)
             {
-                NotificationHandler.PublishFrom(this, NotificationType.Warning, "Unable to create azure event hub publisher. " + exception.Message);
+                NotificationHandler.Warning("Unable to create azure event hub publisher. " + exception.Message);
             }
         }
 
@@ -122,12 +123,12 @@ namespace HA4IoT.Controller.Main
                 string appId = configuration.GetNamedString("appID");
 
                 var weatherStation = new OWMWeatherStation(lat, lon, appId, Timer, HttpApiController, NotificationHandler);
-                NotificationHandler.PublishFrom(this, NotificationType.Info, "WeatherStation initialized successfully.");
+                NotificationHandler.Info("WeatherStation initialized successfully.");
                 return weatherStation;
             }
             catch (Exception exception)
             {
-                NotificationHandler.PublishFrom(this, NotificationType.Warning, "Unable to create weather station. " + exception.Message);
+                NotificationHandler.Warning("Unable to create weather station. " + exception.Message);
             }
 
             return null;

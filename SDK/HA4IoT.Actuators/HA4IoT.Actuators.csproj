@@ -116,6 +116,8 @@
   <ItemGroup>
     <Compile Include="Animations\AnimateParameter.cs" />
     <Compile Include="Animations\Animation.cs" />
+    <Compile Include="Conditions\Specialized\IsDayCondition.cs" />
+    <Compile Include="Conditions\Specialized\IsNightCondition.cs" />
     <Compile Include="PendingBinaryStateOutputActuatorState.cs" />
     <Compile Include="Animations\DirectionAnimation.cs" />
     <Compile Include="Animations\Frame.cs" />
@@ -138,6 +140,7 @@
     <Compile Include="DoNotCommitStateParameter.cs" />
     <Compile Include="ForceUpdateStateParameter.cs" />
     <Compile Include="Home.cs" />
+    <Compile Include="RollerShutters\RollerShutterExtensions.cs" />
     <Compile Include="Room.cs" />
     <Compile Include="SingleValueSensorBase.cs" />
     <Compile Include="ButtonPressedDuration.cs" />
@@ -145,8 +148,8 @@
     <Compile Include="Connectors\StateMachineWithButtonConnector.cs" />
     <Compile Include="ActuatorBase.cs" />
     <Compile Include="Connectors\RollerShutterWithRollerShutterButtonsConnector.cs" />
-    <Compile Include="RollerShutter.cs" />
-    <Compile Include="RollerShutterButtons.cs" />
+    <Compile Include="RollerShutters\RollerShutter.cs" />
+    <Compile Include="RollerShutters\RollerShutterButtons.cs" />
     <Compile Include="Button.cs" />
     <Compile Include="LogicalBinaryStateOutputActuator.cs" />
     <Compile Include="HumiditySensor.cs" />

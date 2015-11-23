@@ -30,6 +30,11 @@ namespace HA4IoT.Actuators.Conditions
             return thisState;
         }
 
+        public bool GetIsFulfilled()
+        {
+            return Validate() == ConditionState.Fulfilled;
+        }
+
         public Condition WithRelatedCondition(ConditionRelation relation, Condition condition)
         {
             if (condition == null) throw new ArgumentNullException(nameof(condition));

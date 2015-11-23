@@ -2,8 +2,8 @@
 using System.Linq;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Notifications;
 using HA4IoT.Networking;
-using HA4IoT.Notifications;
 
 namespace HA4IoT.Actuators
 {
@@ -31,7 +31,7 @@ namespace HA4IoT.Actuators
             bool forceUpdate = parameters.Any(p => p is ForceUpdateStateParameter);
             if (forceUpdate || stateHasChanged)
             {
-                NotificationHandler.PublishFrom(this, NotificationType.Verbose, "'{0}' set to '{1}'.", Id, newState);
+                NotificationHandler.Info(Id + ": " + oldState + "->" + newState);
                 OnStateChanged(oldState, newState);
             }
         }

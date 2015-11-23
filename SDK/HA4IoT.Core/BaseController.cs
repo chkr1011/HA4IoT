@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Devices.Gpio;
 using Windows.Storage;
+using HA4IoT.Contracts.Notifications;
 using HA4IoT.Core.Timer;
 using HA4IoT.Networking;
 using HA4IoT.Notifications;
@@ -56,15 +57,19 @@ namespace HA4IoT.Core
 
         private void InitializeNotificationHandler()
         {
-            NotificationHandler = new NotificationHandler();
-            NotificationHandler.Publish(NotificationType.Info, "Starting");
+            var notificationHandler = new NotificationHandler();
+            notificationHandler.ExposeToApi(HttpApiController);
+            notificationHandler.Info("Starting");
+            NotificationHandler = notificationHandler;
         }
 
         private void InitializeCore()
         {
+            InitializeHttpApi();
+
             InitializeNotificationHandler();
             InitializeTimer();
-            InitializeHttpApi();
+
             TryInitializeActuators();
 
             _httpServer.StartAsync(80).Wait();
@@ -79,7 +84,7 @@ namespace HA4IoT.Core
             }
             catch (Exception exception)
             {
-                NotificationHandler.PublishFrom(this, NotificationType.Error, "Error while initializing. " + exception);
+                NotificationHandler.Error("Error while initializing actuators. " + exception);
             }
         }
     }

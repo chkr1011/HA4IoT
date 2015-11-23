@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Windows.Data.Json;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Notifications;
 using HA4IoT.Networking;
 using HA4IoT.Notifications;
 
@@ -102,6 +104,8 @@ namespace HA4IoT.Actuators
 
             States[_index].Apply(commit);
             StateChanged?.Invoke(this, new StateMachineStateChangedEventArgs(oldState, newState));
+
+            NotificationHandler.Info(Id + ": " + oldState + "->" + newState);
         }
 
         public void TurnOff(bool commit = true)

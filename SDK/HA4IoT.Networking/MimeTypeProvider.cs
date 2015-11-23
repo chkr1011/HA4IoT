@@ -4,51 +4,66 @@ namespace HA4IoT.Networking
 {
     public class MimeTypeProvider
     {
+        public const string Csv = "text/csv; charset=utf-8";
+        public const string Html = "text/html; charset=utf-8";
+        public const string Javascript = "text/javascript; charset=utf-8";
+        public const string Json = "application/json; charset=utf-8";
+        public const string Css = "text/css; charset=utf-8";
+        public const string Png = "image/png";
+        public const string Jpg = "image/jpg";
+        public const string Manifest = "text/cache-manifest; charset=utf-8";
+        public const string PlainText = "text/plain; charset=utf-8";
+        
         public string GetMimeTypeFromFile(string filename)
         {
             string extension = Path.GetExtension(filename).ToLower();
             switch (extension)
             {
+                case ".csv":
+                    {
+                        return Csv;
+                    }
+
                 case ".html":
                 case ".htm":
                     {
-                        return "text/html; charset=utf-8";
+                        return Html;
                     }
 
                 case ".js":
                     {
-                        return "text/javascript; charset=utf-8";
+                        return Javascript;
                     }
 
                 case ".json":
                     {
-                        return "application/json; charset=utf-8";
+                        return Json;
                     }
 
                 case ".css":
                     {
-                        return "text/css; charset=utf-8";
+                        return Css;
                     }
 
                 case ".png":
                     {
-                        return "image/png";
+                        return Png;
                     }
 
                 case ".jpeg":
                 case ".jpg":
                     {
-                        return "image/jpg";
+                        return Jpg;
                     }
 
-                case ".manifest":
+                case Manifest:
                     {
                         return "text/cache-manifest";
                     }
 
                 default:
                     {
-                        return "text/plain; charset=utf-8";
+                        return PlainText;
                     }
             }
         }

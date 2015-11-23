@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.Devices.Enumeration;
 using Windows.Devices.I2c;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Notifications;
 using HA4IoT.Notifications;
 
 namespace HA4IoT.Hardware
@@ -47,8 +49,7 @@ namespace HA4IoT.Hardware
                 catch (Exception exception)
                 {
                     // Ensure that the application will not crash if some devices are currently not available etc.
-                    _notificationHandler.PublishFrom(this, NotificationType.Warning,
-                        "Error while accessing I2C device with address " + address + ". " + exception.Message);
+                    _notificationHandler.Warning("Error while accessing I2C device with address " + address + ". " + exception.Message);
                 }
                 finally
                 {

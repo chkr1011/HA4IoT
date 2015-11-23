@@ -135,7 +135,7 @@ namespace HA4IoT.Networking
                 {
                     responseText.AppendLine(header.ToString());
                 }
-
+                
                 responseText.AppendLine();
                 
                 using (var dataWriter = new DataWriter(client.OutputStream))

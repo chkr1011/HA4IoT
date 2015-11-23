@@ -6,6 +6,7 @@ using Windows.Storage;
 using Windows.Web.Http;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Notifications;
 using HA4IoT.Core.Timer;
 using HA4IoT.Networking;
 using HA4IoT.Notifications;
@@ -76,7 +77,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             }
             catch (Exception exception)
             {
-                _notificationHandler.PublishFrom(this, NotificationType.Warning, "Could not fetch weather information. " + exception.Message);
+                _notificationHandler.Warning("Could not fetch weather information. " + exception.Message);
             }
         }
 
@@ -142,7 +143,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             }
             catch (Exception)
             {
-                _notificationHandler.PublishFrom(this, NotificationType.Warning, "Unable to load persisted weather station values.");
+                _notificationHandler.Warning("Unable to load persisted weather station values.");
                 File.Delete(filename);
             }
         }

@@ -3,6 +3,7 @@ using Windows.Data.Json;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Notifications;
 using HA4IoT.Core.Timer;
 using HA4IoT.Networking;
 using HA4IoT.Notifications;
@@ -87,12 +88,12 @@ namespace HA4IoT.Actuators
 
             if (newState == MotionDetectorState.MotionDetected)
             {
-                NotificationHandler.PublishFrom(this, NotificationType.Info, "Motion detected at '{0}'.", Id);
+                NotificationHandler.Info(Id + ": Motion detected");
                 MotionDetected?.Invoke(this, EventArgs.Empty);
             }
             else
             {
-                NotificationHandler.PublishFrom(this, NotificationType.Info, "Detection completed at '{0}'.", Id);
+                NotificationHandler.Info(Id+ ": Detection completed");
                 DetectionCompleted?.Invoke(this, EventArgs.Empty);
             }
 
@@ -103,7 +104,7 @@ namespace HA4IoT.Actuators
         {
             if (!IsEnabled)
             {
-                notificationHandler.PublishFrom(this, NotificationType.Info, "'{0}' disabled for 1 hour.", Id);
+                notificationHandler.Info(Id + ": Disabled for 1 hour");
                 _autoEnableAction = timer.In(TimeSpan.FromHours(1)).Do(() => IsEnabled = true);
             }
             else

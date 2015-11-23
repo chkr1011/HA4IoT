@@ -1,8 +1,8 @@
 ﻿using System;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Notifications;
 using HA4IoT.Networking;
-using HA4IoT.Notifications;
 
 namespace HA4IoT.Actuators
 {
@@ -31,7 +31,7 @@ namespace HA4IoT.Actuators
             {
                 Value = newValue;
 
-                NotificationHandler.PublishFrom(this, NotificationType.Info, "'{0}' updated the value to from '{1}' to '{2}'", Id, oldValue, Value);
+                NotificationHandler.Info(Id + ": " + oldValue + "->" + newValue);
                 ValueChanged?.Invoke(this, new SingleValueSensorValueChangedEventArgs(oldValue, Value));
             }
         }

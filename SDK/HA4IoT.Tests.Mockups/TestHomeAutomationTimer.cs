@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts;
 using HA4IoT.Core.Timer;
 
 namespace HA4IoT.Tests.Mockups

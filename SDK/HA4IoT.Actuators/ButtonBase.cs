@@ -4,8 +4,8 @@ using System.Linq;
 using Windows.Data.Json;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Notifications;
 using HA4IoT.Networking;
-using HA4IoT.Notifications;
 
 namespace HA4IoT.Actuators
 {
@@ -79,7 +79,7 @@ namespace HA4IoT.Actuators
 
         protected void OnPressedShort()
         {
-            NotificationHandler.PublishFrom(this, NotificationType.Info, "'{0}' was pressed short.", Id);
+            NotificationHandler.Info(Id + ": pressed short");
 
             try
             {
@@ -93,7 +93,7 @@ namespace HA4IoT.Actuators
 
         protected void OnPressedLong()
         {
-            NotificationHandler.PublishFrom(this, NotificationType.Info, "'{0}' was pressed long.", Id);
+            NotificationHandler.Info(Id + ": pressed long");
 
             try
             {

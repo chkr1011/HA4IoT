@@ -48,6 +48,7 @@ function setupController() {
           c.activeRoom = "";
           c.errorMessage = "";
           c.version = "-";
+          c.notifications = [];
 
           getVersion(function (version) {
               c.version = version;
@@ -155,6 +156,12 @@ function setupController() {
 
               invokeActuator(actuator.id, { state: newState }, function () { actuator.state.state = newState; });
           };
+
+          $scope.loadNotifications = function () {
+              $.getJSON("/api/notifications", function(data) {
+                  c.notifications = data.notifications.reverse();
+              });
+          }
 
           $scope.invokeVirtualButton = function (actuator) {
               invokeActuator(actuator.id, {});
