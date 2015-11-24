@@ -57,7 +57,7 @@ namespace HA4IoT.Notifications
                 if (notification.Type != NotificationType.Verbose)
                 {
                     _history.Add(notification);
-                    if (_history.Count > 50)
+                    if (_history.Count > 100)
                     {
                         _history.RemoveAt(0);
                     }

@@ -159,7 +159,8 @@ function setupController() {
 
           $scope.loadNotifications = function () {
               $.getJSON("/api/notifications", function(data) {
-                  c.notifications = data.notifications.reverse();
+                  c.notifications = data.notifications;
+                  c.notifications.reverse();
               });
           }
 

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using HA4IoT.Actuators.Conditions.Specialized;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Core.Timer;
-using HA4IoT.Notifications;
 
 namespace HA4IoT.Actuators.Automations
 {
@@ -17,8 +17,11 @@ namespace HA4IoT.Actuators.Automations
 
         private bool _maxOutsideTemperatureApplied;
 
-        private bool _sunriseApplied;
-        private bool _sunsetApplied;
+        private bool _autoOpenIsApplied;
+        private bool _autoCloseIsApplied;
+        private bool _doNotOpenBeforeIsTraced;
+        private bool _doNotOpenIfTemperatureIsTraced;
+
 
         public AutomaticRollerShutterAutomation(IHomeAutomationTimer timer, IWeatherStation weatherStation, INotificationHandler notificationHandler)
         {
@@ -29,20 +32,19 @@ namespace HA4IoT.Actuators.Automations
             _weatherStation = weatherStation;
             _notificationHandler = notificationHandler;
 
-            SunriseCondition = new IsDayCondition(weatherStation, timer);
-            SunriseCondition.WithStartAdjustment(TimeSpan.FromMinutes(-30));
+            AutomaticallyOpenTimeRange = new TimeRangeCondition(timer);
+            AutomaticallyOpenTimeRange.WithStart(() => weatherStation.Daylight.Sunrise);
+            AutomaticallyOpenTimeRange.WithEnd(() => weatherStation.Daylight.Sunset);
 
-            SunsetCondition = new IsNightCondition(weatherStation, timer);
-            SunsetCondition.WithStartAdjustment(TimeSpan.FromMinutes(30));
+            AutomaticallyOpenTimeRange.WithStartAdjustment(TimeSpan.FromMinutes(-30));
+            AutomaticallyOpenTimeRange.WithEnd(TimeSpan.FromMinutes(30));
 
             IsEnabled = true;
 
             timer.Every(TimeSpan.FromSeconds(10)).Do(PerformPendingActions);
         }
 
-        public TimeRangeCondition SunriseCondition { get; }
-
-        public TimeRangeCondition SunsetCondition { get; }
+        public TimeRangeCondition AutomaticallyOpenTimeRange { get; }
 
         public TimeSpan? DoNotOpenBefore { get; set; }
 
@@ -92,7 +94,7 @@ namespace HA4IoT.Actuators.Automations
                     _maxOutsideTemperatureApplied = true;
                     StartMove(RollerShutterState.MovingDown);
 
-                    _notificationHandler.Info("Closing because outside temperature reaches " + MaxOutsideTemperatureForAutoClose + "°C");
+                    _notificationHandler.Info(GetTracePrefix() + "Closing because outside temperature reaches " + MaxOutsideTemperatureForAutoClose + "°C");
 
                     return;
                 }
@@ -106,39 +108,58 @@ namespace HA4IoT.Actuators.Automations
                 return;
             }
 
-            if (!_sunriseApplied && SunriseCondition.GetIsFulfilled())
+
+            bool autoOpenIsInRange = AutomaticallyOpenTimeRange.GetIsFulfilled();
+            bool autoCloseIsInRange = !autoOpenIsInRange;
+
+            if (!_autoOpenIsApplied && autoOpenIsInRange)
             {
                 TimeSpan time = DateTime.Now.TimeOfDay;
                 if (DoNotOpenBefore.HasValue && DoNotOpenBefore.Value > time)
                 {
-                    // TODO: Trace!
+                    if (!_doNotOpenBeforeIsTraced)
+                    {
+                        _notificationHandler.Info(GetTracePrefix() + "Skipping opening because it is too early.");
+                        _doNotOpenBeforeIsTraced = true;
+                    }
+                    
                     return;
                 }
+
+                // Consider creating an object for conditional traces.
+                _doNotOpenBeforeIsTraced = false;
 
                 if (MinOutsideTemperatureForDoNotOpen.HasValue &&
                     _weatherStation.Temperature.Value < MinOutsideTemperatureForDoNotOpen.Value)
                 {
-                    // TODO: Trace!
+                    if (!_doNotOpenIfTemperatureIsTraced)
+                    {
+                        _notificationHandler.Info(GetTracePrefix() + "Skipping opening because it is too cold (" + MinOutsideTemperatureForDoNotOpen + "°C).");
+                        _doNotOpenIfTemperatureIsTraced = true;
+                    }
+
                     return;
                 }
 
-                _sunriseApplied = true;
-                _sunsetApplied = false;
+                _doNotOpenBeforeIsTraced = false;
+
+                _autoOpenIsApplied = true;
+                _autoCloseIsApplied = false;
                 _maxOutsideTemperatureApplied = false;
 
                 StartMove(RollerShutterState.MovingUp);
-                _notificationHandler.Info("Applied sunrise");
+                _notificationHandler.Info(GetTracePrefix() + "Applied sunrise");
 
                 return;
             }
 
-            if (!_sunsetApplied && SunsetCondition.GetIsFulfilled())
+            if (!_autoCloseIsApplied && autoCloseIsInRange)
             {
-                _sunriseApplied = false;
-                _sunsetApplied = true;
-
+                _autoCloseIsApplied = true;
+                _autoOpenIsApplied = false;
+                
                 StartMove(RollerShutterState.MovingDown);
-                _notificationHandler.Info("Applied sunset");
+                _notificationHandler.Info(GetTracePrefix() + "Applied sunset");
             }
         }
 
@@ -148,6 +169,11 @@ namespace HA4IoT.Actuators.Automations
             {
                 rollerShutter.SetState(state);
             }
+        }
+
+        private string GetTracePrefix()
+        {
+            return "Auto " + string.Join(",", _rollerShutters.Select(rs => rs.Id)) + ": ";
         }
     }
 }

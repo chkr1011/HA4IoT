@@ -7,19 +7,22 @@
     <table class="table table-striped" ng-show="haCtrl.activePanel=='bottomBar'">
         <tbody>
             <tr>
-                <td colspan="2">
+                <td colspan="3">
                     <button type="button" class="btn btn-default" ng-click="loadNotifications()">Refresh notifications</button>
                 </td>
             </tr>
 
             <tr ng-repeat="notification in haCtrl.notifications | orderBy:['timestamp']">
-                <td>
+                <td style="width: 1%;">
                     <span class="label label-danger" ng-show="notification.type==='Error'">Error</span>
                     <span class="label label-warning" ng-show="notification.type==='Warning'">Warning</span>
                     <span class="label label-success" ng-show="notification.type==='Info'">Info</span>
                 </td>
-                <td>
-                    <span style="font-family: monospace">{{ notification.message }}</span>
+                <td style="width: 1%;">
+                    <span style="font-family: monospace; font-size: 8px;">{{ notification.timestamp }}</span>
+                </td>
+                <td style="width: 98%;">
+                    <span style="font-family: monospace; font-size: 8px;">{{ notification.message }}</span>
                 </td>
             </tr>
 
@@ -27,7 +30,7 @@
                 <td>
                     <h4>HA4IoT</h4>
                 </td>
-                <td class="rightTextAligned" style="font-family: monospace">
+                <td class="rightTextAligned" style="font-family: monospace; vertical-align: middle;">
                     (c) Christian Kratky
                 </td>
             </tr>
