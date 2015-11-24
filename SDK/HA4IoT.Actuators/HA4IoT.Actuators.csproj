@@ -116,6 +116,7 @@
   <ItemGroup>
     <Compile Include="Animations\AnimateParameter.cs" />
     <Compile Include="Animations\Animation.cs" />
+    <Compile Include="Buttons\ButtonExtensions.cs" />
     <Compile Include="Conditions\Specialized\IsDayCondition.cs" />
     <Compile Include="Conditions\Specialized\IsNightCondition.cs" />
     <Compile Include="PendingBinaryStateOutputActuatorState.cs" />
@@ -128,7 +129,7 @@
     <Compile Include="Automations\AutomaticTurnOnAndOffAutomation.cs" />
     <Compile Include="Automations\Automation.cs" />
     <Compile Include="BinaryStateOutputActuatorBase.cs" />
-    <Compile Include="ButtonBase.cs" />
+    <Compile Include="Buttons\ButtonBase.cs" />
     <Compile Include="Casement.cs" />
     <Compile Include="CasementState.cs" />
     <Compile Include="Conditions\Condition.cs" />
@@ -143,14 +144,14 @@
     <Compile Include="RollerShutters\RollerShutterExtensions.cs" />
     <Compile Include="Room.cs" />
     <Compile Include="SingleValueSensorBase.cs" />
-    <Compile Include="ButtonPressedDuration.cs" />
+    <Compile Include="Buttons\ButtonPressedDuration.cs" />
     <Compile Include="Connectors\BinaryStateActuatorWithButtonConnector.cs" />
     <Compile Include="Connectors\StateMachineWithButtonConnector.cs" />
     <Compile Include="ActuatorBase.cs" />
     <Compile Include="Connectors\RollerShutterWithRollerShutterButtonsConnector.cs" />
     <Compile Include="RollerShutters\RollerShutter.cs" />
-    <Compile Include="RollerShutters\RollerShutterButtons.cs" />
-    <Compile Include="Button.cs" />
+    <Compile Include="Buttons\RollerShutterButtons.cs" />
+    <Compile Include="Buttons\Button.cs" />
     <Compile Include="LogicalBinaryStateOutputActuator.cs" />
     <Compile Include="HumiditySensor.cs" />
     <Compile Include="StateMachineStateChangedEventArgs.cs" />
@@ -158,14 +159,14 @@
     <Compile Include="StateMachine.cs" />
     <Compile Include="StateMachineState.cs" />
     <Compile Include="TimeRangeChecker.cs" />
-    <Compile Include="VirtualButton.cs" />
+    <Compile Include="Buttons\VirtualButton.cs" />
     <Compile Include="Lamp.cs" />
     <Compile Include="MotionDetector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoomSettings.cs" />
     <Compile Include="Socket.cs" />
     <Compile Include="BinaryStateOutputActuator.cs" />
-    <Compile Include="VirtualButtonGroup.cs" />
+    <Compile Include="Buttons\VirtualButtonGroup.cs" />
     <Compile Include="Window.cs" />
     <Content Include="Properties\HA4IoT.Actuators.rd.xml" />
   </ItemGroup>
@@ -192,7 +193,9 @@
       <Name>HA4IoT.Notifications</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Sensors\" />
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
