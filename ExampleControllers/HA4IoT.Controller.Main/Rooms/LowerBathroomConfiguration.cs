@@ -24,7 +24,7 @@ namespace HA4IoT.Controller.Main.Rooms
             Window
         }
 
-        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Accessor dht22Accessor)
+        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardCollection ioBoardManager, DHT22Accessor dht22Accessor)
         {
             var hspe16_FloorAndLowerBathroom = ioBoardManager.GetOutputBoard(Device.LowerFloorAndLowerBathroomHSPE16);
             var input3 = ioBoardManager.GetInputBoard(Device.Input3);

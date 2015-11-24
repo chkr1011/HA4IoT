@@ -89,14 +89,19 @@ namespace HA4IoT.Actuators
             OnStateChanged(oldState, newState);
         }
 
-        public override void ApiGet(ApiRequestContext context)
+        public void TurnOff(params IParameter[] parameters)
+        {
+            SetState(RollerShutterState.Stopped);
+        }
+
+        public override void HandleApiGet(ApiRequestContext context)
         {
             context.Response.SetNamedValue("state", JsonValue.CreateStringValue(_state.ToString()));
             context.Response.SetNamedValue("position", JsonValue.CreateNumberValue(_position));
             context.Response.SetNamedValue("positionMax", JsonValue.CreateNumberValue(_positionMax));
         }
 
-        public override void ApiPost(ApiRequestContext context)
+        public override void HandleApiPost(ApiRequestContext context)
         {
             if (!context.Request.ContainsKey("state"))
             {

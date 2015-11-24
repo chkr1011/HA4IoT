@@ -34,7 +34,7 @@ namespace HA4IoT.Actuators
             return this;
         }
 
-        public override void ApiPost(ApiRequestContext context)
+        public override void HandleApiPost(ApiRequestContext context)
         {
             var button = context.Request.GetNamedString("button", string.Empty);
 
@@ -49,12 +49,12 @@ namespace HA4IoT.Actuators
                 throw new BadRequestException("The specified button is unknown.");
             }
 
-            virtualButton.ApiPost(context);
+            virtualButton.HandleApiPost(context);
         }
 
-        public override JsonObject ApiGetConfiguration()
+        public override JsonObject GetConfiguration()
         {
-            JsonObject configuration = base.ApiGetConfiguration();
+            JsonObject configuration = base.GetConfiguration();
 
             JsonArray buttonIds = new JsonArray();
             foreach (var button in _buttons)

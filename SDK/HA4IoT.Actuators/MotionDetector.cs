@@ -37,16 +37,16 @@ namespace HA4IoT.Actuators
             return _state;
         }
 
-        public override void ApiGet(ApiRequestContext context)
+        public override void HandleApiGet(ApiRequestContext context)
         {
-            base.ApiGet(context);
+            base.HandleApiGet(context);
 
             context.Response.SetNamedValue("state", JsonValue.CreateStringValue(_state.ToString()));
         }
 
-        public override void ApiPost(ApiRequestContext context)
+        public override void HandleApiPost(ApiRequestContext context)
         {
-            base.ApiPost(context);
+            base.HandleApiPost(context);
             
             if (context.Request.ContainsKey("action"))
             {

@@ -55,7 +55,7 @@ namespace HA4IoT.Controller.Cellar
             IWeatherStation weatherStation = CreateWeatherStation();
             var i2CBus = new I2cBusAccessor(NotificationHandler);
 
-            var ioBoardManager = new IOBoardManager(HttpApiController, NotificationHandler);
+            var ioBoardManager = new IOBoardCollection(HttpApiController, NotificationHandler);
             var ccToolsFactory = new CCToolsBoardController(i2CBus, ioBoardManager, NotificationHandler);
             var hsrt16 = ccToolsFactory.CreateHSRT16(Device.CellarHSRT16, 32);
 

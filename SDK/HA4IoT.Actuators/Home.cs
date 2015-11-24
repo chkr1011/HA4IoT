@@ -95,7 +95,7 @@ namespace HA4IoT.Actuators
             foreach (var actuator in Actuators.Values)
             {
                 var context = new ApiRequestContext(new JsonObject(), new JsonObject());
-                actuator.ApiGet(context);
+                actuator.HandleApiGet(context);
 
                 status.SetNamedValue(actuator.Id, context.Response);
             }

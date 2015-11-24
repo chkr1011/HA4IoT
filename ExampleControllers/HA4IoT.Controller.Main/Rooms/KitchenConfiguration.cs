@@ -34,7 +34,7 @@ namespace HA4IoT.Controller.Main.Rooms
             Window
         }
 
-        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Accessor dht22Accessor)
+        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardCollection ioBoardManager, DHT22Accessor dht22Accessor)
         {
             var hsrel5 = ccToolsController.CreateHSREL5(Device.KitchenHSREL5, 58);
             var hspe8 = ccToolsController.CreateHSPE8OutputOnly(Device.KitchenHSPE8, 39);

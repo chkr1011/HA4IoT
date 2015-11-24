@@ -42,7 +42,7 @@ namespace HA4IoT.Actuators
             return WithCasement(new Casement(Casement.RightCasementId, fullOpenReedSwitch, tiltReedSwitch));
         }
 
-        public override void ApiGet(ApiRequestContext context)
+        public override void HandleApiGet(ApiRequestContext context)
         {
             var state = new JsonObject();
             foreach (var casement in _casements)
@@ -53,9 +53,9 @@ namespace HA4IoT.Actuators
             context.Response.SetNamedValue("state", state);
         }
 
-        public override JsonObject ApiGetConfiguration()
+        public override JsonObject GetConfiguration()
         {
-            JsonObject configuration = base.ApiGetConfiguration();
+            JsonObject configuration = base.GetConfiguration();
 
             JsonArray casements = new JsonArray();
             foreach (var casement in _casements)

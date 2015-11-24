@@ -35,7 +35,7 @@ namespace HA4IoT.Controller.Main
             var i2CHardwareBridge = new I2CHardwareBridge(50, i2CBus);
             var sensorBridgeDriver = new DHT22Accessor(i2CHardwareBridge, Timer);
 
-            var ioBoardManager = new IOBoardManager(HttpApiController, NotificationHandler);
+            var ioBoardManager = new IOBoardCollection(HttpApiController, NotificationHandler);
             var ccToolsBoardController = new CCToolsBoardController(i2CBus, ioBoardManager, NotificationHandler);
 
             ccToolsBoardController.CreateHSPE16InputOnly(Device.Input0, 42);
@@ -49,7 +49,7 @@ namespace HA4IoT.Controller.Main
 
             var home = new Home(Timer, HealthMonitor, weatherStation, HttpApiController, NotificationHandler);
 
-            new BedroomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
+            new BedroomConfiguration(ccToolsBoardController, ioBoardManager).Setup(home, sensorBridgeDriver);
             new OfficeConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver, remoteSwitchController);
             new UpperBathroomConfiguration(ioBoardManager, ccToolsBoardController).Setup(home, sensorBridgeDriver);
             new ReadingRoomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);

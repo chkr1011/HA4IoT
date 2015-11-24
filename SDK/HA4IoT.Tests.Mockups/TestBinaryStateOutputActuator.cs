@@ -43,5 +43,10 @@ namespace HA4IoT.Tests.Mockups
             State = BinaryActuatorState.Off;
             return this;
         }
+
+        public void TurnOff(params IParameter[] parameters)
+        {
+            State = BinaryActuatorState.Off;
+        }
     }
 }

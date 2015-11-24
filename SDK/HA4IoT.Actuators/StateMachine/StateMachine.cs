@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Windows.Data.Json;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Networking;
-using HA4IoT.Notifications;
 
 namespace HA4IoT.Actuators
 {
-    public class StateMachine : ActuatorBase
+    public class StateMachine : ActuatorBase, IActuatorWithOffState
     {
         private int _index;
         private bool _turnOffIfStateIsAppliedTwice;
@@ -56,7 +54,7 @@ namespace HA4IoT.Actuators
             return AddState(id);
         }
 
-        public void ApplyState(string id, bool commit = true)
+        public void ApplyState(string id, params IParameter[] parameters)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
@@ -82,7 +80,7 @@ namespace HA4IoT.Actuators
                     }
 
                     _index = i;
-                    state.Apply(commit);
+                    state.Apply(parameters);
                     StateChanged?.Invoke(this, new StateMachineStateChangedEventArgs(oldState, state.Id));
                     return;
                 }
@@ -91,7 +89,7 @@ namespace HA4IoT.Actuators
             throw new NotSupportedException("StateMachineActuator '" + Id + "' does not support state '" + id + "'.");
         }
 
-        public void ApplyNextState(bool commit = true)
+        public void ApplyNextState(params IParameter[] parameters)
         {
             _index += 1;
             if (_index >= States.Count)
@@ -102,15 +100,15 @@ namespace HA4IoT.Actuators
             string oldState = State;
             string newState = States[_index].Id;
 
-            States[_index].Apply(commit);
+            States[_index].Apply(parameters);
             StateChanged?.Invoke(this, new StateMachineStateChangedEventArgs(oldState, newState));
 
             NotificationHandler.Info(Id + ": " + oldState + "->" + newState);
         }
 
-        public void TurnOff(bool commit = true)
+        public void TurnOff(params IParameter[] parameters)
         {
-            ApplyState(BinaryActuatorState.Off.ToString(), commit);
+            ApplyState(BinaryActuatorState.Off.ToString(), parameters);
         }
 
         public StateMachine WithTurnOffIfStateIsAppliedTwice()
@@ -119,7 +117,7 @@ namespace HA4IoT.Actuators
             return this;
         }
 
-        public override void ApiGet(ApiRequestContext context)
+        public override void HandleApiGet(ApiRequestContext context)
         {
             if (!States.Any())
             {
@@ -129,9 +127,9 @@ namespace HA4IoT.Actuators
             context.Response.SetNamedValue("state", JsonValue.CreateStringValue(States[_index].Id));
         }
 
-        public override JsonObject ApiGetConfiguration()
+        public override JsonObject GetConfiguration()
         {
-            JsonObject configuration = base.ApiGetConfiguration();
+            JsonObject configuration = base.GetConfiguration();
 
             JsonArray stateMachineStates = new JsonArray();
             foreach (var state in States)
@@ -144,7 +142,7 @@ namespace HA4IoT.Actuators
             return configuration;
         }
 
-        public override void ApiPost(ApiRequestContext context)
+        public override void HandleApiPost(ApiRequestContext context)
         {
             if (!context.Request.ContainsKey("state"))
             {

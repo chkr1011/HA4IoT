@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 
@@ -56,7 +57,7 @@ namespace HA4IoT.Actuators
             return this;
         }
 
-        internal void Apply(bool commit = true)
+        internal void Apply(params IParameter[] parameters)
         {
             foreach (var port in _outputs)
             {
@@ -68,7 +69,7 @@ namespace HA4IoT.Actuators
                 actuator.Item1.SetState(actuator.Item2, new DoNotCommitStateParameter());
             }
 
-            if (commit)
+            if (!parameters.Any(p => p is DoNotCommitStateParameter))
             {
                 foreach (var port in _outputs)
                 {

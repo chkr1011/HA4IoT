@@ -8,7 +8,7 @@ using HA4IoT.Notifications;
 
 namespace HA4IoT.Hardware.CCTools
 {
-    public class HSREL5 : IOBoardController, IBinaryOutputController
+    public class HSREL5 : IOBoardControllerBase, IBinaryOutputController
     {
         public HSREL5(string id, int i2CAddress, II2cBusAccessor bus, INotificationHandler notificationHandler)
             : base(id, new PCF8574Driver(i2CAddress, bus), notificationHandler)

@@ -3,21 +3,20 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Windows.Data.Json;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Networking;
-using HA4IoT.Notifications;
 
 namespace HA4IoT.Hardware.GenericIOBoard
 {
-    public class IOBoardManager
+    public class IOBoardCollection
     {
+        private readonly Dictionary<Enum, IOBoardControllerBase> _ioBoards = new Dictionary<Enum, IOBoardControllerBase>();
+
         private readonly IHttpRequestController _httpApiController;
-        private readonly Dictionary<Enum, IOBoardController> _ioBoards = new Dictionary<Enum, IOBoardController>();
         private readonly INotificationHandler _notificationHandler;
 
-        public IOBoardManager(IHttpRequestController httpApiController, INotificationHandler notificationHandler)
+        public IOBoardCollection(IHttpRequestController httpApiController, INotificationHandler notificationHandler)
         {
             if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
             if (notificationHandler == null) throw new ArgumentNullException(nameof(notificationHandler));
@@ -26,22 +25,52 @@ namespace HA4IoT.Hardware.GenericIOBoard
             _notificationHandler = notificationHandler;
         }
 
-        public void Add(Enum id, IOBoardController ioBoard)
+        public void Add(Enum id, IOBoardControllerBase ioBoard)
         {
             if (ioBoard == null) throw new ArgumentNullException(nameof(ioBoard));
 
-            ExposeToApi(ioBoard);
+            if (_ioBoards.ContainsKey(id))
+            {
+                throw new InvalidOperationException("Input board with ID '" + id + "' already registered.");
+            }
+
+            ExposeIoBoardToApi(ioBoard);
             _ioBoards.Add(id, ioBoard);
         }
 
         public IBinaryInputController GetInputBoard(Enum id)
         {
-            return (IBinaryInputController) _ioBoards[id];
+            IOBoardControllerBase board;
+            if (TryGetIOBoard(id, out board))
+            {
+                return (IBinaryInputController)board;
+            }
+
+            throw new InvalidOperationException("No input board with ID '" + id + "' registered.");
         }
 
         public IBinaryOutputController GetOutputBoard(Enum id)
         {
-            return (IBinaryOutputController) _ioBoards[id];
+            IOBoardControllerBase board;
+            if (TryGetIOBoard(id, out board))
+            {
+                return (IBinaryOutputController)board;
+            }
+
+            throw new InvalidOperationException("No output board with ID '" + id + "' registered.");
+        }
+
+        public bool TryGetIOBoard(Enum id, out IOBoardControllerBase board)
+        {
+            IOBoardControllerBase buffer;
+            if (_ioBoards.TryGetValue(id, out buffer))
+            {
+                board = buffer;
+                return true;
+            }
+
+            board = null;
+            return false;
         }
 
         public void PollInputBoardStates()
@@ -71,30 +100,23 @@ namespace HA4IoT.Hardware.GenericIOBoard
             }
         }
 
-        private void ExposeToApi(IOBoardController ioBoard)
+        private void ExposeIoBoardToApi(IOBoardControllerBase ioBoard)
         {
-            _httpApiController.Handle(HttpMethod.Get, "device").WithSegment(ioBoard.Id).Using(c => c.Response.Body = new JsonBody(ApiGet(ioBoard)));
-
-            _httpApiController.Handle(HttpMethod.Post, "device")
-                .WithSegment(ioBoard.Id)
-                .WithRequiredJsonBody()
-                .Using(c => ApiPost(ioBoard, c));
-
-            _httpApiController.Handle(HttpMethod.Patch, "device")
-                .WithSegment(ioBoard.Id)
-                .WithRequiredJsonBody()
-                .Using(c => ApiPatch(ioBoard, c));
+            _httpApiController.Handle(HttpMethod.Get, "device").WithSegment(ioBoard.Id).Using(c => HandleApiGet(c, ioBoard));
+            _httpApiController.Handle(HttpMethod.Post, "device").WithSegment(ioBoard.Id).Using(c => HandleApiPost(c, ioBoard));
+            _httpApiController.Handle(HttpMethod.Patch, "device").WithSegment(ioBoard.Id).Using(c => HandleApiPatch(c, ioBoard));
         }
 
-        private JsonObject ApiGet(IOBoardController ioBoard)
+        private void HandleApiGet(HttpContext httpContext, IOBoardControllerBase ioBoard)
         {
             var result = new JsonObject();
             result.SetNamedValue("state", ByteArrayToJsonValue(ioBoard.GetState()));
             result.SetNamedValue("committed-state", ByteArrayToJsonValue(ioBoard.GetCommittedState()));
-            return result;
+            
+            httpContext.Response.Body = new JsonBody(result);
         }
 
-        private void ApiPost(IOBoardController ioBoard, HttpContext httpContext)
+        private void HandleApiPost(HttpContext httpContext, IOBoardControllerBase ioBoard)
         {
             JsonObject requestData;
             if (!JsonObject.TryParse(httpContext.Request.Body, out requestData))
@@ -117,7 +139,7 @@ namespace HA4IoT.Hardware.GenericIOBoard
             }
         }
 
-        private void ApiPatch(IOBoardController ioBoard, HttpContext httpContext)
+        private void HandleApiPatch(HttpContext httpContext, IOBoardControllerBase ioBoard)
         {
             JsonObject requestData;
             if (!JsonObject.TryParse(httpContext.Request.Body, out requestData))

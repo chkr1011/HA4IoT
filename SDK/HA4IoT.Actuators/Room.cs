@@ -178,7 +178,7 @@ namespace HA4IoT.Actuators
             JsonArray actuatorDescriptions = new JsonArray();
             foreach (var actuator in _actuators)
             {
-                JsonObject actuatorDescription = actuator.ApiGetConfiguration();
+                JsonObject actuatorDescription = actuator.GetConfiguration();
                 actuatorDescriptions.Add(actuatorDescription);
             }
 
@@ -198,7 +198,7 @@ namespace HA4IoT.Actuators
             foreach (var actuator in _actuators)
             {
                 var context = new ApiRequestContext(new JsonObject(), new JsonObject());
-                actuator.ApiGet(context);
+                actuator.HandleApiGet(context);
                 state.SetNamedValue(actuator.Id, context.Response);
             }
 

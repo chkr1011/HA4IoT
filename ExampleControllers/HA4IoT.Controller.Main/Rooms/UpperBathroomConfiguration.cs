@@ -29,7 +29,7 @@ namespace HA4IoT.Controller.Main.Rooms
             CombinedCeilingLights
         }
 
-        public UpperBathroomConfiguration(IOBoardManager ioBoardManager, CCToolsBoardController ccToolsController)
+        public UpperBathroomConfiguration(IOBoardCollection ioBoardManager, CCToolsBoardController ccToolsController)
         {
             if (ioBoardManager == null) throw new ArgumentNullException(nameof(ioBoardManager));
 

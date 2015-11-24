@@ -153,11 +153,10 @@
     <Compile Include="Buttons\RollerShutterButtons.cs" />
     <Compile Include="Buttons\Button.cs" />
     <Compile Include="LogicalBinaryStateOutputActuator.cs" />
-    <Compile Include="HumiditySensor.cs" />
-    <Compile Include="StateMachineStateChangedEventArgs.cs" />
-    <Compile Include="TemperatureSensor.cs" />
-    <Compile Include="StateMachine.cs" />
-    <Compile Include="StateMachineState.cs" />
+    <Compile Include="Sensors\HumiditySensor.cs" />
+    <Compile Include="Sensors\TemperatureSensor.cs" />
+    <Compile Include="StateMachine\StateMachine.cs" />
+    <Compile Include="StateMachine\StateMachineState.cs" />
     <Compile Include="TimeRangeChecker.cs" />
     <Compile Include="Buttons\VirtualButton.cs" />
     <Compile Include="Lamp.cs" />
@@ -193,9 +192,7 @@
       <Name>HA4IoT.Notifications</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Sensors\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

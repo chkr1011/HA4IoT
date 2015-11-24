@@ -112,6 +112,7 @@
     <Compile Include="Actuators\BinaryActuatorStateChangedEventArgs.cs" />
     <Compile Include="Actuators\ButtonState.cs" />
     <Compile Include="Actuators\IActuatorBase.cs" />
+    <Compile Include="Actuators\IActuatorWithOffState.cs" />
     <Compile Include="Actuators\IBinaryStateOutputActuator.cs" />
     <Compile Include="Actuators\IBinaryStateOutputActuatorExtensions.cs" />
     <Compile Include="Actuators\IButton.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="Actuators\MotionDetectorState.cs" />
     <Compile Include="Actuators\RollerShutterState.cs" />
     <Compile Include="Actuators\RollerShutterStateChangedEventArgs.cs" />
+    <Compile Include="Actuators\StateMachineStateChangedEventArgs.cs" />
     <Compile Include="Actuators\ValueChangedEventArgsBase.cs" />
     <Compile Include="ButtonStateChangedEventArgs.cs" />
     <Compile Include="Daylight.cs" />

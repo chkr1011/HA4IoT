@@ -57,7 +57,7 @@ namespace HA4IoT.Controller.Main.Rooms
             CombinedLampStairs
         }
 
-        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Accessor dht22Accessor)
+        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardCollection ioBoardManager, DHT22Accessor dht22Accessor)
         {
             var hsrel5Stairway = ccToolsController.CreateHSREL5(Device.StairwayHSREL5, 60);
             var hspe8UpperFloor = ioBoardManager.GetOutputBoard(Device.UpperFloorAndOfficeHSPE8);

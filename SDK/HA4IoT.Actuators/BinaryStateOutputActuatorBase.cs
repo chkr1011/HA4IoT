@@ -1,10 +1,8 @@
 ﻿using System;
 using Windows.Data.Json;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Networking;
-using HA4IoT.Notifications;
 
 namespace HA4IoT.Actuators
 {
@@ -29,9 +27,14 @@ namespace HA4IoT.Actuators
             SetStateInternal(state, parameters);
         }
 
-        public override void ApiPost(ApiRequestContext context)
+        public void TurnOff(params IParameter[] parameters)
         {
-            base.ApiPost(context);
+            SetState(BinaryActuatorState.Off, parameters);
+        }
+
+        public override void HandleApiPost(ApiRequestContext context)
+        {
+            base.HandleApiPost(context);
 
             if (!context.Request.ContainsKey("state"))
             {
@@ -52,7 +55,7 @@ namespace HA4IoT.Actuators
                     this.Toggle(new DoNotCommitStateParameter());    
                 }
 
-                ApiGet(context);
+                HandleApiGet(context);
 
                 return;
             }
@@ -68,10 +71,10 @@ namespace HA4IoT.Actuators
             }
         }
 
-        public override void ApiGet(ApiRequestContext context)
+        public override void HandleApiGet(ApiRequestContext context)
         {
             context.Response["state"] = JsonValue.CreateStringValue(GetStateInternal().ToString());
-            base.ApiGet(context);
+            base.HandleApiGet(context);
         }
         
         protected void OnStateChanged(BinaryActuatorState oldState, BinaryActuatorState newState)

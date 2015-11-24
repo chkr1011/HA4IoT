@@ -19,7 +19,7 @@ namespace HA4IoT.Actuators
 
         public float ValueChangedMinDelta { get; set; } = 0.15F;
 
-        public override void ApiGet(ApiRequestContext context)
+        public override void HandleApiGet(ApiRequestContext context)
         {
             context.Response.SetNamedValue("value", JsonValue.CreateNumberValue(Value));
         }

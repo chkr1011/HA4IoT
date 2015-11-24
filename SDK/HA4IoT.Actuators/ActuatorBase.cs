@@ -50,21 +50,21 @@ namespace HA4IoT.Actuators
 
         public event EventHandler<ActuatorIsEnabledChangedEventArgs> IsEnabledChanged;
 
-        public virtual void ApiPost(ApiRequestContext context)
+        public virtual void HandleApiPost(ApiRequestContext context)
         {
             if (context.Request.ContainsKey("isEnabled"))
             {
                 IsEnabled = context.Request.GetNamedBoolean("isEnabled", false);
-                NotificationHandler.Info("'{0}' {1}.", Id, IsEnabled ? "enabled" : "disabled");
+                NotificationHandler.Info(Id + ": " + (IsEnabled ? "Enabled" : "Disabled"));
             }
         }
 
-        public virtual void ApiGet(ApiRequestContext context)
+        public virtual void HandleApiGet(ApiRequestContext context)
         {
             context.Response.SetNamedValue("isEnabled", JsonValue.CreateBooleanValue(IsEnabled));
         }
 
-        public virtual JsonObject ApiGetConfiguration()
+        public virtual JsonObject GetConfiguration()
         {
             var configuration = new JsonObject();
             configuration.SetNamedValue("id", JsonValue.CreateStringValue(Id));
@@ -88,7 +88,7 @@ namespace HA4IoT.Actuators
                     }
 
                     var context = new ApiRequestContext(requestData, new JsonObject());
-                    ApiPost(context);
+                    HandleApiPost(context);
 
                     c.Response.Body = new JsonBody(context.Response);
                 });
@@ -104,7 +104,7 @@ namespace HA4IoT.Actuators
                     }
 
                     var context = new ApiRequestContext(requestData, new JsonObject());
-                    ApiGet(context);
+                    HandleApiGet(context);
 
                     c.Response.Body = new JsonBody(context.Response);
                 });

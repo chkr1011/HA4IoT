@@ -79,7 +79,7 @@ namespace HA4IoT.Controller.Demo
 
             // Setup the manager for all types of IO boards which exposes all IO boards to the HTTP API
             // and polls the states of the inputs.
-            var ioBoardManager = new IOBoardManager(HttpApiController, NotificationHandler);
+            var ioBoardManager = new IOBoardCollection(HttpApiController, NotificationHandler);
 
             // Setup the controller which creates ports for IO boards from CCTools (or based on PCF8574/MAX7311/PCA9555D).
             var ccToolsBoardController = new CCToolsBoardController(i2CBus, ioBoardManager, NotificationHandler);
@@ -166,7 +166,7 @@ namespace HA4IoT.Controller.Demo
             };
         }
 
-        private void SetupCeilingFan(StateMachine stateMachine, Actuators.Room room, IOBoardManager ioBoardManager)
+        private void SetupCeilingFan(StateMachine stateMachine, Actuators.Room room, IOBoardCollection ioBoardManager)
         {
             var relayBoard = ioBoardManager.GetOutputBoard(Device.HSRel5);
             var gear1 = relayBoard.GetOutput(2);

@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Notifications;
-using HA4IoT.Notifications;
 
 namespace HA4IoT.Hardware.GenericIOBoard
 {
-    public abstract class IOBoardController
+    public abstract class IOBoardControllerBase
     {
         private readonly byte[] _committedState;
         private readonly byte[] _state;
@@ -19,7 +17,7 @@ namespace HA4IoT.Hardware.GenericIOBoard
         private readonly IPortExpanderDriver _portExpanderDriver;
         private readonly object _syncRoot = new object();
 
-        protected IOBoardController(string id, IPortExpanderDriver portExpanderDriver, INotificationHandler notificationHandler)
+        protected IOBoardControllerBase(string id, IPortExpanderDriver portExpanderDriver, INotificationHandler notificationHandler)
         {
             if (portExpanderDriver == null) throw new ArgumentNullException(nameof(portExpanderDriver));
             if (notificationHandler == null) throw new ArgumentNullException(nameof(notificationHandler));

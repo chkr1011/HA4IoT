@@ -1,6 +1,4 @@
-﻿using HA4IoT.Contracts.Actuators;
-
-namespace HA4IoT.Actuators
+﻿namespace HA4IoT.Contracts.Actuators
 {
     public class StateMachineStateChangedEventArgs : ValueChangedEventArgsBase<string>
     {

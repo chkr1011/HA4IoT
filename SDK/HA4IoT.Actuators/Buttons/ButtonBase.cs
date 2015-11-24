@@ -57,7 +57,7 @@ namespace HA4IoT.Actuators
             return this;
         }
 
-        public override void ApiPost(ApiRequestContext context)
+        public override void HandleApiPost(ApiRequestContext context)
         {
             string action = context.Request.GetNamedString("duration", string.Empty);
             if (action.Equals(ButtonPressedDuration.Long.ToString(), StringComparison.OrdinalIgnoreCase))
@@ -70,9 +70,9 @@ namespace HA4IoT.Actuators
             }
         }
 
-        public override void ApiGet(ApiRequestContext context)
+        public override void HandleApiGet(ApiRequestContext context)
         {
-            base.ApiGet(context);
+            base.HandleApiGet(context);
            
             context.Response.SetNamedValue("state", JsonValue.CreateStringValue(_state.ToString()));
         }

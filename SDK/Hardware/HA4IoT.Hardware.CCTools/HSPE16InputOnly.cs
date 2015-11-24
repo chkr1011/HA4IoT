@@ -7,7 +7,7 @@ using HA4IoT.Notifications;
 
 namespace HA4IoT.Hardware.CCTools
 {
-    public class HSPE16InputOnly : IOBoardController, IBinaryInputController
+    public class HSPE16InputOnly : IOBoardControllerBase, IBinaryInputController
     {
         public HSPE16InputOnly(string id, int address, II2cBusAccessor i2cBus, INotificationHandler notificationHandler)
             : base(id, new MAX7311Driver(address, i2cBus), notificationHandler)

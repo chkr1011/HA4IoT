@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Contracts.Actuators
 {
-    public interface IBinaryStateOutputActuator
+    public interface IBinaryStateOutputActuator : IActuatorWithOffState
     {
         event EventHandler<BinaryActuatorStateChangedEventArgs> StateChanged;
 

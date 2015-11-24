@@ -5,7 +5,7 @@ namespace HA4IoT.Hardware.GenericIOBoard
 {
     public class IOBoardPort : IBinaryInput, IBinaryOutput
     {
-        public IOBoardPort(int number, IOBoardController controller)
+        public IOBoardPort(int number, IOBoardControllerBase controller)
         {
             if (controller == null) throw new ArgumentNullException(nameof(controller));
 
@@ -17,7 +17,7 @@ namespace HA4IoT.Hardware.GenericIOBoard
 
         public int Number { get; }
         public bool ValueIsInverted { get; set; }
-        public IOBoardController Controller { get; }
+        public IOBoardControllerBase Controller { get; }
 
         public event EventHandler<BinaryStateChangedEventArgs> StateChanged;
 
