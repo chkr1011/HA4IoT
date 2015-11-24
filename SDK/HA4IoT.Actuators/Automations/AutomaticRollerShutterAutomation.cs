@@ -32,12 +32,9 @@ namespace HA4IoT.Actuators.Automations
             _weatherStation = weatherStation;
             _notificationHandler = notificationHandler;
 
-            AutomaticallyOpenTimeRange = new TimeRangeCondition(timer);
-            AutomaticallyOpenTimeRange.WithStart(() => weatherStation.Daylight.Sunrise);
-            AutomaticallyOpenTimeRange.WithEnd(() => weatherStation.Daylight.Sunset);
-
+            AutomaticallyOpenTimeRange = new IsDayCondition(weatherStation, timer);
             AutomaticallyOpenTimeRange.WithStartAdjustment(TimeSpan.FromMinutes(-30));
-            AutomaticallyOpenTimeRange.WithEnd(TimeSpan.FromMinutes(30));
+            AutomaticallyOpenTimeRange.WithEndAdjustment(TimeSpan.FromMinutes(30));
 
             IsEnabled = true;
 
