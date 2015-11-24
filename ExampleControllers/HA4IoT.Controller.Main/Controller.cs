@@ -51,7 +51,7 @@ namespace HA4IoT.Controller.Main
 
             new BedroomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
             new OfficeConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver, remoteSwitchController);
-            new UpperBathroomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
+            new UpperBathroomConfiguration(ioBoardManager, ccToolsBoardController).Setup(home, sensorBridgeDriver);
             new ReadingRoomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
             new ChildrensRoomRoomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
             new KitchenConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);

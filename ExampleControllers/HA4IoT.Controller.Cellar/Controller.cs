@@ -5,14 +5,12 @@ using Windows.Storage;
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Notifications;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.GenericIOBoard;
 using HA4IoT.Hardware.OpenWeatherMapWeatherStation;
 using HA4IoT.Hardware.Pi2;
-using HA4IoT.Notifications;
 
 namespace HA4IoT.Controller.Cellar
 {
@@ -74,11 +72,28 @@ namespace HA4IoT.Controller.Cellar
                 .WithLamp(Garden.LampParkingLot1, hsrt16.GetOutput(8))
                 .WithLamp(Garden.LampParkingLot2, hsrt16.GetOutput(6))
                 .WithLamp(Garden.LampParkingLot3, hsrt16.GetOutput(7))
+                .WithButton(Garden.Button, pi2PortController.GetInput(4).WithInvertedState())
+                .WithStateMachine(Garden.StateMachine, SetupStateMachine);
+            
+            garden.StateMachine(Garden.StateMachine).ConnectMoveNextAndToggleOffWith(garden.Button(Garden.Button));
 
-                .WithButton(Garden.Button, pi2PortController.GetInput(4).WithInvertedState());
+            garden.CombineActuators(Garden.CombinedParkingLotLamps)
+                .WithActuator(garden.Lamp(Garden.LampParkingLot1))
+                .WithActuator(garden.Lamp(Garden.LampParkingLot2)) // Mitte
+                .WithActuator(garden.Lamp(Garden.LampParkingLot3));
 
-            var stateMachine = garden.AddStateMachine(Garden.StateMachine);
+            garden.SetupAlwaysOn()
+                .WithActuator(garden.BinaryStateOutput(Garden.CombinedParkingLotLamps))
+                .WithOnlyAtNightRange(home.WeatherStation)
+                .WithOffBetweenRange(TimeSpan.FromHours(22).Add(TimeSpan.FromMinutes(30)), TimeSpan.FromHours(5));
 
+            home.PublishStatisticsNotification();
+
+            Timer.Tick += (s, e) => { pi2PortController.PollOpenInputPorts(); };
+        }
+
+        private void SetupStateMachine(StateMachine stateMachine, Actuators.Room garden)
+        {
             stateMachine.AddOffState()
                 .WithActuator(garden.Lamp(Garden.LampTerrace), BinaryActuatorState.Off)
                 .WithActuator(garden.Lamp(Garden.LampGarage), BinaryActuatorState.Off)
@@ -141,22 +156,6 @@ namespace HA4IoT.Controller.Cellar
                 .WithActuator(garden.Lamp(Garden.LampTap), BinaryActuatorState.On)
                 .WithActuator(garden.Lamp(Garden.SpotlightRoof), BinaryActuatorState.On)
                 .WithActuator(garden.Lamp(Garden.LampRearArea), BinaryActuatorState.On);
-
-            garden.StateMachine(Garden.StateMachine).ConnectMoveNextAndToggleOffWith(garden.Button(Garden.Button));
-
-            garden.CombineActuators(Garden.CombinedParkingLotLamps)
-                .WithActuator(garden.Lamp(Garden.LampParkingLot1))
-                .WithActuator(garden.Lamp(Garden.LampParkingLot2)) // Mitte
-                .WithActuator(garden.Lamp(Garden.LampParkingLot3));
-
-            garden.SetupAlwaysOn()
-                .WithActuator(garden.BinaryStateOutput(Garden.CombinedParkingLotLamps))
-                .WithOnlyAtNightRange(home.WeatherStation)
-                .WithOffBetweenRange(TimeSpan.FromHours(22).Add(TimeSpan.FromMinutes(30)), TimeSpan.FromHours(5));
-
-            home.PublishStatisticsNotification();
-
-            Timer.Tick += (s, e) => { pi2PortController.PollOpenInputPorts(); };
         }
 
         private IWeatherStation CreateWeatherStation()

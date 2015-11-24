@@ -91,12 +91,12 @@ namespace HA4IoT.Actuators
                     Home.NotificationHandler));
         }
 
-        public Room WithStateMachine(Enum id, Action<StateMachine> initializer)
+        public Room WithStateMachine(Enum id, Action<StateMachine, Room> initializer)
         {
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
 
             var stateMachine = new StateMachine(GenerateActuatorId(id), Home.HttpApiController, Home.NotificationHandler);
-            initializer(stateMachine);
+            initializer(stateMachine, this);
 
             return WithActuator(id, stateMachine);
         }

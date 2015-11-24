@@ -6,7 +6,6 @@ using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Notifications;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
@@ -17,8 +16,6 @@ using HA4IoT.Hardware.OpenWeatherMapWeatherStation;
 using HA4IoT.Hardware.Pi2;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
-using HA4IoT.Notifications;
-using HA4IoT.Telemetry;
 using HA4IoT.Telemetry.Csv;
 
 namespace HA4IoT.Controller.Demo
@@ -127,7 +124,7 @@ namespace HA4IoT.Controller.Demo
                 .WithButton(ExampleRoom.Button1, ioBoardManager.GetInputBoard(Device.HSPE16).GetInput(1))
                 .WithButton(ExampleRoom.Button2, ioBoardManager.GetInputBoard(Device.HSPE16).GetInput(2))
                 .WithVirtualButtonGroup(ExampleRoom.LedStripRemote, g => SetupLEDStripRemote(i2CHardwareBridge, g))
-                .WithStateMachine(ExampleRoom.CeilingFan, sm => SetupCeilingFan(sm, ioBoardManager));
+                .WithStateMachine(ExampleRoom.CeilingFan, (sm, r) => SetupCeilingFan(sm, r, ioBoardManager));
             
             exampleRoom.Lamp(ExampleRoom.Lamp5).ConnectToggleActionWith(exampleRoom.Button(ExampleRoom.Button1));
             exampleRoom.Lamp(ExampleRoom.Lamp6).ConnectToggleActionWith(exampleRoom.Button(ExampleRoom.Button1), ButtonPressedDuration.Long);
@@ -169,7 +166,7 @@ namespace HA4IoT.Controller.Demo
             };
         }
 
-        private void SetupCeilingFan(StateMachine stateMachine, IOBoardManager ioBoardManager)
+        private void SetupCeilingFan(StateMachine stateMachine, Actuators.Room room, IOBoardManager ioBoardManager)
         {
             var relayBoard = ioBoardManager.GetOutputBoard(Device.HSRel5);
             var gear1 = relayBoard.GetOutput(2);
