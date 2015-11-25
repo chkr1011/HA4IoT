@@ -13,7 +13,8 @@ namespace HA4IoT.Networking
         public const string Jpg = "image/jpg";
         public const string Manifest = "text/cache-manifest; charset=utf-8";
         public const string PlainText = "text/plain; charset=utf-8";
-        
+        public const string OctetStream = "application/octet-stream";
+
         public string GetMimeTypeFromFile(string filename)
         {
             string extension = Path.GetExtension(filename).ToLower();
@@ -56,9 +57,14 @@ namespace HA4IoT.Networking
                         return Jpg;
                     }
 
-                case Manifest:
+                case ".bin":
                     {
-                        return "text/cache-manifest";
+                        return OctetStream;
+                    }
+
+                case ".manifest":
+                    {
+                        return Manifest;
                     }
 
                 default:

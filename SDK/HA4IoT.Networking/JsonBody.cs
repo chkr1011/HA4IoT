@@ -6,8 +6,6 @@ namespace HA4IoT.Networking
 {
     public class JsonBody : IHttpBody
     {
-        public const string DefaultMimeType = "application/json; charset=utf-8";
-
         public JsonBody(JsonObject content)
         {
             if (content == null) throw new ArgumentNullException(nameof(content));
@@ -17,7 +15,7 @@ namespace HA4IoT.Networking
 
         public JsonObject Content { get; }
 
-        public string MimeType { get; private set; } = DefaultMimeType;
+        public string MimeType { get; private set; } = MimeTypeProvider.Json;
 
         public byte[] ToByteArray()
         {

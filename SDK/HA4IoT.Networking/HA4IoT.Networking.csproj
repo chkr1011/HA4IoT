@@ -119,6 +119,7 @@
     <Compile Include="HttpContext.cs" />
     <Compile Include="HttpHeader.cs" />
     <Compile Include="HttpHeaderCollection.cs" />
+    <Compile Include="JsonObjectExtensions.cs" />
     <Compile Include="MappedFolderController.cs" />
     <Compile Include="IHttpBody.cs" />
     <Compile Include="IHttpRequestController.cs" />

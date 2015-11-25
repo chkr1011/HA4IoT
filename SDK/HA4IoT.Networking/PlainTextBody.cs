@@ -5,11 +5,9 @@ namespace HA4IoT.Networking
 {
     public class PlainTextBody : IHttpBody
     {
-        public const string DefaultMimeType = "text/plain; charset=utf-8";
-
         public StringBuilder Content { get; } = new StringBuilder();
 
-        public string MimeType { get; set; } = DefaultMimeType;
+        public string MimeType { get; set; } = MimeTypeProvider.PlainText;
 
         public byte[] ToByteArray()
         {
