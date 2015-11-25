@@ -12,5 +12,6 @@
   "UI.MotionDetectorDisabled": "Aus",
   "UI.MotionDetectorEnabled": "Aktiv",
   "UI.Sunrise": "Sonnenaufgang",
-  "UI.Sunset": "Sonnenuntergang"
+  "UI.Sunset": "Sonnenuntergang",
+  "UI.Mold": "Schimmel"
 }

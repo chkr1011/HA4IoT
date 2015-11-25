@@ -21,8 +21,7 @@ namespace HA4IoT.Actuators.Automations
         private bool _autoCloseIsApplied;
         private bool _doNotOpenBeforeIsTraced;
         private bool _doNotOpenIfTemperatureIsTraced;
-
-
+        
         public AutomaticRollerShutterAutomation(IHomeAutomationTimer timer, IWeatherStation weatherStation, INotificationHandler notificationHandler)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
@@ -86,7 +85,7 @@ namespace HA4IoT.Actuators.Automations
 
             if (MaxOutsideTemperatureForAutoClose.HasValue && !_maxOutsideTemperatureApplied)
             {
-                if (_weatherStation.Temperature.Value > MaxOutsideTemperatureForAutoClose.Value)
+                if (_weatherStation.TemperatureSensor.GetValue() > MaxOutsideTemperatureForAutoClose.Value)
                 {
                     _maxOutsideTemperatureApplied = true;
                     StartMove(RollerShutterState.MovingDown);
@@ -127,7 +126,7 @@ namespace HA4IoT.Actuators.Automations
                 _doNotOpenBeforeIsTraced = false;
 
                 if (MinOutsideTemperatureForDoNotOpen.HasValue &&
-                    _weatherStation.Temperature.Value < MinOutsideTemperatureForDoNotOpen.Value)
+                    _weatherStation.TemperatureSensor.GetValue() < MinOutsideTemperatureForDoNotOpen.Value)
                 {
                     if (!_doNotOpenIfTemperatureIsTraced)
                     {

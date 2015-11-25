@@ -62,14 +62,13 @@ namespace HA4IoT.Controller.Main
 
             home.PublishStatisticsNotification();
 
-            AttachAzureEventHubPublisher(home);
+            //AttachAzureEventHubPublisher(home);
 
-            var localCsvFileWriter = new LocalCsvFileWriter(NotificationHandler);
+            var localCsvFileWriter = new CsvHistory(NotificationHandler, HttpApiController);
             localCsvFileWriter.ConnectActuators(home);
             localCsvFileWriter.ExposeToApi(HttpApiController);
 
             var ioBoardsInterruptMonitor = new InterruptMonitor(pi2PortController.GetInput(4), NotificationHandler);
-            //Timer.Tick += (s, e) => ioBoardsInterruptMonitor.Poll();
             ioBoardsInterruptMonitor.StartPollingTaskAsync();
 
             ioBoardsInterruptMonitor.InterruptDetected += (s, e) => ioBoardManager.PollInputBoardStates();

@@ -5,6 +5,7 @@ using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using Windows.Storage.Streams;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Core;
 using HA4IoT.Core.Timer;
@@ -12,7 +13,7 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public class Home
+    public class Home : IStatusProvider
     {
         private readonly HealthMonitor _healthMonitor;
         private readonly Dictionary<Enum, Room> _rooms = new Dictionary<Enum, Room>();
@@ -65,7 +66,7 @@ namespace HA4IoT.Actuators
 
         private void HandleStatusRequest(HttpContext httpContext)
         {
-            var currentStatus = GetStatusAsJson().Stringify();
+            var currentStatus = GetStatus().Stringify();
             var currentHash = "\"" + GenerateHash(currentStatus) + "\"";
 
             string clientHash;
@@ -82,10 +83,10 @@ namespace HA4IoT.Actuators
             httpContext.Response.Headers.Add("ETag", currentHash);
 
             // Prevent the JsonObject from performing two redundant "Stringify" calls by using the plain text body with JSON mime type.
-            httpContext.Response.Body = new PlainTextBody().WithContent(currentStatus).WithMimeType(JsonBody.DefaultMimeType);
+            httpContext.Response.Body = new PlainTextBody().WithContent(currentStatus).WithMimeType(MimeTypeProvider.Json);
         }
 
-        private JsonObject GetStatusAsJson()
+        public JsonObject GetStatus()
         {
             var result = new JsonObject();
             result.SetNamedValue("type", JsonValue.CreateStringValue("HA4IoT.Status"));
@@ -104,7 +105,7 @@ namespace HA4IoT.Actuators
 
             if (WeatherStation != null)
             {
-                result.SetNamedValue("weatherStation", WeatherStation.ApiGet());
+                result.SetNamedValue("weatherStation", WeatherStation.GetStatus());
             }
 
             return result;

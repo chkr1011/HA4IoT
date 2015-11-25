@@ -21,7 +21,7 @@ namespace HA4IoT.Hardware.DHT22
 
         public event EventHandler<SingleValueSensorValueChangedEventArgs> ValueChanged;
 
-        public float Read()
+        public float GetValue()
         {
             return _value;
         }

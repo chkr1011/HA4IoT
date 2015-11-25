@@ -6,33 +6,38 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public abstract class SingleValueSensorBase : ActuatorBase
+    public abstract class SingleValueSensorActuatorBase : ActuatorBase, ISingleValueSensor
     {
-        protected SingleValueSensorBase(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
+        private float _value;
+
+        protected SingleValueSensorActuatorBase(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
             : base(id, httpApiController, notificationHandler)
         {
         }
 
         public event EventHandler<SingleValueSensorValueChangedEventArgs> ValueChanged;
 
-        public float Value { get; private set; }
-
         public float ValueChangedMinDelta { get; set; } = 0.15F;
+
+        public float GetValue()
+        {
+            return _value;
+        }
 
         public override void HandleApiGet(ApiRequestContext context)
         {
-            context.Response.SetNamedValue("value", JsonValue.CreateNumberValue(Value));
+            context.Response.SetNamedValue("value", JsonValue.CreateNumberValue(_value));
         }
 
-        protected void UpdateValue(float newValue)
+        public void UpdateValue(float newValue)
         {
-            float oldValue = Value;
+            float oldValue = _value;
             if (Math.Abs(oldValue - newValue) > ValueChangedMinDelta)
             {
-                Value = newValue;
+                _value = newValue;
 
                 NotificationHandler.Info(Id + ": " + oldValue + "->" + newValue);
-                ValueChanged?.Invoke(this, new SingleValueSensorValueChangedEventArgs(oldValue, Value));
+                ValueChanged?.Invoke(this, new SingleValueSensorValueChangedEventArgs(oldValue, _value));
             }
         }
     }

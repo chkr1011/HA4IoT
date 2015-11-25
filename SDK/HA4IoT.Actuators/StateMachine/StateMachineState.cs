@@ -53,7 +53,7 @@ namespace HA4IoT.Actuators
         {
             if (button == null) throw new ArgumentNullException(nameof(button));
 
-            button.WithShortAction(() => _stateMachine.ApplyState(Id));
+            button.WithShortAction(() => _stateMachine.SetState(Id));
             return this;
         }
 

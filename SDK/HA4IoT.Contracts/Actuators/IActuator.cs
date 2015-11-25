@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Contracts.Actuators
 {
-    public interface IActuatorBase
+    public interface IActuator
     {
         event EventHandler<ActuatorIsEnabledChangedEventArgs>  IsEnabledChanged;
 

@@ -1,31 +1,19 @@
 ﻿using System;
-using System.Diagnostics;
 using HA4IoT.Actuators;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Notifications;
-using HA4IoT.Notifications;
 
 namespace HA4IoT.Telemetry
 {
     public abstract class ActuatorMonitor
-    {
-        protected ActuatorMonitor(INotificationHandler notificationHandler)
-        {
-            if (notificationHandler == null) throw new ArgumentNullException(nameof(notificationHandler));
-
-            NotificationHandler = notificationHandler;
-        }
-
-        protected INotificationHandler NotificationHandler { get; }
-
+    { 
         public void ConnectActuators(Home home)
         {
             if (home == null) throw new ArgumentNullException(nameof(home));
 
             foreach (var actuator in home.Actuators.Values)
             {
+                OnActuatorConnecting(actuator);
+
                 var binaryStateOutput = actuator as IBinaryStateOutputActuator;
                 if (binaryStateOutput != null)
                 {
@@ -40,12 +28,13 @@ namespace HA4IoT.Telemetry
                     continue;
                 }
 
-                var sensor = actuator as SingleValueSensorBase;
+                var sensor = actuator as ISingleValueSensorActuator;
                 if (sensor != null)
                 {
+                    OnSensorValueChanged(sensor, sensor.GetValue());
                     sensor.ValueChanged += (s, e) =>
                     {
-                        OnSensorValueChanged(sensor, e);
+                        OnSensorValueChanged(sensor, e.NewValue);
                     };
 
                     continue;
@@ -78,6 +67,10 @@ namespace HA4IoT.Telemetry
             }
         }
 
+        protected virtual void OnActuatorConnecting(IActuator actuator)
+        {
+        }
+
         protected virtual void OnMotionDetected(IMotionDetector motionDetector)
         {
         }
@@ -86,39 +79,35 @@ namespace HA4IoT.Telemetry
         {
         }
 
-        protected virtual void OnBinaryStateActuatorStateChanged(IBinaryStateOutputActuator actuator, BinaryActuatorStateChangedEventArgs eventArgs, TimeSpan previousStateDuration)
+        protected virtual void OnBinaryStateActuatorStateChanged(IBinaryStateOutputActuator actuator, BinaryActuatorState newState)
         {
         }
 
-        protected virtual void OnStateMachineStateChanged(StateMachine stateMachine, StateMachineStateChangedEventArgs eventArgs, TimeSpan previousStateDuration)
+        protected virtual void OnStateMachineStateChanged(StateMachine stateMachine, string newState)
         {
         }
 
-        protected virtual void OnSensorValueChanged(SingleValueSensorBase sensor, SingleValueSensorValueChangedEventArgs eventArgs)
+        protected virtual void OnSensorValueChanged(ISingleValueSensorActuator sensor, float newValue)
         {
         }
 
         private void HandleBinaryStateOutputActuator(IBinaryStateOutputActuator binaryStateOutputActuator)
         {
-            Stopwatch stopwatch = Stopwatch.StartNew();
+            OnBinaryStateActuatorStateChanged(binaryStateOutputActuator, binaryStateOutputActuator.GetState());
+            
             binaryStateOutputActuator.StateChanged += (s, e) =>
             {
-                TimeSpan previousStateDuration = stopwatch.Elapsed;
-                stopwatch.Restart();
-
-                OnBinaryStateActuatorStateChanged(binaryStateOutputActuator, e, previousStateDuration);
+                OnBinaryStateActuatorStateChanged(binaryStateOutputActuator, e.NewValue);
             };
         }
 
         private void HandleStateMachineOutputActuator(StateMachine stateMachine)
         {
-            Stopwatch stopwatch = Stopwatch.StartNew();
+            OnStateMachineStateChanged(stateMachine, stateMachine.GetState());
+
             stateMachine.StateChanged += (s, e) =>
             {
-                TimeSpan previousStateDuration = stopwatch.Elapsed;
-                stopwatch.Restart();
-
-                OnStateMachineStateChanged(stateMachine, e, previousStateDuration);
+                OnStateMachineStateChanged(stateMachine, e.NewValue);
             };
         }
     }

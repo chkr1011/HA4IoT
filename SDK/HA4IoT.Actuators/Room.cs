@@ -63,14 +63,20 @@ namespace HA4IoT.Actuators
         {
             if (output == null) throw new ArgumentNullException(nameof(output));
 
-            return WithActuator(id, new Lamp(GenerateActuatorId(id), output, Home.HttpApiController, Home.NotificationHandler));
+            var lamp = new Lamp(GenerateActuatorId(id), output, Home.HttpApiController, Home.NotificationHandler);
+            lamp.SetInitialState();
+
+            return WithActuator(id, lamp);
         }
 
         public Room WithSocket(Enum id, IBinaryOutput output)
         {
             if (output == null) throw new ArgumentNullException(nameof(output));
 
-            return WithActuator(id, new Socket(GenerateActuatorId(id), output, Home.HttpApiController, Home.NotificationHandler));
+            var socket = new Socket(GenerateActuatorId(id), output, Home.HttpApiController, Home.NotificationHandler);
+            socket.SetInitialState();
+
+            return WithActuator(id, socket);
         }
 
         public Room WithHumiditySensor(Enum id, ISingleValueSensor sensor)
@@ -97,15 +103,9 @@ namespace HA4IoT.Actuators
 
             var stateMachine = new StateMachine(GenerateActuatorId(id), Home.HttpApiController, Home.NotificationHandler);
             initializer(stateMachine, this);
+            stateMachine.SetInitialState();
 
             return WithActuator(id, stateMachine);
-        }
-
-        public StateMachine AddStateMachine(Enum id)
-        {
-            var actuator = new StateMachine(GenerateActuatorId(id), Home.HttpApiController, Home.NotificationHandler);
-            WithActuator(id, actuator);
-            return actuator;
         }
 
         public LogicalBinaryStateOutputActuator CombineActuators(Enum id)

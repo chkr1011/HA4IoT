@@ -15,6 +15,12 @@ namespace HA4IoT.Actuators
 
         public event EventHandler<BinaryActuatorStateChangedEventArgs> StateChanged;
 
+        public virtual void SetInitialState()
+        {
+            // TODO: Load state from file
+            SetState(BinaryActuatorState.Off, new ForceUpdateStateParameter());
+        }
+
         public BinaryActuatorState GetState()
         {
             return GetStateInternal();

@@ -115,9 +115,10 @@
   <ItemGroup>
     <Compile Include="ActuatorMonitor.cs" />
     <Compile Include="Azure\AzureEventHubPublisher.cs" />
-    <Compile Include="Csv\CsvEntry.cs" />
-    <Compile Include="Csv\LocalCsvFileWriter.cs" />
+    <Compile Include="ActuatorHistoryEntry.cs" />
+    <Compile Include="Csv\CsvHistory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Statistics\ActuatorHistory.cs" />
     <Content Include="Properties\HA4IoT.Telemetry.rd.xml" />
   </ItemGroup>
   <ItemGroup>

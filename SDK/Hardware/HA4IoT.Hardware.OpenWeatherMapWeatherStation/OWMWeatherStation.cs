@@ -9,7 +9,6 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Core.Timer;
 using HA4IoT.Networking;
-using HA4IoT.Notifications;
 using HttpMethod = HA4IoT.Networking.HttpMethod;
 using HttpStatusCode = HA4IoT.Networking.HttpStatusCode;
 
@@ -19,8 +18,8 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
     {
         private readonly INotificationHandler _notificationHandler;
         private readonly Uri _weatherDataSourceUrl;
-        private readonly WeatherStationTemperatureSensor _temperature = new WeatherStationTemperatureSensor();
-        private readonly WeatherStationHumiditySensor _humidity = new WeatherStationHumiditySensor();
+        private readonly WeatherStationTemperatureSensor _temperature;
+        private readonly WeatherStationHumiditySensor _humidity;
 
         private DateTime? _lastFetched;
         private TimeSpan _sunrise;
@@ -32,28 +31,31 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
             if (notificationHandler == null) throw new ArgumentNullException(nameof(notificationHandler));
 
-            Temperature = _temperature;
-            Humidity = _humidity;
+            _temperature = new WeatherStationTemperatureSensor("WeatherStation.Temperature", httpApiController, notificationHandler);
+            TemperatureSensor = _temperature;
+
+            _humidity = new WeatherStationHumiditySensor("WeatherStation.Humidity", httpApiController, notificationHandler);
+            HumiditySensor = _humidity;
 
             _notificationHandler = notificationHandler;
             _weatherDataSourceUrl = new Uri(string.Format("http://api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}&APPID={2}&units=metric", lat, lon, appId));
 
-            httpApiController.Handle(HttpMethod.Get, "weatherStation").Using(c => c.Response.Body = new JsonBody(ApiGet()));
-            httpApiController.Handle(HttpMethod.Post, "weatherStation").WithRequiredJsonBody().Using(c => ApiPost(c));
+            httpApiController.Handle(HttpMethod.Get, "weatherStation").Using(HandleApiGet);
+            httpApiController.Handle(HttpMethod.Post, "weatherStation").WithRequiredJsonBody().Using(HandleApiPost);
 
             LoadPersistedValues();
             timer.Every(TimeSpan.FromMinutes(2.5)).Do(Update);
         }
 
         public Daylight Daylight => new Daylight(_sunrise, _sunset);
-        public ITemperatureSensor Temperature { get; }
-        public IHumiditySensor Humidity { get; }
+        public ITemperatureSensor TemperatureSensor { get; }
+        public IHumiditySensor HumiditySensor { get; }
 
-        public JsonObject ApiGet()
+        public JsonObject GetStatus()
         {
             var result = new JsonObject();
-            result.SetNamedValue("temperature", JsonValue.CreateNumberValue(Temperature.Value));
-            result.SetNamedValue("humidity", JsonValue.CreateNumberValue(Humidity.Value));
+            result.SetNamedValue("temperature", JsonValue.CreateNumberValue(TemperatureSensor.GetValue()));
+            result.SetNamedValue("humidity", JsonValue.CreateNumberValue(HumiditySensor.GetValue()));
 
             result.SetNamedValue("lastFetched",
                 _lastFetched.HasValue ? JsonValue.CreateStringValue(_lastFetched.Value.ToString("O")) : JsonValue.CreateNullValue());
@@ -111,7 +113,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             return buffer.AddSeconds(unixTimeStamp).ToLocalTime();
         }
 
-        private void ApiPost(HttpContext context)
+        private void HandleApiPost(HttpContext context)
         {
             JsonObject requestData;
             if (JsonObject.TryParse(context.Request.Body, out requestData))
@@ -126,6 +128,11 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             _sunset = TimeSpan.Parse(requestData.GetNamedString("sunset"));
 
             _lastFetched = DateTime.Now;
+        }
+
+        private void HandleApiGet(HttpContext httpContext)
+        {
+            httpContext.Response.Body = new JsonBody(GetStatus());
         }
 
         private void LoadPersistedValues()

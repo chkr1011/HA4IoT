@@ -1,13 +1,14 @@
 ﻿using System;
 
-namespace HA4IoT.Telemetry.Csv
+namespace HA4IoT.Telemetry
 {
-    public class CsvEntry
+    public class ActuatorHistoryEntry
     {
-        public CsvEntry(DateTime timestamp, string actuatorId, string newState)
+        public ActuatorHistoryEntry(DateTime timestamp, string actuatorId, string newState)
         {
             Timestamp = timestamp;
             ActuatorId = actuatorId;
+
             NewState = newState;
         }
 
@@ -17,9 +18,9 @@ namespace HA4IoT.Telemetry.Csv
 
         public string NewState { get; }
 
-        public override string ToString()
+        public string ToCsv()
         {
-            // Template: {ISO_TIMESTAMP},{ACTUATOR_ID},{NEW_STATE}
+            // Template: {ISO_TIMESTAMP_UTC},{ACTUATOR_ID},{NEW_STATE}
             return Timestamp.ToString("O") + "," + ActuatorId + "," + NewState + Environment.NewLine;
         }
     }

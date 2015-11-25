@@ -1,4 +1,5 @@
 ﻿using System;
+using Windows.Data.Json;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 
@@ -28,6 +29,11 @@ namespace HA4IoT.Tests.Mockups
         public ButtonState GetState()
         {
             return State;
+        }
+
+        public JsonObject GetStatus()
+        {
+            return new JsonObject();
         }
     }
 }

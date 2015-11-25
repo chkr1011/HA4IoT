@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Contracts.Actuators
 {
-    public interface IRollerShutter : IActuatorBase, IActuatorWithOffState
+    public interface IRollerShutter : IActuator, IActuatorWithOffState
     {
         event EventHandler<RollerShutterStateChangedEventArgs> StateChanged;
 

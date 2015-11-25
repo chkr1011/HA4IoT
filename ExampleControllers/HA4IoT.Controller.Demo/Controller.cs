@@ -141,7 +141,7 @@ namespace HA4IoT.Controller.Demo
             home.PublishStatisticsNotification();
 
             // Setup the CSV writer which writes all state changes to the SD card (package directory).
-            var localCsvFileWriter = new LocalCsvFileWriter(NotificationHandler);
+            var localCsvFileWriter = new CsvHistory(NotificationHandler, HttpApiController);
             localCsvFileWriter.ConnectActuators(home);
 
             Timer.Tick += (s, e) =>

@@ -18,8 +18,6 @@ namespace HA4IoT.Actuators
         {
         }
 
-        public string State => States[_index].Id;
-
         public List<StateMachineState> States { get; } = new List<StateMachineState>();
 
         public bool HasOffState
@@ -54,11 +52,11 @@ namespace HA4IoT.Actuators
             return AddState(id);
         }
 
-        public void ApplyState(string id, params IParameter[] parameters)
+        public void SetState(string id, params IParameter[] parameters)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
-            string oldState = State;
+            string oldState = GetState();
 
             for (int i = 0; i < States.Count; i++)
             {
@@ -89,15 +87,16 @@ namespace HA4IoT.Actuators
             throw new NotSupportedException("StateMachineActuator '" + Id + "' does not support state '" + id + "'.");
         }
 
-        public void ApplyNextState(params IParameter[] parameters)
+        public void SetNextState(params IParameter[] parameters)
         {
+            string oldState = GetState();
+
             _index += 1;
             if (_index >= States.Count)
             {
                 _index = 0;
             }
 
-            string oldState = State;
             string newState = States[_index].Id;
 
             States[_index].Apply(parameters);
@@ -106,9 +105,19 @@ namespace HA4IoT.Actuators
             NotificationHandler.Info(Id + ": " + oldState + "->" + newState);
         }
 
+        public void SetInitialState()
+        {
+            TurnOff(new ForceUpdateStateParameter());
+        }
+
+        public string GetState()
+        {
+            return States[_index].Id;
+        }
+
         public void TurnOff(params IParameter[] parameters)
         {
-            ApplyState(BinaryActuatorState.Off.ToString(), parameters);
+            SetState(BinaryActuatorState.Off.ToString(), parameters);
         }
 
         public StateMachine WithTurnOffIfStateIsAppliedTwice()
@@ -150,7 +159,7 @@ namespace HA4IoT.Actuators
             }
 
             string stateId = context.Request.GetNamedString("state", string.Empty);
-            ApplyState(stateId);
+            SetState(stateId);
         }
     }
 }

@@ -17,7 +17,6 @@ namespace HA4IoT.Actuators
             if (output == null) throw new ArgumentNullException(nameof(output));
 
             _output = output;
-            SetStateInternal(BinaryActuatorState.Off, new ForceUpdateStateParameter());
         }
     
         protected override void SetStateInternal(BinaryActuatorState newState, params IParameter[] parameters)

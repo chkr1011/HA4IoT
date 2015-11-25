@@ -1,12 +1,13 @@
 ﻿using System;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public abstract class ActuatorBase : IActuatorBase
+    public abstract class ActuatorBase : IActuator, IStatusProvider
     {
         private bool _isEnabled = true;
 
@@ -61,9 +62,17 @@ namespace HA4IoT.Actuators
 
         public virtual void HandleApiGet(ApiRequestContext context)
         {
-            context.Response.SetNamedValue("isEnabled", JsonValue.CreateBooleanValue(IsEnabled));
+            context.Response.SetNamedValue("isEnabled", JsonValue.CreateBooleanValue(IsEnabled)); ;
         }
 
+        public virtual JsonObject GetStatus()
+        {
+            var result = new JsonObject();
+            result.SetNamedValue("isEnabled", JsonValue.CreateBooleanValue(IsEnabled));
+
+            return result;
+        }
+        
         public virtual JsonObject GetConfiguration()
         {
             var configuration = new JsonObject();

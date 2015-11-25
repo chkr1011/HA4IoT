@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Contracts.Actuators
 {
-    public interface IMotionDetector : IActuatorBase
+    public interface IMotionDetector : IActuator
     {
         event EventHandler MotionDetected;
         event EventHandler DetectionCompleted;
