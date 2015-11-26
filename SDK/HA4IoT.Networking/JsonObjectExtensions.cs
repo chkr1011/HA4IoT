@@ -45,6 +45,12 @@ namespace HA4IoT.Networking
                 return JsonValue.CreateStringValue(dateTimeValue.Value.ToString("O"));
             }
 
+            var convertibleJsonValue = source as IConvertibleToJsonValue;
+            if (convertibleJsonValue != null)
+            {
+                return convertibleJsonValue.ToJsonValue();
+            }
+            
             var array = source as IEnumerable;
             if (array != null)
             {

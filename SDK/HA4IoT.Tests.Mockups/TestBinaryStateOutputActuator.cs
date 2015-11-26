@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 
 namespace HA4IoT.Tests.Mockups
@@ -7,7 +8,7 @@ namespace HA4IoT.Tests.Mockups
     {
         public event EventHandler<BinaryActuatorStateChangedEventArgs> StateChanged;
         public event EventHandler<ActuatorIsEnabledChangedEventArgs> IsEnabledChanged;
-        public string Id { get; set; }
+        public ActuatorId Id { get; set; }
         public bool IsEnabled { get; }
         public BinaryActuatorState State { get; private set; }
 

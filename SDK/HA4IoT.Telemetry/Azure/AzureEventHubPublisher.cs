@@ -4,6 +4,7 @@ using Windows.Data.Json;
 using Windows.Web.Http;
 using Windows.Web.Http.Headers;
 using HA4IoT.Actuators;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Notifications;
 
@@ -80,12 +81,12 @@ namespace HA4IoT.Telemetry.Azure
             Task.Run(() => SendToAzureEventHubAsync(data));
         }
 
-        private JsonObject CreateDataPackage(string actuatorId, EventType eventType)
+        private JsonObject CreateDataPackage(ActuatorId actuatorId, EventType eventType)
         {
             JsonObject data = new JsonObject();
             data.SetNamedValue("timestamp", JsonValue.CreateStringValue(DateTime.Now.ToString("O")));
             data.SetNamedValue("type", JsonValue.CreateStringValue(eventType.ToString()));
-            data.SetNamedValue("actuator", JsonValue.CreateStringValue(actuatorId));
+            data.SetNamedValue("actuator",actuatorId.ToJsonValue());
 
             return data;
         }

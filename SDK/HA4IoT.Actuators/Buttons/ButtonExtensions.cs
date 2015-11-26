@@ -11,8 +11,8 @@ namespace HA4IoT.Actuators
             if (input == null) throw new ArgumentNullException(nameof(input));
 
             return room.WithActuator(id,
-                new Button(room.GenerateActuatorId(id), input, room.Home.HttpApiController,
-                    room.Home.NotificationHandler, room.Home.Timer));
+                new Button(room.GenerateActuatorId(id), input, room.Home.Api,
+                    room.Home.Log, room.Home.Timer));
         }
 
         public static Room WithRollerShutterButtons(this Room room, Enum id, IBinaryInput upInput, IBinaryInput downInput)
@@ -22,8 +22,8 @@ namespace HA4IoT.Actuators
             if (downInput == null) throw new ArgumentNullException(nameof(downInput));
 
             return room.WithActuator(id,
-                new RollerShutterButtons(room.GenerateActuatorId(id), upInput, downInput, room.Home.HttpApiController,
-                    room.Home.NotificationHandler, room.Home.Timer));
+                new RollerShutterButtons(room.GenerateActuatorId(id), upInput, downInput, room.Home.Api,
+                    room.Home.Log, room.Home.Timer));
         }
 
         public static Room WithVirtualButton(this Room room, Enum id, Action<VirtualButton> initializer)
@@ -31,7 +31,7 @@ namespace HA4IoT.Actuators
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
 
-            var virtualButton = new VirtualButton(room.GenerateActuatorId(id), room.Home.HttpApiController, room.Home.NotificationHandler);
+            var virtualButton = new VirtualButton(room.GenerateActuatorId(id), room.Home.Api, room.Home.Log);
             initializer.Invoke(virtualButton);
 
             return room.WithActuator(id, virtualButton);
@@ -42,7 +42,7 @@ namespace HA4IoT.Actuators
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
 
-            var virtualButtonGroup = new VirtualButtonGroup(room.GenerateActuatorId(id), room.Home.HttpApiController, room.Home.NotificationHandler);
+            var virtualButtonGroup = new VirtualButtonGroup(room.GenerateActuatorId(id), room.Home.Api, room.Home.Log);
             initializer.Invoke(virtualButtonGroup);
 
             return room.WithActuator(id, virtualButtonGroup);

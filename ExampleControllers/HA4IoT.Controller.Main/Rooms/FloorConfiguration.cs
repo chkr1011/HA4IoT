@@ -59,15 +59,15 @@ namespace HA4IoT.Controller.Main.Rooms
 
         public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardCollection ioBoardManager, DHT22Accessor dht22Accessor)
         {
-            var hsrel5Stairway = ccToolsController.CreateHSREL5(Device.StairwayHSREL5, 60);
+            var hsrel5Stairway = ccToolsController.CreateHSREL5(Device.StairwayHSREL5, new I2CSlaveAddress(60));
             var hspe8UpperFloor = ioBoardManager.GetOutputBoard(Device.UpperFloorAndOfficeHSPE8);
-            var hspe16_FloorAndLowerBathroom = ccToolsController.CreateHSPE16OutputOnly(Device.LowerFloorAndLowerBathroomHSPE16, 17);
+            var hspe16_FloorAndLowerBathroom = ccToolsController.CreateHSPE16OutputOnly(Device.LowerFloorAndLowerBathroomHSPE16, new I2CSlaveAddress(17));
 
             var input1 = ioBoardManager.GetInputBoard(Device.Input1);
             var input2 = ioBoardManager.GetInputBoard(Device.Input2);
             var input4 = ioBoardManager.GetInputBoard(Device.Input4);
 
-            const int SensorPin = 5; //4;
+            const int SensorPin = 5;
 
             var floor = home.AddRoom(Room.Floor)
                 .WithMotionDetector(Floor.StairwayMotionDetector, input2.GetInput(1))

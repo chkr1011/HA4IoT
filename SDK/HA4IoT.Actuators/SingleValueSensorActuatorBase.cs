@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.Data.Json;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Networking;
@@ -10,7 +11,7 @@ namespace HA4IoT.Actuators
     {
         private float _value;
 
-        protected SingleValueSensorActuatorBase(string id, IHttpRequestController api, INotificationHandler log)
+        protected SingleValueSensorActuatorBase(ActuatorId id, IHttpRequestController api, INotificationHandler log)
             : base(id, api, log)
         {
         }

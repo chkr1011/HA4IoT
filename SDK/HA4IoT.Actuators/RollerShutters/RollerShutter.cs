@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Data.Json;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Notifications;
@@ -25,7 +26,7 @@ namespace HA4IoT.Actuators
         private int _position;
 
         public RollerShutter(
-            string id, 
+            ActuatorId id, 
             IBinaryOutput powerOutput, 
             IBinaryOutput directionOutput, 
             TimeSpan autoOffTimeout,

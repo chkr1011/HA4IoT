@@ -1,5 +1,6 @@
 ﻿using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.DHT22;
 using HA4IoT.Hardware.GenericIOBoard;
@@ -49,12 +50,12 @@ namespace HA4IoT.Controller.Main.Rooms
 
         public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardCollection ioBoardManager, DHT22Accessor dht22Accessor, RemoteSwitchController remoteSwitchController)
         {
-            var hsrel8 = ccToolsController.CreateHSREL8(Device.OfficeHSREL8, 20);
-            var hspe8 = ccToolsController.CreateHSPE8OutputOnly(Device.UpperFloorAndOfficeHSPE8, 37);
+            var hsrel8 = ccToolsController.CreateHSREL8(Device.OfficeHSREL8, new I2CSlaveAddress(20));
+            var hspe8 = ccToolsController.CreateHSPE8OutputOnly(Device.UpperFloorAndOfficeHSPE8, new I2CSlaveAddress(37));
             var input4 = ioBoardManager.GetInputBoard(Device.Input4);
             var input5 = ioBoardManager.GetInputBoard(Device.Input5);
 
-            const int SensorPin = 2; //6;
+            const int SensorPin = 2;
 
             var office = home.AddRoom(Room.Office)
                 .WithMotionDetector(Office.MotionDetector, input4.GetInput(13))

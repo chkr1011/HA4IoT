@@ -4,7 +4,6 @@ using HA4IoT.Contracts;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Networking;
-using HA4IoT.Notifications;
 
 namespace HA4IoT.Actuators
 {
@@ -12,7 +11,7 @@ namespace HA4IoT.Actuators
     {
         private readonly List<Casement> _casements = new List<Casement>(); 
 
-        public Window(string id, IHttpRequestController api, INotificationHandler log) : base(id, api, log)
+        public Window(ActuatorId id, IHttpRequestController api, INotificationHandler log) : base(id, api, log)
         {
         }
 

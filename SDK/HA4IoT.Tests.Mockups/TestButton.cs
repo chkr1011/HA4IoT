@@ -12,7 +12,7 @@ namespace HA4IoT.Tests.Mockups
         public event EventHandler PressedLong;
         public event EventHandler<ButtonStateChangedEventArgs> StateChanged;
 
-        public string Id { get; }
+        public ActuatorId Id { get; }
         public bool IsEnabled { get; }
         public ButtonState State { get; set; } = ButtonState.Released;
 

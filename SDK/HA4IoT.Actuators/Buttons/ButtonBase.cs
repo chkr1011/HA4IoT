@@ -16,7 +16,7 @@ namespace HA4IoT.Actuators
 
         private ButtonState _state = ButtonState.Released;
 
-        protected ButtonBase(string id, IHttpRequestController api, INotificationHandler log)
+        protected ButtonBase(ActuatorId id, IHttpRequestController api, INotificationHandler log)
             : base(id, api, log)
         {
         }

@@ -6,7 +6,7 @@ namespace HA4IoT.Contracts.Actuators
     {
         event EventHandler<ActuatorIsEnabledChangedEventArgs>  IsEnabledChanged;
 
-        string Id { get; }
+        ActuatorId Id { get; }
 
         bool IsEnabled { get; }
     }

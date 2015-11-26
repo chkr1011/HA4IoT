@@ -15,7 +15,7 @@ namespace HA4IoT.Actuators
         private TimedAction _autoEnableAction;
         private MotionDetectorState _state = MotionDetectorState.Idle;
 
-        public MotionDetector(string id, IBinaryInput input, IHomeAutomationTimer timer, IHttpRequestController api, INotificationHandler log)
+        public MotionDetector(ActuatorId id, IBinaryInput input, IHomeAutomationTimer timer, IHttpRequestController api, INotificationHandler log)
             : base(id, api, log)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));

@@ -3,25 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.Devices.Enumeration;
 using Windows.Devices.I2c;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Notifications;
-using HA4IoT.Notifications;
 
 namespace HA4IoT.Hardware
 {
-    public class I2cBusAccessor : II2cBusAccessor
+    public class I2CBusWrapper : II2CBus
     {
         private readonly Dictionary<int, I2cDevice> _deviceCache = new Dictionary<int, I2cDevice>();
         private readonly string _i2CBusId;
-        private readonly INotificationHandler _notificationHandler;
+        private readonly INotificationHandler _log;
         private readonly object _syncRoot = new object();
 
-        public I2cBusAccessor(INotificationHandler notificationHandler)
+        public I2CBusWrapper(INotificationHandler log)
         {
-            if (notificationHandler == null) throw new ArgumentNullException(nameof(notificationHandler));
+            if (log == null) throw new ArgumentNullException(nameof(log));
 
-            _notificationHandler = notificationHandler;
+            _log = log;
 
             string deviceSelector = I2cDevice.GetDeviceSelector();
             
@@ -34,7 +32,7 @@ namespace HA4IoT.Hardware
             _i2CBusId = deviceInformation.First().Id;
         }
 
-        public void Execute(int address, Action<I2cDevice> action, bool useCache = true)
+        public void Execute(I2CSlaveAddress address, Action<I2cDevice> action, bool useCache = true)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
 
@@ -43,13 +41,13 @@ namespace HA4IoT.Hardware
                 I2cDevice device = null;
                 try
                 {
-                    device = GetI2CDevice(address, useCache);
+                    device = GetI2CDevice(address.Value, useCache);
                     action(device);
                 }
                 catch (Exception exception)
                 {
                     // Ensure that the application will not crash if some devices are currently not available etc.
-                    _notificationHandler.Warning("Error while accessing I2C device with address " + address + ". " + exception.Message);
+                    _log.Warning("Error while accessing I2C device with address " + address + ". " + exception.Message);
                 }
                 finally
                 {

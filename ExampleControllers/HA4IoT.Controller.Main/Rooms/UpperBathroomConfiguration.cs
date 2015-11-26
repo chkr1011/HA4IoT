@@ -33,7 +33,7 @@ namespace HA4IoT.Controller.Main.Rooms
         {
             if (ioBoardManager == null) throw new ArgumentNullException(nameof(ioBoardManager));
 
-            _hsrel5 = ccToolsController.CreateHSREL5(Device.UpperBathroomHSREL5, 61);
+            _hsrel5 = ccToolsController.CreateHSREL5(Device.UpperBathroomHSREL5, new I2CSlaveAddress(61));
             _input5 = ioBoardManager.GetInputBoard(Device.Input5);
         }
 

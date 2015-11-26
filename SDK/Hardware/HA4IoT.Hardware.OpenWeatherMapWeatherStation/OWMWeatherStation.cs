@@ -31,10 +31,10 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
             if (notificationHandler == null) throw new ArgumentNullException(nameof(notificationHandler));
 
-            _temperature = new WeatherStationTemperatureSensor("WeatherStation.Temperature", httpApiController, notificationHandler);
+            _temperature = new WeatherStationTemperatureSensor(new ActuatorId("WeatherStation.Temperature"), httpApiController, notificationHandler);
             TemperatureSensor = _temperature;
 
-            _humidity = new WeatherStationHumiditySensor("WeatherStation.Humidity", httpApiController, notificationHandler);
+            _humidity = new WeatherStationHumiditySensor(new ActuatorId("WeatherStation.Humidity"), httpApiController, notificationHandler);
             HumiditySensor = _humidity;
 
             _notificationHandler = notificationHandler;

@@ -7,22 +7,22 @@ namespace HA4IoT.Hardware.CCTools
 {
     public class CCToolsBoardController
     {
-        private readonly II2cBusAccessor _i2CBus;
+        private readonly II2CBus _i2CBus;
         private readonly IOBoardCollection _ioBoardCollection;
-        private readonly INotificationHandler _notificationHandler;
+        private readonly INotificationHandler _log;
 
-        public CCToolsBoardController(II2cBusAccessor i2CBus, IOBoardCollection ioBoardCollection, INotificationHandler notificationHandler)
+        public CCToolsBoardController(II2CBus i2CBus, IOBoardCollection ioBoardCollection, INotificationHandler log)
         {
             if (i2CBus == null) throw new ArgumentNullException(nameof(i2CBus));
             if (ioBoardCollection == null) throw new ArgumentNullException(nameof(ioBoardCollection));
 
             _i2CBus = i2CBus;
-            _notificationHandler = notificationHandler;
+            _log = log;
 
             _ioBoardCollection = ioBoardCollection;
         }
 
-        public HSPE16InputOnly CreateHSPE16InputOnly(Enum id, int address)
+        public HSPE16InputOnly CreateHSPE16InputOnly(Enum id, I2CSlaveAddress address)
         {
             IOBoardControllerBase board;
             if (_ioBoardCollection.TryGetIOBoard(id, out board))
@@ -30,13 +30,13 @@ namespace HA4IoT.Hardware.CCTools
                 return (HSPE16InputOnly) board;
             }
 
-            var device = new HSPE16InputOnly(id.ToString(), address, _i2CBus, _notificationHandler) { AutomaticallyFetchState = true };
+            var device = new HSPE16InputOnly(id.ToString(), address, _i2CBus, _log) { AutomaticallyFetchState = true };
             _ioBoardCollection.Add(id, device);
 
             return device;
         }
 
-        public HSPE16OutputOnly CreateHSPE16OutputOnly(Enum id, int address)
+        public HSPE16OutputOnly CreateHSPE16OutputOnly(Enum id, I2CSlaveAddress address)
         {
             IOBoardControllerBase board;
             if (_ioBoardCollection.TryGetIOBoard(id, out board))
@@ -44,13 +44,13 @@ namespace HA4IoT.Hardware.CCTools
                 return (HSPE16OutputOnly) board;
             }
 
-            var device = new HSPE16OutputOnly(id.ToString(), address, _i2CBus, _notificationHandler);
+            var device = new HSPE16OutputOnly(id.ToString(), address, _i2CBus, _log);
             _ioBoardCollection.Add(id, device);
 
             return device;
         }
 
-        public HSPE8 CreateHSPE8OutputOnly(Enum id, int i2CAddress)
+        public HSPE8 CreateHSPE8OutputOnly(Enum id, I2CSlaveAddress i2CAddress)
         {
             IOBoardControllerBase board;
             if (_ioBoardCollection.TryGetIOBoard(id, out board))
@@ -58,13 +58,13 @@ namespace HA4IoT.Hardware.CCTools
                 return (HSPE8)board;
             }
 
-            var device = new HSPE8(id.ToString(), i2CAddress, _i2CBus, _notificationHandler);
+            var device = new HSPE8(id.ToString(), i2CAddress, _i2CBus, _log);
             _ioBoardCollection.Add(id, device);
 
             return device;
         }
 
-        public HSREL5 CreateHSREL5(Enum id, int i2CAddress)
+        public HSREL5 CreateHSREL5(Enum id, I2CSlaveAddress i2CAddress)
         {
             IOBoardControllerBase board;
             if (_ioBoardCollection.TryGetIOBoard(id, out board))
@@ -72,13 +72,13 @@ namespace HA4IoT.Hardware.CCTools
                 return (HSREL5)board;
             }
 
-            var device = new HSREL5(id.ToString(), i2CAddress, _i2CBus, _notificationHandler);
+            var device = new HSREL5(id.ToString(), i2CAddress, _i2CBus, _log);
             _ioBoardCollection.Add(id, device);
 
             return device;
         }
 
-        public HSREL8 CreateHSREL8(Enum id, int i2CAddress)
+        public HSREL8 CreateHSREL8(Enum id, I2CSlaveAddress i2CAddress)
         {
             IOBoardControllerBase board;
             if (_ioBoardCollection.TryGetIOBoard(id, out board))
@@ -86,13 +86,13 @@ namespace HA4IoT.Hardware.CCTools
                 return (HSREL8)board;
             }
 
-            var device = new HSREL8(id.ToString(), i2CAddress, _i2CBus, _notificationHandler);
+            var device = new HSREL8(id.ToString(), i2CAddress, _i2CBus, _log);
             _ioBoardCollection.Add(id, device);
 
             return device;
         }
 
-        public HSRT16 CreateHSRT16(Enum id, int address)
+        public HSRT16 CreateHSRT16(Enum id, I2CSlaveAddress address)
         {
             IOBoardControllerBase board;
             if (_ioBoardCollection.TryGetIOBoard(id, out board))
@@ -100,7 +100,7 @@ namespace HA4IoT.Hardware.CCTools
                 return (HSRT16)board;
             }
 
-            var device = new HSRT16(id.ToString(), address, _i2CBus, _notificationHandler);
+            var device = new HSRT16(id.ToString(), address, _i2CBus, _log);
             _ioBoardCollection.Add(id, device);
 
             return device;

@@ -1,5 +1,6 @@
 ﻿using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.DHT22;
 using HA4IoT.Hardware.GenericIOBoard;
@@ -36,8 +37,8 @@ namespace HA4IoT.Controller.Main.Rooms
 
         public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardCollection ioBoardManager, DHT22Accessor dht22Accessor)
         {
-            var hsrel5 = ccToolsController.CreateHSREL5(Device.KitchenHSREL5, 58);
-            var hspe8 = ccToolsController.CreateHSPE8OutputOnly(Device.KitchenHSPE8, 39);
+            var hsrel5 = ccToolsController.CreateHSREL5(Device.KitchenHSREL5, new I2CSlaveAddress(58));
+            var hspe8 = ccToolsController.CreateHSPE8OutputOnly(Device.KitchenHSPE8, new I2CSlaveAddress(39));
 
             var input0 = ioBoardManager.GetInputBoard(Device.Input0);
             var input1 = ioBoardManager.GetInputBoard(Device.Input1);

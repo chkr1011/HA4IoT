@@ -15,7 +15,7 @@ namespace HA4IoT.Actuators
     {
         private readonly IHomeAutomationTimer _timer;
 
-        public LogicalBinaryStateOutputActuator(string id, IHttpRequestController api, INotificationHandler log,
+        public LogicalBinaryStateOutputActuator(ActuatorId id, IHttpRequestController api, INotificationHandler log,
             IHomeAutomationTimer timer) : base(
                 id, api, log)
         {

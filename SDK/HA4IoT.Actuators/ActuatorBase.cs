@@ -2,6 +2,7 @@
 using System.IO;
 using Windows.Data.Json;
 using Windows.Storage;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Notifications;
@@ -14,7 +15,7 @@ namespace HA4IoT.Actuators
     {
         private bool _isEnabled = true;
 
-        protected ActuatorBase(string id, IHttpRequestController api, INotificationHandler log)
+        protected ActuatorBase(ActuatorId id, IHttpRequestController api, INotificationHandler log)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (api == null) throw new ArgumentNullException(nameof(api));
@@ -24,14 +25,14 @@ namespace HA4IoT.Actuators
             Log = log;
             Api = api;
 
-            string configurationFilename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Actuators", id, "Configuration.json"); ;
+            string configurationFilename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Actuators", id.Value, "Configuration.json"); ;
             Configuration = new PersistedConfiguration(configurationFilename);
             Configuration.SetValue("type", GetType().FullName);
             
             ExposeToApi();
         }
 
-        public string Id { get; }
+        public ActuatorId Id { get; }
 
         public bool IsEnabled
         {
@@ -104,10 +105,10 @@ namespace HA4IoT.Actuators
 
         private void ExposeToApi()
         {
-            Api.Handle(HttpMethod.Post, "configuration").WithSegment(Id).Using(HandleApiConfigurationPost);
+            Api.Handle(HttpMethod.Post, "configuration").WithSegment(Id.Value).Using(HandleApiConfigurationPost);
 
             Api.Handle(HttpMethod.Post, "actuator")
-                .WithSegment(Id)
+                .WithSegment(Id.Value)
                 .WithRequiredJsonBody()
                 .Using(c =>
                 {
@@ -125,7 +126,7 @@ namespace HA4IoT.Actuators
                 });
 
             Api.Handle(HttpMethod.Get, "actuator")
-                .WithSegment(Id)
+                .WithSegment(Id.Value)
                 .Using(c =>
                 {
                     JsonObject requestData;

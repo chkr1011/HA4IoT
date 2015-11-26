@@ -134,11 +134,12 @@
     <Compile Include="Daylight.cs" />
     <Compile Include="Hardware\BinaryState.cs" />
     <Compile Include="Hardware\BinaryStateChangedEventArgs.cs" />
+    <Compile Include="Hardware\I2CSlaveAddress.cs" />
     <Compile Include="Hardware\IBinaryInput.cs" />
     <Compile Include="Hardware\IBinaryInputController.cs" />
     <Compile Include="Hardware\IBinaryOutput.cs" />
     <Compile Include="Hardware\IBinaryOutputController.cs" />
-    <Compile Include="Hardware\II2CBusAccessor.cs" />
+    <Compile Include="Hardware\II2CBus.cs" />
     <Compile Include="Hardware\IPortExpanderDriver.cs" />
     <Compile Include="Hardware\ISingleValueSensor.cs" />
     <Compile Include="Hardware\SingleValueSensorValueChangedEventArgs.cs" />

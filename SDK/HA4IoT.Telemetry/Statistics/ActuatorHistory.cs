@@ -25,9 +25,9 @@ namespace HA4IoT.Telemetry.Statistics
         {
             _actuator = actuator;
             _notificationHandler = notificationHandler;
-            _filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Actuators", actuator.Id, "History.csv");
+            _filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Actuators", actuator.Id.Value, "History.csv");
 
-            apiRequestController.Handle(HttpMethod.Get, "statistics").WithSegment(actuator.Id).Using(HandleApiGet);
+            apiRequestController.Handle(HttpMethod.Get, "statistics").WithSegment(actuator.Id.Value).Using(HandleApiGet);
         }
 
         public void AddEntry(ActuatorHistoryEntry entry)

@@ -60,8 +60,8 @@ namespace HA4IoT.Controller.Main.Rooms
 
         public BedroomConfiguration(CCToolsBoardController ccToolsController, IOBoardCollection ioBoardCollection)
         {
-            _hsrel5 = ccToolsController.CreateHSREL5(Device.BedroomHSREL5, 38);
-            _hsrel8 = ccToolsController.CreateHSREL8(Device.BedroomHSREL8, 21);
+            _hsrel5 = ccToolsController.CreateHSREL5(Device.BedroomHSREL5, new I2CSlaveAddress(38));
+            _hsrel8 = ccToolsController.CreateHSREL8(Device.BedroomHSREL8, new I2CSlaveAddress(21));
             _input5 = ioBoardCollection.GetInputBoard(Device.Input5);
             _input4 = ioBoardCollection.GetInputBoard(Device.Input4);
         }

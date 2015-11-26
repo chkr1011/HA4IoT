@@ -4,6 +4,7 @@ using Windows.Data.Json;
 using Windows.Storage;
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core;
@@ -23,7 +24,7 @@ namespace HA4IoT.Controller.Demo
     internal class Controller : ControllerBase
     {
         private const int LedGpio = 22;
-        private const int I2CHardwareBridgeAddress = 50;
+        private static readonly I2CSlaveAddress I2CHardwareBridgeAddress = new I2CSlaveAddress(50);
         private const byte I2CHardwareBridge433MHzSenderPin = 6;
 
         private enum Room
@@ -75,7 +76,7 @@ namespace HA4IoT.Controller.Demo
             var pi2PortController = new Pi2PortController();
 
             // Setup the wrapper for I2C bus access.
-            var i2CBus = new I2cBusAccessor(NotificationHandler);
+            var i2CBus = new I2CBusWrapper(NotificationHandler);
 
             // Setup the manager for all types of IO boards which exposes all IO boards to the HTTP API
             // and polls the states of the inputs.
@@ -83,9 +84,9 @@ namespace HA4IoT.Controller.Demo
 
             // Setup the controller which creates ports for IO boards from CCTools (or based on PCF8574/MAX7311/PCA9555D).
             var ccToolsBoardController = new CCToolsBoardController(i2CBus, ioBoardManager, NotificationHandler);
-            ccToolsBoardController.CreateHSPE16InputOnly(Device.HSPE16, 41);
-            ccToolsBoardController.CreateHSREL8(Device.HSRel8, 40);
-            ccToolsBoardController.CreateHSREL5(Device.HSRel5, 56);
+            ccToolsBoardController.CreateHSPE16InputOnly(Device.HSPE16, new I2CSlaveAddress(41));
+            ccToolsBoardController.CreateHSREL8(Device.HSRel8, new I2CSlaveAddress(40));
+            ccToolsBoardController.CreateHSREL5(Device.HSRel5, new I2CSlaveAddress(56));
 
             // Setup the remote switch 433Mhz sender which is attached to the I2C bus (Arduino Nano).
             var i2CHardwareBridge = new I2CHardwareBridge(I2CHardwareBridgeAddress, i2CBus);
@@ -182,13 +183,13 @@ namespace HA4IoT.Controller.Demo
         {
             var ledStripRemote = new LEDStripRemote(i2CHardwareBridge, 4);
 
-            group.WithButton("on", b => b.WithShortAction(() => ledStripRemote.TurnOn()))
-                .WithButton("off", b => b.WithShortAction(() => ledStripRemote.TurnOff()))
-                .WithButton("white", b => b.WithShortAction(() => ledStripRemote.TurnWhite()))
+            group.WithButton(new ActuatorId("on"), b => b.WithShortAction(() => ledStripRemote.TurnOn()))
+                .WithButton(new ActuatorId("off"), b => b.WithShortAction(() => ledStripRemote.TurnOff()))
+                .WithButton(new ActuatorId("white"), b => b.WithShortAction(() => ledStripRemote.TurnWhite()))
 
-                .WithButton("red1", b => b.WithShortAction(() => ledStripRemote.TurnRed1()))
-                .WithButton("green1", b => b.WithShortAction(() => ledStripRemote.TurnGreen1()))
-                .WithButton("blue1", b => b.WithShortAction(() => ledStripRemote.TurnBlue1()));
+                .WithButton(new ActuatorId("red1"), b => b.WithShortAction(() => ledStripRemote.TurnRed1()))
+                .WithButton(new ActuatorId("green1"), b => b.WithShortAction(() => ledStripRemote.TurnGreen1()))
+                .WithButton(new ActuatorId("blue1"), b => b.WithShortAction(() => ledStripRemote.TurnBlue1()));
         }
 
         private IWeatherStation CreateWeatherStation()

@@ -4,20 +4,19 @@ using Windows.Data.Json;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Networking;
-using HA4IoT.Notifications;
 
 namespace HA4IoT.Actuators
 {
     public class VirtualButtonGroup : ActuatorBase
     {
-        private readonly Dictionary<string, VirtualButton> _buttons = new Dictionary<string, VirtualButton>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<ActuatorId, VirtualButton> _buttons = new Dictionary<ActuatorId, VirtualButton>();
 
-        public VirtualButtonGroup(string id, IHttpRequestController api, INotificationHandler log)
+        public VirtualButtonGroup(ActuatorId id, IHttpRequestController api, INotificationHandler log)
             : base(id, api, log)
         {
         }
 
-        public VirtualButtonGroup WithButton(string id, Action<VirtualButton> initializer)
+        public VirtualButtonGroup WithButton(ActuatorId id, Action<VirtualButton> initializer)
         {
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
 
@@ -44,7 +43,7 @@ namespace HA4IoT.Actuators
             }
 
             VirtualButton virtualButton;
-            if (!_buttons.TryGetValue(button, out virtualButton))
+            if (!_buttons.TryGetValue(new ActuatorId(button), out virtualButton))
             {
                 throw new BadRequestException("The specified button is unknown.");
             }
@@ -59,7 +58,7 @@ namespace HA4IoT.Actuators
             JsonArray buttonIds = new JsonArray();
             foreach (var button in _buttons)
             {
-                buttonIds.Add(JsonValue.CreateStringValue(button.Key));
+                buttonIds.Add(JsonValue.CreateStringValue(button.Key.Value));
             }
             
             configuration.SetNamedValue("buttons", buttonIds);

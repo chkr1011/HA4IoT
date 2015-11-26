@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Windows.Data.Json;
 using HA4IoT.Actuators.Automations;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Networking;
@@ -20,7 +21,7 @@ namespace HA4IoT.Actuators
             Id = id;
 
             Home = home;
-            Home.HttpApiController.Handle(HttpMethod.Get, "room").WithSegment(id).Using(HandleApiGet);
+            Home.Api.Handle(HttpMethod.Get, "room").WithSegment(id).Using(HandleApiGet);
         }
 
         public string Id { get; }
@@ -46,14 +47,14 @@ namespace HA4IoT.Actuators
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
 
-            return WithActuator(id, new MotionDetector(GenerateActuatorId(id), input, Home.Timer, Home.HttpApiController, Home.NotificationHandler));
+            return WithActuator(id, new MotionDetector(GenerateActuatorId(id), input, Home.Timer, Home.Api, Home.Log));
         }
 
         public Room WithWindow(Enum id, Action<Window> initializer)
         {
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
             
-            var window = new Window(GenerateActuatorId(id), Home.HttpApiController, Home.NotificationHandler);
+            var window = new Window(GenerateActuatorId(id), Home.Api, Home.Log);
             initializer(window);
 
             return WithActuator(id, window);
@@ -63,7 +64,7 @@ namespace HA4IoT.Actuators
         {
             if (output == null) throw new ArgumentNullException(nameof(output));
 
-            var lamp = new Lamp(GenerateActuatorId(id), output, Home.HttpApiController, Home.NotificationHandler);
+            var lamp = new Lamp(GenerateActuatorId(id), output, Home.Api, Home.Log);
             lamp.SetInitialState();
 
             return WithActuator(id, lamp);
@@ -73,7 +74,7 @@ namespace HA4IoT.Actuators
         {
             if (output == null) throw new ArgumentNullException(nameof(output));
 
-            var socket = new Socket(GenerateActuatorId(id), output, Home.HttpApiController, Home.NotificationHandler);
+            var socket = new Socket(GenerateActuatorId(id), output, Home.Api, Home.Log);
             socket.SetInitialState();
 
             return WithActuator(id, socket);
@@ -84,8 +85,8 @@ namespace HA4IoT.Actuators
             if (sensor == null) throw new ArgumentNullException(nameof(sensor));
 
             return WithActuator(id,
-                new HumiditySensor(GenerateActuatorId(id), sensor, Home.HttpApiController,
-                    Home.NotificationHandler));
+                new HumiditySensor(GenerateActuatorId(id), sensor, Home.Api,
+                    Home.Log));
         }
 
         public Room WithTemperatureSensor(Enum id, ISingleValueSensor sensor)
@@ -93,15 +94,15 @@ namespace HA4IoT.Actuators
             if (sensor == null) throw new ArgumentNullException(nameof(sensor));
 
             return WithActuator(id,
-                new TemperatureSensor(GenerateActuatorId(id), sensor, Home.HttpApiController,
-                    Home.NotificationHandler));
+                new TemperatureSensor(GenerateActuatorId(id), sensor, Home.Api,
+                    Home.Log));
         }
 
         public Room WithStateMachine(Enum id, Action<StateMachine, Room> initializer)
         {
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
 
-            var stateMachine = new StateMachine(GenerateActuatorId(id), Home.HttpApiController, Home.NotificationHandler);
+            var stateMachine = new StateMachine(GenerateActuatorId(id), Home.Api, Home.Log);
             initializer(stateMachine, this);
             stateMachine.SetInitialState();
 
@@ -110,8 +111,8 @@ namespace HA4IoT.Actuators
 
         public LogicalBinaryStateOutputActuator CombineActuators(Enum id)
         {
-            var actuator = new LogicalBinaryStateOutputActuator(GenerateActuatorId(id), Home.HttpApiController,
-                Home.NotificationHandler, Home.Timer);
+            var actuator = new LogicalBinaryStateOutputActuator(GenerateActuatorId(id), Home.Api,
+                Home.Log, Home.Timer);
 
             WithActuator(id, actuator);
             return actuator;
@@ -178,7 +179,7 @@ namespace HA4IoT.Actuators
             var actuators = new JsonObject();
             foreach (var actuator in _actuators)
             {
-                actuators.SetNamedValue(actuator.Id, actuator.GetConfiguration());
+                actuators.SetNamedValue(actuator.Id.Value, actuator.GetConfiguration());
             }
 
             JsonObject configuration = new JsonObject();
@@ -186,9 +187,9 @@ namespace HA4IoT.Actuators
             return configuration;
         }
 
-        public string GenerateActuatorId(Enum id)
+        public ActuatorId GenerateActuatorId(Enum id)
         {
-            return Id + "." + id;
+            return new ActuatorId(Id + "." + id);
         }
 
         private void HandleApiGet(HttpContext httpContext)
@@ -198,7 +199,7 @@ namespace HA4IoT.Actuators
             {
                 var context = new ApiRequestContext(new JsonObject(), new JsonObject());
                 actuator.HandleApiGet(context);
-                state.SetNamedValue(actuator.Id, context.Response);
+                state.SetNamedValue(actuator.Id.Value, context.Response);
             }
 
             httpContext.Response.Body = new JsonBody(state);

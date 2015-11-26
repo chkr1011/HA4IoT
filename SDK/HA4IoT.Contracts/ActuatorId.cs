@@ -1,8 +1,10 @@
 ﻿using System;
+using Windows.Data.Json;
+using HA4IoT.Networking;
 
 namespace HA4IoT.Contracts
 {
-    public class ActuatorId
+    public class ActuatorId : IEquatable<ActuatorId>, IConvertibleToJsonValue
     {
         public ActuatorId(string value)
         {
@@ -18,9 +20,29 @@ namespace HA4IoT.Contracts
             return Value;
         }
 
+        public IJsonValue ToJsonValue()
+        {
+            return JsonValue.CreateStringValue(Value);
+        }
+
         public override int GetHashCode()
         {
             return Value.GetHashCode();
+        }
+
+        public bool Equals(ActuatorId other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(other, this))
+            {
+                return true;
+            }
+
+            return Value.Equals(other.Value);
         }
     }
 }

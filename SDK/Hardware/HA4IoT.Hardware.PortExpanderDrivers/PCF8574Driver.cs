@@ -5,10 +5,10 @@ namespace HA4IoT.Hardware.PortExpanderDrivers
 {
     public class PCF8574Driver : IPortExpanderDriver
     {
-        private readonly II2cBusAccessor _i2CBus;
-        private readonly int _address;
+        private readonly II2CBus _i2CBus;
+        private readonly I2CSlaveAddress _address;
 
-        public PCF8574Driver(int address, II2cBusAccessor i2CBus)
+        public PCF8574Driver(I2CSlaveAddress address, II2CBus i2CBus)
         {
             if (i2CBus == null) throw new ArgumentNullException(nameof(i2CBus));
 

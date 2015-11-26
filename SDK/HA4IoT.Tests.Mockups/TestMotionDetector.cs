@@ -12,7 +12,7 @@ namespace HA4IoT.Tests.Mockups
         public event EventHandler DetectionCompleted;
         public event EventHandler<MotionDetectorStateChangedEventArgs> StateChanged;
         
-        public string Id { get; set; }
+        public ActuatorId Id { get; set; }
         public bool IsEnabled { get; }
         public MotionDetectorState State { get; private set; } = MotionDetectorState.Idle;
 

@@ -20,7 +20,7 @@ namespace HA4IoT.Actuators
 
         public static AutomaticRollerShutterAutomation SetupAutomaticRollerShutters(this Room room)
         {
-            return new AutomaticRollerShutterAutomation(room.Home.Timer, room.Home.WeatherStation, room.Home.NotificationHandler);
+            return new AutomaticRollerShutterAutomation(room.Home.Timer, room.Home.WeatherStation, room.Home.Log);
         }
 
         public static Room WithRollerShutter(this Room room, Enum id, IBinaryOutput powerOutput, IBinaryOutput directionOutput,
@@ -31,7 +31,7 @@ namespace HA4IoT.Actuators
 
             return room.WithActuator(id,
                 new RollerShutter(room.GenerateActuatorId(id), powerOutput, directionOutput, autoOffTimeout, maxPosition,
-                    room.Home.HttpApiController, room.Home.NotificationHandler, room.Home.Timer));
+                    room.Home.Api, room.Home.Log, room.Home.Timer));
         }
     }
 }

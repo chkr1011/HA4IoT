@@ -19,28 +19,28 @@ namespace HA4IoT.Actuators
         private readonly Dictionary<Enum, Room> _rooms = new Dictionary<Enum, Room>();
         private readonly HashAlgorithmProvider _hashAlgorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha1);
 
-        public Home(IHomeAutomationTimer timer, HealthMonitor healthMonitor, IWeatherStation weatherStation, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
+        public Home(IHomeAutomationTimer timer, HealthMonitor healthMonitor, IWeatherStation weatherStation, IHttpRequestController api, INotificationHandler log)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
-            if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
-            if (notificationHandler == null) throw new ArgumentNullException(nameof(notificationHandler));
+            if (api == null) throw new ArgumentNullException(nameof(api));
+            if (log == null) throw new ArgumentNullException(nameof(log));
 
             Timer = timer;
             _healthMonitor = healthMonitor;
             WeatherStation = weatherStation;
-            HttpApiController = httpApiController;
-            NotificationHandler = notificationHandler;
+            Api = api;
+            Log = log;
 
-            httpApiController.Handle(HttpMethod.Get, "configuration").Using(c => c.Response.Body = new JsonBody(GetConfigurationAsJson()));
-            httpApiController.Handle(HttpMethod.Get, "status").Using(HandleStatusRequest);
-            httpApiController.Handle(HttpMethod.Get, "health").Using(c => c.Response.Body = new JsonBody(_healthMonitor.ApiGet()));
+            api.Handle(HttpMethod.Get, "configuration").Using(c => c.Response.Body = new JsonBody(GetConfigurationAsJson()));
+            api.Handle(HttpMethod.Get, "status").Using(HandleStatusRequest);
+            api.Handle(HttpMethod.Get, "health").Using(c => c.Response.Body = new JsonBody(_healthMonitor.ApiGet()));
         }
 
         public IHomeAutomationTimer Timer { get; }
 
-        public IHttpRequestController HttpApiController { get; }
+        public IHttpRequestController Api { get; }
 
-        public INotificationHandler NotificationHandler { get; }
+        public INotificationHandler Log { get; }
 
         public IWeatherStation WeatherStation { get; }
 
@@ -61,7 +61,7 @@ namespace HA4IoT.Actuators
 
         public void PublishStatisticsNotification()
         {
-            NotificationHandler.Info("Registered actuators = {0}, Rooms = {1}.", Actuators.Count, _rooms.Count);
+            Log.Info("Registered actuators = {0}, Rooms = {1}.", Actuators.Count, _rooms.Count);
         }
 
         private void HandleStatusRequest(HttpContext httpContext)
@@ -98,7 +98,7 @@ namespace HA4IoT.Actuators
                 var context = new ApiRequestContext(new JsonObject(), new JsonObject());
                 actuator.HandleApiGet(context);
 
-                status.SetNamedValue(actuator.Id, context.Response);
+                status.SetNamedValue(actuator.Id.Value, context.Response);
             }
 
             result.SetNamedValue("status", status);

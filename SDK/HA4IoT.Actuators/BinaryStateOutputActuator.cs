@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Notifications;
@@ -11,7 +12,7 @@ namespace HA4IoT.Actuators
     {
         private readonly IBinaryOutput _output;
 
-        public BinaryStateOutputActuator(string id, IBinaryOutput output, IHttpRequestController request,
+        public BinaryStateOutputActuator(ActuatorId id, IBinaryOutput output, IHttpRequestController request,
             INotificationHandler log) : base(id, request, log)
         {
             if (output == null) throw new ArgumentNullException(nameof(output));

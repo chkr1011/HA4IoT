@@ -5,6 +5,7 @@ using Windows.Storage;
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
@@ -53,11 +54,11 @@ namespace HA4IoT.Controller.Cellar
             var pi2PortController = new Pi2PortController();
 
             IWeatherStation weatherStation = CreateWeatherStation();
-            var i2CBus = new I2cBusAccessor(NotificationHandler);
+            var i2CBus = new I2CBusWrapper(NotificationHandler);
 
             var ioBoardManager = new IOBoardCollection(HttpApiController, NotificationHandler);
             var ccToolsFactory = new CCToolsBoardController(i2CBus, ioBoardManager, NotificationHandler);
-            var hsrt16 = ccToolsFactory.CreateHSRT16(Device.CellarHSRT16, 32);
+            var hsrt16 = ccToolsFactory.CreateHSRT16(Device.CellarHSRT16, new I2CSlaveAddress(32));
 
             var home = new Home(Timer, HealthMonitor, weatherStation, HttpApiController, NotificationHandler);
 
