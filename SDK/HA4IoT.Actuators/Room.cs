@@ -13,7 +13,7 @@ namespace HA4IoT.Actuators
     public class Room
     {
         private readonly List<ActuatorBase> _actuators = new List<ActuatorBase>();
-
+        
         public Room(Home home, string id)
         {
             if (home == null) throw new ArgumentNullException(nameof(home));
@@ -187,9 +187,9 @@ namespace HA4IoT.Actuators
             return configuration;
         }
 
-        public ActuatorId GenerateActuatorId(Enum id)
+        public ActuatorId GenerateActuatorId(Enum actuatorId)
         {
-            return new ActuatorId(Id + "." + id);
+            return ActuatorIdFactory.Create(Id + "." + actuatorId);
         }
 
         private void HandleApiGet(HttpContext httpContext)

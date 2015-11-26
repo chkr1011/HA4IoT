@@ -100,6 +100,3 @@ appConfiguration.actuatorExtender = function (actuator) {
             }
     }
 };
-
-appConfiguration.roomExtender = function (room) {
-}

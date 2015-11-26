@@ -15,7 +15,7 @@ function getVersion(callback) {
 function loadUILocalizations(callback) {
     $.getJSON("/app/UILocalizations.json").success(function (result) {
         uiLocalizations = result;
-    }).fail(function(jqXHR, textStatus, errorThrown) {
+    }).fail(function (jqXHR, textStatus, errorThrown) {
         alert(textStatus);
     }).always(function () { callback(); });
 }
@@ -61,30 +61,42 @@ function setupController() {
           c.generateRooms = function () {
 
               $http.get("/api/configuration").success(function (data) {
+
                   $.each(data.rooms, function (roomId, room) {
-                      room.id = roomId;
-                      configureRoom(room);
+                      if (room.hide) {
+                          return true;
+                      }
 
-                      if (!room.hide) {
-                          for (var i = room.actuators.length - 1; i >= 0; i--) {
-                              var actuator = room.actuators[i];
+                      var roomControl = {};
+                      roomControl.id = roomId;
+                      roomControl.caption = getActuatorLocalization(roomId);
+                      roomControl.actuators = [];
 
-                              configureActuator(room, actuator, i);
+                      $.each(room.actuators, function (actuatorId, actuator) {
 
-                              if (actuator.type === "HA4IoT.Actuators.TemperatureSensor" ||
-                                actuator.type === "HA4IoT.Actuators.HumiditySensor") {
-                                  c.sensors.push(actuator);
-                              } else if (actuator.type === "HA4IoT.Actuators.RollerShutter") {
-                                  c.rollerShutters.push(actuator);
-                              } else if (actuator.type === "HA4IoT.Actuators.MotionDetector") {
-                                  c.motionDetectors.push(actuator);
-                              } else if (actuator.type === "HA4IoT.Actuators.Window") {
-                                  c.windows.push(actuator);
-                              }
+                          actuator.id = actuatorId;
+
+                          configureActuator(room, actuator);
+
+                          if (actuator.hide) {
+                              return true;
                           }
 
-                          c.rooms.push(room);
-                      }
+                          if (actuator.type === "HA4IoT.Actuators.TemperatureSensor" ||
+                              actuator.type === "HA4IoT.Actuators.HumiditySensor") {
+                              c.sensors.push(actuator);
+                          } else if (actuator.type === "HA4IoT.Actuators.RollerShutter") {
+                              c.rollerShutters.push(actuator);
+                          } else if (actuator.type === "HA4IoT.Actuators.MotionDetector") {
+                              c.motionDetectors.push(actuator);
+                          } else if (actuator.type === "HA4IoT.Actuators.Window") {
+                              c.windows.push(actuator);
+                          }
+
+                          roomControl.actuators.push(actuator);
+                      });
+
+                      c.rooms.push(roomControl);
                   });
 
                   if (c.sensors.length === 0) {
@@ -144,7 +156,7 @@ function setupController() {
               });
 
               setTimeout(function () {
-                 c.pollStatus();
+                  c.pollStatus();
               }, c.appConfiguration.pollInterval);
           };
 
@@ -158,7 +170,7 @@ function setupController() {
           };
 
           $scope.loadNotifications = function () {
-              $.getJSON("/api/notifications", function(data) {
+              $.getJSON("/api/notifications", function (data) {
                   c.notifications = data.notifications;
                   c.notifications.reverse();
               });
@@ -205,19 +217,12 @@ function setupController() {
               });
           };
 
-          loadUILocalizations(function() { loadActuatorLocalizations(function() { c.generateRooms(); }) });
+          loadUILocalizations(function () { loadActuatorLocalizations(function () { c.generateRooms(); }) });
       }
     ]);
 }
 
-function configureRoom(room) {
-    room.caption = getActuatorLocalization(room.id);
-    room.hide = false;
-
-    appConfiguration.roomExtender(room);
-}
-
-function configureActuator(room, actuator, i) {
+function configureActuator(room, actuator) {
     actuator.image = actuator.type;
     actuator.sortValue = 0;
     actuator.caption = getActuatorLocalization(actuator.id);
@@ -225,7 +230,7 @@ function configureActuator(room, actuator, i) {
     actuator.hide = false;
     actuator.displayVertical = false;
     actuator.state = {};
-    
+
     switch (actuator.type) {
         case "HA4IoT.Actuators.Lamp":
             {
@@ -318,7 +323,7 @@ function configureActuator(room, actuator, i) {
 
         default:
             {
-                room.actuators.splice(i, 1);
+                actuator.hide = true;
                 return;
             }
     }
