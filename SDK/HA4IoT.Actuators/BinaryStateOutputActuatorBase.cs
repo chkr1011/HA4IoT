@@ -8,8 +8,8 @@ namespace HA4IoT.Actuators
 {
     public abstract class BinaryStateOutputActuatorBase : ActuatorBase, IBinaryStateOutputActuator
     {
-        protected BinaryStateOutputActuatorBase(string id, IHttpRequestController httpRequestController,
-            INotificationHandler notificationHandler) : base(id, httpRequestController, notificationHandler)
+        protected BinaryStateOutputActuatorBase(string id, IHttpRequestController request,
+            INotificationHandler log) : base(id, request, log)
         {
         }
 

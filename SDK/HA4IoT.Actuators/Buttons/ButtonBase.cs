@@ -16,8 +16,8 @@ namespace HA4IoT.Actuators
 
         private ButtonState _state = ButtonState.Released;
 
-        protected ButtonBase(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
-            : base(id, httpApiController, notificationHandler)
+        protected ButtonBase(string id, IHttpRequestController api, INotificationHandler log)
+            : base(id, api, log)
         {
         }
 
@@ -79,7 +79,7 @@ namespace HA4IoT.Actuators
 
         protected void OnPressedShort()
         {
-            NotificationHandler.Info(Id + ": pressed short");
+            Log.Info(Id + ": pressed short");
 
             try
             {
@@ -93,7 +93,7 @@ namespace HA4IoT.Actuators
 
         protected void OnPressedLong()
         {
-            NotificationHandler.Info(Id + ": pressed long");
+            Log.Info(Id + ": pressed long");
 
             try
             {

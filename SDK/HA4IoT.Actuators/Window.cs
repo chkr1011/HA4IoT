@@ -12,7 +12,7 @@ namespace HA4IoT.Actuators
     {
         private readonly List<Casement> _casements = new List<Casement>(); 
 
-        public Window(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler) : base(id, httpApiController, notificationHandler)
+        public Window(string id, IHttpRequestController api, INotificationHandler log) : base(id, api, log)
         {
         }
 

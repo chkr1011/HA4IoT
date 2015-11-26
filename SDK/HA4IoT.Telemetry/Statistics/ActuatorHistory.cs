@@ -66,6 +66,8 @@ namespace HA4IoT.Telemetry.Statistics
             }
 
             DateTime now = DateTime.Now;
+            //entries.Add(new ActuatorHistoryEntry(now, _actuator.Id, _actuator.));
+
             int firstDayOfWeek = GetFirstDayOfWeek(now);
 
             var entriesOfThisMonth = entries.Where(e => e.Timestamp.Year == now.Year && e.Timestamp.Month == now.Month).ToList();

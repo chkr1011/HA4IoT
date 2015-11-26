@@ -14,7 +14,7 @@ using HA4IoT.Hardware.Pi2;
 
 namespace HA4IoT.Controller.Cellar
 {
-    internal class Controller : BaseController
+    internal class Controller : ControllerBase
     {
         private enum Device
         {

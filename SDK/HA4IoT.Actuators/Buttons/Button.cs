@@ -14,8 +14,8 @@ namespace HA4IoT.Actuators
     {
         private readonly Stopwatch _stopwatch = new Stopwatch();
 
-        public Button(string id, IBinaryInput input, IHttpRequestController httpApiController, INotificationHandler notificationHandler, IHomeAutomationTimer timer)
-            : base(id, httpApiController, notificationHandler)
+        public Button(string id, IBinaryInput input, IHttpRequestController api, INotificationHandler log, IHomeAutomationTimer timer)
+            : base(id, api, log)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (input == null) throw new ArgumentNullException(nameof(input));

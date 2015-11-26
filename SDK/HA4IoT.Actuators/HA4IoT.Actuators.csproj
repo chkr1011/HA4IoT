@@ -114,6 +114,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PersistedConfiguration.cs" />
     <Compile Include="Animations\AnimateParameter.cs" />
     <Compile Include="Animations\Animation.cs" />
     <Compile Include="Buttons\ButtonExtensions.cs" />

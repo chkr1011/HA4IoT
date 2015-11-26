@@ -15,8 +15,8 @@ namespace HA4IoT.Actuators
         private TimedAction _autoEnableAction;
         private MotionDetectorState _state = MotionDetectorState.Idle;
 
-        public MotionDetector(string id, IBinaryInput input, IHomeAutomationTimer timer, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
-            : base(id, httpApiController, notificationHandler)
+        public MotionDetector(string id, IBinaryInput input, IHomeAutomationTimer timer, IHttpRequestController api, INotificationHandler log)
+            : base(id, api, log)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
             
@@ -24,7 +24,7 @@ namespace HA4IoT.Actuators
 
             IsEnabledChanged += (s, e) =>
             {
-                HandleIsEnabledStateChanged(timer, notificationHandler);
+                HandleIsEnabledStateChanged(timer, log);
             };
         }
 
@@ -88,12 +88,12 @@ namespace HA4IoT.Actuators
 
             if (newState == MotionDetectorState.MotionDetected)
             {
-                NotificationHandler.Info(Id + ": Motion detected");
+                Log.Info(Id + ": Motion detected");
                 MotionDetected?.Invoke(this, EventArgs.Empty);
             }
             else
             {
-                NotificationHandler.Info(Id+ ": Detection completed");
+                Log.Info(Id+ ": Detection completed");
                 DetectionCompleted?.Invoke(this, EventArgs.Empty);
             }
 

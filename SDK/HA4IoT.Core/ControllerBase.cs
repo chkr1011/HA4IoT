@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Dynamic;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
@@ -11,10 +12,12 @@ using HA4IoT.Notifications;
 
 namespace HA4IoT.Core
 {
-    public abstract class BaseController
+    public abstract class ControllerBase
     {
         private BackgroundTaskDeferral _deferral;
         private HttpServer _httpServer;
+
+        public static INotificationHandler Log { get; private set; }
 
         protected INotificationHandler NotificationHandler { get; private set; }
         protected IHttpRequestController HttpApiController { get; private set; }
@@ -61,6 +64,8 @@ namespace HA4IoT.Core
             notificationHandler.ExposeToApi(HttpApiController);
             notificationHandler.Info("Starting");
             NotificationHandler = notificationHandler;
+
+            Log = NotificationHandler;
         }
 
         private void InitializeCore()

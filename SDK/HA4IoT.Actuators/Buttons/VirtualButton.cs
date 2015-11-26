@@ -7,8 +7,8 @@ namespace HA4IoT.Actuators
 {
     public class VirtualButton : ButtonBase
     {
-        public VirtualButton(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
-            : base(id, httpApiController, notificationHandler)
+        public VirtualButton(string id, IHttpRequestController api, INotificationHandler log)
+            : base(id, api, log)
         {
         }
     }

@@ -13,8 +13,8 @@ namespace HA4IoT.Actuators
         private int _index;
         private bool _turnOffIfStateIsAppliedTwice;
 
-        public StateMachine(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
-            : base(id, httpApiController, notificationHandler)
+        public StateMachine(string id, IHttpRequestController api, INotificationHandler log)
+            : base(id, api, log)
         {
         }
 
@@ -102,7 +102,7 @@ namespace HA4IoT.Actuators
             States[_index].Apply(parameters);
             StateChanged?.Invoke(this, new StateMachineStateChangedEventArgs(oldState, newState));
 
-            NotificationHandler.Info(Id + ": " + oldState + "->" + newState);
+            Log.Info(Id + ": " + oldState + "->" + newState);
         }
 
         public void SetInitialState()

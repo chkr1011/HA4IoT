@@ -20,7 +20,7 @@ using HA4IoT.Telemetry.Csv;
 
 namespace HA4IoT.Controller.Main
 {
-    internal class Controller : BaseController
+    internal class Controller : ControllerBase
     {
         protected override void Initialize()
         {

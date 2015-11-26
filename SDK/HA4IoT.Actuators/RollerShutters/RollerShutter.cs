@@ -30,10 +30,10 @@ namespace HA4IoT.Actuators
             IBinaryOutput directionOutput, 
             TimeSpan autoOffTimeout,
             int maxPosition,
-            IHttpRequestController httpApiController,
-            INotificationHandler notificationHandler, 
+            IHttpRequestController api,
+            INotificationHandler log, 
             IHomeAutomationTimer timer)
-            : base(id, httpApiController, notificationHandler)
+            : base(id, api, log)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (powerOutput == null) throw new ArgumentNullException(nameof(powerOutput));
@@ -80,7 +80,7 @@ namespace HA4IoT.Actuators
 
                 if (oldState != RollerShutterState.Stopped)
                 {
-                    NotificationHandler.Info(Id + ": Stopped (Duration: " +
+                    Log.Info(Id + ": Stopped (Duration: " +
                                              _movingDuration.ElapsedMilliseconds + "ms)");
                 }
             }
@@ -141,7 +141,7 @@ namespace HA4IoT.Actuators
         private void OnStateChanged(RollerShutterState oldState, RollerShutterState newState)
         {
             StateChanged?.Invoke(this, new RollerShutterStateChangedEventArgs(oldState, newState));
-            NotificationHandler.Info(Id + ": " + oldState + "->" + newState);
+            Log.Info(Id + ": " + oldState + "->" + newState);
         }
 
         private void StopInternal()

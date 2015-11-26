@@ -175,15 +175,14 @@ namespace HA4IoT.Actuators
 
         public JsonObject GetConfigurationAsJson()
         {
-            JsonArray actuatorDescriptions = new JsonArray();
+            var actuators = new JsonObject();
             foreach (var actuator in _actuators)
             {
-                JsonObject actuatorDescription = actuator.GetConfiguration();
-                actuatorDescriptions.Add(actuatorDescription);
+                actuators.SetNamedValue(actuator.Id, actuator.GetConfiguration());
             }
 
             JsonObject configuration = new JsonObject();
-            configuration.SetNamedValue("actuators", actuatorDescriptions);
+            configuration.SetNamedValue("actuators", actuators);
             return configuration;
         }
 

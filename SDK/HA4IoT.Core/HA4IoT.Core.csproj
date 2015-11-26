@@ -114,7 +114,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseController.cs" />
+    <Compile Include="ControllerBase.cs" />
     <Compile Include="HealthMonitor.cs" />
     <Compile Include="Timer\IHomeAutomationTimer.cs" />
     <Compile Include="Timer\TimedAction.cs" />

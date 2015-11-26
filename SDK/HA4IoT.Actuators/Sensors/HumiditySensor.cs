@@ -9,12 +9,12 @@ namespace HA4IoT.Actuators
     public class HumiditySensor : SingleValueSensorActuatorBase, IHumiditySensor
     {
         public HumiditySensor(string id, ISingleValueSensor sensor,
-            IHttpRequestController httpApiController, INotificationHandler notificationHandler)
-            : base(id, httpApiController, notificationHandler)
+            IHttpRequestController api, INotificationHandler log)
+            : base(id, api, log)
         {
             if (sensor == null) throw new ArgumentNullException(nameof(sensor));
 
-            sensor.ValueChanged += (s, e) => UpdateValue(e.NewValue);
+            sensor.ValueChanged += (s, e) => SetValueInternal(e.NewValue);
         }
     }
 }

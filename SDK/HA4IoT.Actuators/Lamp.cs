@@ -6,8 +6,8 @@ namespace HA4IoT.Actuators
 {
     public class Lamp : BinaryStateOutputActuator
     {
-        public Lamp(string id, IBinaryOutput output, IHttpRequestController httpRequestController, INotificationHandler notificationHandler)
-            : base(id, output, httpRequestController, notificationHandler)
+        public Lamp(string id, IBinaryOutput output, IHttpRequestController request, INotificationHandler log)
+            : base(id, output, request, log)
         {
         }
     }

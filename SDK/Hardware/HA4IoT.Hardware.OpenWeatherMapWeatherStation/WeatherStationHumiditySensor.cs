@@ -7,8 +7,13 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 {
     public class WeatherStationHumiditySensor : SingleValueSensorActuatorBase, IHumiditySensor
     {
-        public WeatherStationHumiditySensor(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler) : base(id, httpApiController, notificationHandler)
+        public WeatherStationHumiditySensor(string id, IHttpRequestController api, INotificationHandler log) : base(id, api, log)
         {
+        }
+
+        public void SetValue(float newValue)
+        {
+            SetValueInternal(newValue);
         }
     }
 }

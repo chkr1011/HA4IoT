@@ -1,8 +1,11 @@
 ﻿using System;
+using System.IO;
 using Windows.Data.Json;
+using Windows.Storage;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Notifications;
+using HA4IoT.Core;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
@@ -11,16 +14,20 @@ namespace HA4IoT.Actuators
     {
         private bool _isEnabled = true;
 
-        protected ActuatorBase(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
+        protected ActuatorBase(string id, IHttpRequestController api, INotificationHandler log)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
-            if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
-            if (notificationHandler == null) throw new ArgumentNullException(nameof(notificationHandler));
+            if (api == null) throw new ArgumentNullException(nameof(api));
+            if (log == null) throw new ArgumentNullException(nameof(log));
 
             Id = id;
-            NotificationHandler = notificationHandler;
-            HttpApiController = httpApiController;
+            Log = log;
+            Api = api;
 
+            string configurationFilename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Actuators", id, "Configuration.json"); ;
+            Configuration = new PersistedConfiguration(configurationFilename);
+            Configuration.SetValue("type", GetType().FullName);
+            
             ExposeToApi();
         }
 
@@ -45,9 +52,11 @@ namespace HA4IoT.Actuators
             }
         }
 
-        protected INotificationHandler NotificationHandler { get; }
+        protected INotificationHandler Log { get; }
 
-        protected IHttpRequestController HttpApiController { get; }
+        protected IHttpRequestController Api { get; }
+
+        public PersistedConfiguration Configuration { get; }
 
         public event EventHandler<ActuatorIsEnabledChangedEventArgs> IsEnabledChanged;
 
@@ -56,13 +65,28 @@ namespace HA4IoT.Actuators
             if (context.Request.ContainsKey("isEnabled"))
             {
                 IsEnabled = context.Request.GetNamedBoolean("isEnabled", false);
-                NotificationHandler.Info(Id + ": " + (IsEnabled ? "Enabled" : "Disabled"));
+                ControllerBase.Log.Info(Id + ": " + (IsEnabled ? "Enabled" : "Disabled"));
+                return;
             }
+
+            Configuration.Update(context.Request);
         }
 
         public virtual void HandleApiGet(ApiRequestContext context)
         {
             context.Response.SetNamedValue("isEnabled", JsonValue.CreateBooleanValue(IsEnabled)); ;
+        }
+
+        private void HandleApiConfigurationPost(HttpContext httpContext)
+        {
+            JsonObject configuration;
+            if (!JsonObject.TryParse(httpContext.Request.Body, out configuration))
+            {
+                httpContext.Response.StatusCode = HttpStatusCode.BadRequest;
+                return;
+            }
+
+            Configuration.Update(configuration);
         }
 
         public virtual JsonObject GetStatus()
@@ -75,16 +99,14 @@ namespace HA4IoT.Actuators
         
         public virtual JsonObject GetConfiguration()
         {
-            var configuration = new JsonObject();
-            configuration.SetNamedValue("id", JsonValue.CreateStringValue(Id));
-            configuration.SetNamedValue("type", JsonValue.CreateStringValue(GetType().FullName));
-
-            return configuration;
+            return Configuration.GetAsJson();
         }
 
         private void ExposeToApi()
         {
-            HttpApiController.Handle(HttpMethod.Post, "actuator")
+            Api.Handle(HttpMethod.Post, "configuration").WithSegment(Id).Using(HandleApiConfigurationPost);
+
+            Api.Handle(HttpMethod.Post, "actuator")
                 .WithSegment(Id)
                 .WithRequiredJsonBody()
                 .Using(c =>
@@ -102,7 +124,7 @@ namespace HA4IoT.Actuators
                     c.Response.Body = new JsonBody(context.Response);
                 });
 
-            HttpApiController.Handle(HttpMethod.Get, "actuator")
+            Api.Handle(HttpMethod.Get, "actuator")
                 .WithSegment(Id)
                 .Using(c =>
                 {

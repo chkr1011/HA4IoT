@@ -10,13 +10,13 @@ namespace HA4IoT.Actuators
     public class RollerShutterButtons : ActuatorBase
     {
         public RollerShutterButtons(string id, IBinaryInput upInput, IBinaryInput downInput,
-            IHttpRequestController httpRequestController, INotificationHandler notificationHandler, IHomeAutomationTimer timer) : base(id, httpRequestController, notificationHandler)
+            IHttpRequestController request, INotificationHandler log, IHomeAutomationTimer timer) : base(id, request, log)
         {
             if (upInput == null) throw new ArgumentNullException(nameof(upInput));
             if (downInput == null) throw new ArgumentNullException(nameof(downInput));
 
-            Up = new Button(id + "-up", upInput, httpRequestController, notificationHandler, timer);
-            Down = new Button(id + "-down", downInput, httpRequestController, notificationHandler, timer);
+            Up = new Button(id + "-up", upInput, request, log, timer);
+            Down = new Button(id + "-down", downInput, request, log, timer);
         }
 
         public IButton Up { get; }

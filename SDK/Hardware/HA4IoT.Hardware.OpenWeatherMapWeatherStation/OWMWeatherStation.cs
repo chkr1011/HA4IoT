@@ -93,8 +93,9 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             _sunset = UnixTimeStampToDateTime(sunsetValue).TimeOfDay;
 
             var main = data["main"].GetObject();
-            _temperature.UpdateValue((float) main["temp"].GetNumber());
-            _humidity.UpdateValue((float) main["humidity"].GetNumber());
+
+            _temperature.SetValue((float) main["temp"].GetNumber());
+            _humidity.SetValue((float) main["humidity"].GetNumber());
         }
 
         private async Task<JsonObject> FetchWeatherData()
@@ -122,8 +123,8 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
                 return;
             }
 
-            _temperature.UpdateValue((float)requestData.GetNamedNumber("temperature"));
-            _humidity.UpdateValue((float)requestData.GetNamedNumber("humidity"));
+            _temperature.SetValue((float)requestData.GetNamedNumber("temperature"));
+            _humidity.SetValue((float)requestData.GetNamedNumber("humidity"));
             _sunrise = TimeSpan.Parse(requestData.GetNamedString("sunrise"));
             _sunset = TimeSpan.Parse(requestData.GetNamedString("sunset"));
 

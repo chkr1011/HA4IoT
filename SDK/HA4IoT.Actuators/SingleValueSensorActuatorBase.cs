@@ -10,8 +10,8 @@ namespace HA4IoT.Actuators
     {
         private float _value;
 
-        protected SingleValueSensorActuatorBase(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
-            : base(id, httpApiController, notificationHandler)
+        protected SingleValueSensorActuatorBase(string id, IHttpRequestController api, INotificationHandler log)
+            : base(id, api, log)
         {
         }
 
@@ -29,16 +29,18 @@ namespace HA4IoT.Actuators
             context.Response.SetNamedValue("value", JsonValue.CreateNumberValue(_value));
         }
 
-        public void UpdateValue(float newValue)
+        protected void SetValueInternal(float newValue)
         {
             float oldValue = _value;
-            if (Math.Abs(oldValue - newValue) > ValueChangedMinDelta)
+            if (Math.Abs(oldValue - newValue) < ValueChangedMinDelta)
             {
-                _value = newValue;
-
-                NotificationHandler.Info(Id + ": " + oldValue + "->" + newValue);
-                ValueChanged?.Invoke(this, new SingleValueSensorValueChangedEventArgs(oldValue, _value));
+                return;
             }
+
+            _value = newValue;
+
+            Log.Info(Id + ": " + oldValue + "->" + newValue);
+            ValueChanged?.Invoke(this, new SingleValueSensorValueChangedEventArgs(oldValue, _value));
         }
     }
 }

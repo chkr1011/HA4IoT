@@ -20,7 +20,7 @@ using HA4IoT.Telemetry.Csv;
 
 namespace HA4IoT.Controller.Demo
 {
-    internal class Controller : BaseController
+    internal class Controller : ControllerBase
     {
         private const int LedGpio = 22;
         private const int I2CHardwareBridgeAddress = 50;

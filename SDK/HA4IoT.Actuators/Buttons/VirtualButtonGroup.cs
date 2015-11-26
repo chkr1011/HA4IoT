@@ -12,8 +12,8 @@ namespace HA4IoT.Actuators
     {
         private readonly Dictionary<string, VirtualButton> _buttons = new Dictionary<string, VirtualButton>(StringComparer.OrdinalIgnoreCase);
 
-        public VirtualButtonGroup(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
-            : base(id, httpApiController, notificationHandler)
+        public VirtualButtonGroup(string id, IHttpRequestController api, INotificationHandler log)
+            : base(id, api, log)
         {
         }
 
@@ -26,7 +26,7 @@ namespace HA4IoT.Actuators
                 throw new InvalidOperationException("Button with id " + id + " already part of the button group.");
             }
 
-            var virtualButton = new VirtualButton(id, HttpApiController, NotificationHandler);
+            var virtualButton = new VirtualButton(id, Api, Log);
             initializer(virtualButton);
 
             _buttons.Add(id, virtualButton);
