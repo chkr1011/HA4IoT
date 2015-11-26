@@ -328,6 +328,32 @@ function configureActuator(room, actuator) {
             }
     }
 
+    if (actuator.app !== undefined) {
+        if (actuator.app.caption !== undefined) {
+            actuator.caption = actuator.app.caption;
+        }
+
+        if (actuator.app.sortValue !== undefined) {
+            actuator.sortValue = actuator.app.sortValue;
+        }
+
+        if (actuator.app.image !== undefined) {
+            actuator.image = actuator.app.image;
+        }
+
+        if (actuator.app.hide !== undefined) {
+            actuator.hide = actuator.app.hide;
+        }
+
+        if (actuator.app.overviewCaption !== undefined) {
+            actuator.overviewCaption = actuator.app.overviewCaption;
+        }
+
+        if (actuator.app.displayVertical !== undefined) {
+            actuator.displayVertical = actuator.app.displayVertical;
+        }
+    }
+
     appConfiguration.actuatorExtender(actuator);
 }
 
