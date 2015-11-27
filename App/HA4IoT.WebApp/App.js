@@ -364,8 +364,6 @@ function configureActuator(room, actuator) {
 }
 
 function invokeActuator(id, request, successCallback) {
-    //var url = "/api/actuator/" + id + "?body=" + JSON.stringify(request);
-
     $.post("/api/actuator/" + id, JSON.stringify(request)).success(function () {
         if (successCallback != null) {
             successCallback();
@@ -373,13 +371,4 @@ function invokeActuator(id, request, successCallback) {
     }).fail(function (jqXHR, textStatus, errorThrown) {
         alert(textStatus);
     });
-
-    // The hack with the body as query is required to allow cross site calls.
-    ////$.ajax({ method: "POST", url: url, timeout: 2500 }).success(function () {
-    ////    if (successCallback != null) {
-    ////        successCallback();
-    ////    }
-    ////}).fail(function (jqXHR, textStatus, errorThrown) {
-    ////    alert(textStatus);
-    ////});
 }
