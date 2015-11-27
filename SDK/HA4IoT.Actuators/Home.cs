@@ -66,24 +66,26 @@ namespace HA4IoT.Actuators
 
         private void HandleStatusRequest(HttpContext httpContext)
         {
-            var currentStatus = GetStatus().Stringify();
-            var currentHash = "\"" + GenerateHash(currentStatus) + "\"";
+            var status = GetStatus();
+            var hash = GenerateHash(status.Stringify());
+            var hashWithQuotes = "\"" + hash + "\"";
 
             string clientHash;
             if (httpContext.Request.Headers.TryGetValue("If-None-Match", out clientHash))
             {
-                if (clientHash.Equals(currentHash))
+                if (clientHash.Equals(hashWithQuotes))
                 {
                     httpContext.Response.StatusCode = HttpStatusCode.NotModified;
                     return;
                 }
             }
 
-            httpContext.Response.StatusCode = HttpStatusCode.OK;
-            httpContext.Response.Headers.Add("ETag", currentHash);
+            status.SetNamedValue("hash", hash.ToJsonValue());
 
-            // Prevent the JsonObject from performing two redundant "Stringify" calls by using the plain text body with JSON mime type.
-            httpContext.Response.Body = new PlainTextBody().WithContent(currentStatus).WithMimeType(MimeTypeProvider.Json);
+            httpContext.Response.StatusCode = HttpStatusCode.OK;
+            httpContext.Response.Headers.Add("ETag", hashWithQuotes);
+
+            httpContext.Response.Body = new JsonBody(status);
         }
 
         public JsonObject GetStatus()

@@ -73,9 +73,7 @@ function setupController() {
                       roomControl.actuators = [];
 
                       $.each(room.actuators, function (actuatorId, actuator) {
-
                           actuator.id = actuatorId;
-
                           configureActuator(room, actuator);
 
                           if (actuator.hide) {
@@ -141,9 +139,17 @@ function setupController() {
               }, 100);
           }
 
+          c.previousHash = "";
           c.pollStatus = function () {
-              getJSON(c, "/api/status", function (data) {
+              $.getJSON("/api/status").always(function (data) {
+                  if (data.hash === c.previousHash) {
+                      return;
+                  }
 
+                  c.previousHash = data.hash;
+
+                  console.log("Updating UI due to state changes");
+                  
                   $.each(data.status, function (id, state) {
                       c.updateStatus(id, state);
                   });
@@ -357,28 +363,23 @@ function configureActuator(room, actuator) {
     appConfiguration.actuatorExtender(actuator);
 }
 
-function getJSON(controller, url, callback) {
-    $.ajax({
-        method: "GET",
-        url: url,
-        timeout: 2500
-    }).success(function (result) {
-        controller.errorMessage = "";
-        callback(result);
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        controller.errorMessage = textStatus;
-    });
-};
-
 function invokeActuator(id, request, successCallback) {
-    var url = "/api/actuator/" + id + "?body=" + JSON.stringify(request);
+    //var url = "/api/actuator/" + id + "?body=" + JSON.stringify(request);
 
-    // The hack with the body as query is required to allow cross site calls.
-    $.ajax({ method: "POST", url: url, timeout: 2500 }).success(function () {
+    $.post("/api/actuator/" + id, JSON.stringify(request)).success(function () {
         if (successCallback != null) {
             successCallback();
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
         alert(textStatus);
     });
+
+    // The hack with the body as query is required to allow cross site calls.
+    ////$.ajax({ method: "POST", url: url, timeout: 2500 }).success(function () {
+    ////    if (successCallback != null) {
+    ////        successCallback();
+    ////    }
+    ////}).fail(function (jqXHR, textStatus, errorThrown) {
+    ////    alert(textStatus);
+    ////});
 }
