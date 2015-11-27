@@ -90,7 +90,7 @@ namespace HA4IoT.Actuators
             }
 
             File.WriteAllText(_filename, _configuration.Stringify());
-            ControllerBase.Log.Info("Persisted configuration at '{0}'.");
+            ControllerBase.Log.Info("Persisted configuration at '{0}'.", _filename);
         }
     }
 }
