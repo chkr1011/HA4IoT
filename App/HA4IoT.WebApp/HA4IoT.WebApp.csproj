@@ -903,6 +903,7 @@
     <Content Include="index.html" />
     <Content Include="Style.css" />
     <Content Include="touch-icon-iphone-retina.png" />
+    <Content Include="Views\NotificationsViewerTemplate.html" />
     <Content Include="Views\BottomBarTemplate.html" />
     <Content Include="Views\HumiditySensorTemplate.html" />
     <Content Include="Views\MotionDetectorsOverviewTemplate.html" />

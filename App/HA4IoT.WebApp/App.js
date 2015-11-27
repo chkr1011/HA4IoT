@@ -141,29 +141,28 @@ function setupController() {
 
           c.previousHash = "";
           c.pollStatus = function () {
-              $.getJSON("/api/status").always(function (data) {
+              $.getJSON("/api/status").done(function(data) {
                   if (data.hash === c.previousHash) {
                       return;
                   }
 
                   c.previousHash = data.hash;
-
                   console.log("Updating UI due to state changes");
-                  
-                  $.each(data.status, function (id, state) {
+
+                  $.each(data.status, function(id, state) {
                       c.updateStatus(id, state);
                   });
 
                   c.weatherStation = data.weatherStation;
 
-                  $scope.$apply(function () {
-                      $scope.msgs = data;
-                  });
-              });
+                  $scope.$apply(function () { $scope.msgs = data; });
 
-              setTimeout(function () {
-                  c.pollStatus();
-              }, c.appConfiguration.pollInterval);
+                  c.errorMessage = null;
+              }).fail(function (jqXHR, textStatus, errorThrown) {
+                  c.errorMessage = textStatus;
+              }).always(function() {
+                  setTimeout(function () { c.pollStatus(); }, c.appConfiguration.pollInterval);
+              });
           };
 
           $scope.toggleState = function (actuator) {
@@ -364,7 +363,7 @@ function configureActuator(room, actuator) {
 }
 
 function invokeActuator(id, request, successCallback) {
-    $.post("/api/actuator/" + id, JSON.stringify(request)).success(function () {
+    $.post("/api/actuator/" + id, JSON.stringify(request)).done(function () {
         if (successCallback != null) {
             successCallback();
         }

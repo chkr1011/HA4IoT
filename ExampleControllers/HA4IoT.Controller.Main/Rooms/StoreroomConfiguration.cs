@@ -11,6 +11,7 @@ namespace HA4IoT.Controller.Main.Rooms
         private enum Storeroom
         {
             MotionDetector,
+            MotionDetectorCatLitterBox,
             LightCeiling,
 
             CatLitterBoxFan,
@@ -27,14 +28,19 @@ namespace HA4IoT.Controller.Main.Rooms
 
             var storeroom = home.AddRoom(Room.Storeroom)
                 .WithMotionDetector(Storeroom.MotionDetector, input3.GetInput(12))
+                .WithMotionDetector(Storeroom.MotionDetectorCatLitterBox, input3.GetInput(11).WithInvertedState())
                 .WithLamp(Storeroom.LightCeiling, hsrel5Stairway.GetOutput(7).WithInvertedState())
                 .WithSocket(Storeroom.CatLitterBoxFan, hsrel8LowerHeatingValves.GetOutput(15));
 
             storeroom.SetupAutomaticTurnOnAndOffAction()
                 .WithTrigger(storeroom.MotionDetector(Storeroom.MotionDetector))
                 .WithTarget(storeroom.Lamp(Storeroom.LightCeiling))
-                .WithTarget(storeroom.Socket(Storeroom.CatLitterBoxFan))
                 .WithOnDuration(TimeSpan.FromMinutes(1));
+
+            storeroom.SetupAutomaticTurnOnAndOffAction()
+                .WithTrigger(storeroom.MotionDetector(Storeroom.MotionDetectorCatLitterBox))
+                .WithTarget(storeroom.Socket(Storeroom.CatLitterBoxFan))
+                .WithOnDuration(TimeSpan.FromMinutes(2));
 
             storeroom.WithSocket(Storeroom.CirculatingPump, hsrel5UpperHeatingValves.GetOutput(3));
 
