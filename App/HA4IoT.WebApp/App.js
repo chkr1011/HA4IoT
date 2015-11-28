@@ -141,7 +141,7 @@ function setupController() {
 
           c.previousHash = "";
           c.pollStatus = function () {
-              $.getJSON("/api/status").done(function(data) {
+              $.ajax({ method: "GET", url: "/api/status", timeout: 2500 }).done(function(data) {
                   if (data.hash === c.previousHash) {
                       return;
                   }
@@ -363,7 +363,9 @@ function configureActuator(room, actuator) {
 }
 
 function invokeActuator(id, request, successCallback) {
-    $.post("/api/actuator/" + id, JSON.stringify(request)).done(function () {
+    var url = "/api/actuator/" + id + "?body=" + JSON.stringify(request);
+
+    $.ajax({ method: "POST", url: url, timeout: 2500 }).done(function () {
         if (successCallback != null) {
             successCallback();
         }
