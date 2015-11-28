@@ -31,6 +31,6 @@ namespace HA4IoT.Hardware.CCTools
             return port;
         }
 
-        public IBinaryOutput this[HSREL5Output port] => GetOutput((int) port);
+        public IBinaryOutput this[HSREL5Pin pin] => GetOutput((int) pin);
     }
 }

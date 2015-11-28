@@ -22,6 +22,6 @@ namespace HA4IoT.Hardware.CCTools
             return GetPort(number);
         }
 
-        public IBinaryOutput this[HSREL8Output port] => GetOutput((int)port);
+        public IBinaryOutput this[HSREL8Pin pin] => GetOutput((int) pin);
     }
 }

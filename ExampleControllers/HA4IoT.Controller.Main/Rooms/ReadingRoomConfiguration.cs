@@ -39,10 +39,10 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTemperatureSensor(ReadingRoom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(ReadingRoom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorPin))
                 .WithLamp(ReadingRoom.LightCeilingMiddle, hsrel5.GetOutput(6).WithInvertedState())
-                .WithRollerShutter(ReadingRoom.RollerShutter, hsrel5[HSREL5Output.Relay4], hsrel5[HSREL5Output.Relay3], RollerShutter.DefaultMaxMovingDuration, 20000)
-                .WithSocket(ReadingRoom.SocketWindow, hsrel5[HSREL5Output.Relay0])
-                .WithSocket(ReadingRoom.SocketWallLeft, hsrel5[HSREL5Output.Relay1])
-                .WithSocket(ReadingRoom.SocketWallRight, hsrel5[HSREL5Output.Relay2])
+                .WithRollerShutter(ReadingRoom.RollerShutter, hsrel5[HSREL5Pin.Relay4], hsrel5[HSREL5Pin.Relay3], RollerShutter.DefaultMaxMovingDuration, 20000)
+                .WithSocket(ReadingRoom.SocketWindow, hsrel5[HSREL5Pin.Relay0])
+                .WithSocket(ReadingRoom.SocketWallLeft, hsrel5[HSREL5Pin.Relay1])
+                .WithSocket(ReadingRoom.SocketWallRight, hsrel5[HSREL5Pin.Relay2])
                 .WithButton(ReadingRoom.Button, input2.GetInput(13))
                 .WithWindow(ReadingRoom.Window, w => w.WithCenterCasement(input2.GetInput(8))) // Tilt = input2.GetInput(9) -- currently broken!
                 .WithRollerShutterButtons(ReadingRoom.RollerShutterButtons, input2.GetInput(12), input2.GetInput(11));

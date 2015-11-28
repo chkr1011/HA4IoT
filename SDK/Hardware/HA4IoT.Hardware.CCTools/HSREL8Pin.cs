@@ -1,6 +1,6 @@
 ﻿namespace HA4IoT.Hardware.CCTools
 {
-    public enum HSREL8Output
+    public enum HSREL8Pin
     {
         Relay0 = 0,
 

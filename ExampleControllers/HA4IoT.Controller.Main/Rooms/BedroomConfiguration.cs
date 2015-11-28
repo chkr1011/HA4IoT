@@ -146,9 +146,9 @@ namespace HA4IoT.Controller.Main.Rooms
 
         private void SetupFan(StateMachine fan, Actuators.Room room)
         {
-            var fanRelay1 = _hsrel8[HSREL8Output.Relay0];
-            var fanRelay2 = _hsrel8[HSREL8Output.Relay1];
-            var fanRelay3 = _hsrel8[HSREL8Output.Relay2];
+            var fanRelay1 = _hsrel8[HSREL8Pin.Relay0];
+            var fanRelay2 = _hsrel8[HSREL8Pin.Relay1];
+            var fanRelay3 = _hsrel8[HSREL8Pin.Relay2];
 
             fan.AddOffState()
                 .WithLowPort(fanRelay1)

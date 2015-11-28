@@ -118,8 +118,10 @@
     <Compile Include="HSPE16OutputOnly.cs" />
     <Compile Include="HSPE8.cs" />
     <Compile Include="HSREL5.cs" />
-    <Compile Include="HSREL8Output.cs" />
-    <Compile Include="HSREL5Output.cs" />
+    <Compile Include="HSPE8Pin.cs" />
+    <Compile Include="HSRT16Pin.cs" />
+    <Compile Include="HSREL8Pin.cs" />
+    <Compile Include="HSREL5Pin.cs" />
     <Compile Include="HSREL8.cs" />
     <Compile Include="HSRT16.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
