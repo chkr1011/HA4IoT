@@ -8,6 +8,8 @@ namespace HA4IoT.Controller.Main.Rooms
 {
     internal class StoreroomConfiguration
     {
+        private CatLitterBoxTwitterSender _catLitterBoxTwitterSender;
+
         private enum Storeroom
         {
             MotionDetector,
@@ -50,6 +52,10 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTarget(storeroom.Socket(Storeroom.CirculatingPump))
                 .WithOnDuration(TimeSpan.FromMinutes(1))
                 .WithEnabledAtDay(home.WeatherStation);
+
+            _catLitterBoxTwitterSender =
+                new CatLitterBoxTwitterSender(home.Timer, home.Log).WithTrigger(
+                    storeroom.MotionDetector(Storeroom.MotionDetectorCatLitterBox));
         }
     }
 }

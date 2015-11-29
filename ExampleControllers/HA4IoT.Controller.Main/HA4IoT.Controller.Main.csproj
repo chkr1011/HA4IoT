@@ -102,6 +102,7 @@
     <Compile Include="Controller.cs" />
     <Compile Include="Device.cs" />
     <Compile Include="Rooms\BedroomConfiguration.cs" />
+    <Compile Include="Rooms\CatLitterBoxSender.cs" />
     <Compile Include="Rooms\FloorConfiguration.cs" />
     <Compile Include="Rooms\KitchenConfiguration.cs" />
     <Compile Include="Rooms\LivingRoomConfiguration.cs" />
@@ -111,6 +112,7 @@
     <Compile Include="Rooms\ReadingRoomConfiguration.cs" />
     <Compile Include="Rooms\Room.cs" />
     <Compile Include="Rooms\StoreroomConfiguration.cs" />
+    <Compile Include="Rooms\TwitterApi.cs" />
     <Compile Include="Rooms\UpperBathroomConfiguration.cs" />
     <Compile Include="StartupTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

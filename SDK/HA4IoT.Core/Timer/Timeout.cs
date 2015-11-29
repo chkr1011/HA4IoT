@@ -4,23 +4,48 @@ namespace HA4IoT.Core.Timer
 {
     public class Timeout
     {
-        private TimeSpan _timeout;
+        private TimeSpan _duration;
+        private TimeSpan _timeLeft;
 
-        public bool IsRunning => _timeout > TimeSpan.Zero;
+        public Timeout()
+        {
+        }
 
-        public bool IsElapsed => _timeout == TimeSpan.Zero;
+        public Timeout(TimeSpan defaultDuration)
+        {
+            _duration = defaultDuration;
+        }
+
+        public TimeSpan Duration => _duration;
+
+        public bool IsRunning => _timeLeft > TimeSpan.Zero;
+
+        public bool IsElapsed => _timeLeft == TimeSpan.Zero;
 
         public void Start(TimeSpan duration)
         {
-            _timeout = duration;
+            _duration = duration;
+            _timeLeft = duration;
         }
 
-        public void Tick(TimeSpan duration)
+        public void Restart()
         {
-            _timeout -= duration;
-            if (_timeout < TimeSpan.Zero)
+            _timeLeft = _duration;
+        }
+
+        public void Tick(TimerTickEventArgs timerTickEventArgs)
+        {
+            if (timerTickEventArgs == null) throw new ArgumentNullException(nameof(timerTickEventArgs));
+
+            Tick(timerTickEventArgs.ElapsedTime);
+        }
+
+        public void Tick(TimeSpan elapsedTime)
+        {
+            _timeLeft -= elapsedTime;
+            if (_timeLeft < TimeSpan.Zero)
             {
-                _timeout = TimeSpan.Zero;
+                _timeLeft = TimeSpan.Zero;
             }
         }
     }
