@@ -14,6 +14,8 @@ namespace HA4IoT.Actuators
         {
             if (sensor == null) throw new ArgumentNullException(nameof(sensor));
 
+            ValueChangedMinDelta = 2.5F;
+
             sensor.ValueChanged += (s, e) => SetValueInternal(e.NewValue);
         }
     }
