@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.Data.Json;
@@ -12,12 +13,13 @@ namespace HA4IoT.Controller.Main.Rooms
     internal class CatLitterBoxTwitterSender
     {
         private readonly INotificationHandler _log;
-        private const string Suffix = "@chkratky #HA4IoT #IoT";
+        private const string Suffix = "\r\nSeconds in litter box: {0}\r\n@chkratky";
 
         private readonly Timeout _timeout = new Timeout(TimeSpan.FromSeconds(15));
         private readonly Random _random = new Random((int)DateTime.Now.Ticks);
+        private readonly Stopwatch _timeInLitterBox = new Stopwatch();
 
-        private DateTime? _lastTweetTimestamp = null;
+        private DateTime? _lastTweetTimestamp;
         private string _previousMessage = string.Empty;
 
         // Twitter will not accept the same tweet twice.
@@ -26,11 +28,14 @@ namespace HA4IoT.Controller.Main.Rooms
                 "I was just using my litter box...",
                 "Meow... that was just in time :-)",
                 "Used my litter box...",
-                "Got some work for you :-)",
+                "Got some work for you.",
                 "Hey! Clean up my litter box.",
                 "Had a great time with my litter box.",
                 "I just left my litter box.",
-                "OMG! I left a big thing for you."
+                "OMG! I left a big thing for you.",
+                "May te poo be with you.",
+                "WOW, I think this is my best one.",
+                "Hey, this one looks like you :-)"
             };
 
         public CatLitterBoxTwitterSender(IHomeAutomationTimer timer, INotificationHandler log)
@@ -67,11 +72,18 @@ namespace HA4IoT.Controller.Main.Rooms
 
         private void RestartTimer(object sender, EventArgs eventArgs)
         {
+            if (!_timeInLitterBox.IsRunning)
+            {
+                _timeInLitterBox.Restart();
+            }
+
             _timeout.Restart();
         }
 
         private async Task Tweet()
         {
+            _timeInLitterBox.Stop();
+
             bool tweetingTooFrequently = _lastTweetTimestamp.HasValue && (DateTime.Now - _lastTweetTimestamp) < TimeSpan.FromMinutes(5);
             if (tweetingTooFrequently)
             {
@@ -85,8 +97,8 @@ namespace HA4IoT.Controller.Main.Rooms
             } while (message == _previousMessage);
 
             _previousMessage = message;
-            message = message + " " + Suffix;
-
+            message = message + string.Format(Suffix, _timeInLitterBox.Elapsed.TotalSeconds);
+            
             _log.Verbose("Trying to tweet '" + message + "'.");
 
             try
