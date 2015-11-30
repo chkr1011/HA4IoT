@@ -93,7 +93,7 @@ namespace HA4IoT.Actuators
             }
             else
             {
-                Log.Info(Id+ ": Detection completed");
+                Log.Verbose(Id+ ": Detection completed");
                 DetectionCompleted?.Invoke(this, EventArgs.Empty);
             }
 
