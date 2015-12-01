@@ -13,9 +13,9 @@ namespace HA4IoT.Controller.Main.Rooms
     internal class CatLitterBoxTwitterSender
     {
         private readonly INotificationHandler _log;
-        private const string Suffix = "\r\nSeconds in litter box: {0}\r\n@chkratky";
+        private const string Suffix = "\r\nTime in litter box: {0}s\r\n@chkratky";
 
-        private readonly Timeout _timeout = new Timeout(TimeSpan.FromSeconds(15));
+        private readonly Timeout _timeout = new Timeout(TimeSpan.FromSeconds(20));
         private readonly Random _random = new Random((int)DateTime.Now.Ticks);
         private readonly Stopwatch _timeInLitterBox = new Stopwatch();
 
@@ -66,6 +66,8 @@ namespace HA4IoT.Controller.Main.Rooms
 
             if (_timeout.IsElapsed)
             {
+                _timeInLitterBox.Stop();
+
                 Task.Run(() => Tweet());
             }
         }
@@ -82,14 +84,19 @@ namespace HA4IoT.Controller.Main.Rooms
 
         private async Task Tweet()
         {
-            _timeInLitterBox.Stop();
-
             bool tweetingTooFrequently = _lastTweetTimestamp.HasValue && (DateTime.Now - _lastTweetTimestamp) < TimeSpan.FromMinutes(5);
             if (tweetingTooFrequently)
             {
                 return;
             }
 
+            TimeSpan effectiveTimeInLitterBox = _timeInLitterBox.Elapsed - _timeout.Duration;
+            bool tooLessTimeInLitterBox = effectiveTimeInLitterBox < TimeSpan.FromSeconds(10);
+            if (tooLessTimeInLitterBox)
+            {
+                return;
+            }
+            
             string message;
             do
             {
@@ -97,7 +104,7 @@ namespace HA4IoT.Controller.Main.Rooms
             } while (message == _previousMessage);
 
             _previousMessage = message;
-            message = message + string.Format(Suffix, _timeInLitterBox.Elapsed.TotalSeconds);
+            message = message + string.Format(Suffix, (int)effectiveTimeInLitterBox.TotalSeconds);
             
             _log.Verbose("Trying to tweet '" + message + "'.");
 
