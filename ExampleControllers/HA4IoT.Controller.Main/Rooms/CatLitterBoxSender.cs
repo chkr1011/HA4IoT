@@ -15,7 +15,7 @@ namespace HA4IoT.Controller.Main.Rooms
         private readonly INotificationHandler _log;
         private const string Suffix = "\r\nTime in litter box: {0}s\r\n@chkratky";
 
-        private readonly Timeout _timeout = new Timeout(TimeSpan.FromSeconds(20));
+        private readonly Timeout _timeout = new Timeout(TimeSpan.FromSeconds(30));
         private readonly Random _random = new Random((int)DateTime.Now.Ticks);
         private readonly Stopwatch _timeInLitterBox = new Stopwatch();
 
@@ -35,7 +35,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 "OMG! I left a big thing for you.",
                 "May te poo be with you.",
                 "WOW, I think this is my best one.",
-                "Hey, this one looks like you :-)"
+                "Hey, this one looks like you :-)"         
             };
 
         public CatLitterBoxTwitterSender(IHomeAutomationTimer timer, INotificationHandler log)
@@ -51,7 +51,7 @@ namespace HA4IoT.Controller.Main.Rooms
         {
             if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
 
-            motionDetector.MotionDetected += RestartTimer;
+            motionDetector.StateChanged += RestartTimer;
             return this;
         }
 
@@ -62,13 +62,13 @@ namespace HA4IoT.Controller.Main.Rooms
                 return;
             }
 
-            _timeout.Tick(e.ElapsedTime);
+            _timeout.Tick(e);
 
             if (_timeout.IsElapsed)
             {
                 _timeInLitterBox.Stop();
 
-                Task.Run(() => Tweet());
+                Task.Run(() => Tweet(_timeInLitterBox.Elapsed));
             }
         }
 
@@ -82,7 +82,7 @@ namespace HA4IoT.Controller.Main.Rooms
             _timeout.Restart();
         }
 
-        private async Task Tweet()
+        private async Task Tweet(TimeSpan timeInLitterBox)
         {
             bool tweetingTooFrequently = _lastTweetTimestamp.HasValue && (DateTime.Now - _lastTweetTimestamp) < TimeSpan.FromMinutes(5);
             if (tweetingTooFrequently)
@@ -90,7 +90,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 return;
             }
 
-            TimeSpan effectiveTimeInLitterBox = _timeInLitterBox.Elapsed - _timeout.Duration;
+            TimeSpan effectiveTimeInLitterBox = timeInLitterBox - _timeout.Duration;
             bool tooLessTimeInLitterBox = effectiveTimeInLitterBox < TimeSpan.FromSeconds(10);
             if (tooLessTimeInLitterBox)
             {
