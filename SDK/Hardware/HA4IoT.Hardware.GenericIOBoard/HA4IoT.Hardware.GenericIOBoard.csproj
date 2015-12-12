@@ -113,8 +113,8 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IOBoardController.cs" />
-    <Compile Include="IOBoardManager.cs" />
+    <Compile Include="IOBoardControllerBase.cs" />
+    <Compile Include="IOBoardCollection.cs" />
     <Compile Include="IOBoardPort.cs" />
     <Compile Include="IOBoardStateChangedEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

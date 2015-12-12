@@ -5,10 +5,10 @@ namespace HA4IoT.Hardware.I2CHardwareBridge
 {
     public class I2CHardwareBridge
     {
-        private readonly int _address;
-        private readonly II2cBusAccessor _i2CBus;
+        private readonly I2CSlaveAddress _address;
+        private readonly II2CBus _i2CBus;
 
-        public I2CHardwareBridge(int address, II2cBusAccessor i2CBus)
+        public I2CHardwareBridge(I2CSlaveAddress address, II2CBus i2CBus)
         {
             if (i2CBus == null) throw new ArgumentNullException(nameof(i2CBus));
 

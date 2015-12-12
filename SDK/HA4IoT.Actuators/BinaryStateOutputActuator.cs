@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Notifications;
 using HA4IoT.Networking;
-using HA4IoT.Notifications;
 
 namespace HA4IoT.Actuators
 {
@@ -11,13 +12,12 @@ namespace HA4IoT.Actuators
     {
         private readonly IBinaryOutput _output;
 
-        public BinaryStateOutputActuator(string id, IBinaryOutput output, IHttpRequestController httpRequestController,
-            INotificationHandler notificationHandler) : base(id, httpRequestController, notificationHandler)
+        public BinaryStateOutputActuator(ActuatorId id, IBinaryOutput output, IHttpRequestController request,
+            INotificationHandler log) : base(id, request, log)
         {
             if (output == null) throw new ArgumentNullException(nameof(output));
 
             _output = output;
-            SetStateInternal(BinaryActuatorState.Off, new ForceUpdateStateParameter());
         }
     
         protected override void SetStateInternal(BinaryActuatorState newState, params IParameter[] parameters)
@@ -31,7 +31,7 @@ namespace HA4IoT.Actuators
             bool forceUpdate = parameters.Any(p => p is ForceUpdateStateParameter);
             if (forceUpdate || stateHasChanged)
             {
-                NotificationHandler.PublishFrom(this, NotificationType.Verbose, "'{0}' set to '{1}'.", Id, newState);
+                Log.Info(Id + ": " + oldState + "->" + newState);
                 OnStateChanged(oldState, newState);
             }
         }

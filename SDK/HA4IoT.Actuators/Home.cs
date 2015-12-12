@@ -5,41 +5,42 @@ using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using Windows.Storage.Streams;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Notifications;
 using HA4IoT.Core;
 using HA4IoT.Core.Timer;
 using HA4IoT.Networking;
-using HA4IoT.Notifications;
 
 namespace HA4IoT.Actuators
 {
-    public class Home
+    public class Home : IStatusProvider
     {
         private readonly HealthMonitor _healthMonitor;
         private readonly Dictionary<Enum, Room> _rooms = new Dictionary<Enum, Room>();
         private readonly HashAlgorithmProvider _hashAlgorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha1);
 
-        public Home(IHomeAutomationTimer timer, HealthMonitor healthMonitor, IWeatherStation weatherStation, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
+        public Home(IHomeAutomationTimer timer, HealthMonitor healthMonitor, IWeatherStation weatherStation, IHttpRequestController api, INotificationHandler log)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
-            if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
-            if (notificationHandler == null) throw new ArgumentNullException(nameof(notificationHandler));
+            if (api == null) throw new ArgumentNullException(nameof(api));
+            if (log == null) throw new ArgumentNullException(nameof(log));
 
             Timer = timer;
             _healthMonitor = healthMonitor;
             WeatherStation = weatherStation;
-            HttpApiController = httpApiController;
-            NotificationHandler = notificationHandler;
+            Api = api;
+            Log = log;
 
-            httpApiController.Handle(HttpMethod.Get, "configuration").Using(c => c.Response.Body = new JsonBody(GetConfigurationAsJson()));
-            httpApiController.Handle(HttpMethod.Get, "status").Using(HandleStatusRequest);
-            httpApiController.Handle(HttpMethod.Get, "health").Using(c => c.Response.Body = new JsonBody(_healthMonitor.ApiGet()));
+            api.Handle(HttpMethod.Get, "configuration").Using(c => c.Response.Body = new JsonBody(GetConfigurationAsJson()));
+            api.Handle(HttpMethod.Get, "status").Using(HandleStatusRequest);
+            api.Handle(HttpMethod.Get, "health").Using(c => c.Response.Body = new JsonBody(_healthMonitor.ApiGet()));
         }
 
         public IHomeAutomationTimer Timer { get; }
 
-        public IHttpRequestController HttpApiController { get; }
+        public IHttpRequestController Api { get; }
 
-        public INotificationHandler NotificationHandler { get; }
+        public INotificationHandler Log { get; }
 
         public IWeatherStation WeatherStation { get; }
 
@@ -60,32 +61,34 @@ namespace HA4IoT.Actuators
 
         public void PublishStatisticsNotification()
         {
-            NotificationHandler.PublishFrom(this, NotificationType.Info, "Registered actuators = {0}, Rooms = {1}.", Actuators.Count, _rooms.Count);
+            Log.Info("Registered actuators = {0}, Rooms = {1}.", Actuators.Count, _rooms.Count);
         }
 
         private void HandleStatusRequest(HttpContext httpContext)
         {
-            var currentStatus = GetStatusAsJson().Stringify();
-            var currentHash = "\"" + GenerateHash(currentStatus) + "\"";
+            var status = GetStatus();
+            var hash = GenerateHash(status.Stringify());
+            var hashWithQuotes = "\"" + hash + "\"";
 
             string clientHash;
             if (httpContext.Request.Headers.TryGetValue("If-None-Match", out clientHash))
             {
-                if (clientHash.Equals(currentHash))
+                if (clientHash.Equals(hashWithQuotes))
                 {
                     httpContext.Response.StatusCode = HttpStatusCode.NotModified;
                     return;
                 }
             }
 
-            httpContext.Response.StatusCode = HttpStatusCode.OK;
-            httpContext.Response.Headers.Add("Etag", currentHash);
+            status.SetNamedValue("hash", hash.ToJsonValue());
 
-            // Prevent the JsonObject from performing two redundant "Stringify" calls by using the plain text body with JSON mime type.
-            httpContext.Response.Body = new PlainTextBody().WithContent(currentStatus).WithMimeType(JsonBody.DefaultMimeType);
+            httpContext.Response.StatusCode = HttpStatusCode.OK;
+            httpContext.Response.Headers.Add("ETag", hashWithQuotes);
+
+            httpContext.Response.Body = new JsonBody(status);
         }
 
-        private JsonObject GetStatusAsJson()
+        public JsonObject GetStatus()
         {
             var result = new JsonObject();
             result.SetNamedValue("type", JsonValue.CreateStringValue("HA4IoT.Status"));
@@ -95,16 +98,16 @@ namespace HA4IoT.Actuators
             foreach (var actuator in Actuators.Values)
             {
                 var context = new ApiRequestContext(new JsonObject(), new JsonObject());
-                actuator.ApiGet(context);
+                actuator.HandleApiGet(context);
 
-                status.SetNamedValue(actuator.Id, context.Response);
+                status.SetNamedValue(actuator.Id.Value, context.Response);
             }
 
             result.SetNamedValue("status", status);
 
             if (WeatherStation != null)
             {
-                result.SetNamedValue("weatherStation", WeatherStation.ApiGet());
+                result.SetNamedValue("weatherStation", WeatherStation.GetStatus());
             }
 
             return result;

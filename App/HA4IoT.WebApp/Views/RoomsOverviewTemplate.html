@@ -1,6 +1,11 @@
 ﻿<div class="row panel panel-default" ng-class="{'panel-primary': haCtrl.activePanel==room.id}" id="{{room.id}}" ng-repeat="room in haCtrl.rooms | orderBy:['sortValue', 'caption']">
     <div class="panel-heading pointer" ng-click="haCtrl.setActivePanel(room.id)">
-        <h1 class="panel-title">{{room.caption}}</h1>
+        <span class="panel-title">{{room.caption}}</span>
+        
+        <span style="margin-left: 10px;" ng-show="(room.actuators | filter : {state: {state: 'On'}}).length > 0" class="label label-warning">
+            <span class="glyphicon glyphicon-flash"></span><span ng-bind="(room.actuators | filter : {state: {state: 'On'}}).length"></span>
+        </span>
+
     </div>
     <table class="table table-striped" ng-show="haCtrl.activePanel==room.id">
         <tr ng-repeat="actuator in room.actuators | orderBy:['sortValue', 'caption']">

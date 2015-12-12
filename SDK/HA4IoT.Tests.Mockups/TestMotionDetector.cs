@@ -1,4 +1,5 @@
 ﻿using System;
+using Windows.Data.Json;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 
@@ -11,7 +12,7 @@ namespace HA4IoT.Tests.Mockups
         public event EventHandler DetectionCompleted;
         public event EventHandler<MotionDetectorStateChangedEventArgs> StateChanged;
         
-        public string Id { get; set; }
+        public ActuatorId Id { get; set; }
         public bool IsEnabled { get; }
         public MotionDetectorState State { get; private set; } = MotionDetectorState.Idle;
 
@@ -40,6 +41,11 @@ namespace HA4IoT.Tests.Mockups
         {
             State = MotionDetectorState.Idle;
             DetectionCompleted?.Invoke(this, EventArgs.Empty);
+        }
+
+        public JsonObject GetStatus()
+        {
+            return new JsonObject();
         }
     }
 }

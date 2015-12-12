@@ -15,7 +15,7 @@ function getVersion(callback) {
 function loadUILocalizations(callback) {
     $.getJSON("/app/UILocalizations.json").success(function (result) {
         uiLocalizations = result;
-    }).fail(function(jqXHR, textStatus, errorThrown) {
+    }).fail(function (jqXHR, textStatus, errorThrown) {
         alert(textStatus);
     }).always(function () { callback(); });
 }
@@ -48,6 +48,7 @@ function setupController() {
           c.activeRoom = "";
           c.errorMessage = "";
           c.version = "-";
+          c.notifications = [];
 
           getVersion(function (version) {
               c.version = version;
@@ -60,30 +61,40 @@ function setupController() {
           c.generateRooms = function () {
 
               $http.get("/api/configuration").success(function (data) {
+
                   $.each(data.rooms, function (roomId, room) {
-                      room.id = roomId;
-                      configureRoom(room);
+                      if (room.hide) {
+                          return true;
+                      }
 
-                      if (!room.hide) {
-                          for (var i = room.actuators.length - 1; i >= 0; i--) {
-                              var actuator = room.actuators[i];
+                      var roomControl = {};
+                      roomControl.id = roomId;
+                      roomControl.caption = getActuatorLocalization(roomId);
+                      roomControl.actuators = [];
 
-                              configureActuator(room, actuator, i);
+                      $.each(room.actuators, function (actuatorId, actuator) {
+                          actuator.id = actuatorId;
+                          configureActuator(room, actuator);
 
-                              if (actuator.type === "HA4IoT.Actuators.TemperatureSensor" ||
-                                actuator.type === "HA4IoT.Actuators.HumiditySensor") {
-                                  c.sensors.push(actuator);
-                              } else if (actuator.type === "HA4IoT.Actuators.RollerShutter") {
-                                  c.rollerShutters.push(actuator);
-                              } else if (actuator.type === "HA4IoT.Actuators.MotionDetector") {
-                                  c.motionDetectors.push(actuator);
-                              } else if (actuator.type === "HA4IoT.Actuators.Window") {
-                                  c.windows.push(actuator);
-                              }
+                          if (actuator.hide) {
+                              return true;
                           }
 
-                          c.rooms.push(room);
-                      }
+                          if (actuator.type === "HA4IoT.Actuators.TemperatureSensor" ||
+                              actuator.type === "HA4IoT.Actuators.HumiditySensor") {
+                              c.sensors.push(actuator);
+                          } else if (actuator.type === "HA4IoT.Actuators.RollerShutter") {
+                              c.rollerShutters.push(actuator);
+                          } else if (actuator.type === "HA4IoT.Actuators.MotionDetector") {
+                              c.motionDetectors.push(actuator);
+                          } else if (actuator.type === "HA4IoT.Actuators.Window") {
+                              c.windows.push(actuator);
+                          }
+
+                          roomControl.actuators.push(actuator);
+                      });
+
+                      c.rooms.push(roomControl);
                   });
 
                   if (c.sensors.length === 0) {
@@ -128,23 +139,30 @@ function setupController() {
               }, 100);
           }
 
+          c.previousHash = "";
           c.pollStatus = function () {
-              getJSON(c, "/api/status", function (data) {
+              $.ajax({ method: "GET", url: "/api/status", timeout: 2500 }).done(function(data) {
+                  if (data.hash === c.previousHash) {
+                      return;
+                  }
 
-                  $.each(data.status, function (id, state) {
+                  c.previousHash = data.hash;
+                  console.log("Updating UI due to state changes");
+
+                  $.each(data.status, function(id, state) {
                       c.updateStatus(id, state);
                   });
 
                   c.weatherStation = data.weatherStation;
 
-                  $scope.$apply(function () {
-                      $scope.msgs = data;
-                  });
-              });
+                  $scope.$apply(function () { $scope.msgs = data; });
 
-              setTimeout(function () {
-                 c.pollStatus();
-              }, c.appConfiguration.pollInterval);
+                  c.errorMessage = null;
+              }).fail(function (jqXHR, textStatus, errorThrown) {
+                  c.errorMessage = textStatus;
+              }).always(function() {
+                  setTimeout(function () { c.pollStatus(); }, c.appConfiguration.pollInterval);
+              });
           };
 
           $scope.toggleState = function (actuator) {
@@ -155,6 +173,13 @@ function setupController() {
 
               invokeActuator(actuator.id, { state: newState }, function () { actuator.state.state = newState; });
           };
+
+          $scope.loadNotifications = function () {
+              $.getJSON("/api/notifications", function (data) {
+                  c.notifications = data.notifications;
+                  c.notifications.reverse();
+              });
+          }
 
           $scope.invokeVirtualButton = function (actuator) {
               invokeActuator(actuator.id, {});
@@ -197,19 +222,12 @@ function setupController() {
               });
           };
 
-          loadUILocalizations(function() { loadActuatorLocalizations(function() { c.generateRooms(); }) });
+          loadUILocalizations(function () { loadActuatorLocalizations(function () { c.generateRooms(); }) });
       }
     ]);
 }
 
-function configureRoom(room) {
-    room.caption = getActuatorLocalization(room.id);
-    room.hide = false;
-
-    appConfiguration.roomExtender(room);
-}
-
-function configureActuator(room, actuator, i) {
+function configureActuator(room, actuator) {
     actuator.image = actuator.type;
     actuator.sortValue = 0;
     actuator.caption = getActuatorLocalization(actuator.id);
@@ -217,7 +235,7 @@ function configureActuator(room, actuator, i) {
     actuator.hide = false;
     actuator.displayVertical = false;
     actuator.state = {};
-    
+
     switch (actuator.type) {
         case "HA4IoT.Actuators.Lamp":
             {
@@ -310,32 +328,44 @@ function configureActuator(room, actuator, i) {
 
         default:
             {
-                room.actuators.splice(i, 1);
+                actuator.hide = true;
                 return;
             }
+    }
+
+    if (actuator.app !== undefined) {
+        if (actuator.app.caption !== undefined) {
+            actuator.caption = actuator.app.caption;
+        }
+
+        if (actuator.app.sortValue !== undefined) {
+            actuator.sortValue = actuator.app.sortValue;
+        }
+
+        if (actuator.app.image !== undefined) {
+            actuator.image = actuator.app.image;
+        }
+
+        if (actuator.app.hide !== undefined) {
+            actuator.hide = actuator.app.hide;
+        }
+
+        if (actuator.app.overviewCaption !== undefined) {
+            actuator.overviewCaption = actuator.app.overviewCaption;
+        }
+
+        if (actuator.app.displayVertical !== undefined) {
+            actuator.displayVertical = actuator.app.displayVertical;
+        }
     }
 
     appConfiguration.actuatorExtender(actuator);
 }
 
-function getJSON(controller, url, callback) {
-    $.ajax({
-        method: "GET",
-        url: url,
-        timeout: 2500
-    }).success(function (result) {
-        controller.errorMessage = "";
-        callback(result);
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        controller.errorMessage = textStatus;
-    });
-};
-
 function invokeActuator(id, request, successCallback) {
     var url = "/api/actuator/" + id + "?body=" + JSON.stringify(request);
 
-    // The hack with the body as query is required to allow cross site calls.
-    $.ajax({ method: "POST", url: url, timeout: 2500 }).success(function () {
+    $.ajax({ method: "POST", url: url, timeout: 2500 }).done(function () {
         if (successCallback != null) {
             successCallback();
         }

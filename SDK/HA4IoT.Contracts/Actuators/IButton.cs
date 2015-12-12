@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Contracts.Actuators
 {
-    public interface IButton : IActuatorBase
+    public interface IButton : IActuator
     {
         event EventHandler PressedShort;
         event EventHandler PressedLong;

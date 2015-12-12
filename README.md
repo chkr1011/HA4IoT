@@ -1,4 +1,11 @@
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/Overview1.png?raw=true">
+<h1 style="font-size:70px;">HA4IoT</h1>
+<h6>The first open source Home Automation SDK for Windows 10 IoT Core</h6>
+
+<img style="margin:25px" src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/Overview_4to3.png?raw=true">
+
+> This brilliant project explores uncharted home-automation territory; it even includes a cat litterbox controller, which detects the cat and channels the air into an outdoor flue! Be sure to check out the whole hack; it's an incredible embedded system with extensive wiring built right into the house.
+>
+hackster.io
 
 ## Key features
 * Virtual actuators like push buttons, motion motion detectors, lamps, sockets, roller shutters which can be interconnected using a fluent API

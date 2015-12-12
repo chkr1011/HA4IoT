@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Notifications;
 using HA4IoT.Notifications;
 
 namespace HA4IoT.Hardware
@@ -40,7 +42,7 @@ namespace HA4IoT.Hardware
                 }
                 catch (Exception ex)
                 {
-                    _notificationHandler.PublishFrom(this, NotificationType.Error, "Error while polling interrupt pin " + _pin + ". " + ex.Message);
+                    _notificationHandler.Error("Error while polling interrupt pin '" + _pin + "'. " + ex.Message);
 
                     // Ensure that a persistent error whill flood the trace.
                     Task.Delay(TimeSpan.FromSeconds(2)).Wait();

@@ -1,21 +1,21 @@
-﻿using System;
+﻿using HA4IoT.Actuators;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Notifications;
+using HA4IoT.Networking;
 
 namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 {
-    public class WeatherStationHumiditySensor : IHumiditySensor
+    public class WeatherStationHumiditySensor : SingleValueSensorActuatorBase, IHumiditySensor
     {
-        public event EventHandler<SingleValueSensorValueChangedEventArgs> ValueChanged;
-
-        public float Value { get; private set; }
-
-        public void UpdateValue(float newValue)
+        public WeatherStationHumiditySensor(ActuatorId id, IHttpRequestController api, INotificationHandler log) 
+            : base(id, api, log)
         {
-            float oldValue = Value;
-            Value = newValue;
+        }
 
-            ValueChanged?.Invoke(this, new SingleValueSensorValueChangedEventArgs(oldValue, newValue));
+        public void SetValue(float newValue)
+        {
+            SetValueInternal(newValue);
         }
     }
 }

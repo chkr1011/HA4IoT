@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 
 namespace HA4IoT.Tests.Mockups
@@ -6,12 +7,19 @@ namespace HA4IoT.Tests.Mockups
     public class TestBinaryStateOutputActuator : IBinaryStateOutputActuator
     {
         public event EventHandler<BinaryActuatorStateChangedEventArgs> StateChanged;
-        public string Id { get; set; }
+        public event EventHandler<ActuatorIsEnabledChangedEventArgs> IsEnabledChanged;
+        public ActuatorId Id { get; set; }
+        public bool IsEnabled { get; }
         public BinaryActuatorState State { get; private set; }
 
         public BinaryActuatorState GetState()
         {
             return State;
+        }
+
+        public void SetInitialState()
+        {
+            SetState(BinaryActuatorState.Off);
         }
 
         public void SetState(BinaryActuatorState state, params IParameter[] parameters)
@@ -42,6 +50,11 @@ namespace HA4IoT.Tests.Mockups
         {
             State = BinaryActuatorState.Off;
             return this;
+        }
+
+        public void TurnOff(params IParameter[] parameters)
+        {
+            State = BinaryActuatorState.Off;
         }
     }
 }

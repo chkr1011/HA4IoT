@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
-using HA4IoT.Notifications;
+using HA4IoT.Contracts.Notifications;
 
 namespace HA4IoT.Core.Timer
 {
@@ -52,7 +52,7 @@ namespace HA4IoT.Core.Timer
             }
             catch (Exception exception)
             {
-                _notificationHandler.Publish(NotificationType.Error, "Timer: Tick has catched an unhandled exception. {0}", exception.Message);
+                _notificationHandler.Error("Timer tick has catched an unhandled exception. " +  exception.Message);
             }
         }
     }

@@ -19,7 +19,7 @@ namespace HA4IoT.Actuators.Automations
             _timer = timer;
         }
 
-        public AutomaticBathroomFanAutomation WithMotionDetector(IMotionDetector motionDetector)
+        public AutomaticBathroomFanAutomation WithMotiWithTrigger(IMotionDetector motionDetector)
         {
             if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
 
@@ -51,7 +51,7 @@ namespace HA4IoT.Actuators.Automations
         {
             _timeout = _timer.In(_slowDuration).Do(() =>
             {
-                _actuator.ApplyState("2");
+                _actuator.SetState("2");
                 _timeout = _timer.In(_fastDuration).Do(() => _actuator.TurnOff());
             });
         }
@@ -59,7 +59,7 @@ namespace HA4IoT.Actuators.Automations
         private void TurnOn(object sender, EventArgs e)
         {
             _timeout?.Cancel();
-            _actuator?.ApplyState("1");
+            _actuator?.SetState("1");
         }
     }
 }

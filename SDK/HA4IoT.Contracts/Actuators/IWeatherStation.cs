@@ -1,12 +1,11 @@
-﻿using Windows.Data.Json;
+﻿using HA4IoT.Contracts.Core;
 
 namespace HA4IoT.Contracts.Actuators
 {
-    public interface IWeatherStation
+    public interface IWeatherStation : IStatusProvider
     {
         Daylight Daylight { get; }
-        ITemperatureSensor Temperature { get; }
-        IHumiditySensor Humidity { get; }
-        JsonObject ApiGet();
+        ITemperatureSensor TemperatureSensor { get; }
+        IHumiditySensor HumiditySensor { get; }
     }
 }

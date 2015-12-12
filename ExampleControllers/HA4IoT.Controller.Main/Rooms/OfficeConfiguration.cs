@@ -1,5 +1,6 @@
 ﻿using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.DHT22;
 using HA4IoT.Hardware.GenericIOBoard;
@@ -47,14 +48,14 @@ namespace HA4IoT.Controller.Main.Rooms
             WindowRight
         }
 
-        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardManager ioBoardManager, DHT22Accessor dht22Accessor, RemoteSwitchController remoteSwitchController)
+        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardCollection ioBoardManager, DHT22Accessor dht22Accessor, RemoteSwitchController remoteSwitchController)
         {
-            var hsrel8 = ccToolsController.CreateHSREL8(Device.OfficeHSREL8, 20);
-            var hspe8 = ccToolsController.CreateHSPE8OutputOnly(Device.UpperFloorAndOfficeHSPE8, 37);
+            var hsrel8 = ccToolsController.CreateHSREL8(Device.OfficeHSREL8, new I2CSlaveAddress(20));
+            var hspe8 = ccToolsController.CreateHSPE8OutputOnly(Device.UpperFloorAndOfficeHSPE8, new I2CSlaveAddress(37));
             var input4 = ioBoardManager.GetInputBoard(Device.Input4);
             var input5 = ioBoardManager.GetInputBoard(Device.Input5);
 
-            const int SensorPin = 2; //6;
+            const int SensorPin = 2;
 
             var office = home.AddRoom(Room.Office)
                 .WithMotionDetector(Office.MotionDetector, input4.GetInput(13))
@@ -80,26 +81,36 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithButton(Office.ButtonLowerRight, input4.GetInput(14))
                 .WithButton(Office.ButtonUpperRight, input4.GetInput(15))
                 .WithWindow(Office.WindowLeft, w => w.WithLeftCasement(input4.GetInput(11)).WithRightCasement(input4.GetInput(12), input4.GetInput(10)))
-                .WithWindow(Office.WindowRight, w => w.WithLeftCasement(input4.GetInput(8)).WithRightCasement(input4.GetInput(9), input5.GetInput(8)));
+                .WithWindow(Office.WindowRight, w => w.WithLeftCasement(input4.GetInput(8)).WithRightCasement(input4.GetInput(9), input5.GetInput(8)))
+                .WithSocket(Office.RemoteSocketDesk, remoteSwitchController.GetOutput(0))
+                .WithStateMachine(Office.CombinedCeilingLights, SetupLight);
+            
+            office.Button(Office.ButtonUpperLeft).WithLongAction(() =>
+            {
+                office.StateMachine(Office.CombinedCeilingLights).TurnOff();
+                office.Socket(Office.SocketRearLeftEdge).TurnOff();
+                office.Socket(Office.SocketRearLeft).TurnOff();
+                office.Socket(Office.SocketFrontLeft).TurnOff();
+            });
+        }
 
-            office.WithSocket(Office.RemoteSocketDesk, remoteSwitchController.GetOutput(0));
+        private void SetupLight(StateMachine light, Actuators.Room room)
+        {
+            var lightsCouchOnly = room.CombineActuators(Office.CombinedCeilingLightsCouchOnly)
+                .WithActuator(room.Actuator<Lamp>(Office.LightCeilingRearRight));
 
-            var lightsCouchOnly = office.CombineActuators(Office.CombinedCeilingLightsCouchOnly)
-                .WithActuator(office.Actuator<Lamp>(Office.LightCeilingRearRight));
+            var lightsDeskOnly = room.CombineActuators(Office.CombinedCeilingLightsDeskOnly)
+                .WithActuator(room.Lamp(Office.LightCeilingFrontMiddle))
+                .WithActuator(room.Lamp(Office.LightCeilingFrontLeft))
+                .WithActuator(room.Lamp(Office.LightCeilingMiddleLeft));
 
-            var lightsDeskOnly = office.CombineActuators(Office.CombinedCeilingLightsDeskOnly)
-                .WithActuator(office.Actuator<Lamp>(Office.LightCeilingFrontMiddle))
-                .WithActuator(office.Actuator<Lamp>(Office.LightCeilingFrontLeft))
-                .WithActuator(office.Actuator<Lamp>(Office.LightCeilingMiddleLeft));
+            var lightsOther = room.CombineActuators(Office.CombinedCeilingLightsOther)
+                .WithActuator(room.Lamp(Office.LightCeilingFrontRight))
+                .WithActuator(room.Lamp(Office.LightCeilingMiddleMiddle))
+                .WithActuator(room.Lamp(Office.LightCeilingMiddleRight))
+                .WithActuator(room.Lamp(Office.LightCeilingRearLeft));
 
-            var lightsOther = office.CombineActuators(Office.CombinedCeilingLightsOther)
-                .WithActuator(office.Actuator<Lamp>(Office.LightCeilingFrontRight))
-                .WithActuator(office.Actuator<Lamp>(Office.LightCeilingMiddleMiddle))
-                .WithActuator(office.Actuator<Lamp>(Office.LightCeilingMiddleRight))
-                .WithActuator(office.Actuator<Lamp>(Office.LightCeilingRearLeft));
-
-            var light = office.AddStateMachine(Office.CombinedCeilingLights)
-                .WithTurnOffIfStateIsAppliedTwice();
+            light.WithTurnOffIfStateIsAppliedTwice();
 
             light.AddOffState()
                 .WithActuator(lightsDeskOnly, BinaryActuatorState.Off)
@@ -110,27 +121,19 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithActuator(lightsDeskOnly, BinaryActuatorState.On)
                 .WithActuator(lightsCouchOnly, BinaryActuatorState.On)
                 .WithActuator(lightsOther, BinaryActuatorState.On).
-                ConnectApplyStateWith(office.Actuator<Button>(Office.ButtonUpperLeft));
+                ConnectApplyStateWith(room.Button(Office.ButtonUpperLeft));
 
             light.AddState("DeskOnly")
                 .WithActuator(lightsDeskOnly, BinaryActuatorState.On)
                 .WithActuator(lightsCouchOnly, BinaryActuatorState.Off)
                 .WithActuator(lightsOther, BinaryActuatorState.Off)
-                .ConnectApplyStateWith(office.Actuator<Button>(Office.ButtonLowerLeft));
+                .ConnectApplyStateWith(room.Button(Office.ButtonLowerLeft));
 
             light.AddState("CouchOnly")
                 .WithActuator(lightsDeskOnly, BinaryActuatorState.Off)
                 .WithActuator(lightsCouchOnly, BinaryActuatorState.On)
                 .WithActuator(lightsOther, BinaryActuatorState.Off)
-                .ConnectApplyStateWith(office.Actuator<Button>(Office.ButtonLowerRight));
-
-            office.Button(Office.ButtonUpperLeft).WithLongAction(() =>
-            {
-                light.TurnOff();
-                office.Socket(Office.SocketRearLeftEdge).TurnOff();
-                office.Socket(Office.SocketRearLeft).TurnOff();
-                office.Socket(Office.SocketFrontLeft).TurnOff();
-            });
+                .ConnectApplyStateWith(room.Button(Office.ButtonLowerRight));
         }
     }
 }

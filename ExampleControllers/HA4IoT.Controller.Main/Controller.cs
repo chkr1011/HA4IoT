@@ -4,6 +4,7 @@ using Windows.Data.Json;
 using Windows.Storage;
 using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Controller.Main.Rooms;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
@@ -15,12 +16,12 @@ using HA4IoT.Hardware.OpenWeatherMapWeatherStation;
 using HA4IoT.Hardware.Pi2;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
-using HA4IoT.Notifications;
-using HA4IoT.Telemetry;
+using HA4IoT.Telemetry.Azure;
+using HA4IoT.Telemetry.Csv;
 
 namespace HA4IoT.Controller.Main
 {
-    internal class Controller : BaseController
+    internal class Controller : ControllerBase
     {
         protected override void Initialize()
         {
@@ -28,47 +29,47 @@ namespace HA4IoT.Controller.Main
 
             var pi2PortController = new Pi2PortController();
             
-            var i2CBus = new I2cBusAccessor(NotificationHandler);
+            var i2CBus = new I2CBusWrapper(NotificationHandler);
 
             IWeatherStation weatherStation = CreateWeatherStation();
 
-            var i2CHardwareBridge = new I2CHardwareBridge(50, i2CBus);
+            var i2CHardwareBridge = new I2CHardwareBridge(new I2CSlaveAddress(50), i2CBus);
             var sensorBridgeDriver = new DHT22Accessor(i2CHardwareBridge, Timer);
 
-            var ioBoardManager = new IOBoardManager(HttpApiController, NotificationHandler);
+            var ioBoardManager = new IOBoardCollection(HttpApiController, NotificationHandler);
             var ccToolsBoardController = new CCToolsBoardController(i2CBus, ioBoardManager, NotificationHandler);
 
-            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input0, 42);
-            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input1, 43);
-            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input2, 47);
-            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input3, 45);
-            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input4, 46);
-            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input5, 44);
+            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input0, new I2CSlaveAddress(42));
+            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input1, new I2CSlaveAddress(43));
+            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input2, new I2CSlaveAddress(47));
+            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input3, new I2CSlaveAddress(45));
+            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input4, new I2CSlaveAddress(46));
+            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input5, new I2CSlaveAddress(44));
 
             RemoteSwitchController remoteSwitchController = SetupRemoteSwitchController(i2CHardwareBridge);
 
             var home = new Home(Timer, HealthMonitor, weatherStation, HttpApiController, NotificationHandler);
 
-            new BedroomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
+            new BedroomConfiguration(ccToolsBoardController, ioBoardManager).Setup(home, sensorBridgeDriver);
             new OfficeConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver, remoteSwitchController);
-            new UpperBathroomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
+            new UpperBathroomConfiguration(ioBoardManager, ccToolsBoardController).Setup(home, sensorBridgeDriver);
             new ReadingRoomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
             new ChildrensRoomRoomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
             new KitchenConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
             new FloorConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
             new LowerBathroomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
-            new StoreroomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
+            new StoreroomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager);
             new LivingRoomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
 
             home.PublishStatisticsNotification();
 
-            AttachAzureEventHubPublisher(home);
+            //AttachAzureEventHubPublisher(home);
 
-            var localCsvFileWriter = new LocalCsvFileWriter(NotificationHandler);
+            var localCsvFileWriter = new CsvHistory(NotificationHandler, HttpApiController);
             localCsvFileWriter.ConnectActuators(home);
+            localCsvFileWriter.ExposeToApi(HttpApiController);
 
             var ioBoardsInterruptMonitor = new InterruptMonitor(pi2PortController.GetInput(4), NotificationHandler);
-            //Timer.Tick += (s, e) => ioBoardsInterruptMonitor.Poll();
             ioBoardsInterruptMonitor.StartPollingTaskAsync();
 
             ioBoardsInterruptMonitor.InterruptDetected += (s, e) => ioBoardManager.PollInputBoardStates();
@@ -103,11 +104,11 @@ namespace HA4IoT.Controller.Main
                     NotificationHandler);
 
                 azureEventHubPublisher.ConnectActuators(home);
-                NotificationHandler.PublishFrom(this, NotificationType.Info, "AzureEventHubPublisher initialized successfully.");
+                NotificationHandler.Info("AzureEventHubPublisher initialized successfully.");
             }
             catch (Exception exception)
             {
-                NotificationHandler.PublishFrom(this, NotificationType.Warning, "Unable to create azure event hub publisher. " + exception.Message);
+                NotificationHandler.Warning("Unable to create azure event hub publisher. " + exception.Message);
             }
         }
 
@@ -122,12 +123,12 @@ namespace HA4IoT.Controller.Main
                 string appId = configuration.GetNamedString("appID");
 
                 var weatherStation = new OWMWeatherStation(lat, lon, appId, Timer, HttpApiController, NotificationHandler);
-                NotificationHandler.PublishFrom(this, NotificationType.Info, "WeatherStation initialized successfully.");
+                NotificationHandler.Info("WeatherStation initialized successfully.");
                 return weatherStation;
             }
             catch (Exception exception)
             {
-                NotificationHandler.PublishFrom(this, NotificationType.Warning, "Unable to create weather station. " + exception.Message);
+                NotificationHandler.Warning("Unable to create weather station. " + exception.Message);
             }
 
             return null;

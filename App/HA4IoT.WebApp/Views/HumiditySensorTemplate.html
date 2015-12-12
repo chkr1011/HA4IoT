@@ -1,1 +1,8 @@
-﻿<h5>{{(actuator.state.value | number:1) + '%' }}<span class="label" ng-class="{'label-danger':actuator.state.value>=70,'label-warning':actuator.state.value>=60,'label-success':actuator.state.value<=60}" style="margin-left: 10px">Schimmel</span></h5>
+﻿<div>
+    <div>
+        <span style="text-align: center;" class="sensorValue">{{(actuator.state.value | number:1) + '%' }}</span>
+    </div>
+    <div>
+        <span class="label" ng-class="{'label-danger':actuator.state.value>=70,'label-warning':actuator.state.value>=60,'label-success':actuator.state.value<=60}" style="margin-left: 10px">{{ haCtrl.getUILocalization('UI.Mold') }}</span>
+    </div>
+</div>

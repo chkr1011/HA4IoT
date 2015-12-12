@@ -114,8 +114,13 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActuatorIdFactory.cs" />
+    <Compile Include="PersistedConfiguration.cs" />
     <Compile Include="Animations\AnimateParameter.cs" />
     <Compile Include="Animations\Animation.cs" />
+    <Compile Include="Buttons\ButtonExtensions.cs" />
+    <Compile Include="Conditions\Specialized\IsDayCondition.cs" />
+    <Compile Include="Conditions\Specialized\IsNightCondition.cs" />
     <Compile Include="PendingBinaryStateOutputActuatorState.cs" />
     <Compile Include="Animations\DirectionAnimation.cs" />
     <Compile Include="Animations\Frame.cs" />
@@ -126,7 +131,7 @@
     <Compile Include="Automations\AutomaticTurnOnAndOffAutomation.cs" />
     <Compile Include="Automations\Automation.cs" />
     <Compile Include="BinaryStateOutputActuatorBase.cs" />
-    <Compile Include="ButtonBase.cs" />
+    <Compile Include="Buttons\ButtonBase.cs" />
     <Compile Include="Casement.cs" />
     <Compile Include="CasementState.cs" />
     <Compile Include="Conditions\Condition.cs" />
@@ -138,31 +143,30 @@
     <Compile Include="DoNotCommitStateParameter.cs" />
     <Compile Include="ForceUpdateStateParameter.cs" />
     <Compile Include="Home.cs" />
+    <Compile Include="RollerShutters\RollerShutterExtensions.cs" />
     <Compile Include="Room.cs" />
-    <Compile Include="SingleValueSensorBase.cs" />
-    <Compile Include="ButtonPressedDuration.cs" />
+    <Compile Include="SingleValueSensorActuatorBase.cs" />
+    <Compile Include="Buttons\ButtonPressedDuration.cs" />
     <Compile Include="Connectors\BinaryStateActuatorWithButtonConnector.cs" />
     <Compile Include="Connectors\StateMachineWithButtonConnector.cs" />
     <Compile Include="ActuatorBase.cs" />
     <Compile Include="Connectors\RollerShutterWithRollerShutterButtonsConnector.cs" />
-    <Compile Include="RollerShutter.cs" />
-    <Compile Include="RollerShutterButtons.cs" />
-    <Compile Include="Button.cs" />
+    <Compile Include="RollerShutters\RollerShutter.cs" />
+    <Compile Include="Buttons\RollerShutterButtons.cs" />
+    <Compile Include="Buttons\Button.cs" />
     <Compile Include="LogicalBinaryStateOutputActuator.cs" />
-    <Compile Include="HumiditySensor.cs" />
-    <Compile Include="StateMachineStateChangedEventArgs.cs" />
-    <Compile Include="TemperatureSensor.cs" />
-    <Compile Include="StateMachine.cs" />
-    <Compile Include="StateMachineState.cs" />
+    <Compile Include="Sensors\HumiditySensor.cs" />
+    <Compile Include="Sensors\TemperatureSensor.cs" />
+    <Compile Include="StateMachine\StateMachine.cs" />
+    <Compile Include="StateMachine\StateMachineState.cs" />
     <Compile Include="TimeRangeChecker.cs" />
-    <Compile Include="VirtualButton.cs" />
+    <Compile Include="Buttons\VirtualButton.cs" />
     <Compile Include="Lamp.cs" />
     <Compile Include="MotionDetector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RoomSettings.cs" />
     <Compile Include="Socket.cs" />
     <Compile Include="BinaryStateOutputActuator.cs" />
-    <Compile Include="VirtualButtonGroup.cs" />
+    <Compile Include="Buttons\VirtualButtonGroup.cs" />
     <Compile Include="Window.cs" />
     <Content Include="Properties\HA4IoT.Actuators.rd.xml" />
   </ItemGroup>

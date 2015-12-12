@@ -1,4 +1,5 @@
 ﻿using System;
+using Windows.Data.Json;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 
@@ -11,7 +12,7 @@ namespace HA4IoT.Tests.Mockups
         public event EventHandler PressedLong;
         public event EventHandler<ButtonStateChangedEventArgs> StateChanged;
 
-        public string Id { get; }
+        public ActuatorId Id { get; }
         public bool IsEnabled { get; }
         public ButtonState State { get; set; } = ButtonState.Released;
 
@@ -28,6 +29,11 @@ namespace HA4IoT.Tests.Mockups
         public ButtonState GetState()
         {
             return State;
+        }
+
+        public JsonObject GetStatus()
+        {
+            return new JsonObject();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Hardware.Test;
@@ -14,7 +15,7 @@ namespace HA4IoT.Actuators.Tests
         public void Written_ON_ShouldBeResultIn_HIGH_Port()
         {
             var port = new TestOutputPort();
-            var output = new BinaryStateOutputActuator("test", port, new TestHttpRequestController(), new TestNotificationHandler());
+            var output = new BinaryStateOutputActuator(new ActuatorId("test"), port, new TestHttpRequestController(), new TestNotificationHandler());
 
             output.TurnOn();
 
@@ -25,7 +26,7 @@ namespace HA4IoT.Actuators.Tests
         public void Written_OFF_ShouldBeResultIn_LOW_Port()
         {
             var port = new TestOutputPort();
-            var output = new BinaryStateOutputActuator("test", port, new TestHttpRequestController(), new TestNotificationHandler());
+            var output = new BinaryStateOutputActuator(new ActuatorId("test"), port, new TestHttpRequestController(), new TestNotificationHandler());
 
             output.TurnOff();
 

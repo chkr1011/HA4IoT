@@ -1,29 +1,38 @@
 ﻿using System;
+using System.IO;
 using Windows.Data.Json;
+using Windows.Storage;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Notifications;
+using HA4IoT.Core;
 using HA4IoT.Networking;
-using HA4IoT.Notifications;
 
 namespace HA4IoT.Actuators
 {
-    public abstract class ActuatorBase : IActuatorBase
+    public abstract class ActuatorBase : IActuator, IStatusProvider
     {
         private bool _isEnabled = true;
 
-        protected ActuatorBase(string id, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
+        protected ActuatorBase(ActuatorId id, IHttpRequestController api, INotificationHandler log)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
-            if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
-            if (notificationHandler == null) throw new ArgumentNullException(nameof(notificationHandler));
+            if (api == null) throw new ArgumentNullException(nameof(api));
+            if (log == null) throw new ArgumentNullException(nameof(log));
 
             Id = id;
-            NotificationHandler = notificationHandler;
-            HttpApiController = httpApiController;
+            Log = log;
+            Api = api;
 
+            string configurationFilename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Actuators", id.Value, "Configuration.json"); ;
+            Configuration = new PersistedConfiguration(configurationFilename);
+            Configuration.SetValue("type", GetType().FullName);
+            
             ExposeToApi();
         }
 
-        public string Id { get; }
+        public ActuatorId Id { get; }
 
         public bool IsEnabled
         {
@@ -44,39 +53,62 @@ namespace HA4IoT.Actuators
             }
         }
 
-        protected INotificationHandler NotificationHandler { get; }
+        protected INotificationHandler Log { get; }
 
-        protected IHttpRequestController HttpApiController { get; }
+        protected IHttpRequestController Api { get; }
+
+        public PersistedConfiguration Configuration { get; }
 
         public event EventHandler<ActuatorIsEnabledChangedEventArgs> IsEnabledChanged;
 
-        public virtual void ApiPost(ApiRequestContext context)
+        public virtual void HandleApiPost(ApiRequestContext context)
         {
             if (context.Request.ContainsKey("isEnabled"))
             {
                 IsEnabled = context.Request.GetNamedBoolean("isEnabled", false);
-                NotificationHandler.PublishFrom(this, NotificationType.Info, "'{0}' {1}.", Id, IsEnabled ? "enabled" : "disabled");
+                ControllerBase.Log.Info(Id + ": " + (IsEnabled ? "Enabled" : "Disabled"));
+                return;
             }
+
+            Configuration.Update(context.Request);
         }
 
-        public virtual void ApiGet(ApiRequestContext context)
+        public virtual void HandleApiGet(ApiRequestContext context)
         {
-            context.Response.SetNamedValue("isEnabled", JsonValue.CreateBooleanValue(IsEnabled));
+            context.Response.SetNamedValue("isEnabled", JsonValue.CreateBooleanValue(IsEnabled)); ;
         }
 
-        public virtual JsonObject ApiGetConfiguration()
+        private void HandleApiConfigurationPost(HttpContext httpContext)
         {
-            var configuration = new JsonObject();
-            configuration.SetNamedValue("id", JsonValue.CreateStringValue(Id));
-            configuration.SetNamedValue("type", JsonValue.CreateStringValue(GetType().FullName));
+            JsonObject configuration;
+            if (!JsonObject.TryParse(httpContext.Request.Body, out configuration))
+            {
+                httpContext.Response.StatusCode = HttpStatusCode.BadRequest;
+                return;
+            }
 
-            return configuration;
+            Configuration.Update(configuration);
+        }
+
+        public virtual JsonObject GetStatus()
+        {
+            var result = new JsonObject();
+            result.SetNamedValue("isEnabled", JsonValue.CreateBooleanValue(IsEnabled));
+
+            return result;
+        }
+        
+        public virtual JsonObject GetConfiguration()
+        {
+            return Configuration.GetAsJson();
         }
 
         private void ExposeToApi()
         {
-            HttpApiController.Handle(HttpMethod.Post, "actuator")
-                .WithSegment(Id)
+            Api.Handle(HttpMethod.Post, "configuration").WithSegment(Id.Value).Using(HandleApiConfigurationPost);
+
+            Api.Handle(HttpMethod.Post, "actuator")
+                .WithSegment(Id.Value)
                 .WithRequiredJsonBody()
                 .Using(c =>
                 {
@@ -88,13 +120,13 @@ namespace HA4IoT.Actuators
                     }
 
                     var context = new ApiRequestContext(requestData, new JsonObject());
-                    ApiPost(context);
+                    HandleApiPost(context);
 
                     c.Response.Body = new JsonBody(context.Response);
                 });
 
-            HttpApiController.Handle(HttpMethod.Get, "actuator")
-                .WithSegment(Id)
+            Api.Handle(HttpMethod.Get, "actuator")
+                .WithSegment(Id.Value)
                 .Using(c =>
                 {
                     JsonObject requestData;
@@ -104,7 +136,7 @@ namespace HA4IoT.Actuators
                     }
 
                     var context = new ApiRequestContext(requestData, new JsonObject());
-                    ApiGet(context);
+                    HandleApiGet(context);
 
                     c.Response.Body = new JsonBody(context.Response);
                 });

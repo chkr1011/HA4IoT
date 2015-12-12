@@ -114,6 +114,10 @@
     <Content Include="Properties\HA4IoT.Hardware.OpenWeatherMapWeatherStation.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\HA4IoT.Actuators\HA4IoT.Actuators.csproj">
+      <Project>{808ABECF-D9C2-4AB2-95D8-EAF228B44576}</Project>
+      <Name>HA4IoT.Actuators</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{551337E7-D1EF-4145-92B4-F7086F7665A6}</Project>
       <Name>HA4IoT.Contracts</Name>

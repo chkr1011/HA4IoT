@@ -1,19 +1,30 @@
 ﻿<div class="row panel panel-default" ng-class="{'panel-primary': haCtrl.activePanel=='bottomBar'}" id="bottomBar">
-    <div class="panel-heading" ng-click="haCtrl.setActivePanel('bottomBar')">
-        <h1 class="panel-title pointer">
-            <span class="glyphicon glyphicon-signal" ng-class="{'text-danger': haCtrl.errorMessage!='', 'text-success': haCtrl.errorMessage===''}" aria-hidden="true"></span>
+    <div class="panel-heading pointer" ng-click="haCtrl.setActivePanel('bottomBar')">
+        <h1 class="panel-title">
+            <span class="glyphicon glyphicon-signal" ng-class="{'text-danger': haCtrl.errorMessage!==null, 'text-success': haCtrl.errorMessage===null}" aria-hidden="true"></span>
         </h1>
     </div>
     <table class="table table-striped" ng-show="haCtrl.activePanel=='bottomBar'">
         <tbody>
             <tr>
                 <td>
-                    HA4IoT
+                    <h4>HA4IoT</h4>
                 </td>
-                <td class="rightTextAligned">
+                <td class="rightTextAligned" style="font-family: monospace; vertical-align: middle;">
                     (c) Christian Kratky
                 </td>
             </tr>
+
+            <tr>
+                <td>Homepage</td>
+                <td class="rightTextAligned"><a href="http://www.HA4IoT.de" target="_blank">http://www.HA4IoT.de</a></td>
+            </tr>
+
+            <tr>
+                <td>Twitter</td>
+                <td class="rightTextAligned"><a href="http://twitter.com/chkratky" target="_blank">http://twitter.com/chkratky</a></td>
+            </tr>
+
             <tr>
                 <td>
                     App version

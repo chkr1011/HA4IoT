@@ -5,15 +5,15 @@ namespace HA4IoT.Hardware.PortExpanderDrivers
 {
     public class MAX7311Driver : IPortExpanderDriver
     {
-        private readonly II2cBusAccessor _i2CBus;
-        private readonly int _address;
+        private readonly II2CBus _i2CBus;
+        private readonly I2CSlaveAddress _address;
 
         private const byte InputPortRegisterA = 0;
         private const byte OutputPortRegisterA = 2;
         private const byte PolarityInversionRegisterA = 4;
         private const byte ConfigurationRegisterA = 6;
         
-        public MAX7311Driver(int address, II2cBusAccessor i2CBus)
+        public MAX7311Driver(I2CSlaveAddress address, II2CBus i2CBus)
         {
             if (i2CBus == null) throw new ArgumentNullException(nameof(i2CBus));
 

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Windows.Data.Json;
 using HA4IoT.Actuators.Automations;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Networking;
@@ -10,30 +12,34 @@ namespace HA4IoT.Actuators
 {
     public class Room
     {
-        private readonly Home _home;
-        private readonly List<ActuatorBase> _ownActuators = new List<ActuatorBase>();
-
+        private readonly List<ActuatorBase> _actuators = new List<ActuatorBase>();
+        
         public Room(Home home, string id)
         {
             if (home == null) throw new ArgumentNullException(nameof(home));
 
             Id = id;
 
-            _home = home;
-            _home.HttpApiController.Handle(HttpMethod.Get, "room").WithSegment(id).Using(c => c.Response.Body = new JsonBody(GetStatusAsJson()));
+            Home = home;
+            Home.Api.Handle(HttpMethod.Get, "room").WithSegment(id).Using(HandleApiGet);
         }
 
         public string Id { get; }
 
+        public Home Home { get; }
+
+        public IReadOnlyCollection<ActuatorBase> Actuators => new ReadOnlyCollection<ActuatorBase>(_actuators);
+
         public Room WithActuator(Enum id, ActuatorBase actuator)
         {
-            if (_home.Actuators.ContainsKey(id))
+            if (Home.Actuators.ContainsKey(id))
             {
                 throw new InvalidOperationException("The actuator with ID " + id + " is aready registered.");
             }
 
-            _home.Actuators.Add(id, actuator);
-            _ownActuators.Add(actuator);
+            Home.Actuators.Add(id, actuator);
+            _actuators.Add(actuator);
+
             return this;
         }
 
@@ -41,14 +47,14 @@ namespace HA4IoT.Actuators
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
 
-            return WithActuator(id, new MotionDetector(GenerateId(id), input, _home.Timer, _home.HttpApiController, _home.NotificationHandler));
+            return WithActuator(id, new MotionDetector(GenerateActuatorId(id), input, Home.Timer, Home.Api, Home.Log));
         }
 
         public Room WithWindow(Enum id, Action<Window> initializer)
         {
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
             
-            var window = new Window(GenerateId(id), _home.HttpApiController, _home.NotificationHandler);
+            var window = new Window(GenerateActuatorId(id), Home.Api, Home.Log);
             initializer(window);
 
             return WithActuator(id, window);
@@ -58,58 +64,20 @@ namespace HA4IoT.Actuators
         {
             if (output == null) throw new ArgumentNullException(nameof(output));
 
-            return WithActuator(id, new Lamp(GenerateId(id), output, _home.HttpApiController, _home.NotificationHandler));
+            var lamp = new Lamp(GenerateActuatorId(id), output, Home.Api, Home.Log);
+            lamp.SetInitialState();
+
+            return WithActuator(id, lamp);
         }
 
         public Room WithSocket(Enum id, IBinaryOutput output)
         {
             if (output == null) throw new ArgumentNullException(nameof(output));
 
-            return WithActuator(id, new Socket(GenerateId(id), output, _home.HttpApiController, _home.NotificationHandler));
-        }
+            var socket = new Socket(GenerateActuatorId(id), output, Home.Api, Home.Log);
+            socket.SetInitialState();
 
-        public Room WithRollerShutter(Enum id, IBinaryOutput powerOutput, IBinaryOutput directionOutput,
-            TimeSpan autoOffTimeout, int maxPosition)
-        {
-            if (powerOutput == null) throw new ArgumentNullException(nameof(powerOutput));
-            if (directionOutput == null) throw new ArgumentNullException(nameof(directionOutput));
-
-            return WithActuator(id, new RollerShutter(GenerateId(id), powerOutput, directionOutput, autoOffTimeout, maxPosition, _home.HttpApiController, _home.NotificationHandler, _home.Timer));
-        }
-
-        public Room WithButton(Enum id, IBinaryInput input)
-        {
-            if (input == null) throw new ArgumentNullException(nameof(input));
-
-            return WithActuator(id, new Button(GenerateId(id), input, _home.HttpApiController, _home.NotificationHandler, _home.Timer));
-        }
-
-        public Room WithVirtualButton(Enum id, Action<VirtualButton> initializer)
-        {
-            if (initializer == null) throw new ArgumentNullException(nameof(initializer));
-
-            var virtualButton = new VirtualButton(GenerateId(id), _home.HttpApiController, _home.NotificationHandler);
-            initializer.Invoke(virtualButton);
-
-            return WithActuator(id, virtualButton);
-        }
-
-        public Room WithVirtualButtonGroup(Enum id, Action<VirtualButtonGroup> initializer)
-        {
-            if (initializer == null) throw new ArgumentNullException(nameof(initializer));
-
-            var virtualButtonGroup = new VirtualButtonGroup(GenerateId(id), _home.HttpApiController, _home.NotificationHandler);
-            initializer.Invoke(virtualButtonGroup);
-
-            return WithActuator(id, virtualButtonGroup);
-        }
-
-        public Room WithRollerShutterButtons(Enum id, IBinaryInput upInput, IBinaryInput downInput)
-        {
-            if (upInput == null) throw new ArgumentNullException(nameof(upInput));
-            if (downInput == null) throw new ArgumentNullException(nameof(downInput));
-
-            return WithActuator(id, new RollerShutterButtons(GenerateId(id), upInput, downInput, _home.HttpApiController, _home.NotificationHandler, _home.Timer));
+            return WithActuator(id, socket);
         }
 
         public Room WithHumiditySensor(Enum id, ISingleValueSensor sensor)
@@ -117,8 +85,8 @@ namespace HA4IoT.Actuators
             if (sensor == null) throw new ArgumentNullException(nameof(sensor));
 
             return WithActuator(id,
-                new HumiditySensor(GenerateId(id), sensor, _home.HttpApiController,
-                    _home.NotificationHandler));
+                new HumiditySensor(GenerateActuatorId(id), sensor, Home.Api,
+                    Home.Log));
         }
 
         public Room WithTemperatureSensor(Enum id, ISingleValueSensor sensor)
@@ -126,55 +94,44 @@ namespace HA4IoT.Actuators
             if (sensor == null) throw new ArgumentNullException(nameof(sensor));
 
             return WithActuator(id,
-                new TemperatureSensor(GenerateId(id), sensor, _home.HttpApiController,
-                    _home.NotificationHandler));
+                new TemperatureSensor(GenerateActuatorId(id), sensor, Home.Api,
+                    Home.Log));
         }
 
-        public Room WithStateMachine(Enum id, Action<StateMachine> initializer)
+        public Room WithStateMachine(Enum id, Action<StateMachine, Room> initializer)
         {
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
 
-            var stateMachine = new StateMachine(GenerateId(id), _home.HttpApiController, _home.NotificationHandler);
-            initializer(stateMachine);
+            var stateMachine = new StateMachine(GenerateActuatorId(id), Home.Api, Home.Log);
+            initializer(stateMachine, this);
+            stateMachine.SetInitialState();
 
             return WithActuator(id, stateMachine);
         }
 
-        public StateMachine AddStateMachine(Enum id)
-        {
-            var actuator = new StateMachine(GenerateId(id), _home.HttpApiController, _home.NotificationHandler);
-            WithActuator(id, actuator);
-            return actuator;
-        }
-
         public LogicalBinaryStateOutputActuator CombineActuators(Enum id)
         {
-            var actuator = new LogicalBinaryStateOutputActuator(GenerateId(id), _home.HttpApiController,
-                _home.NotificationHandler, _home.Timer);
+            var actuator = new LogicalBinaryStateOutputActuator(GenerateActuatorId(id), Home.Api,
+                Home.Log, Home.Timer);
 
             WithActuator(id, actuator);
             return actuator;
         }
-
-        public AutomaticRollerShutterAutomation SetupAutomaticRollerShutters()
-        {
-            return new AutomaticRollerShutterAutomation(_home.Timer, _home.WeatherStation);
-        }
-
+        
         public AutomaticTurnOnAndOffAutomation SetupAutomaticTurnOnAndOffAction()
         {
-            return new AutomaticTurnOnAndOffAutomation(_home.Timer);
+            return new AutomaticTurnOnAndOffAutomation(Home.Timer);
         }
 
         public AutomaticConditionalOnAutomation SetupAlwaysOn()
         {
-            return new AutomaticConditionalOnAutomation(_home.Timer);
+            return new AutomaticConditionalOnAutomation(Home.Timer);
         }
 
         public TActuator Actuator<TActuator>(Enum id) where TActuator : ActuatorBase
         {
             ActuatorBase actuator;
-            if (!_home.Actuators.TryGetValue(id, out actuator))
+            if (!Home.Actuators.TryGetValue(id, out actuator))
             {
                 throw new InvalidOperationException("The actuator with id '" + id + "' is not registered.");
             }
@@ -187,18 +144,12 @@ namespace HA4IoT.Actuators
             return (IBinaryStateOutputActuator)Actuator<ActuatorBase>(id);
         }
 
-        // TODO: Consider moving this methods to extension methods for each actuator. Button.cs and ButtonExtensions.cs (also place the connectors here)
-        public Button Button(Enum id)
-        {
-            return Actuator<Button>(id);
-        }
-
-        public TemperatureSensor TemperatureSensor(Enum id)
+        public ITemperatureSensor TemperatureSensor(Enum id)
         {
             return Actuator<TemperatureSensor>(id);
         }
 
-        public HumiditySensor HumiditySensor(Enum id)
+        public IHumiditySensor HumiditySensor(Enum id)
         {
             return Actuator<HumiditySensor>(id);
         }
@@ -213,19 +164,9 @@ namespace HA4IoT.Actuators
             return Actuator<Socket>(id);
         }
 
-        public RollerShutterButtons RollerShutterButtons(Enum id)
-        {
-            return Actuator<RollerShutterButtons>(id);
-        }
-
-        public MotionDetector MotionDetector(Enum id)
+        public IMotionDetector MotionDetector(Enum id)
         {
             return Actuator<MotionDetector>(id);
-        }
-
-        public RollerShutter RollerShutter(Enum id)
-        {
-            return Actuator<RollerShutter>(id);
         }
 
         public StateMachine StateMachine(Enum id)
@@ -235,34 +176,33 @@ namespace HA4IoT.Actuators
 
         public JsonObject GetConfigurationAsJson()
         {
-            JsonArray actuatorDescriptions = new JsonArray();
-            foreach (var actuator in _ownActuators)
+            var actuators = new JsonObject();
+            foreach (var actuator in _actuators)
             {
-                JsonObject actuatorDescription = actuator.ApiGetConfiguration();
-                actuatorDescriptions.Add(actuatorDescription);
+                actuators.SetNamedValue(actuator.Id.Value, actuator.GetConfiguration());
             }
 
             JsonObject configuration = new JsonObject();
-            configuration.SetNamedValue("actuators", actuatorDescriptions);
+            configuration.SetNamedValue("actuators", actuators);
             return configuration;
         }
 
-        public JsonObject GetStatusAsJson()
+        public ActuatorId GenerateActuatorId(Enum actuatorId)
         {
-            JsonObject state = new JsonObject();
-            foreach (var actuator in _ownActuators)
-            {
-                var context = new ApiRequestContext(new JsonObject(), new JsonObject());
-                actuator.ApiGet(context);
-                state.SetNamedValue(actuator.Id, context.Response);
-            }
-
-            return state;
+            return ActuatorIdFactory.Create(Id + "." + actuatorId);
         }
 
-        private string GenerateId(Enum id)
+        private void HandleApiGet(HttpContext httpContext)
         {
-            return Id + "." + id;
+            JsonObject state = new JsonObject();
+            foreach (var actuator in _actuators)
+            {
+                var context = new ApiRequestContext(new JsonObject(), new JsonObject());
+                actuator.HandleApiGet(context);
+                state.SetNamedValue(actuator.Id.Value, context.Response);
+            }
+
+            httpContext.Response.Body = new JsonBody(state);
         }
     }
 }

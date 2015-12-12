@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts;
 using HA4IoT.Core.Timer;
 
 namespace HA4IoT.Actuators.Conditions.Specialized
@@ -10,9 +11,6 @@ namespace HA4IoT.Actuators.Conditions.Specialized
         private Func<TimeSpan> _startValueProvider;
         private Func<TimeSpan> _endValueProvider;
 
-        private TimeSpan? _startAdjustment;
-        private TimeSpan? _endAdjustment;
-
         public TimeRangeCondition(IHomeAutomationTimer timer)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
@@ -20,6 +18,10 @@ namespace HA4IoT.Actuators.Conditions.Specialized
             _timer = timer;
             WithExpression(() => Check());
         }
+
+        private TimeSpan? StartAdjustment { get; set; }
+
+        private TimeSpan? EndAdjustment { get; set; }
 
         public TimeRangeCondition WithStart(Func<TimeSpan> start)
         {
@@ -51,13 +53,13 @@ namespace HA4IoT.Actuators.Conditions.Specialized
 
         public TimeRangeCondition WithStartAdjustment(TimeSpan value)
         {
-            _startAdjustment = value;
+            StartAdjustment = value;
             return this;
         }
 
         public TimeRangeCondition WithEndAdjustment(TimeSpan value)
         {
-            _endAdjustment = value;
+            EndAdjustment = value;
             return this;
         }
 
@@ -71,14 +73,14 @@ namespace HA4IoT.Actuators.Conditions.Specialized
             TimeSpan startValue = _startValueProvider();
             TimeSpan endValue = _endValueProvider();
 
-            if (_startAdjustment.HasValue)
+            if (StartAdjustment.HasValue)
             {
-                startValue += _startAdjustment.Value;
+                startValue += StartAdjustment.Value;
             }
 
-            if (_endAdjustment.HasValue)
+            if (EndAdjustment.HasValue)
             {
-                endValue += _endAdjustment.Value;
+                endValue += EndAdjustment.Value;
             }
 
             var timeRangeChecker = new TimeRangeChecker();

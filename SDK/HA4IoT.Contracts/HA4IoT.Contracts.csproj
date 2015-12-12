@@ -107,11 +107,13 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActuatorId.cs" />
     <Compile Include="Actuators\ActuatorIsEnabledChangedEventArgs.cs" />
     <Compile Include="Actuators\BinaryActuatorState.cs" />
     <Compile Include="Actuators\BinaryActuatorStateChangedEventArgs.cs" />
     <Compile Include="Actuators\ButtonState.cs" />
-    <Compile Include="Actuators\IActuatorBase.cs" />
+    <Compile Include="Actuators\IActuator.cs" />
+    <Compile Include="Actuators\IActuatorWithOffState.cs" />
     <Compile Include="Actuators\IBinaryStateOutputActuator.cs" />
     <Compile Include="Actuators\IBinaryStateOutputActuatorExtensions.cs" />
     <Compile Include="Actuators\IButton.cs" />
@@ -119,25 +121,31 @@
     <Compile Include="Actuators\IMotionDetector.cs" />
     <Compile Include="Actuators\IParameter.cs" />
     <Compile Include="Actuators\IRollerShutter.cs" />
+    <Compile Include="Actuators\ISingleValueSensorActuator.cs" />
     <Compile Include="Actuators\ITemperatureSensor.cs" />
     <Compile Include="Actuators\IWeatherStation.cs" />
     <Compile Include="Actuators\MotionDetectorState.cs" />
     <Compile Include="Actuators\RollerShutterState.cs" />
     <Compile Include="Actuators\RollerShutterStateChangedEventArgs.cs" />
+    <Compile Include="Actuators\StateMachineStateChangedEventArgs.cs" />
     <Compile Include="Actuators\ValueChangedEventArgsBase.cs" />
     <Compile Include="ButtonStateChangedEventArgs.cs" />
+    <Compile Include="Core\IStatusProvider.cs" />
     <Compile Include="Daylight.cs" />
     <Compile Include="Hardware\BinaryState.cs" />
     <Compile Include="Hardware\BinaryStateChangedEventArgs.cs" />
+    <Compile Include="Hardware\I2CSlaveAddress.cs" />
     <Compile Include="Hardware\IBinaryInput.cs" />
     <Compile Include="Hardware\IBinaryInputController.cs" />
     <Compile Include="Hardware\IBinaryOutput.cs" />
     <Compile Include="Hardware\IBinaryOutputController.cs" />
-    <Compile Include="Hardware\II2CBusAccessor.cs" />
+    <Compile Include="Hardware\II2CBus.cs" />
     <Compile Include="Hardware\IPortExpanderDriver.cs" />
     <Compile Include="Hardware\ISingleValueSensor.cs" />
     <Compile Include="Hardware\SingleValueSensorValueChangedEventArgs.cs" />
+    <Compile Include="Notifications\INotificationHandler.cs" />
     <Compile Include="MotionDetectorStateChangedEventArgs.cs" />
+    <Compile Include="Notifications\NotificationType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Actuators\RollerShutterButtonDirection.cs" />
     <Content Include="Properties\HA4IoT.Contracts.rd.xml" />
@@ -146,6 +154,12 @@
     <SDKReference Include="WindowsIoT, Version=10.0.10240.0">
       <Name>Windows IoT Extensions for the UWP</Name>
     </SDKReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HA4IoT.Networking\HA4IoT.Networking.csproj">
+      <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
+      <Name>HA4IoT.Networking</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

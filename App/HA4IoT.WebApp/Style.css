@@ -117,6 +117,12 @@ body {
     cursor: pointer;
 }
 
+.sensorValue {
+    font-size: 18px;
+    width: 60px;
+    margin-left: 10px;
+}
+
 .loadingAnimation {
     animation: rotate 1s infinite linear;
     border-bottom: 7px solid white;
