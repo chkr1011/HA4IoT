@@ -16,7 +16,7 @@ namespace HA4IoT.Hardware.GenericIOBoard
         }
 
         public int Number { get; }
-        public bool ValueIsInverted { get; set; }
+        public bool InvertValue { get; set; }
         public IOBoardControllerBase Controller { get; }
 
         public event EventHandler<BinaryStateChangedEventArgs> StateChanged;
@@ -28,7 +28,7 @@ namespace HA4IoT.Hardware.GenericIOBoard
 
         IBinaryInput IBinaryInput.WithInvertedState()
         {
-            ValueIsInverted = true;
+            InvertValue = true;
             return this;
         }
 
@@ -45,19 +45,19 @@ namespace HA4IoT.Hardware.GenericIOBoard
 
         IBinaryOutput IBinaryOutput.WithInvertedState()
         {
-            ValueIsInverted = true;
+            InvertValue = true;
             return this;
         }
 
         public IOBoardPort WithInvertedState()
         {
-            ValueIsInverted = true;
+            InvertValue = true;
             return this;
         }
 
         private BinaryState CoerceState(BinaryState state)
         {
-            if (ValueIsInverted)
+            if (InvertValue)
             {
                 return state == BinaryState.High ? BinaryState.Low : BinaryState.High;
             }
