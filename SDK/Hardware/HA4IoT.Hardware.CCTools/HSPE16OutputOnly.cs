@@ -17,5 +17,7 @@ namespace HA4IoT.Hardware.CCTools
         {
             return GetPort(number);
         }
+
+        public IBinaryOutput this[HSPE16Pin pin] => GetOutput((int)pin);
     }
 }
