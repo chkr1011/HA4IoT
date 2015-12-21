@@ -41,7 +41,9 @@ $repeat = 1
 
 while($repeat)
 {
-	$package = Get-ChildItem("\\$ip\c$\Users\DefaultAccount\AppData\Local\Packages\HA4IoT.Controller*") -name
+	# Old version of Windows IoT Core: $package = Get-ChildItem("\\$ip\c$\Users\DefaultAccount\AppData\Local\Packages\HA4IoT.Controller*") -name
+	$package = Get-ChildItem("\\$ip\c$\Data\Users\DefaultAccount\AppData\Local\Packages\HA4IoT.Controller*") 
+		
 	if (!$package)
 	{
 		Write-Host "No package found!"
@@ -53,7 +55,7 @@ while($repeat)
 	$clearRemoteDirectory = Read-Host
 
 	$sourceDir = ".\HA4IoT.WebApp"
-	$remoteDir = "\\$ip\c$\Users\DefaultAccount\AppData\Local\Packages\$package\LocalState"
+	$remoteDir = "$package\LocalState"
 
 	Deploy -Source ".\HA4IoT.WebApp" -Target "$remoteDir\app" -Clear $clearRemoteDirectory
 	#Deploy -Source ".\HA4IoT.Configurator" -Target "$remoteDir\configurator" -Clear $clearRemoteDirectory
