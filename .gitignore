@@ -11,3 +11,4 @@ project.lock.json
 __vm/
 HA4IoT.opensdf
 HA4IoT.sdf
+*.VC.opendb
