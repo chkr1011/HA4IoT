@@ -20,7 +20,7 @@ namespace HA4IoT.Actuators.Automations
             WithActionIfNotFulfilled(TurnOff);
         }
 
-        public AutomaticConditionalOnAutomation WithOnlyAtNightRange(IWeatherStation weatherStation)
+        public AutomaticConditionalOnAutomation WithOnAtNightRange(IWeatherStation weatherStation)
         {
             var nightCondition = new TimeRangeCondition(Timer).WithStart(() => weatherStation.Daylight.Sunset).WithEnd(() => weatherStation.Daylight.Sunrise);
             WithCondition(ConditionRelation.And, nightCondition);

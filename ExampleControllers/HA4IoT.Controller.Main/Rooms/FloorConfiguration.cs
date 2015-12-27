@@ -173,7 +173,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             floor.SetupAlwaysOn()
                 .WithActuator(floor.Lamp(Floor.LampStairs))
-                .WithOnlyAtNightRange(weatherStation)
+                .WithOnAtNightRange(weatherStation)
                 .WithOffBetweenRange(TimeSpan.FromHours(23), TimeSpan.FromHours(4));
         }
     }
