@@ -273,7 +273,20 @@ function configureActuator(room, actuator) {
 
                 var extendedStates = [];
                 $.each(actuator.states, function (i, state) {
-                    extendedStates.push({ value: state, caption: getActuatorLocalization(actuator.id + "." + state) });
+
+                    var stateCaption = null;
+
+                    if (actuator.app !== undefined) {
+                        if (actuator.app.stateCaptions !== undefined) {
+                            stateCaption = actuator.app.stateCaptions[state];
+                        }
+                    }
+
+                    if (stateCaption === undefined || stateCaption === null) {
+                        stateCaption = getActuatorLocalization(actuator.id + "." + state);
+                    }
+
+                    extendedStates.push({ value: state, caption: stateCaption });
                 });
 
                 actuator.states = extendedStates;
