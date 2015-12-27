@@ -69,6 +69,7 @@
     <Content Include="Images\Air.png" />
     <Content Include="Images\blind-blade-closed.png" />
     <Content Include="Images\blind-blade-open.png" />
+    <Content Include="Images\Car.png" />
     <Content Include="Images\HA4IoT.Actuators.VirtualButton.png" />
     <Content Include="Images\Cat.png" />
     <Content Include="Images\Fan.png" />
@@ -82,6 +83,7 @@
     <Content Include="Images\HA4IoT.Actuators.RollerShutter.png" />
     <Content Include="Images\HA4IoT.Actuators.Socket.png" />
     <Content Include="Images\Spotlight.png" />
+    <Content Include="Images\StateMachine.png" />
     <Content Include="Images\Sunrise.png" />
     <Content Include="Images\Sunset.png" />
     <Content Include="Images\Table-Lamp.png" />
