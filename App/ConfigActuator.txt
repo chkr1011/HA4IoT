@@ -1,0 +1,6 @@
+POST http://192.168.1.16/api/configuration/Garden.LampParkingLot
+
+[Body]:
+{
+    "app": { "caption": "Parkplätze", "image": "Car" }
+}

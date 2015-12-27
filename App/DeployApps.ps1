@@ -46,7 +46,7 @@ while($repeat)
 		
 	if (!$package)
 	{
-		Write-Host "No package found!"
+		Write-Host "No package found (Ensure that you opened the share via Windows Explorer before and being authenticated)!"
 		return
 	}
 
