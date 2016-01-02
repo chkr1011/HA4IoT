@@ -28,17 +28,32 @@ function Deploy
 	Remove-Item $Target\*.user -Force -ea SilentlyContinue
 }
 
-$ip = "192.168.1.15"
-
-Write-Host("Enter IP if another one should be used as $ip" + ":")
-$newIP = Read-Host
-if ($newIP)
+function SelectIP
 {
-	$ip = $newIP;
+	Write-Host "Select IP of target:"
+	Write-Host "0 - 192.168.1.15"
+	Write-Host "1 - 192.168.1.16"
+	Write-Host "c - <custom>"
+	
+	$choice = Read-Host
+
+	switch($choice)
+	{
+		0 { return "192.168.1.15" }
+		1 { return "192.168.1.16" }
+		"x" 
+		{
+			Write-Host "Enter IP: " 
+			return Read-Host
+		}
+	}
 }
 
-$repeat = 1
+# Start...
+Set-Location $PSScriptRoot
+$ip = SelectIP
 
+$repeat = 1
 while($repeat)
 {
 	# Old version of Windows IoT Core: $package = Get-ChildItem("\\$ip\c$\Users\DefaultAccount\AppData\Local\Packages\HA4IoT.Controller*") -name
