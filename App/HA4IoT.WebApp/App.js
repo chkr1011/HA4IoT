@@ -306,6 +306,9 @@ function configureActuator(room, actuator) {
                 actuator.template = "Views/HumiditySensorTemplate.html";
                 actuator.caption = getUILocalization("UI.Humidity");
                 actuator.sortValue = -9;
+
+                actuator.dangerValue = getConfigurationValue(actuator, "dangerValue", 70);
+                actuator.warningValue = getConfigurationValue(actuator, "warningValue", 60);
                 break;
             }
 
@@ -346,33 +349,26 @@ function configureActuator(room, actuator) {
             }
     }
 
-    if (actuator.app !== undefined) {
-        if (actuator.app.caption !== undefined) {
-            actuator.caption = actuator.app.caption;
-        }
-
-        if (actuator.app.sortValue !== undefined) {
-            actuator.sortValue = actuator.app.sortValue;
-        }
-
-        if (actuator.app.image !== undefined) {
-            actuator.image = actuator.app.image;
-        }
-
-        if (actuator.app.hide !== undefined) {
-            actuator.hide = actuator.app.hide;
-        }
-
-        if (actuator.app.overviewCaption !== undefined) {
-            actuator.overviewCaption = actuator.app.overviewCaption;
-        }
-
-        if (actuator.app.displayVertical !== undefined) {
-            actuator.displayVertical = actuator.app.displayVertical;
-        }
-    }
+    actuator.caption = getConfigurationValue(actuator, "caption", actuator.caption);
+    actuator.sortValue = getConfigurationValue(actuator, "sortValue", actuator.sortValue);
+    actuator.image = getConfigurationValue(actuator, "image", actuator.image);
+    actuator.hide = getConfigurationValue(actuator, "hide", actuator.hide);
+    actuator.overviewCaption = getConfigurationValue(actuator, "overviewCaption", actuator.overviewCaption);
+    actuator.displayVertical = getConfigurationValue(actuator, "displayVertical", actuator.displayVertical);
 
     appConfiguration.actuatorExtender(actuator);
+}
+
+function getConfigurationValue(actuator, name, defaultValue) {
+    if (actuator.app === undefined) {
+        return defaultValue;
+    }
+
+    if (actuator.app[name] === undefined) {
+        return defaultValue;
+    }
+
+    return actuator.app[name];
 }
 
 function invokeActuator(id, request, successCallback) {

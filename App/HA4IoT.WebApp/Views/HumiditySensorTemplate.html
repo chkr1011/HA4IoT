@@ -3,6 +3,10 @@
         <span style="text-align: center;" class="sensorValue">{{(actuator.state.value | number:1) + '%' }}</span>
     </div>
     <div>
-        <span class="label" ng-class="{'label-danger':actuator.state.value>=70,'label-warning':actuator.state.value>=60,'label-success':actuator.state.value<=60}" style="margin-left: 10px">{{ haCtrl.getUILocalization('UI.Mold') }}</span>
+        <span class="label"
+              style="margin-left: 10px"
+              ng-class="{'label-danger':actuator.state.value>=actuator.dangerValue,'label-warning':actuator.state.value>=actuator.warningValue,'label-success':actuator.state.value<actuator.warningValue}">
+            {{ haCtrl.getUILocalization('UI.Mold') }}
+        </span>
     </div>
 </div>
