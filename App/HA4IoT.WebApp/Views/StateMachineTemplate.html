@@ -1,5 +1,8 @@
-﻿<div ng-class="{'btn-group-vertical': actuator.displayVertical==true,'btn-group': actuator.displayVertical==false}">
-    <button class="btn btn-default" ng-repeat="state in actuator.states" ng-class="{'btn-danger': actuator.state.state==state.value}" ng-click="setState(actuator, state.value)">
+﻿<div ng-class="{'btn-group-vertical': actuator.displayVertical===true,'btn-group': actuator.displayVertical===false}">
+    <button class="btn btn-default"
+            ng-repeat="state in actuator.states"
+            ng-class="{'btn-danger': actuator.state.state==state.value}" 
+            ng-click="setState(actuator, state.value)">
         {{state.caption}}
     </button>
 </div>

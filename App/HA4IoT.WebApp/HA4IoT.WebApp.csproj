@@ -70,6 +70,8 @@
     <Content Include="Images\blind-blade-closed.png" />
     <Content Include="Images\blind-blade-open.png" />
     <Content Include="Images\Car.png" />
+    <Content Include="Images\DefaultActuator.png" />
+    <Content Include="Images\HA4IoT.Actuators.StateMachine.png" />
     <Content Include="Images\HA4IoT.Actuators.VirtualButton.png" />
     <Content Include="Images\Cat.png" />
     <Content Include="Images\Fan.png" />
