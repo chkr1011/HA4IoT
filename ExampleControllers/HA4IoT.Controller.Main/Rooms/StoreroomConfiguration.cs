@@ -50,6 +50,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTrigger(home.Room(Room.Kitchen).MotionDetector(KitchenConfiguration.Kitchen.MotionDetector))
                 .WithTrigger(home.Room(Room.LowerBathroom).MotionDetector(LowerBathroomConfiguration.LowerBathroom.MotionDetector))
                 .WithTarget(storeroom.Socket(Storeroom.CirculatingPump))
+                .WithPauseAfterEveryTurnOn(TimeSpan.FromHours(1))
                 .WithOnDuration(TimeSpan.FromMinutes(1))
                 .WithEnabledAtDay(home.WeatherStation);
 
