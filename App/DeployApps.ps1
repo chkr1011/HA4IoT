@@ -49,6 +49,18 @@ function SelectIP
 	}
 }
 
+function IncreaseVersion
+{
+	param([string]$Package)
+
+	$versionFile = "$Package\cache.manifest"
+	$fileContent = Get-Content $versionFile
+	$actualVersion = select-string -Pattern "(# Version [0-9]\.[0-9]\.[0-9])" -InputObject $fileContent
+	Write-Host "Actual version: $actualVersion"
+
+	#Set-Content - $versionFile
+}
+
 # Start...
 Set-Location $PSScriptRoot
 $ip = SelectIP
@@ -58,7 +70,6 @@ while($repeat)
 {
 	# Old version of Windows IoT Core: $package = Get-ChildItem("\\$ip\c$\Users\DefaultAccount\AppData\Local\Packages\HA4IoT.Controller*") -name
 	$package = Get-ChildItem("\\$ip\c$\Data\Users\DefaultAccount\AppData\Local\Packages\HA4IoT.Controller*") 
-		
 	if (!$package)
 	{
 		Write-Host "No package found (Ensure that you opened the share via Windows Explorer before and being authenticated)!"
@@ -70,9 +81,11 @@ while($repeat)
 	$clearRemoteDirectory = Read-Host
 
 	$sourceDir = ".\HA4IoT.WebApp"
-	$remoteDir = "$package\LocalState"
+	$remoteDir = "$package\LocalState\app"
 
-	Deploy -Source ".\HA4IoT.WebApp" -Target "$remoteDir\app" -Clear $clearRemoteDirectory
+	#IncreaseVersion -Package "$remoteDir"
+
+	Deploy -Source ".\HA4IoT.WebApp" -Target "$remoteDir" -Clear $clearRemoteDirectory
 	#Deploy -Source ".\HA4IoT.Configurator" -Target "$remoteDir\configurator" -Clear $clearRemoteDirectory
 
 	Write-Host "Deployment completed. Repeat deploy? (y/n)"
@@ -81,5 +94,3 @@ while($repeat)
 		return
 	}
 }
-
-
