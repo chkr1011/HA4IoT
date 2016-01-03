@@ -46,7 +46,7 @@ function setupController() {
           c.windows = [];
 
           c.activeRoom = "";
-          c.errorMessage = "";
+          c.errorMessage = null;
           c.version = "-";
           c.notifications = [];
 
@@ -141,7 +141,9 @@ function setupController() {
 
           c.previousHash = "";
           c.pollStatus = function () {
-              $.ajax({ method: "GET", url: "/api/status", timeout: 2500 }).done(function(data) {
+              $.ajax({ method: "GET", url: "/api/status", timeout: 2500 }).done(function (data) {
+                  c.errorMessage = null;
+
                   if (data.hash === c.previousHash) {
                       return;
                   }
@@ -155,9 +157,7 @@ function setupController() {
 
                   c.weatherStation = data.weatherStation;
 
-                  $scope.$apply(function () { $scope.msgs = data; });
-
-                  c.errorMessage = null;
+                  $scope.$apply(function () { $scope.msgs = data; });                  
               }).fail(function (jqXHR, textStatus, errorThrown) {
                   c.errorMessage = textStatus;
               }).always(function() {

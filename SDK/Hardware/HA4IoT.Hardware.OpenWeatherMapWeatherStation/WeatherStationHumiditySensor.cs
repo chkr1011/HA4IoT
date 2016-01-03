@@ -1,4 +1,5 @@
-﻿using HA4IoT.Actuators;
+﻿using System;
+using HA4IoT.Actuators;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Notifications;
@@ -13,9 +14,9 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
         {
         }
 
-        public void SetValue(float newValue)
+        public void SetValue(double value)
         {
-            SetValueInternal(newValue);
+            SetValueInternal(Convert.ToSingle(value));
         }
     }
 }

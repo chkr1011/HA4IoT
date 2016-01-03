@@ -1,7 +1,9 @@
 ﻿<div class="row panel panel-default" ng-class="{'panel-primary': haCtrl.activePanel=='bottomBar'}" id="bottomBar">
     <div class="panel-heading pointer" ng-click="haCtrl.setActivePanel('bottomBar')">
         <h1 class="panel-title">
-            <span class="glyphicon glyphicon-signal" ng-class="{'text-danger': haCtrl.errorMessage!==null, 'text-success': haCtrl.errorMessage===null}" aria-hidden="true"></span>
+            <span class="glyphicon glyphicon-signal" 
+                  aria-hidden="true"
+                  ng-class="{'text-danger': haCtrl.errorMessage!=null, 'text-success': haCtrl.errorMessage==null}"></span>
         </h1>
     </div>
     <table class="table table-striped" ng-show="haCtrl.activePanel=='bottomBar'">

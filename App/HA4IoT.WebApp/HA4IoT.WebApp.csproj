@@ -79,7 +79,7 @@
     <Content Include="Images\HA4IoT.Actuators.HumiditySensor.png" />
     <Content Include="Images\HA4IoT.Actuators.Lamp.png" />
     <Content Include="Images\HA4IoT.Actuators.MotionDetector.png" />
-    <Content Include="Images\Night-Lamp.png" />
+    <Content Include="Images\NightLamp.png" />
     <Content Include="Images\Poison.png" />
     <Content Include="Images\Power.png" />
     <Content Include="Images\HA4IoT.Actuators.RollerShutter.png" />
@@ -88,9 +88,10 @@
     <Content Include="Images\StateMachine.png" />
     <Content Include="Images\Sunrise.png" />
     <Content Include="Images\Sunset.png" />
-    <Content Include="Images\Table-Lamp.png" />
     <Content Include="Images\HA4IoT.Actuators.TemperatureSensor.png" />
+    <Content Include="Images\TableLamp.png" />
     <Content Include="Images\WaterPump.png" />
+    <Content Include="Images\WeatherSituation.png" />
     <Content Include="Images\Wifi.png" />
     <Content Include="Images\HA4IoT.Actuators.Window.png" />
     <Content Include="Localization.js" />

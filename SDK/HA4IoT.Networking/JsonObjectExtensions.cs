@@ -33,6 +33,11 @@ namespace HA4IoT.Networking
                 return JsonValue.CreateStringValue(stringValue);
             }
 
+            if (source is Enum)
+            {
+                return JsonValue.CreateStringValue(source.ToString());
+            }
+
             var boolValue = source as bool?;
             if (boolValue.HasValue)
             {
@@ -61,10 +66,40 @@ namespace HA4IoT.Networking
                     return result;
                 }
             }
-            
-            if (source is byte || source is short || source is int || source is long || source is float || source is double || source is decimal)
+
+            if (source is double)
             {
-                return JsonValue.CreateNumberValue((double) source);
+                return JsonValue.CreateNumberValue((double)source);
+            }
+
+            if (source is byte)
+            {
+                return JsonValue.CreateNumberValue(Convert.ToDouble((byte)source));
+            }
+
+            if (source is short)
+            {
+                return JsonValue.CreateNumberValue(Convert.ToDouble((short)source));
+            }
+
+            if (source is int)
+            {
+                return JsonValue.CreateNumberValue(Convert.ToDouble((int)source));
+            }
+
+            if (source is long)
+            {
+                return JsonValue.CreateNumberValue(Convert.ToDouble((long)source));
+            }
+
+            if (source is float)
+            {
+                return JsonValue.CreateNumberValue(Convert.ToDouble((float)source));
+            }
+            
+            if (source is decimal)
+            {
+                return JsonValue.CreateNumberValue(Convert.ToDouble((decimal)source));
             }
 
             return JsonValue.CreateStringValue(Convert.ToString(source));

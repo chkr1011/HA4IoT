@@ -13,5 +13,12 @@
   "UI.MotionDetectorEnabled": "Aktiv",
   "UI.Sunrise": "Sonnenaufgang",
   "UI.Sunset": "Sonnenuntergang",
-  "UI.Mold": "Schimmel"
+  "UI.Mold": "Schimmel",
+  "UI.WeatherStation": "Wetterstation",
+  "UI.WeatherStation.Sunrise": "Sonnenaufgang",
+  "UI.WeatherStation.Sunset": "Sonnenuntergang",
+  "UI.WeatherStation.Temperature": "Temperatur",
+  "UI.WeatherStation.Humidity": "Luftfeuchtigkeit",
+  "UI.WeatherStation.Situation": "Situation",
+  "UI.MotionDetectorsOverview": "Bewegungsmelder"
 }

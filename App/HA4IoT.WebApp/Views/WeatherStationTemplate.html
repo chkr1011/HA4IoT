@@ -1,29 +1,35 @@
 ﻿<div class="row panel panel-default" id="weatherStation">
     <div class="panel-heading pointer" ng-click="haCtrl.setActivePanel('weatherStation')">
-        <span class="panel-title">Wetterstation</span>
+        <span class="panel-title">{{haCtrl.getUILocalization('UI.WeatherStation')}}</span>
     </div>
-    <table class="table table-striped" ng-show="haCtrl.activePanel=='weatherStation'">
+    <table class="table table-striped" ng-show="haCtrl.activePanel==='weatherStation'">
         <tr>
             <td style="vertical-align: middle;">
-                <span><img class="icon" ng-src="Images/HA4IoT.Actuators.TemperatureSensor.png" />Temperatur</span>
+                <span><img class="icon" ng-src="Images/WeatherSituation.png"/>{{haCtrl.getUILocalization('UI.WeatherStation.Situation')}}</span>
+            </td>
+            <td style="text-align: right;"><h4>{{haCtrl.weatherStation.situation}}</h4></td>
+        </tr>
+        <tr>
+            <td style="vertical-align: middle;">
+                <span><img class="icon" ng-src="Images/HA4IoT.Actuators.TemperatureSensor.png" />{{haCtrl.getUILocalization('UI.WeatherStation.Temperature')}}</span>
             </td>
             <td style="text-align: right;"><h4>{{(haCtrl.weatherStation.temperature | number:1) + '°C' }}</h4></td>
         </tr>
         <tr>
             <td style="vertical-align: middle;">
-                <span><img class="icon" ng-src="Images/HA4IoT.Actuators.HumiditySensor.png" />Luftfeuchtigkeit</span>
+                <span><img class="icon" ng-src="Images/HA4IoT.Actuators.HumiditySensor.png" />{{haCtrl.getUILocalization('UI.WeatherStation.Humidity')}}</span>
             </td>
-            <td style="text-align: right;"><h5>{{(haCtrl.weatherStation.humidity | number:1) + '%' }}</h5></td>
+            <td style="text-align: right;"><h5>{{(haCtrl.weatherStation.humidity | number:1) + '%'}}</h5></td>
         </tr>
         <tr>
             <td style="vertical-align: middle;">
-                <span><img class="icon" ng-src="Images/Sunrise.png" />Sonnenaufgang</span>
+                <span><img class="icon" ng-src="Images/Sunrise.png" />{{haCtrl.getUILocalization('UI.WeatherStation.Sunrise')}}</span>
             </td>
             <td style="text-align: right;"><h5>{{haCtrl.weatherStation.sunrise}}</h5></td>
         </tr>
         <tr>
             <td style="vertical-align: middle;">
-                <span><img class="icon" ng-src="Images/Sunset.png" />Sonnenuntergang</span>
+                <span><img class="icon" ng-src="Images/Sunset.png" />{{haCtrl.getUILocalization('UI.WeatherStation.Sunset')}}</span>
             </td>
             <td style="text-align: right;"><h5>{{haCtrl.weatherStation.sunset}}</h5></td>
         </tr>
