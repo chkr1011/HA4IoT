@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using HA4IoT.Actuators.Conditions;
 using HA4IoT.Actuators.Conditions.Specialized;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Core.Timer;
 
 namespace HA4IoT.Actuators.Automations
@@ -15,13 +16,18 @@ namespace HA4IoT.Actuators.Automations
         private readonly ConditionsValidator _disablingConditionsValidator = new ConditionsValidator().WithDefaultState(ConditionState.NotFulfilled);
 
         private readonly IHomeAutomationTimer _timer;
-        private readonly List<IBinaryStateOutputActuator> _actuators = new List<IBinaryStateOutputActuator>();
+
+        private readonly List<Action> _turnOnActions = new List<Action>();
+        private readonly List<Action> _turnOffActions = new List<Action>();
+        
+        private readonly Stopwatch _lastTurnedOn = new Stopwatch();
 
         private TimeSpan _duration;
+        private TimeSpan? _pauseDuration;
         private TimedAction _turnOffTimeout;
         private bool _turnOffIfButtonPressedWhileAlreadyOn;
         private bool _isOn;
-
+        
         public AutomaticTurnOnAndOffAutomation(IHomeAutomationTimer timer)
         {
             _timer = timer;
@@ -62,11 +68,29 @@ namespace HA4IoT.Actuators.Automations
             return this;
         }
 
+        public AutomaticTurnOnAndOffAutomation WithTurnOnAction(Action action)
+        {
+            if (action == null) throw new ArgumentNullException(nameof(action));
+
+            _turnOnActions.Add(action);
+            return this;
+        }
+
+        public AutomaticTurnOnAndOffAutomation WithTurnOffAction(Action action)
+        {
+            if (action == null) throw new ArgumentNullException(nameof(action));
+
+            _turnOffActions.Add(action);
+            return this;
+        }
+
         public AutomaticTurnOnAndOffAutomation WithTarget(IBinaryStateOutputActuator actuator)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
-            _actuators.Add(actuator);
+            _turnOnActions.Add(() => actuator.TurnOn());
+            _turnOffActions.Add(() => actuator.TurnOff());
+            
             return this;
         }
 
@@ -143,6 +167,12 @@ namespace HA4IoT.Actuators.Automations
             return this;
         }
 
+        public AutomaticTurnOnAndOffAutomation WithPauseAfterEveryTurnOn(TimeSpan duration)
+        {
+            _pauseDuration = duration;
+            return this;
+        }
+
         private void HandleButtonPressed(object sender, EventArgs e)
         {
             if (_turnOffIfButtonPressedWhileAlreadyOn && _isOn)
@@ -173,23 +203,53 @@ namespace HA4IoT.Actuators.Automations
                 return;
             }
 
+            if (IsPausing())
+            {
+                return;
+            }
+
             TurnOn();
+        }
+
+        private bool IsPausing()
+        {
+            if (!_pauseDuration.HasValue)
+            {
+                return false;
+            }
+
+            if (_lastTurnedOn.Elapsed < _pauseDuration.Value)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private void TurnOn()
         {
             _turnOffTimeout?.Cancel();
-            _actuators.ForEach(a => a.TurnOn());
 
+            foreach (var action in _turnOnActions)
+            {
+                action();
+            }
+            
             _isOn = true;
+            _lastTurnedOn.Restart();
         }
 
         private void TurnOff()
         {
             _turnOffTimeout?.Cancel();
-            _actuators.ForEach(a => a.TurnOff());
+
+            foreach (var action in _turnOffActions)
+            {
+                action();
+            }
 
             _isOn = false;
+            _lastTurnedOn.Stop();
         }
 
         private void StartTimeout()
