@@ -7,7 +7,7 @@
             <td style="vertical-align: middle;">
                 <span><img class="icon" ng-src="Images/WeatherSituation.png"/>{{haCtrl.getUILocalization('UI.WeatherStation.Situation')}}</span>
             </td>
-            <td style="text-align: right;"><h4>{{haCtrl.weatherStation.situation}}</h4></td>
+            <td style="text-align: right;"><h4>{{haCtrl.getUILocalization('UI.WeatherStation.Situation.' + haCtrl.weatherStation.situation)}}</h4></td>
         </tr>
         <tr>
             <td style="vertical-align: middle;">
