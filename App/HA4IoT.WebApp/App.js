@@ -46,7 +46,7 @@ function setupController() {
           c.windows = [];
 
           c.activeRoom = "";
-          c.errorMessage = "";
+          c.errorMessage = null;
           c.version = "-";
           c.notifications = [];
 
@@ -141,7 +141,9 @@ function setupController() {
 
           c.previousHash = "";
           c.pollStatus = function () {
-              $.ajax({ method: "GET", url: "/api/status", timeout: 2500 }).done(function(data) {
+              $.ajax({ method: "GET", url: "/api/status", timeout: 2500 }).done(function (data) {
+                  c.errorMessage = null;
+
                   if (data.hash === c.previousHash) {
                       return;
                   }
@@ -155,9 +157,7 @@ function setupController() {
 
                   c.weatherStation = data.weatherStation;
 
-                  $scope.$apply(function () { $scope.msgs = data; });
-
-                  c.errorMessage = null;
+                  $scope.$apply(function () { $scope.msgs = data; });                  
               }).fail(function (jqXHR, textStatus, errorThrown) {
                   c.errorMessage = textStatus;
               }).always(function() {
@@ -273,7 +273,20 @@ function configureActuator(room, actuator) {
 
                 var extendedStates = [];
                 $.each(actuator.states, function (i, state) {
-                    extendedStates.push({ value: state, caption: getActuatorLocalization(actuator.id + "." + state) });
+
+                    var stateCaption = null;
+
+                    if (actuator.app !== undefined) {
+                        if (actuator.app.stateCaptions !== undefined) {
+                            stateCaption = actuator.app.stateCaptions[state];
+                        }
+                    }
+
+                    if (stateCaption === undefined || stateCaption === null) {
+                        stateCaption = getActuatorLocalization(actuator.id + "." + state);
+                    }
+
+                    extendedStates.push({ value: state, caption: stateCaption });
                 });
 
                 actuator.states = extendedStates;
@@ -293,6 +306,9 @@ function configureActuator(room, actuator) {
                 actuator.template = "Views/HumiditySensorTemplate.html";
                 actuator.caption = getUILocalization("UI.Humidity");
                 actuator.sortValue = -9;
+
+                actuator.dangerValue = getConfigurationValue(actuator, "dangerValue", 70);
+                actuator.warningValue = getConfigurationValue(actuator, "warningValue", 60);
                 break;
             }
 
@@ -333,33 +349,28 @@ function configureActuator(room, actuator) {
             }
     }
 
-    if (actuator.app !== undefined) {
-        if (actuator.app.caption !== undefined) {
-            actuator.caption = actuator.app.caption;
-        }
-
-        if (actuator.app.sortValue !== undefined) {
-            actuator.sortValue = actuator.app.sortValue;
-        }
-
-        if (actuator.app.image !== undefined) {
-            actuator.image = actuator.app.image;
-        }
-
-        if (actuator.app.hide !== undefined) {
-            actuator.hide = actuator.app.hide;
-        }
-
-        if (actuator.app.overviewCaption !== undefined) {
-            actuator.overviewCaption = actuator.app.overviewCaption;
-        }
-
-        if (actuator.app.displayVertical !== undefined) {
-            actuator.displayVertical = actuator.app.displayVertical;
-        }
-    }
+    actuator.caption = getConfigurationValue(actuator, "caption", actuator.caption);
+    actuator.sortValue = getConfigurationValue(actuator, "sortValue", actuator.sortValue);
+    actuator.image = getConfigurationValue(actuator, "image", actuator.image);
+    actuator.hide = getConfigurationValue(actuator, "hide", actuator.hide);
+    actuator.overviewCaption = getConfigurationValue(actuator, "overviewCaption", actuator.overviewCaption);
+    actuator.displayVertical = getConfigurationValue(actuator, "displayVertical", actuator.displayVertical);
+    actuator.isPartOfOnStateCounter = getConfigurationValue(actuator, "isPartOfOnStateCounter", true);
+    actuator.onStateId = getConfigurationValue(actuator, "onStateId", "On");
 
     appConfiguration.actuatorExtender(actuator);
+}
+
+function getConfigurationValue(actuator, name, defaultValue) {
+    if (actuator.app === undefined) {
+        return defaultValue;
+    }
+
+    if (actuator.app[name] === undefined) {
+        return defaultValue;
+    }
+
+    return actuator.app[name];
 }
 
 function invokeActuator(id, request, successCallback) {

@@ -7,6 +7,7 @@ using Windows.Storage.Streams;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Core;
 using HA4IoT.Core.Timer;
 using HA4IoT.Networking;

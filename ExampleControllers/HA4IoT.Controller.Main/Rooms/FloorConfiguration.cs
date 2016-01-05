@@ -3,6 +3,8 @@ using HA4IoT.Actuators;
 using HA4IoT.Actuators.Animations;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.WeatherStation;
+using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.DHT22;
 using HA4IoT.Hardware.GenericIOBoard;
@@ -42,26 +44,15 @@ namespace HA4IoT.Controller.Main.Rooms
             Lamp3,
             CombinedLamps,
 
-            LampStairsCeiling1,
-            LampStairsCeiling2,
-            LampStairsCeiling3,
-            LampStairsCeiling4,
-            CombinedLampStairsCeiling,
-
-            LampStairs1,
-            LampStairs2,
-            LampStairs3,
-            LampStairs4,
-            LampStairs5,
-            LampStairs6,
-            CombinedLampStairs
+            LampStairsCeiling,
+            LampStairs
         }
 
         public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardCollection ioBoardManager, DHT22Accessor dht22Accessor)
         {
             var hsrel5Stairway = ccToolsController.CreateHSREL5(Device.StairwayHSREL5, new I2CSlaveAddress(60));
-            var hspe8UpperFloor = ioBoardManager.GetOutputBoard(Device.UpperFloorAndOfficeHSPE8);
-            var hspe16_FloorAndLowerBathroom = ccToolsController.CreateHSPE16OutputOnly(Device.LowerFloorAndLowerBathroomHSPE16, new I2CSlaveAddress(17));
+            var hspe8UpperFloor = (HSPE8)ioBoardManager.GetOutputBoard(Device.UpperFloorAndOfficeHSPE8);
+            var hspe16FloorAndLowerBathroom = ccToolsController.CreateHSPE16OutputOnly(Device.LowerFloorAndLowerBathroomHSPE16, new I2CSlaveAddress(17));
 
             var input1 = ioBoardManager.GetInputBoard(Device.Input1);
             var input2 = ioBoardManager.GetInputBoard(Device.Input2);
@@ -76,9 +67,9 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithMotionDetector(Floor.LowerFloorMotionDetector, input1.GetInput(4))
                 .WithTemperatureSensor(Floor.LowerFloorTemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(Floor.LowerFloorHumiditySensor, dht22Accessor.GetHumiditySensor(SensorPin))
-                .WithLamp(Floor.Lamp1, hspe16_FloorAndLowerBathroom.GetOutput(5).WithInvertedState())
-                .WithLamp(Floor.Lamp2, hspe16_FloorAndLowerBathroom.GetOutput(6).WithInvertedState())
-                .WithLamp(Floor.Lamp3, hspe16_FloorAndLowerBathroom.GetOutput(7).WithInvertedState())
+                .WithLamp(Floor.Lamp1, hspe16FloorAndLowerBathroom.GetOutput(5).WithInvertedState())
+                .WithLamp(Floor.Lamp2, hspe16FloorAndLowerBathroom.GetOutput(6).WithInvertedState())
+                .WithLamp(Floor.Lamp3, hspe16FloorAndLowerBathroom.GetOutput(7).WithInvertedState())
                 .WithLamp(Floor.StairwayLampCeiling, hsrel5Stairway.GetOutput(0))
                 .WithLamp(Floor.StairwayLampWall, hsrel5Stairway.GetOutput(1))
                 .WithRollerShutter(Floor.StairwayRollerShutter, hsrel5Stairway.GetOutput(4), hsrel5Stairway.GetOutput(3), RollerShutter.DefaultMaxMovingDuration, 20000)
@@ -118,73 +109,72 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithOnDuration(TimeSpan.FromSeconds(20));
 
             SetupStairsCeilingLamps(floor, hspe8UpperFloor);
-            SetupStairsLamps(floor, home.WeatherStation, hspe16_FloorAndLowerBathroom);
+            SetupStairsLamps(floor, home.WeatherStation, hspe16FloorAndLowerBathroom);
             
             floor.SetupAutomaticRollerShutters().WithRollerShutters(floor.RollerShutter(Floor.StairwayRollerShutter));
         }
 
-        private void SetupStairsCeilingLamps(Actuators.Room floor, IBinaryOutputController hspe8UpperFloor)
+        private void SetupStairsCeilingLamps(Actuators.Room floor, HSPE8 hspe8UpperFloor)
         {
-            floor.WithLamp(Floor.LampStairsCeiling1, hspe8UpperFloor.GetOutput(4).WithInvertedState())
-                .WithLamp(Floor.LampStairsCeiling2, hspe8UpperFloor.GetOutput(5).WithInvertedState())
-                .WithLamp(Floor.LampStairsCeiling3, hspe8UpperFloor.GetOutput(7).WithInvertedState())
-                .WithLamp(Floor.LampStairsCeiling4, hspe8UpperFloor.GetOutput(6).WithInvertedState());
+            var output = new LogicalBinaryOutput()
+                .WithOutput(hspe8UpperFloor[HSPE8Pin.GPIO4])
+                .WithOutput(hspe8UpperFloor[HSPE8Pin.GPIO5])
+                .WithOutput(hspe8UpperFloor[HSPE8Pin.GPIO7])
+                .WithOutput(hspe8UpperFloor[HSPE8Pin.GPIO6])
+                .WithInvertedState();
 
-            var combinedLights = floor.CombineActuators(Floor.CombinedLampStairsCeiling)
-                .WithActuator(floor.Lamp(Floor.LampStairsCeiling1))
-                .WithActuator(floor.Lamp(Floor.LampStairsCeiling2))
-                .WithActuator(floor.Lamp(Floor.LampStairsCeiling3))
-                .WithActuator(floor.Lamp(Floor.LampStairsCeiling4));
+            floor.WithLamp(Floor.LampStairsCeiling, output);
 
             floor.SetupAutomaticTurnOnAndOffAction()
                 .WithTrigger(floor.MotionDetector(Floor.StairsLowerMotionDetector), new AnimateParameter())
                 .WithTrigger(floor.MotionDetector(Floor.StairsUpperMotionDetector))
                 //.WithTrigger(floor.Button(Floor.ButtonStairsUpper))
-                .WithTarget(floor.BinaryStateOutput(Floor.CombinedLampStairsCeiling))
+                .WithTarget(floor.BinaryStateOutput(Floor.LampStairsCeiling))
                 .WithOnDuration(TimeSpan.FromSeconds(10));
+
+            var lamp = floor.Lamp(Floor.LampStairsCeiling);
 
             floor.Button(Floor.ButtonStairsUpper).PressedShort += (s, e) =>
             {
-                if (combinedLights.GetState() == BinaryActuatorState.On)
+                if (lamp.GetState() == BinaryActuatorState.On)
                 {
-                    combinedLights.TurnOff(new AnimateParameter().WithReversedOrder());
+                    lamp.TurnOff(new AnimateParameter().WithReversedOrder());
                 }
                 else
                 {
-                    combinedLights.TurnOn(new AnimateParameter());
+                    lamp.TurnOn(new AnimateParameter());
                 }
             };
 
             floor.Button(Floor.ButtonStairsLowerUpper).PressedShort += (s, e) =>
             {
-                if (combinedLights.GetState() == BinaryActuatorState.On)
+                if (lamp.GetState() == BinaryActuatorState.On)
                 {
-                    combinedLights.TurnOff(new AnimateParameter());
+                    lamp.TurnOff(new AnimateParameter());
                 }
                 else
                 {
-                    combinedLights.TurnOn(new AnimateParameter().WithReversedOrder());
+                    lamp.TurnOn(new AnimateParameter().WithReversedOrder());
                 }
             };
         }
 
-        private void SetupStairsLamps(Actuators.Room floor, IWeatherStation weatherStation, IBinaryOutputController hspe16_FloorAndLowerBathroom)
+        private void SetupStairsLamps(Actuators.Room floor, IWeatherStation weatherStation, HSPE16OutputOnly hspe16FloorAndLowerBathroom)
         {
-            floor.WithLamp(Floor.LampStairs1, hspe16_FloorAndLowerBathroom.GetOutput(8).WithInvertedState())
-                .WithLamp(Floor.LampStairs2, hspe16_FloorAndLowerBathroom.GetOutput(9).WithInvertedState())
-                .WithLamp(Floor.LampStairs3, hspe16_FloorAndLowerBathroom.GetOutput(10).WithInvertedState())
-                .WithLamp(Floor.LampStairs4, hspe16_FloorAndLowerBathroom.GetOutput(11).WithInvertedState())
-                .WithLamp(Floor.LampStairs5, hspe16_FloorAndLowerBathroom.GetOutput(13).WithInvertedState())
-                .WithLamp(Floor.LampStairs6, hspe16_FloorAndLowerBathroom.GetOutput(12).WithInvertedState());
+            var output = new LogicalBinaryOutput()
+                .WithOutput(hspe16FloorAndLowerBathroom[HSPE16Pin.GPIO8])
+                .WithOutput(hspe16FloorAndLowerBathroom[HSPE16Pin.GPIO9])
+                .WithOutput(hspe16FloorAndLowerBathroom[HSPE16Pin.GPIO10])
+                .WithOutput(hspe16FloorAndLowerBathroom[HSPE16Pin.GPIO11])
+                .WithOutput(hspe16FloorAndLowerBathroom[HSPE16Pin.GPIO13])
+                .WithOutput(hspe16FloorAndLowerBathroom[HSPE16Pin.GPIO12])
+                .WithInvertedState();
+
+            floor.WithLamp(Floor.LampStairs, output);
 
             floor.SetupAlwaysOn()
-                .WithActuator(floor.Lamp(Floor.LampStairs1))
-                .WithActuator(floor.Lamp(Floor.LampStairs2))
-                .WithActuator(floor.Lamp(Floor.LampStairs3))
-                .WithActuator(floor.Lamp(Floor.LampStairs4))
-                .WithActuator(floor.Lamp(Floor.LampStairs5))
-                .WithActuator(floor.Lamp(Floor.LampStairs6))
-                .WithOnlyAtNightRange(weatherStation)
+                .WithActuator(floor.Lamp(Floor.LampStairs))
+                .WithOnAtNightRange(weatherStation)
                 .WithOffBetweenRange(TimeSpan.FromHours(23), TimeSpan.FromHours(4));
         }
     }

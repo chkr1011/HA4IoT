@@ -119,6 +119,7 @@
     <Compile Include="HSPE8.cs" />
     <Compile Include="HSREL5.cs" />
     <Compile Include="HSPE8Pin.cs" />
+    <Compile Include="HSPE16Pin.cs" />
     <Compile Include="HSRT16Pin.cs" />
     <Compile Include="HSREL8Pin.cs" />
     <Compile Include="HSREL5Pin.cs" />

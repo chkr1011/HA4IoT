@@ -4,6 +4,7 @@ using HA4IoT.Actuators.Conditions;
 using HA4IoT.Actuators.Conditions.Specialized;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Core.Timer;
 
 namespace HA4IoT.Actuators.Automations
@@ -20,7 +21,7 @@ namespace HA4IoT.Actuators.Automations
             WithActionIfNotFulfilled(TurnOff);
         }
 
-        public AutomaticConditionalOnAutomation WithOnlyAtNightRange(IWeatherStation weatherStation)
+        public AutomaticConditionalOnAutomation WithOnAtNightRange(IWeatherStation weatherStation)
         {
             var nightCondition = new TimeRangeCondition(Timer).WithStart(() => weatherStation.Daylight.Sunset).WithEnd(() => weatherStation.Daylight.Sunrise);
             WithCondition(ConditionRelation.And, nightCondition);

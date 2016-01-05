@@ -109,7 +109,9 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OWMWeatherStation.cs" />
+    <Compile Include="WeatherSituationParser.cs" />
     <Compile Include="WeatherStationHumiditySensor.cs" />
+    <Compile Include="WeatherStationSituationSensor.cs" />
     <Compile Include="WeatherStationTemperatureSensor.cs" />
     <Content Include="Properties\HA4IoT.Hardware.OpenWeatherMapWeatherStation.rd.xml" />
   </ItemGroup>

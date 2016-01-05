@@ -109,12 +109,8 @@ namespace HA4IoT.Networking
         {
             try
             {
-                var statusDescription = _statusDescriptionProvider.GetDescription(context.Response.StatusCode);
-
-                var responseText = new StringBuilder();
-                responseText.AppendLine("HTTP/1.1 " + (int)context.Response.StatusCode + " " + statusDescription);
-                responseText.AppendLine("Connection:close");
-                responseText.AppendLine("Access-Control-Allow-Origin:*");
+                context.Response.Headers.Add("Connection", "close");
+                context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
 
                 byte[] content = new byte[0];
                 if (context.Response.Body != null)
@@ -130,17 +126,10 @@ namespace HA4IoT.Networking
                 }
 
                 context.Response.Headers.Add("Content-Length", content.Length);
-
-                foreach (var header in context.Response.Headers)
-                {
-                    responseText.AppendLine(header.ToString());
-                }
-                
-                responseText.AppendLine();
                 
                 using (var dataWriter = new DataWriter(client.OutputStream))
                 {
-                    dataWriter.WriteString(responseText.ToString());
+                    dataWriter.WriteString(GetHttpResponseText(context.Response));
                     await dataWriter.StoreAsync();
 
                     if (content.Length > 0)
@@ -157,6 +146,23 @@ namespace HA4IoT.Networking
                 Debug.WriteLine("Failed to send HTTP response. " + exception.Message);
                 return false;
             }
+        }
+
+        private string GetHttpResponseText(HttpResponse response)
+        {
+            var statusDescription = _statusDescriptionProvider.GetDescription(response.StatusCode);
+
+            var buffer = new StringBuilder();
+            buffer.AppendLine("HTTP/1.1 " + (int)response.StatusCode + " " + statusDescription);
+
+            foreach (var header in response.Headers)
+            {
+                buffer.AppendLine(header.ToString());
+            }
+
+            buffer.AppendLine();
+
+            return buffer.ToString();
         }
 
         private byte[] Compress(byte[] content)
@@ -180,7 +186,7 @@ namespace HA4IoT.Networking
                 await client.InputStream.ReadAsync(buffer, buffer.Capacity, InputStreamOptions.Partial);
 
                 var binaryRequest = buffer.ToArray();
-                var requestText = Encoding.ASCII.GetString(binaryRequest, 0, binaryRequest.Length);
+                var requestText = Encoding.UTF8.GetString(binaryRequest, 0, binaryRequest.Length);
 
                 HttpRequest request;
                 new HttpRequestParser(requestText).TryParse(out request);

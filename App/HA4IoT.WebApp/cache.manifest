@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Version 1.7.9
+# Version 1.8.23
 
 CACHE:
 
@@ -27,12 +27,14 @@ fonts/glyphicons-halflings-regular.woff2
 
 Images/Wifi.png
 Images/Cat.png
+Images/Car.png
 Images/Fan.png
 Images/Air.png
 Images/WaterPump.png
 Images/Sunrise.png
 Images/Sunset.png
 Images/HA4IoT.Actuators.Socket.png
+Images/HA4IoT.Actuators.StateMachine.png
 Images/HA4IoT.Actuators.Lamp.png
 Images/HA4IoT.Actuators.RollerShutter.png
 Images/HA4IoT.Actuators.TemperatureSensor.png

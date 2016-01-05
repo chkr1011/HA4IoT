@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Storage;
@@ -7,6 +8,7 @@ using Windows.Web.Http;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Core.Timer;
 using HA4IoT.Networking;
 using HttpMethod = HA4IoT.Networking.HttpMethod;
@@ -20,6 +22,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
         private readonly Uri _weatherDataSourceUrl;
         private readonly WeatherStationTemperatureSensor _temperature;
         private readonly WeatherStationHumiditySensor _humidity;
+        private readonly WeatherStationSituationSensor _situation;
 
         private DateTime? _lastFetched;
         private TimeSpan _sunrise;
@@ -37,6 +40,9 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             _humidity = new WeatherStationHumiditySensor(new ActuatorId("WeatherStation.Humidity"), httpApiController, notificationHandler);
             HumiditySensor = _humidity;
 
+            _situation = new WeatherStationSituationSensor();
+            SituationSensor = _situation;
+
             _notificationHandler = notificationHandler;
             _weatherDataSourceUrl = new Uri(string.Format("http://api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}&APPID={2}&units=metric", lat, lon, appId));
 
@@ -50,18 +56,17 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
         public Daylight Daylight => new Daylight(_sunrise, _sunset);
         public ITemperatureSensor TemperatureSensor { get; }
         public IHumiditySensor HumiditySensor { get; }
+        public IWeatherSituationSensor SituationSensor { get; }
 
         public JsonObject GetStatus()
         {
             var result = new JsonObject();
-            result.SetNamedValue("temperature", JsonValue.CreateNumberValue(TemperatureSensor.GetValue()));
-            result.SetNamedValue("humidity", JsonValue.CreateNumberValue(HumiditySensor.GetValue()));
-
-            result.SetNamedValue("lastFetched",
-                _lastFetched.HasValue ? JsonValue.CreateStringValue(_lastFetched.Value.ToString("O")) : JsonValue.CreateNullValue());
-
-            result.SetNamedValue("sunrise", JsonValue.CreateStringValue(_sunrise.ToString()));
-            result.SetNamedValue("sunset", JsonValue.CreateStringValue(_sunset.ToString()));
+            result.SetNamedValue("situation", SituationSensor.GetSituation().ToJsonValue());
+            result.SetNamedValue("temperature", TemperatureSensor.GetValue().ToJsonValue());
+            result.SetNamedValue("humidity", HumiditySensor.GetValue().ToJsonValue());
+            result.SetNamedValue("lastFetched", _lastFetched.HasValue ? _lastFetched.Value.ToJsonValue() : JsonValue.CreateNullValue());
+            result.SetNamedValue("sunrise", _sunrise.ToJsonValue());
+            result.SetNamedValue("sunset", _sunset.ToJsonValue());
 
             return result;
         }
@@ -70,11 +75,11 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
         {
             try
             {
-                var json = await FetchWeatherData();
-                string filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "WeatherStationValues.json");
-                File.WriteAllText(filename, json.Stringify());
+                JsonObject weatherData = await FetchWeatherData();
 
-                Update(json);
+                PersistWeatherData(weatherData);
+                Update(weatherData);
+
                 _lastFetched = DateTime.Now;
             }
             catch (Exception exception)
@@ -83,19 +88,27 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             }
         }
 
+        private void PersistWeatherData(JsonObject weatherData)
+        {
+            string filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "WeatherStationValues.json");
+            File.WriteAllText(filename, weatherData.Stringify());
+        }
+
         private void Update(JsonObject data)
         {
-            var sys = data["sys"].GetObject();
-            var sunriseValue = sys["sunrise"].GetNumber();
-            var sunsetValue = sys["sunset"].GetNumber();
+            var sys = data.GetNamedObject("sys");
+            var main = data.GetNamedObject("main");
+            var weather = data.GetNamedArray("weather");
 
+            var sunriseValue = sys.GetNamedNumber("sunrise", 0);
             _sunrise = UnixTimeStampToDateTime(sunriseValue).TimeOfDay;
+
+            var sunsetValue = sys.GetNamedNumber("sunset", 0);
             _sunset = UnixTimeStampToDateTime(sunsetValue).TimeOfDay;
 
-            var main = data["main"].GetObject();
-
-            _temperature.SetValue((float) main["temp"].GetNumber());
-            _humidity.SetValue((float) main["humidity"].GetNumber());
+            _situation.SetValue(weather.First().GetObject().GetNamedValue("id"));
+            _temperature.SetValue(main.GetNamedNumber("temp", 0));
+            _humidity.SetValue(main.GetNamedNumber("humidity", 0));
         }
 
         private async Task<JsonObject> FetchWeatherData()
@@ -123,6 +136,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
                 return;
             }
 
+            _situation.SetValue(requestData.GetNamedValue("situation"));
             _temperature.SetValue((float)requestData.GetNamedNumber("temperature"));
             _humidity.SetValue((float)requestData.GetNamedNumber("humidity"));
             _sunrise = TimeSpan.Parse(requestData.GetNamedString("sunrise"));

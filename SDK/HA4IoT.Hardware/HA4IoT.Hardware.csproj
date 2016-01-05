@@ -118,6 +118,7 @@
     <Compile Include="ByteExtensions.cs" />
     <Compile Include="I2CBusWrapper.cs" />
     <Compile Include="InterruptMonitor.cs" />
+    <Compile Include="LogicalBinaryOutput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Test\TestInputPort.cs" />
     <Compile Include="Test\TestOutputPort.cs" />
