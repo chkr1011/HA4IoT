@@ -355,6 +355,8 @@ function configureActuator(room, actuator) {
     actuator.hide = getConfigurationValue(actuator, "hide", actuator.hide);
     actuator.overviewCaption = getConfigurationValue(actuator, "overviewCaption", actuator.overviewCaption);
     actuator.displayVertical = getConfigurationValue(actuator, "displayVertical", actuator.displayVertical);
+    actuator.isPartOfOnStateCounter = getConfigurationValue(actuator, "isPartOfOnStateCounter", true);
+    actuator.onStateId = getConfigurationValue(actuator, "onStateId", "On");
 
     appConfiguration.actuatorExtender(actuator);
 }
