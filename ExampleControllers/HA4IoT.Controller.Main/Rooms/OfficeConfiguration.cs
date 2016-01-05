@@ -1,5 +1,7 @@
 ﻿using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Configuration;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.DHT22;
@@ -48,7 +50,7 @@ namespace HA4IoT.Controller.Main.Rooms
             WindowRight
         }
 
-        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardCollection ioBoardManager, DHT22Accessor dht22Accessor, RemoteSwitchController remoteSwitchController)
+        public void Setup(IController controller, CCToolsBoardController ccToolsController, IOBoardCollection ioBoardManager, DHT22Accessor dht22Accessor, RemoteSwitchController remoteSwitchController)
         {
             var hsrel8 = ccToolsController.CreateHSREL8(Device.OfficeHSREL8, new I2CSlaveAddress(20));
             var hspe8 = ccToolsController.CreateHSPE8OutputOnly(Device.UpperFloorAndOfficeHSPE8, new I2CSlaveAddress(37));
@@ -57,7 +59,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 2;
 
-            var office = home.AddRoom(Room.Office)
+            var office = controller.CreateRoom(Room.Office)
                 .WithMotionDetector(Office.MotionDetector, input4.GetInput(13))
                 .WithTemperatureSensor(Office.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(Office.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorPin))
@@ -94,10 +96,10 @@ namespace HA4IoT.Controller.Main.Rooms
             });
         }
 
-        private void SetupLight(StateMachine light, Actuators.Room room)
+        private void SetupLight(StateMachine light, IRoom room)
         {
             var lightsCouchOnly = room.CombineActuators(Office.CombinedCeilingLightsCouchOnly)
-                .WithActuator(room.Actuator<Lamp>(Office.LightCeilingRearRight));
+                .WithActuator(room.Lamp(Office.LightCeilingRearRight));
 
             var lightsDeskOnly = room.CombineActuators(Office.CombinedCeilingLightsDeskOnly)
                 .WithActuator(room.Lamp(Office.LightCeilingFrontMiddle))

@@ -10,7 +10,7 @@ namespace HA4IoT.Actuators
     public abstract class BinaryStateOutputActuatorBase : ActuatorBase, IBinaryStateOutputActuator
     {
         protected BinaryStateOutputActuatorBase(ActuatorId id, IHttpRequestController request,
-            INotificationHandler log) : base(id, request, log)
+            INotificationHandler logger) : base(id, request, logger)
         {
         }
 
@@ -62,8 +62,7 @@ namespace HA4IoT.Actuators
                     this.Toggle(new DoNotCommitStateParameter());    
                 }
 
-                HandleApiGet(context);
-
+                context.Response = GetStatusForApi();
                 return;
             }
 
@@ -78,10 +77,12 @@ namespace HA4IoT.Actuators
             }
         }
 
-        public override void HandleApiGet(ApiRequestContext context)
+        public override JsonObject GetStatusForApi()
         {
-            context.Response["state"] = JsonValue.CreateStringValue(GetStateInternal().ToString());
-            base.HandleApiGet(context);
+            var status = base.GetStatusForApi();
+            status.SetNamedValue("state", JsonValue.CreateStringValue(GetStateInternal().ToString()));
+
+            return status;
         }
         
         protected void OnStateChanged(BinaryActuatorState oldState, BinaryActuatorState newState)

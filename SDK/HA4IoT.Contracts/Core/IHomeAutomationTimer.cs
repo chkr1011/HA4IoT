@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HA4IoT.Core.Timer
+namespace HA4IoT.Contracts.Core
 {
     public interface IHomeAutomationTimer
     {

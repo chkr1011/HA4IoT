@@ -1,7 +1,6 @@
 ﻿using System;
-using HA4IoT.Contracts;
 
-namespace HA4IoT.Core.Timer
+namespace HA4IoT.Contracts.Core
 {
     public class TimedAction
     {

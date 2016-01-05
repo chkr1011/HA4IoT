@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using HA4IoT.Contracts;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core.Timer;
 

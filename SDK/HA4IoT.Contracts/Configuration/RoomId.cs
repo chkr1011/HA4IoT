@@ -2,13 +2,13 @@
 using Windows.Data.Json;
 using HA4IoT.Networking;
 
-namespace HA4IoT.Contracts
+namespace HA4IoT.Contracts.Configuration
 {
-    public class ActuatorId : IEquatable<ActuatorId>, IConvertibleToJsonValue
+    public class RoomId : IEquatable<RoomId>, IConvertibleToJsonValue
     {
-        public ActuatorId(string value)
+        public RoomId(string value)
         {
-            if (string.IsNullOrEmpty(value)) throw new ArgumentException("Actuator ID is invalid.");
+            if (string.IsNullOrEmpty(value)) throw new ArgumentException("Room ID is invalid.");
 
             Value = value;
         }
@@ -30,7 +30,7 @@ namespace HA4IoT.Contracts
             return Value.GetHashCode();
         }
 
-        public bool Equals(ActuatorId other)
+        public bool Equals(RoomId other)
         {
             if (other == null)
             {

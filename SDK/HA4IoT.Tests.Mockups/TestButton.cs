@@ -14,7 +14,13 @@ namespace HA4IoT.Tests.Mockups
 
         public ActuatorId Id { get; }
         public bool IsEnabled { get; }
+
         public ButtonState State { get; set; } = ButtonState.Released;
+
+        public JsonObject GetConfigurationForApi()
+        {
+            return new JsonObject();
+        }
 
         public void PressShort()
         {
@@ -31,7 +37,7 @@ namespace HA4IoT.Tests.Mockups
             return State;
         }
 
-        public JsonObject GetStatus()
+        public JsonObject GetStatusForApi()
         {
             return new JsonObject();
         }

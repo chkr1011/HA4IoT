@@ -14,8 +14,8 @@ namespace HA4IoT.Actuators
         private int _index;
         private bool _turnOffIfStateIsAppliedTwice;
 
-        public StateMachine(ActuatorId id, IHttpRequestController api, INotificationHandler log)
-            : base(id, api, log)
+        public StateMachine(ActuatorId id, IHttpRequestController api, INotificationHandler logger)
+            : base(id, api, logger)
         {
         }
 
@@ -103,7 +103,7 @@ namespace HA4IoT.Actuators
             States[_index].Apply(parameters);
             StateChanged?.Invoke(this, new StateMachineStateChangedEventArgs(oldState, newState));
 
-            Log.Info(Id + ": " + oldState + "->" + newState);
+            Logger.Info(Id + ": " + oldState + "->" + newState);
         }
 
         public void SetInitialState()
@@ -127,19 +127,21 @@ namespace HA4IoT.Actuators
             return this;
         }
 
-        public override void HandleApiGet(ApiRequestContext context)
+        public override JsonObject GetStatusForApi()
         {
-            if (!States.Any())
+            var status = base.GetStatusForApi();
+
+            if (States.Any())
             {
-                return;
+                status.SetNamedValue("state", JsonValue.CreateStringValue(States[_index].Id));
             }
 
-            context.Response.SetNamedValue("state", JsonValue.CreateStringValue(States[_index].Id));
+            return status;
         }
 
-        public override JsonObject GetConfiguration()
+        public override JsonObject GetConfigurationForApi()
         {
-            JsonObject configuration = base.GetConfiguration();
+            JsonObject configuration = base.GetConfigurationForApi();
 
             JsonArray stateMachineStates = new JsonArray();
             foreach (var state in States)

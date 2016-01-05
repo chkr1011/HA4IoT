@@ -2,6 +2,7 @@
 using Windows.Data.Json;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Core.Timer;
@@ -15,8 +16,8 @@ namespace HA4IoT.Actuators
         private TimedAction _autoEnableAction;
         private MotionDetectorState _state = MotionDetectorState.Idle;
 
-        public MotionDetector(ActuatorId id, IBinaryInput input, IHomeAutomationTimer timer, IHttpRequestController api, INotificationHandler log)
-            : base(id, api, log)
+        public MotionDetector(ActuatorId id, IBinaryInput input, IHomeAutomationTimer timer, IHttpRequestController api, INotificationHandler logger)
+            : base(id, api, logger)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
             
@@ -24,7 +25,7 @@ namespace HA4IoT.Actuators
 
             IsEnabledChanged += (s, e) =>
             {
-                HandleIsEnabledStateChanged(timer, log);
+                HandleIsEnabledStateChanged(timer, logger);
             };
         }
 
@@ -37,11 +38,12 @@ namespace HA4IoT.Actuators
             return _state;
         }
 
-        public override void HandleApiGet(ApiRequestContext context)
+        public override JsonObject GetStatusForApi()
         {
-            base.HandleApiGet(context);
+            var status = base.GetStatusForApi();
+            status.SetNamedValue("state", JsonValue.CreateStringValue(_state.ToString()));
 
-            context.Response.SetNamedValue("state", JsonValue.CreateStringValue(_state.ToString()));
+            return status;
         }
 
         public override void HandleApiPost(ApiRequestContext context)
@@ -88,12 +90,12 @@ namespace HA4IoT.Actuators
 
             if (newState == MotionDetectorState.MotionDetected)
             {
-                Log.Info(Id + ": Motion detected");
+                Logger.Info(Id + ": Motion detected");
                 MotionDetected?.Invoke(this, EventArgs.Empty);
             }
             else
             {
-                Log.Verbose(Id+ ": Detection completed");
+                Logger.Verbose(Id+ ": Detection completed");
                 DetectionCompleted?.Invoke(this, EventArgs.Empty);
             }
 

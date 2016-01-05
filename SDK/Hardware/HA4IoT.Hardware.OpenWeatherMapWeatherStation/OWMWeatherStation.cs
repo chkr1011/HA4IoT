@@ -7,6 +7,7 @@ using Windows.Storage;
 using Windows.Web.Http;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Core.Timer;
@@ -58,7 +59,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
         public IHumiditySensor HumiditySensor { get; }
         public IWeatherSituationSensor SituationSensor { get; }
 
-        public JsonObject GetStatus()
+        public JsonObject GetStatusForApi()
         {
             var result = new JsonObject();
             result.SetNamedValue("situation", SituationSensor.GetSituation().ToJsonValue());
@@ -147,7 +148,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 
         private void HandleApiGet(HttpContext httpContext)
         {
-            httpContext.Response.Body = new JsonBody(GetStatus());
+            httpContext.Response.Body = new JsonBody(GetStatusForApi());
         }
 
         private void LoadPersistedValues()

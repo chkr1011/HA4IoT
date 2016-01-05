@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HA4IoT.Contracts.Actuators;
 
-namespace HA4IoT.Actuators
+namespace HA4IoT.Actuators.Animations
 {
     public class PendingBinaryStateOutputActuatorState
     {

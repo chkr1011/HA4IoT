@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Windows.Data.Json;
 using HA4IoT.Contracts;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Networking;
@@ -11,7 +12,7 @@ namespace HA4IoT.Actuators
     {
         private readonly List<Casement> _casements = new List<Casement>(); 
 
-        public Window(ActuatorId id, IHttpRequestController api, INotificationHandler log) : base(id, api, log)
+        public Window(ActuatorId id, IHttpRequestController api, INotificationHandler logger) : base(id, api, logger)
         {
         }
 
@@ -41,20 +42,24 @@ namespace HA4IoT.Actuators
             return WithCasement(new Casement(Casement.RightCasementId, fullOpenReedSwitch, tiltReedSwitch));
         }
 
-        public override void HandleApiGet(ApiRequestContext context)
+        public override JsonObject GetStatusForApi()
         {
+            var status = base.GetStatusForApi();
+
             var state = new JsonObject();
             foreach (var casement in _casements)
             {
                 state.SetNamedValue(casement.Id, JsonValue.CreateStringValue(casement.State.ToString()));
-            }            
+            }
 
-            context.Response.SetNamedValue("state", state);
+            status.SetNamedValue("state", state);
+
+            return status;
         }
-
-        public override JsonObject GetConfiguration()
+        
+        public override JsonObject GetConfigurationForApi()
         {
-            JsonObject configuration = base.GetConfiguration();
+            JsonObject configuration = base.GetConfigurationForApi();
 
             JsonArray casements = new JsonArray();
             foreach (var casement in _casements)

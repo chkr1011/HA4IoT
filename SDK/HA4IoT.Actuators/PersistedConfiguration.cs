@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Windows.Data.Json;
+using HA4IoT.Contracts.Notifications;
 using HA4IoT.Core;
 using HA4IoT.Networking;
 
@@ -9,13 +10,17 @@ namespace HA4IoT.Actuators
     public class PersistedConfiguration
     {
         private readonly string _filename;
+        private readonly INotificationHandler _logger;
         private readonly JsonObject _configuration = new JsonObject();
 
-        public PersistedConfiguration(string filename)
+        public PersistedConfiguration(string filename, INotificationHandler logger)
         {
             if (filename == null) throw new ArgumentNullException(nameof(filename));
-            
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
+
             _filename = filename;
+            _logger = logger;
+
             Load();
         }
 
@@ -77,7 +82,7 @@ namespace HA4IoT.Actuators
             }
             catch (Exception exception)
             {
-                ControllerBase.Log.Warning("Error while loading configuration from '{0}'. {1}", _filename, exception.Message);
+                _logger.Warning("Error while loading configuration from '{0}'. {1}", _filename, exception.Message);
             }
         }
 
@@ -90,7 +95,7 @@ namespace HA4IoT.Actuators
             }
 
             File.WriteAllText(_filename, _configuration.Stringify());
-            ControllerBase.Log.Info("Persisted configuration at '{0}'.", _filename);
+            _logger.Info("Persisted configuration at '{0}'.", _filename);
         }
     }
 }

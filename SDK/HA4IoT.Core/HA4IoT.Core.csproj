@@ -116,12 +116,10 @@
   <ItemGroup>
     <Compile Include="ControllerBase.cs" />
     <Compile Include="HealthMonitor.cs" />
-    <Compile Include="Timer\IHomeAutomationTimer.cs" />
-    <Compile Include="Timer\TimedAction.cs" />
+    <Compile Include="Room.cs" />
     <Compile Include="Timer\Timeout.cs" />
     <Compile Include="Timer\HomeAutomationTimer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Timer\TimerTickEventArgs.cs" />
     <Content Include="Properties\HA4IoT.Core.rd.xml" />
   </ItemGroup>
   <ItemGroup>

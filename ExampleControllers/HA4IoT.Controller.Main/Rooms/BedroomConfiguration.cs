@@ -1,7 +1,10 @@
 ﻿using System;
 using HA4IoT.Actuators;
+using HA4IoT.Actuators.Automations;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Configuration;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.DHT22;
@@ -66,11 +69,11 @@ namespace HA4IoT.Controller.Main.Rooms
             _input4 = ioBoardCollection.GetInputBoard(Device.Input4);
         }
 
-        public void Setup(Home home, DHT22Accessor dht22Accessor)
+        public void Setup(IController controller, DHT22Accessor dht22Accessor)
         {
             const int SensorPin = 6;
 
-            var bedroom = home.AddRoom(Room.Bedroom)
+            var bedroom = controller.CreateRoom(Room.Bedroom)
                 .WithTemperatureSensor(Bedroom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(Bedroom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorPin))
                 .WithMotionDetector(Bedroom.MotionDetector, _input5.GetInput(12))
@@ -123,12 +126,12 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithCloseIfOutsideTemperatureIsGreaterThan(24)
                 .WithDoNotOpenIfOutsideTemperatureIsBelowThan(3);
 
-            bedroom.SetupAutomaticTurnOnAndOffAction()
+            bedroom.SetupAutomaticTurnOnAndOffAutomation()
                 .WithTrigger(bedroom.MotionDetector(Bedroom.MotionDetector))
-                .WithTarget(bedroom.Actuator<BinaryStateOutputActuator>(Bedroom.LightCeiling))
+                .WithTarget(bedroom.BinaryStateOutput(Bedroom.LightCeiling))
                 .WithOnDuration(TimeSpan.FromSeconds(15))
                 .WithTurnOnIfAllRollerShuttersClosed(bedroom.RollerShutter(Bedroom.RollerShutterLeft), bedroom.RollerShutter(Bedroom.RollerShutterRight))
-                .WithEnabledAtNight(home.WeatherStation)
+                .WithEnabledAtNight(controller.WeatherStation)
                 .WithSkipIfAnyActuatorIsAlreadyOn(bedroom.Lamp(Bedroom.LampBedLeft), bedroom.Lamp(Bedroom.LampBedRight));
             
             bedroom.WithStateMachine(Bedroom.Fan, SetupFan);
@@ -144,7 +147,7 @@ namespace HA4IoT.Controller.Main.Rooms
             bedroom.Button(Bedroom.ButtonBedRightOuter).WithLongAction(() => bedroom.StateMachine(Bedroom.Fan).TurnOff());
         }
 
-        private void SetupFan(StateMachine fan, Actuators.Room room)
+        private void SetupFan(StateMachine fan, IRoom room)
         {
             var fanRelay1 = _hsrel8[HSREL8Pin.Relay0];
             var fanRelay2 = _hsrel8[HSREL8Pin.Relay1];

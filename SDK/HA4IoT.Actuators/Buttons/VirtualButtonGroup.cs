@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Windows.Data.Json;
 using HA4IoT.Contracts;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Networking;
 
@@ -11,8 +12,8 @@ namespace HA4IoT.Actuators
     {
         private readonly Dictionary<ActuatorId, VirtualButton> _buttons = new Dictionary<ActuatorId, VirtualButton>();
 
-        public VirtualButtonGroup(ActuatorId id, IHttpRequestController api, INotificationHandler log)
-            : base(id, api, log)
+        public VirtualButtonGroup(ActuatorId id, IHttpRequestController api, INotificationHandler logger)
+            : base(id, api, logger)
         {
         }
 
@@ -25,7 +26,7 @@ namespace HA4IoT.Actuators
                 throw new InvalidOperationException("Button with id " + id + " already part of the button group.");
             }
 
-            var virtualButton = new VirtualButton(id, Api, Log);
+            var virtualButton = new VirtualButton(id, Api, Logger);
             initializer(virtualButton);
 
             _buttons.Add(id, virtualButton);
@@ -51,9 +52,9 @@ namespace HA4IoT.Actuators
             virtualButton.HandleApiPost(context);
         }
 
-        public override JsonObject GetConfiguration()
+        public override JsonObject GetConfigurationForApi()
         {
-            JsonObject configuration = base.GetConfiguration();
+            JsonObject configuration = base.GetConfigurationForApi();
 
             JsonArray buttonIds = new JsonArray();
             foreach (var button in _buttons)

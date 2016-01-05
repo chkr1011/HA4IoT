@@ -2,8 +2,7 @@
 using System.IO;
 using Windows.Data.Json;
 using Windows.Storage;
-using HA4IoT.Actuators;
-using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Controller.Main.Rooms;
@@ -30,15 +29,15 @@ namespace HA4IoT.Controller.Main
 
             var pi2PortController = new Pi2PortController();
             
-            var i2CBus = new I2CBusWrapper(NotificationHandler);
+            var i2CBus = new I2CBusWrapper(Logger);
 
-            IWeatherStation weatherStation = CreateWeatherStation();
+            WeatherStation = CreateWeatherStation();
 
             var i2CHardwareBridge = new I2CHardwareBridge(new I2CSlaveAddress(50), i2CBus);
             var sensorBridgeDriver = new DHT22Accessor(i2CHardwareBridge, Timer);
 
-            var ioBoardManager = new IOBoardCollection(HttpApiController, NotificationHandler);
-            var ccToolsBoardController = new CCToolsBoardController(i2CBus, ioBoardManager, NotificationHandler);
+            var ioBoardManager = new IOBoardCollection(HttpApiController, Logger);
+            var ccToolsBoardController = new CCToolsBoardController(i2CBus, ioBoardManager, Logger);
 
             ccToolsBoardController.CreateHSPE16InputOnly(Device.Input0, new I2CSlaveAddress(42));
             ccToolsBoardController.CreateHSPE16InputOnly(Device.Input1, new I2CSlaveAddress(43));
@@ -48,29 +47,27 @@ namespace HA4IoT.Controller.Main
             ccToolsBoardController.CreateHSPE16InputOnly(Device.Input5, new I2CSlaveAddress(44));
 
             RemoteSwitchController remoteSwitchController = SetupRemoteSwitchController(i2CHardwareBridge);
+            
+            new BedroomConfiguration(ccToolsBoardController, ioBoardManager).Setup(this, sensorBridgeDriver);
+            new OfficeConfiguration().Setup(this, ccToolsBoardController, ioBoardManager, sensorBridgeDriver, remoteSwitchController);
+            new UpperBathroomConfiguration(ioBoardManager, ccToolsBoardController).Setup(this, sensorBridgeDriver);
+            new ReadingRoomConfiguration().Setup(this, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
+            new ChildrensRoomRoomConfiguration().Setup(this, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
+            new KitchenConfiguration().Setup(this, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
+            new FloorConfiguration().Setup(this, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
+            new LowerBathroomConfiguration().Setup(this, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
+            new StoreroomConfiguration().Setup(this, ccToolsBoardController, ioBoardManager);
+            new LivingRoomConfiguration().Setup(this, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
 
-            var home = new Home(Timer, HealthMonitor, weatherStation, HttpApiController, NotificationHandler);
-
-            new BedroomConfiguration(ccToolsBoardController, ioBoardManager).Setup(home, sensorBridgeDriver);
-            new OfficeConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver, remoteSwitchController);
-            new UpperBathroomConfiguration(ioBoardManager, ccToolsBoardController).Setup(home, sensorBridgeDriver);
-            new ReadingRoomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
-            new ChildrensRoomRoomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
-            new KitchenConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
-            new FloorConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
-            new LowerBathroomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
-            new StoreroomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager);
-            new LivingRoomConfiguration().Setup(home, ccToolsBoardController, ioBoardManager, sensorBridgeDriver);
-
-            home.PublishStatisticsNotification();
+            PublishStatisticsNotification();
 
             //AttachAzureEventHubPublisher(home);
 
-            var localCsvFileWriter = new CsvHistory(NotificationHandler, HttpApiController);
-            localCsvFileWriter.ConnectActuators(home);
+            var localCsvFileWriter = new CsvHistory(Logger, HttpApiController);
+            localCsvFileWriter.ConnectActuators(this);
             localCsvFileWriter.ExposeToApi(HttpApiController);
 
-            var ioBoardsInterruptMonitor = new InterruptMonitor(pi2PortController.GetInput(4), NotificationHandler);
+            var ioBoardsInterruptMonitor = new InterruptMonitor(pi2PortController.GetInput(4), Logger);
             ioBoardsInterruptMonitor.StartPollingTaskAsync();
 
             ioBoardsInterruptMonitor.InterruptDetected += (s, e) => ioBoardManager.PollInputBoardStates();
@@ -92,7 +89,7 @@ namespace HA4IoT.Controller.Main
             return remoteSwitchController;
         }
 
-        private void AttachAzureEventHubPublisher(Home home)
+        private void AttachAzureEventHubPublisher(IController controller)
         {
             try
             {
@@ -102,14 +99,14 @@ namespace HA4IoT.Controller.Main
                     configuration.GetNamedString("eventHubNamespace"),
                     configuration.GetNamedString("eventHubName"),
                     configuration.GetNamedString("sasToken"),
-                    NotificationHandler);
+                    Logger);
 
-                azureEventHubPublisher.ConnectActuators(home);
-                NotificationHandler.Info("AzureEventHubPublisher initialized successfully.");
+                azureEventHubPublisher.ConnectActuators(controller);
+                Logger.Info("AzureEventHubPublisher initialized successfully.");
             }
             catch (Exception exception)
             {
-                NotificationHandler.Warning("Unable to create azure event hub publisher. " + exception.Message);
+                Logger.Warning("Unable to create azure event hub publisher. " + exception.Message);
             }
         }
 
@@ -123,13 +120,13 @@ namespace HA4IoT.Controller.Main
                 double lon = configuration.GetNamedNumber("lon");
                 string appId = configuration.GetNamedString("appID");
 
-                var weatherStation = new OWMWeatherStation(lat, lon, appId, Timer, HttpApiController, NotificationHandler);
-                NotificationHandler.Info("WeatherStation initialized successfully.");
+                var weatherStation = new OWMWeatherStation(lat, lon, appId, Timer, HttpApiController, Logger);
+                Logger.Info("WeatherStation initialized successfully.");
                 return weatherStation;
             }
             catch (Exception exception)
             {
-                NotificationHandler.Warning("Unable to create weather station. " + exception.Message);
+                Logger.Warning("Unable to create weather station. " + exception.Message);
             }
 
             return null;

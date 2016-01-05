@@ -1,6 +1,7 @@
 ﻿using System;
 using Windows.Data.Json;
 using HA4IoT.Contracts;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Networking;
@@ -11,8 +12,8 @@ namespace HA4IoT.Actuators
     {
         private float _value;
 
-        protected SingleValueSensorActuatorBase(ActuatorId id, IHttpRequestController api, INotificationHandler log)
-            : base(id, api, log)
+        protected SingleValueSensorActuatorBase(ActuatorId id, IHttpRequestController api, INotificationHandler logger)
+            : base(id, api, logger)
         {
         }
 
@@ -25,9 +26,12 @@ namespace HA4IoT.Actuators
             return _value;
         }
 
-        public override void HandleApiGet(ApiRequestContext context)
+        public override JsonObject GetStatusForApi()
         {
-            context.Response.SetNamedValue("value", JsonValue.CreateNumberValue(_value));
+            var status = base.GetStatusForApi();
+            status.SetNamedValue("value", JsonValue.CreateNumberValue(_value));
+
+            return status;
         }
 
         protected void SetValueInternal(float newValue)
@@ -40,7 +44,7 @@ namespace HA4IoT.Actuators
 
             _value = newValue;
 
-            Log.Info(Id + ": " + oldValue + "->" + newValue);
+            Logger.Info(Id + ": " + oldValue + "->" + newValue);
             ValueChanged?.Invoke(this, new SingleValueSensorValueChangedEventArgs(oldValue, _value));
         }
     }

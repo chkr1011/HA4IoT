@@ -1,5 +1,6 @@
 ﻿using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.DHT22;
@@ -9,7 +10,7 @@ namespace HA4IoT.Controller.Main.Rooms
 {
     internal class LivingRoomConfiguration
     {
-        public enum LivingRoom
+        private enum LivingRoom
         {
             MotionDetector,
             TemperatureSensor,
@@ -43,7 +44,7 @@ namespace HA4IoT.Controller.Main.Rooms
             WindowRight,
         }
 
-        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardCollection ioBoardManager, DHT22Accessor dht22Accessor)
+        public void Setup(IController controller, CCToolsBoardController ccToolsController, IOBoardCollection ioBoardManager, DHT22Accessor dht22Accessor)
         {
             var hsrel8 = ccToolsController.CreateHSREL8(Device.LivingRoomHSREL8, new I2CSlaveAddress(18));
             var hsrel5 = ccToolsController.CreateHSREL5(Device.LivingRoomHSREL5, new I2CSlaveAddress(57));
@@ -53,7 +54,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 12;
 
-            var livingRoom = home.AddRoom(Room.LivingRoom)
+            var livingRoom = controller.CreateRoom(Room.LivingRoom)
                 .WithTemperatureSensor(LivingRoom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(LivingRoom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorPin))
                 .WithLamp(LivingRoom.LampCouch, hsrel8.GetOutput(8).WithInvertedState())

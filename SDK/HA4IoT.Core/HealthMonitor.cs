@@ -4,6 +4,7 @@ using System.Linq;
 using Windows.Data.Json;
 using Windows.Devices.Gpio;
 using HA4IoT.Contracts;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Core.Timer;
 using HA4IoT.Networking;
 

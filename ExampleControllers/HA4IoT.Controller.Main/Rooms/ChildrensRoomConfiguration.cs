@@ -1,5 +1,6 @@
 ﻿using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.DHT22;
@@ -28,14 +29,14 @@ namespace HA4IoT.Controller.Main.Rooms
             Window
         }
 
-        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardCollection ioBoardManager, DHT22Accessor dht22Accessor)
+        public void Setup(IController controller, CCToolsBoardController ccToolsController, IOBoardCollection ioBoardManager, DHT22Accessor dht22Accessor)
         {
             var hsrel5 = ccToolsController.CreateHSREL5(Device.ChildrensRoomHSREL5, new I2CSlaveAddress(63));
             var input0 = ioBoardManager.GetInputBoard(Device.Input0);
 
             const int SensorPin = 7;
 
-            var childrensRoom = home.AddRoom(Room.ChildrensRoom)
+            var childrensRoom = controller.CreateRoom(Room.ChildrensRoom)
                 .WithTemperatureSensor(ChildrensRoom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(ChildrensRoom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorPin))
                 .WithLamp(ChildrensRoom.LightCeilingMiddle, hsrel5[HSREL5Pin.GPIO1].WithInvertedState())

@@ -13,7 +13,7 @@ namespace HA4IoT.Actuators
         private readonly IBinaryOutput _output;
 
         public BinaryStateOutputActuator(ActuatorId id, IBinaryOutput output, IHttpRequestController request,
-            INotificationHandler log) : base(id, request, log)
+            INotificationHandler logger) : base(id, request, logger)
         {
             if (output == null) throw new ArgumentNullException(nameof(output));
 
@@ -31,7 +31,7 @@ namespace HA4IoT.Actuators
             bool forceUpdate = parameters.Any(p => p is ForceUpdateStateParameter);
             if (forceUpdate || stateHasChanged)
             {
-                Log.Info(Id + ": " + oldState + "->" + newState);
+                Logger.Info(Id + ": " + oldState + "->" + newState);
                 OnStateChanged(oldState, newState);
             }
         }
