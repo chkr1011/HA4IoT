@@ -52,7 +52,7 @@ namespace HA4IoT.Controller.Cellar
 
             var pi2PortController = new Pi2PortController();
 
-            WeatherStation = CreateWeatherStation();
+            InitializeWeatherStation(CreateWeatherStation());
             var i2CBus = new I2CBusWrapper(Logger);
 
             var ioBoardManager = new IOBoardCollection(HttpApiController, Logger);

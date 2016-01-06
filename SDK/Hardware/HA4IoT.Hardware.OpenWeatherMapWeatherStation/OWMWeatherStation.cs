@@ -10,7 +10,6 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Contracts.WeatherStation;
-using HA4IoT.Core.Timer;
 using HA4IoT.Networking;
 using HttpMethod = HA4IoT.Networking.HttpMethod;
 using HttpStatusCode = HA4IoT.Networking.HttpStatusCode;
@@ -19,7 +18,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 {
     public class OWMWeatherStation : IWeatherStation
     {
-        private readonly INotificationHandler _notificationHandler;
+        private readonly INotificationHandler _logger;
         private readonly Uri _weatherDataSourceUrl;
         private readonly WeatherStationTemperatureSensor _temperature;
         private readonly WeatherStationHumiditySensor _humidity;
@@ -29,22 +28,22 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
         private TimeSpan _sunrise;
         private TimeSpan _sunset;
         
-        public OWMWeatherStation(double lat, double lon, string appId, IHomeAutomationTimer timer, IHttpRequestController httpApiController, INotificationHandler notificationHandler)
+        public OWMWeatherStation(double lat, double lon, string appId, IHomeAutomationTimer timer, IHttpRequestController httpApiController, INotificationHandler logger)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
             if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
-            if (notificationHandler == null) throw new ArgumentNullException(nameof(notificationHandler));
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
 
-            _temperature = new WeatherStationTemperatureSensor(new ActuatorId("WeatherStation.Temperature"), httpApiController, notificationHandler);
+            _temperature = new WeatherStationTemperatureSensor(new ActuatorId("WeatherStation.Temperature"), httpApiController, logger);
             TemperatureSensor = _temperature;
 
-            _humidity = new WeatherStationHumiditySensor(new ActuatorId("WeatherStation.Humidity"), httpApiController, notificationHandler);
+            _humidity = new WeatherStationHumiditySensor(new ActuatorId("WeatherStation.Humidity"), httpApiController, logger);
             HumiditySensor = _humidity;
 
             _situation = new WeatherStationSituationSensor();
             SituationSensor = _situation;
 
-            _notificationHandler = notificationHandler;
+            _logger = logger;
             _weatherDataSourceUrl = new Uri(string.Format("http://api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}&APPID={2}&units=metric", lat, lon, appId));
 
             httpApiController.Handle(HttpMethod.Get, "weatherStation").Using(HandleApiGet);
@@ -68,6 +67,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             result.SetNamedValue("lastFetched", _lastFetched.HasValue ? _lastFetched.Value.ToJsonValue() : JsonValue.CreateNullValue());
             result.SetNamedValue("sunrise", _sunrise.ToJsonValue());
             result.SetNamedValue("sunset", _sunset.ToJsonValue());
+            result.SetNamedValue("uri", _weatherDataSourceUrl.ToJsonValue());
 
             return result;
         }
@@ -85,7 +85,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             }
             catch (Exception exception)
             {
-                _notificationHandler.Warning("Could not fetch weather information. " + exception.Message);
+                _logger.Warning("Could not fetch weather information. " + exception.Message);
             }
         }
 
@@ -166,7 +166,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             }
             catch (Exception)
             {
-                _notificationHandler.Warning("Unable to load persisted weather station values.");
+                _logger.Warning("Unable to load persisted weather station values.");
                 File.Delete(filename);
             }
         }

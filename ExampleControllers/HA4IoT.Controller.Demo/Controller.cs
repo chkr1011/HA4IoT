@@ -5,7 +5,6 @@ using Windows.Storage;
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Automations;
 using HA4IoT.Actuators.Connectors;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Hardware;
@@ -20,7 +19,6 @@ using HA4IoT.Hardware.OpenWeatherMapWeatherStation;
 using HA4IoT.Hardware.Pi2;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
-using HA4IoT.Notifications;
 using HA4IoT.Telemetry.Csv;
 
 namespace HA4IoT.Controller.Demo
@@ -107,7 +105,7 @@ namespace HA4IoT.Controller.Demo
                 intertechnoCodes.GetSequence(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1, RemoteSwitchCommand.TurnOff));
 
             // Setup the weather station which provides sunrise and sunset information.
-            WeatherStation = CreateWeatherStation();
+            InitializeWeatherStation(CreateWeatherStation());
 
             // Add new rooms with actuators here! Example:
             var exampleRoom = CreateRoom(Room.ExampleRoom)

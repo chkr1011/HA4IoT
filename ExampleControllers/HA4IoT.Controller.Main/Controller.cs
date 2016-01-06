@@ -31,7 +31,7 @@ namespace HA4IoT.Controller.Main
             
             var i2CBus = new I2CBusWrapper(Logger);
 
-            WeatherStation = CreateWeatherStation();
+            InitializeWeatherStation(CreateWeatherStation());
 
             var i2CHardwareBridge = new I2CHardwareBridge(new I2CSlaveAddress(50), i2CBus);
             var sensorBridgeDriver = new DHT22Accessor(i2CHardwareBridge, Timer);

@@ -32,7 +32,7 @@ namespace HA4IoT.Core
         public INotificationHandler Logger { get; private set; }
         public IHttpRequestController HttpApiController { get; private set; }
         public IHomeAutomationTimer Timer { get; private set; }
-        public IWeatherStation WeatherStation { get; set; }
+        public IWeatherStation WeatherStation { get; private set; }
 
         public Dictionary<ActuatorId, IActuator> Actuators { get; } = new Dictionary<ActuatorId, IActuator>();
 
@@ -161,8 +161,7 @@ namespace HA4IoT.Core
 
             return configuration;
         }
-
-
+        
         private JsonObject GetRoomConfigurationAsJson(IRoom room)
         {
             var actuators = new JsonObject();
@@ -192,6 +191,13 @@ namespace HA4IoT.Core
 
             var appPath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "app");
             httpRequestDispatcher.MapFolder("app", appPath);
+        }
+
+        protected void InitializeWeatherStation(IWeatherStation weatherStation)
+        {
+            if (weatherStation == null) throw new ArgumentNullException(nameof(weatherStation));
+
+            WeatherStation = weatherStation;
         }
 
         private void InitializeTimer()
