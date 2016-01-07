@@ -1,4 +1,5 @@
 ﻿using System.Xml.Linq;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Hardware;
 
@@ -19,6 +20,21 @@ namespace HA4IoT.Configuration
         }
 
         public IBinaryInput ParseBinaryInput(XElement element)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IActuator ParseActuatorNode(XElement element)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void OnConfigurationParsed()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void OnInitializationFromCodeCompleted()
         {
             throw new System.NotImplementedException();
         }

@@ -108,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actuators\ActuatorId.cs" />
+    <Compile Include="Actuators\ActuatorIdFactory.cs" />
     <Compile Include="Actuators\ActuatorIsEnabledChangedEventArgs.cs" />
     <Compile Include="Actuators\BinaryActuatorState.cs" />
     <Compile Include="Actuators\BinaryActuatorStateChangedEventArgs.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="Actuators\ISingleValueSensorActuator.cs" />
     <Compile Include="Actuators\ITemperatureSensor.cs" />
     <Compile Include="Automations\IAutomation.cs" />
+    <Compile Include="Configuration\ConfigurationInvalidException.cs" />
     <Compile Include="Core\IController.cs" />
     <Compile Include="Configuration\IRoom.cs" />
     <Compile Include="Configuration\RoomId.cs" />
@@ -133,6 +135,7 @@
     <Compile Include="Core\IHomeAutomationTimer.cs" />
     <Compile Include="Core\TimedAction.cs" />
     <Compile Include="Core\TimerTickEventArgs.cs" />
+    <Compile Include="Hardware\DeviceIdExtensions.cs" />
     <Compile Include="Hardware\IDevice.cs" />
     <Compile Include="Hardware\DeviceId.cs" />
     <Compile Include="WeatherStation\IWeatherStation.cs" />

@@ -29,7 +29,7 @@ namespace HA4IoT.Controller.Main
 
             var pi2PortController = new Pi2PortController();
             
-            var i2CBus = new I2CBusWrapper(Logger);
+            var i2CBus = new DefaultI2CBus("II2CBus.default".ToDeviceId(), Logger);
 
             InitializeWeatherStation(CreateWeatherStation());
 
@@ -39,7 +39,7 @@ namespace HA4IoT.Controller.Main
             var ccToolsBoardController = new CCToolsBoardController(this, i2CBus, HttpApiController, Logger);
             
             var configurationParser = new ConfigurationParser(this);
-            //configurationParser.RegisterConfigurationExtender(new CCToolsConfigurationExtender());
+            configurationParser.RegisterConfigurationExtender(new CCToolsConfigurationExtender(this));
             configurationParser.TryParseConfiguration();
             
             ccToolsBoardController.CreateHSPE16InputOnly(Device.Input0, new I2CSlaveAddress(42));

@@ -3,7 +3,7 @@ using Windows.Devices.I2c;
 
 namespace HA4IoT.Contracts.Hardware
 {
-    public interface II2CBus
+    public interface II2CBus : IDevice
     {
         /// <summary>
         /// Executes the specified action providing the <see cref="I2cDevice"/> for the device with the specified address.

@@ -8,18 +8,22 @@ using HA4IoT.Contracts.Notifications;
 
 namespace HA4IoT.Hardware
 {
-    public class I2CBusWrapper : II2CBus
+    public class DefaultI2CBus : II2CBus
     {
         private readonly Dictionary<int, I2cDevice> _deviceCache = new Dictionary<int, I2cDevice>();
+
         private readonly string _i2CBusId;
-        private readonly INotificationHandler _log;
+
+        private readonly INotificationHandler _logger;
         private readonly object _syncRoot = new object();
 
-        public I2CBusWrapper(INotificationHandler log)
+        public DefaultI2CBus(DeviceId id, INotificationHandler logger)
         {
-            if (log == null) throw new ArgumentNullException(nameof(log));
+            if (id == null) throw new ArgumentNullException(nameof(id));
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
 
-            _log = log;
+            Id = id;
+            _logger = logger;
 
             string deviceSelector = I2cDevice.GetDeviceSelector();
             
@@ -31,6 +35,8 @@ namespace HA4IoT.Hardware
 
             _i2CBusId = deviceInformation.First().Id;
         }
+
+        public DeviceId Id { get; }
 
         public void Execute(I2CSlaveAddress address, Action<I2cDevice> action, bool useCache = true)
         {
@@ -47,7 +53,7 @@ namespace HA4IoT.Hardware
                 catch (Exception exception)
                 {
                     // Ensure that the application will not crash if some devices are currently not available etc.
-                    _log.Warning("Error while accessing I2C device with address " + address + ". " + exception.Message);
+                    _logger.Warning("Error while accessing I2C device with address " + address + ". " + exception.Message);
                 }
                 finally
                 {

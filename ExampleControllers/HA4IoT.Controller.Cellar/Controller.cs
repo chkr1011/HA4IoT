@@ -52,9 +52,11 @@ namespace HA4IoT.Controller.Cellar
             var pi2PortController = new Pi2PortController();
 
             InitializeWeatherStation(CreateWeatherStation());
-            var i2CBus = new I2CBusWrapper(Logger);
 
-            var ccToolsFactory = new CCToolsBoardController(this, i2CBus, HttpApiController, Logger);
+            var i2cBus = new DefaultI2CBus("II2CBus.default".ToDeviceId(), Logger);
+            AddDevice(i2cBus);
+
+            var ccToolsFactory = new CCToolsBoardController(this, i2cBus, HttpApiController, Logger);
             var hsrt16 = ccToolsFactory.CreateHSRT16(Device.CellarHSRT16, new I2CSlaveAddress(32));
             
             var garden = this.CreateRoom(Room.Garden)

@@ -1,4 +1,5 @@
 ﻿using System.Xml.Linq;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Contracts.Configuration
@@ -12,5 +13,11 @@ namespace HA4IoT.Contracts.Configuration
         IBinaryOutput ParseBinaryOutput(XElement element);
 
         IBinaryInput ParseBinaryInput(XElement element);
+
+        IActuator ParseActuatorNode(XElement element);
+
+        void OnConfigurationParsed();
+
+        void OnInitializationFromCodeCompleted();
     }
 }

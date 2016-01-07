@@ -116,7 +116,7 @@
   <ItemGroup>
     <Compile Include="BinaryOutputWithState.cs" />
     <Compile Include="ByteExtensions.cs" />
-    <Compile Include="I2CBusWrapper.cs" />
+    <Compile Include="DefaultI2CBus.cs" />
     <Compile Include="InterruptMonitor.cs" />
     <Compile Include="LogicalBinaryOutput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

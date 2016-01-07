@@ -107,6 +107,8 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigurationExtenderBase.cs" />
+    <Compile Include="ConfigurationExtensions.cs" />
     <Compile Include="ConfigurationParser.cs" />
     <Compile Include="DefaultConfigurationExtender.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
