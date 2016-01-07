@@ -114,7 +114,9 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ControllerApiHandler.cs" />
     <Compile Include="ControllerBase.cs" />
+    <Compile Include="ControllerExtensions.cs" />
     <Compile Include="HealthMonitor.cs" />
     <Compile Include="Room.cs" />
     <Compile Include="Timer\Timeout.cs" />

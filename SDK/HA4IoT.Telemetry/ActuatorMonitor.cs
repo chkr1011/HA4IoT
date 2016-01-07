@@ -11,7 +11,7 @@ namespace HA4IoT.Telemetry
         {
             if (controller == null) throw new ArgumentNullException(nameof(controller));
 
-            foreach (var actuator in controller.Actuators.Values)
+            foreach (var actuator in controller.GetActuators())
             {
                 OnActuatorConnecting(actuator);
 

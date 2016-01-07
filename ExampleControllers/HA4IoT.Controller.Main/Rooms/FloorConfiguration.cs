@@ -4,13 +4,12 @@ using HA4IoT.Actuators.Animations;
 using HA4IoT.Actuators.Automations;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.WeatherStation;
+using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.DHT22;
-using HA4IoT.Hardware.GenericIOBoard;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
@@ -51,15 +50,15 @@ namespace HA4IoT.Controller.Main.Rooms
             LampStairs
         }
 
-        public void Setup(IController controller, CCToolsBoardController ccToolsController, IOBoardCollection ioBoardManager, DHT22Accessor dht22Accessor)
+        public void Setup(Controller controller, CCToolsBoardController ccToolsController, DHT22Accessor dht22Accessor)
         {
             var hsrel5Stairway = ccToolsController.CreateHSREL5(Device.StairwayHSREL5, new I2CSlaveAddress(60));
-            var hspe8UpperFloor = (HSPE8)ioBoardManager.GetOutputBoard(Device.UpperFloorAndOfficeHSPE8);
+            var hspe8UpperFloor = controller.GetDevice<HSPE8OutputOnly>(Device.UpperFloorAndOfficeHSPE8);
             var hspe16FloorAndLowerBathroom = ccToolsController.CreateHSPE16OutputOnly(Device.LowerFloorAndLowerBathroomHSPE16, new I2CSlaveAddress(17));
 
-            var input1 = ioBoardManager.GetInputBoard(Device.Input1);
-            var input2 = ioBoardManager.GetInputBoard(Device.Input2);
-            var input4 = ioBoardManager.GetInputBoard(Device.Input4);
+            var input1 = controller.GetDevice<HSPE16InputOnly>(Device.Input1);
+            var input2 = controller.GetDevice<HSPE16InputOnly>(Device.Input2);
+            var input4 = controller.GetDevice<HSPE16InputOnly>(Device.Input4);
 
             const int SensorPin = 5;
 
@@ -117,7 +116,7 @@ namespace HA4IoT.Controller.Main.Rooms
             floor.SetupAutomaticRollerShutters().WithRollerShutters(floor.RollerShutter(Floor.StairwayRollerShutter));
         }
 
-        private void SetupStairsCeilingLamps(IRoom floor, HSPE8 hspe8UpperFloor)
+        private void SetupStairsCeilingLamps(IRoom floor, HSPE8OutputOnly hspe8UpperFloor)
         {
             var output = new LogicalBinaryOutput()
                 .WithOutput(hspe8UpperFloor[HSPE8Pin.GPIO4])

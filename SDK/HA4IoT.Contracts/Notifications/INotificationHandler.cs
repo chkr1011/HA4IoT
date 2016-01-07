@@ -1,4 +1,6 @@
-﻿namespace HA4IoT.Contracts.Notifications
+﻿using System;
+
+namespace HA4IoT.Contracts.Notifications
 {
     public interface INotificationHandler
     {
@@ -8,8 +10,12 @@
 
         void Warning(string message, params object[] parameters);
 
+        void Warning(Exception exception, string message, params object[] parameters);
+
         void Error(string message, params object[] parameters);
 
+        void Error(Exception exception, string message, params object[] parameters);
+        
         void Verbose(string message, params object[] parameters);
     }
 }

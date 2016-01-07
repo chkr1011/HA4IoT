@@ -1,10 +1,9 @@
 ﻿using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Core;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.DHT22;
-using HA4IoT.Hardware.GenericIOBoard;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
@@ -44,13 +43,13 @@ namespace HA4IoT.Controller.Main.Rooms
             WindowRight,
         }
 
-        public void Setup(IController controller, CCToolsBoardController ccToolsController, IOBoardCollection ioBoardManager, DHT22Accessor dht22Accessor)
+        public void Setup(Controller controller, CCToolsBoardController ccToolsController, DHT22Accessor dht22Accessor)
         {
             var hsrel8 = ccToolsController.CreateHSREL8(Device.LivingRoomHSREL8, new I2CSlaveAddress(18));
             var hsrel5 = ccToolsController.CreateHSREL5(Device.LivingRoomHSREL5, new I2CSlaveAddress(57));
             
-            var input0 = ioBoardManager.GetInputBoard(Device.Input0);
-            var input1 = ioBoardManager.GetInputBoard(Device.Input1);
+            var input0 = controller.GetDevice<HSPE16InputOnly>(Device.Input0);
+            var input1 = controller.GetDevice<HSPE16InputOnly>(Device.Input1);
 
             const int SensorPin = 12;
 

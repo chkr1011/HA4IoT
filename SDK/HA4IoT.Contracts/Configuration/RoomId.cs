@@ -1,33 +1,18 @@
 ﻿using System;
-using Windows.Data.Json;
-using HA4IoT.Networking;
+using HA4IoT.Contracts.Core;
 
 namespace HA4IoT.Contracts.Configuration
 {
-    public class RoomId : IEquatable<RoomId>, IConvertibleToJsonValue
+    public class RoomId : IdBase, IEquatable<RoomId>
     {
-        public RoomId(string value)
+        public RoomId(string value) : base(value)
         {
             if (string.IsNullOrEmpty(value)) throw new ArgumentException("Room ID is invalid.");
-
-            Value = value;
         }
 
-        public string Value { get; }
-
-        public override string ToString()
+        public static RoomId From(Enum value)
         {
-            return Value;
-        }
-
-        public IJsonValue ToJsonValue()
-        {
-            return JsonValue.CreateStringValue(Value);
-        }
-
-        public override int GetHashCode()
-        {
-            return Value.GetHashCode();
+            return new RoomId(value.ToString());
         }
 
         public bool Equals(RoomId other)

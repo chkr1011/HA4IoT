@@ -2,16 +2,16 @@
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Automations;
 using HA4IoT.Contracts.Configuration;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Core;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.DHT22;
-using HA4IoT.Hardware.GenericIOBoard;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
     internal class UpperBathroomConfiguration
     {
+        private readonly Controller _controller;
         private readonly HSREL5 _hsrel5;
         private readonly IBinaryInputController _input5;
 
@@ -31,19 +31,22 @@ namespace HA4IoT.Controller.Main.Rooms
             CombinedCeilingLights
         }
 
-        public UpperBathroomConfiguration(IOBoardCollection ioBoardManager, CCToolsBoardController ccToolsController)
+        public UpperBathroomConfiguration(Controller controller, CCToolsBoardController ccToolsController)
         {
-            if (ioBoardManager == null) throw new ArgumentNullException(nameof(ioBoardManager));
+            if (controller == null) throw new ArgumentNullException(nameof(controller));
+            if (ccToolsController == null) throw new ArgumentNullException(nameof(ccToolsController));
+
+            _controller = controller;
 
             _hsrel5 = ccToolsController.CreateHSREL5(Device.UpperBathroomHSREL5, new I2CSlaveAddress(61));
-            _input5 = ioBoardManager.GetInputBoard(Device.Input5);
+            _input5 = controller.GetDevice<HSPE16InputOnly>(Device.Input5);
         }
 
-        public void Setup(IController controller, DHT22Accessor dht22Accessor)
+        public void Setup(DHT22Accessor dht22Accessor)
         {
             const int SensorPin = 4;
 
-            var bathroom = controller.CreateRoom(Room.UpperBathroom)
+            var bathroom = _controller.CreateRoom(Room.UpperBathroom)
                 .WithTemperatureSensor(UpperBathroom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(UpperBathroom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorPin))
                 .WithMotionDetector(UpperBathroom.MotionDetector, _input5.GetInput(15))
@@ -65,7 +68,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTarget(combinedLights)
                 .WithOnDuration(TimeSpan.FromMinutes(8));
             
-            new AutomaticBathroomFanAutomation(controller.Timer)
+            new AutomaticBathroomFanAutomation(_controller.Timer)
                 .WithSlowDuration(TimeSpan.FromMinutes(8))
                 .WithFastDuration(TimeSpan.FromMinutes(12))
                 .WithMotiWithTrigger(bathroom.MotionDetector(UpperBathroom.MotionDetector))

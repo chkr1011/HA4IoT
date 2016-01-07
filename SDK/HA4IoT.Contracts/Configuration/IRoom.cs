@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 
@@ -13,8 +12,8 @@ namespace HA4IoT.Contracts.Configuration
 
         void AddActuator(IActuator actuator);
 
-        TActuator Actuator<TActuator>(ActuatorId id) where TActuator : IActuator;
+        IList<IActuator> GetActuators();
 
-        IReadOnlyDictionary<ActuatorId, IActuator> Actuators { get; }
+        TActuator Actuator<TActuator>(ActuatorId id) where TActuator : IActuator;
     }
 }

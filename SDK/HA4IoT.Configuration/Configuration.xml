@@ -1,18 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Configuration Version="1"
-               xmlns:CCTools="CCTools">
+<Configuration Version="1" xmlns:CCTools="CCTools">
 
   <Devices>
     <!-- Shared input devices -->
-    <CCTools.HSPE16_InputOnly id="Input0" i2cAddress="42" />
-    <CCTools.HSPE16_InputOnly id="Input1" i2cAddress="43" />
-    <CCTools.HSPE16_InputOnly id="Input2" i2cAddress="47" />
-    <CCTools.HSPE16_InputOnly id="Input3" i2cAddress="45" />
-    <CCTools.HSPE16_InputOnly id="Input4" i2cAddress="46" />
-    <CCTools.HSPE16_InputOnly id="Input5" i2cAddress="44" />
+    <CCTools:HSPE16_InputOnly id="Input0" i2cAddress="42" />
+    <CCTools:HSPE16_InputOnly id="Input1" i2cAddress="43" />
+    <CCTools:HSPE16_InputOnly id="Input2" i2cAddress="47" />
+    <CCTools:HSPE16_InputOnly id="Input3" i2cAddress="45" />
+    <CCTools:HSPE16_InputOnly id="Input4" i2cAddress="46" />
+    <CCTools:HSPE16_InputOnly id="Input5" i2cAddress="44" />
     
-    <CCTools.HSRel5 id="LivingRoom.HSRel5" i2cAddress="38" />
-    <CCTools.HSRel8 id="LivingRoom.HSRel8" i2cAddress="21" />
+    <CCTools:HSRel5 id="LivingRoom.HSRel5" i2cAddress="38" />
+    <CCTools:HSRel8 id="LivingRoom.HSRel8" i2cAddress="21" />
 
     <I2CHardwareBridge i2cAddress="50"></I2CHardwareBridge>
   </Devices>
@@ -165,6 +164,12 @@
     </Room>
   </Rooms>
 
+  <App pollInterval="250" showSensorsOverview="true" showMotionDetectorsOverview="true">
+    <UILocalizations>
+      <UILocalization key="UI.X">Value</UILocalization>
+    </UILocalizations>
+  </App>
+  
 </Configuration>
 
 <!--

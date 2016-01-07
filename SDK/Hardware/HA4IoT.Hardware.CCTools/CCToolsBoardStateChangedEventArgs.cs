@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HA4IoT.Hardware.GenericIOBoard
+namespace HA4IoT.Hardware.CCTools
 {
     public class IOBoardStateChangedEventArgs : EventArgs
     {

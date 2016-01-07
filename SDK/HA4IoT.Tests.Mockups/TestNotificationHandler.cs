@@ -1,4 +1,5 @@
-﻿using HA4IoT.Contracts;
+﻿using System;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Notifications;
 
@@ -26,11 +27,19 @@ namespace HA4IoT.Tests.Mockups
         {
         }
 
+        public void Warning(Exception exception, string message, params object[] parameters)
+        {
+        }
+
         public void Warning(object sender, string message, params object[] parameters)
         {
         }
 
         public void Error(string message, params object[] parameters)
+        {
+        }
+
+        public void Error(Exception exception, string message, params object[] parameters)
         {
         }
 

@@ -4,16 +4,16 @@ using HA4IoT.Actuators.Automations;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Core;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.DHT22;
-using HA4IoT.Hardware.GenericIOBoard;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
     internal class BedroomConfiguration
     {
+        private readonly Controller _controller;
         private readonly HSREL5 _hsrel5;
         private readonly HSREL8 _hsrel8;
         private readonly IBinaryInputController _input5;
@@ -61,19 +61,24 @@ namespace HA4IoT.Controller.Main.Rooms
             WindowRight
         }
 
-        public BedroomConfiguration(CCToolsBoardController ccToolsController, IOBoardCollection ioBoardCollection)
+        public BedroomConfiguration(Controller controller, CCToolsBoardController ccToolsController)
         {
+            if (controller == null) throw new ArgumentNullException(nameof(controller));
+            if (ccToolsController == null) throw new ArgumentNullException(nameof(ccToolsController));
+
+            _controller = controller;
+
             _hsrel5 = ccToolsController.CreateHSREL5(Device.BedroomHSREL5, new I2CSlaveAddress(38));
             _hsrel8 = ccToolsController.CreateHSREL8(Device.BedroomHSREL8, new I2CSlaveAddress(21));
-            _input5 = ioBoardCollection.GetInputBoard(Device.Input5);
-            _input4 = ioBoardCollection.GetInputBoard(Device.Input4);
+            _input5 = controller.GetDevice<HSPE16InputOnly>(Device.Input5);
+            _input4 = controller.GetDevice<HSPE16InputOnly>(Device.Input4);
         }
 
-        public void Setup(IController controller, DHT22Accessor dht22Accessor)
+        public void Setup(DHT22Accessor dht22Accessor)
         {
             const int SensorPin = 6;
 
-            var bedroom = controller.CreateRoom(Room.Bedroom)
+            var bedroom = _controller.CreateRoom(Room.Bedroom)
                 .WithTemperatureSensor(Bedroom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(Bedroom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorPin))
                 .WithMotionDetector(Bedroom.MotionDetector, _input5.GetInput(12))
@@ -131,7 +136,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTarget(bedroom.BinaryStateOutput(Bedroom.LightCeiling))
                 .WithOnDuration(TimeSpan.FromSeconds(15))
                 .WithTurnOnIfAllRollerShuttersClosed(bedroom.RollerShutter(Bedroom.RollerShutterLeft), bedroom.RollerShutter(Bedroom.RollerShutterRight))
-                .WithEnabledAtNight(controller.WeatherStation)
+                .WithEnabledAtNight(_controller.WeatherStation)
                 .WithSkipIfAnyActuatorIsAlreadyOn(bedroom.Lamp(Bedroom.LampBedLeft), bedroom.Lamp(Bedroom.LampBedRight));
             
             bedroom.WithStateMachine(Bedroom.Fan, SetupFan);

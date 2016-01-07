@@ -12,7 +12,6 @@ using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
-using HA4IoT.Hardware.GenericIOBoard;
 using HA4IoT.Hardware.OpenWeatherMapWeatherStation;
 using HA4IoT.Hardware.Pi2;
 
@@ -55,11 +54,10 @@ namespace HA4IoT.Controller.Cellar
             InitializeWeatherStation(CreateWeatherStation());
             var i2CBus = new I2CBusWrapper(Logger);
 
-            var ioBoardManager = new IOBoardCollection(HttpApiController, Logger);
-            var ccToolsFactory = new CCToolsBoardController(i2CBus, ioBoardManager, Logger);
+            var ccToolsFactory = new CCToolsBoardController(this, i2CBus, HttpApiController, Logger);
             var hsrt16 = ccToolsFactory.CreateHSRT16(Device.CellarHSRT16, new I2CSlaveAddress(32));
             
-            var garden = CreateRoom(Room.Garden)
+            var garden = this.CreateRoom(Room.Garden)
                 .WithLamp(Garden.LampTerrace, hsrt16[HSRT16Pin.Relay15])
                 .WithLamp(Garden.LampGarage, hsrt16[HSRT16Pin.Relay14])
                 .WithLamp(Garden.LampTap, hsrt16[HSRT16Pin.Relay13])

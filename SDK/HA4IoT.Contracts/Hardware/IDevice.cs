@@ -2,6 +2,8 @@
 {
     public interface IDevice
     {
-        string Id { get; }
+        DeviceId Id { get; }
+
+        //JsonObject HandleApiRequest(HttpMethod method, JsonObject request);
     }
 }

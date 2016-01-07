@@ -1,9 +1,8 @@
 ﻿using HA4IoT.Actuators;
 using HA4IoT.Actuators.Automations;
-using HA4IoT.Contracts.Core;
+using HA4IoT.Core;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.DHT22;
-using HA4IoT.Hardware.GenericIOBoard;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
@@ -26,10 +25,10 @@ namespace HA4IoT.Controller.Main.Rooms
             Window
         }
 
-        public void Setup(IController controller, CCToolsBoardController ccToolsController, IOBoardCollection ioBoardManager, DHT22Accessor dht22Accessor)
+        public void Setup(Controller controller, CCToolsBoardController ccToolsController, DHT22Accessor dht22Accessor)
         {
-            var hspe16_FloorAndLowerBathroom = ioBoardManager.GetOutputBoard(Device.LowerFloorAndLowerBathroomHSPE16);
-            var input3 = ioBoardManager.GetInputBoard(Device.Input3);
+            var hspe16_FloorAndLowerBathroom = controller.GetDevice<HSPE16OutputOnly>(Device.LowerFloorAndLowerBathroomHSPE16);
+            var input3 = controller.GetDevice<HSPE16InputOnly>(Device.Input3);
 
             const int SensorPin = 3; //5;
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
@@ -22,19 +23,22 @@ namespace HA4IoT.Core
 
         public IController Controller { get; }
 
-        public IReadOnlyDictionary<ActuatorId, IActuator> Actuators => _actuators;
-
         public void AddActuator(IActuator actuator)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
-            if (Controller.Actuators.ContainsKey(actuator.Id))
+            if (_actuators.ContainsKey(actuator.Id))
             {
-                throw new InvalidOperationException("Actuator with ID '" + actuator.Id + "' aready registered.");
+                throw new InvalidOperationException("Actuator with ID '" + actuator.Id + "' already registered.");
             }
 
-            Controller.Actuators.Add(actuator.Id, actuator);
+            Controller.AddActuator(actuator);
             _actuators.Add(actuator.Id, actuator);
+        }
+
+        public IList<IActuator> GetActuators()
+        {
+            return _actuators.Values.ToList();
         }
 
         public TActuator Actuator<TActuator>(ActuatorId id) where TActuator : IActuator

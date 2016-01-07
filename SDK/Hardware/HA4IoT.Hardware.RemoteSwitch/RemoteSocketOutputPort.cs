@@ -3,7 +3,7 @@ using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Hardware.RemoteSwitch
 {
-    public class RemoteSwitchOutputPort : IBinaryOutput
+    public class RemoteSocketOutputPort : IBinaryOutput
     {
         private readonly LPD433MHzCodeSequence _onCodeSqCodeSequence;
         private readonly LPD433MHzCodeSequence _offCodeSequence;
@@ -11,7 +11,7 @@ namespace HA4IoT.Hardware.RemoteSwitch
         private readonly object _syncRoot = new object();
         private BinaryState _state;
 
-        public RemoteSwitchOutputPort(int id, LPD433MHzCodeSequence onCodeSequence, LPD433MHzCodeSequence offCodeSequence, LPD433MHzSignalSender sender)
+        public RemoteSocketOutputPort(int id, LPD433MHzCodeSequence onCodeSequence, LPD433MHzCodeSequence offCodeSequence, LPD433MHzSignalSender sender)
         {
             if (onCodeSequence == null) throw new ArgumentNullException(nameof(onCodeSequence));
             if (offCodeSequence == null) throw new ArgumentNullException(nameof(offCodeSequence));

@@ -2,10 +2,9 @@
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Automations;
 using HA4IoT.Contracts.Configuration;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Core;
 using HA4IoT.Hardware.CCTools;
-using HA4IoT.Hardware.GenericIOBoard;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
@@ -23,13 +22,13 @@ namespace HA4IoT.Controller.Main.Rooms
             CirculatingPump
         }
 
-        public void Setup(IController controller, CCToolsBoardController ccToolsController, IOBoardCollection ioBoardManager)
+        public void Setup(Controller controller, CCToolsBoardController ccToolsController)
         {
             var hsrel8LowerHeatingValves = ccToolsController.CreateHSREL8(Device.LowerHeatingValvesHSREL8, new I2CSlaveAddress(16));
             var hsrel5UpperHeatingValves = ccToolsController.CreateHSREL5(Device.UpperHeatingValvesHSREL5, new I2CSlaveAddress(56));
 
-            var hsrel5Stairway = ioBoardManager.GetOutputBoard(Device.StairwayHSREL5);
-            var input3 = ioBoardManager.GetInputBoard(Device.Input3);
+            var hsrel5Stairway = controller.GetDevice<HSREL5>(Device.StairwayHSREL5);
+            var input3 = controller.GetDevice<HSPE16InputOnly>(Device.Input3);
 
             var storeroom = controller.CreateRoom(Room.Storeroom)
                 .WithMotionDetector(Storeroom.MotionDetector, input3.GetInput(12))

@@ -1,109 +1,119 @@
 ﻿using System;
+using System.Diagnostics;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Notifications;
-using HA4IoT.Hardware.GenericIOBoard;
+using HA4IoT.Networking;
 
 namespace HA4IoT.Hardware.CCTools
 {
     public class CCToolsBoardController
     {
         private readonly II2CBus _i2CBus;
-        private readonly IOBoardCollection _ioBoardCollection;
-        private readonly INotificationHandler _log;
+        private readonly IController _controller;
+        private readonly IHttpRequestController _httpApi;
+        private readonly INotificationHandler _logger;
 
-        public CCToolsBoardController(II2CBus i2CBus, IOBoardCollection ioBoardCollection, INotificationHandler log)
+        public CCToolsBoardController(IController controller, II2CBus i2cBus, IHttpRequestController httpApi, INotificationHandler logger)
         {
-            if (i2CBus == null) throw new ArgumentNullException(nameof(i2CBus));
-            if (ioBoardCollection == null) throw new ArgumentNullException(nameof(ioBoardCollection));
+            if (i2cBus == null) throw new ArgumentNullException(nameof(i2cBus));
+            if (controller == null) throw new ArgumentNullException(nameof(controller));
+            if (httpApi == null) throw new ArgumentNullException(nameof(httpApi));
 
-            _i2CBus = i2CBus;
-            _log = log;
-
-            _ioBoardCollection = ioBoardCollection;
+            _controller = controller;
+            _i2CBus = i2cBus;
+            
+            _httpApi = httpApi;
+            _logger = logger;
         }
 
         public HSPE16InputOnly CreateHSPE16InputOnly(Enum id, I2CSlaveAddress address)
         {
-            IOBoardControllerBase board;
-            if (_ioBoardCollection.TryGetIOBoard(id, out board))
+            var device = new HSPE16InputOnly(DeviceId.From(id), address, _i2CBus, _httpApi, _logger)
             {
-                return (HSPE16InputOnly) board;
-            }
+                AutomaticallyFetchState = true
+            };
 
-            var device = new HSPE16InputOnly(id.ToString(), address, _i2CBus, _log) { AutomaticallyFetchState = true };
-            _ioBoardCollection.Add(id, device);
+            _controller.AddDevice(device);
 
             return device;
         }
 
         public HSPE16OutputOnly CreateHSPE16OutputOnly(Enum id, I2CSlaveAddress address)
         {
-            IOBoardControllerBase board;
-            if (_ioBoardCollection.TryGetIOBoard(id, out board))
-            {
-                return (HSPE16OutputOnly) board;
-            }
-
-            var device = new HSPE16OutputOnly(id.ToString(), address, _i2CBus, _log);
-            _ioBoardCollection.Add(id, device);
+            var device = new HSPE16OutputOnly(DeviceId.From(id), address, _i2CBus, _httpApi, _logger);
+            _controller.AddDevice(device);
 
             return device;
         }
 
-        public HSPE8 CreateHSPE8OutputOnly(Enum id, I2CSlaveAddress i2CAddress)
+        public HSPE8OutputOnly CreateHSPE8OutputOnly(Enum id, I2CSlaveAddress i2CAddress)
         {
-            IOBoardControllerBase board;
-            if (_ioBoardCollection.TryGetIOBoard(id, out board))
-            {
-                return (HSPE8)board;
-            }
+            var device = new HSPE8OutputOnly(DeviceId.From(id), i2CAddress, _i2CBus, _httpApi, _logger);
+            _controller.AddDevice(device);
 
-            var device = new HSPE8(id.ToString(), i2CAddress, _i2CBus, _log);
-            _ioBoardCollection.Add(id, device);
+            return device;
+        }
+
+        public HSPE8InputOnly CreateHSPE8InputOnly(Enum id, I2CSlaveAddress i2CAddress)
+        {
+            var device = new HSPE8InputOnly(DeviceId.From(id), i2CAddress, _i2CBus, _httpApi, _logger);
+            _controller.AddDevice(device);
 
             return device;
         }
 
         public HSREL5 CreateHSREL5(Enum id, I2CSlaveAddress i2CAddress)
         {
-            IOBoardControllerBase board;
-            if (_ioBoardCollection.TryGetIOBoard(id, out board))
-            {
-                return (HSREL5)board;
-            }
-
-            var device = new HSREL5(id.ToString(), i2CAddress, _i2CBus, _log);
-            _ioBoardCollection.Add(id, device);
+            var device = new HSREL5(DeviceId.From(id), i2CAddress, _i2CBus, _httpApi, _logger);
+            _controller.AddDevice(device);
 
             return device;
         }
 
         public HSREL8 CreateHSREL8(Enum id, I2CSlaveAddress i2CAddress)
         {
-            IOBoardControllerBase board;
-            if (_ioBoardCollection.TryGetIOBoard(id, out board))
-            {
-                return (HSREL8)board;
-            }
-
-            var device = new HSREL8(id.ToString(), i2CAddress, _i2CBus, _log);
-            _ioBoardCollection.Add(id, device);
+            var device = new HSREL8(DeviceId.From(id), i2CAddress, _i2CBus, _httpApi, _logger);
+            _controller.AddDevice(device);
 
             return device;
         }
 
         public HSRT16 CreateHSRT16(Enum id, I2CSlaveAddress address)
         {
-            IOBoardControllerBase board;
-            if (_ioBoardCollection.TryGetIOBoard(id, out board))
-            {
-                return (HSRT16)board;
-            }
-
-            var device = new HSRT16(id.ToString(), address, _i2CBus, _log);
-            _ioBoardCollection.Add(id, device);
+            var device = new HSRT16(DeviceId.From(id), address, _i2CBus, _httpApi, _logger);
+            _controller.AddDevice(device);
 
             return device;
+        }
+
+        public void PollInputBoardStates()
+        {
+            var stopwatch = Stopwatch.StartNew();
+
+            var inputDevices = _controller.GetDevices<CCToolsInputBoardBase>();
+
+            foreach (var portExpanderController in inputDevices)
+            {
+                if (portExpanderController.AutomaticallyFetchState)
+                {
+                    portExpanderController.PeekState();
+                }
+            }
+
+            stopwatch.Stop();
+            if (stopwatch.ElapsedMilliseconds > 25)
+            {
+                _logger.Publish(NotificationType.Warning, "Fetching inputs took {0}ms.", stopwatch.ElapsedMilliseconds);
+            }
+
+            foreach (var portExpanderController in inputDevices)
+            {
+                if (portExpanderController.AutomaticallyFetchState)
+                {
+                    portExpanderController.FetchState();
+                }
+            }
         }
     }
 }

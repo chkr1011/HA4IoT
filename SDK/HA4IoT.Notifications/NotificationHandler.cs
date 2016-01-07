@@ -75,9 +75,19 @@ namespace HA4IoT.Notifications
             Publish(NotificationType.Warning, message, parameters);
         }
 
+        public void Warning(Exception exception, string message, params object[] parameters)
+        {
+            Publish(NotificationType.Warning, string.Format(message, parameters) + Environment.NewLine + exception);
+        }
+
         public void Error(string message, params object[] parameters)
         {
             Publish(NotificationType.Error, message, parameters);
+        }
+
+        public void Error(Exception exception, string message, params object[] parameters)
+        {
+            Publish(NotificationType.Error, string.Format(message, parameters) + Environment.NewLine + exception);
         }
 
         public void Verbose(string message, params object[] parameters)

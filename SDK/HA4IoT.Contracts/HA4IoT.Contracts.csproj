@@ -129,10 +129,12 @@
     <Compile Include="Configuration\RoomId.cs" />
     <Compile Include="Configuration\HandleConfigurationNodeResult.cs" />
     <Compile Include="Configuration\IConfigurationExtender.cs" />
+    <Compile Include="Core\IdBase.cs" />
     <Compile Include="Core\IHomeAutomationTimer.cs" />
     <Compile Include="Core\TimedAction.cs" />
     <Compile Include="Core\TimerTickEventArgs.cs" />
     <Compile Include="Hardware\IDevice.cs" />
+    <Compile Include="Hardware\DeviceId.cs" />
     <Compile Include="WeatherStation\IWeatherStation.cs" />
     <Compile Include="Actuators\MotionDetectorState.cs" />
     <Compile Include="Actuators\RollerShutterState.cs" />

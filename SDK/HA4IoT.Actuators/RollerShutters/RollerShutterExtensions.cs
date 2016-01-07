@@ -11,7 +11,7 @@ namespace HA4IoT.Actuators
     {
         public static IRollerShutter[] GetAllRollerShutters(this IRoom room)
         {
-            return room.Actuators.Values.Where(a => a is RollerShutter).Cast<IRollerShutter>().ToArray();
+            return room.GetActuators().Where(a => a is RollerShutter).Cast<IRollerShutter>().ToArray();
         }
         
         public static IRollerShutter RollerShutter(this IRoom room, Enum id)

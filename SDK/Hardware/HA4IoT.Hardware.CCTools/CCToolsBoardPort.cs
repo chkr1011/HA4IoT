@@ -1,29 +1,29 @@
 ﻿using System;
 using HA4IoT.Contracts.Hardware;
 
-namespace HA4IoT.Hardware.GenericIOBoard
+namespace HA4IoT.Hardware.CCTools
 {
     public class IOBoardPort : IBinaryInput, IBinaryOutput
     {
-        public IOBoardPort(int number, IOBoardControllerBase controller)
+        public IOBoardPort(int number, CCToolsBoardBase board)
         {
-            if (controller == null) throw new ArgumentNullException(nameof(controller));
+            if (board == null) throw new ArgumentNullException(nameof(board));
 
             Number = number;
-            Controller = controller;
+            Board = board;
 
-            controller.StateChanged += OnControllerStateChanged;
+            board.StateChanged += OnControllerStateChanged;
         }
-
-        public int Number { get; }
-        public bool InvertValue { get; set; }
-        public IOBoardControllerBase Controller { get; }
 
         public event EventHandler<BinaryStateChangedEventArgs> StateChanged;
 
+        public int Number { get; }
+        public bool InvertValue { get; set; }
+        public CCToolsBoardBase Board { get; }
+
         public BinaryState Read()
         {
-            return CoerceState(Controller.GetPortState(Number));
+            return CoerceState(Board.GetPortState(Number));
         }
 
         IBinaryInput IBinaryInput.WithInvertedState()
@@ -35,11 +35,11 @@ namespace HA4IoT.Hardware.GenericIOBoard
         public void Write(BinaryState state, bool commit)
         {
             state = CoerceState(state);
-            Controller.SetPortState(Number, state);
+            Board.SetPortState(Number, state);
 
             if (commit)
             {
-                Controller.CommitChanges();
+                Board.CommitChanges();
             }
         }
 

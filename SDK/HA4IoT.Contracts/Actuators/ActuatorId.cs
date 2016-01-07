@@ -1,33 +1,13 @@
 ﻿using System;
-using Windows.Data.Json;
-using HA4IoT.Networking;
+using HA4IoT.Contracts.Core;
 
 namespace HA4IoT.Contracts.Actuators
 {
-    public class ActuatorId : IEquatable<ActuatorId>, IConvertibleToJsonValue
+    public class ActuatorId : IdBase, IEquatable<ActuatorId>
     {
-        public ActuatorId(string value)
+        public ActuatorId(string value) : base(value)
         {
             if (string.IsNullOrEmpty(value)) throw new ArgumentException("Actuator ID is invalid.");
-
-            Value = value;
-        }
-
-        public string Value { get; }
-
-        public override string ToString()
-        {
-            return Value;
-        }
-
-        public IJsonValue ToJsonValue()
-        {
-            return JsonValue.CreateStringValue(Value);
-        }
-
-        public override int GetHashCode()
-        {
-            return Value.GetHashCode();
         }
 
         public bool Equals(ActuatorId other)
