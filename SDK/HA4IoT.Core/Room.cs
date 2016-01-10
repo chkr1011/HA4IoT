@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using HA4IoT.Contracts.Actuators;
+﻿using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
+using System;
+using System.Collections.Generic;
 
 namespace HA4IoT.Core
 {
     public class Room : IRoom
     {
-        private readonly Dictionary<ActuatorId, IActuator> _actuators = new Dictionary<ActuatorId, IActuator>();
-        
+        private readonly ActuatorCollection _actuators = new ActuatorCollection();
+
         public Room(RoomId id, IController controller)
         {
             if (controller == null) throw new ArgumentNullException(nameof(controller));
@@ -25,31 +24,18 @@ namespace HA4IoT.Core
 
         public void AddActuator(IActuator actuator)
         {
-            if (actuator == null) throw new ArgumentNullException(nameof(actuator));
-
-            if (_actuators.ContainsKey(actuator.Id))
-            {
-                throw new InvalidOperationException("Actuator with ID '" + actuator.Id + "' already registered.");
-            }
-
+            _actuators.Add(actuator);
             Controller.AddActuator(actuator);
-            _actuators.Add(actuator.Id, actuator);
         }
 
         public IList<IActuator> GetActuators()
         {
-            return _actuators.Values.ToList();
+            return _actuators.GetAll();
         }
 
         public TActuator Actuator<TActuator>(ActuatorId id) where TActuator : IActuator
         {
-            IActuator actuator;
-            if (!_actuators.TryGetValue(id, out actuator))
-            {
-                throw new InvalidOperationException("Actuator with ID '" + id + "' is not registered.");
-            }
-
-            return (TActuator)actuator;
+            return (TActuator)_actuators.Get(id);
         }
     }
 }

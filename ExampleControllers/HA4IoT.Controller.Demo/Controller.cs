@@ -27,7 +27,7 @@ namespace HA4IoT.Controller.Demo
         private static readonly I2CSlaveAddress I2CHardwareBridgeAddress = new I2CSlaveAddress(50);
         private const byte I2CHardwareBridge433MHzSenderPin = 6;
 
-        private enum Room
+        private enum RoomId
         {
             ExampleRoom
         }
@@ -98,7 +98,7 @@ namespace HA4IoT.Controller.Demo
             InitializeWeatherStation(CreateWeatherStation());
 
             // Add new rooms with actuators here! Example:
-            var exampleRoom = this.CreateRoom(Room.ExampleRoom)
+            var exampleRoom = this.CreateRoom(RoomId.ExampleRoom)
                 .WithTemperatureSensor(ExampleRoom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(5))
                 .WithHumiditySensor(ExampleRoom.HumiditySensor, dht22Accessor.GetHumiditySensor(5))
                 .WithMotionDetector(ExampleRoom.MotionDetector, hspe16.GetInput(8))

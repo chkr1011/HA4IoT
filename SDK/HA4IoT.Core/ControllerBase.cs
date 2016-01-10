@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
@@ -21,9 +20,9 @@ namespace HA4IoT.Core
 {
     public abstract class ControllerBase : IController
     {
-        private readonly Dictionary<DeviceId, IDevice> _devices = new Dictionary<DeviceId, IDevice>();
-        private readonly Dictionary<RoomId, IRoom> _rooms = new Dictionary<RoomId, IRoom>();
-        private readonly Dictionary<ActuatorId, IActuator> _actuators = new Dictionary<ActuatorId, IActuator>();
+        private readonly RoomCollection _rooms = new RoomCollection();
+        private readonly ActuatorCollection _actuators = new ActuatorCollection();
+        private readonly DeviceCollection _devices = new DeviceCollection();
 
         private HealthMonitor _healthMonitor;
         private BackgroundTaskDeferral _deferral;
@@ -33,9 +32,7 @@ namespace HA4IoT.Core
         public IHttpRequestController HttpApiController { get; private set; }
         public IHomeAutomationTimer Timer { get; private set; }
         public IWeatherStation WeatherStation { get; private set; }
-
-        ////public Dictionary<ActuatorId, IActuator> Actuators { get; } = new Dictionary<ActuatorId, IActuator>();
-
+        
         public void RunAsync(IBackgroundTaskInstance taskInstance)
         {
             if (taskInstance == null) throw new ArgumentNullException(nameof(taskInstance));
@@ -43,66 +40,35 @@ namespace HA4IoT.Core
             _deferral = taskInstance.GetDeferral();
             Task.Factory.StartNew(InitializeCore, TaskCreationOptions.LongRunning);
         }
-
-        public IRoom Room(RoomId id)
-        {
-            if (id == null) throw new ArgumentNullException(nameof(id));
-
-            IRoom room;
-            if (!_rooms.TryGetValue(id, out room))
-            {
-                throw new InvalidOperationException("Room with ID '" + id + "' is not registered.");
-            }
-
-            return room;
-        }
-
+        
         public void AddRoom(IRoom room)
         {
-            if (room == null) throw new ArgumentNullException(nameof(room));
-
-            if (_rooms.ContainsKey(room.Id))
-            {
-                throw new InvalidOperationException("Room with ID '" + room.Id + "' aready registered.");
-            }
-
-            _rooms.Add(room.Id, room);
+            _rooms.Add(room);
         }
 
         public IRoom GetRoom(RoomId id)
         {
-            if (id == null) throw new ArgumentNullException(nameof(id));
-
             return _rooms[id];
         }
 
         public IList<IRoom> GetRooms()
         {
-            return _rooms.Values.ToList();
+            return _rooms.GetAll();
         }
 
         public void AddActuator(IActuator actuator)
         {
-            if (actuator == null) throw new ArgumentNullException(nameof(actuator));
-
-            _actuators.Add(actuator.Id, actuator);
+            _actuators.Add(actuator);
         }
 
         public IList<IActuator> GetActuators()
         {
-            return _actuators.Values.ToList();
+            return _actuators.GetAll();
         }
 
         public void AddDevice(IDevice device)
         {
-            if (device == null) throw new ArgumentNullException(nameof(device));
-
-            if (_devices.ContainsKey(device.Id))
-            {
-                throw new InvalidOperationException("Device with ID '" + device.Id + "' aready registered.");
-            }
-
-            _devices.Add(device.Id, device);
+            _devices.Add(device);
         }
 
         public TDevice GetDevice<TDevice>(Enum id) where TDevice : IDevice
@@ -112,31 +78,12 @@ namespace HA4IoT.Core
 
         public TDevice GetDevice<TDevice>(DeviceId id) where TDevice : IDevice
         {
-            if (id == null) throw new ArgumentNullException(nameof(id));
-
-            IDevice device;
-            if (!_devices.TryGetValue(id, out device))
-            {
-                throw new InvalidOperationException("Device with ID '" + id + "' not registered.");    
-            }
-
-            if (!(device is TDevice))
-            {
-                string message = string.Format(
-                    "Device with ID '{0}' is registered but no '{1}' (is '{2}').",
-                    id,
-                    typeof (TDevice).Name,
-                    device.GetType().Name);
-
-                throw new InvalidOperationException(message);
-            }
-
-            return (TDevice)device;
+            return _devices.Get<TDevice>(id);
         }
 
         public IList<TDevice> GetDevices<TDevice>() where TDevice : IDevice
         {
-            return _devices.Values.OfType<TDevice>().ToList();
+            return _devices.GetAll<TDevice>();
         }
 
         protected void PublishStatisticsNotification()

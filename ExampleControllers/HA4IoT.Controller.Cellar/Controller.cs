@@ -24,7 +24,7 @@ namespace HA4IoT.Controller.Cellar
             CellarHSRT16
         }
 
-        private enum Room
+        private enum RoomId
         {
             Garden
         }
@@ -59,7 +59,7 @@ namespace HA4IoT.Controller.Cellar
             var ccToolsFactory = new CCToolsBoardController(this, i2cBus, HttpApiController, Logger);
             var hsrt16 = ccToolsFactory.CreateHSRT16(Device.CellarHSRT16, new I2CSlaveAddress(32));
             
-            var garden = this.CreateRoom(Room.Garden)
+            var garden = this.CreateRoom(RoomId.Garden)
                 .WithLamp(Garden.LampTerrace, hsrt16[HSRT16Pin.Relay15])
                 .WithLamp(Garden.LampGarage, hsrt16[HSRT16Pin.Relay14])
                 .WithLamp(Garden.LampTap, hsrt16[HSRT16Pin.Relay13])
