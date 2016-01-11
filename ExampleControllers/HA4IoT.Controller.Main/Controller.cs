@@ -40,7 +40,7 @@ namespace HA4IoT.Controller.Main
             
             var configurationParser = new ConfigurationParser(this);
             configurationParser.RegisterConfigurationExtender(new CCToolsConfigurationExtender(this));
-            configurationParser.TryParseConfiguration();
+            configurationParser.ParseConfiguration();
             
             ccToolsBoardController.CreateHSPE16InputOnly(Device.Input0, new I2CSlaveAddress(42));
             ccToolsBoardController.CreateHSPE16InputOnly(Device.Input1, new I2CSlaveAddress(43));

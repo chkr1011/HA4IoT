@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Configuration Version="1" xmlns:CCTools="http://www.ha4iot.de/ConfigurationExtenders/CCTools">
+<Configuration Version="1" xmlns:CCTools="http://www.ha4iot.de/ConfigurationExtenders/CCTools" xmlns:Test="http://www.ha4iot.de/ConfigurationExtenders/Test">
 
   <Devices>
-    <I2CBus id="II2CBus.default" useCache="true" mode="StandardMode" />
+    <Test:I2CBus id="II2CBus.default" />
 
     <!-- Shared input devices -->
     <CCTools:HSPE16_InputOnly id="Input0" i2cAddress="42" i2cBus="II2CBus.default" />

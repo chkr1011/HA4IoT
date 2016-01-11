@@ -28,10 +28,10 @@ namespace HA4IoT.Core
         private BackgroundTaskDeferral _deferral;
         private HttpServer _httpServer;
 
-        public INotificationHandler Logger { get; private set; }
-        public IHttpRequestController HttpApiController { get; private set; }
-        public IHomeAutomationTimer Timer { get; private set; }
-        public IWeatherStation WeatherStation { get; private set; }
+        public INotificationHandler Logger { get; protected set; }
+        public IHttpRequestController HttpApiController { get; protected set; }
+        public IHomeAutomationTimer Timer { get; protected set; }
+        public IWeatherStation WeatherStation { get; protected set; }
         
         public void RunAsync(IBackgroundTaskInstance taskInstance)
         {

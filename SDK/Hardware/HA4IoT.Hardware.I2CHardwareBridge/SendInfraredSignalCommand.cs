@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Windows.Devices.I2c;
+using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Hardware.I2CHardwareBridge
 {
@@ -44,7 +44,7 @@ namespace HA4IoT.Hardware.I2CHardwareBridge
             return this;
         }
 
-        public override void Execute(I2cDevice i2CDevice)
+        public override void Execute(II2CDevice i2CDevice)
         {
             i2CDevice.Write(GenerateClearSignalCachePackage());
 

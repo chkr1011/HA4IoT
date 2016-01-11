@@ -136,6 +136,7 @@
     <Compile Include="Core\TimedAction.cs" />
     <Compile Include="Core\TimerTickEventArgs.cs" />
     <Compile Include="Hardware\DeviceIdExtensions.cs" />
+    <Compile Include="Hardware\II2CDevice.cs" />
     <Compile Include="Hardware\IDevice.cs" />
     <Compile Include="Hardware\DeviceId.cs" />
     <Compile Include="WeatherStation\IWeatherStation.cs" />
@@ -167,11 +168,6 @@
     <Compile Include="WeatherStation\WeatherSituation.cs" />
     <Compile Include="WeatherStation\WeatherSituationSensorValueChangedEventArgs.cs" />
     <Content Include="Properties\HA4IoT.Contracts.rd.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <SDKReference Include="WindowsIoT, Version=10.0.10240.0">
-      <Name>Windows IoT Extensions for the UWP</Name>
-    </SDKReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HA4IoT.Networking\HA4IoT.Networking.csproj">

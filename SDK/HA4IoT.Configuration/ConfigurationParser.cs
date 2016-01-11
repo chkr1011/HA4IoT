@@ -22,7 +22,7 @@ namespace HA4IoT.Configuration
 
             _controller = controller;
 
-            RegisterConfigurationExtender(new DefaultConfigurationExtender());
+            RegisterConfigurationExtender(new DefaultConfigurationExtender(controller));
         }
 
         public void RegisterConfigurationExtender(IConfigurationExtender configurationExtender)
@@ -32,41 +32,33 @@ namespace HA4IoT.Configuration
             _configurationExtenders.Add(configurationExtender.Namespace, configurationExtender);
         }
 
-        public bool TryParseConfiguration()
+        public void ParseConfiguration(XDocument configuration)
         {
-            if (!TryLoadConfiguration())
-            {
-                return false;
-            }
+            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+
+            _configuration = configuration;
 
             ParseDevices();
             ParseRooms();
-
-            return true;
         }
 
-        private bool TryLoadConfiguration()
+        public void ParseConfiguration()
+        {
+            var configuration = LoadConfiguration();
+            ParseConfiguration(configuration);
+        }
+
+        private XDocument LoadConfiguration()
         {
             string filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Configuration.xml");
             if (!File.Exists(filename))
             {
                 _controller.Logger.Info("Skipped loading XML configuration because file '{0}' does not exist.", filename);
-                return false;
             }
 
-            try
+            using (var fileStream = File.OpenRead(filename))
             {
-                using (var fileStream = File.OpenRead(filename))
-                {
-                    _configuration = XDocument.Load(fileStream);
-                }
-
-                return true;
-            }
-            catch (Exception exception)
-            {
-                _controller.Logger.Error(exception, "Error while loading XML configuration.");
-                return false;
+                return XDocument.Load(fileStream);
             }
         }
 
@@ -92,7 +84,7 @@ namespace HA4IoT.Configuration
             IConfigurationExtender extender;
             if (!_configurationExtenders.TryGetValue(element.Name.NamespaceName, out extender))
             {
-                throw new InvalidOperationException("");
+                throw new InvalidOperationException("No configuration extender found for element with namespace '" + element.Name.NamespaceName + "'.");
             }
 
             return extender;

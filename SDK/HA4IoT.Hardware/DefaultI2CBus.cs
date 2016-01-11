@@ -38,7 +38,7 @@ namespace HA4IoT.Hardware
 
         public DeviceId Id { get; }
 
-        public void Execute(I2CSlaveAddress address, Action<I2cDevice> action, bool useCache = true)
+        public void Execute(I2CSlaveAddress address, Action<II2CDevice> action, bool useCache = true)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
 
@@ -48,7 +48,7 @@ namespace HA4IoT.Hardware
                 try
                 {
                     device = GetI2CDevice(address.Value, useCache);
-                    action(device);
+                    action(new I2CDeviceWrapper(device));
                 }
                 catch (Exception exception)
                 {

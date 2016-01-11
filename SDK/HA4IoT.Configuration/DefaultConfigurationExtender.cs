@@ -1,17 +1,38 @@
-﻿using System.Xml.Linq;
+﻿using System;
+using System.Xml.Linq;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Hardware;
 
 namespace HA4IoT.Configuration
 {
     public class DefaultConfigurationExtender : IConfigurationExtender
     {
-        public string Namespace { get; } = "http://www.ha4iot.de/ConfigurationExtenders/Default";
+        private readonly IController _controller;
+        public string Namespace { get; } = string.Empty;
+
+        public DefaultConfigurationExtender(IController controller)
+        {
+            if (controller == null) throw new ArgumentNullException(nameof(controller));
+
+            _controller = controller;
+        }
 
         public IDevice ParseDevice(XElement element)
         {
-            throw new System.NotImplementedException();
+            switch (element.Name.LocalName)
+            {
+                case "I2CBus": return ParseI2CBus(element);
+
+                default: throw new ConfigurationInvalidException("Device not supported.", element);
+            }
+        }
+
+        private IDevice ParseI2CBus(XElement element)
+        {
+            return new DefaultI2CBus(new DeviceId(element.GetMandatoryValueFromAttribute("id")), _controller.Logger);
         }
 
         public IBinaryOutput ParseBinaryOutput(XElement element)

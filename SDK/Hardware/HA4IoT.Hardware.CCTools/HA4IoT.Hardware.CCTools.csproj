@@ -135,11 +135,6 @@
     <Content Include="Properties\HA4IoT.Hardware.CCTools.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <SDKReference Include="WindowsIoT, Version=10.0.10240.0">
-      <Name>Windows IoT Extensions for the UWP</Name>
-    </SDKReference>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\HA4IoT.Configuration\HA4IoT.Configuration.csproj">
       <Project>{f9d92ea6-3763-47f5-9efd-6d83804c95e6}</Project>
       <Name>HA4IoT.Configuration</Name>
