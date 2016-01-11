@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-using System.Xml.Linq;
-using FluentAssertions;
+﻿using FluentAssertions;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -8,7 +6,7 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 namespace HA4IoT.Configuration.Tests
 {
     [TestClass]
-    public class ConfigurationParserDevicesTests
+    public class ConfigurationParserCCToolsDevicesTests
     {
         [TestMethod]
         public void Parse_CCToolsDevices()
@@ -21,6 +19,7 @@ namespace HA4IoT.Configuration.Tests
             parser.ParseConfiguration(TestConfiguration.GetConfiguration());
 
             controller.GetDevices<HSREL5>().Count.ShouldBeEquivalentTo(1);
+            controller.GetDevices<HSREL8>().Count.ShouldBeEquivalentTo(1);
         }
     }
 }

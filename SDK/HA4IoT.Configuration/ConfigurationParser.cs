@@ -6,6 +6,7 @@ using Windows.Storage;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Core;
 
 namespace HA4IoT.Configuration
 {
@@ -79,6 +80,36 @@ namespace HA4IoT.Configuration
             }
         }
 
+        private void ParseWeatherStation()
+        {
+            
+        }
+
+        private void ParseRooms()
+        {
+            var roomsElement = _configuration.Root.Element("Rooms");
+            foreach (XElement roomElement in roomsElement.Elements())
+            {
+                try
+                {
+                    _controller.AddRoom(ParseRoom(roomElement));
+                }
+                catch (Exception exception)
+                {
+                    _controller.Logger.Warning(exception, "Unable to parse room node '{0}'.", roomElement.Name);
+                }
+            }
+        }
+
+        private IRoom ParseRoom(XElement roomElement)
+        {
+            var room = new Room(new RoomId(roomElement.GetMandatoryValueFromAttribute("id")), _controller);
+
+            // TODO: Parse actuators.
+
+            return room;
+        }
+
         private IConfigurationExtender GetConfigurationExtender(XElement element)
         {
             IConfigurationExtender extender;
@@ -88,16 +119,6 @@ namespace HA4IoT.Configuration
             }
 
             return extender;
-        }
-
-        private void ParseWeatherStation()
-        {
-            
-        }
-
-        private void ParseRooms()
-        {
-            
         }
     }
 }
