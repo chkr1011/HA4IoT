@@ -51,6 +51,7 @@ namespace HA4IoT.Configuration
             if (!File.Exists(filename))
             {
                 _controller.Logger.Info("Skipped loading XML configuration because file '{0}' does not exist.", filename);
+                return false;
             }
 
             try

@@ -7,7 +7,7 @@ namespace HA4IoT.Configuration
 {
     public class DefaultConfigurationExtender : IConfigurationExtender
     {
-        public string Namespace { get; }
+        public string Namespace { get; } = "http://www.ha4iot.de/ConfigurationExtenders/Default";
 
         public IDevice ParseDevice(XElement element)
         {

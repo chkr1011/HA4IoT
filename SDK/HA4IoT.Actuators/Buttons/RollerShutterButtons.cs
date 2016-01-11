@@ -1,10 +1,8 @@
 ﻿using System;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Notifications;
-using HA4IoT.Core.Timer;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
@@ -17,8 +15,8 @@ namespace HA4IoT.Actuators
             if (upInput == null) throw new ArgumentNullException(nameof(upInput));
             if (downInput == null) throw new ArgumentNullException(nameof(downInput));
 
-            Up = new Button(ActuatorIdFactory.Create(id + "-up"), upInput, api, logger, timer);
-            Down = new Button(ActuatorIdFactory.Create(id + "-down"), downInput, api, logger, timer);
+            Up = new Button(new ActuatorId(id + "-up"), upInput, api, logger, timer);
+            Down = new Button(new ActuatorId(id + "-down"), downInput, api, logger, timer);
         }
 
         public IButton Up { get; }
