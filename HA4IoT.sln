@@ -71,7 +71,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Configurator", "App\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Configuration", "SDK\HA4IoT.Configuration\HA4IoT.Configuration.csproj", "{F9D92EA6-3763-47F5-9EFD-6D83804C95E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Configuration.Tests", "HA4IoT.Configuration.Tests\HA4IoT.Configuration.Tests.csproj", "{01200BFE-8207-4EE1-84A4-8D09B044B3C9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Configuration.Tests", "SDK\HA4IoT.Configuration.Tests\HA4IoT.Configuration.Tests.csproj", "{01200BFE-8207-4EE1-84A4-8D09B044B3C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
