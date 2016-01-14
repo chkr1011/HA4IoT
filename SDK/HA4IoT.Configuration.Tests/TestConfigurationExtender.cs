@@ -15,7 +15,7 @@ namespace HA4IoT.Configuration.Tests
         {
             switch (element.Name.LocalName)
             {
-                case "I2CBus": return new TestI2CBus(new DeviceId(element.GetMandatoryValueFromAttribute("id")));
+                case "I2CBus": return new TestI2CBus(new DeviceId(element.GetMandatoryStringFromAttribute("id")));
 
                 default: throw new ConfigurationInvalidException("Device not supported.", element);
             }
@@ -31,7 +31,7 @@ namespace HA4IoT.Configuration.Tests
             throw new NotImplementedException();
         }
 
-        public IActuator ParseActuatorNode(XElement element)
+        public IActuator ParseActuator(XElement element)
         {
             throw new NotImplementedException();
         }

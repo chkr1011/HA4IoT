@@ -120,7 +120,7 @@ namespace HA4IoT.Controller.Main
                 double lon = configuration.GetNamedNumber("lon");
                 string appId = configuration.GetNamedString("appID");
 
-                var weatherStation = new OWMWeatherStation(lat, lon, appId, Timer, HttpApiController, Logger);
+                var weatherStation = new OWMWeatherStation(DeviceId.From(Device.WeatherStation), lat, lon, appId, Timer, HttpApiController, Logger);
                 Logger.Info("WeatherStation initialized successfully.");
                 return weatherStation;
             }

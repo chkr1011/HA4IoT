@@ -8,6 +8,7 @@ namespace HA4IoT.Tests.Mockups
         {
             Logger = new TestNotificationHandler();
             HttpApiController = new TestHttpRequestController();
+            Timer = new TestHomeAutomationTimer();
         }
     }
 }

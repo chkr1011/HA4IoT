@@ -3,7 +3,8 @@
 
   <Devices>
     <Test:I2CBus id="II2CBus.default" />
-
+    <OWMWeatherStation id="WeatherStation" appId="ABC123" lat="51.518080" lon="6.531836" />
+    
     <!-- Shared input devices -->
     <CCTools:HSPE16_InputOnly id="Input0" i2cAddress="42" i2cBus="II2CBus.default" />
     <CCTools:HSPE16_InputOnly id="Input1" i2cAddress="43" />
@@ -17,10 +18,6 @@
 
     <I2CHardwareBridge i2cAddress="50"></I2CHardwareBridge>
   </Devices>
-
-  <WeatherStation>
-    <OWMWeatherStation appID="" lat="" lot="" />
-  </WeatherStation>
 
   <Rooms>
     <Room id="Bedroom">

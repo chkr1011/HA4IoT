@@ -3,11 +3,13 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Data.Json;
+using Windows.Media.Devices;
 using Windows.Storage;
 using Windows.Web.Http;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Networking;
@@ -28,8 +30,9 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
         private TimeSpan _sunrise;
         private TimeSpan _sunset;
         
-        public OWMWeatherStation(double lat, double lon, string appId, IHomeAutomationTimer timer, IHttpRequestController httpApiController, INotificationHandler logger)
+        public OWMWeatherStation(DeviceId id, double lat, double lon, string appId, IHomeAutomationTimer timer, IHttpRequestController httpApiController, INotificationHandler logger)
         {
+            if (id == null) throw new ArgumentNullException(nameof(id));
             if (timer == null) throw new ArgumentNullException(nameof(timer));
             if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
@@ -43,6 +46,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             _situation = new WeatherStationSituationSensor();
             SituationSensor = _situation;
 
+            Id = id;
             _logger = logger;
             _weatherDataSourceUrl = new Uri(string.Format("http://api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}&APPID={2}&units=metric", lat, lon, appId));
 
@@ -53,6 +57,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             timer.Every(TimeSpan.FromMinutes(2.5)).Do(Update);
         }
 
+        public DeviceId Id { get; }
         public Daylight Daylight => new Daylight(_sunrise, _sunset);
         public ITemperatureSensor TemperatureSensor { get; }
         public IHumiditySensor HumiditySensor { get; }

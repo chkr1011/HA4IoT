@@ -103,7 +103,7 @@ namespace HA4IoT.Configuration
 
         private IRoom ParseRoom(XElement roomElement)
         {
-            var room = new Room(new RoomId(roomElement.GetMandatoryValueFromAttribute("id")), _controller);
+            var room = new Room(new RoomId(roomElement.GetMandatoryStringFromAttribute("id")), _controller);
 
             // TODO: Parse actuators.
 

@@ -2,6 +2,8 @@
 {
     internal enum Device
     {
+        WeatherStation,
+
         Input0,
         Input1,
         Input2,

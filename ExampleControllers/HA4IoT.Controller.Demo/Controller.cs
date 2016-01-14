@@ -62,6 +62,7 @@ namespace HA4IoT.Controller.Demo
 
         private enum Device
         {
+            WeatherStation,
             HSPE16,
             HSRel8,
             HSRel5
@@ -192,7 +193,7 @@ namespace HA4IoT.Controller.Demo
                 double lon = configuration.GetNamedNumber("lon");
                 string appId = configuration.GetNamedString("appID");
 
-                var weatherStation = new OWMWeatherStation(lat, lon, appId, Timer, HttpApiController, Logger);
+                var weatherStation = new OWMWeatherStation(DeviceId.From(Device.WeatherStation), lat, lon, appId, Timer, HttpApiController, Logger);
                 Logger.Info("WeatherStation initialized successfully");
 
                 return weatherStation;

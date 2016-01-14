@@ -7,7 +7,7 @@ namespace HA4IoT.Configuration.Tests
     {
         public static XDocument GetConfiguration()
         {
-            using (var stream = typeof(ConfigurationParserCCToolsDevicesTests).GetTypeInfo().Assembly.GetManifestResourceStream("HA4IoT.Configuration.Tests.Configuration.xml"))
+            using (var stream = typeof(ConfigurationParserTests).GetTypeInfo().Assembly.GetManifestResourceStream("HA4IoT.Configuration.Tests.Configuration.xml"))
             {
                 return XDocument.Load(stream);
             }

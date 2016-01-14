@@ -14,7 +14,7 @@ namespace HA4IoT.Contracts.Configuration
 
         IBinaryInput ParseBinaryInput(XElement element);
 
-        IActuator ParseActuatorNode(XElement element);
+        IActuator ParseActuator(XElement element);
 
         void OnConfigurationParsed();
 
