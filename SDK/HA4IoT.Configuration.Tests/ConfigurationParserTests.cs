@@ -7,6 +7,7 @@ using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Hardware.CCTools;
+using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -104,13 +105,32 @@ namespace HA4IoT.Configuration.Tests
             controller.Room(new RoomId("Bedroom")).Actuator<Window>(new ActuatorId("Bedroom.WindowLeft"));
         }
 
+        [TestMethod]
+        public void Parse_TemperatureSensor()
+        {
+            var controller = GetController();
+
+            // TODO: Check parameters (expose properties).
+            controller.Room(new RoomId("Bedroom")).Actuator<TemperatureSensor>(new ActuatorId("Bedroom.TemperatureSensor"));
+        }
+
+        [TestMethod]
+        public void Parse_HumiditySensor()
+        {
+            var controller = GetController();
+
+            // TODO: Check parameters (expose properties).
+            controller.Room(new RoomId("Bedroom")).Actuator<HumiditySensor>(new ActuatorId("Bedroom.HumiditySensor"));
+        }
         private IController GetController()
         {
             var controller = new TestController();
 
             var parser = new ConfigurationParser(controller);
-            parser.RegisterConfigurationExtender(new TestConfigurationExtender());
+            parser.RegisterConfigurationExtender(new TestConfigurationExtender(parser, controller));
             parser.RegisterConfigurationExtender(new CCToolsConfigurationExtender(parser, controller));
+            parser.RegisterConfigurationExtender(new I2CHardwareBridgeConfigurationExtender(parser, controller));
+
             parser.ParseConfiguration(TestConfiguration.GetConfiguration());
 
             return controller;

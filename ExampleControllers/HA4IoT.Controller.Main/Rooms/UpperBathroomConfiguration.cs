@@ -5,7 +5,7 @@ using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core;
 using HA4IoT.Hardware.CCTools;
-using HA4IoT.Hardware.DHT22;
+using HA4IoT.Hardware.I2CHardwareBridge;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
@@ -39,16 +39,18 @@ namespace HA4IoT.Controller.Main.Rooms
             _controller = controller;
 
             _hsrel5 = ccToolsController.CreateHSREL5(Device.UpperBathroomHSREL5, new I2CSlaveAddress(61));
-            _input5 = controller.GetDevice<HSPE16InputOnly>(Device.Input5);
+            _input5 = controller.Device<HSPE16InputOnly>(Device.Input5);
         }
 
-        public void Setup(DHT22Accessor dht22Accessor)
+        public void Setup()
         {
             const int SensorPin = 4;
 
+            var i2cHardwareBridge = _controller.Device<I2CHardwareBridge>();
+
             var bathroom = _controller.CreateRoom(Room.UpperBathroom)
-                .WithTemperatureSensor(UpperBathroom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorPin))
-                .WithHumiditySensor(UpperBathroom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorPin))
+                .WithTemperatureSensor(UpperBathroom.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
+                .WithHumiditySensor(UpperBathroom.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
                 .WithMotionDetector(UpperBathroom.MotionDetector, _input5.GetInput(15))
                 .WithLamp(UpperBathroom.LightCeilingDoor, _hsrel5.GetOutput(0))
                 .WithLamp(UpperBathroom.LightCeilingEdge, _hsrel5.GetOutput(1))

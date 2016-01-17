@@ -10,7 +10,6 @@ using HA4IoT.Controller.Main.Rooms;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
-using HA4IoT.Hardware.DHT22;
 using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.Hardware.OpenWeatherMapWeatherStation;
 using HA4IoT.Hardware.Pi2;
@@ -33,8 +32,7 @@ namespace HA4IoT.Controller.Main
 
             InitializeWeatherStation(CreateWeatherStation());
 
-            var i2CHardwareBridge = new I2CHardwareBridge(new I2CSlaveAddress(50), i2CBus);
-            var sensorBridgeDriver = new DHT22Accessor(i2CHardwareBridge, Timer);
+            AddDevice(new I2CHardwareBridge(new DeviceId("HB"), new I2CSlaveAddress(50), i2CBus, Timer));
 
             var ccToolsBoardController = new CCToolsBoardController(this, i2CBus, HttpApiController, Logger);
             
@@ -49,18 +47,18 @@ namespace HA4IoT.Controller.Main
             ccToolsBoardController.CreateHSPE16InputOnly(Main.Device.Input4, new I2CSlaveAddress(46));
             ccToolsBoardController.CreateHSPE16InputOnly(Main.Device.Input5, new I2CSlaveAddress(44));
 
-            RemoteSocketController remoteSwitchController = SetupRemoteSwitchController(i2CHardwareBridge);
+            RemoteSocketController remoteSwitchController = SetupRemoteSwitchController();
             
-            new BedroomConfiguration(this, ccToolsBoardController).Setup(sensorBridgeDriver);
-            new OfficeConfiguration().Setup(this, ccToolsBoardController, sensorBridgeDriver, remoteSwitchController);
-            new UpperBathroomConfiguration(this, ccToolsBoardController).Setup(sensorBridgeDriver);
-            new ReadingRoomConfiguration().Setup(this, ccToolsBoardController, sensorBridgeDriver);
-            new ChildrensRoomRoomConfiguration().Setup(this, ccToolsBoardController, sensorBridgeDriver);
-            new KitchenConfiguration().Setup(this, ccToolsBoardController, sensorBridgeDriver);
-            new FloorConfiguration().Setup(this, ccToolsBoardController, sensorBridgeDriver);
-            new LowerBathroomConfiguration().Setup(this, ccToolsBoardController, sensorBridgeDriver);
+            new BedroomConfiguration(this, ccToolsBoardController).Setup();
+            new OfficeConfiguration().Setup(this, ccToolsBoardController, remoteSwitchController);
+            new UpperBathroomConfiguration(this, ccToolsBoardController).Setup();
+            new ReadingRoomConfiguration().Setup(this, ccToolsBoardController);
+            new ChildrensRoomRoomConfiguration().Setup(this, ccToolsBoardController);
+            new KitchenConfiguration().Setup(this, ccToolsBoardController);
+            new FloorConfiguration().Setup(this, ccToolsBoardController);
+            new LowerBathroomConfiguration().Setup(this);
             new StoreroomConfiguration().Setup(this, ccToolsBoardController);
-            new LivingRoomConfiguration().Setup(this, ccToolsBoardController, sensorBridgeDriver);
+            new LivingRoomConfiguration().Setup(this, ccToolsBoardController);
 
             PublishStatisticsNotification();
 
@@ -76,12 +74,13 @@ namespace HA4IoT.Controller.Main
             ioBoardsInterruptMonitor.InterruptDetected += (s, e) => ccToolsBoardController.PollInputBoardStates();
         }
 
-        private RemoteSocketController SetupRemoteSwitchController(I2CHardwareBridge i2CHardwareBridge)
+        private RemoteSocketController SetupRemoteSwitchController()
         {
             const int LDP433MhzSenderPin = 10;
 
+            var i2cHardwareBridge = Device<I2CHardwareBridge>();
             var bc = new BrennenstuhlCodeSequenceProvider();
-            var ldp433MHzSender = new LPD433MHzSignalSender(i2CHardwareBridge, LDP433MhzSenderPin, HttpApiController);
+            var ldp433MHzSender = new LPD433MHzSignalSender(i2cHardwareBridge, LDP433MhzSenderPin, HttpApiController);
 
             var remoteSwitchController = new RemoteSocketController(new DeviceId("RemoteSocketController"),  ldp433MHzSender, Timer)
                 .WithRemoteSocket(0, bc.GetSequence(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A, RemoteSocketCommand.TurnOn), bc.GetSequence(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A, RemoteSocketCommand.TurnOff));

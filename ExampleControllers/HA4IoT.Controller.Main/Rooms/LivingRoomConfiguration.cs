@@ -3,7 +3,7 @@ using HA4IoT.Actuators.Connectors;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core;
 using HA4IoT.Hardware.CCTools;
-using HA4IoT.Hardware.DHT22;
+using HA4IoT.Hardware.I2CHardwareBridge;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
@@ -43,19 +43,21 @@ namespace HA4IoT.Controller.Main.Rooms
             WindowRight,
         }
 
-        public void Setup(Controller controller, CCToolsBoardController ccToolsController, DHT22Accessor dht22Accessor)
+        public void Setup(Controller controller, CCToolsBoardController ccToolsController)
         {
             var hsrel8 = ccToolsController.CreateHSREL8(Device.LivingRoomHSREL8, new I2CSlaveAddress(18));
             var hsrel5 = ccToolsController.CreateHSREL5(Device.LivingRoomHSREL5, new I2CSlaveAddress(57));
             
-            var input0 = controller.GetDevice<HSPE16InputOnly>(Device.Input0);
-            var input1 = controller.GetDevice<HSPE16InputOnly>(Device.Input1);
+            var input0 = controller.Device<HSPE16InputOnly>(Device.Input0);
+            var input1 = controller.Device<HSPE16InputOnly>(Device.Input1);
+
+            var i2cHardwareBridge = controller.Device<I2CHardwareBridge>();
 
             const int SensorPin = 12;
 
             var livingRoom = controller.CreateRoom(Room.LivingRoom)
-                .WithTemperatureSensor(LivingRoom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorPin))
-                .WithHumiditySensor(LivingRoom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorPin))
+                .WithTemperatureSensor(LivingRoom.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
+                .WithHumiditySensor(LivingRoom.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
                 .WithLamp(LivingRoom.LampCouch, hsrel8.GetOutput(8).WithInvertedState())
                 .WithLamp(LivingRoom.LampDiningTable, hsrel8.GetOutput(9).WithInvertedState())
                 .WithSocket(LivingRoom.SocketWindowLeftLower, hsrel8.GetOutput(1))

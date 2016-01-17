@@ -71,7 +71,7 @@ namespace HA4IoT.Core
             _devices.Add(device);
         }
 
-        public TDevice GetDevice<TDevice>(Enum id) where TDevice : IDevice
+        public TDevice Device<TDevice>(Enum id) where TDevice : IDevice
         {
             return Device<TDevice>(new DeviceId(id.ToString()));
         }
@@ -79,6 +79,11 @@ namespace HA4IoT.Core
         public TDevice Device<TDevice>(DeviceId id) where TDevice : IDevice
         {
             return _devices.Get<TDevice>(id);
+        }
+
+        public TDevice Device<TDevice>() where TDevice : IDevice
+        {
+            return _devices.Get<TDevice>();
         }
 
         public IList<TDevice> Devices<TDevice>() where TDevice : IDevice

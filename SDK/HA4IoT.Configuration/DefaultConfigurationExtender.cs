@@ -10,7 +10,7 @@ using HA4IoT.Hardware.OpenWeatherMapWeatherStation;
 
 namespace HA4IoT.Configuration
 {
-    public class DefaultConfigurationExtender : ConfigurationExtenderBase, IConfigurationExtender
+    public class DefaultConfigurationExtender : ConfigurationExtenderBase
     {
         public DefaultConfigurationExtender(ConfigurationParser parser, IController controller) : base(parser, controller)
         {
@@ -20,7 +20,7 @@ namespace HA4IoT.Configuration
             Namespace = string.Empty;
         }
 
-        public IDevice ParseDevice(XElement element)
+        public override IDevice ParseDevice(XElement element)
         {
             switch (element.Name.LocalName)
             {
@@ -31,7 +31,7 @@ namespace HA4IoT.Configuration
             }
         }
 
-        public IActuator ParseActuator(XElement element)
+        public override IActuator ParseActuator(XElement element)
         {
             switch (element.Name.LocalName)
             {
@@ -42,27 +42,11 @@ namespace HA4IoT.Configuration
                 case "RollerShutter": return ParseRollerShutter(element);
                 case "RollerShutterButtons": return ParseRollerShutterButtons(element);
                 case "Window": return ParseWindow(element);
+                case "TemperatureSensor": return ParseTemperatureSensor(element);
+                case "HumiditySensor": return ParseHumiditySensor(element);
 
                 default: throw new ConfigurationInvalidException("Actuator not supported.", element);
             }
-        }
-
-        public IBinaryInput ParseBinaryInput(XElement element)
-        {
-            throw new NotSupportedException("Default configuration extender does not support any binary inputs.");
-        }
-
-        public IBinaryOutput ParseBinaryOutput(XElement element)
-        {
-            throw new NotSupportedException("Default configuration extender does not support any binary outputs.");
-        }
-
-        public void OnConfigurationParsed()
-        {
-        }
-
-        public void OnInitializationFromCodeCompleted()
-        {            
         }
 
         private IDevice ParseI2CBus(XElement element)
@@ -197,6 +181,28 @@ namespace HA4IoT.Configuration
             
             var casement = new Casement(element.GetStringFromAttribute("id", defaultId), fullOpenInput, tiltInput);
             return casement;
+        }
+
+        private IActuator ParseHumiditySensor(XElement element)
+        {
+            ISingleValueSensor sensor = Parser.ParseSingleValueSensor(element.GetMandatorySingleChildElementOrFromContainer("Sensor"));
+
+            return new HumiditySensor(
+                new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
+                sensor,
+                Controller.HttpApiController,
+                Controller.Logger);
+        }
+
+        private IActuator ParseTemperatureSensor(XElement element)
+        {
+            ISingleValueSensor sensor = Parser.ParseSingleValueSensor(element.GetMandatorySingleChildElementOrFromContainer("Sensor"));
+
+            return new TemperatureSensor(
+                new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
+                sensor,
+                Controller.HttpApiController,
+                Controller.Logger);
         }
     }
 }

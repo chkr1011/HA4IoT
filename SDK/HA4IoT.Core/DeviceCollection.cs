@@ -21,6 +21,11 @@ namespace HA4IoT.Core
             _devices.Add(device.Id, device);
         }
 
+        public TDevice Get<TDevice>() where TDevice : IDevice
+        {
+            return (TDevice)_devices.Values.Single(d => d is TDevice);
+        }
+
         public TDevice Get<TDevice>(DeviceId id) where TDevice : IDevice
         {
             if (id == null) throw new ArgumentNullException(nameof(id));

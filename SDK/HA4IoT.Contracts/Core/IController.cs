@@ -19,6 +19,8 @@ namespace HA4IoT.Contracts.Core
 
         TDevice Device<TDevice>(DeviceId id) where TDevice : IDevice;
 
+        TDevice Device<TDevice>() where TDevice : IDevice;
+
         IList<TDevice> Devices<TDevice>() where TDevice : IDevice;
 
         void AddRoom(IRoom room);

@@ -151,10 +151,6 @@
       <Project>{B0A7EF01-9382-422C-81AF-C90DC5A7AFFD}</Project>
       <Name>HA4IoT.Hardware.CCTools</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.DHT22\HA4IoT.Hardware.DHT22.csproj">
-      <Project>{C838FE97-95A5-4D11-8F4E-19257B1D062A}</Project>
-      <Name>HA4IoT.Hardware.DHT22</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.I2CHardwareBridge\HA4IoT.Hardware.I2CHardwareBridge.csproj">
       <Project>{8BF16E28-A01D-47E9-A5C4-CC93E347AAF4}</Project>
       <Name>HA4IoT.Hardware.I2CHardwareBridge</Name>

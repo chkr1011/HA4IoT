@@ -11,7 +11,6 @@ using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
-using HA4IoT.Hardware.DHT22;
 using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.Hardware.OpenWeatherMapWeatherStation;
 using HA4IoT.Hardware.Pi2;
@@ -86,9 +85,8 @@ namespace HA4IoT.Controller.Demo
             var hsrel5 = ccToolsBoardController.CreateHSREL5(Device.HSRel5, new I2CSlaveAddress(56));
 
             // Setup the remote switch 433Mhz sender which is attached to the I2C bus (Arduino Nano).
-            var i2CHardwareBridge = new I2CHardwareBridge(I2CHardwareBridgeAddress, i2CBus);
+            var i2CHardwareBridge = new I2CHardwareBridge(new DeviceId("HB"),  I2CHardwareBridgeAddress, i2CBus, Timer);
             var remoteSwitchSender = new LPD433MHzSignalSender(i2CHardwareBridge, I2CHardwareBridge433MHzSenderPin, HttpApiController);
-            var dht22Accessor = new DHT22Accessor(i2CHardwareBridge, Timer);
 
             // Setup the controller which creates ports for wireless sockets (433Mhz).
             var ic = new IntertechnoCodeSequenceProvider();
@@ -100,8 +98,8 @@ namespace HA4IoT.Controller.Demo
 
             // Add new rooms with actuators here! Example:
             var exampleRoom = this.CreateRoom(RoomId.ExampleRoom)
-                .WithTemperatureSensor(ExampleRoom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(5))
-                .WithHumiditySensor(ExampleRoom.HumiditySensor, dht22Accessor.GetHumiditySensor(5))
+                .WithTemperatureSensor(ExampleRoom.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(5))
+                .WithHumiditySensor(ExampleRoom.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(5))
                 .WithMotionDetector(ExampleRoom.MotionDetector, hspe16.GetInput(8))
                 .WithWindow(ExampleRoom.Window, w => w.WithCenterCasement(hspe16.GetInput(0)))
                 .WithLamp(ExampleRoom.Lamp1, remoteSwitchController.GetOutput(0))
@@ -160,7 +158,7 @@ namespace HA4IoT.Controller.Demo
 
         private void SetupCeilingFan(StateMachine stateMachine)
         {
-            var relayBoard = GetDevice<HSREL5>(Device.HSRel5);
+            var relayBoard = Device<HSREL5>(Device.HSRel5);
             var gear1 = relayBoard.GetOutput(2);
             var gear2 = relayBoard.GetOutput(1);
 

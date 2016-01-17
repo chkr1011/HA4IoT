@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Core.Timer;
-using HA4IoT.Hardware.I2CHardwareBridge;
 
-namespace HA4IoT.Hardware.DHT22
+namespace HA4IoT.Hardware.I2CHardwareBridge
 {
     public class DHT22Accessor
     {
-        private readonly I2CHardwareBridge.I2CHardwareBridge _i2CHardwareBridge;
+        private readonly Hardware.I2CHardwareBridge.I2CHardwareBridge _i2CHardwareBridge;
 
         private readonly HashSet<byte> _openPins = new HashSet<byte>();
         private readonly Dictionary<byte, float> _humidities = new Dictionary<byte, float>();
         private readonly Dictionary<byte, float> _temperatures = new Dictionary<byte, float>();
         
-        public DHT22Accessor(I2CHardwareBridge.I2CHardwareBridge i2CHardwareBridge, IHomeAutomationTimer timer)
+        public DHT22Accessor(Hardware.I2CHardwareBridge.I2CHardwareBridge i2CHardwareBridge, IHomeAutomationTimer timer)
         {
             if (i2CHardwareBridge == null) throw new ArgumentNullException(nameof(i2CHardwareBridge));
             if (timer == null) throw new ArgumentNullException(nameof(timer));

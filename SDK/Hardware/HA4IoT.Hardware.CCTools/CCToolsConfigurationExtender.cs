@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Xml.Linq;
 using HA4IoT.Configuration;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Hardware.CCTools
 {
-    public class CCToolsConfigurationExtender : ConfigurationExtenderBase, IConfigurationExtender
+    public class CCToolsConfigurationExtender : ConfigurationExtenderBase
     {
         public CCToolsConfigurationExtender(ConfigurationParser parser, IController controller) 
             : base(parser, controller)
@@ -16,14 +15,14 @@ namespace HA4IoT.Hardware.CCTools
             Namespace = "http://www.ha4iot.de/ConfigurationExtenders/CCTools";
         }
 
-        public IDevice ParseDevice(XElement element)
+        public override IDevice ParseDevice(XElement element)
         {
             if (element == null) throw new ArgumentNullException(nameof(element));
 
             switch (element.Name.LocalName)
             {
                 case "HSPE16InputOnly": return ParseHSPE16InputOnly(element);
-                case "HSPE16OutputOnly": return ParseHSPE16InputOnly(element);
+                case "HSPE16OutputOnly": return ParseHSPE16OutputOnly(element);
 
                 case "HSPE8InputOnly": return ParseHSPE8InputOnly(element);
                 case "HSPE8OutputOnly": return ParseHSPE8OutputOnly(element);
@@ -37,12 +36,7 @@ namespace HA4IoT.Hardware.CCTools
             }
         }
 
-        public IActuator ParseActuator(XElement element)
-        {
-            throw new NotSupportedException("The CCTools configuration extender does not supporty any actuators.");
-        }
-
-        public IBinaryInput ParseBinaryInput(XElement element)
+        public override IBinaryInput ParseBinaryInput(XElement element)
         {
             if (element == null) throw new ArgumentNullException(nameof(element));
 
@@ -64,7 +58,7 @@ namespace HA4IoT.Hardware.CCTools
             throw new ConfigurationInvalidException("CCTools device '" + device.GetType().FullName + "' is no input device.", element);
         }
 
-        public IBinaryOutput ParseBinaryOutput(XElement element)
+        public override IBinaryOutput ParseBinaryOutput(XElement element)
         {
             if (element == null) throw new ArgumentNullException(nameof(element));
 
@@ -102,14 +96,6 @@ namespace HA4IoT.Hardware.CCTools
             }
 
             throw new ConfigurationInvalidException("CCTools device '" + device.GetType().FullName + "' is no input device.", element);
-        }
-
-        public void OnConfigurationParsed()
-        {
-        }
-
-        public void OnInitializationFromCodeCompleted()
-        {
         }
 
         private HSREL5 ParseHSRel5(XElement element)

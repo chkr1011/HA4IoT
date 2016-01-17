@@ -27,8 +27,8 @@ namespace HA4IoT.Controller.Main.Rooms
             var hsrel8LowerHeatingValves = ccToolsController.CreateHSREL8(Device.LowerHeatingValvesHSREL8, new I2CSlaveAddress(16));
             var hsrel5UpperHeatingValves = ccToolsController.CreateHSREL5(Device.UpperHeatingValvesHSREL5, new I2CSlaveAddress(56));
 
-            var hsrel5Stairway = controller.GetDevice<HSREL5>(Device.StairwayHSREL5);
-            var input3 = controller.GetDevice<HSPE16InputOnly>(Device.Input3);
+            var hsrel5Stairway = controller.Device<HSREL5>(Device.StairwayHSREL5);
+            var input3 = controller.Device<HSPE16InputOnly>(Device.Input3);
 
             var storeroom = controller.CreateRoom(Room.Storeroom)
                 .WithMotionDetector(Storeroom.MotionDetector, input3.GetInput(12))

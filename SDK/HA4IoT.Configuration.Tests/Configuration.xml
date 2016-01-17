@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Configuration Version="1" xmlns:CCTools="http://www.ha4iot.de/ConfigurationExtenders/CCTools" xmlns:Test="http://www.ha4iot.de/ConfigurationExtenders/Test">
+<Configuration Version="1" 
+               xmlns:CCTools="http://www.ha4iot.de/ConfigurationExtenders/CCTools" 
+               xmlns:I2CHardwareBridge="http://www.ha4iot.de/ConfigurationExtenders/I2CHardwareBridge"
+               xmlns:Test="http://www.ha4iot.de/ConfigurationExtenders/Test">
 
   <Devices>
     <Test:I2CBus id="II2CBus.default" />
@@ -16,14 +19,19 @@
     <CCTools:HSRel5 id="Bedroom.HSRel5" i2cAddress="38" />
     <CCTools:HSRel8 id="Bedroom.HSRel8" i2cAddress="21" />
 
-    <I2CHardwareBridge i2cAddress="50"></I2CHardwareBridge>
+    <I2CHardwareBridge:I2CHardwareBridge id="I2CHardwareBridge" i2cAddress="50" />
   </Devices>
 
   <Rooms>
     <Room id="Bedroom">
       <Actuators>
-        <TemperatureSensor id="Bedroom.TemperatureSensor"></TemperatureSensor>
-        <HumiditySensor id="Bedroom.WithHumiditySensor"></HumiditySensor>
+        <TemperatureSensor id="Bedroom.TemperatureSensor">
+          <I2CHardwareBridge:TemperatureSensor i2cHardwareBridgeDeviceId="I2CHardwareBridge" sensorId="6" />
+        </TemperatureSensor>
+        
+        <HumiditySensor id="Bedroom.HumiditySensor">
+          <I2CHardwareBridge:HumiditySensor i2cHardwareBridgeDeviceId="I2CHardwareBridge" sensorId="6" />
+        </HumiditySensor>
 
         <MotionDetector id="Bedroom.MotionDetector">
           <CCTools:BinaryInput deviceId="Input5" port="GPIO12" />

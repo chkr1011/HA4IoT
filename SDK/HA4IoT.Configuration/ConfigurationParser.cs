@@ -62,6 +62,11 @@ namespace HA4IoT.Configuration
             return GetConfigurationExtender(element).ParseBinaryOutput(element);
         }
 
+        public ISingleValueSensor ParseSingleValueSensor(XElement element)
+        {
+            return GetConfigurationExtender(element).ParseSingleValueSensor(element);
+        }
+
         private XDocument LoadConfiguration()
         {
             string filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Configuration.xml");

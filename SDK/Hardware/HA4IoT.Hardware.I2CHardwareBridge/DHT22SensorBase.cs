@@ -1,7 +1,7 @@
 ﻿using System;
 using HA4IoT.Contracts.Hardware;
 
-namespace HA4IoT.Hardware.DHT22
+namespace HA4IoT.Hardware.I2CHardwareBridge
 {
     public abstract class DHT22SensorBase : ISingleValueSensor
     {

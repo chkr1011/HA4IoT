@@ -1,4 +1,4 @@
-﻿namespace HA4IoT.Hardware.DHT22
+﻿namespace HA4IoT.Hardware.I2CHardwareBridge
 {
     public class DHT22TemperatureSensor : DHT22SensorBase
     {
