@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Xml.Linq;
+using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
@@ -9,16 +10,14 @@ using HA4IoT.Hardware.OpenWeatherMapWeatherStation;
 
 namespace HA4IoT.Configuration
 {
-    public class DefaultConfigurationExtender : IConfigurationExtender
+    public class DefaultConfigurationExtender : ConfigurationExtenderBase, IConfigurationExtender
     {
-        private readonly IController _controller;
-        public string Namespace { get; } = string.Empty;
-
-        public DefaultConfigurationExtender(IController controller)
+        public DefaultConfigurationExtender(ConfigurationParser parser, IController controller) : base(parser, controller)
         {
+            if (parser == null) throw new ArgumentNullException(nameof(parser));
             if (controller == null) throw new ArgumentNullException(nameof(controller));
 
-            _controller = controller;
+            Namespace = string.Empty;
         }
 
         public IDevice ParseDevice(XElement element)
@@ -32,56 +31,43 @@ namespace HA4IoT.Configuration
             }
         }
 
-        public IBinaryOutput ParseBinaryOutput(XElement element)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public IBinaryInput ParseBinaryInput(XElement element)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public IActuator ParseActuator(XElement element)
         {
             switch (element.Name.LocalName)
             {
+                case "BinaryStateOutputActuator": return ParseBinaryStateOutputActuator(element); 
                 case "Lamp": return ParseLamp(element);
                 case "Socket": return ParseSocket(element);
                 case "Button": return ParseButton(element);
+                case "RollerShutter": return ParseRollerShutter(element);
+                case "RollerShutterButtons": return ParseRollerShutterButtons(element);
+                case "Window": return ParseWindow(element);
 
                 default: throw new ConfigurationInvalidException("Actuator not supported.", element);
             }
         }
 
-        private IActuator ParseButton(XElement element)
+        public IBinaryInput ParseBinaryInput(XElement element)
         {
-            return null;
+            throw new NotSupportedException("Default configuration extender does not support any binary inputs.");
         }
 
-        private IActuator ParseSocket(XElement element)
+        public IBinaryOutput ParseBinaryOutput(XElement element)
         {
-            return null;
-        }
-
-        private IActuator ParseLamp(XElement element)
-        {
-            return null;
+            throw new NotSupportedException("Default configuration extender does not support any binary outputs.");
         }
 
         public void OnConfigurationParsed()
         {
-            throw new System.NotImplementedException();
         }
 
         public void OnInitializationFromCodeCompleted()
-        {
-            throw new System.NotImplementedException();
+        {            
         }
 
         private IDevice ParseI2CBus(XElement element)
         {
-            return new DefaultI2CBus(new DeviceId(element.GetMandatoryStringFromAttribute("id")), _controller.Logger);
+            return new DefaultI2CBus(new DeviceId(element.GetMandatoryStringFromAttribute("id")), Controller.Logger);
         }
 
         private IDevice ParseWeatherStation(XElement element)
@@ -91,9 +77,126 @@ namespace HA4IoT.Configuration
                 element.GetMandatoryDoubleFromAttribute("lat"),
                 element.GetMandatoryDoubleFromAttribute("lon"),
                 element.GetMandatoryStringFromAttribute("appId"),
-                _controller.Timer,
-                _controller.HttpApiController,
-                _controller.Logger);
+                Controller.Timer,
+                Controller.HttpApiController,
+                Controller.Logger);
+        }
+
+        private IActuator ParseBinaryStateOutputActuator(XElement element)
+        {
+            IBinaryOutput output = Parser.ParseBinaryOutput(element.GetMandatorySingleChildElementOrFromContainer("Output"));
+
+            return new BinaryStateOutputActuator(
+                new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
+                output,
+                Controller.HttpApiController,
+                Controller.Logger);
+        }
+
+        private IActuator ParseButton(XElement element)
+        {
+            IBinaryInput input = Parser.ParseBinaryInput(element.GetMandatorySingleChildElementOrFromContainer("Input"));
+
+            return new Button(
+                new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
+                input,
+                Controller.HttpApiController,
+                Controller.Logger,
+                Controller.Timer);
+        }
+
+        private IActuator ParseSocket(XElement element)
+        {
+            IBinaryOutput output = Parser.ParseBinaryOutput(element.GetMandatorySingleChildElementOrFromContainer("Output"));
+
+            return new Socket(
+                new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
+                output,
+                Controller.HttpApiController,
+                Controller.Logger);
+        }
+
+        private IActuator ParseLamp(XElement element)
+        {
+            IBinaryOutput output = Parser.ParseBinaryOutput(element.GetMandatorySingleChildElementOrFromContainer("Output"));
+
+            return new Lamp(
+                new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
+                output,
+                Controller.HttpApiController,
+                Controller.Logger);
+        }
+
+        private IActuator ParseRollerShutter(XElement element)
+        {
+            IBinaryOutput powerOutput = Parser.ParseBinaryOutput(element.GetMandatorySingleChildFromContainer("Power"));
+            IBinaryOutput directionOutput = Parser.ParseBinaryOutput(element.GetMandatorySingleChildFromContainer("Direction"));
+
+            return new RollerShutter(
+                new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
+                powerOutput,
+                directionOutput,
+                element.GetTimeSpanFromAttribute("autoOffTimeout", TimeSpan.FromSeconds(22)),
+                element.GetIntFromAttribute("maxPosition", 20000),
+                Controller.HttpApiController,
+                Controller.Logger,
+                Controller.Timer);
+        }
+
+        private IActuator ParseRollerShutterButtons(XElement element)
+        {
+            IBinaryInput upInput = Parser.ParseBinaryInput(element.GetMandatorySingleChildFromContainer("Up"));
+            IBinaryInput downInput = Parser.ParseBinaryInput(element.GetMandatorySingleChildFromContainer("Down"));
+
+            return new RollerShutterButtons(
+                new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
+                upInput,
+                downInput,
+                Controller.HttpApiController,
+                Controller.Logger,
+                Controller.Timer);
+        }
+
+        private IActuator ParseWindow(XElement element)
+        {
+            var window = new Window(
+                new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
+                Controller.HttpApiController,
+                Controller.Logger);
+
+            var leftCasementElement = element.Element("LeftCasement");
+            if (leftCasementElement != null)
+            {
+                window.WithCasement(ParseCasement(leftCasementElement, Casement.LeftCasementId));
+            }
+
+            var centerCasementElement = element.Element("CenterCasement");
+            if (centerCasementElement != null)
+            {
+                window.WithCasement(ParseCasement(centerCasementElement, Casement.CenterCasementId));
+            }
+
+            var rightCasementElement = element.Element("RightCasement");
+            if (rightCasementElement != null)
+            {
+                window.WithCasement(ParseCasement(rightCasementElement, Casement.RightCasementId));
+            }
+
+            return window;
+        }
+
+        private Casement ParseCasement(XElement element, string defaultId)
+        {
+            IBinaryInput fullOpenInput = Parser.ParseBinaryInput(element.GetMandatorySingleChildFromContainer("FullOpen"));
+
+            IBinaryInput tiltInput = null;
+            if (element.HasChildElement("Tilt"))
+            {
+                tiltInput = Parser.ParseBinaryInput(element.GetMandatorySingleChildFromContainer("Tilt"));
+            }
+            
+            var casement = new Casement(element.GetStringFromAttribute("id", defaultId), fullOpenInput, tiltInput);
+            return casement;
         }
     }
 }

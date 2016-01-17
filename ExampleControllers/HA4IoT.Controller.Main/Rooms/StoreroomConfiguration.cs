@@ -50,8 +50,8 @@ namespace HA4IoT.Controller.Main.Rooms
 
             // TODO: Create RoomIdFactory like ActuatorIdFactory.
             storeroom.SetupAutomaticTurnOnAndOffAutomation()
-                .WithTrigger(controller.GetRoom(new RoomId(Room.Kitchen.ToString())).MotionDetector(KitchenConfiguration.Kitchen.MotionDetector))
-                .WithTrigger(controller.GetRoom(new RoomId(Room.LowerBathroom.ToString())).MotionDetector(LowerBathroomConfiguration.LowerBathroom.MotionDetector))
+                .WithTrigger(controller.Room(new RoomId(Room.Kitchen.ToString())).MotionDetector(KitchenConfiguration.Kitchen.MotionDetector))
+                .WithTrigger(controller.Room(new RoomId(Room.LowerBathroom.ToString())).MotionDetector(LowerBathroomConfiguration.LowerBathroom.MotionDetector))
                 .WithTarget(storeroom.Socket(Storeroom.CirculatingPump))
                 .WithPauseAfterEveryTurnOn(TimeSpan.FromHours(1))
                 .WithOnDuration(TimeSpan.FromMinutes(1))

@@ -17,18 +17,18 @@ namespace HA4IoT.Contracts.Core
 
         void AddDevice(IDevice device);
 
-        TDevice GetDevice<TDevice>(DeviceId id) where TDevice : IDevice;
+        TDevice Device<TDevice>(DeviceId id) where TDevice : IDevice;
 
-        IList<TDevice> GetDevices<TDevice>() where TDevice : IDevice;
+        IList<TDevice> Devices<TDevice>() where TDevice : IDevice;
 
         void AddRoom(IRoom room);
 
-        IRoom GetRoom(RoomId id);
+        IRoom Room(RoomId id);
 
-        IList<IRoom> GetRooms();
+        IList<IRoom> Rooms();
 
         void AddActuator(IActuator actuator);
 
-        IList<IActuator> GetActuators();
+        IList<IActuator> Actuators();
     }
 }

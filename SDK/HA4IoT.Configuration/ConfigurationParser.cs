@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
 using Windows.Storage;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
@@ -23,7 +24,7 @@ namespace HA4IoT.Configuration
 
             _controller = controller;
 
-            RegisterConfigurationExtender(new DefaultConfigurationExtender(controller));
+            RegisterConfigurationExtender(new DefaultConfigurationExtender(this, controller));
         }
 
         public void RegisterConfigurationExtender(IConfigurationExtender configurationExtender)
@@ -41,12 +42,24 @@ namespace HA4IoT.Configuration
 
             ParseDevices();
             ParseRooms();
+
+            TriggerOnConfigurationParsed();
         }
 
         public void ParseConfiguration()
         {
             var configuration = LoadConfiguration();
             ParseConfiguration(configuration);
+        }
+
+        public IBinaryInput ParseBinaryInput(XElement element)
+        {
+            return GetConfigurationExtender(element).ParseBinaryInput(element);
+        }
+
+        public IBinaryOutput ParseBinaryOutput(XElement element)
+        {
+            return GetConfigurationExtender(element).ParseBinaryOutput(element);
         }
 
         private XDocument LoadConfiguration()
@@ -80,11 +93,6 @@ namespace HA4IoT.Configuration
             }
         }
 
-        private void ParseWeatherStation()
-        {
-            
-        }
-
         private void ParseRooms()
         {
             var roomsElement = _configuration.Root.Element("Rooms");
@@ -105,7 +113,18 @@ namespace HA4IoT.Configuration
         {
             var room = new Room(new RoomId(roomElement.GetMandatoryStringFromAttribute("id")), _controller);
 
-            // TODO: Parse actuators.
+            foreach (var actuatorElement in roomElement.Element("Actuators").Elements())
+            {
+                try
+                {
+                    IActuator actuator = GetConfigurationExtender(actuatorElement).ParseActuator(actuatorElement);
+                    room.AddActuator(actuator);
+                }
+                catch (Exception exception)
+                {
+                    _controller.Logger.Warning(exception, "Unable to parse actuator node '{0}'.", actuatorElement.Name);
+                }
+            }
 
             return room;
         }
@@ -119,6 +138,14 @@ namespace HA4IoT.Configuration
             }
 
             return extender;
+        }
+
+        private void TriggerOnConfigurationParsed()
+        {
+            foreach (var configurationExtender in _configurationExtenders.Values)
+            {
+                configurationExtender.OnConfigurationParsed();
+            }
         }
     }
 }

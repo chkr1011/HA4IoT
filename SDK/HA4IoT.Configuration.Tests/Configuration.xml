@@ -6,15 +6,15 @@
     <OWMWeatherStation id="WeatherStation" appId="ABC123" lat="51.518080" lon="6.531836" />
     
     <!-- Shared input devices -->
-    <CCTools:HSPE16_InputOnly id="Input0" i2cAddress="42" i2cBus="II2CBus.default" />
-    <CCTools:HSPE16_InputOnly id="Input1" i2cAddress="43" />
-    <CCTools:HSPE16_InputOnly id="Input2" i2cAddress="47" />
-    <CCTools:HSPE16_InputOnly id="Input3" i2cAddress="45" />
-    <CCTools:HSPE16_InputOnly id="Input4" i2cAddress="46" />
-    <CCTools:HSPE16_InputOnly id="Input5" i2cAddress="44" />
+    <CCTools:HSPE16InputOnly id="Input0" i2cAddress="42" i2cBus="II2CBus.default" />
+    <CCTools:HSPE16InputOnly id="Input1" i2cAddress="43" />
+    <CCTools:HSPE16InputOnly id="Input2" i2cAddress="47" />
+    <CCTools:HSPE16InputOnly id="Input3" i2cAddress="45" />
+    <CCTools:HSPE16InputOnly id="Input4" i2cAddress="46" />
+    <CCTools:HSPE16InputOnly id="Input5" i2cAddress="44" />
 
-    <CCTools:HSRel5 id="LivingRoom.HSRel5" i2cAddress="38" />
-    <CCTools:HSRel8 id="LivingRoom.HSRel8" i2cAddress="21" />
+    <CCTools:HSRel5 id="Bedroom.HSRel5" i2cAddress="38" />
+    <CCTools:HSRel8 id="Bedroom.HSRel8" i2cAddress="21" />
 
     <I2CHardwareBridge i2cAddress="50"></I2CHardwareBridge>
   </Devices>
@@ -30,47 +30,47 @@
         </MotionDetector>
 
         <Lamp id="Bedroom.LightCeiling">
-          <CCTools:BinaryOutput deviceId="LivingRoom.HSRel5" port="GPIO0" invertState="true" />
+          <CCTools:BinaryOutput deviceId="Bedroom.HSRel5" port="GPIO0" invertState="true" />
         </Lamp>
 
         <Lamp id="Bedroom.LightCeilingWindow">
-          <CCTools:BinaryOutput deviceId="LivingRoom.HSRel5" port="GPIO1" invertState="true" />
+          <CCTools:BinaryOutput deviceId="Bedroom.HSRel5" port="GPIO1" invertState="true" />
         </Lamp>
 
         <Lamp id="Bedroom.LightCeilingWall">
-          <CCTools:BinaryOutput deviceId="LivingRoom.HSRel5" port="GPIO2" invertState="true" />
+          <CCTools:BinaryOutput deviceId="Bedroom.HSRel5" port="GPIO2" invertState="true" />
         </Lamp>
 
         <Socket id="Bedroom.SocketWindowLeft">
-          <CCTools:BinaryOutput deviceId="LivingRoom.HSRel5" port="Relay0" />
+          <CCTools:BinaryOutput deviceId="Bedroom.HSRel5" port="Relay0" />
         </Socket>
 
         <Socket id="Bedroom.SocketWindowRight">
-          <CCTools:BinaryOutput deviceId="LivingRoom.HSRel5" port="Relay1" />
+          <CCTools:BinaryOutput deviceId="Bedroom.HSRel5" port="Relay1" />
         </Socket>
 
         <Socket id="Bedroom.SocketWall">
-          <CCTools:BinaryOutput deviceId="LivingRoom.HSRel5" port="Relay2" />
+          <CCTools:BinaryOutput deviceId="Bedroom.HSRel5" port="Relay2" />
         </Socket>
 
         <Socket id="Bedroom.SocketWallEdge">
-          <CCTools:BinaryOutput deviceId="LivingRoom.HSRel5" port="Relay3" />
+          <CCTools:BinaryOutput deviceId="Bedroom.HSRel5" port="Relay3" />
         </Socket>
 
         <Socket id="Bedroom.SocketBedLeft">
-          <CCTools:BinaryOutput deviceId="LivingRoom.HSRel8" port="Relay7" />
+          <CCTools:BinaryOutput deviceId="Bedroom.HSRel8" port="Relay7" />
         </Socket>
 
         <Socket id="Bedroom.SocketBedRight">
-          <CCTools:BinaryOutput deviceId="LivingRoom.HSRel8" port="GPIO1" />
+          <CCTools:BinaryOutput deviceId="Bedroom.HSRel8" port="GPIO1" />
         </Socket>
 
         <Socket id="Bedroom.LampBedLeft">
-          <CCTools:BinaryOutput deviceId="LivingRoom.HSRel5" port="Relay4" />
+          <CCTools:BinaryOutput deviceId="Bedroom.HSRel5" port="Relay4" />
         </Socket>
 
         <Socket id="Bedroom.LampBedRight">
-          <CCTools:BinaryOutput deviceId="LivingRoom.HSRel8" port="GPIO0" invertState="true" />
+          <CCTools:BinaryOutput deviceId="Bedroom.HSRel8" port="GPIO0" invertState="true" />
         </Socket>
 
         <Button id="Bedroom.ButtonDoor">
@@ -102,62 +102,59 @@
         </Button>
 
         <RollerShutter id="Bedroom.RollerShutterLeft" autoOffTimeout="00:00:20" maxPosition="1700">
-          <PowerPort>
-            <CCTools:BinaryOutput deviceId="LivingRoom.HSRel8" port="Relay6" />
-          </PowerPort>
-          <DirectionPort>
-            <CCTools:BinaryOutput deviceId="LivingRoom.HSRel8" port="Relay5" />
-          </DirectionPort>
+          <Power>
+            <CCTools:BinaryOutput deviceId="Bedroom.HSRel8" port="Relay6" />
+          </Power>
+          <Direction>
+            <CCTools:BinaryOutput deviceId="Bedroom.HSRel8" port="Relay5" />
+          </Direction>
         </RollerShutter>
 
         <RollerShutter id="Bedroom.RollerShutterRight" autoOffTimeout="00:00:20" maxPosition="1700">
-          <PowerPort>
-            <CCTools:BinaryOutput deviceId="LivingRoom.HSRel8" port="Relay3" />
-          </PowerPort>
-          <DirectionPort>
-            <CCTools:BinaryOutput deviceId="LivingRoom.HSRel8" port="Relay4" />
-          </DirectionPort>
+          <Power>
+            <CCTools:BinaryOutput deviceId="Bedroom.HSRel8" port="Relay3" />
+          </Power>
+          <Direction>
+            <CCTools:BinaryOutput deviceId="Bedroom.HSRel8" port="Relay4" />
+          </Direction>
         </RollerShutter>
 
-        <RollerShutterButtons>
-          <UpPort>
+        <RollerShutterButtons id="Bedroom.RollerShutterButtonsUpper">
+          <Up>
             <CCTools:BinaryInput deviceId="Input5" port="GPIO6" />
-          </UpPort>
-          <DownPort>
+          </Up>
+          <Down>
             <CCTools:BinaryInput deviceId="Input5" port="GPIO7" />
-          </DownPort>
+          </Down>
         </RollerShutterButtons>
 
-        <RollerShutterButtons>
-          <UpPort>
+        <RollerShutterButtons id="Bedroom.RollerShutterButtonsLower">
+          <Up>
             <CCTools:BinaryInput deviceId="Input5" port="GPIO4" />
-          </UpPort>
-          <DownPort>
+          </Up>
+          <Down>
             <CCTools:BinaryInput deviceId="Input5" port="GPIO5" />
-          </DownPort>
+          </Down>
         </RollerShutterButtons>
 
         <Window id="Bedroom.WindowLeft">
           <CenterCasement>
-            <FullOpenPort>
+            <FullOpen>
               <CCTools:BinaryInput deviceId="Input5" port="GPIO2" />
-            </FullOpenPort>
+            </FullOpen>
 
-            <TiltPort>
-
-            </TiltPort>
+            <!--<Tilt>
+            </Tilt-->>
           </CenterCasement>
         </Window>
 
         <Window id="Bedroom.WindowRight">
           <CenterCasement>
-            <FullOpenPort>
+            <FullOpen>
               <CCTools:BinaryInput deviceId="Input5" port="GPIO3" />
-            </FullOpenPort>
-
-            <TiltPort>
-
-            </TiltPort>
+            </FullOpen>
+            <!--<Tilt>
+            </Tilt>-->
           </CenterCasement>
         </Window>
       </Actuators>

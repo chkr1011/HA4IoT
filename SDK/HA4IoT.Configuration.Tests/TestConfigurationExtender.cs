@@ -38,12 +38,10 @@ namespace HA4IoT.Configuration.Tests
 
         public void OnConfigurationParsed()
         {
-            throw new NotImplementedException();
         }
 
         public void OnInitializationFromCodeCompleted()
         {
-            throw new NotImplementedException();
         }
     }
 }

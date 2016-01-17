@@ -91,7 +91,7 @@ namespace HA4IoT.Hardware.CCTools
         {
             var stopwatch = Stopwatch.StartNew();
 
-            var inputDevices = _controller.GetDevices<CCToolsInputBoardBase>();
+            var inputDevices = _controller.Devices<CCToolsInputBoardBase>();
 
             foreach (var portExpanderController in inputDevices)
             {

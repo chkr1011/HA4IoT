@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Xml.Linq;
 using HA4IoT.Contracts.Configuration;
 
@@ -56,6 +57,11 @@ namespace HA4IoT.Configuration
             return GetGenericValueFromAttribute(element, attributeName, defaultValue, Convert.ToDouble);
         }
 
+        public static TimeSpan GetTimeSpanFromAttribute(this XElement element, string attributeName, TimeSpan defaultValue)
+        {
+            return GetGenericValueFromAttribute(element, attributeName, defaultValue, TimeSpan.Parse);
+        }
+
         public static string GetMandatoryStringFromAttribute(this XElement element, string attributeName)
         {
             if (element == null) throw new ArgumentNullException(nameof(element));
@@ -86,6 +92,54 @@ namespace HA4IoT.Configuration
             if (attributeName == null) throw new ArgumentNullException(nameof(attributeName));
 
             return element.GetMandatoryGenericValueFromAttribute(attributeName, Convert.ToDouble);
+        }
+
+        public static XElement GetMandatorySingleChildFromContainer(this XElement element, string containerElementName)
+        {
+            if (element == null) throw new ArgumentNullException(nameof(element));
+            if (containerElementName == null) throw new ArgumentNullException(nameof(containerElementName));
+
+            var containerElement = element.Element(containerElementName);
+            if (containerElement == null)
+            {
+                throw new ConfigurationInvalidException("Mandatory container element '" + containerElementName + "' missing.", element);
+            }
+
+            var childElements = containerElement.Elements().ToList();
+
+            if (childElements.Count == 0)
+            {
+                throw new ConfigurationInvalidException("Mandatory container element '" + containerElementName + "' is empty.", element);
+            }
+
+            if (childElements.Count > 1)
+            {
+                throw new ConfigurationInvalidException("Mandatory container element '" + containerElementName + "' contains more than one element.", element);
+            }
+
+            return childElements.First();
+        }
+
+        public static XElement GetMandatorySingleChildElementOrFromContainer(this XElement element, string containerElementName)
+        {
+            if (element == null) throw new ArgumentNullException(nameof(element));
+            if (containerElementName == null) throw new ArgumentNullException(nameof(containerElementName));
+
+            var childElements = element.Elements().ToList();
+            if (childElements.Count() == 1)
+            {
+                return childElements.First();
+            }
+
+            return element.GetMandatorySingleChildFromContainer(containerElementName);
+        }
+
+        public static bool HasChildElement(this XElement element, string childElementName)
+        {
+            if (element == null) throw new ArgumentNullException(nameof(element));
+            if (childElementName == null) throw new ArgumentNullException(nameof(childElementName));
+
+            return element.Element(childElementName) != null;
         }
     }
 }

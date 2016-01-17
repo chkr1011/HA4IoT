@@ -34,7 +34,7 @@ namespace HA4IoT.Core
             result.SetNamedValue("version", JsonValue.CreateNumberValue(1));
 
             var status = new JsonObject();
-            foreach (var actuator in _controller.GetActuators())
+            foreach (var actuator in _controller.Actuators())
             {
                 status.SetNamedValue(actuator.Id.Value, actuator.GetStatusForApi());
             }
@@ -80,7 +80,7 @@ namespace HA4IoT.Core
             configuration.SetNamedValue("version", JsonValue.CreateNumberValue(1));
 
             var rooms = new JsonObject();
-            foreach (var room in _controller.GetRooms())
+            foreach (var room in _controller.Rooms())
             {
                 rooms.SetNamedValue(room.Id.Value, GetRoomConfigurationAsJson(room));
             }
@@ -93,7 +93,7 @@ namespace HA4IoT.Core
         private JsonObject GetRoomConfigurationAsJson(IRoom room)
         {
             var actuators = new JsonObject();
-            foreach (var actuator in room.GetActuators())
+            foreach (var actuator in room.Actuators())
             {
                 actuators.SetNamedValue(actuator.Id.Value, actuator.GetConfigurationForApi());
             }

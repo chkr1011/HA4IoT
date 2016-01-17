@@ -13,15 +13,15 @@ namespace HA4IoT.Actuators
     {
         private bool _isEnabled = true;
 
-        protected ActuatorBase(ActuatorId id, IHttpRequestController api, INotificationHandler logger)
+        protected ActuatorBase(ActuatorId id, IHttpRequestController httpApi, INotificationHandler logger)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
-            if (api == null) throw new ArgumentNullException(nameof(api));
+            if (httpApi == null) throw new ArgumentNullException(nameof(httpApi));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
 
             Id = id;
             Logger = logger;
-            Api = api;
+            HttpApi = httpApi;
 
             string configurationFilename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Actuators", id.Value, "Configuration.json"); ;
             Configuration = new PersistedConfiguration(configurationFilename, logger);
@@ -53,7 +53,7 @@ namespace HA4IoT.Actuators
 
         protected INotificationHandler Logger { get; }
 
-        protected IHttpRequestController Api { get; }
+        protected IHttpRequestController HttpApi { get; }
 
         public PersistedConfiguration Configuration { get; }
 
@@ -100,9 +100,9 @@ namespace HA4IoT.Actuators
 
         private void ExposeToApi()
         {
-            Api.Handle(HttpMethod.Post, "configuration").WithSegment(Id.Value).Using(HandleApiConfigurationPost);
+            HttpApi.Handle(HttpMethod.Post, "configuration").WithSegment(Id.Value).Using(HandleApiConfigurationPost);
 
-            Api.Handle(HttpMethod.Post, "actuator")
+            HttpApi.Handle(HttpMethod.Post, "actuator")
                 .WithSegment(Id.Value)
                 .WithRequiredJsonBody()
                 .Using(c =>
@@ -120,7 +120,7 @@ namespace HA4IoT.Actuators
                     c.Response.Body = new JsonBody(context.Response);
                 });
 
-            Api.Handle(HttpMethod.Get, "actuator")
+            HttpApi.Handle(HttpMethod.Get, "actuator")
                 .WithSegment(Id.Value)
                 .Using(c =>
                 {

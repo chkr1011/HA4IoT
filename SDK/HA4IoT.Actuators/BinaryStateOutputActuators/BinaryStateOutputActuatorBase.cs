@@ -1,6 +1,5 @@
 ﻿using System;
 using Windows.Data.Json;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Networking;
@@ -9,8 +8,8 @@ namespace HA4IoT.Actuators
 {
     public abstract class BinaryStateOutputActuatorBase : ActuatorBase, IBinaryStateOutputActuator
     {
-        protected BinaryStateOutputActuatorBase(ActuatorId id, IHttpRequestController request,
-            INotificationHandler logger) : base(id, request, logger)
+        protected BinaryStateOutputActuatorBase(ActuatorId id, IHttpRequestController httpApi, INotificationHandler logger) 
+            : base(id, httpApi, logger)
         {
         }
 

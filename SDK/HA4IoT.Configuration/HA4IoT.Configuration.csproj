@@ -111,6 +111,7 @@
     <Compile Include="ConfigurationExtensions.cs" />
     <Compile Include="ConfigurationParser.cs" />
     <Compile Include="DefaultConfigurationExtender.cs" />
+    <Compile Include="Pi2ConfigurationExtender.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.Configuration.rd.xml" />
   </ItemGroup>

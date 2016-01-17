@@ -116,7 +116,9 @@
     <None Include="HA4IoT.Configuration.Tests_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Configuration.xml" />
+    <EmbeddedResource Include="Configuration.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <Content Include="Properties\UnitTestApp.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -127,6 +129,10 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\HA4IoT.Actuators\HA4IoT.Actuators.csproj">
+      <Project>{808abecf-d9c2-4ab2-95d8-eaf228b44576}</Project>
+      <Name>HA4IoT.Actuators</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Configuration\HA4IoT.Configuration.csproj">
       <Project>{F9D92EA6-3763-47F5-9EFD-6D83804C95E6}</Project>
       <Name>HA4IoT.Configuration</Name>

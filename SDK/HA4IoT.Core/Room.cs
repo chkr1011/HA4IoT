@@ -28,7 +28,7 @@ namespace HA4IoT.Core
             Controller.AddActuator(actuator);
         }
 
-        public IList<IActuator> GetActuators()
+        public IList<IActuator> Actuators()
         {
             return _actuators.GetAll();
         }

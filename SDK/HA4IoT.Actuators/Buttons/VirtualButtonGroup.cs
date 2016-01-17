@@ -26,7 +26,7 @@ namespace HA4IoT.Actuators
                 throw new InvalidOperationException("Button with id " + id + " already part of the button group.");
             }
 
-            var virtualButton = new VirtualButton(id, Api, Logger);
+            var virtualButton = new VirtualButton(id, HttpApi, Logger);
             initializer(virtualButton);
 
             _buttons.Add(id, virtualButton);

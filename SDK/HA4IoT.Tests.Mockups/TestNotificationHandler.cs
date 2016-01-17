@@ -1,58 +1,44 @@
 ﻿using System;
-using HA4IoT.Contracts;
+using System.Diagnostics;
 using HA4IoT.Contracts.Notifications;
-using HA4IoT.Notifications;
 
 namespace HA4IoT.Tests.Mockups
 {
     public class TestNotificationHandler : INotificationHandler
     {
         public void Publish(NotificationType type, string message, params object[] parameters)
-        {   
-        }
-
-        public void Publish<TSender>(TSender sender, NotificationType type, string message, params object[] parameters) where TSender : class
         {
+            Debug.WriteLine(type + ": " + string.Format(message, parameters));
         }
 
         public void Info(string message, params object[] parameters)
         {
-        }
-
-        public void Info(object sender, string message, params object[] parameters)
-        {
+            Publish(NotificationType.Info, message, parameters);
         }
 
         public void Warning(string message, params object[] parameters)
         {
+            Publish(NotificationType.Warning, message, parameters);
         }
 
         public void Warning(Exception exception, string message, params object[] parameters)
         {
-        }
-
-        public void Warning(object sender, string message, params object[] parameters)
-        {
+            Publish(NotificationType.Warning, message + "\r\n" + exception.Message, parameters);
         }
 
         public void Error(string message, params object[] parameters)
         {
+            Publish(NotificationType.Error, message, parameters);
         }
 
         public void Error(Exception exception, string message, params object[] parameters)
         {
-        }
-
-        public void Error(object sender, string message, params object[] parameters)
-        {
+            Publish(NotificationType.Error, message + "\r\n" + exception.Message, parameters);
         }
 
         public void Verbose(string message, params object[] parameters)
         {
-        }
-
-        public void Verbose(object sender, string message, params object[] parameters)
-        {
+            Publish(NotificationType.Verbose, message, parameters);
         }
     }
 }

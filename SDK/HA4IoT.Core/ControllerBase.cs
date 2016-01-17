@@ -46,12 +46,12 @@ namespace HA4IoT.Core
             _rooms.Add(room);
         }
 
-        public IRoom GetRoom(RoomId id)
+        public IRoom Room(RoomId id)
         {
             return _rooms[id];
         }
 
-        public IList<IRoom> GetRooms()
+        public IList<IRoom> Rooms()
         {
             return _rooms.GetAll();
         }
@@ -61,7 +61,7 @@ namespace HA4IoT.Core
             _actuators.Add(actuator);
         }
 
-        public IList<IActuator> GetActuators()
+        public IList<IActuator> Actuators()
         {
             return _actuators.GetAll();
         }
@@ -73,15 +73,15 @@ namespace HA4IoT.Core
 
         public TDevice GetDevice<TDevice>(Enum id) where TDevice : IDevice
         {
-            return GetDevice<TDevice>(new DeviceId(id.ToString()));
+            return Device<TDevice>(new DeviceId(id.ToString()));
         }
 
-        public TDevice GetDevice<TDevice>(DeviceId id) where TDevice : IDevice
+        public TDevice Device<TDevice>(DeviceId id) where TDevice : IDevice
         {
             return _devices.Get<TDevice>(id);
         }
 
-        public IList<TDevice> GetDevices<TDevice>() where TDevice : IDevice
+        public IList<TDevice> Devices<TDevice>() where TDevice : IDevice
         {
             return _devices.GetAll<TDevice>();
         }
@@ -92,12 +92,12 @@ namespace HA4IoT.Core
 
             var message = new StringBuilder();
             message.AppendLine("Controller statistics after initialization:");
-            message.AppendFormat("- Devices={0}", GetDevices<IDevice>().Count);
+            message.AppendFormat("- Devices={0}", Devices<IDevice>().Count);
             message.AppendLine();
 
-            foreach (var room in GetRooms())
+            foreach (var room in Rooms())
             {
-                var actuatorsCount = room.GetActuators().Count;
+                var actuatorsCount = room.Actuators().Count;
                 totalActuatorsCount += actuatorsCount;
 
                 message.AppendFormat("- Room '{0}', Actuators={1}", room.Id, actuatorsCount);

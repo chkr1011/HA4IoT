@@ -12,7 +12,7 @@ namespace HA4IoT.Contracts.Configuration
 
         void AddActuator(IActuator actuator);
 
-        IList<IActuator> GetActuators();
+        IList<IActuator> Actuators();
 
         TActuator Actuator<TActuator>(ActuatorId id) where TActuator : IActuator;
     }

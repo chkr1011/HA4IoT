@@ -39,15 +39,15 @@ namespace HA4IoT.Controller.Main
             var ccToolsBoardController = new CCToolsBoardController(this, i2CBus, HttpApiController, Logger);
             
             var configurationParser = new ConfigurationParser(this);
-            configurationParser.RegisterConfigurationExtender(new CCToolsConfigurationExtender(this));
+            configurationParser.RegisterConfigurationExtender(new CCToolsConfigurationExtender(configurationParser, this));
             configurationParser.ParseConfiguration();
             
-            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input0, new I2CSlaveAddress(42));
-            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input1, new I2CSlaveAddress(43));
-            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input2, new I2CSlaveAddress(47));
-            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input3, new I2CSlaveAddress(45));
-            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input4, new I2CSlaveAddress(46));
-            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input5, new I2CSlaveAddress(44));
+            ccToolsBoardController.CreateHSPE16InputOnly(Main.Device.Input0, new I2CSlaveAddress(42));
+            ccToolsBoardController.CreateHSPE16InputOnly(Main.Device.Input1, new I2CSlaveAddress(43));
+            ccToolsBoardController.CreateHSPE16InputOnly(Main.Device.Input2, new I2CSlaveAddress(47));
+            ccToolsBoardController.CreateHSPE16InputOnly(Main.Device.Input3, new I2CSlaveAddress(45));
+            ccToolsBoardController.CreateHSPE16InputOnly(Main.Device.Input4, new I2CSlaveAddress(46));
+            ccToolsBoardController.CreateHSPE16InputOnly(Main.Device.Input5, new I2CSlaveAddress(44));
 
             RemoteSocketController remoteSwitchController = SetupRemoteSwitchController(i2CHardwareBridge);
             
@@ -120,7 +120,7 @@ namespace HA4IoT.Controller.Main
                 double lon = configuration.GetNamedNumber("lon");
                 string appId = configuration.GetNamedString("appID");
 
-                var weatherStation = new OWMWeatherStation(DeviceId.From(Device.WeatherStation), lat, lon, appId, Timer, HttpApiController, Logger);
+                var weatherStation = new OWMWeatherStation(DeviceId.From(Main.Device.WeatherStation), lat, lon, appId, Timer, HttpApiController, Logger);
                 Logger.Info("WeatherStation initialized successfully.");
                 return weatherStation;
             }
