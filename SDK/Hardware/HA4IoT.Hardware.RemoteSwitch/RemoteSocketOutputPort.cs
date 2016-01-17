@@ -56,7 +56,7 @@ namespace HA4IoT.Hardware.RemoteSwitch
             }
         }
 
-        public IBinaryOutput WithInvertedState()
+        public IBinaryOutput WithInvertedState(bool value = true)
         {
             throw new NotSupportedException();
         }

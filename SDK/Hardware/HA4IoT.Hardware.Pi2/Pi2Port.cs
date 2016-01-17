@@ -21,9 +21,9 @@ namespace HA4IoT.Hardware.Pi2
 
         public event EventHandler<BinaryStateChangedEventArgs> StateChanged;
 
-        IBinaryInput IBinaryInput.WithInvertedState()
+        IBinaryInput IBinaryInput.WithInvertedState(bool value)
         {
-            _isStateInverted = true;
+            _isStateInverted = value;
             return this;
         }
 
@@ -67,9 +67,9 @@ namespace HA4IoT.Hardware.Pi2
             }
         }
 
-        IBinaryOutput IBinaryOutput.WithInvertedState()
+        IBinaryOutput IBinaryOutput.WithInvertedState(bool value)
         {
-            _isStateInverted = true;
+            _isStateInverted = value;
             return this;
         }
 

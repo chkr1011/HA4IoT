@@ -54,12 +54,12 @@ namespace HA4IoT.Configuration
 
         public IBinaryInput ParseBinaryInput(XElement element)
         {
-            return GetConfigurationExtender(element).ParseBinaryInput(element);
+            return GetConfigurationExtender(element).ParseBinaryInput(element).WithInvertedState(element.GetBoolFromAttribute("invertState", false));
         }
 
         public IBinaryOutput ParseBinaryOutput(XElement element)
         {
-            return GetConfigurationExtender(element).ParseBinaryOutput(element);
+            return GetConfigurationExtender(element).ParseBinaryOutput(element).WithInvertedState(element.GetBoolFromAttribute("invertState", false));
         }
 
         public ISingleValueSensor ParseSingleValueSensor(XElement element)

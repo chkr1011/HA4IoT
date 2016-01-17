@@ -52,7 +52,7 @@ namespace HA4IoT.Hardware.CCTools
             var hspe8 = device as HSPE8InputOnly;
             if (hspe8 != null)
             {
-                return hspe8[(HSPE8Pin)Enum.Parse(typeof (HSPE8Pin), port)];
+                return hspe8[(HSPE8Pin) Enum.Parse(typeof (HSPE8Pin), port)];
             }
 
             throw new ConfigurationInvalidException("CCTools device '" + device.GetType().FullName + "' is no input device.", element);

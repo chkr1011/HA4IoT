@@ -36,9 +36,9 @@ namespace HA4IoT.Hardware
             return CoerceState(_state);
         }
 
-        public IBinaryOutput WithInvertedState()
+        public IBinaryOutput WithInvertedState(bool value = true)
         {
-            InvertValue = true;
+            InvertValue = value;
             return this;
         }
 
