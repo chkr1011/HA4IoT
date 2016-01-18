@@ -7,6 +7,7 @@ namespace HA4IoT.Hardware.Pi2
     public class Pi2Port : IBinaryOutput, IBinaryInput
     {
         private readonly object _syncRoot = new object();
+
         private bool _isStateInverted;
         private BinaryState _previousState;
 

@@ -48,7 +48,12 @@ namespace HA4IoT.Configuration
 
         public void ParseConfiguration()
         {
-            var configuration = LoadConfiguration();
+            XDocument configuration = LoadConfiguration();
+            if (configuration == null)
+            {
+                return;
+            }
+
             ParseConfiguration(configuration);
         }
 
@@ -73,6 +78,7 @@ namespace HA4IoT.Configuration
             if (!File.Exists(filename))
             {
                 _controller.Logger.Info("Skipped loading XML configuration because file '{0}' does not exist.", filename);
+                return null;
             }
 
             using (var fileStream = File.OpenRead(filename))

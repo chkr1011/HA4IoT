@@ -26,7 +26,7 @@ namespace HA4IoT.Hardware.CCTools
             return CoerceState(Board.GetPortState(Number));
         }
 
-        IBinaryInput IBinaryInput.WithInvertedState(bool value = true)
+        IBinaryInput IBinaryInput.WithInvertedState(bool value)
         {
             InvertValue = value;
             return this;
@@ -43,7 +43,7 @@ namespace HA4IoT.Hardware.CCTools
             }
         }
 
-        IBinaryOutput IBinaryOutput.WithInvertedState(bool value = true)
+        IBinaryOutput IBinaryOutput.WithInvertedState(bool value)
         {
             InvertValue = true;
             return this;

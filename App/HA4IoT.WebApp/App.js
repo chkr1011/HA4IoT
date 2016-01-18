@@ -148,7 +148,7 @@ function setupController() {
                       return;
                   }
 
-                  c.previousHash = data.hash;
+                  c.previousHash = data._hash;
                   console.log("Updating UI due to state changes");
 
                   $.each(data.status, function(id, state) {

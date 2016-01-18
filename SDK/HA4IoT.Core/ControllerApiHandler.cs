@@ -65,7 +65,7 @@ namespace HA4IoT.Core
                 }
             }
 
-            status.SetNamedValue("hash", hash.ToJsonValue());
+            status.SetNamedValue("_hash", hash.ToJsonValue());
 
             httpContext.Response.StatusCode = HttpStatusCode.OK;
             httpContext.Response.Headers.Add("ETag", hashWithQuotes);
