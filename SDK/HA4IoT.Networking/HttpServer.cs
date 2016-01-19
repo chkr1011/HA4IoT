@@ -185,11 +185,10 @@ namespace HA4IoT.Networking
                 IBuffer buffer = new Buffer(2048);
                 await client.InputStream.ReadAsync(buffer, buffer.Capacity, InputStreamOptions.Partial);
 
-                var binaryRequest = buffer.ToArray();
-                var requestText = Encoding.UTF8.GetString(binaryRequest, 0, binaryRequest.Length);
-
+                byte[] binaryRequest = buffer.ToArray();
+                
                 HttpRequest request;
-                new HttpRequestParser(requestText).TryParse(out request);
+                new HttpRequestParser().TryParse(binaryRequest, out request);
 
                 return request;
             }

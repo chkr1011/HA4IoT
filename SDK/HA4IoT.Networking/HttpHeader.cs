@@ -4,22 +4,19 @@ namespace HA4IoT.Networking
 {
     public class HttpHeader
     {
-        public string Name { get; set; }
+        public static HttpHeader Create(string name)
+        {
+            return new HttpHeader(name);
+        }
+
+        public HttpHeader(string name)
+        {
+            Name = name;
+        }
+
+        public string Name { get; private set; }
 
         public string Value { get; set; }
-
-        public static HttpHeader Create()
-        {
-            return new HttpHeader();
-        }
-
-        public HttpHeader WithName(string name)
-        {
-            if (name == null) throw new ArgumentNullException(nameof(name));
-
-            Name = name;
-            return this;
-        }
 
         public HttpHeader WithValue(string value)
         {
