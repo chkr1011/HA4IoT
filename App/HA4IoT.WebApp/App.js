@@ -144,7 +144,7 @@ function setupController() {
               $.ajax({ method: "GET", url: "/api/status", timeout: 2500 }).done(function (data) {
                   c.errorMessage = null;
 
-                  if (data.hash === c.previousHash) {
+                  if (data._hash === c.previousHash) {
                       return;
                   }
 
