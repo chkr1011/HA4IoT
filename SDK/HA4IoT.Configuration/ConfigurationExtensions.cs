@@ -70,6 +70,15 @@ namespace HA4IoT.Configuration
             return element.GetMandatoryGenericValueFromAttribute(attributeName, v => v);
         }
 
+        public static TEnum GetMandatoryEnumFromAttribute<TEnum>(this XElement element, string attributeName)
+        {
+            if (element == null) throw new ArgumentNullException(nameof(element));
+            if (attributeName == null) throw new ArgumentNullException(nameof(attributeName));
+
+            string value = element.GetMandatoryGenericValueFromAttribute(attributeName, v => v);
+            return (TEnum)Enum.Parse(typeof (TEnum), value, true);
+        }
+
         public static bool GetMandatoryBoolFromAttribute(this XElement element, string attributeName)
         {
             if (element == null) throw new ArgumentNullException(nameof(element));

@@ -44,6 +44,7 @@ namespace HA4IoT.Configuration
                 case "Window": return ParseWindow(element);
                 case "TemperatureSensor": return ParseTemperatureSensor(element);
                 case "HumiditySensor": return ParseHumiditySensor(element);
+                case "StateMachine": return ParseStateMachine(element);
 
                 default: throw new ConfigurationInvalidException("Actuator not supported.", element);
             }
@@ -203,6 +204,40 @@ namespace HA4IoT.Configuration
                 sensor,
                 Controller.HttpApiController,
                 Controller.Logger);
+        }
+
+        private IActuator ParseStateMachine(XElement element)
+        {
+            var id = new ActuatorId(element.GetMandatoryStringFromAttribute("id"));
+
+            var stateMachine = new StateMachine(id, Controller.HttpApiController, Controller.Logger);
+
+            foreach (var stateElement in element.Element("States").Elements("State"))
+            {
+                var stateId = stateElement.GetMandatoryStringFromAttribute("id");
+                var state = stateMachine.AddState(stateId);
+                
+                foreach (var lowPortElement in stateElement.Element("LowPorts").Elements())
+                {
+                    state.WithPort(Parser.ParseBinaryOutput(lowPortElement), BinaryState.Low);
+                }
+
+                foreach (var highPortElement in stateElement.Element("LowPorts").Elements())
+                {
+                    state.WithPort(Parser.ParseBinaryOutput(highPortElement), BinaryState.High);
+                }
+
+                foreach (var actuatorElement in stateElement.Element("Actuators").Elements())
+                {
+                    var targetState = actuatorElement.GetMandatoryEnumFromAttribute<BinaryActuatorState>("targetState");
+                    var actuatorId = new ActuatorId(actuatorElement.GetMandatoryStringFromAttribute("id"));
+                    var actuator = Controller.Actuator<IBinaryStateOutputActuator>(actuatorId);
+
+                    state.WithActuator(actuator, targetState);
+                }
+            }
+            
+            return stateMachine;
         }
     }
 }

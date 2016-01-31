@@ -35,7 +35,7 @@ namespace HA4IoT.Core
 
         public TActuator Actuator<TActuator>(ActuatorId id) where TActuator : IActuator
         {
-            return (TActuator)_actuators.Get(id);
+            return _actuators.Get<TActuator>(id);
         }
     }
 }

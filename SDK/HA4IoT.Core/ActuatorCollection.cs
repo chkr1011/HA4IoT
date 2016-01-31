@@ -16,7 +16,7 @@ namespace HA4IoT.Core
             _actuators.Add(actuator.Id, actuator);
         }
 
-        public IActuator Get(ActuatorId id)
+        public TActuator Get<TActuator>(ActuatorId id) where TActuator : IActuator
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
@@ -26,7 +26,7 @@ namespace HA4IoT.Core
                 throw new InvalidOperationException("Actuator with ID '" + id + "' is not registered.");
             }
 
-            return actuator;
+            return (TActuator) actuator;
         }
         public IList<IActuator> GetAll()
         {

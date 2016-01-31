@@ -169,24 +169,36 @@
         <StateMachine id="Fan">
           <States>
             <State id="Off">
-              <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay0" targetState="Low" />
-              <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay1" targetState="Low" />
-              <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay2" targetState="Low" />
+              <LowPorts>
+                <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay0" />
+                <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay1" />
+                <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay2" />
+              </LowPorts>
             </State>
             <State id="1">
-              <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay0" targetState="High" />
-              <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay1" targetState="Low" />
-              <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay2" targetState="High" />
+              <HighPorts>
+                <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay0" />
+                <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay2" />
+              </HighPorts>
+              <LowPorts>
+                <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay1" />
+              </LowPorts>
             </State>
             <State id="2">
-              <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay0" targetState="High" />
-              <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay1" targetState="High" />
-              <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay2" targetState="Low" />
+              <HighPorts>
+                <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay0" />
+                <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay1" />
+              </HighPorts>
+              <LowPorts>
+                <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay2"/>
+              </LowPorts>
             </State>
             <State id="3">
-              <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay0" targetState="High" />
-              <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay1" targetState="High" />
-              <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay2" targetState="High" />
+              <HighPorts>
+                <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay0" />
+                <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay1" />
+                <CCTools:BinaryInput deviceId="Bedroom.HSRel8" port="Relay2" />
+              </HighPorts>
             </State>
           </States>
         </StateMachine>

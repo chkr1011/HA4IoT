@@ -27,7 +27,7 @@ namespace HA4IoT.Networking
 
         private void HandleConnection(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
-            Task.Run(() => HandleRequests(args.Socket));
+            Task.Factory.StartNew(() => HandleRequests(args.Socket), TaskCreationOptions.LongRunning);
         }
 
         private async Task HandleRequests(StreamSocket client)
@@ -89,43 +89,27 @@ namespace HA4IoT.Networking
             }
         }
 
-        private bool GetConnectionMustBeClosed(HttpContext context)
-        {
-            string headerValue;
-            if (!context.Request.Headers.TryGetValue("Connection", out headerValue))
-            {
-                return true;
-            }
-
-            if (headerValue.Equals("keep-alive", StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
         private async Task<bool> TrySendResponse(StreamSocket client, HttpContext context)
         {
             try
             {
-                context.Response.Headers.Add("Connection", "close");
-                context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                context.Response.Headers.Add(HttpHeaderNames.Connection, "close");
+                context.Response.Headers.Add(HttpHeaderNames.AccessControlAllowOrigin, "*");
 
                 byte[] content = new byte[0];
                 if (context.Response.Body != null)
                 {
                     content = context.Response.Body.ToByteArray();
-                    context.Response.Headers.Add("Content-Type", context.Response.Body.MimeType);
+                    context.Response.Headers.Add(HttpHeaderNames.ContentType, context.Response.Body.MimeType);
 
-                    if (GetClientSupportsCompression(context.Request))
+                    if (context.Request.Headers.GetClientSupportsGzipCompression())
                     {
                         content = Compress(content);
-                        context.Response.Headers.Add("Content-Encoding", "gzip");
+                        context.Response.Headers.Add(HttpHeaderNames.ContentEncoding, "gzip");
                     }
                 }
 
-                context.Response.Headers.Add("Content-Length", content.Length);
+                context.Response.Headers.Add(HttpHeaderNames.ContentLength, content.Length);
                 
                 using (var dataWriter = new DataWriter(client.OutputStream))
                 {
@@ -197,17 +181,6 @@ namespace HA4IoT.Networking
                 Debug.WriteLine("Failed to read HTTP request. " + exception.Message);
                 return null;
             }
-        }
-
-        private bool GetClientSupportsCompression(HttpRequest request)
-        {
-            string headerValue;
-            if (request.Headers.TryGetValue("Accept-Encoding", out headerValue))
-            {
-                return headerValue.IndexOf("gzip", StringComparison.OrdinalIgnoreCase) > -1;
-            }
-
-            return false;
         }
 
         private JsonObject ExceptionToJson(Exception exception)
