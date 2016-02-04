@@ -56,7 +56,7 @@ namespace HA4IoT.Core
             var hashWithQuotes = "\"" + hash + "\"";
 
             string clientHash;
-            if (httpContext.Request.Headers.TryGetValue("If-None-Match", out clientHash))
+            if (httpContext.Request.Headers.TryGetValue(HttpHeaderNames.IfNoneMatch, out clientHash))
             {
                 if (clientHash.Equals(hashWithQuotes))
                 {
@@ -68,7 +68,7 @@ namespace HA4IoT.Core
             status.SetNamedValue("_hash", hash.ToJsonValue());
 
             httpContext.Response.StatusCode = HttpStatusCode.OK;
-            httpContext.Response.Headers.Add("ETag", hashWithQuotes);
+            httpContext.Response.Headers[HttpHeaderNames.ETag] = hashWithQuotes;
 
             httpContext.Response.Body = new JsonBody(status);
         }

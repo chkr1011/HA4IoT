@@ -73,15 +73,15 @@ namespace HA4IoT.Networking
 
                 if (!line.Contains(":"))
                 {
-                    _headers.Add(line, string.Empty);
+                    _headers[line] = string.Empty;
                 }
                 else
                 {
                     var indexOfDelimiter = line.IndexOf(":");
-                    var headerName = line.Substring(0, indexOfDelimiter).Trim();
-                    var headerValue = line.Substring(indexOfDelimiter + 1).Trim();
+                    var name = line.Substring(0, indexOfDelimiter).Trim();
+                    var token = line.Substring(indexOfDelimiter + 1).Trim();
 
-                    _headers.Add(headerName, headerValue);
+                    _headers[name] = token;
                 }
             }
         }
