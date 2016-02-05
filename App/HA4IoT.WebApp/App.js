@@ -374,12 +374,14 @@ function getConfigurationValue(actuator, name, defaultValue) {
 }
 
 function invokeActuator(id, request, successCallback) {
-    var url = "/api/actuator/" + id;
+    var url = "/api/actuator/" + id + "?body=" + JSON.stringify(request);
 
     $.ajax({
         method: "POST",
+        async: false,
         url: url,
-        data: request,
+        data: JSON.stringify(request),
+        contentType: "application/json; charset=utf-8",
         timeout: 2500
     }).done(function () {
         if (successCallback != null) {
