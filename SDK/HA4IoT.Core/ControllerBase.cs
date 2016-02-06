@@ -4,7 +4,6 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
-using Windows.Devices.Gpio;
 using Windows.Storage;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
@@ -13,6 +12,7 @@ using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Core.Timer;
+using HA4IoT.Hardware.Pi2;
 using HA4IoT.Networking;
 using HA4IoT.Notifications;
 
@@ -125,9 +125,8 @@ namespace HA4IoT.Core
 
         protected void InitializeHealthMonitor(int pi2GpioPinWithLed)
         {
-            var pi2PortController = GpioController.GetDefault();
-            var ledPin = pi2PortController.OpenPin(pi2GpioPinWithLed);
-            ledPin.SetDriveMode(GpioPinDriveMode.Output);
+            var pi2PortController = new Pi2PortController();
+            var ledPin = pi2PortController.GetOutput(pi2GpioPinWithLed);
 
             _healthMonitor = new HealthMonitor(ledPin, Timer, HttpApiController);
         }

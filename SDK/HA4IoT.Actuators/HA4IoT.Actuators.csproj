@@ -180,11 +180,6 @@
     <Content Include="Properties\HA4IoT.Actuators.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <SDKReference Include="WindowsIoT, Version=10.0.10240.0">
-      <Name>Windows IoT Extensions for the UWP</Name>
-    </SDKReference>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{551337e7-d1ef-4145-92b4-f7086f7665a6}</Project>
       <Name>HA4IoT.Contracts</Name>
