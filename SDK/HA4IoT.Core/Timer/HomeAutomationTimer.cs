@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Notifications;
 
 namespace HA4IoT.Core.Timer

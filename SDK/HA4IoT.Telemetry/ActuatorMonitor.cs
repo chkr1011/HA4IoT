@@ -1,16 +1,17 @@
 ﻿using System;
 using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Core;
 
 namespace HA4IoT.Telemetry
 {
     public abstract class ActuatorMonitor
     { 
-        public void ConnectActuators(Home home)
+        public void ConnectActuators(IController controller)
         {
-            if (home == null) throw new ArgumentNullException(nameof(home));
+            if (controller == null) throw new ArgumentNullException(nameof(controller));
 
-            foreach (var actuator in home.Actuators.Values)
+            foreach (var actuator in controller.Actuators())
             {
                 OnActuatorConnecting(actuator);
 

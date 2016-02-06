@@ -3,16 +3,14 @@ using System.IO;
 using Windows.Data.Json;
 using Windows.Storage;
 using HA4IoT.Actuators;
+using HA4IoT.Actuators.Automations;
 using HA4IoT.Actuators.Connectors;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
-using HA4IoT.Hardware.DHT22;
-using HA4IoT.Hardware.GenericIOBoard;
 using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.Hardware.OpenWeatherMapWeatherStation;
 using HA4IoT.Hardware.Pi2;
@@ -28,7 +26,7 @@ namespace HA4IoT.Controller.Demo
         private static readonly I2CSlaveAddress I2CHardwareBridgeAddress = new I2CSlaveAddress(50);
         private const byte I2CHardwareBridge433MHzSenderPin = 6;
 
-        private enum Room
+        private enum RoomId
         {
             ExampleRoom
         }
@@ -63,6 +61,7 @@ namespace HA4IoT.Controller.Demo
 
         private enum Device
         {
+            WeatherStation,
             HSPE16,
             HSRel8,
             HSRel5
@@ -77,79 +76,68 @@ namespace HA4IoT.Controller.Demo
             var pi2PortController = new Pi2PortController();
 
             // Setup the wrapper for I2C bus access.
-            var i2CBus = new I2CBusWrapper(NotificationHandler);
-
-            // Setup the manager for all types of IO boards which exposes all IO boards to the HTTP API
-            // and polls the states of the inputs.
-            var ioBoardManager = new IOBoardCollection(HttpApiController, NotificationHandler);
+            var i2CBus = new DefaultI2CBus("II2CBus.default".ToDeviceId(), Logger);
 
             // Setup the controller which creates ports for IO boards from CCTools (or based on PCF8574/MAX7311/PCA9555D).
-            var ccToolsBoardController = new CCToolsBoardController(i2CBus, ioBoardManager, NotificationHandler);
-            ccToolsBoardController.CreateHSPE16InputOnly(Device.HSPE16, new I2CSlaveAddress(41));
-            ccToolsBoardController.CreateHSREL8(Device.HSRel8, new I2CSlaveAddress(40));
-            ccToolsBoardController.CreateHSREL5(Device.HSRel5, new I2CSlaveAddress(56));
+            var ccToolsBoardController = new CCToolsBoardController(this, i2CBus, HttpApiController, Logger);
+            var hspe16 = ccToolsBoardController.CreateHSPE16InputOnly(Device.HSPE16, new I2CSlaveAddress(41));
+            var hsrel8 = ccToolsBoardController.CreateHSREL8(Device.HSRel8, new I2CSlaveAddress(40));
+            var hsrel5 = ccToolsBoardController.CreateHSREL5(Device.HSRel5, new I2CSlaveAddress(56));
 
             // Setup the remote switch 433Mhz sender which is attached to the I2C bus (Arduino Nano).
-            var i2CHardwareBridge = new I2CHardwareBridge(I2CHardwareBridgeAddress, i2CBus);
+            var i2CHardwareBridge = new I2CHardwareBridge(new DeviceId("HB"),  I2CHardwareBridgeAddress, i2CBus, Timer);
             var remoteSwitchSender = new LPD433MHzSignalSender(i2CHardwareBridge, I2CHardwareBridge433MHzSenderPin, HttpApiController);
-            var dht22Accessor = new DHT22Accessor(i2CHardwareBridge, Timer);
 
             // Setup the controller which creates ports for wireless sockets (433Mhz).
-            var remoteSwitchController = new RemoteSwitchController(remoteSwitchSender, Timer);
-
-            var intertechnoCodes = new IntertechnoCodeSequenceProvider();
-            remoteSwitchController.Register(
-                0,
-                intertechnoCodes.GetSequence(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1, RemoteSwitchCommand.TurnOn),
-                intertechnoCodes.GetSequence(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1, RemoteSwitchCommand.TurnOff));
-
-            // Setup the weather station which provides sunrise and sunset information.
-            var weatherStation = CreateWeatherStation();
+            var ic = new IntertechnoCodeSequenceProvider();
+            var remoteSwitchController = new RemoteSocketController(new DeviceId("RemoteSocketController"), remoteSwitchSender, Timer)
+                .WithRemoteSocket(0, ic.GetSequence(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1, RemoteSocketCommand.TurnOn), ic.GetSequence(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1, RemoteSocketCommand.TurnOff));
             
-            var home = new Home(Timer, HealthMonitor, weatherStation, HttpApiController, NotificationHandler);
+            // Setup the weather station which provides sunrise and sunset information.
+            InitializeWeatherStation(CreateWeatherStation());
 
             // Add new rooms with actuators here! Example:
-            var exampleRoom = home.AddRoom(Room.ExampleRoom)
-                .WithTemperatureSensor(ExampleRoom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(5))
-                .WithHumiditySensor(ExampleRoom.HumiditySensor, dht22Accessor.GetHumiditySensor(5))
-                .WithMotionDetector(ExampleRoom.MotionDetector, ioBoardManager.GetInputBoard(Device.HSPE16).GetInput(8))
-                .WithWindow(ExampleRoom.Window, w => w.WithCenterCasement(ioBoardManager.GetInputBoard(Device.HSPE16).GetInput(0)))
+            var exampleRoom = this.CreateRoom(RoomId.ExampleRoom)
+                .WithTemperatureSensor(ExampleRoom.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(5))
+                .WithHumiditySensor(ExampleRoom.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(5))
+                .WithMotionDetector(ExampleRoom.MotionDetector, hspe16.GetInput(8))
+                .WithWindow(ExampleRoom.Window, w => w.WithCenterCasement(hspe16.GetInput(0)))
                 .WithLamp(ExampleRoom.Lamp1, remoteSwitchController.GetOutput(0))
-                .WithSocket(ExampleRoom.Socket1, ioBoardManager.GetOutputBoard(Device.HSRel5).GetOutput(0))
-                .WithSocket(ExampleRoom.Socket2, ioBoardManager.GetOutputBoard(Device.HSRel5).GetOutput(4))
-                .WithSocket(ExampleRoom.BathroomFan, ioBoardManager.GetOutputBoard(Device.HSRel5).GetOutput(3))
-                .WithLamp(ExampleRoom.Lamp2, ioBoardManager.GetOutputBoard(Device.HSRel8).GetOutput(0))
-                .WithLamp(ExampleRoom.Lamp3, ioBoardManager.GetOutputBoard(Device.HSRel8).GetOutput(1))
-                .WithLamp(ExampleRoom.Lamp4, ioBoardManager.GetOutputBoard(Device.HSRel8).GetOutput(2))
-                .WithLamp(ExampleRoom.Lamp5, ioBoardManager.GetOutputBoard(Device.HSRel8).GetOutput(3))
-                .WithLamp(ExampleRoom.Lamp6, ioBoardManager.GetOutputBoard(Device.HSRel8).GetOutput(4))
-                .WithButton(ExampleRoom.Button1, ioBoardManager.GetInputBoard(Device.HSPE16).GetInput(1))
-                .WithButton(ExampleRoom.Button2, ioBoardManager.GetInputBoard(Device.HSPE16).GetInput(2))
+                .WithSocket(ExampleRoom.Socket1, hsrel5.GetOutput(0))
+                .WithSocket(ExampleRoom.Socket2, hsrel5.GetOutput(4))
+                .WithSocket(ExampleRoom.BathroomFan, hsrel5.GetOutput(3))
+                .WithLamp(ExampleRoom.Lamp2, hsrel8.GetOutput(0))
+                .WithLamp(ExampleRoom.Lamp3, hsrel8.GetOutput(1))
+                .WithLamp(ExampleRoom.Lamp4, hsrel8.GetOutput(2))
+                .WithLamp(ExampleRoom.Lamp5, hsrel8.GetOutput(3))
+                .WithLamp(ExampleRoom.Lamp6, hsrel8.GetOutput(4))
+                .WithButton(ExampleRoom.Button1, hspe16.GetInput(1))
+                .WithButton(ExampleRoom.Button2, hspe16.GetInput(2))
                 .WithVirtualButtonGroup(ExampleRoom.LedStripRemote, g => SetupLEDStripRemote(i2CHardwareBridge, g))
-                .WithStateMachine(ExampleRoom.CeilingFan, (sm, r) => SetupCeilingFan(sm, r, ioBoardManager));
+                .WithStateMachine(ExampleRoom.CeilingFan, (sm, r) => SetupCeilingFan(sm));
             
             exampleRoom.Lamp(ExampleRoom.Lamp5).ConnectToggleActionWith(exampleRoom.Button(ExampleRoom.Button1));
             exampleRoom.Lamp(ExampleRoom.Lamp6).ConnectToggleActionWith(exampleRoom.Button(ExampleRoom.Button1), ButtonPressedDuration.Long);
             exampleRoom.StateMachine(ExampleRoom.CeilingFan).ConnectMoveNextAndToggleOffWith(exampleRoom.Button(ExampleRoom.Button2));
 
-            SetupHumidityDependingOutput(exampleRoom.HumiditySensor(ExampleRoom.HumiditySensor), ioBoardManager.GetOutputBoard(Device.HSRel8).GetOutput(5));
+            SetupHumidityDependingOutput(exampleRoom.HumiditySensor(ExampleRoom.HumiditySensor), hsrel8.GetOutput(5));
 
-            exampleRoom.SetupAutomaticTurnOnAndOffAction()
+            exampleRoom.SetupAutomaticTurnOnAndOffAutomation()
                 .WithTrigger(exampleRoom.MotionDetector(ExampleRoom.MotionDetector))
                 .WithTarget(exampleRoom.BinaryStateOutput(ExampleRoom.BathroomFan))
                 .WithTarget(exampleRoom.BinaryStateOutput(ExampleRoom.Lamp2))
                 .WithOnDuration(TimeSpan.FromSeconds(10));
 
-            home.PublishStatisticsNotification();
+            PublishStatisticsNotification();
 
             // Setup the CSV writer which writes all state changes to the SD card (package directory).
-            var localCsvFileWriter = new CsvHistory(NotificationHandler, HttpApiController);
-            localCsvFileWriter.ConnectActuators(home);
+            var localCsvFileWriter = new CsvHistory(Logger, HttpApiController);
+            localCsvFileWriter.ConnectActuators(this);
 
             Timer.Tick += (s, e) =>
             {
                 pi2PortController.PollOpenInputPorts();
-                ioBoardManager.PollInputBoardStates();
+                ccToolsBoardController.PollInputBoardStates();
             };
         }
 
@@ -168,9 +156,9 @@ namespace HA4IoT.Controller.Demo
             };
         }
 
-        private void SetupCeilingFan(StateMachine stateMachine, Actuators.Room room, IOBoardCollection ioBoardManager)
+        private void SetupCeilingFan(StateMachine stateMachine)
         {
-            var relayBoard = ioBoardManager.GetOutputBoard(Device.HSRel5);
+            var relayBoard = Device<HSREL5>(Device.HSRel5);
             var gear1 = relayBoard.GetOutput(2);
             var gear2 = relayBoard.GetOutput(1);
 
@@ -203,14 +191,14 @@ namespace HA4IoT.Controller.Demo
                 double lon = configuration.GetNamedNumber("lon");
                 string appId = configuration.GetNamedString("appID");
 
-                var weatherStation = new OWMWeatherStation(lat, lon, appId, Timer, HttpApiController, NotificationHandler);
-                NotificationHandler.Info("WeatherStation initialized successfully");
+                var weatherStation = new OWMWeatherStation(DeviceId.From(Device.WeatherStation), lat, lon, appId, Timer, HttpApiController, Logger);
+                Logger.Info("WeatherStation initialized successfully");
 
                 return weatherStation;
             }
             catch (Exception exception)
             {
-                NotificationHandler.Warning("Unable to create weather station. " + exception.Message);
+                Logger.Warning("Unable to create weather station. " + exception.Message);
             }
 
             return null;

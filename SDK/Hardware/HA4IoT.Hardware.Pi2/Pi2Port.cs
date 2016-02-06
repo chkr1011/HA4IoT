@@ -7,6 +7,7 @@ namespace HA4IoT.Hardware.Pi2
     public class Pi2Port : IBinaryOutput, IBinaryInput
     {
         private readonly object _syncRoot = new object();
+
         private bool _isStateInverted;
         private BinaryState _previousState;
 
@@ -21,9 +22,9 @@ namespace HA4IoT.Hardware.Pi2
 
         public event EventHandler<BinaryStateChangedEventArgs> StateChanged;
 
-        IBinaryInput IBinaryInput.WithInvertedState()
+        IBinaryInput IBinaryInput.WithInvertedState(bool value)
         {
-            _isStateInverted = true;
+            _isStateInverted = value;
             return this;
         }
 
@@ -67,9 +68,9 @@ namespace HA4IoT.Hardware.Pi2
             }
         }
 
-        IBinaryOutput IBinaryOutput.WithInvertedState()
+        IBinaryOutput IBinaryOutput.WithInvertedState(bool value)
         {
-            _isStateInverted = true;
+            _isStateInverted = value;
             return this;
         }
 

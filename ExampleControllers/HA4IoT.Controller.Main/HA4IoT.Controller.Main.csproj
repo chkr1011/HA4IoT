@@ -11,8 +11,8 @@
     <AssemblyName>HA4IoT.Controller.Main</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
@@ -133,6 +133,10 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Configuration\HA4IoT.Configuration.csproj">
+      <Project>{F9D92EA6-3763-47F5-9EFD-6D83804C95E6}</Project>
+      <Name>HA4IoT.Configuration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{551337E7-D1EF-4145-92B4-F7086F7665A6}</Project>
       <Name>HA4IoT.Contracts</Name>
@@ -164,14 +168,6 @@
     <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.CCTools\HA4IoT.Hardware.CCTools.csproj">
       <Project>{B0A7EF01-9382-422C-81AF-C90DC5A7AFFD}</Project>
       <Name>HA4IoT.Hardware.CCTools</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.DHT22\HA4IoT.Hardware.DHT22.csproj">
-      <Project>{C838FE97-95A5-4D11-8F4E-19257B1D062A}</Project>
-      <Name>HA4IoT.Hardware.DHT22</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.GenericIOBoard\HA4IoT.Hardware.GenericIOBoard.csproj">
-      <Project>{74BECF44-F00B-40F1-9220-06C4C7F2220F}</Project>
-      <Name>HA4IoT.Hardware.GenericIOBoard</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.I2CHardwareBridge\HA4IoT.Hardware.I2CHardwareBridge.csproj">
       <Project>{8BF16E28-A01D-47E9-A5C4-CC93E347AAF4}</Project>

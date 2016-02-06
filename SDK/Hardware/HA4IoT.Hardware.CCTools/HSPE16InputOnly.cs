@@ -1,14 +1,14 @@
 ﻿using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Notifications;
-using HA4IoT.Hardware.GenericIOBoard;
 using HA4IoT.Hardware.PortExpanderDrivers;
+using HA4IoT.Networking;
 
 namespace HA4IoT.Hardware.CCTools
 {
-    public class HSPE16InputOnly : IOBoardControllerBase, IBinaryInputController
+    public class HSPE16InputOnly : CCToolsInputBoardBase, IBinaryInputController
     {
-        public HSPE16InputOnly(string id, I2CSlaveAddress address, II2CBus i2cBus, INotificationHandler log)
-            : base(id, new MAX7311Driver(address, i2cBus), log)
+        public HSPE16InputOnly(DeviceId id, I2CSlaveAddress address, II2CBus i2cBus, IHttpRequestController httpApi, INotificationHandler logger)
+            : base(id, new MAX7311Driver(address, i2cBus), httpApi, logger)
         {
             byte[] setupAsInputs = { 0x06, 0xFF, 0xFF };
             i2cBus.Execute(address, b => b.Write(setupAsInputs));

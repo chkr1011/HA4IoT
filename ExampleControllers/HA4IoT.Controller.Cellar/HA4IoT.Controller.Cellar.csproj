@@ -11,8 +11,8 @@
     <AssemblyName>HA4IoT.Controller.Cellar</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
@@ -146,10 +146,6 @@
     <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.CCTools\HA4IoT.Hardware.CCTools.csproj">
       <Project>{B0A7EF01-9382-422C-81AF-C90DC5A7AFFD}</Project>
       <Name>HA4IoT.Hardware.CCTools</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.GenericIOBoard\HA4IoT.Hardware.GenericIOBoard.csproj">
-      <Project>{74BECF44-F00B-40F1-9220-06C4C7F2220F}</Project>
-      <Name>HA4IoT.Hardware.GenericIOBoard</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.OpenWeatherMapWeatherStation\HA4IoT.Hardware.OpenWeatherMapWeatherStation.csproj">
       <Project>{25A0003B-E68E-481A-92AD-F4BDABC65700}</Project>

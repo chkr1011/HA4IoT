@@ -1,5 +1,6 @@
 ﻿using System;
 using HA4IoT.Contracts;
+using HA4IoT.Contracts.Actuators;
 
 namespace HA4IoT.Telemetry
 {

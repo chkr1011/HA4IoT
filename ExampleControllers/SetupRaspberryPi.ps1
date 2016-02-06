@@ -10,7 +10,9 @@ Enter-PSSession -ComputerName 192.168.1.15 -Credential 192.168.1.15\Administrato
 
 get-date
 tzutil /s "W. Europe Standard Time"
-#set-date "2015/08/7 21:59"
+
+# yyyy/mm/mm hh:mm
+#set-date "2015/01/17 21:59"
 w32tm /resync
 setcomputername HA4IoT-Main
 #setcomputername HA4IoT-Cellar

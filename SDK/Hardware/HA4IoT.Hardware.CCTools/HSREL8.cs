@@ -1,15 +1,15 @@
 ﻿using System;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Notifications;
-using HA4IoT.Hardware.GenericIOBoard;
 using HA4IoT.Hardware.PortExpanderDrivers;
+using HA4IoT.Networking;
 
 namespace HA4IoT.Hardware.CCTools
 {
-    public class HSREL8 : IOBoardControllerBase, IBinaryOutputController
+    public class HSREL8 : CCToolsBoardBase, IBinaryOutputController
     {
-        public HSREL8(string id, I2CSlaveAddress i2CAddress, II2CBus i2CBus, INotificationHandler notificationHandler)
-            : base(id, new MAX7311Driver(i2CAddress, i2CBus), notificationHandler)
+        public HSREL8(DeviceId id, I2CSlaveAddress i2CAddress, II2CBus i2CBus, IHttpRequestController httpApi, INotificationHandler logger)
+            : base(id, new MAX7311Driver(i2CAddress, i2CBus), httpApi, logger)
         {
             SetState(new byte[] { 0x00, 255 });
             CommitChanges(true);

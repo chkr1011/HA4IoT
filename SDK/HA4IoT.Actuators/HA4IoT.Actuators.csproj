@@ -11,8 +11,8 @@
     <AssemblyName>HA4IoT.Actuators</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -115,13 +115,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActuatorIdFactory.cs" />
+    <Compile Include="Automations\AutomaticConditionalOnAutomationExtensions.cs" />
+    <Compile Include="Automations\AutomaticTurnOnAndOffAutomationExtensions.cs" />
+    <Compile Include="BinaryStateOutputActuators\BinaryStateOutputActuatorExtensions.cs" />
+    <Compile Include="BinaryStateOutputActuators\LogicalBinaryStateOutputActuatorExtensions.cs" />
+    <Compile Include="Lamps\LampExtensions.cs" />
+    <Compile Include="MotionDetectors\MotionDetectorExtensions.cs" />
     <Compile Include="PersistedConfiguration.cs" />
     <Compile Include="Animations\AnimateParameter.cs" />
     <Compile Include="Animations\Animation.cs" />
     <Compile Include="Buttons\ButtonExtensions.cs" />
     <Compile Include="Conditions\Specialized\IsDayCondition.cs" />
     <Compile Include="Conditions\Specialized\IsNightCondition.cs" />
-    <Compile Include="PendingBinaryStateOutputActuatorState.cs" />
+    <Compile Include="Animations\PendingBinaryStateOutputActuatorState.cs" />
     <Compile Include="Animations\DirectionAnimation.cs" />
     <Compile Include="Animations\Frame.cs" />
     <Compile Include="ApiRequestContext.cs" />
@@ -130,10 +136,11 @@
     <Compile Include="Automations\AutomaticRollerShutterAutomation.cs" />
     <Compile Include="Automations\AutomaticTurnOnAndOffAutomation.cs" />
     <Compile Include="Automations\Automation.cs" />
-    <Compile Include="BinaryStateOutputActuatorBase.cs" />
+    <Compile Include="BinaryStateOutputActuators\BinaryStateOutputActuatorBase.cs" />
     <Compile Include="Buttons\ButtonBase.cs" />
-    <Compile Include="Casement.cs" />
-    <Compile Include="CasementState.cs" />
+    <Compile Include="StateMachines\StateMachineExtensions.cs" />
+    <Compile Include="Windows\Casement.cs" />
+    <Compile Include="Windows\CasementState.cs" />
     <Compile Include="Conditions\Condition.cs" />
     <Compile Include="Conditions\ConditionRelation.cs" />
     <Compile Include="Conditions\ConditionState.cs" />
@@ -142,9 +149,9 @@
     <Compile Include="Conditions\Specialized\TimeRangeCondition.cs" />
     <Compile Include="DoNotCommitStateParameter.cs" />
     <Compile Include="ForceUpdateStateParameter.cs" />
-    <Compile Include="Home.cs" />
     <Compile Include="RollerShutters\RollerShutterExtensions.cs" />
-    <Compile Include="Room.cs" />
+    <Compile Include="Sensors\HumiditySensorExtensions.cs" />
+    <Compile Include="Sensors\TemperatureSensorExtensions.cs" />
     <Compile Include="SingleValueSensorActuatorBase.cs" />
     <Compile Include="Buttons\ButtonPressedDuration.cs" />
     <Compile Include="Connectors\BinaryStateActuatorWithButtonConnector.cs" />
@@ -154,26 +161,23 @@
     <Compile Include="RollerShutters\RollerShutter.cs" />
     <Compile Include="Buttons\RollerShutterButtons.cs" />
     <Compile Include="Buttons\Button.cs" />
-    <Compile Include="LogicalBinaryStateOutputActuator.cs" />
+    <Compile Include="BinaryStateOutputActuators\LogicalBinaryStateOutputActuator.cs" />
     <Compile Include="Sensors\HumiditySensor.cs" />
     <Compile Include="Sensors\TemperatureSensor.cs" />
-    <Compile Include="StateMachine\StateMachine.cs" />
-    <Compile Include="StateMachine\StateMachineState.cs" />
+    <Compile Include="Sockets\SocketExtensions.cs" />
+    <Compile Include="StateMachines\StateMachine.cs" />
+    <Compile Include="StateMachines\StateMachineState.cs" />
     <Compile Include="TimeRangeChecker.cs" />
     <Compile Include="Buttons\VirtualButton.cs" />
-    <Compile Include="Lamp.cs" />
-    <Compile Include="MotionDetector.cs" />
+    <Compile Include="Lamps\Lamp.cs" />
+    <Compile Include="MotionDetectors\MotionDetector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Socket.cs" />
-    <Compile Include="BinaryStateOutputActuator.cs" />
+    <Compile Include="Sockets\Socket.cs" />
+    <Compile Include="BinaryStateOutputActuators\BinaryStateOutputActuator.cs" />
     <Compile Include="Buttons\VirtualButtonGroup.cs" />
-    <Compile Include="Window.cs" />
+    <Compile Include="Windows\Window.cs" />
+    <Compile Include="Windows\WindowExtensions.cs" />
     <Content Include="Properties\HA4IoT.Actuators.rd.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <SDKReference Include="WindowsIoT, Version=10.0.10240.0">
-      <Name>Windows IoT Extensions for the UWP</Name>
-    </SDKReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">

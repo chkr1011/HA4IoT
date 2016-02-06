@@ -16,6 +16,6 @@ namespace HA4IoT.Actuators
 
         public JsonObject Request { get; }
 
-        public JsonObject Response { get; }
+        public JsonObject Response { get; set; }
     }
 }

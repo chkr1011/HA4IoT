@@ -15,7 +15,7 @@ namespace HA4IoT.Hardware.RemoteSwitch.Tests
             var sequence = generator.GetSequence(
                 BrennenstuhlSystemCode.AllOn,
                 BrennenstuhlUnitCode.A,
-                RemoteSwitchCommand.TurnOn);
+                RemoteSocketCommand.TurnOn);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);
             sequence.Codes.First().Value.ShouldBeEquivalentTo(1361U);
@@ -28,7 +28,7 @@ namespace HA4IoT.Hardware.RemoteSwitch.Tests
             var sequence = generator.GetSequence(
                 BrennenstuhlSystemCode.AllOn,
                 BrennenstuhlUnitCode.A,
-                RemoteSwitchCommand.TurnOff);
+                RemoteSocketCommand.TurnOff);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);
             sequence.Codes.First().Value.ShouldBeEquivalentTo(1364U);
@@ -41,7 +41,7 @@ namespace HA4IoT.Hardware.RemoteSwitch.Tests
             var sequence = generator.GetSequence(
                 BrennenstuhlSystemCode.AllOn,
                 BrennenstuhlUnitCode.B,
-                RemoteSwitchCommand.TurnOn);
+                RemoteSocketCommand.TurnOn);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);
             sequence.Codes.First().Value.ShouldBeEquivalentTo(4433U);
@@ -54,7 +54,7 @@ namespace HA4IoT.Hardware.RemoteSwitch.Tests
             var sequence = generator.GetSequence(
                 BrennenstuhlSystemCode.AllOn,
                 BrennenstuhlUnitCode.B,
-                RemoteSwitchCommand.TurnOff);
+                RemoteSocketCommand.TurnOff);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);
             sequence.Codes.First().Value.ShouldBeEquivalentTo(4436U);
@@ -68,7 +68,7 @@ namespace HA4IoT.Hardware.RemoteSwitch.Tests
                 generator.GetSequence(
                     BrennenstuhlSystemCode.Switch1 | BrennenstuhlSystemCode.Switch3 | BrennenstuhlSystemCode.Switch5,
                     BrennenstuhlUnitCode.C,
-                    RemoteSwitchCommand.TurnOn);
+                    RemoteSocketCommand.TurnOn);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);
             sequence.Codes.First().Value.ShouldBeEquivalentTo(1119313U);
@@ -82,7 +82,7 @@ namespace HA4IoT.Hardware.RemoteSwitch.Tests
                 generator.GetSequence(
                     BrennenstuhlSystemCode.Switch1 | BrennenstuhlSystemCode.Switch3 | BrennenstuhlSystemCode.Switch5,
                     BrennenstuhlUnitCode.C,
-                    RemoteSwitchCommand.TurnOff);
+                    RemoteSocketCommand.TurnOff);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);
             sequence.Codes.First().Value.ShouldBeEquivalentTo(1119316U);
@@ -96,7 +96,7 @@ namespace HA4IoT.Hardware.RemoteSwitch.Tests
                 generator.GetSequence(
                     BrennenstuhlSystemCode.AllOff,
                     BrennenstuhlUnitCode.D,
-                    RemoteSwitchCommand.TurnOn);
+                    RemoteSocketCommand.TurnOn);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);
             sequence.Codes.First().Value.ShouldBeEquivalentTo(5592337U);
@@ -110,7 +110,7 @@ namespace HA4IoT.Hardware.RemoteSwitch.Tests
                 generator.GetSequence(
                     BrennenstuhlSystemCode.AllOff,
                     BrennenstuhlUnitCode.D,
-                    RemoteSwitchCommand.TurnOff);
+                    RemoteSocketCommand.TurnOff);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);
             sequence.Codes.First().Value.ShouldBeEquivalentTo(5592340U);

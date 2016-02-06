@@ -70,7 +70,7 @@ namespace HA4IoT.Actuators.Tests
         }
 
         [TestMethod]
-        public void AndjustedRange_OUT_OF_RANGE_ShouldBeNotFulfilled()
+        public void AdjustedRange_OUT_OF_RANGE_ShouldBeNotFulfilled()
         {
             var timer = new TestHomeAutomationTimer();
             timer.CurrentTime = TimeSpan.Parse("15:00");
@@ -85,7 +85,7 @@ namespace HA4IoT.Actuators.Tests
         }
 
         [TestMethod]
-        public void AndjustedRange_IN_RANGE_ShouldBeFulfilled()
+        public void AdjustedRange_IN_RANGE_ShouldBeFulfilled()
         {
             var timer = new TestHomeAutomationTimer();
             timer.CurrentTime = TimeSpan.Parse("17:00");

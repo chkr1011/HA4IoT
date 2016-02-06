@@ -4,6 +4,6 @@ namespace HA4IoT.Contracts.Core
 {
     public interface IStatusProvider
     {
-        JsonObject GetStatus();
+        JsonObject GetStatusForApi();
     }
 }

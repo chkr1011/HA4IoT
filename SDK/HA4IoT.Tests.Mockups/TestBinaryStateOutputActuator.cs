@@ -1,5 +1,5 @@
 ﻿using System;
-using HA4IoT.Contracts;
+using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
 
 namespace HA4IoT.Tests.Mockups
@@ -10,7 +10,18 @@ namespace HA4IoT.Tests.Mockups
         public event EventHandler<ActuatorIsEnabledChangedEventArgs> IsEnabledChanged;
         public ActuatorId Id { get; set; }
         public bool IsEnabled { get; }
+
         public BinaryActuatorState State { get; private set; }
+
+        public JsonObject GetConfigurationForApi()
+        {
+            return new JsonObject();
+        }
+
+        public JsonObject GetStatusForApi()
+        {
+            return new JsonObject();
+        }
 
         public BinaryActuatorState GetState()
         {

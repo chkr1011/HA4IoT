@@ -9,6 +9,8 @@ namespace HA4IoT.Hardware.Pi2
         private readonly GpioController _gpioController = GpioController.GetDefault();
         private readonly Dictionary<int, Pi2Port> _openPorts = new Dictionary<int, Pi2Port>();
 
+        public DeviceId Id { get; } = new DeviceId("Pi2.GPIOs");
+
         public IBinaryInput GetInput(int number)
         {
             return OpenPort(number, GpioPinDriveMode.Input);

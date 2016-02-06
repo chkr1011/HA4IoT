@@ -1,21 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using HA4IoT.Contracts;
+using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Configuration;
 
 namespace HA4IoT.Actuators
 {
     public static class ActuatorIdFactory
     {
-        private static readonly HashSet<string> UsedIds = new HashSet<string>();
-
-        public static ActuatorId Create(string id)
+        public static ActuatorId Create(IRoom room, Enum id)
         {
-            if (!UsedIds.Add(id.ToLowerInvariant()))
-            {
-                throw new InvalidOperationException("The actuator ID '" + id + "' is already in use.");
-            }
-
-            return new ActuatorId(id);
+            return new ActuatorId(room.Id + "." + id);
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using HA4IoT.Contracts;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Core.Timer;
 
 namespace HA4IoT.Actuators.Animations
