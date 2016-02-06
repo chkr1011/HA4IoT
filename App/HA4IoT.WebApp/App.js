@@ -144,11 +144,11 @@ function setupController() {
               $.ajax({ method: "GET", url: "/api/status", timeout: 2500 }).done(function (data) {
                   c.errorMessage = null;
 
-                  if (data.hash === c.previousHash) {
+                  if (data._hash === c.previousHash) {
                       return;
                   }
 
-                  c.previousHash = data.hash;
+                  c.previousHash = data._hash;
                   console.log("Updating UI due to state changes");
 
                   $.each(data.status, function(id, state) {
@@ -376,7 +376,14 @@ function getConfigurationValue(actuator, name, defaultValue) {
 function invokeActuator(id, request, successCallback) {
     var url = "/api/actuator/" + id + "?body=" + JSON.stringify(request);
 
-    $.ajax({ method: "POST", url: url, timeout: 2500 }).done(function () {
+    $.ajax({
+        method: "POST",
+        async: false,
+        url: url,
+        data: JSON.stringify(request),
+        contentType: "application/json; charset=utf-8",
+        timeout: 2500
+    }).done(function () {
         if (successCallback != null) {
             successCallback();
         }

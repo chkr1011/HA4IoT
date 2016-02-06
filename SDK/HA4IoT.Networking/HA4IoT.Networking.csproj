@@ -11,8 +11,8 @@
     <AssemblyName>HA4IoT.Networking</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -116,9 +116,12 @@
   <ItemGroup>
     <Compile Include="BadRequestException.cs" />
     <Compile Include="BinaryBody.cs" />
+    <Compile Include="HttpClientHandler.cs" />
     <Compile Include="HttpContext.cs" />
-    <Compile Include="HttpHeader.cs" />
     <Compile Include="HttpHeaderCollection.cs" />
+    <Compile Include="HttpHeaderCollectionExtensions.cs" />
+    <Compile Include="HttpHeaderNames.cs" />
+    <Compile Include="HttpResponseSerializer.cs" />
     <Compile Include="IConvertibleToJsonValue.cs" />
     <Compile Include="JsonObjectExtensions.cs" />
     <Compile Include="MappedFolderController.cs" />

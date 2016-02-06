@@ -11,8 +11,8 @@
     <AssemblyName>HA4IoT.Hardware.I2CHardwareBridge</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -107,8 +107,13 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DHT22Accessor.cs" />
+    <Compile Include="DHT22HumiditySensor.cs" />
+    <Compile Include="DHT22SensorBase.cs" />
+    <Compile Include="DHT22TemperatureSensor.cs" />
     <Compile Include="I2CHardwareBridge.cs" />
     <Compile Include="I2CHardwareBridgeCommand.cs" />
+    <Compile Include="I2CHardwareBridgeConfigurationExtender.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadDHT22SensorCommand.cs" />
     <Compile Include="ReadDHT22SensorCommandResponse.cs" />
@@ -117,11 +122,10 @@
     <Content Include="Properties\HA4IoT.Hardware.I2CHardwareBridge.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <SDKReference Include="WindowsIoT, Version=10.0.10240.0">
-      <Name>Windows IoT Extensions for the UWP</Name>
-    </SDKReference>
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\..\HA4IoT.Configuration\HA4IoT.Configuration.csproj">
+      <Project>{F9D92EA6-3763-47F5-9EFD-6D83804C95E6}</Project>
+      <Name>HA4IoT.Configuration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{551337E7-D1EF-4145-92B4-F7086F7665A6}</Project>
       <Name>HA4IoT.Contracts</Name>

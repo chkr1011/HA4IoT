@@ -3,14 +3,15 @@ using System.IO;
 using Windows.Data.Json;
 using Windows.Storage;
 using HA4IoT.Actuators;
+using HA4IoT.Actuators.Automations;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
-using HA4IoT.Hardware.GenericIOBoard;
 using HA4IoT.Hardware.OpenWeatherMapWeatherStation;
 using HA4IoT.Hardware.Pi2;
 
@@ -20,10 +21,11 @@ namespace HA4IoT.Controller.Cellar
     {
         private enum Device
         {
+            WeatherStation,
             CellarHSRT16
         }
 
-        private enum Room
+        private enum RoomId
         {
             Garden
         }
@@ -50,16 +52,15 @@ namespace HA4IoT.Controller.Cellar
 
             var pi2PortController = new Pi2PortController();
 
-            IWeatherStation weatherStation = CreateWeatherStation();
-            var i2CBus = new I2CBusWrapper(NotificationHandler);
+            InitializeWeatherStation(CreateWeatherStation());
 
-            var ioBoardManager = new IOBoardCollection(HttpApiController, NotificationHandler);
-            var ccToolsFactory = new CCToolsBoardController(i2CBus, ioBoardManager, NotificationHandler);
+            var i2cBus = new DefaultI2CBus("II2CBus.default".ToDeviceId(), Logger);
+            AddDevice(i2cBus);
+
+            var ccToolsFactory = new CCToolsBoardController(this, i2cBus, HttpApiController, Logger);
             var hsrt16 = ccToolsFactory.CreateHSRT16(Device.CellarHSRT16, new I2CSlaveAddress(32));
-
-            var home = new Home(Timer, HealthMonitor, weatherStation, HttpApiController, NotificationHandler);
-
-            var garden = home.AddRoom(Room.Garden)
+            
+            var garden = this.CreateRoom(RoomId.Garden)
                 .WithLamp(Garden.LampTerrace, hsrt16[HSRT16Pin.Relay15])
                 .WithLamp(Garden.LampGarage, hsrt16[HSRT16Pin.Relay14])
                 .WithLamp(Garden.LampTap, hsrt16[HSRT16Pin.Relay13])
@@ -73,17 +74,17 @@ namespace HA4IoT.Controller.Cellar
             
             garden.StateMachine(Garden.StateMachine).ConnectMoveNextAndToggleOffWith(garden.Button(Garden.Button));
 
-            garden.SetupAlwaysOn()
+            garden.SetupAutomaticConditionalOnAutomation()
                 .WithActuator(garden.Lamp(Garden.LampParkingLot))
-                .WithOnAtNightRange(home.WeatherStation)
+                .WithOnAtNightRange(WeatherStation)
                 .WithOffBetweenRange(TimeSpan.Parse("22:30:00"), TimeSpan.Parse("05:00:00"));
 
-            home.PublishStatisticsNotification();
+            PublishStatisticsNotification();
 
             Timer.Tick += (s, e) => { pi2PortController.PollOpenInputPorts(); };
         }
 
-        private void SetupStateMachine(StateMachine stateMachine, Actuators.Room garden)
+        private void SetupStateMachine(StateMachine stateMachine, IRoom garden)
         {
             stateMachine.AddOffState()
                 .WithActuator(garden.Lamp(Garden.LampTerrace), BinaryActuatorState.Off)
@@ -159,14 +160,14 @@ namespace HA4IoT.Controller.Cellar
                 double lon = configuration.GetNamedNumber("lon");
                 string appId = configuration.GetNamedString("appID");
 
-                var weatherStation = new OWMWeatherStation(lat, lon, appId, Timer, HttpApiController, NotificationHandler);
-                NotificationHandler.Info("WeatherStation initialized successfully");
+                var weatherStation = new OWMWeatherStation(DeviceId.From(Device.WeatherStation),  lat, lon, appId, Timer, HttpApiController, Logger);
+                Logger.Info("WeatherStation initialized successfully");
 
                 return weatherStation;
             }
             catch (Exception exception)
             {
-                NotificationHandler.Warning("Unable to create weather station. " + exception.Message);
+                Logger.Warning("Unable to create weather station. " + exception.Message);
             }
 
             return null;

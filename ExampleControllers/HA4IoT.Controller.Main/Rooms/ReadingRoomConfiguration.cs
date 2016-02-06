@@ -1,9 +1,9 @@
 ﻿using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Core;
 using HA4IoT.Hardware.CCTools;
-using HA4IoT.Hardware.DHT22;
-using HA4IoT.Hardware.GenericIOBoard;
+using HA4IoT.Hardware.I2CHardwareBridge;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
@@ -28,16 +28,18 @@ namespace HA4IoT.Controller.Main.Rooms
             Window
         }
 
-        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardCollection ioBoardManager, DHT22Accessor dht22Accessor)
+        public void Setup(Controller controller, CCToolsBoardController ccToolsController)
         {
             var hsrel5 = ccToolsController.CreateHSREL5(Device.ReadingRoomHSREL5, new I2CSlaveAddress(62));
-            var input2 = ioBoardManager.GetInputBoard(Device.Input2);
+            var input2 = controller.Device<HSPE16InputOnly>(Device.Input2);
+
+            var i2cHardwareBridge = controller.Device<I2CHardwareBridge>();
 
             const int SensorPin = 9;
 
-            var readingRoom = home.AddRoom(Room.ReadingRoom)
-                .WithTemperatureSensor(ReadingRoom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorPin))
-                .WithHumiditySensor(ReadingRoom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorPin))
+            var readingRoom = controller.CreateRoom(Room.ReadingRoom)
+                .WithTemperatureSensor(ReadingRoom.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
+                .WithHumiditySensor(ReadingRoom.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
                 .WithLamp(ReadingRoom.LightCeilingMiddle, hsrel5.GetOutput(6).WithInvertedState())
                 .WithRollerShutter(ReadingRoom.RollerShutter, hsrel5[HSREL5Pin.Relay4], hsrel5[HSREL5Pin.Relay3], RollerShutter.DefaultMaxMovingDuration, 20000)
                 .WithSocket(ReadingRoom.SocketWindow, hsrel5[HSREL5Pin.Relay0])

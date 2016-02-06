@@ -14,7 +14,19 @@ namespace HA4IoT.Tests.Mockups
         
         public ActuatorId Id { get; set; }
         public bool IsEnabled { get; }
+
         public MotionDetectorState State { get; private set; } = MotionDetectorState.Idle;
+        public bool IsMotionDetected { get; set; }
+
+        public JsonObject GetConfigurationForApi()
+        {
+            return new JsonObject();
+        }
+
+        public MotionDetectorState GetState()
+        {
+            return State;
+        }
 
         public void SetState(MotionDetectorState newState)
         {
@@ -23,13 +35,6 @@ namespace HA4IoT.Tests.Mockups
 
             StateChanged?.Invoke(this, new MotionDetectorStateChangedEventArgs(oldState, newState));
         }
-
-        public MotionDetectorState GetState()
-        {
-            return State;
-        }
-
-        public bool IsMotionDetected { get; set; }
 
         public void WalkIntoMotionDetector()
         {
@@ -43,7 +48,7 @@ namespace HA4IoT.Tests.Mockups
             DetectionCompleted?.Invoke(this, EventArgs.Empty);
         }
 
-        public JsonObject GetStatus()
+        public JsonObject GetStatusForApi()
         {
             return new JsonObject();
         }

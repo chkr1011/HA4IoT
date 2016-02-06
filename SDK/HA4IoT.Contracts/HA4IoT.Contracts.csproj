@@ -11,8 +11,8 @@
     <AssemblyName>HA4IoT.Contracts</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -107,7 +107,8 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActuatorId.cs" />
+    <Compile Include="Actuators\ActuatorId.cs" />
+    <Compile Include="Actuators\ActuatorIdFactory.cs" />
     <Compile Include="Actuators\ActuatorIsEnabledChangedEventArgs.cs" />
     <Compile Include="Actuators\BinaryActuatorState.cs" />
     <Compile Include="Actuators\BinaryActuatorStateChangedEventArgs.cs" />
@@ -123,6 +124,21 @@
     <Compile Include="Actuators\IRollerShutter.cs" />
     <Compile Include="Actuators\ISingleValueSensorActuator.cs" />
     <Compile Include="Actuators\ITemperatureSensor.cs" />
+    <Compile Include="Automations\IAutomation.cs" />
+    <Compile Include="Configuration\ConfigurationInvalidException.cs" />
+    <Compile Include="Core\IController.cs" />
+    <Compile Include="Configuration\IRoom.cs" />
+    <Compile Include="Configuration\RoomId.cs" />
+    <Compile Include="Configuration\HandleConfigurationNodeResult.cs" />
+    <Compile Include="Configuration\IConfigurationExtender.cs" />
+    <Compile Include="Core\IdBase.cs" />
+    <Compile Include="Core\IHomeAutomationTimer.cs" />
+    <Compile Include="Core\TimedAction.cs" />
+    <Compile Include="Core\TimerTickEventArgs.cs" />
+    <Compile Include="Hardware\DeviceIdExtensions.cs" />
+    <Compile Include="Hardware\II2CDevice.cs" />
+    <Compile Include="Hardware\IDevice.cs" />
+    <Compile Include="Hardware\DeviceId.cs" />
     <Compile Include="WeatherStation\IWeatherStation.cs" />
     <Compile Include="Actuators\MotionDetectorState.cs" />
     <Compile Include="Actuators\RollerShutterState.cs" />
@@ -152,11 +168,6 @@
     <Compile Include="WeatherStation\WeatherSituation.cs" />
     <Compile Include="WeatherStation\WeatherSituationSensorValueChangedEventArgs.cs" />
     <Content Include="Properties\HA4IoT.Contracts.rd.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <SDKReference Include="WindowsIoT, Version=10.0.10240.0">
-      <Name>Windows IoT Extensions for the UWP</Name>
-    </SDKReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HA4IoT.Networking\HA4IoT.Networking.csproj">

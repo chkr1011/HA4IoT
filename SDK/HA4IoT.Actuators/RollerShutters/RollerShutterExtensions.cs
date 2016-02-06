@@ -2,36 +2,41 @@
 using System.Linq;
 using HA4IoT.Actuators.Automations;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Actuators
 {
     public static class RollerShutterExtensions
     {
-        public static IRollerShutter[] GetAllRollerShutters(this Room room)
+        public static IRollerShutter[] GetAllRollerShutters(this IRoom room)
         {
-            return room.Actuators.Where(a => a is RollerShutter).Cast<IRollerShutter>().ToArray();
+            return room.Actuators().Where(a => a is RollerShutter).Cast<IRollerShutter>().ToArray();
         }
         
-        public static IRollerShutter RollerShutter(this Room room, Enum id)
+        public static IRollerShutter RollerShutter(this IRoom room, Enum id)
         {
-            return room.Actuator<RollerShutter>(id);
+            if (room == null) throw new ArgumentNullException(nameof(room));
+
+            return room.Actuator<RollerShutter>(ActuatorIdFactory.Create(room, id));
         }
 
-        public static AutomaticRollerShutterAutomation SetupAutomaticRollerShutters(this Room room)
+        public static AutomaticRollerShutterAutomation SetupAutomaticRollerShutters(this IRoom room)
         {
-            return new AutomaticRollerShutterAutomation(room.Home.Timer, room.Home.WeatherStation, room.Home.Log);
+            return new AutomaticRollerShutterAutomation(room.Controller.Timer, room.Controller.WeatherStation, room.Controller.Logger);
         }
 
-        public static Room WithRollerShutter(this Room room, Enum id, IBinaryOutput powerOutput, IBinaryOutput directionOutput,
+        public static IRoom WithRollerShutter(this IRoom room, Enum id, IBinaryOutput powerOutput, IBinaryOutput directionOutput,
             TimeSpan autoOffTimeout, int maxPosition)
         {
             if (powerOutput == null) throw new ArgumentNullException(nameof(powerOutput));
             if (directionOutput == null) throw new ArgumentNullException(nameof(directionOutput));
 
-            return room.WithActuator(id,
-                new RollerShutter(room.GenerateActuatorId(id), powerOutput, directionOutput, autoOffTimeout, maxPosition,
-                    room.Home.Api, room.Home.Log, room.Home.Timer));
+            var rollerShutter = new RollerShutter(ActuatorIdFactory.Create(room, id), powerOutput, directionOutput,
+                autoOffTimeout, maxPosition, room.Controller.HttpApiController, room.Controller.Logger, room.Controller.Timer);
+
+            room.AddActuator(rollerShutter);
+            return room;
         }
     }
 }

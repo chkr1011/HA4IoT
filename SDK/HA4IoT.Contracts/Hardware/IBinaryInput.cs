@@ -8,6 +8,6 @@ namespace HA4IoT.Contracts.Hardware
 
         BinaryState Read();
 
-        IBinaryInput WithInvertedState();
+        IBinaryInput WithInvertedState(bool value = true);
     }
 }

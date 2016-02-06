@@ -1,9 +1,10 @@
 ﻿using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Core;
 using HA4IoT.Hardware.CCTools;
-using HA4IoT.Hardware.DHT22;
-using HA4IoT.Hardware.GenericIOBoard;
+using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.Hardware.RemoteSwitch;
 
 namespace HA4IoT.Controller.Main.Rooms
@@ -48,19 +49,21 @@ namespace HA4IoT.Controller.Main.Rooms
             WindowRight
         }
 
-        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardCollection ioBoardManager, DHT22Accessor dht22Accessor, RemoteSwitchController remoteSwitchController)
+        public void Setup(Controller controller, CCToolsBoardController ccToolsController, RemoteSocketController remoteSwitchController)
         {
             var hsrel8 = ccToolsController.CreateHSREL8(Device.OfficeHSREL8, new I2CSlaveAddress(20));
             var hspe8 = ccToolsController.CreateHSPE8OutputOnly(Device.UpperFloorAndOfficeHSPE8, new I2CSlaveAddress(37));
-            var input4 = ioBoardManager.GetInputBoard(Device.Input4);
-            var input5 = ioBoardManager.GetInputBoard(Device.Input5);
+            var input4 = controller.Device<HSPE16InputOnly>(Device.Input4);
+            var input5 = controller.Device<HSPE16InputOnly>(Device.Input5);
 
             const int SensorPin = 2;
 
-            var office = home.AddRoom(Room.Office)
+            var i2cHardwareBridge = controller.Device<I2CHardwareBridge>();
+
+            var office = controller.CreateRoom(Room.Office)
                 .WithMotionDetector(Office.MotionDetector, input4.GetInput(13))
-                .WithTemperatureSensor(Office.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorPin))
-                .WithHumiditySensor(Office.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorPin))
+                .WithTemperatureSensor(Office.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
+                .WithHumiditySensor(Office.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
                 .WithLamp(Office.LightCeilingFrontRight, hsrel8.GetOutput(8).WithInvertedState())
                 .WithLamp(Office.LightCeilingFrontMiddle, hspe8.GetOutput(2).WithInvertedState())
                 .WithLamp(Office.LightCeilingFrontLeft, hspe8.GetOutput(0).WithInvertedState())
@@ -94,10 +97,10 @@ namespace HA4IoT.Controller.Main.Rooms
             });
         }
 
-        private void SetupLight(StateMachine light, Actuators.Room room)
+        private void SetupLight(StateMachine light, IRoom room)
         {
             var lightsCouchOnly = room.CombineActuators(Office.CombinedCeilingLightsCouchOnly)
-                .WithActuator(room.Actuator<Lamp>(Office.LightCeilingRearRight));
+                .WithActuator(room.Lamp(Office.LightCeilingRearRight));
 
             var lightsDeskOnly = room.CombineActuators(Office.CombinedCeilingLightsDeskOnly)
                 .WithActuator(room.Lamp(Office.LightCeilingFrontMiddle))

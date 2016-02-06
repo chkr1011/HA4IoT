@@ -1,7 +1,8 @@
 ﻿using HA4IoT.Actuators;
+using HA4IoT.Actuators.Automations;
+using HA4IoT.Core;
 using HA4IoT.Hardware.CCTools;
-using HA4IoT.Hardware.DHT22;
-using HA4IoT.Hardware.GenericIOBoard;
+using HA4IoT.Hardware.I2CHardwareBridge;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
@@ -24,17 +25,18 @@ namespace HA4IoT.Controller.Main.Rooms
             Window
         }
 
-        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardCollection ioBoardManager, DHT22Accessor dht22Accessor)
+        public void Setup(Controller controller)
         {
-            var hspe16_FloorAndLowerBathroom = ioBoardManager.GetOutputBoard(Device.LowerFloorAndLowerBathroomHSPE16);
-            var input3 = ioBoardManager.GetInputBoard(Device.Input3);
+            var hspe16_FloorAndLowerBathroom = controller.Device<HSPE16OutputOnly>(Device.LowerFloorAndLowerBathroomHSPE16);
+            var input3 = controller.Device<HSPE16InputOnly>(Device.Input3);
+            var i2cHardwareBridge = controller.Device<I2CHardwareBridge>();
 
-            const int SensorPin = 3; //5;
+            const int SensorPin = 3;
 
-            var bathroom = home.AddRoom(Room.LowerBathroom)
+            var bathroom = controller.CreateRoom(Room.LowerBathroom)
                 .WithMotionDetector(LowerBathroom.MotionDetector, input3.GetInput(15))
-                .WithTemperatureSensor(LowerBathroom.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorPin))
-                .WithHumiditySensor(LowerBathroom.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorPin))
+                .WithTemperatureSensor(LowerBathroom.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
+                .WithHumiditySensor(LowerBathroom.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
                 .WithLamp(LowerBathroom.LightCeilingDoor, hspe16_FloorAndLowerBathroom.GetOutput(0).WithInvertedState())
                 .WithLamp(LowerBathroom.LightCeilingMiddle, hspe16_FloorAndLowerBathroom.GetOutput(1).WithInvertedState())
                 .WithLamp(LowerBathroom.LightCeilingWindow, hspe16_FloorAndLowerBathroom.GetOutput(2).WithInvertedState())
@@ -47,7 +49,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithActuator(bathroom.Lamp(LowerBathroom.LightCeilingWindow))
                 .WithActuator(bathroom.Lamp(LowerBathroom.LampMirror));
 
-            bathroom.SetupAutomaticTurnOnAndOffAction()
+            bathroom.SetupAutomaticTurnOnAndOffAutomation()
                 .WithTrigger(bathroom.MotionDetector(LowerBathroom.MotionDetector))
                 .WithTarget(bathroom.BinaryStateOutput(LowerBathroom.CombinedLights));
         }

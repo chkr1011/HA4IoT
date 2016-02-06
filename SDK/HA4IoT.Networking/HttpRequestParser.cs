@@ -1,32 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Windows.Data.Json;
+using System.Text;
 
 namespace HA4IoT.Networking
 {
-    internal sealed class HttpRequestParser
+    public class HttpRequestParser
     {
         private readonly HttpHeaderCollection _headers = new HttpHeaderCollection();
         private readonly List<string> _lines = new List<string>();
-        private readonly string _request;
         private string _body;
         private string _httpVersion;
         private HttpMethod _method;
         private string _query;
         private string _uri;
 
-        public HttpRequestParser(string request)
-        {
-            if (request == null) throw new ArgumentNullException(nameof(request));
+        private string _request;
 
-            _request = request;
-        }
-
-        public bool TryParse(out HttpRequest request)
+        public bool TryParse(byte[] buffer, out HttpRequest request)
         {
+            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
+
             try
             {
+                _request = Encoding.UTF8.GetString(buffer);
+
                 request = null;
 
                 if (!TryParsePackage())
@@ -43,7 +41,7 @@ namespace HA4IoT.Networking
                 ParseBody();
                 ParseQuery();
 
-                request = new HttpRequest(_method, _uri, _query, _headers, _body);
+                request = new HttpRequest(_method, _uri, Version.Parse(_httpVersion), _query, _headers, _body);
                 return true;
             }
             catch (Exception)
@@ -55,6 +53,8 @@ namespace HA4IoT.Networking
 
         private void ParseHeaders()
         {
+            _headers.Clear();
+
             for (var i = 0; i < _lines.Count; i++)
             {
                 var isRequestLine = i == 0;
@@ -73,15 +73,15 @@ namespace HA4IoT.Networking
 
                 if (!line.Contains(":"))
                 {
-                    _headers.Add(HttpHeader.Create().WithName(line));
+                    _headers[line] = string.Empty;
                 }
                 else
                 {
                     var indexOfDelimiter = line.IndexOf(":");
-                    var headerName = line.Substring(0, indexOfDelimiter).Trim();
-                    var headerValue = line.Substring(indexOfDelimiter + 1).Trim();
+                    var name = line.Substring(0, indexOfDelimiter).Trim();
+                    var token = line.Substring(indexOfDelimiter + 1).Trim();
 
-                    _headers.Add(HttpHeader.Create().WithName(headerName).WithValue(headerValue));
+                    _headers[name] = token;
                 }
             }
         }
@@ -126,6 +126,7 @@ namespace HA4IoT.Networking
                 return false;
             }
 
+            _lines.Clear();
             _lines.AddRange(_request.Split(new[] {Environment.NewLine}, StringSplitOptions.None));
             if (_lines.Count < 2)
             {
@@ -149,7 +150,7 @@ namespace HA4IoT.Networking
             }
 
             _uri = requestParts[1];
-            _httpVersion = requestParts[2];
+            _httpVersion = requestParts[2].Substring(requestParts[2].IndexOf("/", StringComparison.OrdinalIgnoreCase) + 1);
 
             return true;
         }

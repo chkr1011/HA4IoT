@@ -1,4 +1,5 @@
 ﻿using System;
+using Windows.Data.Json;
 
 namespace HA4IoT.Contracts.Actuators
 {
@@ -9,5 +10,9 @@ namespace HA4IoT.Contracts.Actuators
         ActuatorId Id { get; }
 
         bool IsEnabled { get; }
+
+        JsonObject GetConfigurationForApi();
+
+        JsonObject GetStatusForApi();
     }
 }

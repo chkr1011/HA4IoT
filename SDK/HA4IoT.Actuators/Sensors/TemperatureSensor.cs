@@ -9,8 +9,8 @@ namespace HA4IoT.Actuators
 {
     public class TemperatureSensor : SingleValueSensorActuatorBase, ITemperatureSensor
     {
-        public TemperatureSensor(ActuatorId id, ISingleValueSensor sensor, IHttpRequestController api, INotificationHandler log)
-            : base(id, api, log)
+        public TemperatureSensor(ActuatorId id, ISingleValueSensor sensor, IHttpRequestController api, INotificationHandler logger)
+            : base(id, api, logger)
         {
             if (sensor == null) throw new ArgumentNullException(nameof(sensor));
 

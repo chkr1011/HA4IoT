@@ -11,8 +11,8 @@
     <AssemblyName>HA4IoT.Hardware</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -116,7 +116,8 @@
   <ItemGroup>
     <Compile Include="BinaryOutputWithState.cs" />
     <Compile Include="ByteExtensions.cs" />
-    <Compile Include="I2CBusWrapper.cs" />
+    <Compile Include="DefaultI2CBus.cs" />
+    <Compile Include="I2CDeviceWrapper.cs" />
     <Compile Include="InterruptMonitor.cs" />
     <Compile Include="LogicalBinaryOutput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -124,11 +125,6 @@
     <Compile Include="Test\TestOutputPort.cs" />
     <Compile Include="Test\TestPort.cs" />
     <Content Include="Properties\HA4IoT.Hardware.rd.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <SDKReference Include="WindowsIoT, Version=10.0.10240.0">
-      <Name>Windows IoT Extensions for the UWP</Name>
-    </SDKReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
@@ -143,6 +139,11 @@
       <Project>{15DB669D-AF71-4E89-9748-0290A2E5D291}</Project>
       <Name>HA4IoT.Notifications</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <SDKReference Include="WindowsIoT, Version=10.0.10586.0">
+      <Name>Windows IoT Extensions for the UWP</Name>
+    </SDKReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

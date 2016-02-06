@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Windows.Data.Json;
-using Windows.Devices.Gpio;
-using HA4IoT.Contracts;
+using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core.Timer;
 using HA4IoT.Networking;
 
@@ -14,7 +14,7 @@ namespace HA4IoT.Core
         private readonly List<int> _durations = new List<int>(100);
         private readonly Timeout _ledTimeout = new Timeout();
         private readonly DateTime _startedDate = DateTime.Now;
-        private readonly GpioPin _statusLed;
+        private readonly IBinaryOutput _statusLed;
         private float? _averageTimerDuration;
 
         private bool _ledState;
@@ -22,7 +22,7 @@ namespace HA4IoT.Core
 
         private float? _minTimerDuration;
 
-        public HealthMonitor(GpioPin statusLed, IHomeAutomationTimer timer, IHttpRequestController httpApiController)
+        public HealthMonitor(IBinaryOutput statusLed, IHomeAutomationTimer timer, IHttpRequestController httpApiController)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
             if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
@@ -34,26 +34,20 @@ namespace HA4IoT.Core
             }
 
             timer.Tick += Tick;
-            httpApiController.Handle(HttpMethod.Get, "health").Using(c => c.Response.Body = new JsonBody(ApiGet()));
+            httpApiController.Handle(HttpMethod.Get, "health").Using(HandleApiGet);
             httpApiController.Handle(HttpMethod.Post, "health").WithSegment("reset").Using(c => ResetStatistics());
         }
 
-        public JsonObject ApiGet()
+        private void HandleApiGet(HttpContext httpContext)
         {
             var status = new JsonObject();
+            status.SetNamedValue("timerMin", _minTimerDuration.ToJsonValue());
+            status.SetNamedValue("timerMax", _maxTimerDuration.ToJsonValue());
+            status.SetNamedValue("timerAverage", _averageTimerDuration.ToJsonValue());
+            status.SetNamedValue("upTime", (DateTime.Now - _startedDate).ToJsonValue());
+            status.SetNamedValue("systemTime", DateTime.Now.ToJsonValue());
 
-            status.SetNamedValue("timerMin",
-                _minTimerDuration.HasValue ? JsonValue.CreateNumberValue(_minTimerDuration.Value) : JsonValue.CreateNullValue());
-
-            status.SetNamedValue("timerMax",
-                _maxTimerDuration.HasValue ? JsonValue.CreateNumberValue(_maxTimerDuration.Value) : JsonValue.CreateNullValue());
-
-            status.SetNamedValue("timerAverage",
-                _averageTimerDuration.HasValue ? JsonValue.CreateNumberValue(_averageTimerDuration.Value) : JsonValue.CreateNullValue());
-
-            status.SetNamedValue("uptime", JsonValue.CreateStringValue((DateTime.Now - _startedDate).ToString()));
-
-            return status;
+            httpContext.Response.Body = new JsonBody(status);
         }
 
         private void ResetStatistics()
@@ -96,12 +90,12 @@ namespace HA4IoT.Core
         {
             if (_ledState)
             {
-                _statusLed.Write(GpioPinValue.High);
+                _statusLed.Write(BinaryState.High);
                 _ledTimeout.Start(TimeSpan.FromSeconds(5));
             }
             else
             {
-                _statusLed.Write(GpioPinValue.Low);
+                _statusLed.Write(BinaryState.Low);
                 _ledTimeout.Start(TimeSpan.FromMilliseconds(200));
             }
 

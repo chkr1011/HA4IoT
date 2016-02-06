@@ -57,7 +57,7 @@ namespace HA4IoT.Telemetry.Statistics
         }
 
 
-        public JsonObject GetStatus()
+        public JsonObject GetStatusForApi()
         {
             var entries = new List<ActuatorHistoryEntry>();
             lock (_entriesOfThisMonth)
@@ -171,7 +171,7 @@ namespace HA4IoT.Telemetry.Statistics
 
         private void HandleApiGet(HttpContext httpContext)
         {
-            httpContext.Response.Body = new JsonBody(GetStatus());
+            httpContext.Response.Body = new JsonBody(GetStatusForApi());
         }
     }
 }

@@ -44,9 +44,9 @@ namespace HA4IoT.Hardware.Test
             }
         }
         
-        public TestPort WithInvertedState()
+        public TestPort WithInvertedState(bool value = true)
         {
-            _stateIsInverted = true;
+            _stateIsInverted = value;
             return this;
         }
 

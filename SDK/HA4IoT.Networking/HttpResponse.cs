@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace HA4IoT.Networking
 {
     public class HttpResponse

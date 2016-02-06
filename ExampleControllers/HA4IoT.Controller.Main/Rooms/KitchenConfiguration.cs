@@ -1,9 +1,10 @@
 ﻿using HA4IoT.Actuators;
+using HA4IoT.Actuators.Automations;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Core;
 using HA4IoT.Hardware.CCTools;
-using HA4IoT.Hardware.DHT22;
-using HA4IoT.Hardware.GenericIOBoard;
+using HA4IoT.Hardware.I2CHardwareBridge;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
@@ -35,20 +36,22 @@ namespace HA4IoT.Controller.Main.Rooms
             Window
         }
 
-        public void Setup(Home home, CCToolsBoardController ccToolsController, IOBoardCollection ioBoardManager, DHT22Accessor dht22Accessor)
+        public void Setup(Controller controller, CCToolsBoardController ccToolsController)
         {
             var hsrel5 = ccToolsController.CreateHSREL5(Device.KitchenHSREL5, new I2CSlaveAddress(58));
             var hspe8 = ccToolsController.CreateHSPE8OutputOnly(Device.KitchenHSPE8, new I2CSlaveAddress(39));
 
-            var input0 = ioBoardManager.GetInputBoard(Device.Input0);
-            var input1 = ioBoardManager.GetInputBoard(Device.Input1);
-            var input2 = ioBoardManager.GetInputBoard(Device.Input2);
+            var input0 = controller.Device<HSPE16InputOnly>(Device.Input0);
+            var input1 = controller.Device<HSPE16InputOnly>(Device.Input1);
+            var input2 = controller.Device<HSPE16InputOnly>(Device.Input2);
 
-            const int SensorPin = 11; // 1;
+            var i2cHardwareBridge = controller.Device<I2CHardwareBridge>();
 
-            var kitchen = home.AddRoom(Room.Kitchen)
-                .WithTemperatureSensor(Kitchen.TemperatureSensor, dht22Accessor.GetTemperatureSensor(SensorPin))
-                .WithHumiditySensor(Kitchen.HumiditySensor, dht22Accessor.GetHumiditySensor(SensorPin))
+            const int SensorPin = 11;
+
+            var kitchen = controller.CreateRoom(Room.Kitchen)
+                .WithTemperatureSensor(Kitchen.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
+                .WithHumiditySensor(Kitchen.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
                 .WithMotionDetector(Kitchen.MotionDetector, input1.GetInput(8))
                 .WithLamp(Kitchen.LightCeilingMiddle, hsrel5.GetOutput(5).WithInvertedState())
                 .WithLamp(Kitchen.LightCeilingWindow, hsrel5.GetOutput(6).WithInvertedState())
@@ -74,10 +77,10 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithActuator(kitchen.Lamp(Kitchen.LightCeilingDoor))
                 .WithActuator(kitchen.Lamp(Kitchen.LightCeilingWindow));
 
-            kitchen.SetupAutomaticTurnOnAndOffAction()
+            kitchen.SetupAutomaticTurnOnAndOffAutomation()
                 .WithTrigger(kitchen.MotionDetector(Kitchen.MotionDetector))
                 .WithTarget(kitchen.BinaryStateOutput(Kitchen.CombinedAutomaticLights))
-                .WithEnabledAtNight(home.WeatherStation);
+                .WithEnabledAtNight(controller.WeatherStation);
         }
     }
 }

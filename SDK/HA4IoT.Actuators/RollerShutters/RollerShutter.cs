@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Windows.Data.Json;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Core.Timer;
@@ -32,9 +33,9 @@ namespace HA4IoT.Actuators
             TimeSpan autoOffTimeout,
             int maxPosition,
             IHttpRequestController api,
-            INotificationHandler log, 
+            INotificationHandler logger, 
             IHomeAutomationTimer timer)
-            : base(id, api, log)
+            : base(id, api, logger)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (powerOutput == null) throw new ArgumentNullException(nameof(powerOutput));
@@ -81,7 +82,7 @@ namespace HA4IoT.Actuators
 
                 if (oldState != RollerShutterState.Stopped)
                 {
-                    Log.Info(Id + ": Stopped (Duration: " +
+                    Logger.Info(Id + ": Stopped (Duration: " +
                                              _movingDuration.ElapsedMilliseconds + "ms)");
                 }
             }
@@ -95,11 +96,15 @@ namespace HA4IoT.Actuators
             SetState(RollerShutterState.Stopped);
         }
 
-        public override void HandleApiGet(ApiRequestContext context)
+        public override JsonObject GetStatusForApi()
         {
-            context.Response.SetNamedValue("state", JsonValue.CreateStringValue(_state.ToString()));
-            context.Response.SetNamedValue("position", JsonValue.CreateNumberValue(_position));
-            context.Response.SetNamedValue("positionMax", JsonValue.CreateNumberValue(_positionMax));
+            var status = base.GetStatusForApi();
+
+            status.SetNamedValue("state", JsonValue.CreateStringValue(_state.ToString()));
+            status.SetNamedValue("position", JsonValue.CreateNumberValue(_position));
+            status.SetNamedValue("positionMax", JsonValue.CreateNumberValue(_positionMax));
+
+            return status;
         }
 
         public override void HandleApiPost(ApiRequestContext context)
@@ -142,7 +147,7 @@ namespace HA4IoT.Actuators
         private void OnStateChanged(RollerShutterState oldState, RollerShutterState newState)
         {
             StateChanged?.Invoke(this, new RollerShutterStateChangedEventArgs(oldState, newState));
-            Log.Info(Id + ": " + oldState + "->" + newState);
+            Logger.Info(Id + ": " + oldState + "->" + newState);
         }
 
         private void StopInternal()
