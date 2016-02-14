@@ -1,7 +1,7 @@
 ﻿using System;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Core.Timer;
+using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Actuators.Automations
 {
@@ -20,12 +20,12 @@ namespace HA4IoT.Actuators.Automations
             _timer = timer;
         }
 
-        public AutomaticBathroomFanAutomation WithMotiWithTrigger(IMotionDetector motionDetector)
+        public AutomaticBathroomFanAutomation WithTrigger(IMotionDetector motionDetector)
         {
             if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
 
-            motionDetector.MotionDetected += TurnOn;
-            motionDetector.DetectionCompleted += StartTimeout;
+            motionDetector.GetMotionDetectedTrigger().Triggered += TurnOn;
+            motionDetector.GetDetectionCompletedTrigger().Triggered += StartTimeout;
 
             return this;
         }

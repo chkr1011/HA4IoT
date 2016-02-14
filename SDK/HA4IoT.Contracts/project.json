@@ -1,6 +1,5 @@
 ﻿{
   "dependencies": {
-    "angularjs": "1.4.7",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0"
   },
   "frameworks": {

@@ -1,15 +1,17 @@
 ﻿using System;
 using Windows.Data.Json;
-using HA4IoT.Contracts;
+using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Tests.Mockups
 {
     public class TestMotionDetector : IMotionDetector
     {
+        private readonly Trigger _motionDetectedTrigger = new Trigger();
+        private readonly Trigger _detectionCompletedTrigger = new Trigger();
+
         public event EventHandler<ActuatorIsEnabledChangedEventArgs> IsEnabledChanged;
-        public event EventHandler MotionDetected;
-        public event EventHandler DetectionCompleted;
         public event EventHandler<MotionDetectorStateChangedEventArgs> StateChanged;
         
         public ActuatorId Id { get; set; }
@@ -28,6 +30,16 @@ namespace HA4IoT.Tests.Mockups
             return State;
         }
 
+        public ITrigger GetMotionDetectedTrigger()
+        {
+            return _motionDetectedTrigger;
+        }
+
+        public ITrigger GetDetectionCompletedTrigger()
+        {
+            return _detectionCompletedTrigger;
+        }
+
         public void SetState(MotionDetectorState newState)
         {
             var oldState = State;
@@ -39,13 +51,13 @@ namespace HA4IoT.Tests.Mockups
         public void WalkIntoMotionDetector()
         {
             State = MotionDetectorState.MotionDetected;
-            MotionDetected?.Invoke(this, EventArgs.Empty);
+            _motionDetectedTrigger.Invoke();
         }
 
         public void FireDetectionCompleted()
         {
             State = MotionDetectorState.Idle;
-            DetectionCompleted?.Invoke(this, EventArgs.Empty);
+            _motionDetectedTrigger.Invoke();
         }
 
         public JsonObject GetStatusForApi()

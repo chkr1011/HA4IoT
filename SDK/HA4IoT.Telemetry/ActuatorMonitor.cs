@@ -44,7 +44,7 @@ namespace HA4IoT.Telemetry
                 var motionDetector = actuator as IMotionDetector;
                 if (motionDetector != null)
                 {
-                    motionDetector.MotionDetected += (s, e) =>
+                    motionDetector.GetMotionDetectedTrigger().Triggered += (s, e) =>
                     {
                         OnMotionDetected(motionDetector);
                     };
@@ -55,12 +55,12 @@ namespace HA4IoT.Telemetry
                 var button = actuator as IButton;
                 if (button != null)
                 {
-                    button.PressedShort += (s, e) =>
+                    button.GetPressedShortlyTrigger().Triggered += (s, e) =>
                     {
                         OnButtonPressed(button, ButtonPressedDuration.Short);
                     };
 
-                    button.PressedLong += (s, e) =>
+                    button.GetPressedLongTrigger().Triggered += (s, e) =>
                     {
                         OnButtonPressed(button, ButtonPressedDuration.Long);
                     };

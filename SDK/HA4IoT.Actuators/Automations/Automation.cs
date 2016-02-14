@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using HA4IoT.Actuators.Conditions;
-using HA4IoT.Contracts;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Core.Timer;
+using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Actuators.Automations
 {
@@ -74,50 +72,11 @@ namespace HA4IoT.Actuators.Automations
             return this;
         }
 
-        public Automation WithButtonPressedShortTrigger(IButton button)
+        public Automation WithTrigger(ITrigger trigger)
         {
-            if (button == null) throw new ArgumentNullException(nameof(button));
+            if (trigger == null) throw new ArgumentNullException(nameof(trigger));
 
-            button.PressedShort += (s, e) => Trigger();
-            return this;
-        }
-
-        public Automation WithButtonPressedLongTrigger(IButton button)
-        {
-            if (button == null) throw new ArgumentNullException(nameof(button));
-
-            button.PressedLong += (s, e) => Trigger();
-            return this;
-        }
-
-        public Automation WithMotionDetectedTrigger(IMotionDetector motionDetector)
-        {
-            if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
-
-            motionDetector.MotionDetected += (s, e) => Trigger();
-            return this;
-        }
-
-        public Automation WithMotionDetectionCompletedTrigger(IMotionDetector motionDetector)
-        {
-            if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
-
-            motionDetector.DetectionCompleted += (s, e) => Trigger();
-            return this;
-        }
-
-        public Automation WithBinaryStateOutputActuatorStateChangedTrigger(IBinaryStateOutputActuator actuator, BinaryActuatorState desiredState)
-        {
-            if (actuator == null) throw new ArgumentNullException(nameof(actuator));
-
-            actuator.StateChanged += (s, e) =>
-            {
-                if (actuator.GetState() == desiredState)
-                {
-                    Trigger();
-                }
-            };
-
+            trigger.Triggered += (s, e) => Trigger();
             return this;
         }
     }

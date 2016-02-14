@@ -36,7 +36,7 @@ namespace HA4IoT.Actuators.Tests
             var output = new TestBinaryStateOutputActuator();
             output.State.ShouldBeEquivalentTo(BinaryActuatorState.Off);
 
-            automation.WithTrigger(button);
+            automation.WithTrigger(button.GetPressedShortlyTrigger());
             automation.WithTarget(output);
 
             button.PressShort();
@@ -76,7 +76,7 @@ namespace HA4IoT.Actuators.Tests
             output.State.ShouldBeEquivalentTo(BinaryActuatorState.Off);
 
             automation.WithTurnOnWithinTimeRange(() => TimeSpan.Parse("10:00:00"), () => TimeSpan.Parse("15:00:00"));
-            automation.WithTrigger(button);
+            automation.WithTrigger(button.GetPressedShortlyTrigger());
             automation.WithTarget(output);
 
             button.PressShort();
@@ -151,7 +151,7 @@ namespace HA4IoT.Actuators.Tests
             var output = new TestBinaryStateOutputActuator();
             output.State.ShouldBeEquivalentTo(BinaryActuatorState.Off);
 
-            automation.WithTrigger(button);
+            automation.WithTrigger(button.GetPressedShortlyTrigger());
             automation.WithTarget(output);
 
             IBinaryStateOutputActuator[] otherActuators =

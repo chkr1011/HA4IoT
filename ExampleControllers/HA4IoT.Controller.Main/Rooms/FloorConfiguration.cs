@@ -92,7 +92,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             floor.SetupAutomaticTurnOnAndOffAutomation()
                 .WithTrigger(floor.MotionDetector(Floor.StairwayMotionDetector))
-                .WithTrigger(floor.Button(Floor.ButtonStairway))
+                .WithTrigger(floor.Button(Floor.ButtonStairway).GetPressedShortlyTrigger())
                 .WithTarget(floor.BinaryStateOutput(Floor.CombinedStairwayLamp))
                 .WithEnabledAtNight(controller.WeatherStation)
                 .WithOnDuration(TimeSpan.FromSeconds(30));
@@ -104,9 +104,9 @@ namespace HA4IoT.Controller.Main.Rooms
 
             floor.SetupAutomaticTurnOnAndOffAutomation()
                 .WithTrigger(floor.MotionDetector(Floor.LowerFloorMotionDetector))
-                .WithTrigger(floor.Button(Floor.ButtonLowerFloorUpper))
-                .WithTrigger(floor.Button(Floor.ButtonLowerFloorAtBathroom))
-                .WithTrigger(floor.Button(Floor.ButtonLowerFloorAtKitchen))
+                .WithTrigger(floor.Button(Floor.ButtonLowerFloorUpper).GetPressedShortlyTrigger())
+                .WithTrigger(floor.Button(Floor.ButtonLowerFloorAtBathroom).GetPressedShortlyTrigger())
+                .WithTrigger(floor.Button(Floor.ButtonLowerFloorAtKitchen).GetPressedShortlyTrigger())
                 .WithTarget(floor.BinaryStateOutput(Floor.CombinedLamps))
                 .WithEnabledAtNight(controller.WeatherStation)
                 .WithTurnOffIfButtonPressedWhileAlreadyOn()
@@ -138,7 +138,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             var lamp = floor.Lamp(Floor.LampStairsCeiling);
 
-            floor.Button(Floor.ButtonStairsUpper).PressedShort += (s, e) =>
+            floor.Button(Floor.ButtonStairsUpper).GetPressedShortlyTrigger().Triggered += (s, e) =>
             {
                 if (lamp.GetState() == BinaryActuatorState.On)
                 {
@@ -150,7 +150,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 }
             };
 
-            floor.Button(Floor.ButtonStairsLowerUpper).PressedShort += (s, e) =>
+            floor.Button(Floor.ButtonStairsLowerUpper).GetPressedShortlyTrigger().Triggered += (s, e) =>
             {
                 if (lamp.GetState() == BinaryActuatorState.On)
                 {

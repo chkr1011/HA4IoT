@@ -6,8 +6,8 @@ using HA4IoT.Actuators.Conditions;
 using HA4IoT.Actuators.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Triggers;
 using HA4IoT.Contracts.WeatherStation;
-using HA4IoT.Core.Timer;
 
 namespace HA4IoT.Actuators.Automations
 {
@@ -41,31 +41,19 @@ namespace HA4IoT.Actuators.Automations
             if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
-            motionDetector.MotionDetected += (s, e) => Trigger();
-            motionDetector.DetectionCompleted += (s, e) => StartTimeout();
+            motionDetector.GetMotionDetectedTrigger().Triggered += (s, e) => Trigger();
+            motionDetector.GetDetectionCompletedTrigger().Triggered += (s, e) => StartTimeout();
             motionDetector.IsEnabledChanged += CancelTimeoutIfMotionDetectorDeactivated;
             
             return this;
         }
 
-        public AutomaticTurnOnAndOffAutomation WithTrigger(IButton button, ButtonPressedDuration duration = ButtonPressedDuration.Short, params IParameter[] parameters)
+        public AutomaticTurnOnAndOffAutomation WithTrigger(ITrigger trigger, params IParameter[] parameters)
         {
-            if (button == null) throw new ArgumentNullException(nameof(button));
+            if (trigger == null) throw new ArgumentNullException(nameof(trigger));
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
-            if (duration == ButtonPressedDuration.Short)
-            {
-                button.PressedShort += HandleButtonPressed;
-            }
-            else if (duration == ButtonPressedDuration.Long)
-            {
-                button.PressedLong += HandleButtonPressed;
-            }
-            else
-            {
-                throw new NotSupportedException();
-            }
-            
+            trigger.Triggered += HandleButtonPressed;
             return this;
         }
 

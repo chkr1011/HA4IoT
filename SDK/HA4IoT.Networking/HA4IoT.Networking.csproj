@@ -123,10 +123,10 @@
     <Compile Include="HttpHeaderNames.cs" />
     <Compile Include="HttpResponseSerializer.cs" />
     <Compile Include="IConvertibleToJsonValue.cs" />
+    <Compile Include="IHttpRequestController.cs" />
     <Compile Include="JsonObjectExtensions.cs" />
     <Compile Include="MappedFolderController.cs" />
     <Compile Include="IHttpBody.cs" />
-    <Compile Include="IHttpRequestController.cs" />
     <Compile Include="HttpRequestController.cs" />
     <Compile Include="HttpMethod.cs" />
     <Compile Include="HttpRequest.cs" />

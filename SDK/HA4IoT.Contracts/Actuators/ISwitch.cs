@@ -3,13 +3,13 @@ using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Contracts.Actuators
 {
-    public interface IButton : IActuator
+    public interface ISwitch : IActuator
     {
         event EventHandler<ButtonStateChangedEventArgs> StateChanged;
 
-        ButtonState GetState();
+        SwitchState GetState();
 
-        ITrigger GetPressedShortlyTrigger();
-        ITrigger GetPressedLongTrigger();
+        ITrigger GetTurnedOnTrigger();
+        ITrigger GetTurnedOffTrigger();
     }
 }

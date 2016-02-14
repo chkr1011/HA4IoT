@@ -1,15 +1,20 @@
 ﻿using System;
 using Windows.Data.Json;
+using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Triggers;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
     public class MotionDetector : ActuatorBase, IMotionDetector
     {
+        private readonly Trigger _motionDetectedTrigger = new Trigger();
+        private readonly Trigger _detectionCompletedTrigger = new Trigger();
+
         private TimedAction _autoEnableAction;
         private MotionDetectorState _state = MotionDetectorState.Idle;
 
@@ -26,13 +31,21 @@ namespace HA4IoT.Actuators
             };
         }
 
-        public event EventHandler MotionDetected;
-        public event EventHandler DetectionCompleted;
         public event EventHandler<MotionDetectorStateChangedEventArgs> StateChanged;
 
         public MotionDetectorState GetState()
         {
             return _state;
+        }
+
+        public ITrigger GetMotionDetectedTrigger()
+        {
+            return _motionDetectedTrigger;
+        }
+
+        public ITrigger GetDetectionCompletedTrigger()
+        {
+            return _detectionCompletedTrigger;
         }
 
         public override JsonObject GetStatusForApi()
@@ -88,12 +101,12 @@ namespace HA4IoT.Actuators
             if (newState == MotionDetectorState.MotionDetected)
             {
                 Logger.Info(Id + ": Motion detected");
-                MotionDetected?.Invoke(this, EventArgs.Empty);
+                _motionDetectedTrigger.Invoke();
             }
             else
             {
                 Logger.Verbose(Id+ ": Detection completed");
-                DetectionCompleted?.Invoke(this, EventArgs.Empty);
+                _detectionCompletedTrigger.Invoke();
             }
 
             StateChanged?.Invoke(this, new MotionDetectorStateChangedEventArgs(oldState, newState));

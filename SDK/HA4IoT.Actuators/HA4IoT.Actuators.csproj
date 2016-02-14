@@ -139,6 +139,8 @@
     <Compile Include="BinaryStateOutputActuators\BinaryStateOutputActuatorBase.cs" />
     <Compile Include="Buttons\ButtonBase.cs" />
     <Compile Include="StateMachines\StateMachineExtensions.cs" />
+    <Compile Include="Triggers\SensorValueReachedTrigger.cs" />
+    <Compile Include="Triggers\Trigger.cs" />
     <Compile Include="Windows\Casement.cs" />
     <Compile Include="Windows\CasementState.cs" />
     <Compile Include="Conditions\Condition.cs" />
@@ -193,9 +195,7 @@
       <Name>HA4IoT.Networking</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Triggers\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

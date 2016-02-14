@@ -71,9 +71,9 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithOnDuration(TimeSpan.FromMinutes(8));
             
             new AutomaticBathroomFanAutomation(_controller.Timer)
+                .WithTrigger(bathroom.MotionDetector(UpperBathroom.MotionDetector))
                 .WithSlowDuration(TimeSpan.FromMinutes(8))
                 .WithFastDuration(TimeSpan.FromMinutes(12))
-                .WithMotiWithTrigger(bathroom.MotionDetector(UpperBathroom.MotionDetector))
                 .WithActuator(bathroom.StateMachine(UpperBathroom.Fan));
         }
 
