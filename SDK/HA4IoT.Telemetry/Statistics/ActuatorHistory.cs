@@ -6,7 +6,7 @@ using Windows.Data.Json;
 using Windows.Storage;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Networking;
 using DayOfWeek = System.DayOfWeek;
 
@@ -15,16 +15,16 @@ namespace HA4IoT.Telemetry.Statistics
     public class ActuatorHistory : IStatusProvider
     {
         private readonly IActuator _actuator;
-        private readonly INotificationHandler _notificationHandler;
+        private readonly ILogger _logger;
         private readonly object _syncRoot = new object();
 
         private readonly List<ActuatorHistoryEntry> _entriesOfThisMonth = new List<ActuatorHistoryEntry>();
         private readonly string _filename;
 
-        public ActuatorHistory(IActuator actuator, IHttpRequestController apiRequestController, INotificationHandler notificationHandler)
+        public ActuatorHistory(IActuator actuator, IHttpRequestController apiRequestController, ILogger logger)
         {
             _actuator = actuator;
-            _notificationHandler = notificationHandler;
+            _logger = logger;
             _filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Actuators", actuator.Id.Value, "History.csv");
 
             apiRequestController.Handle(HttpMethod.Get, "statistics").WithSegment(actuator.Id.Value).Using(HandleApiGet);
@@ -39,7 +39,7 @@ namespace HA4IoT.Telemetry.Statistics
                 if (entry.Timestamp.Month != DateTime.Now.Month)
                 {
                     _entriesOfThisMonth.Clear();
-                    _notificationHandler.Verbose("Cleared rolling history due to month change.");
+                    _logger.Verbose("Cleared rolling history due to month change.");
                 }
 
                 _entriesOfThisMonth.Add(entry);
@@ -47,7 +47,7 @@ namespace HA4IoT.Telemetry.Statistics
                 string directory = Path.GetDirectoryName(_filename);
                 if (!Directory.Exists(directory))
                 {
-                    _notificationHandler.Verbose("Creating directory... " + directory);
+                    _logger.Verbose("Creating directory... " + directory);
 
                     Directory.CreateDirectory(directory);
                 }

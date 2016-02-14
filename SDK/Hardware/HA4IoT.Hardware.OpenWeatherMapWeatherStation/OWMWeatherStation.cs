@@ -9,7 +9,7 @@ using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Networking;
 using HttpMethod = HA4IoT.Networking.HttpMethod;
@@ -19,7 +19,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 {
     public class OWMWeatherStation : IWeatherStation
     {
-        private readonly INotificationHandler _logger;
+        private readonly ILogger _logger;
         private readonly Uri _weatherDataSourceUrl;
         private readonly WeatherStationTemperatureSensor _temperature;
         private readonly WeatherStationHumiditySensor _humidity;
@@ -29,7 +29,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
         private TimeSpan _sunrise;
         private TimeSpan _sunset;
         
-        public OWMWeatherStation(DeviceId id, double lat, double lon, string appId, IHomeAutomationTimer timer, IHttpRequestController httpApi, INotificationHandler logger)
+        public OWMWeatherStation(DeviceId id, double lat, double lon, string appId, IHomeAutomationTimer timer, IHttpRequestController httpApi, ILogger logger)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (timer == null) throw new ArgumentNullException(nameof(timer));

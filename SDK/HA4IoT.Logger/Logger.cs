@@ -7,20 +7,20 @@ using Windows.Data.Json;
 using Windows.Networking;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
-using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Notifications
 {
-    public class NotificationHandler : INotificationHandler
+    public class Logger : ILogger
     {
         private readonly bool _isDebuggerAttached = Debugger.IsAttached;
 
         private readonly object _syncRoot = new object();
-        private readonly List<NotificationItem> _items = new List<NotificationItem>();
-        private readonly List<NotificationItem> _history = new List<NotificationItem>();
+        private readonly List<LogEntry> _items = new List<LogEntry>();
+        private readonly List<LogEntry> _history = new List<LogEntry>();
         
-        public NotificationHandler()
+        public Logger()
         {
             Task.Factory.StartNew(SendAsync, TaskCreationOptions.LongRunning);
         }
@@ -32,7 +32,7 @@ namespace HA4IoT.Notifications
             apiRequestController.Handle(HttpMethod.Get, "notifications").Using(HandleApiGet);
         }
 
-        public void Publish(NotificationType type, string text, params object[] parameters)
+        public void Publish(LogEntrySeverity type, string text, params object[] parameters)
         {
             if (parameters != null && parameters.Any())
             {
@@ -50,11 +50,11 @@ namespace HA4IoT.Notifications
 
             lock (_syncRoot)
             {
-                var notification = new NotificationItem(DateTime.Now, type, text);
+                var notification = new LogEntry(DateTime.Now, Environment.CurrentManagedThreadId, type, text);
 
                 _items.Add(notification);
 
-                if (notification.Type != NotificationType.Verbose)
+                if (notification.Severity != LogEntrySeverity.Verbose)
                 {
                     _history.Add(notification);
                     if (_history.Count > 100)
@@ -67,32 +67,32 @@ namespace HA4IoT.Notifications
 
         public void Info(string message, params object[] parameters)
         {
-            Publish(NotificationType.Info, message, parameters);
+            Publish(LogEntrySeverity.Info, message, parameters);
         }
 
         public void Warning(string message, params object[] parameters)
         {
-            Publish(NotificationType.Warning, message, parameters);
+            Publish(LogEntrySeverity.Warning, message, parameters);
         }
 
         public void Warning(Exception exception, string message, params object[] parameters)
         {
-            Publish(NotificationType.Warning, string.Format(message, parameters) + Environment.NewLine + exception);
+            Publish(LogEntrySeverity.Warning, string.Format(message, parameters) + Environment.NewLine + exception);
         }
 
         public void Error(string message, params object[] parameters)
         {
-            Publish(NotificationType.Error, message, parameters);
+            Publish(LogEntrySeverity.Error, message, parameters);
         }
 
         public void Error(Exception exception, string message, params object[] parameters)
         {
-            Publish(NotificationType.Error, string.Format(message, parameters) + Environment.NewLine + exception);
+            Publish(LogEntrySeverity.Error, string.Format(message, parameters) + Environment.NewLine + exception);
         }
 
         public void Verbose(string message, params object[] parameters)
         {
-            Publish(NotificationType.Verbose, message, parameters);
+            Publish(LogEntrySeverity.Verbose, message, parameters);
         }
 
         private void HandleApiGet(HttpContext httpContext)
@@ -137,19 +137,19 @@ namespace HA4IoT.Notifications
             }
         }
 
-        private List<NotificationItem> GetPendingItems()
+        private List<LogEntry> GetPendingItems()
         {
-            List<NotificationItem> itemsToSend;
+            List<LogEntry> itemsToSend;
             lock (_syncRoot)
             {
-                itemsToSend = new List<NotificationItem>(_items);
+                itemsToSend = new List<LogEntry>(_items);
                 _items.Clear();
             }
 
             return itemsToSend;
         }
 
-        private JsonObject CreatePackage(ICollection<NotificationItem> notificationItems)
+        private JsonObject CreatePackage(ICollection<LogEntry> notificationItems)
         {
             JsonArray notifications = new JsonArray();
             foreach (var notification in notificationItems)
@@ -165,7 +165,7 @@ namespace HA4IoT.Notifications
             return package;
         }
 
-        private void PrintNotification(NotificationType type, string message)
+        private void PrintNotification(LogEntrySeverity type, string message)
         {
             if (!_isDebuggerAttached)
             {
@@ -175,25 +175,25 @@ namespace HA4IoT.Notifications
             string typeText = string.Empty;
             switch (type)
             {
-                case NotificationType.Error:
+                case LogEntrySeverity.Error:
                     {
                         typeText = "ERROR";
                         break;
                     }
 
-                case NotificationType.Info:
+                case LogEntrySeverity.Info:
                     {
                         typeText = "INFO";
                         break;
                     }
 
-                case NotificationType.Warning:
+                case LogEntrySeverity.Warning:
                     {
                         typeText = "WARNING";
                         break;
                     }
 
-                case NotificationType.Verbose:
+                case LogEntrySeverity.Verbose:
                     {
                         typeText = "VERBOSE";
                         break;

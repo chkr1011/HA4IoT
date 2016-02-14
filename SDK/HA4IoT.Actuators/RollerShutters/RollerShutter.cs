@@ -6,7 +6,7 @@ using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Core.Timer;
 using HA4IoT.Networking;
 
@@ -33,7 +33,7 @@ namespace HA4IoT.Actuators
             TimeSpan autoOffTimeout,
             int maxPosition,
             IHttpRequestController api,
-            INotificationHandler logger, 
+            ILogger logger, 
             IHomeAutomationTimer timer)
             : base(id, api, logger)
         {

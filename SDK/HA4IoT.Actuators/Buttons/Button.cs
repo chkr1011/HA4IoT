@@ -4,7 +4,7 @@ using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Core.Timer;
 using HA4IoT.Networking;
 
@@ -14,7 +14,7 @@ namespace HA4IoT.Actuators
     {
         private readonly Stopwatch _stopwatch = new Stopwatch();
 
-        public Button(ActuatorId id, IBinaryInput input, IHttpRequestController api, INotificationHandler logger, IHomeAutomationTimer timer)
+        public Button(ActuatorId id, IBinaryInput input, IHttpRequestController api, ILogger logger, IHomeAutomationTimer timer)
             : base(id, api, logger)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));

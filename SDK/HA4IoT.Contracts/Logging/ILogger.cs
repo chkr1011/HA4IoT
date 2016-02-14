@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace HA4IoT.Contracts.Notifications
+namespace HA4IoT.Contracts.Logging
 {
-    public interface INotificationHandler
+    public interface ILogger
     {
-        void Publish(NotificationType type, string message, params object[] parameters);
+        void Verbose(string message, params object[] parameters);
 
         void Info(string message, params object[] parameters);
 
@@ -15,7 +15,5 @@ namespace HA4IoT.Contracts.Notifications
         void Error(string message, params object[] parameters);
 
         void Error(Exception exception, string message, params object[] parameters);
-        
-        void Verbose(string message, params object[] parameters);
     }
 }

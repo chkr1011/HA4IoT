@@ -1,6 +1,6 @@
-namespace HA4IoT.Contracts.Notifications
+namespace HA4IoT.Notifications
 {
-    public enum NotificationType
+    public enum LogEntrySeverity
     {
         Verbose,
 

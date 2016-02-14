@@ -6,24 +6,24 @@ using Windows.Web.Http.Headers;
 using HA4IoT.Actuators;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Telemetry.Azure
 {
     public class AzureEventHubPublisher : ActuatorMonitor
     {
         private readonly string _sasToken;
-        private readonly INotificationHandler _notificationHandler;
+        private readonly ILogger _logger;
         private readonly Uri _uri;
 
-        public AzureEventHubPublisher(string eventHubNamespace, string eventHubName, string sasToken, INotificationHandler notificationHandler)
+        public AzureEventHubPublisher(string eventHubNamespace, string eventHubName, string sasToken, ILogger logger)
         {
             if (eventHubNamespace == null) throw new ArgumentNullException(nameof(eventHubNamespace));
             if (eventHubName == null) throw new ArgumentNullException(nameof(eventHubName));
             if (sasToken == null) throw new ArgumentNullException(nameof(sasToken));
 
             _sasToken = sasToken;
-            _notificationHandler = notificationHandler;
+            _logger = logger;
             _uri = new Uri(string.Format("https://{0}.servicebus.windows.net/{1}/messages?timeout=60&api-version=2014-01", eventHubNamespace, eventHubName));
         }
 
@@ -101,17 +101,17 @@ namespace HA4IoT.Telemetry.Azure
                     HttpResponseMessage result = await client.PostAsync(_uri, content);
                     if (result.IsSuccessStatusCode)
                     {
-                        _notificationHandler.Verbose("Azure event published successfully.");
+                        _logger.Verbose("Azure event published successfully.");
                     }
                     else
                     {
-                        _notificationHandler.Warning("Failed to publish azure event (Error code: {0}).", result.StatusCode);
+                        _logger.Warning("Failed to publish azure event (Error code: {0}).", result.StatusCode);
                     }
                 }
             }
             catch (Exception exception)
             {
-                _notificationHandler.Warning("Failed to publish azure event. {0}", exception.Message);
+                _logger.Warning("Failed to publish azure event. {0}", exception.Message);
             }
         }
 

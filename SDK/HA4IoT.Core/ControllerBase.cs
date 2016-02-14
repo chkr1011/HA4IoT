@@ -9,7 +9,7 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Core.Timer;
 using HA4IoT.Hardware.Pi2;
@@ -28,7 +28,7 @@ namespace HA4IoT.Core
         private BackgroundTaskDeferral _deferral;
         private HttpServer _httpServer;
 
-        public INotificationHandler Logger { get; protected set; }
+        public ILogger Logger { get; protected set; }
         public IHttpRequestController HttpApiController { get; protected set; }
         public IHomeAutomationTimer Timer { get; protected set; }
         public IWeatherStation WeatherStation { get; protected set; }
@@ -153,9 +153,9 @@ namespace HA4IoT.Core
             Timer = new HomeAutomationTimer(Logger);
         }
 
-        private void InitializeNotificationHandler()
+        private void InitializeLogging()
         {
-            var logger = new NotificationHandler();
+            var logger = new Logger();
             logger.ExposeToApi(HttpApiController);
             logger.Info("Starting");
             Logger = logger;
@@ -165,7 +165,7 @@ namespace HA4IoT.Core
         {
             InitializeHttpApi();
 
-            InitializeNotificationHandler();
+            InitializeLogging();
             InitializeTimer();
 
             var controllerApiHandler = new ControllerApiHandler(this);
@@ -185,7 +185,7 @@ namespace HA4IoT.Core
             }
             catch (Exception exception)
             {
-                Logger.Error("Error while initializing actuators. " + exception);
+                Logger.Error(exception, "Error while initializing actuators");
             }
         }
     }

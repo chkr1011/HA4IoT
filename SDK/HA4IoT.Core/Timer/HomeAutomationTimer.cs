@@ -2,20 +2,20 @@
 using System.Diagnostics;
 using System.Threading;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Core.Timer
 {
     public class HomeAutomationTimer : IHomeAutomationTimer
     {
-        private readonly INotificationHandler _notificationHandler;
+        private readonly ILogger _logger;
         private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
 
-        public HomeAutomationTimer(INotificationHandler notificationHandler)
+        public HomeAutomationTimer(ILogger logger)
         {
-            if (notificationHandler == null) throw new ArgumentNullException(nameof(notificationHandler));
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
 
-            _notificationHandler = notificationHandler;
+            _logger = logger;
         }
 
         public event EventHandler<TimerTickEventArgs> Tick;
@@ -53,7 +53,7 @@ namespace HA4IoT.Core.Timer
             }
             catch (Exception exception)
             {
-                _notificationHandler.Error("Timer tick has catched an unhandled exception. " +  exception.Message);
+                _logger.Error(exception, "Timer tick has catched an unhandled exception");
             }
         }
     }

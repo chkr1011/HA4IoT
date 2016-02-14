@@ -7,8 +7,8 @@
     <ProjectGuid>{15DB669D-AF71-4E89-9748-0290A2E5D291}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HA4IoT.Notifications</RootNamespace>
-    <AssemblyName>HA4IoT.Notifications</AssemblyName>
+    <RootNamespace>HA4IoT.Logger</RootNamespace>
+    <AssemblyName>HA4IoT.Logger</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
@@ -114,8 +114,9 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NotificationHandler.cs" />
-    <Compile Include="NotificationItem.cs" />
+    <Compile Include="LogEntrySeverity.cs" />
+    <Compile Include="Logger.cs" />
+    <Compile Include="LogEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Properties\HA4IoT.Notifications.rd.xml" />
   </ItemGroup>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
@@ -13,7 +13,7 @@ namespace HA4IoT.Actuators
         private int _index;
         private bool _turnOffIfStateIsAppliedTwice;
 
-        public StateMachine(ActuatorId id, IHttpRequestController api, INotificationHandler logger)
+        public StateMachine(ActuatorId id, IHttpRequestController api, ILogger logger)
             : base(id, api, logger)
         {
         }

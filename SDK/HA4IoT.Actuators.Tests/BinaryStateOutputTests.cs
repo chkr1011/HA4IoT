@@ -15,7 +15,7 @@ namespace HA4IoT.Actuators.Tests
         public void Written_ON_ShouldBeResultIn_HIGH_Port()
         {
             var port = new TestOutputPort();
-            var output = new BinaryStateOutputActuator(new ActuatorId("test"), port, new TestHttpRequestController(), new TestNotificationHandler());
+            var output = new BinaryStateOutputActuator(new ActuatorId("test"), port, new TestHttpRequestController(), new TestLogger());
 
             output.TurnOn();
 
@@ -26,7 +26,7 @@ namespace HA4IoT.Actuators.Tests
         public void Written_OFF_ShouldBeResultIn_LOW_Port()
         {
             var port = new TestOutputPort();
-            var output = new BinaryStateOutputActuator(new ActuatorId("test"), port, new TestHttpRequestController(), new TestNotificationHandler());
+            var output = new BinaryStateOutputActuator(new ActuatorId("test"), port, new TestHttpRequestController(), new TestLogger());
 
             output.TurnOff();
 

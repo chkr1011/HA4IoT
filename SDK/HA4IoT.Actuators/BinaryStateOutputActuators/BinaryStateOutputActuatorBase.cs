@@ -1,14 +1,14 @@
 ﻿using System;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
     public abstract class BinaryStateOutputActuatorBase : ActuatorBase, IBinaryStateOutputActuator
     {
-        protected BinaryStateOutputActuatorBase(ActuatorId id, IHttpRequestController httpApi, INotificationHandler logger) 
+        protected BinaryStateOutputActuatorBase(ActuatorId id, IHttpRequestController httpApi, ILogger logger) 
             : base(id, httpApi, logger)
         {
         }

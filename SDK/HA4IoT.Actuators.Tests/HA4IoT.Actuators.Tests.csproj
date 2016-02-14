@@ -155,10 +155,6 @@
       <Project>{d4e0a3f9-6521-4aee-815a-e2a60323fb63}</Project>
       <Name>HA4IoT.Networking</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HA4IoT.Notifications\HA4IoT.Notifications.csproj">
-      <Project>{15db669d-af71-4e89-9748-0290a2e5d291}</Project>
-      <Name>HA4IoT.Notifications</Name>
-    </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Tests.Mockups\HA4IoT.Tests.Mockups.csproj">
       <Project>{238AD610-4F9B-4652-81DB-A8FC215F61A5}</Project>
       <Name>HA4IoT.Tests.Mockups</Name>

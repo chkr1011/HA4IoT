@@ -1,6 +1,4 @@
-﻿using HA4IoT.Contracts.Actuators;
-
-namespace HA4IoT.Contracts
+﻿namespace HA4IoT.Contracts.Actuators
 {
     public class MotionDetectorStateChangedEventArgs : ValueChangedEventArgsBase<MotionDetectorState>
     {

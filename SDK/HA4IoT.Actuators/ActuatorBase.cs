@@ -4,7 +4,7 @@ using Windows.Data.Json;
 using Windows.Storage;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
@@ -13,7 +13,7 @@ namespace HA4IoT.Actuators
     {
         private bool _isEnabled = true;
 
-        protected ActuatorBase(ActuatorId id, IHttpRequestController httpApi, INotificationHandler logger)
+        protected ActuatorBase(ActuatorId id, IHttpRequestController httpApi, ILogger logger)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (httpApi == null) throw new ArgumentNullException(nameof(httpApi));
@@ -51,7 +51,7 @@ namespace HA4IoT.Actuators
             }
         }
 
-        protected INotificationHandler Logger { get; }
+        protected ILogger Logger { get; }
 
         protected IHttpRequestController HttpApi { get; }
 

@@ -5,7 +5,7 @@ using HA4IoT.Actuators.Conditions.Specialized;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Core.Timer;
 
@@ -15,7 +15,7 @@ namespace HA4IoT.Actuators.Automations
     {
         private readonly List<IRollerShutter> _rollerShutters = new List<IRollerShutter>();
         private readonly IWeatherStation _weatherStation;
-        private readonly INotificationHandler _notificationHandler;
+        private readonly ILogger _logger;
 
         private bool _maxOutsideTemperatureApplied;
 
@@ -24,14 +24,14 @@ namespace HA4IoT.Actuators.Automations
         private bool _doNotOpenBeforeIsTraced;
         private bool _doNotOpenIfTemperatureIsTraced;
         
-        public AutomaticRollerShutterAutomation(IHomeAutomationTimer timer, IWeatherStation weatherStation, INotificationHandler notificationHandler)
+        public AutomaticRollerShutterAutomation(IHomeAutomationTimer timer, IWeatherStation weatherStation, ILogger logger)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
             if (weatherStation == null) throw new ArgumentNullException(nameof(weatherStation));
-            if (notificationHandler == null) throw new ArgumentNullException(nameof(notificationHandler));
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
 
             _weatherStation = weatherStation;
-            _notificationHandler = notificationHandler;
+            _logger = logger;
 
             AutomaticallyOpenTimeRange = new IsDayCondition(weatherStation, timer);
             AutomaticallyOpenTimeRange.WithStartAdjustment(TimeSpan.FromMinutes(-30));
@@ -92,7 +92,7 @@ namespace HA4IoT.Actuators.Automations
                     _maxOutsideTemperatureApplied = true;
                     StartMove(RollerShutterState.MovingDown);
 
-                    _notificationHandler.Info(GetTracePrefix() + "Closing because outside temperature reaches " + MaxOutsideTemperatureForAutoClose + "°C");
+                    _logger.Info(GetTracePrefix() + "Closing because outside temperature reaches " + MaxOutsideTemperatureForAutoClose + "°C");
 
                     return;
                 }
@@ -117,7 +117,7 @@ namespace HA4IoT.Actuators.Automations
                 {
                     if (!_doNotOpenBeforeIsTraced)
                     {
-                        _notificationHandler.Info(GetTracePrefix() + "Skipping opening because it is too early.");
+                        _logger.Info(GetTracePrefix() + "Skipping opening because it is too early.");
                         _doNotOpenBeforeIsTraced = true;
                     }
                     
@@ -132,7 +132,7 @@ namespace HA4IoT.Actuators.Automations
                 {
                     if (!_doNotOpenIfTemperatureIsTraced)
                     {
-                        _notificationHandler.Info(GetTracePrefix() + "Skipping opening because it is too cold (" + MinOutsideTemperatureForDoNotOpen + "°C).");
+                        _logger.Info(GetTracePrefix() + "Skipping opening because it is too cold (" + MinOutsideTemperatureForDoNotOpen + "°C).");
                         _doNotOpenIfTemperatureIsTraced = true;
                     }
 
@@ -146,7 +146,7 @@ namespace HA4IoT.Actuators.Automations
                 _maxOutsideTemperatureApplied = false;
 
                 StartMove(RollerShutterState.MovingUp);
-                _notificationHandler.Info(GetTracePrefix() + "Applied sunrise");
+                _logger.Info(GetTracePrefix() + "Applied sunrise");
 
                 return;
             }
@@ -157,7 +157,7 @@ namespace HA4IoT.Actuators.Automations
                 _autoOpenIsApplied = false;
                 
                 StartMove(RollerShutterState.MovingDown);
-                _notificationHandler.Info(GetTracePrefix() + "Applied sunset");
+                _logger.Info(GetTracePrefix() + "Applied sunset");
             }
         }
 

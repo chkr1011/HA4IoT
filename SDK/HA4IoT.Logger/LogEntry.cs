@@ -1,21 +1,23 @@
 ﻿using System;
 using Windows.Data.Json;
-using HA4IoT.Contracts.Notifications;
 
 namespace HA4IoT.Notifications
 {
-    internal sealed class NotificationItem
+    internal sealed class LogEntry
     {
-        public NotificationItem(DateTime timestamp, NotificationType type, string message)
+        public LogEntry(DateTime timestamp, int threadId, LogEntrySeverity severity, string message)
         {
             Timestamp = timestamp;
-            Type = type;
+            ThreadId = threadId;
+            Severity = severity;
             Message = message;
         }
 
         public DateTime Timestamp { get; }
 
-        public NotificationType Type { get; }
+        public int ThreadId { get; }
+
+        public LogEntrySeverity Severity { get; }
 
         public string Message { get; }
 
@@ -23,7 +25,8 @@ namespace HA4IoT.Notifications
         {
             var notification = new JsonObject();
             notification.SetNamedValue("timestamp", JsonValue.CreateStringValue(Timestamp.ToString("O")));
-            notification.SetNamedValue("type", JsonValue.CreateStringValue(Type.ToString()));
+            notification.SetNamedValue("threadId", JsonValue.CreateStringValue(ThreadId.ToString()));
+            notification.SetNamedValue("severity", JsonValue.CreateStringValue(Severity.ToString()));
             notification.SetNamedValue("message", JsonValue.CreateStringValue(Message));
 
             return notification;

@@ -1,13 +1,10 @@
 ﻿using System;
 using Windows.Data.Json;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Notifications;
-using HA4IoT.Core.Timer;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Networking;
-using HA4IoT.Notifications;
 
 namespace HA4IoT.Actuators
 {
@@ -16,7 +13,7 @@ namespace HA4IoT.Actuators
         private TimedAction _autoEnableAction;
         private MotionDetectorState _state = MotionDetectorState.Idle;
 
-        public MotionDetector(ActuatorId id, IBinaryInput input, IHomeAutomationTimer timer, IHttpRequestController api, INotificationHandler logger)
+        public MotionDetector(ActuatorId id, IBinaryInput input, IHomeAutomationTimer timer, IHttpRequestController api, ILogger logger)
             : base(id, api, logger)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
@@ -102,11 +99,11 @@ namespace HA4IoT.Actuators
             StateChanged?.Invoke(this, new MotionDetectorStateChangedEventArgs(oldState, newState));
         }
 
-        private void HandleIsEnabledStateChanged(IHomeAutomationTimer timer, INotificationHandler notificationHandler)
+        private void HandleIsEnabledStateChanged(IHomeAutomationTimer timer, ILogger logger)
         {
             if (!IsEnabled)
             {
-                notificationHandler.Info(Id + ": Disabled for 1 hour");
+                logger.Info(Id + ": Disabled for 1 hour");
                 _autoEnableAction = timer.In(TimeSpan.FromHours(1)).Do(() => IsEnabled = true);
             }
             else
