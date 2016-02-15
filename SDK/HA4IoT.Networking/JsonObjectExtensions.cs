@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using Windows.Data.Json;
 
 namespace HA4IoT.Networking
 {
     public static class JsonObjectExtensions
     {
+        private static readonly object[] EmptyParameters = new object[0];
+
         public static JsonObject ToIndexedJsonObject<TKey, TValue>(this Dictionary<TKey, TValue> entries)
         {
             if (entries == null) throw new ArgumentNullException(nameof(entries));
@@ -18,6 +21,19 @@ namespace HA4IoT.Networking
             }
 
             return jsonObject;
+        }
+
+        public static JsonObject ToJsonObject(this object source)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+
+            var result = new JsonObject();
+            foreach (var property in source.GetType().GetProperties())
+            {
+                result.SetNamedValue(property.Name, property.GetMethod.Invoke(source, EmptyParameters).ToJsonValue());
+            }
+
+            return result;
         }
 
         public static IJsonValue ToJsonValue(this object source)
@@ -102,7 +118,7 @@ namespace HA4IoT.Networking
                 return JsonValue.CreateNumberValue(Convert.ToDouble((decimal)source));
             }
 
-            return JsonValue.CreateStringValue(Convert.ToString(source));
+            return source.ToJsonObject();
         }
     }
 }
