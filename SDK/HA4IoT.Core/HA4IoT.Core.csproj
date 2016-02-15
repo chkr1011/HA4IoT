@@ -121,7 +121,7 @@
     <Compile Include="DeviceCollection.cs" />
     <Compile Include="HealthMonitor.cs" />
     <Compile Include="Room.cs" />
-    <Compile Include="RoomCollection.cs" />
+    <Compile Include="AreaCollection.cs" />
     <Compile Include="Timer\Timeout.cs" />
     <Compile Include="Timer\HomeAutomationTimer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

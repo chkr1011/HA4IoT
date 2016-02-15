@@ -33,7 +33,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 3;
 
-            var bathroom = controller.CreateRoom(Room.LowerBathroom)
+            var bathroom = controller.CreateArea(Room.LowerBathroom)
                 .WithMotionDetector(LowerBathroom.MotionDetector, input3.GetInput(15))
                 .WithTemperatureSensor(LowerBathroom.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(LowerBathroom.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))

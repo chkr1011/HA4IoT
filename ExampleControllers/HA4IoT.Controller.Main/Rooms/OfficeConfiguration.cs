@@ -60,7 +60,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             var i2cHardwareBridge = controller.Device<I2CHardwareBridge>();
 
-            var office = controller.CreateRoom(Room.Office)
+            var office = controller.CreateArea(Room.Office)
                 .WithMotionDetector(Office.MotionDetector, input4.GetInput(13))
                 .WithTemperatureSensor(Office.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(Office.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
@@ -97,7 +97,7 @@ namespace HA4IoT.Controller.Main.Rooms
             });
         }
 
-        private void SetupLight(StateMachine light, IRoom room)
+        private void SetupLight(StateMachine light, IArea room)
         {
             var lightsCouchOnly = room.CombineActuators(Office.CombinedCeilingLightsCouchOnly)
                 .WithActuator(room.Lamp(Office.LightCeilingRearRight));

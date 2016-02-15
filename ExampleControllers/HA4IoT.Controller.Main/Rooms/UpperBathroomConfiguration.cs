@@ -48,7 +48,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             var i2cHardwareBridge = _controller.Device<I2CHardwareBridge>();
 
-            var bathroom = _controller.CreateRoom(Room.UpperBathroom)
+            var bathroom = _controller.CreateArea(Room.UpperBathroom)
                 .WithTemperatureSensor(UpperBathroom.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(UpperBathroom.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
                 .WithMotionDetector(UpperBathroom.MotionDetector, _input5.GetInput(15))
@@ -77,7 +77,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithActuator(bathroom.StateMachine(UpperBathroom.Fan));
         }
 
-        private void SetupFan(StateMachine stateMachine, IRoom room)
+        private void SetupFan(StateMachine stateMachine, IArea room)
         {
             var fanPort0 = _hsrel5.GetOutput(4);
             var fanPort1 = _hsrel5.GetOutput(5);

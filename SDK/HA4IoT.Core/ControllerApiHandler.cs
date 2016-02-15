@@ -5,6 +5,7 @@ using Windows.Security.Cryptography.Core;
 using Windows.Storage.Streams;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Core
@@ -30,8 +31,8 @@ namespace HA4IoT.Core
         private JsonObject GetStatus()
         {
             var result = new JsonObject();
-            result.SetNamedValue("type", JsonValue.CreateStringValue("HA4IoT.Status"));
-            result.SetNamedValue("version", JsonValue.CreateNumberValue(1));
+            result.SetNamedValue("type", "HA4IoT.Status".ToJsonValue());
+            result.SetNamedValue("version", 1.ToJsonValue());
 
             var status = new JsonObject();
             foreach (var actuator in _controller.Actuators())
@@ -41,9 +42,10 @@ namespace HA4IoT.Core
 
             result.SetNamedValue("status", status);
 
-            if (_controller.WeatherStation != null)
+            var weatherStation = _controller.Device<IWeatherStation>();
+            if (weatherStation != null)
             {
-                result.SetNamedValue("weatherStation", _controller.WeatherStation.GetStatusForApi());
+                result.SetNamedValue("weatherStation", weatherStation.GetStatusForApi());
             }
 
             return result;
@@ -80,9 +82,9 @@ namespace HA4IoT.Core
             configuration.SetNamedValue("version", JsonValue.CreateNumberValue(1));
 
             var rooms = new JsonObject();
-            foreach (var room in _controller.Rooms())
+            foreach (var room in _controller.Areas())
             {
-                rooms.SetNamedValue(room.Id.Value, GetRoomConfigurationAsJson(room));
+                rooms.SetNamedValue(room.Id.Value, GetAreaConfigurationAsJson(room));
             }
 
             configuration.SetNamedValue("rooms", rooms);
@@ -90,10 +92,10 @@ namespace HA4IoT.Core
             return configuration;
         }
 
-        private JsonObject GetRoomConfigurationAsJson(IRoom room)
+        private JsonObject GetAreaConfigurationAsJson(IArea area)
         {
             var actuators = new JsonObject();
-            foreach (var actuator in room.Actuators())
+            foreach (var actuator in area.Actuators())
             {
                 actuators.SetNamedValue(actuator.Id.Value, actuator.GetConfigurationForApi());
             }

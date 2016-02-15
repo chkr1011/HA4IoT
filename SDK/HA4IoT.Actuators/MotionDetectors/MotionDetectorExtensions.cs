@@ -7,7 +7,7 @@ namespace HA4IoT.Actuators
 {
     public static class MotionDetectorExtensions
     {
-        public static IRoom WithMotionDetector(this IRoom room, Enum id, IBinaryInput input)
+        public static IArea WithMotionDetector(this IArea room, Enum id, IBinaryInput input)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (input == null) throw new ArgumentNullException(nameof(input));
@@ -17,7 +17,7 @@ namespace HA4IoT.Actuators
             return room;
         }
 
-        public static IMotionDetector MotionDetector(this IRoom room, Enum id)
+        public static IMotionDetector MotionDetector(this IArea room, Enum id)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 

@@ -4,9 +4,9 @@ using HA4IoT.Contracts.Core;
 
 namespace HA4IoT.Contracts.Configuration
 {
-    public interface IRoom
+    public interface IArea
     {
-        RoomId Id { get; }
+        AreaId Id { get; }
 
         IController Controller { get; }
 

@@ -6,11 +6,11 @@ using System.Collections.Generic;
 
 namespace HA4IoT.Core
 {
-    public class Room : IRoom
+    public class Area : IArea
     {
         private readonly ActuatorCollection _actuators = new ActuatorCollection();
 
-        public Room(RoomId id, IController controller)
+        public Area(AreaId id, IController controller)
         {
             if (controller == null) throw new ArgumentNullException(nameof(controller));
 
@@ -18,13 +18,13 @@ namespace HA4IoT.Core
             Controller = controller;
         }
 
-        public RoomId Id { get; }
+        public AreaId Id { get; }
 
         public IController Controller { get; }
 
         public void AddActuator(IActuator actuator)
         {
-            _actuators.Add(actuator);
+            _actuators.AddUnique(actuator);
             Controller.AddActuator(actuator);
         }
 

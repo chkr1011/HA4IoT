@@ -8,7 +8,7 @@ namespace HA4IoT.Contracts.Actuators
     {
         private static readonly HashSet<string> UsedIds = new HashSet<string>();
 
-        public static ActuatorId Create(IRoom room, Enum id)
+        public static ActuatorId Create(IArea room, Enum id)
         {
             return Create(room.Id + "." + id);
         }

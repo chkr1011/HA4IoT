@@ -3,19 +3,19 @@ using HA4IoT.Contracts.Core;
 
 namespace HA4IoT.Contracts.Configuration
 {
-    public class RoomId : IdBase, IEquatable<RoomId>
+    public class AreaId : IdBase, IEquatable<AreaId>
     {
-        public RoomId(string value) : base(value)
+        public AreaId(string value) : base(value)
         {
-            if (string.IsNullOrEmpty(value)) throw new ArgumentException("Room ID is invalid.");
+            if (string.IsNullOrEmpty(value)) throw new ArgumentException("Area ID is invalid.");
         }
 
-        public static RoomId From(Enum value)
+        public static AreaId From(Enum value)
         {
-            return new RoomId(value.ToString());
+            return new AreaId(value.ToString());
         }
 
-        public bool Equals(RoomId other)
+        public bool Equals(AreaId other)
         {
             if (other == null)
             {

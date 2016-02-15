@@ -3,7 +3,6 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Contracts.Core
@@ -13,7 +12,6 @@ namespace HA4IoT.Contracts.Core
         ILogger Logger { get; }
         IHttpRequestController HttpApiController { get; }
         IHomeAutomationTimer Timer { get; }
-        IWeatherStation WeatherStation { get; }
 
         void AddDevice(IDevice device);
 
@@ -23,11 +21,11 @@ namespace HA4IoT.Contracts.Core
 
         IList<TDevice> Devices<TDevice>() where TDevice : IDevice;
 
-        void AddRoom(IRoom room);
+        void AddArea(IArea room);
 
-        IRoom Room(RoomId id);
+        IArea Area(AreaId id);
 
-        IList<IRoom> Rooms();
+        IList<IArea> Areas();
 
         void AddActuator(IActuator actuator);
 

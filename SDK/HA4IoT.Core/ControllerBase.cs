@@ -10,7 +10,6 @@ using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Core.Timer;
 using HA4IoT.Hardware.Pi2;
 using HA4IoT.Networking;
@@ -20,7 +19,7 @@ namespace HA4IoT.Core
 {
     public abstract class ControllerBase : IController
     {
-        private readonly RoomCollection _rooms = new RoomCollection();
+        private readonly AreaCollection _areas = new AreaCollection();
         private readonly ActuatorCollection _actuators = new ActuatorCollection();
         private readonly DeviceCollection _devices = new DeviceCollection();
 
@@ -31,7 +30,6 @@ namespace HA4IoT.Core
         public ILogger Logger { get; protected set; }
         public IHttpRequestController HttpApiController { get; protected set; }
         public IHomeAutomationTimer Timer { get; protected set; }
-        public IWeatherStation WeatherStation { get; protected set; }
         
         public void RunAsync(IBackgroundTaskInstance taskInstance)
         {
@@ -41,19 +39,19 @@ namespace HA4IoT.Core
             Task.Factory.StartNew(InitializeCore, TaskCreationOptions.LongRunning);
         }
         
-        public void AddRoom(IRoom room)
+        public void AddArea(IArea room)
         {
-            _rooms.Add(room);
+            _areas.Add(room);
         }
 
-        public IRoom Room(RoomId id)
+        public IArea Area(AreaId id)
         {
-            return _rooms[id];
+            return _areas[id];
         }
 
-        public IList<IRoom> Rooms()
+        public IList<IArea> Areas()
         {
-            return _rooms.GetAll();
+            return _areas.GetAll();
         }
 
         public void AddActuator(IActuator actuator)
@@ -105,7 +103,7 @@ namespace HA4IoT.Core
             message.AppendFormat("- Devices={0}", Devices<IDevice>().Count);
             message.AppendLine();
 
-            foreach (var room in Rooms())
+            foreach (var room in Areas())
             {
                 var actuatorsCount = room.Actuators().Count;
                 totalActuatorsCount += actuatorsCount;
@@ -139,13 +137,6 @@ namespace HA4IoT.Core
 
             var appPath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "app");
             httpRequestDispatcher.MapFolder("app", appPath);
-        }
-
-        protected void InitializeWeatherStation(IWeatherStation weatherStation)
-        {
-            if (weatherStation == null) throw new ArgumentNullException(nameof(weatherStation));
-
-            WeatherStation = weatherStation;
         }
 
         private void InitializeTimer()

@@ -41,7 +41,7 @@ namespace HA4IoT.Configuration
             _configuration = configuration;
 
             ParseDevices();
-            ParseRooms();
+            ParseAreas();
 
             TriggerOnConfigurationParsed();
         }
@@ -104,32 +104,32 @@ namespace HA4IoT.Configuration
             }
         }
 
-        private void ParseRooms()
+        private void ParseAreas()
         {
-            var roomsElement = _configuration.Root.Element("Rooms");
-            foreach (XElement roomElement in roomsElement.Elements())
+            var roomsElement = _configuration.Root.Element("Areas");
+            foreach (XElement areaElement in roomsElement.Elements())
             {
                 try
                 {
-                    _controller.AddRoom(ParseRoom(roomElement));
+                    _controller.AddArea(ParseArea(areaElement));
                 }
                 catch (Exception exception)
                 {
-                    _controller.Logger.Warning(exception, "Unable to parse room node '{0}'.", roomElement.Name);
+                    _controller.Logger.Warning(exception, "Unable to parse area node '{0}'.", areaElement.Name);
                 }
             }
         }
 
-        private IRoom ParseRoom(XElement roomElement)
+        private IArea ParseArea(XElement roomElement)
         {
-            var room = new Room(new RoomId(roomElement.GetMandatoryStringFromAttribute("id")), _controller);
+            var area = new Area(new AreaId(roomElement.GetMandatoryStringFromAttribute("id")), _controller);
 
             foreach (var actuatorElement in roomElement.Element("Actuators").Elements())
             {
                 try
                 {
                     IActuator actuator = GetConfigurationExtender(actuatorElement).ParseActuator(actuatorElement);
-                    room.AddActuator(actuator);
+                    area.AddActuator(actuator);
                 }
                 catch (Exception exception)
                 {
@@ -137,7 +137,7 @@ namespace HA4IoT.Configuration
                 }
             }
 
-            return room;
+            return area;
         }
 
         private IConfigurationExtender GetConfigurationExtender(XElement element)

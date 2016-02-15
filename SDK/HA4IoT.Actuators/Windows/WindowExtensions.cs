@@ -5,7 +5,7 @@ namespace HA4IoT.Actuators
 {
     public static class WindowExtensions
     {
-        public static IRoom WithWindow(this IRoom room, Enum id, Action<Window> initializer)
+        public static IArea WithWindow(this IArea room, Enum id, Action<Window> initializer)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
@@ -17,7 +17,7 @@ namespace HA4IoT.Actuators
             return room;
         }
 
-        public static Window Window(this IRoom room, Enum id)
+        public static Window Window(this IArea room, Enum id)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 

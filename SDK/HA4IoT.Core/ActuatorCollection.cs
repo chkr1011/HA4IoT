@@ -9,11 +9,18 @@ namespace HA4IoT.Core
     {
         private readonly Dictionary<ActuatorId, IActuator> _actuators = new Dictionary<ActuatorId, IActuator>();
 
+        public void AddUnique(IActuator actuator)
+        {
+            if (actuator == null) throw new ArgumentNullException(nameof(actuator));
+
+            _actuators[actuator.Id] = actuator;
+        }
+
         public void Add(IActuator actuator)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
-            _actuators.Add(actuator.Id, actuator);
+            _actuators[actuator.Id] = actuator;
         }
 
         public TActuator Get<TActuator>(ActuatorId id) where TActuator : IActuator

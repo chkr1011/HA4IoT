@@ -5,7 +5,7 @@ namespace HA4IoT.Actuators.Automations
 {
     public static class AutomaticConditionalOnAutomationExtensions
     {
-        public static AutomaticConditionalOnAutomation SetupAutomaticConditionalOnAutomation(this IRoom room)
+        public static AutomaticConditionalOnAutomation SetupAutomaticConditionalOnAutomation(this IArea room)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 

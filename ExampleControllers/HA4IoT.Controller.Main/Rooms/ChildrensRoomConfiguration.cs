@@ -37,7 +37,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 7;
 
-            var childrensRoom = controller.CreateRoom(Room.ChildrensRoom)
+            var childrensRoom = controller.CreateArea(Room.ChildrensRoom)
                 .WithTemperatureSensor(ChildrensRoom.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(ChildrensRoom.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
                 .WithLamp(ChildrensRoom.LightCeilingMiddle, hsrel5[HSREL5Pin.GPIO1].WithInvertedState())

@@ -5,30 +5,30 @@ using System.Linq;
 
 namespace HA4IoT.Core
 {
-    public class RoomCollection
+    public class AreaCollection
     { 
-        private readonly Dictionary<RoomId, IRoom> _rooms = new Dictionary<RoomId, IRoom>();
+        private readonly Dictionary<AreaId, IArea> _areas = new Dictionary<AreaId, IArea>();
 
-        public void Add(IRoom room)
+        public void Add(IArea room)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 
-            if (_rooms.ContainsKey(room.Id))
+            if (_areas.ContainsKey(room.Id))
             {
-                throw new InvalidOperationException("Room with ID '" + room.Id + "' aready registered.");
+                throw new InvalidOperationException("Area with ID '" + room.Id + "' aready registered.");
             }
 
-            _rooms[room.Id] = room;
+            _areas[room.Id] = room;
         }
 
-        public IRoom this[RoomId id]
+        public IArea this[AreaId id]
         {
             get
             {
                 if (id == null) throw new ArgumentNullException(nameof(id));
 
-                IRoom room;
-                if (!_rooms.TryGetValue(id, out room))
+                IArea room;
+                if (!_areas.TryGetValue(id, out room))
                 {
                     throw new InvalidOperationException("Room with ID '" + id + "' is not registered.");
                 }
@@ -37,9 +37,9 @@ namespace HA4IoT.Core
             }
         }
 
-        public IList<IRoom> GetAll()
+        public IList<IArea> GetAll()
         {
-            return _rooms.Values.ToList();
+            return _areas.Values.ToList();
         }
     }
 }

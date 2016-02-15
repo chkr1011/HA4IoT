@@ -30,7 +30,7 @@ namespace HA4IoT.Controller.Main
             
             var i2CBus = new DefaultI2CBus("II2CBus.default".ToDeviceId(), Logger);
 
-            InitializeWeatherStation(CreateWeatherStation());
+            CreateWeatherStation();
 
             AddDevice(new I2CHardwareBridge(new DeviceId("HB"), new I2CSlaveAddress(50), i2CBus, Timer));
 
@@ -109,7 +109,7 @@ namespace HA4IoT.Controller.Main
             }
         }
 
-        private IWeatherStation CreateWeatherStation()
+        private void CreateWeatherStation()
         {
             try
             {
@@ -121,14 +121,13 @@ namespace HA4IoT.Controller.Main
 
                 var weatherStation = new OWMWeatherStation(DeviceId.From(Main.Device.WeatherStation), lat, lon, appId, Timer, HttpApiController, Logger);
                 Logger.Info("WeatherStation initialized successfully.");
-                return weatherStation;
+                
+                AddDevice(weatherStation);
             }
             catch (Exception exception)
             {
                 Logger.Warning("Unable to create weather station. " + exception.Message);
             }
-
-            return null;
         }
     }
 }

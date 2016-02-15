@@ -16,7 +16,7 @@ namespace HA4IoT.Actuators
             return new SensorValueReachedTrigger(sensor).WithTarget(target).WithDelta(delta);
         }
 
-        public static IRoom WithHumiditySensor(this IRoom room, Enum id, ISingleValueSensor sensor)
+        public static IArea WithHumiditySensor(this IArea room, Enum id, ISingleValueSensor sensor)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (sensor == null) throw new ArgumentNullException(nameof(sensor));
@@ -25,7 +25,7 @@ namespace HA4IoT.Actuators
             return room;
         }
 
-        public static IHumiditySensor HumiditySensor(this IRoom room, Enum id)
+        public static IHumiditySensor HumiditySensor(this IArea room, Enum id)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 

@@ -129,8 +129,8 @@
     <Compile Include="Automations\IAutomation.cs" />
     <Compile Include="Configuration\ConfigurationInvalidException.cs" />
     <Compile Include="Core\IController.cs" />
-    <Compile Include="Configuration\IRoom.cs" />
-    <Compile Include="Configuration\RoomId.cs" />
+    <Compile Include="Configuration\IArea.cs" />
+    <Compile Include="Configuration\AreaId.cs" />
     <Compile Include="Configuration\HandleConfigurationNodeResult.cs" />
     <Compile Include="Configuration\IConfigurationExtender.cs" />
     <Compile Include="Core\IdBase.cs" />
