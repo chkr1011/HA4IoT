@@ -3,6 +3,7 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core;
+using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.Hardware.RemoteSwitch;

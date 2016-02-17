@@ -7,6 +7,8 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
+    // TODO: Add generic type for configuation object and use ToJsonObject on save.
+    // TODO: Create base configuration object for each type of config with IsEnabled etc.
     public class PersistedConfiguration
     {
         private readonly string _filename;

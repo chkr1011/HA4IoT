@@ -71,7 +71,7 @@ namespace HA4IoT.Networking
             {
                 return convertibleJsonValue.ToJsonValue();
             }
-            
+
             var array = source as IEnumerable;
             if (array != null)
             {
@@ -79,8 +79,9 @@ namespace HA4IoT.Networking
                 foreach (var arrayEntry in array)
                 {
                     result.Add(arrayEntry.ToJsonValue());
-                    return result;
                 }
+
+                return result;
             }
 
             if (source is double)
@@ -112,7 +113,7 @@ namespace HA4IoT.Networking
             {
                 return JsonValue.CreateNumberValue(Convert.ToDouble((float)source));
             }
-            
+
             if (source is decimal)
             {
                 return JsonValue.CreateNumberValue(Convert.ToDouble((decimal)source));

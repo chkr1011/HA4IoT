@@ -1,7 +1,7 @@
 ﻿using System;
 using Windows.Data.Json;
 
-namespace HA4IoT.Notifications
+namespace HA4IoT.Logger
 {
     internal sealed class LogEntry
     {

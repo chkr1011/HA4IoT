@@ -114,13 +114,16 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AreaIdFactory.cs" />
+    <Compile Include="AutomationCollection.cs" />
     <Compile Include="ActuatorCollection.cs" />
     <Compile Include="ControllerApiHandler.cs" />
     <Compile Include="ControllerBase.cs" />
     <Compile Include="ControllerExtensions.cs" />
+    <Compile Include="GenericControllerCollection.cs" />
     <Compile Include="DeviceCollection.cs" />
     <Compile Include="HealthMonitor.cs" />
-    <Compile Include="Room.cs" />
+    <Compile Include="Area.cs" />
     <Compile Include="AreaCollection.cs" />
     <Compile Include="Timer\Timeout.cs" />
     <Compile Include="Timer\HomeAutomationTimer.cs" />

@@ -1,12 +1,13 @@
 ﻿using System;
 using HA4IoT.Actuators;
-using HA4IoT.Actuators.Automations;
 using HA4IoT.Actuators.Connectors;
+using HA4IoT.Automations;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Core;
+using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
 

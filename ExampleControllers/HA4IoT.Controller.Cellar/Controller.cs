@@ -3,8 +3,8 @@ using System.IO;
 using Windows.Data.Json;
 using Windows.Storage;
 using HA4IoT.Actuators;
-using HA4IoT.Actuators.Automations;
 using HA4IoT.Actuators.Connectors;
+using HA4IoT.Automations;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Hardware;
@@ -160,7 +160,7 @@ namespace HA4IoT.Controller.Cellar
                 double lon = configuration.GetNamedNumber("lon");
                 string appId = configuration.GetNamedString("appID");
 
-                var weatherStation = new OWMWeatherStation(DeviceId.From(Device.WeatherStation),  lat, lon, appId, Timer, HttpApiController, Logger);
+                var weatherStation = new OWMWeatherStation(DeviceIdFactory.CreateIdFrom(Device.WeatherStation),  lat, lon, appId, Timer, HttpApiController, Logger);
                 Logger.Info("WeatherStation initialized successfully");
 
                 AddDevice(weatherStation);

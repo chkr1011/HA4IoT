@@ -41,6 +41,8 @@ namespace HA4IoT.Actuators.Triggers
 
                 _invoked = true;
                 Invoke();
+
+                return;
             }
 
             if (e.NewValue < Target - Delta)

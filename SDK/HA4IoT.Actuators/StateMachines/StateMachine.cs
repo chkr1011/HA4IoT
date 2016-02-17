@@ -8,7 +8,7 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public class StateMachine : ActuatorBase, IActuatorWithOffState
+    public class StateMachine : ActuatorBase, IStateMachine
     {
         private int _index;
         private bool _turnOffIfStateIsAppliedTwice;

@@ -5,7 +5,6 @@ using Windows.Storage;
 using HA4IoT.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Controller.Main.Rooms;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
@@ -119,7 +118,7 @@ namespace HA4IoT.Controller.Main
                 double lon = configuration.GetNamedNumber("lon");
                 string appId = configuration.GetNamedString("appID");
 
-                var weatherStation = new OWMWeatherStation(DeviceId.From(Main.Device.WeatherStation), lat, lon, appId, Timer, HttpApiController, Logger);
+                var weatherStation = new OWMWeatherStation(DeviceIdFactory.CreateIdFrom(Main.Device.WeatherStation), lat, lon, appId, Timer, HttpApiController, Logger);
                 Logger.Info("WeatherStation initialized successfully.");
                 
                 AddDevice(weatherStation);

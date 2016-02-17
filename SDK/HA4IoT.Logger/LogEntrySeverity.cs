@@ -1,4 +1,4 @@
-namespace HA4IoT.Notifications
+namespace HA4IoT.Logger
 {
     public enum LogEntrySeverity
     {

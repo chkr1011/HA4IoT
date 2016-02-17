@@ -119,6 +119,10 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Automations\HA4IoT.Automations.csproj">
+      <Project>{1CA64C98-210A-4015-95C6-67D591115F7B}</Project>
+      <Name>HA4IoT.Automations</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{551337E7-D1EF-4145-92B4-F7086F7665A6}</Project>
       <Name>HA4IoT.Contracts</Name>

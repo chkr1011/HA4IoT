@@ -3,8 +3,8 @@ using System.IO;
 using Windows.Data.Json;
 using Windows.Storage;
 using HA4IoT.Actuators;
-using HA4IoT.Actuators.Automations;
 using HA4IoT.Actuators.Connectors;
+using HA4IoT.Automations;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core;
@@ -157,7 +157,7 @@ namespace HA4IoT.Controller.Demo
 
         private void SetupCeilingFan(StateMachine stateMachine)
         {
-            var relayBoard = Device<HSREL5>(Device.HSRel5);
+            var relayBoard = Device<HSREL5>(DeviceIdFactory.CreateIdFrom(Device.HSRel5));
             var gear1 = relayBoard.GetOutput(2);
             var gear2 = relayBoard.GetOutput(1);
 
@@ -190,7 +190,7 @@ namespace HA4IoT.Controller.Demo
                 double lon = configuration.GetNamedNumber("lon");
                 string appId = configuration.GetNamedString("appID");
 
-                var weatherStation = new OWMWeatherStation(DeviceId.From(Device.WeatherStation), lat, lon, appId, Timer, HttpApiController, Logger);
+                var weatherStation = new OWMWeatherStation(DeviceIdFactory.CreateIdFrom(Device.WeatherStation), lat, lon, appId, Timer, HttpApiController, Logger);
                 Logger.Info("WeatherStation initialized successfully");
 
                 AddDevice(weatherStation);

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Storage;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
@@ -13,16 +15,16 @@ using HA4IoT.Contracts.Logging;
 using HA4IoT.Core.Timer;
 using HA4IoT.Hardware.Pi2;
 using HA4IoT.Networking;
-using HA4IoT.Notifications;
 
 namespace HA4IoT.Core
 {
     public abstract class ControllerBase : IController
     {
+        private readonly DeviceCollection _devices = new DeviceCollection();
         private readonly AreaCollection _areas = new AreaCollection();
         private readonly ActuatorCollection _actuators = new ActuatorCollection();
-        private readonly DeviceCollection _devices = new DeviceCollection();
-
+        private readonly AutomationCollection _automations = new AutomationCollection();
+        
         private HealthMonitor _healthMonitor;
         private BackgroundTaskDeferral _deferral;
         private HttpServer _httpServer;
@@ -39,14 +41,14 @@ namespace HA4IoT.Core
             Task.Factory.StartNew(InitializeCore, TaskCreationOptions.LongRunning);
         }
         
-        public void AddArea(IArea room)
+        public void AddArea(IArea area)
         {
-            _areas.Add(room);
+            _areas.AddUnique(area.Id, area);
         }
 
         public IArea Area(AreaId id)
         {
-            return _areas[id];
+            return _areas.Get(id);
         }
 
         public IList<IArea> Areas()
@@ -56,12 +58,17 @@ namespace HA4IoT.Core
 
         public void AddActuator(IActuator actuator)
         {
-            _actuators.Add(actuator);
+            _actuators.AddOrUpdate(actuator.Id, actuator);
         }
 
         public TActuator Actuator<TActuator>(ActuatorId id) where TActuator : IActuator
         {
             return _actuators.Get<TActuator>(id);
+        }
+
+        public IList<TActuator> Actuators<TActuator>() where TActuator : IActuator
+        {
+            return _actuators.GetAll<TActuator>();
         }
 
         public IList<IActuator> Actuators()
@@ -71,12 +78,7 @@ namespace HA4IoT.Core
 
         public void AddDevice(IDevice device)
         {
-            _devices.Add(device);
-        }
-
-        public TDevice Device<TDevice>(Enum id) where TDevice : IDevice
-        {
-            return Device<TDevice>(new DeviceId(id.ToString()));
+            _devices.AddUnique(device.Id, device);
         }
 
         public TDevice Device<TDevice>(DeviceId id) where TDevice : IDevice
@@ -94,26 +96,66 @@ namespace HA4IoT.Core
             return _devices.GetAll<TDevice>();
         }
 
+        public IList<IDevice> Devices()
+        {
+            return _devices.GetAll();
+        }
+
+        public void AddAutomation(IAutomation automation)
+        {
+            _automations.AddOrUpdate(automation.Id, automation);
+        }
+
+        public IList<TAutomation> Automations<TAutomation>() where TAutomation : IAutomation
+        {
+            return _automations.GetAll<TAutomation>();
+        }
+
+        public TAutomation Automation<TAutomation>(AutomationId id) where TAutomation : IAutomation
+        {
+            return _automations.Get<TAutomation>(id);
+        }
+
+        public IList<IAutomation> Automations()
+        {
+            return _automations.GetAll();
+        }
+
         protected void PublishStatisticsNotification()
         {
-            int totalActuatorsCount = 0;
-
             var message = new StringBuilder();
             message.AppendLine("Controller statistics after initialization:");
-            message.AppendFormat("- Devices={0}", Devices<IDevice>().Count);
-            message.AppendLine();
 
-            foreach (var room in Areas())
+            message.AppendLine("- Devices total=" + Devices().Count);
+            var deviceGroups = Devices().GroupBy(d => d.GetType().Name).OrderBy(g => g.Key);
+            foreach (var deviceGroup in deviceGroups)
             {
-                var actuatorsCount = room.Actuators().Count;
-                totalActuatorsCount += actuatorsCount;
-
-                message.AppendFormat("- Room '{0}', Actuators={1}", room.Id, actuatorsCount);
-                message.AppendLine();
+                message.AppendLine("- Device '" + deviceGroup.Key + "'=" + deviceGroup.Count());
             }
 
-            message.AppendLine("Total actuators=" + totalActuatorsCount);
+            message.AppendLine("- Actuators total=" + Actuators().Count);
+            var actuatorGroups = Actuators().GroupBy(a => a.GetType().Name).OrderBy(g => g.Key);
+            foreach (var actuatorGroup in actuatorGroups)
+            {
+                message.AppendLine("- Actuator '" + actuatorGroup.Key + "'=" + actuatorGroup.Count());
+            }
 
+            message.AppendLine("- Automations total=" + Automations().Count);
+            var automationGroups = Actuators().GroupBy(a => a.GetType().Name).OrderBy(g => g.Key);
+            foreach (var automationGroup in automationGroups)
+            {
+                message.AppendLine("- Automation '" + automationGroup.Key + "'=" + automationGroup.Count());
+            }
+
+            message.AppendLine("- Areas total=" + Areas().Count);
+            foreach (var area in Areas())
+            {
+                var actuatorsCount = area.Actuators().Count;
+                
+                message.AppendFormat("- Area '{0}', Actuators={1}", area.Id, actuatorsCount);
+                message.AppendLine();
+            }
+            
             Logger.Info(message.ToString());
         }
 
@@ -146,7 +188,7 @@ namespace HA4IoT.Core
 
         private void InitializeLogging()
         {
-            var logger = new Logger();
+            var logger = new Logger.Logger();
             logger.ExposeToApi(HttpApiController);
             logger.Info("Starting");
             Logger = logger;

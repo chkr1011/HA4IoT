@@ -1,45 +1,43 @@
 ﻿using HA4IoT.Contracts.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using HA4IoT.Contracts.Actuators;
 
 namespace HA4IoT.Core
 {
-    public class AreaCollection
+    public class AreaCollection : GenericControllerCollection<AreaId, IArea>
     { 
-        private readonly Dictionary<AreaId, IArea> _areas = new Dictionary<AreaId, IArea>();
+        ////private readonly Dictionary<AreaId, IArea> _areas = new Dictionary<AreaId, IArea>();
 
-        public void Add(IArea room)
-        {
-            if (room == null) throw new ArgumentNullException(nameof(room));
+        ////public void Add(IArea area)
+        ////{
+        ////    if (area == null) throw new ArgumentNullException(nameof(area));
 
-            if (_areas.ContainsKey(room.Id))
-            {
-                throw new InvalidOperationException("Area with ID '" + room.Id + "' aready registered.");
-            }
+        ////    if (_areas.ContainsKey(area.Id))
+        ////    {
+        ////        throw new InvalidOperationException("Area with ID '" + area.Id + "' aready registered.");
+        ////    }
 
-            _areas[room.Id] = room;
-        }
+        ////    _areas[area.Id] = area;
+        ////}
 
-        public IArea this[AreaId id]
-        {
-            get
-            {
-                if (id == null) throw new ArgumentNullException(nameof(id));
+        ////public IArea this[AreaId id]
+        ////{
+        ////    get
+        ////    {
+        ////        if (id == null) throw new ArgumentNullException(nameof(id));
 
-                IArea room;
-                if (!_areas.TryGetValue(id, out room))
-                {
-                    throw new InvalidOperationException("Room with ID '" + id + "' is not registered.");
-                }
+        ////        IArea room;
+        ////        if (!_areas.TryGetValue(id, out room))
+        ////        {
+        ////            throw new InvalidOperationException("Area with ID '" + id + "' is not registered.");
+        ////        }
 
-                return room;
-            }
-        }
+        ////        return room;
+        ////    }
+        ////}
 
-        public IList<IArea> GetAll()
-        {
-            return _areas.Values.ToList();
-        }
+        ////public IList<IArea> GetAll()
+        ////{
+        ////    return _areas.Values.ToList();
+        ////}
     }
 }

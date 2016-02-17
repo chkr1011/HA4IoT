@@ -10,7 +10,7 @@ using Windows.Storage.Streams;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Networking;
 
-namespace HA4IoT.Notifications
+namespace HA4IoT.Logger
 {
     public class Logger : ILogger
     {

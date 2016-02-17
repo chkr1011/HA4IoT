@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Notifications;
+using HA4IoT.Logger;
 
 namespace HA4IoT.Tests.Mockups
 {

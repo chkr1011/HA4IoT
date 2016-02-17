@@ -22,6 +22,11 @@ namespace HA4IoT.Actuators.Triggers
         public void Invoke()
         {
             Triggered?.Invoke(this, new TriggeredEventArgs());
+
+            foreach (var action in _actions)
+            {
+                action();
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ using Windows.Data.Json;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using Windows.Storage.Streams;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.WeatherStation;
@@ -35,7 +36,7 @@ namespace HA4IoT.Core
             result.SetNamedValue("version", 1.ToJsonValue());
 
             var status = new JsonObject();
-            foreach (var actuator in _controller.Actuators())
+            foreach (var actuator in _controller.Actuators<IActuator>())
             {
                 status.SetNamedValue(actuator.Id.Value, actuator.GetStatusForApi());
             }
@@ -81,27 +82,37 @@ namespace HA4IoT.Core
             configuration.SetNamedValue("type", JsonValue.CreateStringValue("HA4IoT.Configuration"));
             configuration.SetNamedValue("version", JsonValue.CreateNumberValue(1));
 
-            var rooms = new JsonObject();
-            foreach (var room in _controller.Areas())
+            var areas = new JsonObject();
+            foreach (var area in _controller.Areas())
             {
-                rooms.SetNamedValue(room.Id.Value, GetAreaConfigurationAsJson(room));
+                areas.SetNamedValue(area.Id.Value, GetAreaConfigurationAsJson(area));
             }
 
-            configuration.SetNamedValue("rooms", rooms);
+            configuration.SetNamedValue("areas", areas);
 
             return configuration;
         }
 
         private JsonObject GetAreaConfigurationAsJson(IArea area)
         {
+            JsonObject configuration = new JsonObject();
+
             var actuators = new JsonObject();
             foreach (var actuator in area.Actuators())
             {
                 actuators.SetNamedValue(actuator.Id.Value, actuator.GetConfigurationForApi());
             }
 
-            JsonObject configuration = new JsonObject();
             configuration.SetNamedValue("actuators", actuators);
+
+            var automations = new JsonObject();
+            foreach (var automation in area.Automations())
+            {
+                automations.SetNamedValue(automation.Id.Value, automation.GetConfigurationForApi());
+            }
+
+            configuration.SetNamedValue("automations", automations);
+
             return configuration;
         }
 

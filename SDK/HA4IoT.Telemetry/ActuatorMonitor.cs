@@ -11,7 +11,7 @@ namespace HA4IoT.Telemetry
         {
             if (controller == null) throw new ArgumentNullException(nameof(controller));
 
-            foreach (var actuator in controller.Actuators())
+            foreach (var actuator in controller.Actuators<IActuator>())
             {
                 OnActuatorConnecting(actuator);
 
@@ -44,26 +44,15 @@ namespace HA4IoT.Telemetry
                 var motionDetector = actuator as IMotionDetector;
                 if (motionDetector != null)
                 {
-                    motionDetector.GetMotionDetectedTrigger().Triggered += (s, e) =>
-                    {
-                        OnMotionDetected(motionDetector);
-                    };
-
+                    motionDetector.GetMotionDetectedTrigger().Attach(() => OnMotionDetected(motionDetector));
                     continue;
                 }
 
                 var button = actuator as IButton;
                 if (button != null)
                 {
-                    button.GetPressedShortlyTrigger().Triggered += (s, e) =>
-                    {
-                        OnButtonPressed(button, ButtonPressedDuration.Short);
-                    };
-
-                    button.GetPressedLongTrigger().Triggered += (s, e) =>
-                    {
-                        OnButtonPressed(button, ButtonPressedDuration.Long);
-                    };
+                    button.GetPressedShortlyTrigger().Attach(() => OnButtonPressed(button, ButtonPressedDuration.Short));
+                    button.GetPressedLongTrigger().Attach(() => OnButtonPressed(button, ButtonPressedDuration.Long));
                 }
             }
         }

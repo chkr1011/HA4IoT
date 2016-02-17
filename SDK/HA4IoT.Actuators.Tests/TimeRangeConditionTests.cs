@@ -1,7 +1,7 @@
 ﻿using System;
 using FluentAssertions;
-using HA4IoT.Actuators.Conditions;
-using HA4IoT.Actuators.Conditions.Specialized;
+using HA4IoT.Conditions;
+using HA4IoT.Conditions.Specialized;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 

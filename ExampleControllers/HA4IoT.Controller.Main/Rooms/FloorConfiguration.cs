@@ -1,7 +1,7 @@
 ﻿using System;
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Animations;
-using HA4IoT.Actuators.Automations;
+using HA4IoT.Automations;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Hardware;

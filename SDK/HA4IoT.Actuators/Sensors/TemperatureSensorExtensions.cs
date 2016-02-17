@@ -16,6 +16,13 @@ namespace HA4IoT.Actuators
             return new SensorValueReachedTrigger(sensor).WithTarget(target).WithDelta(delta);
         }
 
+        public static ITrigger GetTemperatureUnderranTrigger(this ITemperatureSensor sensor, float target, float delta)
+        {
+            if (sensor == null) throw new ArgumentNullException(nameof(sensor));
+
+            return new SensorValueUnderranTrigger(sensor).WithTarget(target).WithDelta(delta);
+        }
+
         public static IArea WithTemperatureSensor(this IArea room, Enum id, ISingleValueSensor sensor)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
