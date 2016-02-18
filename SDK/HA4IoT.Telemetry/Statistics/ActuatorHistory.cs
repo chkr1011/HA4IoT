@@ -57,7 +57,7 @@ namespace HA4IoT.Telemetry.Statistics
         }
 
 
-        public JsonObject GetStatusForApi()
+        public JsonObject ExportStatusToJsonObject()
         {
             var entries = new List<ActuatorHistoryEntry>();
             lock (_entriesOfThisMonth)
@@ -75,7 +75,7 @@ namespace HA4IoT.Telemetry.Statistics
             var entriesOfThisDay = entriesOfThisWeek.Where(e => e.Timestamp.Day == now.Day).ToList();
 
             var status = new JsonObject();
-            status.SetNamedValue("actuator", _actuator.Id.ToJsonValue());
+            status.SetNamedValue("actuator", _actuator.Id.ExportToJsonObject());
             status.SetNamedValue("durationsOfThisMonth", GetStateDurations(entriesOfThisMonth).ToIndexedJsonObject());
             status.SetNamedValue("durationsOfThisWeek", GetStateDurations(entriesOfThisWeek).ToIndexedJsonObject());
             status.SetNamedValue("durationsOfThisDay", GetStateDurations(entriesOfThisDay).ToIndexedJsonObject());
@@ -171,7 +171,7 @@ namespace HA4IoT.Telemetry.Statistics
 
         private void HandleApiGet(HttpContext httpContext)
         {
-            httpContext.Response.Body = new JsonBody(GetStatusForApi());
+            httpContext.Response.Body = new JsonBody(ExportStatusToJsonObject());
         }
     }
 }

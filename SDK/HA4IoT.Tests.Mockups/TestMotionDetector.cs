@@ -20,7 +20,7 @@ namespace HA4IoT.Tests.Mockups
         public MotionDetectorState State { get; private set; } = MotionDetectorState.Idle;
         public bool IsMotionDetected { get; set; }
 
-        public JsonObject GetConfigurationForApi()
+        public JsonObject ExportConfigurationToJsonObject()
         {
             return new JsonObject();
         }
@@ -60,9 +60,14 @@ namespace HA4IoT.Tests.Mockups
             _motionDetectedTrigger.Invoke();
         }
 
-        public JsonObject GetStatusForApi()
+        public JsonObject ExportStatusToJsonObject()
         {
             return new JsonObject();
+        }
+
+        public void LoadSettings()
+        {
+            
         }
     }
 }

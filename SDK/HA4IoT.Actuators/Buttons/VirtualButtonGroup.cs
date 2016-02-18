@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Windows.Data.Json;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Networking;
@@ -26,7 +25,7 @@ namespace HA4IoT.Actuators
                 throw new InvalidOperationException("Button with id " + id + " already part of the button group.");
             }
 
-            var virtualButton = new VirtualButton(id, HttpApi, Logger);
+            var virtualButton = new VirtualButton(id, HttpApiController, Logger);
             initializer(virtualButton);
 
             _buttons.Add(id, virtualButton);
@@ -52,9 +51,9 @@ namespace HA4IoT.Actuators
             virtualButton.HandleApiPost(context);
         }
 
-        public override JsonObject GetConfigurationForApi()
+        public override JsonObject ExportConfigurationToJsonObject()
         {
-            JsonObject configuration = base.GetConfigurationForApi();
+            JsonObject configuration = base.ExportConfigurationToJsonObject();
 
             JsonArray buttonIds = new JsonArray();
             foreach (var button in _buttons)

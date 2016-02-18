@@ -116,15 +116,18 @@
   <ItemGroup>
     <Compile Include="BadRequestException.cs" />
     <Compile Include="BinaryBody.cs" />
+    <Compile Include="HideFromToJsonObjectAttribute.cs" />
     <Compile Include="HttpClientHandler.cs" />
     <Compile Include="HttpContext.cs" />
     <Compile Include="HttpHeaderCollection.cs" />
     <Compile Include="HttpHeaderCollectionExtensions.cs" />
     <Compile Include="HttpHeaderNames.cs" />
     <Compile Include="HttpResponseSerializer.cs" />
-    <Compile Include="IConvertibleToJsonValue.cs" />
+    <Compile Include="IExportToJsonValue.cs" />
     <Compile Include="IHttpRequestController.cs" />
+    <Compile Include="IImportFromJsonValue.cs" />
     <Compile Include="JsonObjectExtensions.cs" />
+    <Compile Include="JsonObjectSerializer.cs" />
     <Compile Include="MappedFolderController.cs" />
     <Compile Include="IHttpBody.cs" />
     <Compile Include="HttpRequestController.cs" />

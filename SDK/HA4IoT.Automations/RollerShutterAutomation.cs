@@ -8,10 +8,11 @@ using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.WeatherStation;
+using HA4IoT.Networking;
 
 namespace HA4IoT.Automations
 {
-    public class AutomaticRollerShutterAutomation : AutomationBase
+    public class RollerShutterAutomation : AutomationBase<RollerShutterAutomationSettings>
     {
         private readonly List<IRollerShutter> _rollerShutters = new List<IRollerShutter>();
         private readonly IWeatherStation _weatherStation;
@@ -21,10 +22,10 @@ namespace HA4IoT.Automations
 
         private bool _autoOpenIsApplied;
         private bool _autoCloseIsApplied;
-        private bool _doNotOpenBeforeIsTraced;
+        private bool _doNotOpenBeforeIsTraced; // TODO: Create trace wrapper with flag and "Reset()" method?
         private bool _doNotOpenIfTemperatureIsTraced;
         
-        public AutomaticRollerShutterAutomation(AutomationId id, IHomeAutomationTimer timer, IWeatherStation weatherStation, ILogger logger)
+        public RollerShutterAutomation(AutomationId id, IHomeAutomationTimer timer, IWeatherStation weatherStation, IHttpRequestController httpApiController, ILogger logger)
             : base(id)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
@@ -34,26 +35,18 @@ namespace HA4IoT.Automations
             _weatherStation = weatherStation;
             _logger = logger;
 
+            Settings = new RollerShutterAutomationSettings(id, httpApiController, logger);
+
             AutomaticallyOpenTimeRange = new IsDayCondition(weatherStation, timer);
             AutomaticallyOpenTimeRange.WithStartAdjustment(TimeSpan.FromMinutes(-30));
             AutomaticallyOpenTimeRange.WithEndAdjustment(TimeSpan.FromMinutes(30));
-
-            IsEnabled = true;
-
+            
             timer.Every(TimeSpan.FromSeconds(10)).Do(PerformPendingActions);
         }
 
         public TimeRangeCondition AutomaticallyOpenTimeRange { get; }
 
-        public TimeSpan? DoNotOpenBefore { get; set; }
-
-        public float? MaxOutsideTemperatureForAutoClose { get; private set; }
-
-        public float? MinOutsideTemperatureForDoNotOpen { get; private set; }
-
-        public bool IsEnabled { get; set; }
-
-        public AutomaticRollerShutterAutomation WithRollerShutters(params IRollerShutter[] rollerShutters)
+        public RollerShutterAutomation WithRollerShutters(params IRollerShutter[] rollerShutters)
         {
             if (rollerShutters == null) throw new ArgumentNullException(nameof(rollerShutters));
 
@@ -61,39 +54,39 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public AutomaticRollerShutterAutomation WithDoNotOpenBefore(TimeSpan minTime)
+        public RollerShutterAutomation WithDoNotOpenBefore(TimeSpan minTime)
         {
-            DoNotOpenBefore = minTime;
+            Settings.DoNotOpenBefore.Value = minTime;
             return this;
         }
 
-        public AutomaticRollerShutterAutomation WithDoNotOpenIfOutsideTemperatureIsBelowThan(float minOutsideTemperature)
+        public RollerShutterAutomation WithDoNotOpenIfOutsideTemperatureIsBelowThan(float minOutsideTemperature)
         {
-            MinOutsideTemperatureForDoNotOpen = minOutsideTemperature;
+            Settings.MinOutsideTemperatureForDoNotOpen.Value = minOutsideTemperature;
             return this;
         }
 
-        public AutomaticRollerShutterAutomation WithCloseIfOutsideTemperatureIsGreaterThan(float maxOutsideTemperature)
+        public RollerShutterAutomation WithCloseIfOutsideTemperatureIsGreaterThan(float maxOutsideTemperature)
         {
-            MaxOutsideTemperatureForAutoClose = maxOutsideTemperature;
+            Settings.MaxOutsideTemperatureForAutoClose.Value = maxOutsideTemperature;
             return this;
         }
 
         private void PerformPendingActions()
         {
-            if (!IsEnabled)
+            if (!Settings.IsEnabled.Value)
             {
                 return;
             }
 
-            if (MaxOutsideTemperatureForAutoClose.HasValue && !_maxOutsideTemperatureApplied)
+            if (Settings.MaxOutsideTemperatureForAutoClose.Value.HasValue && !_maxOutsideTemperatureApplied)
             {
-                if (_weatherStation.TemperatureSensor.GetValue() > MaxOutsideTemperatureForAutoClose.Value)
+                if (_weatherStation.TemperatureSensor.GetValue() > Settings.MaxOutsideTemperatureForAutoClose.Value)
                 {
                     _maxOutsideTemperatureApplied = true;
                     StartMove(RollerShutterState.MovingDown);
 
-                    _logger.Info(GetTracePrefix() + "Closing because outside temperature reaches " + MaxOutsideTemperatureForAutoClose + "°C");
+                    _logger.Info(GetTracePrefix() + "Closing because outside temperature reaches " + Settings.MaxOutsideTemperatureForAutoClose + "°C");
 
                     return;
                 }
@@ -114,7 +107,7 @@ namespace HA4IoT.Automations
             if (!_autoOpenIsApplied && autoOpenIsInRange)
             {
                 TimeSpan time = DateTime.Now.TimeOfDay;
-                if (DoNotOpenBefore.HasValue && DoNotOpenBefore.Value > time)
+                if (Settings.DoNotOpenBefore.Value.HasValue && Settings.DoNotOpenBefore.Value > time)
                 {
                     if (!_doNotOpenBeforeIsTraced)
                     {
@@ -128,12 +121,12 @@ namespace HA4IoT.Automations
                 // Consider creating an object for conditional traces.
                 _doNotOpenBeforeIsTraced = false;
 
-                if (MinOutsideTemperatureForDoNotOpen.HasValue &&
-                    _weatherStation.TemperatureSensor.GetValue() < MinOutsideTemperatureForDoNotOpen.Value)
+                if (Settings.MinOutsideTemperatureForDoNotOpen.Value.HasValue &&
+                    _weatherStation.TemperatureSensor.GetValue() < Settings.MinOutsideTemperatureForDoNotOpen.Value)
                 {
                     if (!_doNotOpenIfTemperatureIsTraced)
                     {
-                        _logger.Info(GetTracePrefix() + "Skipping opening because it is too cold (" + MinOutsideTemperatureForDoNotOpen + "°C).");
+                        _logger.Info(GetTracePrefix() + "Skipping opening because it is too cold (" + Settings.MinOutsideTemperatureForDoNotOpen + "°C).");
                         _doNotOpenIfTemperatureIsTraced = true;
                     }
 

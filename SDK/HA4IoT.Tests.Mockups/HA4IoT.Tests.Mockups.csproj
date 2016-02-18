@@ -120,7 +120,7 @@
     <Compile Include="TestHomeAutomationTimer.cs" />
     <Compile Include="TestI2CBus.cs" />
     <Compile Include="TestMotionDetector.cs" />
-    <Compile Include="TestNotificationHandler.cs" />
+    <Compile Include="TestLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestSensor.cs" />
     <Content Include="Properties\HA4IoT.Tests.Mockups.rd.xml" />

@@ -8,7 +8,7 @@ namespace HA4IoT.Networking
 {
     public static class JsonObjectExtensions
     {
-        private static readonly object[] EmptyParameters = new object[0];
+        private static readonly IJsonValue NullValue = JsonValue.CreateNullValue();
 
         public static JsonObject ToIndexedJsonObject<TKey, TValue>(this Dictionary<TKey, TValue> entries)
         {
@@ -30,7 +30,13 @@ namespace HA4IoT.Networking
             var result = new JsonObject();
             foreach (var property in source.GetType().GetProperties())
             {
-                result.SetNamedValue(property.Name, property.GetMethod.Invoke(source, EmptyParameters).ToJsonValue());
+                if (property.GetCustomAttribute<HideFromToJsonObjectAttribute>() != null)
+                {
+                    continue;
+                }
+
+                IJsonValue value = property.GetValue(source).ToJsonValue();
+                result.SetNamedValue(property.Name, value);
             }
 
             return result;
@@ -40,7 +46,19 @@ namespace HA4IoT.Networking
         {
             if (source == null)
             {
-                return JsonValue.CreateNullValue();
+                return NullValue;
+            }
+
+            var jsonValue = source as IJsonValue;
+            if (jsonValue != null)
+            {
+                return jsonValue;
+            }
+
+            var convertibleJsonValue = source as IExportToJsonValue;
+            if (convertibleJsonValue != null)
+            {
+                return convertibleJsonValue.ExportToJsonObject();
             }
 
             var stringValue = source as string;
@@ -54,6 +72,12 @@ namespace HA4IoT.Networking
                 return JsonValue.CreateStringValue(source.ToString());
             }
 
+            var timeSpan = source as TimeSpan?;
+            if (timeSpan.HasValue)
+            {
+                return JsonValue.CreateStringValue(timeSpan.ToString());
+            }
+
             var boolValue = source as bool?;
             if (boolValue.HasValue)
             {
@@ -64,12 +88,6 @@ namespace HA4IoT.Networking
             if (dateTimeValue.HasValue)
             {
                 return JsonValue.CreateStringValue(dateTimeValue.Value.ToString("O"));
-            }
-
-            var convertibleJsonValue = source as IConvertibleToJsonValue;
-            if (convertibleJsonValue != null)
-            {
-                return convertibleJsonValue.ToJsonValue();
             }
 
             var array = source as IEnumerable;
@@ -120,6 +138,109 @@ namespace HA4IoT.Networking
             }
 
             return source.ToJsonObject();
+        }
+
+        public static TObject ToObject<TObject>(this IJsonValue value)
+        {
+            return (TObject)value.ToObject(typeof(TObject));
+        }
+
+        public static object ToObject(this IJsonValue value, Type targetType)
+        {
+            if (value.GetType() == targetType)
+            {
+                return value;
+            }
+            
+            if (value.ValueType == JsonValueType.Null)
+            {
+                return null;
+            }
+
+            if (targetType == typeof (JsonObject))
+            {
+                return JsonObject.Parse(value.Stringify());
+            }
+
+            if (typeof(IJsonValue).IsAssignableFrom(targetType))
+            {
+                return value;
+            }
+
+            if (targetType == typeof(string))
+            {
+                return value.GetString();
+            }
+
+            if (targetType == typeof(int) || targetType == typeof(int?))
+            {
+                return (int)value.GetNumber();
+            }
+
+            if (targetType == typeof(long) || targetType == typeof(long?))
+            {
+                return (long)value.GetNumber();
+            }
+
+            if (targetType == typeof(bool) || targetType == typeof(bool?))
+            {
+                return value.GetBoolean();
+            }
+
+            if (targetType == typeof(float) || targetType == typeof(float?))
+            {
+                return (float)value.GetNumber();
+            }
+
+            if (targetType == typeof(double) || targetType == typeof(double?))
+            {
+                return value.GetNumber();
+            }
+
+            if (targetType == typeof(decimal) || targetType == typeof(decimal?))
+            {
+                return (decimal)value.GetNumber();
+            }
+
+            if (targetType == typeof(DateTime) || targetType == typeof(DateTime?))
+            {
+                return DateTime.Parse(value.GetString());
+            }
+
+            if (targetType == typeof(TimeSpan) || targetType == typeof(TimeSpan?))
+            {
+                return TimeSpan.Parse(value.GetString());
+            }
+
+            throw new NotSupportedException($"Type {targetType} is not supported.");
+        }
+
+        public static void DeserializeTo(this JsonObject jsonObject, object target)
+        {
+            if (target == null) throw new ArgumentNullException(nameof(target));
+
+            var properties = target.GetType().GetProperties();
+            var importFromJsonType = typeof(IImportFromJsonValue);
+
+            foreach (var property in properties)
+            {
+                IJsonValue jsonValue;
+                if (!jsonObject.TryGetValue(property.Name, out jsonValue))
+                {
+                    continue;
+                }
+
+                if (importFromJsonType.IsAssignableFrom(property.PropertyType))
+                {
+                    var propertyValue = (IImportFromJsonValue)property.GetValue(target);
+                    propertyValue?.ImportFromJsonValue(jsonValue);
+
+                    continue;
+                }
+
+                object value = jsonValue.ToObject(property.PropertyType);
+                property.SetValue(target, value);
+            }
         }
     }
 }

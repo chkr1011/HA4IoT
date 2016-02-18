@@ -61,7 +61,7 @@ namespace HA4IoT.Actuators
                     this.Toggle(new DoNotCommitStateParameter());    
                 }
 
-                context.Response = GetStatusForApi();
+                context.Response = ExportStatusToJsonObject();
                 return;
             }
 
@@ -76,14 +76,14 @@ namespace HA4IoT.Actuators
             }
         }
 
-        public override JsonObject GetStatusForApi()
+        public override JsonObject ExportStatusToJsonObject()
         {
-            var status = base.GetStatusForApi();
+            var status = base.ExportStatusToJsonObject();
             status.SetNamedValue("state", JsonValue.CreateStringValue(GetStateInternal().ToString()));
 
             return status;
         }
-        
+
         protected void OnStateChanged(BinaryActuatorState oldState, BinaryActuatorState newState)
         {
             StateChanged?.Invoke(this, new BinaryActuatorStateChangedEventArgs(oldState, newState));

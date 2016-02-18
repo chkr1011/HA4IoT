@@ -126,21 +126,21 @@ namespace HA4IoT.Actuators
             return this;
         }
 
-        public override JsonObject GetStatusForApi()
+        public override JsonObject ExportStatusToJsonObject()
         {
-            var status = base.GetStatusForApi();
+            var status = base.ExportStatusToJsonObject();
 
             if (States.Any())
             {
-                status.SetNamedValue("state", JsonValue.CreateStringValue(States[_index].Id));
+                status.SetNamedValue("state", States[_index].Id.ToJsonValue());
             }
 
             return status;
         }
 
-        public override JsonObject GetConfigurationForApi()
+        public override JsonObject ExportConfigurationToJsonObject()
         {
-            JsonObject configuration = base.GetConfigurationForApi();
+            JsonObject configuration = base.ExportConfigurationToJsonObject();
 
             JsonArray stateMachineStates = new JsonArray();
             foreach (var state in States)

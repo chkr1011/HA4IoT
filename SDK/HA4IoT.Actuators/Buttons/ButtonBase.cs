@@ -47,7 +47,7 @@ namespace HA4IoT.Actuators
             var oldState = _state;
             _state = newState;
 
-            if (!IsEnabled)
+            if (!Settings.IsEnabled)
             {
                 return;
             }
@@ -83,9 +83,9 @@ namespace HA4IoT.Actuators
             }
         }
 
-        public override JsonObject GetStatusForApi()
+        public override JsonObject ExportStatusToJsonObject()
         {
-            var status = base.GetStatusForApi();
+            var status = base.ExportStatusToJsonObject();
             status.SetNamedValue("state", JsonValue.CreateStringValue(_state.ToString()));
 
             return status;

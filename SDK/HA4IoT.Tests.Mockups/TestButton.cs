@@ -19,7 +19,7 @@ namespace HA4IoT.Tests.Mockups
 
         public ButtonState State { get; set; } = ButtonState.Released;
 
-        public JsonObject GetConfigurationForApi()
+        public JsonObject ExportConfigurationToJsonObject()
         {
             return new JsonObject();
         }
@@ -49,9 +49,14 @@ namespace HA4IoT.Tests.Mockups
             return _pressedLongTrigger;
         }
 
-        public JsonObject GetStatusForApi()
+        public JsonObject ExportStatusToJsonObject()
         {
             return new JsonObject();
+        }
+
+        public void LoadSettings()
+        {
+            
         }
     }
 }

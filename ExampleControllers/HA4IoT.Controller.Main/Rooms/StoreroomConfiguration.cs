@@ -38,12 +38,12 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithLamp(Storeroom.LightCeiling, hsrel5Stairway.GetOutput(7).WithInvertedState())
                 .WithSocket(Storeroom.CatLitterBoxFan, hsrel8LowerHeatingValves.GetOutput(15));
 
-            storeroom.SetupAutomaticTurnOnAndOffAutomation()
+            storeroom.SetupTurnOnAndOffAutomation()
                 .WithTrigger(storeroom.MotionDetector(Storeroom.MotionDetector))
                 .WithTarget(storeroom.Lamp(Storeroom.LightCeiling))
                 .WithOnDuration(TimeSpan.FromMinutes(1));
 
-            storeroom.SetupAutomaticTurnOnAndOffAutomation()
+            storeroom.SetupTurnOnAndOffAutomation()
                 .WithTrigger(storeroom.MotionDetector(Storeroom.MotionDetectorCatLitterBox))
                 .WithTarget(storeroom.Socket(Storeroom.CatLitterBoxFan))
                 .WithOnDuration(TimeSpan.FromMinutes(2));
@@ -51,7 +51,7 @@ namespace HA4IoT.Controller.Main.Rooms
             storeroom.WithSocket(Storeroom.CirculatingPump, hsrel5UpperHeatingValves.GetOutput(3));
 
             // TODO: Create RoomIdFactory like ActuatorIdFactory.
-            storeroom.SetupAutomaticTurnOnAndOffAutomation()
+            storeroom.SetupTurnOnAndOffAutomation()
                 .WithTrigger(controller.Area(new AreaId(Room.Kitchen.ToString())).MotionDetector(KitchenConfiguration.Kitchen.MotionDetector))
                 .WithTrigger(controller.Area(new AreaId(Room.LowerBathroom.ToString())).MotionDetector(LowerBathroomConfiguration.LowerBathroom.MotionDetector))
                 .WithTarget(storeroom.Socket(Storeroom.CirculatingPump))

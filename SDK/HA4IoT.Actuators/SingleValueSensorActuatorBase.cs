@@ -26,9 +26,9 @@ namespace HA4IoT.Actuators
             return _value;
         }
 
-        public override JsonObject GetStatusForApi()
+        public override JsonObject ExportStatusToJsonObject()
         {
-            var status = base.GetStatusForApi();
+            var status = base.ExportStatusToJsonObject();
             status.SetNamedValue("value", _value.ToJsonValue());
             status.SetNamedValue("valueLastChanged", _valueLastChanged.ToJsonValue());
 

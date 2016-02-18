@@ -50,7 +50,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithActuator(bathroom.Lamp(LowerBathroom.LightCeilingWindow))
                 .WithActuator(bathroom.Lamp(LowerBathroom.LampMirror));
 
-            bathroom.SetupAutomaticTurnOnAndOffAutomation()
+            bathroom.SetupTurnOnAndOffAutomation()
                 .WithTrigger(bathroom.MotionDetector(LowerBathroom.MotionDetector))
                 .WithTarget(bathroom.BinaryStateOutput(LowerBathroom.CombinedLights));
         }

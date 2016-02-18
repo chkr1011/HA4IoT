@@ -66,12 +66,12 @@ namespace HA4IoT.Controller.Main.Rooms
                     .WithActuator(bathroom.Lamp(UpperBathroom.LightCeilingMirrorCabinet))
                     .WithActuator(bathroom.Lamp(UpperBathroom.LampMirrorCabinet));
 
-            bathroom.SetupAutomaticTurnOnAndOffAutomation()
+            bathroom.SetupTurnOnAndOffAutomation()
                 .WithTrigger(bathroom.MotionDetector(UpperBathroom.MotionDetector))
                 .WithTarget(combinedLights)
                 .WithOnDuration(TimeSpan.FromMinutes(8));
             
-            new AutomaticBathroomFanAutomation(AutomationIdFactory.CreateIdFrom<AutomaticBathroomFanAutomation>(bathroom), _controller.Timer)
+            new BathroomFanAutomation(AutomationIdFactory.CreateIdFrom<BathroomFanAutomation>(bathroom), _controller.Timer)
                 .WithTrigger(bathroom.MotionDetector(UpperBathroom.MotionDetector))
                 .WithSlowDuration(TimeSpan.FromMinutes(8))
                 .WithFastDuration(TimeSpan.FromMinutes(12))

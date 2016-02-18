@@ -5,16 +5,18 @@ using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.WeatherStation;
+using HA4IoT.Networking;
 
 namespace HA4IoT.Automations
 {
-    public class AutomaticConditionalOnAutomation : Automation
+    public class ConditionalOnAutomation : Automation
     {
         private readonly List<IBinaryStateOutputActuator> _actuators = new List<IBinaryStateOutputActuator>();
 
-        public AutomaticConditionalOnAutomation(AutomationId id, IHomeAutomationTimer timer) 
-            : base(id, timer)
+        public ConditionalOnAutomation(AutomationId id, IHomeAutomationTimer timer, IHttpRequestController httpApiController, ILogger logger) 
+            : base(id, timer, httpApiController, logger)
         {
             WithAutoTrigger(TimeSpan.FromMinutes(1));
 
@@ -22,7 +24,7 @@ namespace HA4IoT.Automations
             WithActionIfNotFulfilled(TurnOff);
         }
 
-        public AutomaticConditionalOnAutomation WithOnAtNightRange(IWeatherStation weatherStation)
+        public ConditionalOnAutomation WithOnAtNightRange(IWeatherStation weatherStation)
         {
             var nightCondition = new TimeRangeCondition(Timer).WithStart(() => weatherStation.Daylight.Sunset).WithEnd(() => weatherStation.Daylight.Sunrise);
             WithCondition(ConditionRelation.And, nightCondition);
@@ -30,13 +32,13 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public AutomaticConditionalOnAutomation WithOffBetweenRange(TimeSpan from, TimeSpan until)
+        public ConditionalOnAutomation WithOffBetweenRange(TimeSpan from, TimeSpan until)
         {
             WithCondition(ConditionRelation.AndNot, new TimeRangeCondition(Timer).WithStart(() => from).WithEnd(() => until));
             return this;
         }
 
-        public AutomaticConditionalOnAutomation WithActuator(IBinaryStateOutputActuator actuator)
+        public ConditionalOnAutomation WithActuator(IBinaryStateOutputActuator actuator)
         {
             _actuators.Add(actuator);
             return this;

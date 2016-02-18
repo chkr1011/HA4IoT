@@ -128,13 +128,13 @@ namespace HA4IoT.Controller.Main.Rooms
                 bedroom.Lamp(Bedroom.CombinedCeilingLights).TurnOff();
             });
 
-            bedroom.SetupAutomaticRollerShutters()
+            bedroom.SetupRollerShutterAutomation()
                 .WithRollerShutters(bedroom.GetAllRollerShutters())
                 .WithDoNotOpenBefore(TimeSpan.FromHours(7).Add(TimeSpan.FromMinutes(15)))
                 .WithCloseIfOutsideTemperatureIsGreaterThan(24)
                 .WithDoNotOpenIfOutsideTemperatureIsBelowThan(3);
 
-            bedroom.SetupAutomaticTurnOnAndOffAutomation()
+            bedroom.SetupTurnOnAndOffAutomation()
                 .WithTrigger(bedroom.MotionDetector(Bedroom.MotionDetector))
                 .WithTarget(bedroom.BinaryStateOutput(Bedroom.LightCeiling))
                 .WithOnDuration(TimeSpan.FromSeconds(15))

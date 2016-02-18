@@ -1,9 +1,10 @@
 ﻿using System;
 using Windows.Data.Json;
+using HA4IoT.Networking;
 
 namespace HA4IoT.Logger
 {
-    internal sealed class LogEntry
+    internal sealed class LogEntry : IExportToJsonValue
     {
         public LogEntry(DateTime timestamp, int threadId, LogEntrySeverity severity, string message)
         {
@@ -21,13 +22,13 @@ namespace HA4IoT.Logger
 
         public string Message { get; }
 
-        public JsonObject ToJsonObject()
+        public IJsonValue ExportToJsonObject()
         {
             var notification = new JsonObject();
-            notification.SetNamedValue("timestamp", JsonValue.CreateStringValue(Timestamp.ToString("O")));
-            notification.SetNamedValue("threadId", JsonValue.CreateStringValue(ThreadId.ToString()));
-            notification.SetNamedValue("severity", JsonValue.CreateStringValue(Severity.ToString()));
-            notification.SetNamedValue("message", JsonValue.CreateStringValue(Message));
+            notification.SetNamedValue("timestamp", Timestamp.ToJsonValue());
+            notification.SetNamedValue("threadId", ThreadId.ToJsonValue());
+            notification.SetNamedValue("severity", Severity.ToJsonValue());
+            notification.SetNamedValue("message", Message.ToJsonValue());
 
             return notification;
         }

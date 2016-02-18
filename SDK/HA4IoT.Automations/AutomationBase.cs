@@ -5,7 +5,7 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.Automations
 {
-    public abstract class AutomationBase : IAutomation
+    public abstract class AutomationBase<TSettings> : IAutomation where TSettings : AutomationSettings
     {
         protected AutomationBase(AutomationId id)
         {
@@ -16,16 +16,29 @@ namespace HA4IoT.Automations
 
         public AutomationId Id { get; }
 
-        public JsonObject GetConfigurationForApi()
+        public TSettings Settings { get; protected set; }
+
+        public virtual JsonObject ExportConfigurationAsJsonValue()
         {
             var result = new JsonObject();
-            result.SetNamedValue("type", GetType().FullName.ToJsonValue());
+            result.SetNamedValue("Type", GetType().FullName.ToJsonValue());
+
+            if (Settings != null)
+            {
+                result.SetNamedValue("Settings", Settings.ExportToJsonObject());
+            }
+
             return result;
         }
 
-        public JsonObject GetStatusForApi()
+        public virtual JsonObject ExportStatusToJsonObject()
         {
             return new JsonObject();
+        }
+
+        public virtual void LoadSettings()
+        {
+            Settings?.Load();
         }
     }
 }

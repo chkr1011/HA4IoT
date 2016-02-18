@@ -64,10 +64,10 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
         public IHumiditySensor HumiditySensor { get; }
         public IWeatherSituationSensor SituationSensor { get; }
 
-        public JsonObject GetStatusForApi()
+        public JsonObject ExportStatusToJsonObject()
         {
             var result = new JsonObject();
-            result.SetNamedValue("uri", _weatherDataSourceUrl.ToJsonValue());
+            result.SetNamedValue("uri", _weatherDataSourceUrl.ToString().ToJsonValue());
 
             result.SetNamedValue("situation", SituationSensor.GetSituation().ToJsonValue());
             result.SetNamedValue("temperature", TemperatureSensor.GetValue().ToJsonValue());
@@ -165,7 +165,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 
         private void HandleApiGet(HttpContext httpContext)
         {
-            httpContext.Response.Body = new JsonBody(GetStatusForApi());
+            httpContext.Response.Body = new JsonBody(ExportStatusToJsonObject());
         }
 
         private void LoadPersistedValues()

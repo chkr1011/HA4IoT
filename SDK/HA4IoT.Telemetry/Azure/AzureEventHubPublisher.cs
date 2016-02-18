@@ -86,7 +86,7 @@ namespace HA4IoT.Telemetry.Azure
             JsonObject data = new JsonObject();
             data.SetNamedValue("timestamp", JsonValue.CreateStringValue(DateTime.Now.ToString("O")));
             data.SetNamedValue("type", JsonValue.CreateStringValue(eventType.ToString()));
-            data.SetNamedValue("actuator",actuatorId.ToJsonValue());
+            data.SetNamedValue("actuator",actuatorId.ExportToJsonObject());
 
             return data;
         }

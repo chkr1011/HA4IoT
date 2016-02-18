@@ -2,12 +2,10 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Data.Json;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Core.Timer;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
@@ -96,13 +94,13 @@ namespace HA4IoT.Actuators
             SetState(RollerShutterState.Stopped);
         }
 
-        public override JsonObject GetStatusForApi()
+        public override JsonObject ExportStatusToJsonObject()
         {
-            var status = base.GetStatusForApi();
+            var status = base.ExportStatusToJsonObject();
 
-            status.SetNamedValue("state", JsonValue.CreateStringValue(_state.ToString()));
-            status.SetNamedValue("position", JsonValue.CreateNumberValue(_position));
-            status.SetNamedValue("positionMax", JsonValue.CreateNumberValue(_positionMax));
+            status.SetNamedValue("state", _state.ToJsonValue());
+            status.SetNamedValue("position", _position.ToJsonValue());
+            status.SetNamedValue("positionMax", _positionMax.ToJsonValue());
 
             return status;
         }

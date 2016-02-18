@@ -6,8 +6,10 @@ namespace HA4IoT.Contracts.Automations
     {
         AutomationId Id { get; }
 
-        JsonObject GetConfigurationForApi();
+        JsonObject ExportConfigurationAsJsonValue();
 
-        JsonObject GetStatusForApi();
+        JsonObject ExportStatusToJsonObject();
+
+        void LoadSettings();
     }
 }

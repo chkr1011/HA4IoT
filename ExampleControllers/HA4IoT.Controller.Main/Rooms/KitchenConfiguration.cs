@@ -71,7 +71,7 @@ namespace HA4IoT.Controller.Main.Rooms
             kitchen.Lamp(Kitchen.LightCeilingMiddle).ConnectToggleActionWith(kitchen.Button(Kitchen.ButtonKitchenette));
             kitchen.Lamp(Kitchen.LightCeilingMiddle).ConnectToggleActionWith(kitchen.Button(Kitchen.ButtonPassage));
 
-            kitchen.SetupAutomaticRollerShutters().WithRollerShutters(kitchen.RollerShutter(Kitchen.RollerShutter));
+            kitchen.SetupRollerShutterAutomation().WithRollerShutters(kitchen.RollerShutter(Kitchen.RollerShutter));
             kitchen.RollerShutter(Kitchen.RollerShutter).ConnectWith(kitchen.RollerShutterButtons(Kitchen.RollerShutterButtons));
 
             kitchen.CombineActuators(Kitchen.CombinedAutomaticLights)
@@ -79,7 +79,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithActuator(kitchen.Lamp(Kitchen.LightCeilingDoor))
                 .WithActuator(kitchen.Lamp(Kitchen.LightCeilingWindow));
 
-            kitchen.SetupAutomaticTurnOnAndOffAutomation()
+            kitchen.SetupTurnOnAndOffAutomation()
                 .WithTrigger(kitchen.MotionDetector(Kitchen.MotionDetector))
                 .WithTarget(kitchen.BinaryStateOutput(Kitchen.CombinedAutomaticLights))
                 .WithEnabledAtNight(controller.Device<IWeatherStation>());

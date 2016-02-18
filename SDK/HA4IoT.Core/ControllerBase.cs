@@ -197,20 +197,20 @@ namespace HA4IoT.Core
         private void InitializeCore()
         {
             InitializeHttpApi();
-
             InitializeLogging();
             InitializeTimer();
 
-            var controllerApiHandler = new ControllerApiHandler(this);
+            var controllerApiHandler = new ControllerApiDispatcher(this);
             controllerApiHandler.ExposeToApi();
 
-            TryInitializeActuators();
+            TryInitialize();
+            LoadSettings();
 
             _httpServer.StartAsync(80).Wait();
             Timer.Run();
         }
 
-        private void TryInitializeActuators()
+        private void TryInitialize()
         {
             try
             {
@@ -218,7 +218,20 @@ namespace HA4IoT.Core
             }
             catch (Exception exception)
             {
-                Logger.Error(exception, "Error while initializing actuators");
+                Logger.Error(exception, "Error while initializing");
+            }
+        }
+
+        private void LoadSettings()
+        {
+            foreach (var actuator in _actuators.GetAll())
+            {
+                actuator.LoadSettings();
+            }
+
+            foreach (var automation in _automations.GetAll())
+            {
+                automation.LoadSettings();
             }
         }
     }

@@ -34,14 +34,19 @@ namespace HA4IoT.Tests.Mockups
             return InternalValue;
         }
 
-        public JsonObject GetConfigurationForApi()
+        public JsonObject ExportConfigurationToJsonObject()
         {
             throw new NotImplementedException();
         }
 
-        public JsonObject GetStatusForApi()
+        public JsonObject ExportStatusToJsonObject()
         {
             throw new NotImplementedException();
+        }
+
+        public void LoadSettings()
+        {
+            
         }
     }
 }

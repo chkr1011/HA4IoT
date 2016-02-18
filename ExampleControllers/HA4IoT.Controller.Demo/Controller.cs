@@ -121,7 +121,7 @@ namespace HA4IoT.Controller.Demo
 
             SetupHumidityDependingOutput(exampleRoom.HumiditySensor(ExampleRoom.HumiditySensor), hsrel8.GetOutput(5));
 
-            exampleRoom.SetupAutomaticTurnOnAndOffAutomation()
+            exampleRoom.SetupTurnOnAndOffAutomation()
                 .WithTrigger(exampleRoom.MotionDetector(ExampleRoom.MotionDetector))
                 .WithTarget(exampleRoom.BinaryStateOutput(ExampleRoom.BathroomFan))
                 .WithTarget(exampleRoom.BinaryStateOutput(ExampleRoom.Lamp2))

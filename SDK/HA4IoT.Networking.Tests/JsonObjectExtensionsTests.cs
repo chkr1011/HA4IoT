@@ -56,7 +56,9 @@ namespace HA4IoT.Networking.Tests
             var jsonObject = data.ToJsonObject();
             stopwatch.Stop();
 
-            jsonObject.Stringify().ShouldBeEquivalentTo("{\"id\":\"123abc\",\"number\":11.11,\"flag\":true}");
+            Debug.WriteLine(jsonObject.Stringify());
+
+            jsonObject.Stringify().ShouldBeEquivalentTo("{\"id\":\"123abc\",\"number\":11.11,\"flag\":true,\"nullableFloat\":null}");
 
             Debug.WriteLine("Serializing object to JSON object took " + stopwatch.Elapsed.TotalMilliseconds + "ms.");
         }
@@ -81,7 +83,7 @@ namespace HA4IoT.Networking.Tests
             JsonArray array = value.GetArray();
             string json = array.Stringify();
 
-            json.ShouldBeEquivalentTo("[0,true,\"Hello World\",null,{\"id\":\"123ABC\",\"number\":1.1,\"flag\":true}]");
+            json.ShouldBeEquivalentTo("[0,true,\"Hello World\",null,{\"id\":\"123ABC\",\"number\":1.1,\"flag\":true,\"nullableFloat\":null}]");
 
             Debug.WriteLine("Serializing array to JSON array took " + stopwatch.Elapsed.TotalMilliseconds + "ms.");
         }
@@ -91,6 +93,10 @@ namespace HA4IoT.Networking.Tests
             public string id { get; set; }
             public decimal number { get; set; }
             public bool flag { get; set; }
+            public float? nullableFloat { get; set; }
+
+            [HideFromToJsonObject]
+            public bool? nullableBool { get; set; }
         }
     }
 }

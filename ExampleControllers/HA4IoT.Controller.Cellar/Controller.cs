@@ -74,7 +74,7 @@ namespace HA4IoT.Controller.Cellar
             
             garden.StateMachine(Garden.StateMachine).ConnectMoveNextAndToggleOffWith(garden.Button(Garden.Button));
 
-            garden.SetupAutomaticConditionalOnAutomation()
+            garden.SetupConditionalOnAutomation()
                 .WithActuator(garden.Lamp(Garden.LampParkingLot))
                 .WithOnAtNightRange(Device<IWeatherStation>())
                 .WithOffBetweenRange(TimeSpan.Parse("22:30:00"), TimeSpan.Parse("05:00:00"));

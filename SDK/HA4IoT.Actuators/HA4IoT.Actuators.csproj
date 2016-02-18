@@ -114,12 +114,13 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActuatorSettingsHttpApiDispatcher.cs" />
     <Compile Include="ActuatorIdFactory.cs" />
     <Compile Include="BinaryStateOutputActuators\BinaryStateOutputActuatorExtensions.cs" />
     <Compile Include="BinaryStateOutputActuators\LogicalBinaryStateOutputActuatorExtensions.cs" />
     <Compile Include="Lamps\LampExtensions.cs" />
     <Compile Include="MotionDetectors\MotionDetectorExtensions.cs" />
-    <Compile Include="PersistedConfiguration.cs" />
+    <Compile Include="ActuatorSettings.cs" />
     <Compile Include="Animations\AnimateParameter.cs" />
     <Compile Include="Animations\Animation.cs" />
     <Compile Include="Buttons\ButtonExtensions.cs" />

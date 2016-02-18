@@ -53,7 +53,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             readingRoom.Lamp(ReadingRoom.LightCeilingMiddle).ConnectToggleActionWith(readingRoom.Button(ReadingRoom.Button));
 
-            readingRoom.SetupAutomaticRollerShutters().WithRollerShutters(readingRoom.RollerShutter(ReadingRoom.RollerShutter));
+            readingRoom.SetupRollerShutterAutomation().WithRollerShutters(readingRoom.RollerShutter(ReadingRoom.RollerShutter));
             readingRoom.RollerShutter(ReadingRoom.RollerShutter)
                 .ConnectWith(readingRoom.RollerShutterButtons(ReadingRoom.RollerShutterButtons));
         }

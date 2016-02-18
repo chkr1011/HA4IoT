@@ -5,7 +5,7 @@ using HA4IoT.Contracts.Core;
 
 namespace HA4IoT.Automations
 {
-    public class AutomaticBathroomFanAutomation : AutomationBase
+    public class BathroomFanAutomation : AutomationBase<AutomationSettings>
     {
         private readonly IHomeAutomationTimer _timer;
         private IStateMachine _actuator;
@@ -13,7 +13,7 @@ namespace HA4IoT.Automations
         private TimeSpan _slowDuration;
         private TimedAction _timeout;
 
-        public AutomaticBathroomFanAutomation(AutomationId id, IHomeAutomationTimer timer)
+        public BathroomFanAutomation(AutomationId id, IHomeAutomationTimer timer)
             : base(id)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
@@ -21,7 +21,7 @@ namespace HA4IoT.Automations
             _timer = timer;
         }
 
-        public AutomaticBathroomFanAutomation WithTrigger(IMotionDetector motionDetector)
+        public BathroomFanAutomation WithTrigger(IMotionDetector motionDetector)
         {
             if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
 
@@ -31,19 +31,19 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public AutomaticBathroomFanAutomation WithActuator(IStateMachine actuator)
+        public BathroomFanAutomation WithActuator(IStateMachine actuator)
         {
             _actuator = actuator;
             return this;
         }
 
-        public AutomaticBathroomFanAutomation WithSlowDuration(TimeSpan duration)
+        public BathroomFanAutomation WithSlowDuration(TimeSpan duration)
         {
             _slowDuration = duration;
             return this;
         }
 
-        public AutomaticBathroomFanAutomation WithFastDuration(TimeSpan duration)
+        public BathroomFanAutomation WithFastDuration(TimeSpan duration)
         {
             _fastDuration = duration;
             return this;
