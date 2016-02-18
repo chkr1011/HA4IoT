@@ -48,6 +48,7 @@ namespace HA4IoT.Core
         public void AddAutomation(IAutomation automation)
         {
             _automations.AddUnique(automation.Id, automation);
+            Controller.AddAutomation(automation);
         }
 
         public IList<TAutomation> Automations<TAutomation>() where TAutomation : IAutomation
