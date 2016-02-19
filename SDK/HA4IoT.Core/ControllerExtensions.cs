@@ -6,15 +6,12 @@ namespace HA4IoT.Core
 {
     public static class ControllerExtensions
     {
-        public static IRoom CreateRoom(this IController controller, Enum id)
+        public static IArea CreateArea(this IController controller, Enum id)
         {
-            var roomId = RoomId.From(id);
+            var area = new Area(AreaIdFactory.CreateIdFrom(id), controller);
+            controller.AddArea(area);
 
-            // TODO: use RoomIdFactory.
-            var room = new Room(roomId, controller);
-            controller.AddRoom(room);
-
-            return room;
+            return area;
         }
     }
 }

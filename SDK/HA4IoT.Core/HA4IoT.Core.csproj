@@ -114,14 +114,19 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AreaIdFactory.cs" />
+    <Compile Include="AutomationCollection.cs" />
     <Compile Include="ActuatorCollection.cs" />
-    <Compile Include="ControllerApiHandler.cs" />
+    <Compile Include="ControllerApiDispatcher.cs" />
     <Compile Include="ControllerBase.cs" />
     <Compile Include="ControllerExtensions.cs" />
+    <Compile Include="GenericControllerCollection.cs" />
     <Compile Include="DeviceCollection.cs" />
     <Compile Include="HealthMonitor.cs" />
-    <Compile Include="Room.cs" />
-    <Compile Include="RoomCollection.cs" />
+    <Compile Include="Area.cs" />
+    <Compile Include="AreaCollection.cs" />
+    <Compile Include="Settings\Setting.cs" />
+    <Compile Include="Settings\SettingsContainer.cs" />
     <Compile Include="Timer\Timeout.cs" />
     <Compile Include="Timer\HomeAutomationTimer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -132,13 +137,13 @@
       <Project>{551337E7-D1EF-4145-92B4-F7086F7665A6}</Project>
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>
+    <ProjectReference Include="..\HA4IoT.Logger\HA4IoT.Logger.csproj">
+      <Project>{15DB669D-AF71-4E89-9748-0290A2E5D291}</Project>
+      <Name>HA4IoT.Logger</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
       <Name>HA4IoT.Networking</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\HA4IoT.Notifications\HA4IoT.Notifications.csproj">
-      <Project>{15DB669D-AF71-4E89-9748-0290A2E5D291}</Project>
-      <Name>HA4IoT.Notifications</Name>
     </ProjectReference>
     <ProjectReference Include="..\Hardware\HA4IoT.Hardware.Pi2\HA4IoT.Hardware.Pi2.csproj">
       <Project>{39819B8F-40F8-418A-AD3A-92A8C8D63268}</Project>

@@ -4,7 +4,7 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.Contracts.Core
 {
-    public abstract class IdBase : IConvertibleToJsonValue
+    public abstract class IdBase : IExportToJsonValue
     {
         private readonly string _value;
 
@@ -22,7 +22,7 @@ namespace HA4IoT.Contracts.Core
             return _value;
         }
 
-        public IJsonValue ToJsonValue()
+        public IJsonValue ExportToJsonObject()
         {
             return JsonValue.CreateStringValue(_value);
         }

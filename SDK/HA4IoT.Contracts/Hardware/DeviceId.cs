@@ -10,11 +10,6 @@ namespace HA4IoT.Contracts.Hardware
             if (string.IsNullOrEmpty(value)) throw new ArgumentException("Device ID is invalid.");
         }
 
-        public static DeviceId From(Enum value)
-        {
-            return new DeviceId(value.ToString());
-        }
-
         public bool Equals(DeviceId other)
         {
             if (other == null)

@@ -13,14 +13,19 @@ namespace HA4IoT.Tests.Mockups
 
         public BinaryActuatorState State { get; private set; }
 
-        public JsonObject GetConfigurationForApi()
+        public JsonObject ExportConfigurationToJsonObject()
         {
             return new JsonObject();
         }
 
-        public JsonObject GetStatusForApi()
+        public JsonObject ExportStatusToJsonObject()
         {
             return new JsonObject();
+        }
+
+        public void LoadSettings()
+        {
+            
         }
 
         public BinaryActuatorState GetState()

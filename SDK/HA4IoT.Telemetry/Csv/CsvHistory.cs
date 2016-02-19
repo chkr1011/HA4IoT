@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Networking;
 using HA4IoT.Telemetry.Statistics;
 
@@ -14,7 +14,7 @@ namespace HA4IoT.Telemetry.Csv
 {
     public class CsvHistory : ActuatorMonitor
     {
-        private readonly INotificationHandler _notificationHandler;
+        private readonly ILogger _logger;
         private readonly IHttpRequestController _apiRequestController;
         private readonly string _filename;
 
@@ -22,12 +22,12 @@ namespace HA4IoT.Telemetry.Csv
         private readonly List<ActuatorHistoryEntry> _queuedEntries = new List<ActuatorHistoryEntry>();
         private readonly Dictionary<IActuator, ActuatorHistory> _actuatorHistory = new Dictionary<IActuator, ActuatorHistory>();
 
-        public CsvHistory(INotificationHandler notificationHandler, IHttpRequestController apiRequestController)
+        public CsvHistory(ILogger logger, IHttpRequestController apiRequestController)
         {
-            if (notificationHandler == null) throw new ArgumentNullException(nameof(notificationHandler));
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
             if (apiRequestController == null) throw new ArgumentNullException(nameof(apiRequestController));
 
-            _notificationHandler = notificationHandler;
+            _logger = logger;
             _apiRequestController = apiRequestController;
             _filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "History.csv");
 
@@ -43,7 +43,7 @@ namespace HA4IoT.Telemetry.Csv
 
         protected override void OnActuatorConnecting(IActuator actuator)
         {
-            _actuatorHistory[actuator] = new ActuatorHistory(actuator, _apiRequestController, _notificationHandler);
+            _actuatorHistory[actuator] = new ActuatorHistory(actuator, _apiRequestController, _logger);
         }
 
         protected override void OnBinaryStateActuatorStateChanged(IBinaryStateOutputActuator actuator, BinaryActuatorState newState)
@@ -100,7 +100,7 @@ namespace HA4IoT.Telemetry.Csv
                         }
                         catch (Exception exception)
                         {
-                            _notificationHandler.Warning("Error while write actuator state changes to CSV log. " + exception.Message);
+                            _logger.Warning("Error while write actuator state changes to CSV log. " + exception.Message);
                         }
                     }
                 }

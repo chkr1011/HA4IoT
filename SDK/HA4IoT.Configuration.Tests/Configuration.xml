@@ -22,8 +22,8 @@
     <I2CHardwareBridge:I2CHardwareBridge id="I2CHardwareBridge" i2cAddress="50" />
   </Devices>
 
-  <Rooms>
-    <Room id="Bedroom">
+  <Areas>
+    <Area id="Bedroom">
       <Actuators>
         <TemperatureSensor id="Bedroom.TemperatureSensor">
           <I2CHardwareBridge:TemperatureSensor i2cHardwareBridgeDeviceId="I2CHardwareBridge" sensorId="6" />
@@ -208,8 +208,8 @@
       <Automations>
         
       </Automations>
-    </Room>
-  </Rooms>
+    </Area>
+  </Areas>
 
   <App pollInterval="250" showSensorsOverview="true" showMotionDetectorsOverview="true">
     <UILocalizations>

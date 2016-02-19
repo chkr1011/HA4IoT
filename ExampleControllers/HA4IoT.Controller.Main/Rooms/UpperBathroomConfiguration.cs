@@ -1,9 +1,10 @@
 ﻿using System;
 using HA4IoT.Actuators;
-using HA4IoT.Actuators.Automations;
+using HA4IoT.Automations;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core;
+using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
 
@@ -48,7 +49,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             var i2cHardwareBridge = _controller.Device<I2CHardwareBridge>();
 
-            var bathroom = _controller.CreateRoom(Room.UpperBathroom)
+            var bathroom = _controller.CreateArea(Room.UpperBathroom)
                 .WithTemperatureSensor(UpperBathroom.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(UpperBathroom.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
                 .WithMotionDetector(UpperBathroom.MotionDetector, _input5.GetInput(15))
@@ -65,19 +66,19 @@ namespace HA4IoT.Controller.Main.Rooms
                     .WithActuator(bathroom.Lamp(UpperBathroom.LightCeilingMirrorCabinet))
                     .WithActuator(bathroom.Lamp(UpperBathroom.LampMirrorCabinet));
 
-            bathroom.SetupAutomaticTurnOnAndOffAutomation()
+            bathroom.SetupTurnOnAndOffAutomation()
                 .WithTrigger(bathroom.MotionDetector(UpperBathroom.MotionDetector))
                 .WithTarget(combinedLights)
                 .WithOnDuration(TimeSpan.FromMinutes(8));
             
-            new AutomaticBathroomFanAutomation(_controller.Timer)
+            new BathroomFanAutomation(AutomationIdFactory.CreateIdFrom<BathroomFanAutomation>(bathroom), _controller.Timer)
+                .WithTrigger(bathroom.MotionDetector(UpperBathroom.MotionDetector))
                 .WithSlowDuration(TimeSpan.FromMinutes(8))
                 .WithFastDuration(TimeSpan.FromMinutes(12))
-                .WithMotiWithTrigger(bathroom.MotionDetector(UpperBathroom.MotionDetector))
                 .WithActuator(bathroom.StateMachine(UpperBathroom.Fan));
         }
 
-        private void SetupFan(StateMachine stateMachine, IRoom room)
+        private void SetupFan(StateMachine stateMachine, IArea room)
         {
             var fanPort0 = _hsrel5.GetOutput(4);
             var fanPort1 = _hsrel5.GetOutput(5);

@@ -1,15 +1,17 @@
 ﻿using System;
 using Windows.Data.Json;
-using HA4IoT.Contracts;
+using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Tests.Mockups
 {
     public class TestButton : IButton
     {
+        private readonly Trigger _pressedShortlyTrigger = new Trigger();
+        private readonly Trigger _pressedLongTrigger = new Trigger();
+
         public event EventHandler<ActuatorIsEnabledChangedEventArgs> IsEnabledChanged;
-        public event EventHandler PressedShort;
-        public event EventHandler PressedLong;
         public event EventHandler<ButtonStateChangedEventArgs> StateChanged;
 
         public ActuatorId Id { get; }
@@ -17,19 +19,19 @@ namespace HA4IoT.Tests.Mockups
 
         public ButtonState State { get; set; } = ButtonState.Released;
 
-        public JsonObject GetConfigurationForApi()
+        public JsonObject ExportConfigurationToJsonObject()
         {
             return new JsonObject();
         }
 
         public void PressShort()
         {
-            PressedShort?.Invoke(this, EventArgs.Empty);
+            _pressedShortlyTrigger.Invoke();
         }
 
         public void PressLong()
         {
-            PressedLong?.Invoke(this, EventArgs.Empty);
+            _pressedLongTrigger.Invoke();
         }
 
         public ButtonState GetState()
@@ -37,9 +39,24 @@ namespace HA4IoT.Tests.Mockups
             return State;
         }
 
-        public JsonObject GetStatusForApi()
+        public ITrigger GetPressedShortlyTrigger()
+        {
+            return _pressedShortlyTrigger;
+        }
+
+        public ITrigger GetPressedLongTrigger()
+        {
+            return _pressedLongTrigger;
+        }
+
+        public JsonObject ExportStatusToJsonObject()
         {
             return new JsonObject();
+        }
+
+        public void LoadSettings()
+        {
+            
         }
     }
 }

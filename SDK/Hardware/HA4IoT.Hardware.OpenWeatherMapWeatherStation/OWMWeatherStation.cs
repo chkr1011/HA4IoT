@@ -9,7 +9,7 @@ using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Networking;
 using HttpMethod = HA4IoT.Networking.HttpMethod;
@@ -19,17 +19,19 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 {
     public class OWMWeatherStation : IWeatherStation
     {
-        private readonly INotificationHandler _logger;
+        private readonly ILogger _logger;
         private readonly Uri _weatherDataSourceUrl;
         private readonly WeatherStationTemperatureSensor _temperature;
         private readonly WeatherStationHumiditySensor _humidity;
         private readonly WeatherStationSituationSensor _situation;
 
+        private string _previousResponse;
         private DateTime? _lastFetched;
+        private DateTime? _lastFetchedDifferentResponse;
         private TimeSpan _sunrise;
         private TimeSpan _sunset;
         
-        public OWMWeatherStation(DeviceId id, double lat, double lon, string appId, IHomeAutomationTimer timer, IHttpRequestController httpApi, INotificationHandler logger)
+        public OWMWeatherStation(DeviceId id, double lat, double lon, string appId, IHomeAutomationTimer timer, IHttpRequestController httpApi, ILogger logger)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (timer == null) throw new ArgumentNullException(nameof(timer));
@@ -62,16 +64,20 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
         public IHumiditySensor HumiditySensor { get; }
         public IWeatherSituationSensor SituationSensor { get; }
 
-        public JsonObject GetStatusForApi()
+        public JsonObject ExportStatusToJsonObject()
         {
             var result = new JsonObject();
+            result.SetNamedValue("uri", _weatherDataSourceUrl.ToString().ToJsonValue());
+
             result.SetNamedValue("situation", SituationSensor.GetSituation().ToJsonValue());
             result.SetNamedValue("temperature", TemperatureSensor.GetValue().ToJsonValue());
             result.SetNamedValue("humidity", HumiditySensor.GetValue().ToJsonValue());
-            result.SetNamedValue("lastFetched", _lastFetched.HasValue ? _lastFetched.Value.ToJsonValue() : JsonValue.CreateNullValue());
+
+            result.SetNamedValue("lastFetched", _lastFetched.ToJsonValue());
+            result.SetNamedValue("lastFetchedDifferentResponse", _lastFetchedDifferentResponse.ToJsonValue());
+
             result.SetNamedValue("sunrise", _sunrise.ToJsonValue());
             result.SetNamedValue("sunset", _sunset.ToJsonValue());
-            result.SetNamedValue("uri", _weatherDataSourceUrl.ToJsonValue());
 
             return result;
         }
@@ -82,9 +88,15 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             {
                 string response = await FetchWeatherData();
 
-                PersistWeatherData(response);
-                ParseWeatherData(response);
+                if (!string.Equals(response, _previousResponse))
+                {
+                    PersistWeatherData(response);
+                    ParseWeatherData(response);
 
+                    _previousResponse = response;
+                    _lastFetchedDifferentResponse = DateTime.Now;
+                }
+                
                 _lastFetched = DateTime.Now;
             }
             catch (Exception exception)
@@ -153,7 +165,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 
         private void HandleApiGet(HttpContext httpContext)
         {
-            httpContext.Response.Body = new JsonBody(GetStatusForApi());
+            httpContext.Response.Body = new JsonBody(ExportStatusToJsonObject());
         }
 
         private void LoadPersistedValues()

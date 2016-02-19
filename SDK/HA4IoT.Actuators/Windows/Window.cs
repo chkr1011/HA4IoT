@@ -3,7 +3,7 @@ using Windows.Data.Json;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
@@ -12,7 +12,7 @@ namespace HA4IoT.Actuators
     {
         private readonly List<Casement> _casements = new List<Casement>(); 
 
-        public Window(ActuatorId id, IHttpRequestController api, INotificationHandler logger) : base(id, api, logger)
+        public Window(ActuatorId id, IHttpRequestController api, ILogger logger) : base(id, api, logger)
         {
         }
 
@@ -42,14 +42,14 @@ namespace HA4IoT.Actuators
             return WithCasement(new Casement(Casement.RightCasementId, fullOpenReedSwitch, tiltReedSwitch));
         }
 
-        public override JsonObject GetStatusForApi()
+        public override JsonObject ExportStatusToJsonObject()
         {
-            var status = base.GetStatusForApi();
+            var status = base.ExportStatusToJsonObject();
 
             var state = new JsonObject();
             foreach (var casement in _casements)
             {
-                state.SetNamedValue(casement.Id, JsonValue.CreateStringValue(casement.State.ToString()));
+                state.SetNamedValue(casement.Id, casement.State.ToJsonValue());
             }
 
             status.SetNamedValue("state", state);
@@ -57,9 +57,9 @@ namespace HA4IoT.Actuators
             return status;
         }
         
-        public override JsonObject GetConfigurationForApi()
+        public override JsonObject ExportConfigurationToJsonObject()
         {
-            JsonObject configuration = base.GetConfigurationForApi();
+            JsonObject configuration = base.ExportConfigurationToJsonObject();
 
             JsonArray casements = new JsonArray();
             foreach (var casement in _casements)

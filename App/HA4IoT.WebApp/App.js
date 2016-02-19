@@ -62,7 +62,7 @@ function setupController() {
 
               $http.get("/api/configuration").success(function (data) {
 
-                  $.each(data.rooms, function (roomId, room) {
+                  $.each(data.Areas, function (roomId, room) {
                       if (room.hide) {
                           return true;
                       }
@@ -72,7 +72,7 @@ function setupController() {
                       roomControl.caption = getActuatorLocalization(roomId);
                       roomControl.actuators = [];
 
-                      $.each(room.actuators, function (actuatorId, actuator) {
+                      $.each(room.Actuators, function (actuatorId, actuator) {
                           actuator.id = actuatorId;
                           configureActuator(room, actuator);
 
@@ -80,14 +80,14 @@ function setupController() {
                               return true;
                           }
 
-                          if (actuator.type === "HA4IoT.Actuators.TemperatureSensor" ||
-                              actuator.type === "HA4IoT.Actuators.HumiditySensor") {
+                          if (actuator.Type === "HA4IoT.Actuators.TemperatureSensor" ||
+                              actuator.Type === "HA4IoT.Actuators.HumiditySensor") {
                               c.sensors.push(actuator);
-                          } else if (actuator.type === "HA4IoT.Actuators.RollerShutter") {
+                          } else if (actuator.Type === "HA4IoT.Actuators.RollerShutter") {
                               c.rollerShutters.push(actuator);
-                          } else if (actuator.type === "HA4IoT.Actuators.MotionDetector") {
+                          } else if (actuator.Type === "HA4IoT.Actuators.MotionDetector") {
                               c.motionDetectors.push(actuator);
-                          } else if (actuator.type === "HA4IoT.Actuators.Window") {
+                          } else if (actuator.Type === "HA4IoT.Actuators.Window") {
                               c.windows.push(actuator);
                           }
 
@@ -144,18 +144,18 @@ function setupController() {
               $.ajax({ method: "GET", url: "/api/status", timeout: 2500 }).done(function (data) {
                   c.errorMessage = null;
 
-                  if (data._hash === c.previousHash) {
+                  if (data.Hash === c.previousHash) {
                       return;
                   }
 
-                  c.previousHash = data._hash;
+                  c.previousHash = data.Hash;
                   console.log("Updating UI due to state changes");
 
-                  $.each(data.status, function(id, state) {
+                  $.each(data.Actuators, function(id, state) {
                       c.updateStatus(id, state);
                   });
 
-                  c.weatherStation = data.weatherStation;
+                  c.weatherStation = data.WeatherStation;
 
                   $scope.$apply(function () { $scope.msgs = data; });                  
               }).fail(function (jqXHR, textStatus, errorThrown) {
@@ -228,7 +228,7 @@ function setupController() {
 }
 
 function configureActuator(room, actuator) {
-    actuator.image = actuator.type;
+    actuator.image = actuator.Type;
     actuator.sortValue = 0;
     actuator.caption = getActuatorLocalization(actuator.id);
     actuator.overviewCaption = getActuatorLocalization(actuator.id + ".Overview");
@@ -236,7 +236,7 @@ function configureActuator(room, actuator) {
     actuator.displayVertical = false;
     actuator.state = {};
 
-    switch (actuator.type) {
+    switch (actuator.Type) {
         case "HA4IoT.Actuators.Lamp":
             {
                 actuator.template = "Views/ToggleTemplate.html";
@@ -276,9 +276,9 @@ function configureActuator(room, actuator) {
 
                     var stateCaption = null;
 
-                    if (actuator.app !== undefined) {
-                        if (actuator.app.stateCaptions !== undefined) {
-                            stateCaption = actuator.app.stateCaptions[state];
+                    if (actuator.AppSettings !== undefined) {
+                        if (actuator.AppSettings.StateCaptions !== undefined) {
+                            stateCaption = actuator.AppSettings.StateCaptions[state];
                         }
                     }
 
@@ -349,28 +349,28 @@ function configureActuator(room, actuator) {
             }
     }
 
-    actuator.caption = getConfigurationValue(actuator, "caption", actuator.caption);
-    actuator.sortValue = getConfigurationValue(actuator, "sortValue", actuator.sortValue);
-    actuator.image = getConfigurationValue(actuator, "image", actuator.image);
-    actuator.hide = getConfigurationValue(actuator, "hide", actuator.hide);
-    actuator.overviewCaption = getConfigurationValue(actuator, "overviewCaption", actuator.overviewCaption);
-    actuator.displayVertical = getConfigurationValue(actuator, "displayVertical", actuator.displayVertical);
-    actuator.isPartOfOnStateCounter = getConfigurationValue(actuator, "isPartOfOnStateCounter", true);
-    actuator.onStateId = getConfigurationValue(actuator, "onStateId", "On");
+    actuator.caption = getConfigurationValue(actuator, "Caption", actuator.caption);
+    actuator.sortValue = getConfigurationValue(actuator, "SortValue", actuator.sortValue);
+    actuator.image = getConfigurationValue(actuator, "Image", actuator.image);
+    actuator.hide = getConfigurationValue(actuator, "Hide", actuator.hide);
+    actuator.overviewCaption = getConfigurationValue(actuator, "OverviewCaption", actuator.overviewCaption);
+    actuator.displayVertical = getConfigurationValue(actuator, "DisplayVertical", actuator.displayVertical);
+    actuator.isPartOfOnStateCounter = getConfigurationValue(actuator, "IsPartOfOnStateCounter", true);
+    actuator.onStateId = getConfigurationValue(actuator, "OnStateId", "On");
 
     appConfiguration.actuatorExtender(actuator);
 }
 
 function getConfigurationValue(actuator, name, defaultValue) {
-    if (actuator.app === undefined) {
+    if (actuator.AppSettings === undefined) {
         return defaultValue;
     }
 
-    if (actuator.app[name] === undefined) {
+    if (actuator.AppSettings[name] === undefined) {
         return defaultValue;
     }
 
-    return actuator.app[name];
+    return actuator.AppSettings[name];
 }
 
 function invokeActuator(id, request, successCallback) {

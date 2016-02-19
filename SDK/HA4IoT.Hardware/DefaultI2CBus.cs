@@ -4,7 +4,7 @@ using System.Linq;
 using Windows.Devices.Enumeration;
 using Windows.Devices.I2c;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Hardware
 {
@@ -14,10 +14,10 @@ namespace HA4IoT.Hardware
 
         private readonly string _i2CBusId;
 
-        private readonly INotificationHandler _logger;
+        private readonly ILogger _logger;
         private readonly object _syncRoot = new object();
 
-        public DefaultI2CBus(DeviceId id, INotificationHandler logger)
+        public DefaultI2CBus(DeviceId id, ILogger logger)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (logger == null) throw new ArgumentNullException(nameof(logger));

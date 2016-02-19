@@ -3,8 +3,8 @@ using System.IO;
 using Windows.Data.Json;
 using Windows.Storage;
 using HA4IoT.Actuators;
-using HA4IoT.Actuators.Automations;
 using HA4IoT.Actuators.Connectors;
+using HA4IoT.Automations;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Hardware;
@@ -52,7 +52,7 @@ namespace HA4IoT.Controller.Cellar
 
             var pi2PortController = new Pi2PortController();
 
-            InitializeWeatherStation(CreateWeatherStation());
+            CreateWeatherStation();
 
             var i2cBus = new DefaultI2CBus("II2CBus.default".ToDeviceId(), Logger);
             AddDevice(i2cBus);
@@ -60,7 +60,7 @@ namespace HA4IoT.Controller.Cellar
             var ccToolsFactory = new CCToolsBoardController(this, i2cBus, HttpApiController, Logger);
             var hsrt16 = ccToolsFactory.CreateHSRT16(Device.CellarHSRT16, new I2CSlaveAddress(32));
             
-            var garden = this.CreateRoom(RoomId.Garden)
+            var garden = this.CreateArea(RoomId.Garden)
                 .WithLamp(Garden.LampTerrace, hsrt16[HSRT16Pin.Relay15])
                 .WithLamp(Garden.LampGarage, hsrt16[HSRT16Pin.Relay14])
                 .WithLamp(Garden.LampTap, hsrt16[HSRT16Pin.Relay13])
@@ -74,9 +74,9 @@ namespace HA4IoT.Controller.Cellar
             
             garden.StateMachine(Garden.StateMachine).ConnectMoveNextAndToggleOffWith(garden.Button(Garden.Button));
 
-            garden.SetupAutomaticConditionalOnAutomation()
+            garden.SetupConditionalOnAutomation()
                 .WithActuator(garden.Lamp(Garden.LampParkingLot))
-                .WithOnAtNightRange(WeatherStation)
+                .WithOnAtNightRange(Device<IWeatherStation>())
                 .WithOffBetweenRange(TimeSpan.Parse("22:30:00"), TimeSpan.Parse("05:00:00"));
 
             PublishStatisticsNotification();
@@ -84,7 +84,7 @@ namespace HA4IoT.Controller.Cellar
             Timer.Tick += (s, e) => { pi2PortController.PollOpenInputPorts(); };
         }
 
-        private void SetupStateMachine(StateMachine stateMachine, IRoom garden)
+        private void SetupStateMachine(StateMachine stateMachine, IArea garden)
         {
             stateMachine.AddOffState()
                 .WithActuator(garden.Lamp(Garden.LampTerrace), BinaryActuatorState.Off)
@@ -150,7 +150,7 @@ namespace HA4IoT.Controller.Cellar
                 .WithActuator(garden.Lamp(Garden.LampRearArea), BinaryActuatorState.On);
         }
 
-        private IWeatherStation CreateWeatherStation()
+        private void CreateWeatherStation()
         {
             try
             {
@@ -160,17 +160,15 @@ namespace HA4IoT.Controller.Cellar
                 double lon = configuration.GetNamedNumber("lon");
                 string appId = configuration.GetNamedString("appID");
 
-                var weatherStation = new OWMWeatherStation(DeviceId.From(Device.WeatherStation),  lat, lon, appId, Timer, HttpApiController, Logger);
+                var weatherStation = new OWMWeatherStation(DeviceIdFactory.CreateIdFrom(Device.WeatherStation),  lat, lon, appId, Timer, HttpApiController, Logger);
                 Logger.Info("WeatherStation initialized successfully");
 
-                return weatherStation;
+                AddDevice(weatherStation);
             }
             catch (Exception exception)
             {
                 Logger.Warning("Unable to create weather station. " + exception.Message);
             }
-
-            return null;
         }
     }
 }
