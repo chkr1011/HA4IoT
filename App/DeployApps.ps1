@@ -86,7 +86,6 @@ while($repeat)
 	#IncreaseVersion -Package "$remoteDir"
 
 	Deploy -Source ".\HA4IoT.WebApp" -Target "$remoteDir" -Clear $clearRemoteDirectory
-	#Deploy -Source ".\HA4IoT.Configurator" -Target "$remoteDir\configurator" -Clear $clearRemoteDirectory
 
 	Write-Host "Deployment completed. Repeat deploy? (y/n)"
 	if ((Read-Host) -eq "n")
