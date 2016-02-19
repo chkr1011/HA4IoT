@@ -370,7 +370,7 @@ function getConfigurationValue(actuator, name, defaultValue) {
         return defaultValue;
     }
 
-    return actuator.app[name];
+    return actuator.AppSettings[name];
 }
 
 function invokeActuator(id, request, successCallback) {
