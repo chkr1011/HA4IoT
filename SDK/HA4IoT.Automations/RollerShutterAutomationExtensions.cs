@@ -15,6 +15,7 @@ namespace HA4IoT.Automations
                 area.Controller.Timer, 
                 area.Controller.Device<IWeatherStation>(),
                 area.Controller.HttpApiController,
+                area.Controller,
                 area.Controller.Logger);
 
             area.AddAutomation(automation);

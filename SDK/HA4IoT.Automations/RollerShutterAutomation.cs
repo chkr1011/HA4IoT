@@ -14,8 +14,9 @@ namespace HA4IoT.Automations
 {
     public class RollerShutterAutomation : AutomationBase<RollerShutterAutomationSettings>
     {
-        private readonly List<IRollerShutter> _rollerShutters = new List<IRollerShutter>();
+        private readonly List<ActuatorId> _rollerShutters = new List<ActuatorId>();
         private readonly IWeatherStation _weatherStation;
+        private readonly IActuatorController _actuatorController;
         private readonly ILogger _logger;
 
         private bool _maxOutsideTemperatureApplied;
@@ -25,14 +26,16 @@ namespace HA4IoT.Automations
         private bool _doNotOpenBeforeIsTraced; // TODO: Create trace wrapper with flag and "Reset()" method?
         private bool _doNotOpenIfTemperatureIsTraced;
         
-        public RollerShutterAutomation(AutomationId id, IHomeAutomationTimer timer, IWeatherStation weatherStation, IHttpRequestController httpApiController, ILogger logger)
+        public RollerShutterAutomation(AutomationId id, IHomeAutomationTimer timer, IWeatherStation weatherStation, IHttpRequestController httpApiController, IActuatorController actuatorController, ILogger logger)
             : base(id)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
             if (weatherStation == null) throw new ArgumentNullException(nameof(weatherStation));
+            if (actuatorController == null) throw new ArgumentNullException(nameof(actuatorController));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
 
             _weatherStation = weatherStation;
+            _actuatorController = actuatorController;
             _logger = logger;
 
             Settings = new RollerShutterAutomationSettings(id, httpApiController, logger);
@@ -50,7 +53,7 @@ namespace HA4IoT.Automations
         {
             if (rollerShutters == null) throw new ArgumentNullException(nameof(rollerShutters));
 
-            _rollerShutters.AddRange(rollerShutters);
+            _rollerShutters.AddRange(rollerShutters.Select(rs => rs.Id));
             return this;
         }
 
@@ -159,13 +162,13 @@ namespace HA4IoT.Automations
         {
             foreach (var rollerShutter in _rollerShutters)
             {
-                rollerShutter.SetState(state);
+                _actuatorController.Actuator<IRollerShutter>(rollerShutter).SetState(state);
             }
         }
 
         private string GetTracePrefix()
         {
-            return "Auto " + string.Join(",", _rollerShutters.Select(rs => rs.Id)) + ": ";
+            return "Auto " + string.Join(",", _rollerShutters) + ": ";
         }
     }
 }
