@@ -1,78 +1,114 @@
 ﻿using System;
+using System.IO;
+using HA4IoT.TraceViewer.Properties;
 
 namespace HA4IoT.TraceViewer
 {
     public static class Program
     {
-        private static readonly object ConsoleSyncRoot = new object();
-        private static readonly ControllerNotificationReceiver NotificationReceiver = new ControllerNotificationReceiver();
+        private static readonly object SyncRoot = new object();
+        private static readonly TraceReceiver TraceItemReceiver = new TraceReceiver();
 
-        public static void Main(string[] args)
+        private static bool _loggingIsEnabled;
+
+        public static void Main()
         {
-            WriteConsoleOutput(ConsoleColor.Green, "Application started.\r\n- Press 'c' to clear the screen\r\n- Press 'q' to quit.");
-            NotificationReceiver.NotificationReceived += HandleNotification;
-            NotificationReceiver.Start();
+            Console.Title = "Trace Viewer - HA4IoT";
 
+            Console.Write("Starting... ");
+
+            PrepareLogging();
+            TraceItemReceiver.TraceItemReceived += PrintTraceItem;
+            TraceItemReceiver.Start();
+
+            Console.WriteLine("[OK]");
+            Console.WriteLine("- Press 'C' to clear the console");
+            Console.WriteLine("- Press 'D' to delete the log file (if logging activated)");
+            Console.WriteLine("- Press 'Q' to quit");
+            
             ConsoleKeyInfo pressedKey;
             do
             {
                 pressedKey = Console.ReadKey(true);
                 if (pressedKey.Key == ConsoleKey.C)
                 {
-                    lock (ConsoleSyncRoot)
+                    lock (SyncRoot)
                     {
                         Console.Clear();
+                    }
+                }
+                else if (pressedKey.Key == ConsoleKey.D)
+                {
+                    lock (SyncRoot)
+                    {
+                        if (_loggingIsEnabled)
+                        {
+                            File.Delete(Settings.Default.LogFilename);
+                            Console.WriteLine($"Log file '{Settings.Default.LogFilename}' deleted");
+                        }
                     }
                 }
             } while (pressedKey.Key != ConsoleKey.Q);
         }
 
-        private static void HandleNotification(object sender, ControllerNotificationReceivedEventArguments e)
+        private static void PrepareLogging()
         {
-            var line = e.Notification.RemoteAddress + " " + DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss.fff") + ": " +
-                       e.Notification.Message;
+            if (!Settings.Default.ClearLogOnStartup)
+            {
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(Settings.Default.LogFilename))
+            {
+                _loggingIsEnabled = true;
+
+                if (File.Exists(Settings.Default.LogFilename))
+                {
+                    File.Delete(Settings.Default.LogFilename);
+                }
+            }
+        }
+
+        private static void PrintTraceItem(object sender, TraceItemReceivedEventArgs e)
+        {
+            string timestamp = e.TraceItem.Timestamp.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            var line = $"[{e.SenderAddress}] [{timestamp}] [{e.TraceItem.ThreadId}] [{e.TraceItem.Type}]: {e.TraceItem.Message}";
 
             var color = ConsoleColor.White;
-            switch (e.Notification.Type)
+            switch (e.TraceItem.Type)
             {
-                case NotificationType.Verbose:
+                case TraceItemSeverity.Verbose:
                 {
                     color = ConsoleColor.Gray;
                     break;
                 }
 
-                case NotificationType.Info:
+                case TraceItemSeverity.Info:
                 {
                     color = ConsoleColor.Green;
                     break;
                 }
 
-                case NotificationType.Warning:
+                case TraceItemSeverity.Warning:
                 {
                     color = ConsoleColor.Yellow;
                     break;
                 }
 
-                case NotificationType.Error:
+                case TraceItemSeverity.Error:
                 {
                     color = ConsoleColor.Red;
                     break;
                 }
             }
-
-            lock (ConsoleSyncRoot)
+            
+            lock (SyncRoot)
             {
-                Console.ForegroundColor = color;
-                Console.WriteLine(line);
-            }
-        }
+                if (_loggingIsEnabled)
+                {
+                    File.AppendAllText(Settings.Default.LogFilename, line + Environment.NewLine);
+                }
 
-        private static void WriteConsoleOutput(ConsoleColor color, string message, params object[] arguments)
-        {
-            var line = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss.fff") + ": " + string.Format(message, arguments);
-
-            lock (ConsoleSyncRoot)
-            {
                 Console.ForegroundColor = color;
                 Console.WriteLine(line);
             }

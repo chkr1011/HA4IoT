@@ -1,27 +1,26 @@
 ﻿using System;
-using System.Net;
 
 namespace HA4IoT.TraceViewer
 {
-    public class Notification
+    public class TraceItem
     {
-        public Notification(
+        public TraceItem(
             DateTime timestamp,
-            IPAddress remoteAddress, 
-            NotificationType type,
+            int threadId,
+            TraceItemSeverity type,
             string message)
         {
             Timestamp = timestamp;
-            RemoteAddress = remoteAddress;
+            ThreadId = threadId;
             Type = type;
             Message = message;
         }
 
         public DateTime Timestamp { get; }
 
-        public IPAddress RemoteAddress { get; }
+        public int ThreadId { get; }
 
-        public NotificationType Type { get; }
+        public TraceItemSeverity Type { get; }
 
         public string Message { get; }
     }

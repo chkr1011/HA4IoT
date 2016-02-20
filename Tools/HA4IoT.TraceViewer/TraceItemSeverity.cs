@@ -1,6 +1,6 @@
 ﻿namespace HA4IoT.TraceViewer
 {
-    public enum NotificationType
+    public enum TraceItemSeverity
     {
         Verbose = 0,
 
