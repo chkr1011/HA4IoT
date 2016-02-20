@@ -20,5 +20,19 @@ namespace HA4IoT.Networking
 
             return false;
         }
+
+        public static bool GetRequiresContinue(this HttpHeaderCollection headers)
+        {
+            string value;
+            return headers.TryGetValue(HttpHeaderNames.Expect, out value) &&
+                string.Equals(value, "100-Continue", StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static bool GetHasBodyContent(this HttpHeaderCollection headers)
+        {
+            string value;
+            return headers.TryGetValue(HttpHeaderNames.ContentLength, out value) &&
+                !string.Equals(value, "0", StringComparison.OrdinalIgnoreCase);
+        }
     }
 }

@@ -11,7 +11,8 @@ namespace HA4IoT.Tests.Mockups
 
         public event EventHandler<SingleValueSensorValueChangedEventArgs> ValueChanged;
 
-        public event EventHandler<ActuatorIsEnabledChangedEventArgs> IsEnabledChanged;
+        public ActuatorId Id { get; }
+        public IActuatorSettings Settings { get; }
 
         public float InternalValue
         {
@@ -19,15 +20,11 @@ namespace HA4IoT.Tests.Mockups
 
             set
             {
-                float oldValue = _internalValue;
+                var oldValue = _internalValue;
                 _internalValue = value;
                 ValueChanged?.Invoke(this, new SingleValueSensorValueChangedEventArgs(oldValue, _internalValue));
             }
         }
-
-
-        public ActuatorId Id { get; }
-        public bool IsEnabled { get; }
 
         public float GetValue()
         {
@@ -46,7 +43,6 @@ namespace HA4IoT.Tests.Mockups
 
         public void LoadSettings()
         {
-            
         }
     }
 }

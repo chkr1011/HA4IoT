@@ -11,7 +11,5 @@ namespace HA4IoT.Contracts.Core
         TimedAction In(TimeSpan dueTime);
 
         TimedAction Every(TimeSpan interval);
-
-        void Run();
     }
 }

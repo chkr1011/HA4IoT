@@ -6,7 +6,7 @@ function Deploy
 {
 	param([string]$Source, [string]$Target, [string]$Clear)
 	 
-	Write-Host "Deploying to $Target..."
+	Write-Host("Deploying to $Target...");
 
 	New-Item -ItemType directory -Path $Target -ea SilentlyContinue
 
@@ -49,6 +49,21 @@ function SelectIP
 	}
 }
 
+function Confirm()
+{
+	param([string]$message);
+
+	Write-Host($message);
+	$key = [Console]::ReadKey($true).KeyChar;
+
+	if ($key -eq "y")
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
 function IncreaseVersion
 {
 	param([string]$Package)
@@ -77,9 +92,8 @@ while($repeat)
 	}
 
 	Write-Host("Found package: " + $package)
-	Write-Host "Clear remote directory (y/n)?"
-	$clearRemoteDirectory = Read-Host
-
+	
+	$clearRemoteDirectory = Confirm("Clear remote directory (y/n)?")
 	$sourceDir = ".\HA4IoT.WebApp"
 	$remoteDir = "$package\LocalState\app"
 
@@ -87,8 +101,7 @@ while($repeat)
 
 	Deploy -Source ".\HA4IoT.WebApp" -Target "$remoteDir" -Clear $clearRemoteDirectory
 
-	Write-Host "Deployment completed. Repeat deploy? (y/n)"
-	if ((Read-Host) -eq "n")
+	if (-Not (Confirm("Deployment completed. Repeat deploy? (y/n)")))
 	{
 		return
 	}

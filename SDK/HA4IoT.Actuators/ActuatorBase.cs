@@ -30,8 +30,8 @@ namespace HA4IoT.Actuators
 
         protected IHttpRequestController HttpApiController { get; }
 
-        public ActuatorSettings Settings { get; }
-        
+        public IActuatorSettings Settings { get; }
+
         public virtual JsonObject ExportStatusToJsonObject()
         {
             return Settings.ExportToJsonObject();
@@ -54,6 +54,7 @@ namespace HA4IoT.Actuators
         {
             new ActuatorSettingsHttpApiDispatcher(Settings, HttpApiController).ExposeToApi();
             
+            // TODO: Add /settings.
             HttpApiController.Handle(HttpMethod.Post, $"actuator/{Id.Value}")
                 .WithRequiredJsonBody()
                 .Using(c =>

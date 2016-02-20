@@ -109,7 +109,7 @@
   <ItemGroup>
     <Compile Include="Actuators\ActuatorId.cs" />
     <Compile Include="Actuators\ActuatorIdFactory.cs" />
-    <Compile Include="Actuators\ActuatorIsEnabledChangedEventArgs.cs" />
+    <Compile Include="Actuators\IActuatorSettings.cs" />
     <Compile Include="Automations\AutomationId.cs" />
     <Compile Include="Actuators\BinaryActuatorState.cs" />
     <Compile Include="Actuators\BinaryActuatorStateChangedEventArgs.cs" />
@@ -141,6 +141,7 @@
     <Compile Include="Core\IdBase.cs" />
     <Compile Include="Core\IDeviceController.cs" />
     <Compile Include="Core\IHomeAutomationTimer.cs" />
+    <Compile Include="Core\Settings\ISetting.cs" />
     <Compile Include="Core\TimedAction.cs" />
     <Compile Include="Core\TimerTickEventArgs.cs" />
     <Compile Include="Hardware\DeviceIdExtensions.cs" />
@@ -155,7 +156,7 @@
     <Compile Include="Actuators\RollerShutterState.cs" />
     <Compile Include="Actuators\RollerShutterStateChangedEventArgs.cs" />
     <Compile Include="Actuators\StateMachineStateChangedEventArgs.cs" />
-    <Compile Include="Actuators\ValueChangedEventArgsBase.cs" />
+    <Compile Include="Actuators\ValueChangedEventArgs.cs" />
     <Compile Include="Actuators\ButtonStateChangedEventArgs.cs" />
     <Compile Include="Core\IStatusProvider.cs" />
     <Compile Include="Daylight.cs" />

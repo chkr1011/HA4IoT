@@ -72,7 +72,7 @@ namespace HA4IoT.TraceViewer
         private static void PrintTraceItem(object sender, TraceItemReceivedEventArgs e)
         {
             string timestamp = e.TraceItem.Timestamp.ToString("yyyy-MM-dd HH:mm:ss.fff");
-            var line = $"[{e.SenderAddress}] [{timestamp}] [{e.TraceItem.ThreadId}] [{e.TraceItem.Type}]: {e.TraceItem.Message}";
+            var line = $"[{e.SenderAddress}] [{e.TraceItem.Id}] [{timestamp}] [{e.TraceItem.ThreadId}] [{e.TraceItem.Type}]: {e.TraceItem.Message}";
 
             var color = ConsoleColor.White;
             switch (e.TraceItem.Type)

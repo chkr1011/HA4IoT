@@ -3,7 +3,7 @@
         <span class="panel-title">{{room.caption}}</span>
         
         <span style="margin-left: 10px;" ng-show="(room.actuators | filter : {state: {state: 'On'}}).length > 0" class="label label-warning">
-            <span class="glyphicon glyphicon-flash"></span><span ng-bind="(room.actuators | filter : {state: {state: 'On'}, isPartOfOnStateCounter: true}).length"></span>
+            <span class="glyphicon glyphicon-flash"></span><span ng-bind="(room.actuators | filter : {state: {state: room.OnState}, isPartOfOnStateCounter: true}).length"></span>
         </span>
 
     </div>

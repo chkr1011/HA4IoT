@@ -48,7 +48,6 @@ function setupController() {
           c.activeRoom = "";
           c.errorMessage = null;
           c.version = "-";
-          c.notifications = [];
 
           getVersion(function (version) {
               c.version = version;
@@ -174,13 +173,6 @@ function setupController() {
               invokeActuator(actuator.id, { state: newState }, function () { actuator.state.state = newState; });
           };
 
-          $scope.loadNotifications = function () {
-              $.getJSON("/api/notifications", function (data) {
-                  c.notifications = data.notifications;
-                  c.notifications.reverse();
-              });
-          }
-
           $scope.invokeVirtualButton = function (actuator) {
               invokeActuator(actuator.id, {});
               c.pollStatus();
@@ -228,10 +220,11 @@ function setupController() {
 }
 
 function configureActuator(room, actuator) {
-    actuator.image = actuator.Type;
-    actuator.sortValue = 0;
     actuator.caption = getActuatorLocalization(actuator.id);
     actuator.overviewCaption = getActuatorLocalization(actuator.id + ".Overview");
+
+    actuator.image = actuator.Type;
+    actuator.sortValue = 0;
     actuator.hide = false;
     actuator.displayVertical = false;
     actuator.state = {};
@@ -240,13 +233,15 @@ function configureActuator(room, actuator) {
         case "HA4IoT.Actuators.Lamp":
             {
                 actuator.template = "Views/ToggleTemplate.html";
-                actuator.sortValue = -7;
+                actuator.image = "Lamp";
+                actuator.sortValue = 1000;
                 break;
             }
         case "HA4IoT.Actuators.Socket":
             {
                 actuator.template = "Views/ToggleTemplate.html";
-                actuator.sortValue = -6;
+                actuator.image = "Socket";
+                actuator.sortValue = 2000;
                 break;
             }
 
@@ -254,7 +249,8 @@ function configureActuator(room, actuator) {
             {
                 actuator.caption = getUILocalization("UI.RollerShutter");
                 actuator.template = "Views/RollerShutterTemplate.html";
-                actuator.sortValue = -4;
+                actuator.image = "RollerShutter";
+                actuator.sortValue = 3000;
                 break;
             }
 
@@ -262,14 +258,16 @@ function configureActuator(room, actuator) {
             {
                 actuator.caption = getUILocalization("UI.Window");
                 actuator.template = "Views/WindowTemplate.html";
-                actuator.sortValue = -4;
+                actuator.image = "Window";
+                actuator.sortValue = 4000;
                 break;
             }
 
         case "HA4IoT.Actuators.StateMachine":
             {
                 actuator.template = "Views/StateMachineTemplate.html";
-                actuator.sortValue = -5;
+                actuator.sortValue = 5000;
+                actuator.image = "StateMachine";
 
                 var extendedStates = [];
                 $.each(actuator.states, function (i, state) {
@@ -296,16 +294,18 @@ function configureActuator(room, actuator) {
         case "HA4IoT.Actuators.TemperatureSensor":
             {
                 actuator.template = "Views/TemperatureSensorTemplate.html";
+                actuator.image = "TemperatureSensor";
                 actuator.caption = getUILocalization("UI.Temperature");
-                actuator.sortValue = -10;
+                actuator.sortValue = 6000;
                 break;
             }
 
         case "HA4IoT.Actuators.HumiditySensor":
             {
                 actuator.template = "Views/HumiditySensorTemplate.html";
+                actuator.image = "HumiditySensor";
                 actuator.caption = getUILocalization("UI.Humidity");
-                actuator.sortValue = -9;
+                actuator.sortValue = 7000;
 
                 actuator.dangerValue = getConfigurationValue(actuator, "dangerValue", 70);
                 actuator.warningValue = getConfigurationValue(actuator, "warningValue", 60);
@@ -315,23 +315,25 @@ function configureActuator(room, actuator) {
         case "HA4IoT.Actuators.MotionDetector":
             {
                 actuator.template = "Views/MotionDetectorTemplate.html";
+                actuator.image = "MotionDetector";
                 actuator.caption = getUILocalization("UI.MotionDetector");
-                actuator.sortValue = -8;
+                actuator.sortValue = 8000;
                 break;
             }
 
         case "HA4IoT.Actuators.VirtualButton":
             {
                 actuator.template = "Views/VirtualButtonTemplate.html";
-                actuator.sortValue = -1;
+                actuator.image = "VirtualButton";
+                actuator.sortValue = 9000;
                 break;
             }
 
         case "HA4IoT.Actuators.VirtualButtonGroup":
             {
                 actuator.template = "Views/VirtualButtonGroupTemplate.html";
-                actuator.image = "HA4IoT.Actuators.VirtualButton";
-                actuator.sortValue = -1;
+                actuator.image = "VirtualButton";
+                actuator.sortValue = 10000;
 
                 var extendedButtons = [];
                 $.each(actuator.buttons, function (i, button) {
@@ -350,13 +352,15 @@ function configureActuator(room, actuator) {
     }
 
     actuator.caption = getConfigurationValue(actuator, "Caption", actuator.caption);
+    actuator.overviewCaption = getConfigurationValue(actuator, "OverviewCaption", actuator.overviewCaption);
+
     actuator.sortValue = getConfigurationValue(actuator, "SortValue", actuator.sortValue);
     actuator.image = getConfigurationValue(actuator, "Image", actuator.image);
     actuator.hide = getConfigurationValue(actuator, "Hide", actuator.hide);
-    actuator.overviewCaption = getConfigurationValue(actuator, "OverviewCaption", actuator.overviewCaption);
+    
     actuator.displayVertical = getConfigurationValue(actuator, "DisplayVertical", actuator.displayVertical);
     actuator.isPartOfOnStateCounter = getConfigurationValue(actuator, "IsPartOfOnStateCounter", true);
-    actuator.onStateId = getConfigurationValue(actuator, "OnStateId", "On");
+    actuator.onStateId = getConfigurationValue(actuator, "OnState", "On");
 
     appConfiguration.actuatorExtender(actuator);
 }
@@ -374,13 +378,13 @@ function getConfigurationValue(actuator, name, defaultValue) {
 }
 
 function invokeActuator(id, request, successCallback) {
+    // This hack is required for Safari because only one Ajax request at the same time is allowed.
     var url = "/api/actuator/" + id + "?body=" + JSON.stringify(request);
 
     $.ajax({
         method: "POST",
         async: false,
         url: url,
-        data: JSON.stringify(request),
         contentType: "application/json; charset=utf-8",
         timeout: 2500
     }).done(function () {

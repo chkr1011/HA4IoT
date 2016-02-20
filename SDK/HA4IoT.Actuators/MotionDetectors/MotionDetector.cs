@@ -28,12 +28,10 @@ namespace HA4IoT.Actuators
             Settings.IsEnabled.ValueChanged += (s, e) =>
             {
                 HandleIsEnabledStateChanged(timer, logger);
-                IsEnabledChanged?.Invoke(this, new ActuatorIsEnabledChangedEventArgs(e.OldValue, e.NewValue));
             };
         }
 
         public event EventHandler<MotionDetectorStateChangedEventArgs> StateChanged;
-        public event EventHandler<ActuatorIsEnabledChangedEventArgs> IsEnabledChanged;
 
         public MotionDetectorState GetState()
         {
@@ -95,7 +93,7 @@ namespace HA4IoT.Actuators
             MotionDetectorState oldState = _state;
             _state = newState;
 
-            if (!Settings.IsEnabled)
+            if (!Settings.IsEnabled.Value)
             {
                 return;
             }
@@ -116,7 +114,7 @@ namespace HA4IoT.Actuators
 
         private void HandleIsEnabledStateChanged(IHomeAutomationTimer timer, ILogger logger)
         {
-            if (!Settings.IsEnabled)
+            if (!Settings.IsEnabled.Value)
             {
                 logger.Info(Id + ": Disabled for 1 hour");
                 _autoEnableAction = timer.In(TimeSpan.FromHours(1)).Do(() => Settings.IsEnabled.Value = true);

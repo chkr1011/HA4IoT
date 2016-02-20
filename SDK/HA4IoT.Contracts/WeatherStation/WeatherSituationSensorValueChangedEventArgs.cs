@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Contracts.WeatherStation
 {
-    public class WeatherSituationSensorValueChangedEventArgs : ValueChangedEventArgsBase<WeatherSituation>
+    public class WeatherSituationSensorValueChangedEventArgs : ValueChangedEventArgs<WeatherSituation>
     {
         public WeatherSituationSensorValueChangedEventArgs(WeatherSituation oldValue, WeatherSituation newValue) : base(oldValue, newValue)
         {

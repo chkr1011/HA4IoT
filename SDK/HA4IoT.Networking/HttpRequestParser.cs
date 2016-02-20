@@ -20,7 +20,7 @@ namespace HA4IoT.Networking
         public bool TryParse(byte[] buffer, out HttpRequest request)
         {
             if (buffer == null) throw new ArgumentNullException(nameof(buffer));
-
+            
             try
             {
                 _request = Encoding.UTF8.GetString(buffer);

@@ -61,12 +61,31 @@ namespace HA4IoT.Networking
         private async Task<HttpRequest> ReceiveRequest()
         {
             var buffer = new Buffer(REQUEST_BUFFER_SIZE);
-            await _client.InputStream.ReadAsync(buffer, buffer.Capacity, InputStreamOptions.Partial);
 
+            await _client.InputStream.ReadAsync(buffer, buffer.Capacity, InputStreamOptions.Partial);
             byte[] binaryRequest = buffer.ToArray();
 
             HttpRequest httpRequest;
-            _requestParser.TryParse(binaryRequest, out httpRequest);
+            if (!_requestParser.TryParse(binaryRequest, out httpRequest))
+            {
+                return null;
+            }
+
+            if (httpRequest.Headers.GetRequiresContinue() && httpRequest.Headers.GetHasBodyContent())
+            {
+                await _client.InputStream.ReadAsync(buffer, buffer.Capacity, InputStreamOptions.Partial);
+
+                int binaryRequestPart1Length = binaryRequest.Length;
+                byte[] binaryRequestPart2 = buffer.ToArray();
+
+                Array.Resize(ref binaryRequest, binaryRequest.Length + binaryRequestPart2.Length);
+                Array.Copy(binaryRequestPart2, 0, binaryRequest, binaryRequestPart1Length, binaryRequestPart2.Length);
+
+                if (!_requestParser.TryParse(binaryRequest, out httpRequest))
+                {
+                    return null;
+                }
+            }
 
             return httpRequest;
         }

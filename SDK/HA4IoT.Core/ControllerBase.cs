@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -38,7 +39,7 @@ namespace HA4IoT.Core
             if (taskInstance == null) throw new ArgumentNullException(nameof(taskInstance));
 
             _deferral = taskInstance.GetDeferral();
-            Task.Factory.StartNew(InitializeCore, TaskCreationOptions.LongRunning);
+            Task.Factory.StartNew(() => InitializeCore().Wait(), TaskCreationOptions.LongRunning);
         }
         
         public void AddArea(IArea area)
@@ -181,9 +182,12 @@ namespace HA4IoT.Core
             httpRequestDispatcher.MapFolder("app", appPath);
         }
 
-        private void InitializeTimer()
+        private HomeAutomationTimer InitializeTimer()
         {
-            Timer = new HomeAutomationTimer(Logger);
+            var timer = new HomeAutomationTimer(Logger);
+            Timer = timer;
+
+            return timer;
         }
 
         private void InitializeLogging()
@@ -194,20 +198,26 @@ namespace HA4IoT.Core
             Logger = logger;
         }
 
-        private void InitializeCore()
+        private async Task InitializeCore()
         {
-            InitializeHttpApi();
-            InitializeLogging();
-            InitializeTimer();
+            try
+            {
+                InitializeHttpApi();
+                InitializeLogging();
+                var timer = InitializeTimer();
 
-            var controllerApiHandler = new ControllerApiDispatcher(this);
-            controllerApiHandler.ExposeToApi();
+                TryInitialize();
+                LoadSettings();
 
-            TryInitialize();
-            LoadSettings();
+                new ControllerApiDispatcher(this).ExposeToApi();
+                await _httpServer.StartAsync(80);
 
-            _httpServer.StartAsync(80).Wait();
-            Timer.Run();
+                timer.Run();
+            }
+            catch (Exception exception)
+            {
+                Debug.WriteLine(exception.ToString());
+            }
         }
 
         private void TryInitialize()

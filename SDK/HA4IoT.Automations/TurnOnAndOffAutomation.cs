@@ -49,7 +49,7 @@ namespace HA4IoT.Automations
 
             motionDetector.GetMotionDetectedTrigger().Attach(Trigger);
             motionDetector.GetDetectionCompletedTrigger().Attach(StartTimeout);
-            motionDetector.IsEnabledChanged += CancelTimeoutIfMotionDetectorDeactivated;
+            motionDetector.Settings.IsEnabled.ValueChanged += CancelTimeoutIfMotionDetectorDeactivated;
             
             return this;
         }
@@ -181,7 +181,7 @@ namespace HA4IoT.Automations
             StartTimeout();
         }
 
-        private void CancelTimeoutIfMotionDetectorDeactivated(object sender, ActuatorIsEnabledChangedEventArgs e)
+        private void CancelTimeoutIfMotionDetectorDeactivated(object sender, ValueChangedEventArgs<bool> e)
         {
             bool isDeactivated = !e.NewValue;
 

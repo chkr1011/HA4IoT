@@ -19,50 +19,19 @@ namespace HA4IoT.Logger
         private readonly object _syncRoot = new object();
         private readonly List<LogEntry> _items = new List<LogEntry>();
         private readonly List<LogEntry> _history = new List<LogEntry>();
-        
+
+        private long _currentId;
+
         public Logger()
         {
-            Task.Factory.StartNew(SendAsync, TaskCreationOptions.LongRunning);
+            Task.Factory.StartNew(() => SendAsync().Wait(), TaskCreationOptions.LongRunning);
         }
 
-        public void ExposeToApi(IHttpRequestController apiRequestController)
+        public void ExposeToApi(IHttpRequestController httpApiController)
         {
-            if (apiRequestController == null) throw new ArgumentNullException(nameof(apiRequestController));
+            if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
 
-            apiRequestController.Handle(HttpMethod.Get, "notifications").Using(HandleApiGet);
-        }
-
-        public void Publish(LogEntrySeverity type, string text, params object[] parameters)
-        {
-            if (parameters != null && parameters.Any())
-            {
-                try
-                {
-                    text = string.Format(text, parameters);
-                }
-                catch (FormatException)
-                {
-                    text = text + " (" + string.Join(",", parameters) + ")";
-                }
-            }
-
-            PrintNotification(type, text);
-
-            lock (_syncRoot)
-            {
-                var notification = new LogEntry(DateTime.Now, Environment.CurrentManagedThreadId, type, text);
-
-                _items.Add(notification);
-
-                if (notification.Severity != LogEntrySeverity.Verbose)
-                {
-                    _history.Add(notification);
-                    if (_history.Count > 100)
-                    {
-                        _history.RemoveAt(0);
-                    }
-                }
-            }
+            httpApiController.Handle(HttpMethod.Get, "trace").Using(HandleApiGet);
         }
 
         public void Info(string message, params object[] parameters)
@@ -95,6 +64,41 @@ namespace HA4IoT.Logger
             Publish(LogEntrySeverity.Verbose, message, parameters);
         }
 
+        private void Publish(LogEntrySeverity type, string text, params object[] parameters)
+        {
+            if (parameters != null && parameters.Any())
+            {
+                try
+                {
+                    text = string.Format(text, parameters);
+                }
+                catch (FormatException)
+                {
+                    text = text + " (" + string.Join(",", parameters) + ")";
+                }
+            }
+
+            PrintNotification(type, text);
+
+            lock (_syncRoot)
+            {
+                var logEntry = new LogEntry(_currentId, DateTime.Now, Environment.CurrentManagedThreadId, type, text);
+                _items.Add(logEntry);
+
+                _currentId++;
+
+                if (logEntry.Severity != LogEntrySeverity.Verbose)
+                {
+                    _history.Add(logEntry);
+
+                    if (_history.Count > 100)
+                    {
+                        _history.RemoveAt(0);
+                    }
+                }
+            }
+        }
+
         private void HandleApiGet(HttpContext httpContext)
         {
             lock (_syncRoot)
@@ -103,13 +107,13 @@ namespace HA4IoT.Logger
             }
         }
 
-        private async void SendAsync()
+        private async Task SendAsync()
         {
             using (DatagramSocket socket = new DatagramSocket())
             {
                 socket.Control.DontFragment = true;
 
-                using (IOutputStream streamReader = socket.GetOutputStreamAsync(new HostName("255.255.255.255"), "19227").AsTask().Result)
+                using (IOutputStream streamReader = await socket.GetOutputStreamAsync(new HostName("255.255.255.255"), "19227"))
                 using (var writer = new DataWriter(streamReader))
                 {
                     while (true)
@@ -149,18 +153,18 @@ namespace HA4IoT.Logger
             return itemsToSend;
         }
 
-        private JsonObject CreatePackage(ICollection<LogEntry> notificationItems)
+        private JsonObject CreatePackage(ICollection<LogEntry> traceItems)
         {
-            JsonArray notifications = new JsonArray();
-            foreach (var notification in notificationItems)
+            var traceItemsCollection = new JsonArray();
+            foreach (var traceItem in traceItems)
             {
-                notifications.Add(notification.ToJsonObject());
+                traceItemsCollection.Add(traceItem.ExportToJsonObject());
             }
 
             JsonObject package = new JsonObject();
-            package.SetNamedValue("type", JsonValue.CreateStringValue("HA4IoT.Notifications"));
-            package.SetNamedValue("version", JsonValue.CreateNumberValue(1));
-            package.SetNamedValue("notifications", notifications);
+            package.SetNamedValue("Type", "HA4IoT.Trace".ToJsonValue());
+            package.SetNamedValue("Version", 1.ToJsonValue());
+            package.SetNamedValue("TraceItems", traceItemsCollection);
 
             return package;
         }

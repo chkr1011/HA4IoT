@@ -10,7 +10,7 @@ namespace HA4IoT.Networking
         {
             if (content == null) throw new ArgumentNullException(nameof(content));
             
-            Content = content;
+            Content = content;            
         }
 
         public IJsonValue Content { get; }

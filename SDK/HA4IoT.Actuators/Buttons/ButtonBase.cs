@@ -47,7 +47,7 @@ namespace HA4IoT.Actuators
             var oldState = _state;
             _state = newState;
 
-            if (!Settings.IsEnabled)
+            if (!Settings.IsEnabled.Value)
             {
                 return;
             }

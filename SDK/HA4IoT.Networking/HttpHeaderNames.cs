@@ -17,5 +17,7 @@
         public static string IfNoneMatch = "If-None-Match";
 
         public static string ETag = "ETag";
+
+        public static string Expect = "Expect";
     }
 }

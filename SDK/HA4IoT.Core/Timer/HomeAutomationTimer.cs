@@ -19,7 +19,7 @@ namespace HA4IoT.Core.Timer
         }
 
         public event EventHandler<TimerTickEventArgs> Tick;
-
+        
         public TimeSpan CurrentTime => DateTime.Now.TimeOfDay;
 
         public TimedAction In(TimeSpan dueTime)
@@ -34,10 +34,12 @@ namespace HA4IoT.Core.Timer
 
         public void Run()
         {
+            _logger.Verbose($"Timer is running on thread {Environment.CurrentManagedThreadId}");
+
             while (true)
             {
                 SpinWait.SpinUntil(() => _stopwatch.ElapsedMilliseconds >= 50);
-
+                
                 TimeSpan elapsedTime = _stopwatch.Elapsed;
                 _stopwatch.Restart();
 

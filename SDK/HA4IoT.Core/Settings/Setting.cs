@@ -1,11 +1,12 @@
 ﻿using System;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Core.Settings
 {
-    public class Setting<TValue> : IExportToJsonValue, IImportFromJsonValue
+    public class Setting<TValue> : IExportToJsonValue, IImportFromJsonValue, ISetting<TValue>
     {
         private TValue _value;
         
@@ -17,7 +18,7 @@ namespace HA4IoT.Core.Settings
             _serializedValue = DefaultValue.ToJsonValue();
         }
 
-        public event EventHandler<ValueChangedEventArgsBase<TValue>> ValueChanged;
+        public event EventHandler<ValueChangedEventArgs<TValue>> ValueChanged;
 
         public TValue Value
         {
@@ -40,7 +41,7 @@ namespace HA4IoT.Core.Settings
 
                 _serializedValue = _value.ToJsonValue();
 
-                ValueChanged?.Invoke(this, new ValueChangedEventArgsBase<TValue>(oldValue, _value));
+                ValueChanged?.Invoke(this, new ValueChangedEventArgs<TValue>(oldValue, _value));
             }
         }
 
@@ -52,7 +53,7 @@ namespace HA4IoT.Core.Settings
         {
             return setting.Value;
         }
-
+        
         public IJsonValue ExportToJsonObject()
         {
             return _serializedValue;

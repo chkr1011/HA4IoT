@@ -1,15 +1,16 @@
 ﻿using System;
 using Windows.Data.Json;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
     public class ActuatorSettingsHttpApiDispatcher
     {
-        private readonly ActuatorSettings _actuatorSettings;
+        private readonly IActuatorSettings _actuatorSettings;
         private readonly IHttpRequestController _httpApiController;
 
-        public ActuatorSettingsHttpApiDispatcher(ActuatorSettings actuatorSettings, IHttpRequestController httpApiController)
+        public ActuatorSettingsHttpApiDispatcher(IActuatorSettings actuatorSettings, IHttpRequestController httpApiController)
         {
             if (actuatorSettings == null) throw new ArgumentNullException(nameof(actuatorSettings));
             if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));

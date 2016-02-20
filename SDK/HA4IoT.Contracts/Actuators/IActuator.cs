@@ -6,6 +6,8 @@ namespace HA4IoT.Contracts.Actuators
     {
         ActuatorId Id { get; }
         
+        IActuatorSettings Settings { get; }
+
         JsonObject ExportConfigurationToJsonObject();
 
         JsonObject ExportStatusToJsonObject();

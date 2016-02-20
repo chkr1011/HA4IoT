@@ -42,7 +42,7 @@ namespace HA4IoT.Actuators
                 throw new NotSupportedException();
             }
 
-            if (!Settings.IsEnabled)
+            if (!Settings.IsEnabled.Value)
             {
                 return;
             }
