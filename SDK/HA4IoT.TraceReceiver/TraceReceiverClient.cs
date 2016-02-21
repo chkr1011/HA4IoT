@@ -27,19 +27,20 @@ namespace HA4IoT.TraceReceiver
             _cancellationTokenSource = new CancellationTokenSource();
 
             Task.Factory.StartNew(
-                () =>
-                {
-                    while (!_cancellationTokenSource.IsCancellationRequested)
-                    {
-                        IPEndPoint remoteEndPoint = null;
-                        byte[] buffer = _udpClient.Receive(ref remoteEndPoint);
-
-                        string data = Encoding.UTF8.GetString(buffer);
-                        OnDataReceived(remoteEndPoint.Address, data);
-                    }
-                },
+                Receive,
                 _cancellationTokenSource.Token,
                 TaskCreationOptions.LongRunning, TaskScheduler.Default);
+        }
+
+        private async Task Receive()
+        {
+            while (!_cancellationTokenSource.IsCancellationRequested)
+            {
+                UdpReceiveResult result = await _udpClient.ReceiveAsync();
+
+                string data = Encoding.UTF8.GetString(result.Buffer);
+                OnDataReceived(result.RemoteEndPoint.Address, data);
+            }
         }
 
         public void Stop()

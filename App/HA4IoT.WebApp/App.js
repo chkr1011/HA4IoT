@@ -274,9 +274,9 @@ function configureActuator(room, actuator) {
 
                     var stateCaption = null;
 
-                    if (actuator.AppSettings !== undefined) {
-                        if (actuator.AppSettings.StateCaptions !== undefined) {
-                            stateCaption = actuator.AppSettings.StateCaptions[state];
+                    if (actuator.Settings.AppSettings !== undefined) {
+                        if (actuator.Settings.AppSettings.StateCaptions !== undefined) {
+                            stateCaption = actuator.Settings.AppSettings.StateCaptions[state];
                         }
                     }
 
@@ -366,20 +366,20 @@ function configureActuator(room, actuator) {
 }
 
 function getConfigurationValue(actuator, name, defaultValue) {
-    if (actuator.AppSettings === undefined) {
+    if (actuator.Settings.AppSettings === undefined) {
         return defaultValue;
     }
 
-    if (actuator.AppSettings[name] === undefined) {
+    if (actuator.Settings.AppSettings[name] === undefined) {
         return defaultValue;
     }
 
-    return actuator.AppSettings[name];
+    return actuator.Settings.AppSettings[name];
 }
 
 function invokeActuator(id, request, successCallback) {
     // This hack is required for Safari because only one Ajax request at the same time is allowed.
-    var url = "/api/actuator/" + id + "?body=" + JSON.stringify(request);
+    var url = "/api/actuator/" + id + "/status?body=" + JSON.stringify(request);
 
     $.ajax({
         method: "POST",

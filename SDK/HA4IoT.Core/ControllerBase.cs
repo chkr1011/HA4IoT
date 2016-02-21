@@ -195,7 +195,7 @@ namespace HA4IoT.Core
         {
             var logger = new Logger.Logger();
             logger.ExposeToApi(HttpApiController);
-            logger.Info("Starting");
+            logger.Info("Starting...");
             Logger = logger;
         }
 
@@ -203,6 +203,8 @@ namespace HA4IoT.Core
         {
             try
             {
+                var stopwatch = Stopwatch.StartNew();
+
                 InitializeHttpApi();
                 InitializeLogging();
                 var timer = InitializeTimer();
@@ -212,6 +214,9 @@ namespace HA4IoT.Core
 
                 new ControllerApiDispatcher(this).ExposeToApi();
                 await _httpServer.StartAsync(80);
+
+                stopwatch.Stop();
+                Logger.Info("Startup completed after " + stopwatch.Elapsed);
 
                 timer.Run();
             }

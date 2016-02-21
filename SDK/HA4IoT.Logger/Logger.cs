@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Networking;
@@ -81,11 +83,10 @@ namespace HA4IoT.Logger
 
             PrintNotification(type, text);
 
+            var logEntry = new LogEntry(_currentId, DateTime.Now, Environment.CurrentManagedThreadId, type, text);
             lock (_syncRoot)
             {
-                var logEntry = new LogEntry(_currentId, DateTime.Now, Environment.CurrentManagedThreadId, type, text);
                 _items.Add(logEntry);
-
                 _currentId++;
 
                 if (logEntry.Severity != LogEntrySeverity.Verbose)
@@ -113,31 +114,29 @@ namespace HA4IoT.Logger
             using (DatagramSocket socket = new DatagramSocket())
             {
                 socket.Control.DontFragment = true;
+                await socket.ConnectAsync(new HostName("255.255.255.255"), "19227");
 
-                using (IOutputStream streamReader = await socket.GetOutputStreamAsync(new HostName("255.255.255.255"), "19227"))
-                using (var writer = new DataWriter(streamReader))
+                while (true)
                 {
-                    while (true)
+                    try
                     {
-                        try
+                        var pendingItems = GetPendingItems();
+                        if (pendingItems.Any())
                         {
-                            var pendingItems = GetPendingItems();
-                            if (pendingItems.Any())
-                            {
-                                var package = CreatePackage(pendingItems);
-
-                                await writer.FlushAsync();
-                                writer.WriteString(package.Stringify());
-                                await writer.StoreAsync();
-                            }
+                            JsonObject package = CreatePackage(pendingItems);
+                            string data = package.Stringify();
+                            IBuffer buffer = Encoding.UTF8.GetBytes(data).AsBuffer();
+                            
+                            await socket.OutputStream.WriteAsync(buffer);
+                            await socket.OutputStream.FlushAsync();
                         }
-                        catch (Exception exception)
-                        {
-                            Debug.WriteLine("Could not send notifications. " + exception.Message);
-                        }
-
-                        await Task.Delay(100);
                     }
+                    catch (Exception exception)
+                    {
+                        Debug.WriteLine("ERROR: Could not send trace items. " + exception);
+                    }
+
+                    await Task.Delay(100);
                 }
             }
         }
