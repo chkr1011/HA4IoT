@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using HA4IoT.ManagementConsole.Configuration.ViewModels;
 using HA4IoT.ManagementConsole.Json;
 using Newtonsoft.Json.Linq;
@@ -25,16 +26,12 @@ namespace HA4IoT.ManagementConsole.Configuration
         {
             var item = new AreaItemVM(source.Name);
 
-            foreach (JProperty actuator in ((JObject)source.Value["Actuators"]).Properties())
-            {
-                item.Actuators.Add(CreateActuatorItemVM(actuator));
-            }
+            var actuators = ((JObject) source.Value["Actuators"]).Properties().Select(CreateActuatorItemVM).OrderBy(a => a.Settings.AppSettings.SortValue);
+            item.Actuators.AddRange(actuators);
 
-            foreach (JProperty automation in ((JObject)source.Value["Automations"]).Properties())
-            {
-                item.Automations.Add(CreateAutomationItemVM(automation));
-            }
-                        
+            var automations = ((JObject) source.Value["Automations"]).Properties().Select(CreateAutomationItemVM);
+            item.Automations.AddRange(automations);
+
             return item;
         }
 

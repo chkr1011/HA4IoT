@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
@@ -23,6 +25,16 @@ namespace HA4IoT.ManagementConsole.Core
 
                 SelectedItemChanged?.Invoke(this, EventArgs.Empty);
                 OnPropertyChanged(new PropertyChangedEventArgs("SelectedItem"));
+            }
+        }
+
+        public void AddRange(IEnumerable<TItem> items)
+        {
+            if (items == null) throw new ArgumentNullException(nameof(items));
+
+            foreach (var item in items)
+            {
+                Add(item);
             }
         }
 
