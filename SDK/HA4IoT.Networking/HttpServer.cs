@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking.Sockets;
 using HA4IoT.Contracts.Networking;
@@ -15,7 +16,7 @@ namespace HA4IoT.Networking
             _serverSocket.Control.KeepAlive = true;
             _serverSocket.ConnectionReceived += HandleConnection;
 
-            await _serverSocket.BindServiceNameAsync(port.ToString(), SocketProtectionLevel.PlainSocket);
+            await _serverSocket.BindServiceNameAsync(port.ToString());
         }
 
         public event EventHandler<HttpRequestReceivedEventArgs> RequestReceived;
@@ -27,9 +28,8 @@ namespace HA4IoT.Networking
 
         private void HandleConnection(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
-            ////Debug.WriteLine("Received HTTP connection on thread " + Environment.CurrentManagedThreadId);
-
-            Task.Factory.StartNew(() => HandleRequests(args.Socket), TaskCreationOptions.LongRunning);
+            Task.Factory.StartNew(() => HandleRequests(args.Socket), CancellationToken.None,
+                TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
         private void HandleRequests(StreamSocket client)

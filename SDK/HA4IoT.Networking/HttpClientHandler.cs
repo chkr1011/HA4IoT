@@ -76,6 +76,7 @@ namespace HA4IoT.Networking
             if (httpRequest.Headers.GetRequiresContinue() && httpRequest.Headers.GetHasBodyContent())
             {
                 bufferLength += _inputStream.Read(_buffer, bufferLength, _buffer.Length);
+
                 if (!_requestParser.TryParse(_buffer, bufferLength, out httpRequest))
                 {
                     return null;

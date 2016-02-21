@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Storage;
@@ -40,7 +41,9 @@ namespace HA4IoT.Core
             if (taskInstance == null) throw new ArgumentNullException(nameof(taskInstance));
 
             _deferral = taskInstance.GetDeferral();
-            Task.Factory.StartNew(async () => await InitializeCoreAsync(), TaskCreationOptions.LongRunning);
+
+            Task.Factory.StartNew(InitializeCore, CancellationToken.None, TaskCreationOptions.LongRunning,
+                TaskScheduler.Default);
         }
         
         public void AddArea(IArea area)
@@ -199,7 +202,7 @@ namespace HA4IoT.Core
             Logger = logger;
         }
 
-        private async Task InitializeCoreAsync()
+        private void InitializeCore()
         {
             try
             {
@@ -207,13 +210,13 @@ namespace HA4IoT.Core
 
                 InitializeHttpApi();
                 InitializeLogging();
-                var timer = InitializeTimer();
+                HomeAutomationTimer timer = InitializeTimer();
 
                 TryInitialize();
                 LoadSettings();
 
                 new ControllerApiDispatcher(this).ExposeToApi();
-                await _httpServer.StartAsync(80);
+                _httpServer.StartAsync(80).Wait();
 
                 stopwatch.Stop();
                 Logger.Info("Startup completed after " + stopwatch.Elapsed);
