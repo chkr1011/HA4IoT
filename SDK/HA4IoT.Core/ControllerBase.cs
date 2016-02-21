@@ -40,7 +40,7 @@ namespace HA4IoT.Core
             if (taskInstance == null) throw new ArgumentNullException(nameof(taskInstance));
 
             _deferral = taskInstance.GetDeferral();
-            Task.Factory.StartNew(() => InitializeCore().Wait(), TaskCreationOptions.LongRunning);
+            Task.Factory.StartNew(async () => await InitializeCoreAsync(), TaskCreationOptions.LongRunning);
         }
         
         public void AddArea(IArea area)
@@ -199,7 +199,7 @@ namespace HA4IoT.Core
             Logger = logger;
         }
 
-        private async Task InitializeCore()
+        private async Task InitializeCoreAsync()
         {
             try
             {

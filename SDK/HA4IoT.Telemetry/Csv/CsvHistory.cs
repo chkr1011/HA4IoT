@@ -32,7 +32,7 @@ namespace HA4IoT.Telemetry.Csv
             _apiRequestController = apiRequestController;
             _filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "History.csv");
 
-            Task.Factory.StartNew(WritePendingEntries, TaskCreationOptions.LongRunning);
+            Task.Factory.StartNew(async () => await WritePendingEntries(), TaskCreationOptions.LongRunning);
         }
 
         public void ExposeToApi(IHttpRequestController httpRequestController)
@@ -73,11 +73,11 @@ namespace HA4IoT.Telemetry.Csv
             }
         }
 
-        private void WritePendingEntries()
+        private async Task WritePendingEntries()
         {
             while (true)
             {
-                Task.Delay(100).Wait();
+                await Task.Delay(100);
 
                 var entries = new List<ActuatorHistoryEntry>();
                 lock (_queuedEntries)

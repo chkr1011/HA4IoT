@@ -60,7 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SDK\HA4IoT.TraceReceiver\HA4IoT.TraceReceiver.csproj">
-      <Project>{25C33CC4-07E7-41AA-B2DC-299AFBB9DE25}</Project>
+      <Project>{25c33cc4-07e7-41aa-b2dc-299afbb9de25}</Project>
       <Name>HA4IoT.TraceReceiver</Name>
     </ProjectReference>
   </ItemGroup>

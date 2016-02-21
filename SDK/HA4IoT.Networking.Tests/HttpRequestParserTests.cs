@@ -17,7 +17,7 @@ namespace HA4IoT.Networking.Tests
             byte[] buffer = Encoding.UTF8.GetBytes(GetRequestText());
 
             HttpRequest request;
-            parser.TryParse(buffer, out request).ShouldBeEquivalentTo(true);
+            parser.TryParse(buffer, buffer.Length, out request).ShouldBeEquivalentTo(true);
 
             request.Method.ShouldBeEquivalentTo(HttpMethod.Delete);
             request.Uri.ShouldBeEquivalentTo("/Uri%20/lalalo323/_/-/+/%/@/&/./~/:/#/;/,/*");

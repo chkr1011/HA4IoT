@@ -58,7 +58,7 @@ namespace HA4IoT.Networking
             return action;
         }
 
-        private void ExecuteActions(object sender, RequestReceivedEventArgs e)
+        private void ExecuteActions(object sender, HttpRequestReceivedEventArgs e)
         {
             string requestUri = e.Context.Request.Uri.Trim('/');
 

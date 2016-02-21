@@ -1,46 +1,50 @@
 ﻿using System;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
+using System.IO;
 using Windows.Data.Json;
 using Windows.Networking.Sockets;
-using Windows.Storage.Streams;
 using HA4IoT.Contracts.Networking;
-using Buffer = Windows.Storage.Streams.Buffer;
 
 namespace HA4IoT.Networking
 {
     public sealed class HttpClientHandler : IDisposable
     {
-        private const int REQUEST_BUFFER_SIZE = 2048;
+        private const int REQUEST_BUFFER_SIZE = 16*1024;
+        private readonly byte[] _buffer = new byte[REQUEST_BUFFER_SIZE];
 
-        private readonly StreamSocket _client;
-        private readonly DataWriter _dataWriter;
         private readonly HttpRequestParser _requestParser = new HttpRequestParser();
         private readonly HttpResponseSerializer _responseSerializer = new HttpResponseSerializer();
 
+        private readonly StreamSocket _client;
+        private readonly Stream _inputStream;
+        private readonly Stream _outputStream;
+
+        private readonly Func<HttpClientHandler, HttpContext, bool> _requestReceivedCallback;
+
         private bool _abort;
 
-        public HttpClientHandler(StreamSocket client)
+        public HttpClientHandler(StreamSocket client, Func<HttpClientHandler, HttpContext, bool> requestReceivedCallback)
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
+            if (requestReceivedCallback == null) throw new ArgumentNullException(nameof(requestReceivedCallback));
 
             _client = client;
-            _dataWriter = new DataWriter(_client.OutputStream);
+            _inputStream = _client.InputStream.AsStreamForRead(_buffer.Length);
+            _outputStream = _client.OutputStream.AsStreamForWrite(REQUEST_BUFFER_SIZE);
+
+            _requestReceivedCallback = requestReceivedCallback;
         }
 
-        public event EventHandler<RequestReceivedEventArgs> RequestReceived;
-
-        public async Task HandleRequests()
+        public void HandleRequests()
         {
             while (!_abort)
             {
-                await HandleRequest();
+                HandleRequest();
             }
         }
 
-        private async Task HandleRequest()
+        private void HandleRequest()
         {
-            HttpRequest request = await ReceiveRequest();
+            HttpRequest request = ReceiveRequest();
             if (request == null)
             {
                 _abort = true;
@@ -51,7 +55,7 @@ namespace HA4IoT.Networking
             PrepareResponseHeaders(context);
 
             ProcessRequest(context);
-            await SendResponse(context);
+            SendResponse(context);
 
             if (context.Request.Headers.GetConnectionMustBeClosed())
             {
@@ -59,30 +63,20 @@ namespace HA4IoT.Networking
             }
         }
 
-        private async Task<HttpRequest> ReceiveRequest()
+        private HttpRequest ReceiveRequest()
         {
-            var buffer = new Buffer(REQUEST_BUFFER_SIZE);
-
-            await _client.InputStream.ReadAsync(buffer, buffer.Capacity, InputStreamOptions.Partial);
-            byte[] binaryRequest = buffer.ToArray();
-
+            int bufferLength = _inputStream.Read(_buffer, 0, _buffer.Length);
+            
             HttpRequest httpRequest;
-            if (!_requestParser.TryParse(binaryRequest, out httpRequest))
+            if (!_requestParser.TryParse(_buffer, bufferLength, out httpRequest))
             {
                 return null;
             }
 
             if (httpRequest.Headers.GetRequiresContinue() && httpRequest.Headers.GetHasBodyContent())
             {
-                await _client.InputStream.ReadAsync(buffer, buffer.Capacity, InputStreamOptions.Partial);
-
-                int binaryRequestPart1Length = binaryRequest.Length;
-                byte[] binaryRequestPart2 = buffer.ToArray();
-
-                Array.Resize(ref binaryRequest, binaryRequest.Length + binaryRequestPart2.Length);
-                Array.Copy(binaryRequestPart2, 0, binaryRequest, binaryRequestPart1Length, binaryRequestPart2.Length);
-
-                if (!_requestParser.TryParse(binaryRequest, out httpRequest))
+                bufferLength += _inputStream.Read(_buffer, bufferLength, _buffer.Length);
+                if (!_requestParser.TryParse(_buffer, bufferLength, out httpRequest))
                 {
                     return null;
                 }
@@ -95,20 +89,10 @@ namespace HA4IoT.Networking
         {
             try
             {
-                EventHandler<RequestReceivedEventArgs> handler = RequestReceived;
-                if (handler == null)
+                bool requestHandled = _requestReceivedCallback.Invoke(this, context);
+                if (!requestHandled)
                 {
-                    context.Response.StatusCode = HttpStatusCode.NotImplemented;
-                }
-                else
-                {
-                    var eventArgs = new RequestReceivedEventArgs(context);
-                    handler.Invoke(this, eventArgs);
-
-                    if (!eventArgs.IsHandled)
-                    {
-                        context.Response.StatusCode = HttpStatusCode.BadRequest;
-                    }
+                    context.Response.StatusCode = HttpStatusCode.BadRequest;
                 }
             }
             catch (Exception exception)
@@ -131,27 +115,22 @@ namespace HA4IoT.Networking
             }
         }
 
-        private async Task SendResponse(HttpContext context)
+        private void SendResponse(HttpContext context)
         {
             byte[] response = _responseSerializer.SerializeResponse(context);
-
-            _dataWriter.WriteBytes(response);
-            await _dataWriter.StoreAsync();
+            _outputStream.Write(response, 0, response.Length);
+            _outputStream.Flush();
         }
 
         private JsonObject ExceptionToJson(Exception exception)
         {
-            var root = new JsonObject();
-            root.SetNamedValue("type", exception.GetType().Name.ToJsonValue());
-            root.SetNamedValue("message", exception.Message.ToJsonValue());
-            root.SetNamedValue("stackTrace", exception.StackTrace.ToJsonValue());
-            root.SetNamedValue("source", exception.Source.ToJsonValue());
-            return root;
+            return exception.ToJsonObject();
         }
 
         public void Dispose()
         {
-            _dataWriter.Dispose();
+            _inputStream.Dispose();
+            _outputStream.Dispose();
             _client.Dispose();
         }
     }

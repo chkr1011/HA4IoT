@@ -3,9 +3,9 @@ using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Networking
 {
-    public class RequestReceivedEventArgs : EventArgs
+    public class HttpRequestReceivedEventArgs : EventArgs
     {
-        public RequestReceivedEventArgs(HttpContext context)
+        public HttpRequestReceivedEventArgs(HttpContext context)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 

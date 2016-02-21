@@ -40,7 +40,7 @@ if ([Console]::ReadKey($true).KeyChar -eq "y")
 	#net user Administrator [new password]
 }
 
-# Setup IP address
+### Setup IP address
 Write-Output "Set IP address (y/n)?"
 if ([Console]::ReadKey($true).KeyChar -eq "y")
 {
@@ -49,10 +49,12 @@ if ([Console]::ReadKey($true).KeyChar -eq "y")
         $newGateway = "192.168.1.1";
 
         netsh interface ip set dns "Ethernet" static $newGateway
-        netsh interface ip set address "Ethernet" static $newIP 255.255.255.0 $newGateway 1 }
+        netsh interface ip set address "Ethernet" static $newIP 255.255.255.0 $newGateway 1
+        
+        shutdown /r /t 0 }
 }
 
-# Setup startup projects
+### Setup startup projects
 Write-Output "Setup startup project (y/n)?"
 if ([Console]::ReadKey($true).KeyChar -eq "y")
 {
@@ -63,8 +65,33 @@ if ([Console]::ReadKey($true).KeyChar -eq "y")
        
         Write-Output "Autostart:"
         iotstartup startup }
-               	   
-	#iotstartup remove headless "HA4IoT.Controller."
+}
+
+Write-Output "Remove startup project (y/n)?"
+if ([Console]::ReadKey($true).KeyChar -eq "y")
+{
+    Invoke-Command -Session $session -ScriptBlock {
+        Write-Output "Available:"
+        iotstartup list
+	    iotstartup remove headless "HA4IoT.Controller."
+       
+        Write-Output "Autostart:"
+        iotstartup startup }
+}
+
+### Reboot
+Write-Output "Reboot (y/n)?"
+if ([Console]::ReadKey($true).KeyChar -eq "y")
+{
+    Invoke-Command -Session $session -ScriptBlock {
+        shutdown /r /t 0 }
+}
+
+### Open packages directory
+Write-Output "Open packages directory (y/n)?"
+if ([Console]::ReadKey($true).KeyChar -eq "y")
+{
+    explorer.exe "\\$hostAddress\c$\Data\Users\DefaultAccount\AppData\Local\Packages\"
 }
 
 #Install Node.js

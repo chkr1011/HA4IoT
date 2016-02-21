@@ -20,14 +20,16 @@ namespace HA4IoT.Logger
         private readonly bool _isDebuggerAttached = Debugger.IsAttached;
 
         private readonly object _syncRoot = new object();
-        private readonly List<LogEntry> _items = new List<LogEntry>();
         private readonly List<LogEntry> _history = new List<LogEntry>();
+
+        private List<LogEntry> _items = new List<LogEntry>();
+        private List<LogEntry> _itemsBuffer = new List<LogEntry>();
 
         private long _currentId;
 
         public Logger()
         {
-            Task.Factory.StartNew(() => SendAsync().Wait(), TaskCreationOptions.LongRunning);
+            Task.Factory.StartNew(async () => await SendAsync(), TaskCreationOptions.LongRunning);
         }
 
         public void ExposeToApi(IHttpRequestController httpApiController)
@@ -113,20 +115,21 @@ namespace HA4IoT.Logger
         {
             using (DatagramSocket socket = new DatagramSocket())
             {
-                socket.Control.DontFragment = true;
                 await socket.ConnectAsync(new HostName("255.255.255.255"), "19227");
 
                 while (true)
                 {
+                    List<LogEntry> pendingItems = GetPendingItems();
                     try
                     {
-                        var pendingItems = GetPendingItems();
-                        if (pendingItems.Any())
+                        foreach (var traceItem in pendingItems)
                         {
-                            JsonObject package = CreatePackage(pendingItems);
+                            var collection = new[] {traceItem};
+                            JsonObject package = CreatePackage(collection);
+
                             string data = package.Stringify();
                             IBuffer buffer = Encoding.UTF8.GetBytes(data).AsBuffer();
-                            
+
                             await socket.OutputStream.WriteAsync(buffer);
                             await socket.OutputStream.FlushAsync();
                         }
@@ -134,6 +137,10 @@ namespace HA4IoT.Logger
                     catch (Exception exception)
                     {
                         Debug.WriteLine("ERROR: Could not send trace items. " + exception);
+                    }
+                    finally
+                    {
+                        pendingItems.Clear();
                     }
 
                     await Task.Delay(100);
@@ -143,24 +150,24 @@ namespace HA4IoT.Logger
 
         private List<LogEntry> GetPendingItems()
         {
-            List<LogEntry> itemsToSend;
             lock (_syncRoot)
             {
-                itemsToSend = new List<LogEntry>(_items);
-                _items.Clear();
-            }
+                var buffer = _items;
+                _items = _itemsBuffer;
+                _itemsBuffer = buffer;
 
-            return itemsToSend;
+                return _itemsBuffer;
+            }
         }
 
-        private JsonObject CreatePackage(ICollection<LogEntry> traceItems)
+        private JsonObject CreatePackage(IEnumerable<LogEntry> traceItems)
         {
             var traceItemsCollection = new JsonArray();
             foreach (var traceItem in traceItems)
             {
                 traceItemsCollection.Add(traceItem.ExportToJsonObject());
             }
-
+            
             JsonObject package = new JsonObject();
             package.SetNamedValue("Type", "HA4IoT.Trace".ToJsonValue());
             package.SetNamedValue("Version", 1.ToJsonValue());

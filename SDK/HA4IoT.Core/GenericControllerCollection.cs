@@ -1,5 +1,4 @@
-﻿using HA4IoT.Contracts.Hardware;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using HA4IoT.Contracts.Core;

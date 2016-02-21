@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
@@ -21,7 +22,7 @@ namespace HA4IoT.Hardware
 
         public event EventHandler InterruptDetected;
 
-        public void Poll()
+        public void PollOne()
         {
             if (_pin.Read() == BinaryState.Low)
             {
@@ -29,28 +30,23 @@ namespace HA4IoT.Hardware
             }
         }
 
-        public void PollForever()
+        public async Task PollAsync()
         {
             while (true)
             {
                 try
                 {
-                    Poll();
-                    Task.Delay(TimeSpan.FromMilliseconds(10)).Wait();
+                    PollOne();
+                    await Task.Delay(10);
                 }
                 catch (Exception ex)
                 {
                     _logger.Error(ex, "Error while polling interrupt pin '" + _pin + "'");
 
                     // Ensure that a persistent error will not flood the trace.
-                    Task.Delay(TimeSpan.FromSeconds(2)).Wait();
+                    await Task.Delay(2000);
                 }
             }
-        }
-
-        public void StartPollingTaskAsync()
-        {
-            Task.Factory.StartNew(PollForever, TaskCreationOptions.LongRunning);
         }
     }
 }
