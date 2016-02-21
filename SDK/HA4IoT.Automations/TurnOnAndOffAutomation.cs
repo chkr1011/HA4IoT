@@ -11,11 +11,10 @@ using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.Triggers;
 using HA4IoT.Contracts.WeatherStation;
-using HA4IoT.Networking;
 
 namespace HA4IoT.Automations
 {
-    public class TurnOnAndOffAutomation : AutomationBase<TurnOnAndOffAutomationSettings>
+    public class TurnOnAndOffAutomation : AutomationBase<AutomationSettings>
     {
         private readonly ConditionsValidator _enablingConditionsValidator = new ConditionsValidator().WithDefaultState(ConditionState.NotFulfilled);
         private readonly ConditionsValidator _disablingConditionsValidator = new ConditionsValidator().WithDefaultState(ConditionState.NotFulfilled);
@@ -40,7 +39,7 @@ namespace HA4IoT.Automations
 
             WithOnDuration(TimeSpan.FromMinutes(1));
 
-            Settings = new TurnOnAndOffAutomationSettings(id, httpApiController, logger);
+            Settings = new AutomationSettings(id, httpApiController, logger);
         }
 
         public TurnOnAndOffAutomation WithTrigger(IMotionDetector motionDetector, params IParameter[] parameters)

@@ -45,6 +45,12 @@ namespace HA4IoT.ManagementConsole.Controller
             return await GetJObject("configuration");
         }
 
+        public async Task SetAutomationConfiguration(string automationId, JObject configuration)
+        {
+            string relativeUrl = "automation/" + automationId + "/settings";
+            await PostJObject(relativeUrl, configuration);
+        }
+
         public async Task SetActuatorConfiguration(string actuatorId, JObject configuration)
         {
             string relativeUrl = "actuator/" + actuatorId + "/settings";

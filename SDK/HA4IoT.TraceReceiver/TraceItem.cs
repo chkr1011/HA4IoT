@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HA4IoT.TraceViewer
+namespace HA4IoT.TraceReceiver
 {
     public class TraceItem
     {

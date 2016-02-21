@@ -24,7 +24,7 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels
             Areas = new SelectableObservableCollection<AreaItemVM>();
 
             RefreshCommand = new AsyncDelegateCommand(RefreshAsync);
-            SaveActuatorSettingsCommand = new AsyncDelegateCommand(SaveActuatorSettingsAsync);
+            SaveCommand = new AsyncDelegateCommand(SaveAsync);
             MoveUpCommand = new DelegateCommand(MoveActuatorUp);
             MoveDownCommand = new DelegateCommand(MoveActuatorDown);
         }
@@ -33,45 +33,18 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels
 
         public ICommand RefreshCommand { get; private set; }
 
-        public ICommand SaveActuatorSettingsCommand { get; private set; }
+        public ICommand SaveCommand { get; private set; }
         
         public ICommand MoveUpCommand { get; private set; }
 
         public ICommand MoveDownCommand { get; private set; }
 
-        private void MoveActuatorUp()
-        {
-            Areas.SelectedItem.Actuators.MoveItemUp(Areas.SelectedItem.Actuators.SelectedItem);
-        }
-
-        private void MoveActuatorDown()
-        {
-            Areas.SelectedItem.Actuators.MoveItemDown(Areas.SelectedItem.Actuators.SelectedItem);
-        }
-
-        private async Task SaveActuatorSettingsAsync()
-        {
-            try
-            {
-                UpdateActuatorSortValues();
-                foreach (var actuator in Areas.SelectedItem.Actuators)
-                {
-                    var configruation = JObject.FromObject(actuator.Settings);
-                    await _controllerClient.SetActuatorConfiguration(actuator.Id, configruation);
-                }
-            }
-            catch (Exception exception)
-            {
-                _unhandledExceptionPresenter.Show(exception);
-            }
-        }
-
-        private async Task RefreshAsync()
+        public async Task RefreshAsync()
         {
             JObject configuration;
             try
             {
-                 configuration = await _controllerClient.GetConfiguration();
+                configuration = await _controllerClient.GetConfiguration();
             }
             catch (Exception exception)
             {
@@ -84,6 +57,39 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels
             foreach (var areaItem in parser.Parse(configuration))
             {
                 Areas.Add(areaItem);
+            }
+        }
+
+        private void MoveActuatorUp()
+        {
+            Areas.SelectedItem.Actuators.MoveItemUp(Areas.SelectedItem.Actuators.SelectedItem);
+        }
+
+        private void MoveActuatorDown()
+        {
+            Areas.SelectedItem.Actuators.MoveItemDown(Areas.SelectedItem.Actuators.SelectedItem);
+        }
+
+        private async Task SaveAsync()
+        {
+            try
+            {
+                UpdateActuatorSortValues();
+                foreach (var actuator in Areas.SelectedItem.Actuators)
+                {
+                    var configruation = JObject.FromObject(actuator.Settings);
+                    await _controllerClient.SetActuatorConfiguration(actuator.Id, configruation);
+                }
+
+                foreach (var automation in Areas.SelectedItem.Automations)
+                {
+                    var configuration = JObject.FromObject(automation.Settings);
+                    await _controllerClient.SetAutomationConfiguration(automation.Id, configuration);
+                }
+            }
+            catch (Exception exception)
+            {
+                _unhandledExceptionPresenter.Show(exception);
             }
         }
 

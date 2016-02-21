@@ -7,7 +7,11 @@ namespace HA4IoT.ManagementConsole.Chrome.Views
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainWindowVM();
+
+            var viewModel = new MainWindowVM();
+            DataContext = viewModel;
+
+            Loaded += (s, e) => viewModel.ConfigurationTab.RefreshAsync();
         }
     }
 }

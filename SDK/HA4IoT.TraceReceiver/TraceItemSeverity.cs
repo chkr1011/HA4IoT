@@ -1,4 +1,4 @@
-﻿namespace HA4IoT.TraceViewer
+﻿namespace HA4IoT.TraceReceiver
 {
     public enum TraceItemSeverity
     {

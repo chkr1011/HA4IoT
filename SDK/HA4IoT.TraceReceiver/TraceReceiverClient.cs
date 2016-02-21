@@ -6,16 +6,17 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HA4IoT.TraceViewer
+namespace HA4IoT.TraceReceiver
 {
-    public class TraceReceiver
+    public class TraceReceiverClient
     {
         private readonly UdpClient _udpClient;
         private CancellationTokenSource _cancellationTokenSource;
 
-        public TraceReceiver()
+        public TraceReceiverClient()
         {
             _udpClient = new UdpClient(19227);
+            _udpClient.Client.ReceiveBufferSize = 64*1024;
             _udpClient.EnableBroadcast = true;
         }
 

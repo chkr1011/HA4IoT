@@ -34,8 +34,7 @@ namespace HA4IoT.ManagementConsole.Configuration
             {
                 item.Automations.Add(CreateAutomationItemVM(automation));
             }
-
-            //var value = source.Value<JObject>();
+                        
             return item;
         }
 
@@ -43,22 +42,23 @@ namespace HA4IoT.ManagementConsole.Configuration
         {
             string type = source.Value["Type"].Value<string>();
 
-            var editor = CreateActuatorEditorVM((JObject)source.Value);
-            var item = new ActuatorItemVM(source.Name, type, editor);
+            var settings = CreateActuatorSettingsVM((JObject)source.Value["Settings"]);
+            var item = new ActuatorItemVM(source.Name, type, settings);
             
             return item;
         }
 
         public AutomationItemVM CreateAutomationItemVM(JProperty source)
         {
-            //string type = source.Value["Type"].Value<string>();
+            string type = source.Value["Type"].Value<string>();
 
-            var item = new AutomationItemVM(source.Name);
+            var settings = CreateAutomationSettingsVM((JObject)source.Value["Settings"]);
+            var item = new AutomationItemVM(source.Name, type, settings);
 
             return item;
         }
 
-        public ActuatorSettingsVM CreateActuatorEditorVM(JObject configuration)
+        public ActuatorSettingsVM CreateActuatorSettingsVM(JObject configuration)
         {
             if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
@@ -78,6 +78,17 @@ namespace HA4IoT.ManagementConsole.Configuration
                 settings.AppSettings.OnState = appSettings.GetNamedString("OnState", "On");
                 settings.AppSettings.DisplayVertical = appSettings.GetNamedBoolean("DisplayVertical", false);
             }
+
+            return settings;
+        }
+
+        public AutomationSettingsVM CreateAutomationSettingsVM(JObject configuration)
+        {
+            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+
+            var settings = new AutomationSettingsVM();
+
+            settings.IsEnabled = configuration.GetNamedBoolean("IsEnabled");
 
             return settings;
         }

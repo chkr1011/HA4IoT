@@ -40,10 +40,15 @@ namespace HA4IoT.Actuators
 
         public virtual JsonObject ExportConfigurationToJsonObject()
         {
-            var configuration = Settings.ExportToJsonObject();
-            configuration.SetNamedValue("Type", GetType().FullName.ToJsonValue());
+            var result = new JsonObject();
+            result.SetNamedValue("Type", GetType().FullName.ToJsonValue());
 
-            return configuration;
+            if (Settings != null)
+            {
+                result.SetNamedValue("Settings", Settings.ExportToJsonObject());
+            }
+
+            return result;
         }
 
         public void LoadSettings()

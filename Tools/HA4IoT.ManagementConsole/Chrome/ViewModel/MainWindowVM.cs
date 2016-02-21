@@ -3,6 +3,7 @@ using System.Windows;
 using HA4IoT.ManagementConsole.Configuration.ViewModels;
 using HA4IoT.ManagementConsole.Controller;
 using HA4IoT.ManagementConsole.Core;
+using HA4IoT.ManagementConsole.Properties;
 
 namespace HA4IoT.ManagementConsole.Chrome.ViewModel
 {
@@ -13,7 +14,7 @@ namespace HA4IoT.ManagementConsole.Chrome.ViewModel
 
         public MainWindowVM()
         {
-            _controllerClient.Address = "192.168.1.15";
+            _controllerClient.Address = Settings.Default.ControllerAddress;
             _controllerClient.IsWorkingChanged += OnIsWorkingChanged;
             
             ConfigurationTab = new ConfigurationTabVM(_controllerClient, _unhandledExceptionPresenter);

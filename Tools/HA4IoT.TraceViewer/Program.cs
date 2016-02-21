@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using HA4IoT.TraceReceiver;
 using HA4IoT.TraceViewer.Properties;
 
 namespace HA4IoT.TraceViewer
@@ -7,7 +8,7 @@ namespace HA4IoT.TraceViewer
     public static class Program
     {
         private static readonly object SyncRoot = new object();
-        private static readonly TraceReceiver TraceItemReceiver = new TraceReceiver();
+        private static readonly TraceReceiverClient TraceItemReceiver = new TraceReceiverClient();
 
         private static bool _loggingIsEnabled;
 

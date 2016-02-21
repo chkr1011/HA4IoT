@@ -22,5 +22,14 @@ namespace HA4IoT.ManagementConsole.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("192.168.1.15")]
+        public string ControllerAddress {
+            get {
+                return ((string)(this["ControllerAddress"]));
+            }
+        }
     }
 }

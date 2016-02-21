@@ -67,6 +67,7 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="CanUserSortColumns" Value="False" />
+        <Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
         <Setter Property="CanUserReorderColumns" Value="False" />
     </Style>
 
@@ -79,6 +80,24 @@
                                Padding="2,6,10,6"
                                Text="{Binding}" />
                 </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type DataGridCheckBoxColumn}">
+        <Setter Property="ElementStyle">
+            <Setter.Value>
+                <Style TargetType="{x:Type DataGridCell}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <CheckBox Background="Red"
+                                          Content="LALALALA"
+                                          IsChecked="{Binding}" />
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
             </Setter.Value>
         </Setter>
     </Style>

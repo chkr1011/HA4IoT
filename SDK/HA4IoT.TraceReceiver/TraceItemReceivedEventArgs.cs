@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace HA4IoT.TraceViewer
+namespace HA4IoT.TraceReceiver
 {
     public class TraceItemReceivedEventArgs : EventArgs
     {
