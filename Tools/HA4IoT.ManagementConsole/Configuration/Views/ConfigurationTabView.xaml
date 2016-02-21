@@ -1,0 +1,144 @@
+﻿<UserControl x:Class="HA4IoT.ManagementConsole.Configuration.Views.ConfigurationTabView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:HA4IoT.ManagementConsole.Configuration.ViewModels"
+             d:DesignHeight="1024"
+             d:DesignWidth="1280"
+             mc:Ignorable="d">
+    <Grid>
+        <Grid.Resources>
+            <DataTemplate DataType="{x:Type viewModels:AreaItemVM}">
+                <DockPanel>
+                    <ContentPresenter Content="{StaticResource ImageArea}" />
+                    <Label VerticalAlignment="Center" Content="{Binding Id}" />
+                </DockPanel>
+            </DataTemplate>
+        </Grid.Resources>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" MinWidth="200" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <DockPanel Grid.Column="0">
+            <Button Command="{Binding RefreshCommand}"
+                    Content="Load"
+                    DockPanel.Dock="Bottom" />
+            <ListView BorderThickness="0,0,1,0"
+                      ItemsSource="{Binding Areas}"
+                      SelectedItem="{Binding Areas.SelectedItem}" />
+        </DockPanel>
+
+        <DockPanel Grid.Column="1" Margin="10,0,0,0">
+
+            <TabControl>
+
+                <TabItem Header="Actuators">
+                    <TabItem.Resources>
+                        <Style TargetType="{x:Type Label}">
+                            <Setter Property="Margin" Value="0, 0, 10, 0" />
+                        </Style>
+                        <Style TargetType="{x:Type CheckBox}">
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                        </Style>
+                        <Style TargetType="{x:Type TextBox}">
+                            <Setter Property="Margin" Value="0,2" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                        </Style>
+                    </TabItem.Resources>
+                    <DockPanel>
+                        <ToolBar DockPanel.Dock="Top">
+                            <Button MinHeight="26"
+                                    HorizontalAlignment="Right"
+                                    Command="{Binding SaveActuatorSettingsCommand}"
+                                    Content="Save" />
+
+                            <Separator />
+
+                            <Button MinHeight="26"
+                                    HorizontalAlignment="Right"
+                                    Command="{Binding MoveUpCommand}"
+                                    Content="Move up" />
+
+                            <Button MinHeight="26"
+                                    HorizontalAlignment="Right"
+                                    Command="{Binding MoveDownCommand}"
+                                    Content="Move down" />
+                        </ToolBar>
+
+                        <DataGrid AlternatingRowBackground="WhiteSmoke"
+                                  AutoGenerateColumns="False"
+                                  FontSize="12"
+                                  GridLinesVisibility="None"
+                                  ItemsSource="{Binding Areas.SelectedItem.Actuators}"
+                                  RowHeaderWidth="0"
+                                  RowHeight="28"
+                                  SelectedItem="{Binding Areas.SelectedItem.Actuators.SelectedItem}"
+                                  SelectionMode="Single"
+                                  SelectionUnit="FullRow">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Header="">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Margin="1">
+                                                <Path Width="22"
+                                                      Height="22"
+                                                      Margin="0,0,0,0"
+                                                      Data="M2.6949773,9.6219993L2.6949773,23.638002C3.9109809,24.177003,11.233004,27.423997,13.868992,28.588991L13.868992,14.573994 13.474978,14.399006C11.544986,13.545003,5.1279919,10.698995,2.6949773,9.6219993z M27.847999,9.5659996L23.289007,11.588995C20.405004,12.868992,17.312992,14.241002,16.563999,14.573002L16.563999,28.588991C19.207981,27.416994,26.62998,24.123003,27.847999,23.582994z M15.326999,2.8210064C14.526981,3.1760016 8.0650041,6.0430055 4.6709912,7.5490018 7.5729997,8.8360039 12.672,11.095007 14.560978,11.931996L15.215,12.224003 16.907993,11.472005C19.252994,10.431005 23.381994,8.5979973 25.871984,7.493002 22.492986,5.9970003 16.12598,3.1749945 15.326999,2.8210064z M15.325992,0C15.511997,0,15.698978,0.039001457,15.871982,0.11600494L29.741005,6.2610079C29.853981,6.327994 29.892982,6.3389955 29.931007,6.3629976 30.047981,6.4599977 30.084999,6.4899965 30.118995,6.5230013 30.173988,6.5750032 30.221992,6.631003 30.267982,6.6910001 30.293983,6.7269955 30.323982,6.7639981 30.345009,6.8029996 30.388008,6.8719998 30.417,6.9449979 30.446998,7.0210019 30.461006,7.0580045 30.478981,7.0930081 30.491981,7.1319943 30.523994,7.2480069 30.542,7.3700009 30.542,7.493002L30.542,24.459001C30.542,24.991991,30.230995,25.474992,29.742988,25.690004L15.761997,31.89299C15.651981,31.932998 15.596988,31.946991 15.537998,31.959991 15.487003,31.972 15.436985,31.985992 15.381992,31.991989 15.326999,32 15.272983,32 15.215976,32 15.161991,32 15.105991,32 15.049991,31.991989 14.997989,31.985992 14.946995,31.972 14.893986,31.959991 14.836979,31.946991 14.782993,31.932998 14.728977,31.908996L0.80099487,25.748003C0.31298822,25.530992,-1.3702993E-07,25.046999,0,24.515001L0,7.5490018C-1.3702993E-07,7.4249936 0.017974721,7.3049985 0.052978514,7.1870023 0.06298816,7.1480008 0.080993531,7.1129971 0.095977781,7.0759946 0.12399281,7.0009976 0.15499867,6.9270078 0.19598388,6.8589993 0.22097769,6.8199979 0.24999992,6.7829953 0.27697754,6.7450009 0.31997674,6.6870023 0.3679809,6.631003 0.42098999,6.579001 0.45898434,6.5459963 0.49298093,6.5150057 0.53399658,6.4859987 0.64797973,6.3960024 0.68899536,6.3839937 0.72598266,6.3629976L14.780002,0.11600494C14.952976,0.039001457,15.139988,0,15.325992,0z"
+                                                      Fill="#FF337AB7"
+                                                      RenderTransformOrigin="0.5,0.5"
+                                                      Stretch="Uniform" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Width="Auto"
+                                                    Binding="{Binding Id}"
+                                                    Header="ID"
+                                                    IsReadOnly="True" />
+                                <DataGridCheckBoxColumn Width="Auto"
+                                                        Binding="{Binding Settings.IsEnabled}"
+                                                        Header="Enabled" />
+                                <DataGridTextColumn Width="Auto"
+                                                    Binding="{Binding Settings.AppSettings.Caption}"
+                                                    Header="Caption" />
+                                <DataGridTextColumn Width="Auto"
+                                                    Binding="{Binding Settings.AppSettings.OverviewCaption}"
+                                                    Header="Caption (Overview)" />
+                                <DataGridTextColumn Width="Auto"
+                                                    Binding="{Binding Settings.AppSettings.Image}"
+                                                    Header="Image" />
+                                <DataGridCheckBoxColumn Width="Auto"
+                                                        Binding="{Binding Settings.AppSettings.IsPartOfOnStateCounter}"
+                                                        Header="Part of On-State counter" />
+                                <DataGridTextColumn Width="Auto"
+                                                    Binding="{Binding Settings.AppSettings.OnState}"
+                                                    Header="On-State" />
+                                <DataGridCheckBoxColumn Width="Auto"
+                                                        Binding="{Binding Settings.AppSettings.Hide}"
+                                                        Header="Hidden" />
+                                <DataGridCheckBoxColumn Width="Auto"
+                                                        Binding="{Binding Settings.AppSettings.DisplayVertical}"
+                                                        Header="Display vertical" />
+
+                            </DataGrid.Columns>
+
+                        </DataGrid>
+                    </DockPanel>
+                </TabItem>
+
+                <TabItem Header="Automations">
+                    <DockPanel>
+                        <Grid />
+
+                        <ListBox Margin="10"
+                                 DockPanel.Dock="Top"
+                                 ItemsSource="{Binding Areas.SelectedItem.Automations}" />
+                    </DockPanel>
+                </TabItem>
+
+            </TabControl>
+        </DockPanel>
+    </Grid>
+</UserControl>

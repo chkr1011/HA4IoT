@@ -3,6 +3,7 @@ using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
@@ -50,13 +51,15 @@ namespace HA4IoT.Actuators
             Settings?.Load();
         }
 
+        public virtual void HandleApiPost(ApiRequestContext context)
+        {
+        }
+
         private void ExposeToApi()
         {
             new ActuatorSettingsHttpApiDispatcher(Settings, HttpApiController).ExposeToApi();
             
-            // TODO: Add /settings.
-            HttpApiController.Handle(HttpMethod.Post, $"actuator/{Id.Value}")
-                .WithRequiredJsonBody()
+            HttpApiController.HandlePost($"actuator/{Id.Value}/status")
                 .Using(c =>
                 {
                     JsonObject requestData;
@@ -66,26 +69,17 @@ namespace HA4IoT.Actuators
                         return;
                     }
 
-                    var context = new ApiRequestContext(requestData, new JsonObject());
-                    HandleApiPost(context);
+                    var apiContext = new ApiRequestContext(requestData, new JsonObject());
+                    HandleApiPost(apiContext);
 
-                    c.Response.Body = new JsonBody(context.Response);
+                    c.Response.Body = new JsonBody(apiContext.Response);
                 });
 
-            HttpApiController.Handle(HttpMethod.Get, $"actuator/{Id.Value}/status")
+            HttpApiController.HandleGet($"actuator/{Id.Value}/status")
                 .Using(c =>
                 {
                     c.Response.Body = new JsonBody(ExportStatusToJsonObject());
                 });
-        }
-
-        public virtual void HandleApiPost(ApiRequestContext context)
-        {
-            if (context.Request.ContainsKey("isEnabled"))
-            {
-                Settings.IsEnabled.Value = context.Request.GetNamedBoolean("isEnabled", false);
-                Logger.Info(Id + ": " + (Settings.IsEnabled.Value ? "Enabled" : "Disabled"));
-            }
         }
     }
 }

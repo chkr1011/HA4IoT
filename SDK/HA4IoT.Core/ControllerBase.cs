@@ -13,6 +13,7 @@ using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Networking;
 using HA4IoT.Core.Timer;
 using HA4IoT.Hardware.Pi2;
 using HA4IoT.Networking;

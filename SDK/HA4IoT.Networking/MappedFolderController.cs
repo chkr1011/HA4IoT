@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Networking
 {

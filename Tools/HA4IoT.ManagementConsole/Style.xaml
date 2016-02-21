@@ -43,9 +43,7 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <TabPanel Grid.Row="0" IsItemsHost="true" />
-                        <Border Grid.Row="1"
-                                BorderBrush="#D0CEBF"
-                                BorderThickness="0,0,1,1">
+                        <Border Grid.Row="1">
                             <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
                                 <Border Background="{TemplateBinding Background}">
                                     <ContentPresenter ContentSource="SelectedContent" />
@@ -53,6 +51,33 @@
                             </Border>
                         </Border>
                     </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type DataGrid}">
+        <Setter Property="AlternatingRowBackground" Value="WhiteSmoke" />
+        <Setter Property="AutoGenerateColumns" Value="False" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="GridLinesVisibility" Value="None" />
+        <Setter Property="RowHeaderWidth" Value="0" />
+        <Setter Property="SelectionMode" Value="Single" />
+        <Setter Property="SelectionUnit" Value="FullRow" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CanUserSortColumns" Value="False" />
+        <Setter Property="CanUserReorderColumns" Value="False" />
+    </Style>
+
+    <Style TargetType="{x:Type DataGridColumnHeader}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
+                    <TextBlock Background="DimGray"
+                               Foreground="WhiteSmoke"
+                               Padding="2,6,10,6"
+                               Text="{Binding}" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

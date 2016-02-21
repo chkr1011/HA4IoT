@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using Windows.Data.Json;
+using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Networking
 {

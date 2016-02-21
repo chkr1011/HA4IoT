@@ -5,6 +5,7 @@ using HA4IoT.Actuators.Animations;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
@@ -13,9 +14,9 @@ namespace HA4IoT.Actuators
     {
         private readonly IHomeAutomationTimer _timer;
 
-        public LogicalBinaryStateOutputActuator(ActuatorId id, IHttpRequestController api, ILogger logger,
+        public LogicalBinaryStateOutputActuator(ActuatorId id, IHttpRequestController apiController, ILogger logger,
             IHomeAutomationTimer timer) : base(
-                id, api, logger)
+                id, apiController, logger)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
 

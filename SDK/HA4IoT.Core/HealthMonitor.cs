@@ -4,6 +4,7 @@ using System.Linq;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Networking;
 using HA4IoT.Core.Timer;
 using HA4IoT.Networking;
 
@@ -34,8 +35,8 @@ namespace HA4IoT.Core
             }
 
             timer.Tick += Tick;
-            httpApiController.Handle(HttpMethod.Get, "health").Using(HandleApiGet);
-            httpApiController.Handle(HttpMethod.Post, "health").WithSegment("reset").Using(c => ResetStatistics());
+            httpApiController.HandleGet("health").Using(HandleApiGet);
+            httpApiController.HandlePost("health/reset").Using(c => ResetStatistics());
         }
 
         private void HandleApiGet(HttpContext httpContext)

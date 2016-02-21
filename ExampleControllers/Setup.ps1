@@ -1,64 +1,69 @@
-﻿$hostAddress = "minwinpc";
+﻿$hostAddress = "192.168.1.15";
 
-Write-Host("Setting up $hostAddress");
-Write-Host("Change host address (y/n)?");
-$key = [Console]::ReadKey($true).KeyChar;
-if ($key -eq "y")
+## Select target
+Write-Output "Setting up $hostAddress"
+Write-Output "Change host address (y/n)?"
+if ([Console]::ReadKey($true).KeyChar -eq "y")
 {
 	$hostAddress = Read-Host("Enter host address");
 }
 
-# Setup and connect remote session
-Write-Host("Preparing WINRM...");
+### Setup and connect remote session
+Write-Output "Preparing WINRM..."
 net start winrm
 Set-Item WSMan:\localhost\Client\TrustedHosts -Value $hostAddress
-#$session = New-PSSession -ComputerName $hostAddress -Credential "$hostAddress\Administrator"
-Enter-PSSession -ComputerName $hostAddress -Credential "$hostAddress\Administrator"
+$session = New-PSSession -ComputerName $hostAddress -Credential "$hostAddress\Administrator"
+#Enter-PSSession -ComputerName $hostAddress -Credential "$hostAddress\Administrator"
 
-# Setup date
-Write-Host("Setting up date & time...");
-get-date
-tzutil /s "W. Europe Standard Time"
+### Setup date
+Write-Output "Setting up date & time..."
+$date = Get-Date -Format o
+Write-Output $date
 
-# yyyy/mm/mm hh:mm
-#set-date "2015/01/17 21:59"
-w32tm /resync
-
-# Setup machine
-Write-Host("Setup machine (y/n)?");
-$key = [Console]::ReadKey($true).KeyChar;
-if ($key -eq "y")
+Invoke-Command -Session $session -ArgumentList $date -ScriptBlock { 
+    param($p1)
+    
+    get-date
+    tzutil /s "W. Europe Standard Time"
+    #w32tm /resync
+    # Date-format: yyyy/mm/mm HH:mm 
+    set-date $p1 }
+    
+### Setup machine
+Write-Output "Setup machine (y/n)?"
+if ([Console]::ReadKey($true).KeyChar -eq "y")
 {
-	setcomputername HA4IoT-Main
-	#setcomputername HA4IoT-Cellar
-	
-	setbootoption.exe headless
+    Invoke-Command -Session $session -ScriptBlock {
+        setcomputername HA4IoT-Main
+        setbootoption.exe headless }
+    
 	#net user Administrator [new password]
 }
 
 # Setup IP address
-Write-Host("Set IP address (y/n)?");
-$key = [Console]::ReadKey($true).KeyChar;
-if ($key -eq "y")
+Write-Output "Set IP address (y/n)?"
+if ([Console]::ReadKey($true).KeyChar -eq "y")
 {
-	$newIP = "192.168.1.15";
-	$newGateway = "192.168.1.1";
+    Invoke-Command -Session $session -ScriptBlock {
+        $newIP = "192.168.1.15";
+        $newGateway = "192.168.1.1";
 
-	netsh interface ip set dns "Ethernet" static $newGateway
-	netsh interface ip set address "Ethernet" static $newIP 255.255.255.0 $newGateway 1
-
-	#netsh interface ip set dns "Ethernet" static 192.168.1.1
-	#netsh interface ip set address "Ethernet" static 192.168.1.15 255.255.255.0 192.168.1.1 1
+        netsh interface ip set dns "Ethernet" static $newGateway
+        netsh interface ip set address "Ethernet" static $newIP 255.255.255.0 $newGateway 1 }
 }
 
 # Setup startup projects
-Write-Host("Setup startup project (y/n)?");
-$key = [Console]::ReadKey($true).KeyChar;
-if ($key -eq "y")
+Write-Output "Setup startup project (y/n)?"
+if ([Console]::ReadKey($true).KeyChar -eq "y")
 {
-	iotstartup startup
-	iotstartup add headless "HA4IoT.Controller."
-
+    Invoke-Command -Session $session -ScriptBlock {
+        Write-Output "Available:"
+        iotstartup list
+	    iotstartup add headless "HA4IoT.Controller."
+       
+        Write-Output "Autostart:"
+        iotstartup startup }
+               	   
 	#iotstartup remove headless "HA4IoT.Controller."
 }
 
@@ -67,4 +72,4 @@ if ($key -eq "y")
 
 Exit-PSSession
 
-Write-Host("Done!");
+Write-Output "Done!";

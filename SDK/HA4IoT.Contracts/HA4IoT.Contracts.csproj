@@ -149,6 +149,17 @@
     <Compile Include="Hardware\IDevice.cs" />
     <Compile Include="Hardware\DeviceId.cs" />
     <Compile Include="Actuators\ISwitch.cs" />
+    <Compile Include="Networking\HttpContext.cs" />
+    <Compile Include="Networking\HttpHeaderCollection.cs" />
+    <Compile Include="Networking\HttpMethod.cs" />
+    <Compile Include="Networking\HttpRequest.cs" />
+    <Compile Include="Networking\HttpResponse.cs" />
+    <Compile Include="Networking\HttpStatusCode.cs" />
+    <Compile Include="Networking\IExportToJsonValue.cs" />
+    <Compile Include="Networking\IHttpBody.cs" />
+    <Compile Include="Networking\IHttpRequestController.cs" />
+    <Compile Include="Networking\IHttpRequestDispatcherAction.cs" />
+    <Compile Include="Networking\IImportFromJsonValue.cs" />
     <Compile Include="Triggers\ITrigger.cs" />
     <Compile Include="Triggers\TriggeredEventArgs.cs" />
     <Compile Include="WeatherStation\IWeatherStation.cs" />
@@ -179,13 +190,6 @@
     <Compile Include="WeatherStation\WeatherSituation.cs" />
     <Compile Include="WeatherStation\WeatherSituationSensorValueChangedEventArgs.cs" />
     <Content Include="Properties\HA4IoT.Contracts.rd.xml" />
-  </ItemGroup>
-  <ItemGroup />
-  <ItemGroup>
-    <ProjectReference Include="..\HA4IoT.Networking\HA4IoT.Networking.csproj">
-      <Project>{d4e0a3f9-6521-4aee-815a-e2a60323fb63}</Project>
-      <Name>HA4IoT.Networking</Name>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

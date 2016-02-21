@@ -1,6 +1,7 @@
 ﻿using System;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
@@ -21,8 +22,8 @@ namespace HA4IoT.Actuators
         
         public void ExposeToApi()
         {
-            _httpApiController.Handle(HttpMethod.Get, $"actuator/{_actuatorSettings.ActuatorId}/settings").Using(HandleApiGet);
-            _httpApiController.Handle(HttpMethod.Post, $"actuator/{_actuatorSettings.ActuatorId}/settings").Using(HandleApiPost);
+            _httpApiController.HandleGet($"actuator/{_actuatorSettings.ActuatorId}/settings").Using(HandleApiGet);
+            _httpApiController.HandlePost($"actuator/{_actuatorSettings.ActuatorId}/settings").Using(HandleApiPost);
         }
 
         private void HandleApiGet(HttpContext httpContext)

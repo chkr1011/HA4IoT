@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.Data.Json;
+using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Automations
@@ -20,8 +21,8 @@ namespace HA4IoT.Automations
 
         public void ExposeToApi()
         {
-            _httpApiController.Handle(HttpMethod.Post, $"automation/{_automationSettings.AutomationId}/settings").Using(HandleApiPost);
-            _httpApiController.Handle(HttpMethod.Get, $"automation/{_automationSettings.AutomationId}/settings").Using(HandleApiGet);
+            _httpApiController.HandlePost($"automation/{_automationSettings.AutomationId}/settings").Using(HandleApiPost);
+            _httpApiController.HandleGet($"automation/{_automationSettings.AutomationId}/settings").Using(HandleApiGet);
         }
 
         private void HandleApiGet(HttpContext httpContext)

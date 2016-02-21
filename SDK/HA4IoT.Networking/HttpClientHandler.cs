@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
+using HA4IoT.Contracts.Networking;
 using Buffer = Windows.Storage.Streams.Buffer;
 
 namespace HA4IoT.Networking

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Networking
 {

@@ -7,6 +7,7 @@ using Windows.Storage;
 using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 using HA4IoT.Telemetry.Statistics;
 
@@ -38,7 +39,7 @@ namespace HA4IoT.Telemetry.Csv
         {
             if (httpRequestController == null) throw new ArgumentNullException(nameof(httpRequestController));
 
-            httpRequestController.Handle(HttpMethod.Get, "history").Using(HandleApiGet);
+            httpRequestController.HandleGet("history").Using(HandleApiGet);
         }
 
         protected override void OnActuatorConnecting(IActuator actuator)

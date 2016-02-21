@@ -1,4 +1,6 @@
 ﻿using System;
+using HA4IoT.Contracts.Networking;
+
 namespace HA4IoT.Networking
 {
     public static class HttpHeaderCollectionExtensions

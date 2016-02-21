@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using Windows.Data.Json;
+using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Networking
 {

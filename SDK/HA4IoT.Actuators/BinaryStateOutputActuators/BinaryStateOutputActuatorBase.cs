@@ -2,14 +2,15 @@
 using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
     public abstract class BinaryStateOutputActuatorBase : ActuatorBase, IBinaryStateOutputActuator
     {
-        protected BinaryStateOutputActuatorBase(ActuatorId id, IHttpRequestController httpApi, ILogger logger) 
-            : base(id, httpApi, logger)
+        protected BinaryStateOutputActuatorBase(ActuatorId id, IHttpRequestController httpApiController, ILogger logger) 
+            : base(id, httpApiController, logger)
         {
         }
 
@@ -29,6 +30,11 @@ namespace HA4IoT.Actuators
         public void SetState(BinaryActuatorState state, params IParameter[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+
+            if (!Settings.IsEnabled.Value)
+            {
+                return;
+            }
 
             SetStateInternal(state, parameters);
         }

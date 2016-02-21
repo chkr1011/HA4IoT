@@ -1,5 +1,6 @@
 ﻿using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Automations

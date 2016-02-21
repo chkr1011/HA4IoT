@@ -7,6 +7,7 @@ using Windows.Storage;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 using DayOfWeek = System.DayOfWeek;
 
@@ -27,7 +28,7 @@ namespace HA4IoT.Telemetry.Statistics
             _logger = logger;
             _filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Actuators", actuator.Id.Value, "History.csv");
 
-            apiRequestController.Handle(HttpMethod.Get, "statistics").WithSegment(actuator.Id.Value).Using(HandleApiGet);
+            apiRequestController.HandleGet($"statistics/{actuator.Id}").Using(HandleApiGet);
         }
 
         public void AddEntry(ActuatorHistoryEntry entry)

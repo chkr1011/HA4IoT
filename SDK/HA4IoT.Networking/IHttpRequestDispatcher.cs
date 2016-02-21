@@ -1,4 +1,6 @@
-﻿namespace HA4IoT.Networking
+﻿using HA4IoT.Contracts.Networking;
+
+namespace HA4IoT.Networking
 {
     public interface IHttpRequestDispatcher
     {

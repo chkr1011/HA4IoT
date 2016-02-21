@@ -1,6 +1,6 @@
 ﻿using System;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Networking;
+using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Contracts.Core.Settings
 {

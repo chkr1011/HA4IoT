@@ -1,0 +1,45 @@
+﻿<UserControl x:Class="HA4IoT.ManagementConsole.Configuration.Views.AreaEditorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:HA4IoT.ManagementConsole.Configuration.ViewModels"
+             Background="{StaticResource PanelBackground}"
+             d:DataContext="{d:DesignInstance Type=viewModels:AreaItemVM,
+                                              IsDesignTimeCreatable=True}"
+             d:DesignHeight="300"
+             d:DesignWidth="300"
+             mc:Ignorable="d">
+    <DockPanel Margin="10">
+        <GroupBox Header="App">
+            <Grid Margin="10">
+                <Grid.Resources>
+                    <Style TargetType="{x:Type Label}">
+                        <Setter Property="Margin" Value="0,0,10,0" />
+                    </Style>
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0"
+                       Grid.Column="0"
+                       Content="ID:" />
+                <Label Grid.Row="0"
+                       Grid.Column="1"
+                       Margin="0"
+                       Content="{Binding Id}" />
+
+                <Label Grid.Row="1"
+                       Grid.Column="0"
+                       Content="Caption:" />
+                <TextBox Grid.Row="1" Grid.Column="1" />
+            </Grid>
+        </GroupBox>
+    </DockPanel>
+</UserControl>

@@ -10,10 +10,11 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Networking;
-using HttpMethod = HA4IoT.Networking.HttpMethod;
-using HttpStatusCode = HA4IoT.Networking.HttpStatusCode;
+using HttpMethod = HA4IoT.Contracts.Networking.HttpMethod;
+using HttpStatusCode = HA4IoT.Contracts.Networking.HttpStatusCode;
 
 namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 {
@@ -54,8 +55,8 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             LoadPersistedValues();
             timer.Every(TimeSpan.FromMinutes(2.5)).Do(Update);
 
-            httpApi.Handle(HttpMethod.Get, "weatherStation").Using(HandleApiGet);
-            httpApi.Handle(HttpMethod.Post, "weatherStation").WithRequiredJsonBody().Using(HandleApiPost);
+            httpApi.HandleGet("weatherStation").Using(HandleApiGet);
+            httpApi.HandlePost("weatherStation").Using(HandleApiPost);
         }
 
         public DeviceId Id { get; }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Networking
 {
@@ -27,6 +28,36 @@ namespace HA4IoT.Networking
             return action;
         }
 
+        public IHttpRequestDispatcherAction HandleGet(string uri)
+        {
+            if (uri == null) throw new ArgumentNullException(nameof(uri));
+
+            var action = new HttpRequestDispatcherAction(HttpMethod.Get, uri);
+            _handlers.Add(action);
+
+            return action;
+        }
+
+        public IHttpRequestDispatcherAction HandlePost(string uri)
+        {
+            if (uri == null) throw new ArgumentNullException(nameof(uri));
+
+            var action = new HttpRequestDispatcherAction(HttpMethod.Post, uri);
+            _handlers.Add(action);
+
+            return action;
+        }
+
+        public IHttpRequestDispatcherAction HandlePatch(string uri)
+        {
+            if (uri == null) throw new ArgumentNullException(nameof(uri));
+
+            var action = new HttpRequestDispatcherAction(HttpMethod.Patch, uri);
+            _handlers.Add(action);
+
+            return action;
+        }
+
         private void ExecuteActions(object sender, RequestReceivedEventArgs e)
         {
             string requestUri = e.Context.Request.Uri.Trim('/');
@@ -43,12 +74,7 @@ namespace HA4IoT.Networking
                 {
                     continue;
                 }
-
-                if (e.Context.Request.Body.Length == 0 && handler.IsJsonBodyRequired)
-                {
-                    continue;
-                }
-
+                
                 if (handler.HandleRequestsWithDifferentSubUrl)
                 {
                     if (!relativeUri.StartsWith(handler.Uri, StringComparison.OrdinalIgnoreCase))
@@ -74,7 +100,7 @@ namespace HA4IoT.Networking
         {
             try
             {
-                handler.Action(context);
+                handler.Handler(context);
             }
             catch (BadRequestException)
             {

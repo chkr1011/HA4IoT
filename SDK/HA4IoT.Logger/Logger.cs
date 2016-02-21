@@ -8,6 +8,7 @@ using Windows.Networking;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Logger
@@ -31,7 +32,7 @@ namespace HA4IoT.Logger
         {
             if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
 
-            httpApiController.Handle(HttpMethod.Get, "trace").Using(HandleApiGet);
+            httpApiController.HandleGet("trace").Using(HandleApiGet);
         }
 
         public void Info(string message, params object[] parameters)
