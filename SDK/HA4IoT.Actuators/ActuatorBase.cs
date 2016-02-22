@@ -8,7 +8,7 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public abstract class ActuatorBase : IActuator, IStatusProvider
+    public abstract class ActuatorBase<TSettings> : IActuator, IStatusProvider where TSettings : IActuatorSettings
     {
         protected ActuatorBase(ActuatorId id, IHttpRequestController httpApiController, ILogger logger)
         {
@@ -19,10 +19,6 @@ namespace HA4IoT.Actuators
             Id = id;
             Logger = logger;
             HttpApiController = httpApiController;
-
-            Settings = new ActuatorSettings(id, logger);
-
-            ExposeToApi();
         }
 
         public ActuatorId Id { get; }
@@ -31,7 +27,7 @@ namespace HA4IoT.Actuators
 
         protected IHttpRequestController HttpApiController { get; }
 
-        public IActuatorSettings Settings { get; }
+        public TSettings Settings { get; protected set; }
 
         public virtual JsonObject ExportStatusToJsonObject()
         {
@@ -60,7 +56,7 @@ namespace HA4IoT.Actuators
         {
         }
 
-        private void ExposeToApi()
+        public void ExposeToApi()
         {
             new ActuatorSettingsHttpApiDispatcher(Settings, HttpApiController).ExposeToApi();
             

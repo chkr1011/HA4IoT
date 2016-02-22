@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Storage;
@@ -13,7 +14,6 @@ using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Networking;
-using HttpMethod = HA4IoT.Contracts.Networking.HttpMethod;
 using HttpStatusCode = HA4IoT.Contracts.Networking.HttpStatusCode;
 
 namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
@@ -53,7 +53,9 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             _weatherDataSourceUrl = new Uri($"http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&APPID={appId}&units=metric");
 
             LoadPersistedValues();
-            timer.Every(TimeSpan.FromMinutes(2.5)).Do(Update);
+
+            Task.Factory.StartNew(async () => await FetchWeahterData(), CancellationToken.None,
+                TaskCreationOptions.LongRunning, TaskScheduler.Default);
 
             httpApi.HandleGet("weatherStation").Using(HandleApiGet);
             httpApi.HandlePost("weatherStation").Using(HandleApiPost);
@@ -83,26 +85,33 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             return result;
         }
 
-        private async void Update()
+        private async Task FetchWeahterData()
         {
-            try
+            while (true)
             {
-                string response = await FetchWeatherData();
-
-                if (!string.Equals(response, _previousResponse))
+                try
                 {
-                    PersistWeatherData(response);
-                    ParseWeatherData(response);
+                    string response = await FetchWeatherData();
 
-                    _previousResponse = response;
-                    _lastFetchedDifferentResponse = DateTime.Now;
+                    if (!string.Equals(response, _previousResponse))
+                    {
+                        PersistWeatherData(response);
+                        ParseWeatherData(response);
+
+                        _previousResponse = response;
+                        _lastFetchedDifferentResponse = DateTime.Now;
+                    }
+
+                    _lastFetched = DateTime.Now;
                 }
-                
-                _lastFetched = DateTime.Now;
-            }
-            catch (Exception exception)
-            {
-                _logger.Warning("Could not fetch weather information. " + exception.Message);
+                catch (Exception exception)
+                {
+                    _logger.Warning(exception, "Could not fetch weather information");
+                }
+                finally
+                {
+                    await Task.Delay(5000);
+                }
             }
         }
 

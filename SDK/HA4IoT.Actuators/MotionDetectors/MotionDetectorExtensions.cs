@@ -21,7 +21,14 @@ namespace HA4IoT.Actuators
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 
-            return room.Actuator<MotionDetector>(ActuatorIdFactory.Create(room, id));
+            return room.Actuator<IMotionDetector>(ActuatorIdFactory.Create(room, id));
+        }
+
+        public static IMotionDetector MotionDetector(this IArea room)
+        {
+            if (room == null) throw new ArgumentNullException(nameof(room));
+
+            return room.Actuator<IMotionDetector>();
         }
     }
 }

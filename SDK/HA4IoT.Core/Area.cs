@@ -30,6 +30,11 @@ namespace HA4IoT.Core
             Controller.AddActuator(actuator);
         }
 
+        public TActuator Actuator<TActuator>() where TActuator : IActuator
+        {
+            return _actuators.Get<TActuator>();
+        }
+
         public IList<TActuator> Actuators<TActuator>() where TActuator : IActuator
         {
             return _actuators.GetAll<TActuator>();

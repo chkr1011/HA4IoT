@@ -11,11 +11,10 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public class RollerShutter : ActuatorBase, IRollerShutter
+    public class RollerShutter : ActuatorBase<RollerShutterSettings>, IRollerShutter
     {
         private readonly TimeSpan _autoOffTimeout;
         private readonly IBinaryOutput _directionGpioPin;
-        private readonly int _positionMax;
         private readonly Stopwatch _movingDuration = new Stopwatch();
         private readonly IBinaryOutput _powerGpioPin;
         private readonly IHomeAutomationTimer _timer;
@@ -30,11 +29,10 @@ namespace HA4IoT.Actuators
             IBinaryOutput powerOutput, 
             IBinaryOutput directionOutput, 
             TimeSpan autoOffTimeout,
-            int maxPosition,
-            IHttpRequestController api,
+            IHttpRequestController httpApiController,
             ILogger logger, 
             IHomeAutomationTimer timer)
-            : base(id, api, logger)
+            : base(id, httpApiController, logger)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (powerOutput == null) throw new ArgumentNullException(nameof(powerOutput));
@@ -43,19 +41,20 @@ namespace HA4IoT.Actuators
             _powerGpioPin = powerOutput;
             _directionGpioPin = directionOutput;
             _autoOffTimeout = autoOffTimeout;
-            _positionMax = maxPosition;
             _timer = timer;
-
-            //TODO: StartMoveUp();
-
+            
             timer.Tick += (s, e) => UpdatePosition(e);
+
+            base.Settings = new RollerShutterSettings(id, logger);
         }
 
         public event EventHandler<RollerShutterStateChangedEventArgs> StateChanged; 
 
         public static TimeSpan DefaultMaxMovingDuration { get; } = TimeSpan.FromSeconds(20);
 
-        public bool IsClosed => _position == _positionMax;
+        public new IRollerShutterSettings Settings => base.Settings;
+
+        public bool IsClosed => _position == Settings.MaxPosition.Value;
 
         public RollerShutterState GetState()
         {
@@ -68,7 +67,7 @@ namespace HA4IoT.Actuators
 
             if (newState == RollerShutterState.MovingUp || newState == RollerShutterState.MovingDown)
             {
-                StartMove(newState);
+                StartMove(newState).Wait();
             }
             else
             {
@@ -81,8 +80,7 @@ namespace HA4IoT.Actuators
 
                 if (oldState != RollerShutterState.Stopped)
                 {
-                    Logger.Info(Id + ": Stopped (Duration: " +
-                                             _movingDuration.ElapsedMilliseconds + "ms)");
+                    Logger.Info(Id + ": Stopped (Duration: " + _movingDuration.ElapsedMilliseconds + "ms)");
                 }
             }
 
@@ -101,7 +99,7 @@ namespace HA4IoT.Actuators
 
             status.SetNamedValue("state", _state.ToJsonValue());
             status.SetNamedValue("position", _position.ToJsonValue());
-            status.SetNamedValue("positionMax", _positionMax.ToJsonValue());
+            status.SetNamedValue("positionMax", Settings.MaxPosition.Value.ToJsonValue());
 
             return status;
         }
@@ -117,12 +115,14 @@ namespace HA4IoT.Actuators
             SetState(state);
         }
 
-        private void StartMove(RollerShutterState newState)
+        private async Task StartMove(RollerShutterState newState)
         {
             if (_state != RollerShutterState.Stopped)
             {
                 StopInternal();
-                Task.Delay(50).Wait();
+
+                // Ensure that the relay is completely fallen off before switching the direction.
+                await Task.Delay(50);
             }
 
             BinaryState binaryState;
@@ -179,9 +179,9 @@ namespace HA4IoT.Actuators
                 _position = 0;
             }
 
-            if (_position > _positionMax)
+            if (_position > Settings.MaxPosition.Value)
             {
-                _position = _positionMax;
+                _position = Settings.MaxPosition.Value;
             }
         }
     }

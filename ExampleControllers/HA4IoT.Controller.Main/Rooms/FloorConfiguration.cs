@@ -76,7 +76,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithLamp(Floor.Lamp3, hspe16FloorAndLowerBathroom.GetOutput(7).WithInvertedState())
                 .WithLamp(Floor.StairwayLampCeiling, hsrel5Stairway.GetOutput(0))
                 .WithLamp(Floor.StairwayLampWall, hsrel5Stairway.GetOutput(1))
-                .WithRollerShutter(Floor.StairwayRollerShutter, hsrel5Stairway.GetOutput(4), hsrel5Stairway.GetOutput(3), RollerShutter.DefaultMaxMovingDuration, 20000)
+                .WithRollerShutter(Floor.StairwayRollerShutter, hsrel5Stairway.GetOutput(4), hsrel5Stairway.GetOutput(3), RollerShutter.DefaultMaxMovingDuration)
                 .WithButton(Floor.ButtonLowerFloorUpper, input1.GetInput(0))
                 .WithButton(Floor.ButtonLowerFloorLower, input1.GetInput(5))
                 .WithButton(Floor.ButtonLowerFloorAtBathroom, input1.GetInput(1))

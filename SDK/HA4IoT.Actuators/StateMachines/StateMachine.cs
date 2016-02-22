@@ -9,7 +9,7 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public class StateMachine : ActuatorBase, IStateMachine
+    public class StateMachine : ActuatorBase<ActuatorSettings>, IStateMachine
     {
         private int _index;
         private bool _turnOffIfStateIsAppliedTwice;
@@ -17,6 +17,7 @@ namespace HA4IoT.Actuators
         public StateMachine(ActuatorId id, IHttpRequestController api, ILogger logger)
             : base(id, api, logger)
         {
+            Settings = new ActuatorSettings(id, logger);
         }
 
         public List<StateMachineState> States { get; } = new List<StateMachineState>();

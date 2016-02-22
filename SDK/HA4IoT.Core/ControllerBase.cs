@@ -71,6 +71,11 @@ namespace HA4IoT.Core
             return _actuators.Get<TActuator>(id);
         }
 
+        public TActuator Actuator<TActuator>() where TActuator : IActuator
+        {
+            return _actuators.Get<TActuator>();
+        }
+
         public IList<TActuator> Actuators<TActuator>() where TActuator : IActuator
         {
             return _actuators.GetAll<TActuator>();
@@ -215,8 +220,8 @@ namespace HA4IoT.Core
                 TryInitialize();
                 LoadSettings();
 
-                new ControllerApiDispatcher(this).ExposeToApi();
-                _httpServer.StartAsync(80).Wait();
+                _httpServer.Start(80);
+                ExposeToApi();
 
                 stopwatch.Stop();
                 Logger.Info("Startup completed after " + stopwatch.Elapsed);
@@ -251,6 +256,15 @@ namespace HA4IoT.Core
             foreach (var automation in _automations.GetAll())
             {
                 automation.LoadSettings();
+            }
+        }
+
+        private void ExposeToApi()
+        {
+            new ControllerApiDispatcher(this).ExposeToApi();
+            foreach (var actuator in _actuators.GetAll())
+            {
+                actuator.ExposeToApi();
             }
         }
     }

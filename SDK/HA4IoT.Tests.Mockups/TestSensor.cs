@@ -44,5 +44,10 @@ namespace HA4IoT.Tests.Mockups
         public void LoadSettings()
         {
         }
+
+        public void ExposeToApi()
+        {
+            
+        }
     }
 }

@@ -46,6 +46,11 @@ namespace HA4IoT.Tests.Mockups
         {
         }
 
+        public void ExposeToApi()
+        {
+            
+        }
+
         public void SetState(MotionDetectorState newState)
         {
             var oldState = State;

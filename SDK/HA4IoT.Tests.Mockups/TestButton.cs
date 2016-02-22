@@ -48,6 +48,11 @@ namespace HA4IoT.Tests.Mockups
         {
         }
 
+        public void ExposeToApi()
+        {
+            
+        }
+
         public void PressShort()
         {
             _pressedShortlyTrigger.Invoke();

@@ -1,5 +1,9 @@
-﻿using HA4IoT.Actuators;
+﻿using System;
+using HA4IoT.Actuators;
 using HA4IoT.Automations;
+using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Configuration;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
@@ -9,6 +13,8 @@ namespace HA4IoT.Controller.Main.Rooms
 {
     internal class LowerBathroomConfiguration
     {
+        private TimedAction _bathmodeResetTimer;
+
         public enum LowerBathroom
         {
             TemperatureSensor,
@@ -21,6 +27,7 @@ namespace HA4IoT.Controller.Main.Rooms
             // Another light is available!
             CombinedLights,
 
+            StartBathmodeButton,
             LampMirror,
 
             Window
@@ -44,6 +51,8 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithLamp(LowerBathroom.LampMirror, hspe16_FloorAndLowerBathroom.GetOutput(4).WithInvertedState())
                 .WithWindow(LowerBathroom.Window, w => w.WithCenterCasement(input3.GetInput(13), input3.GetInput(14)));
 
+            bathroom.WithVirtualButton(LowerBathroom.StartBathmodeButton, b => b.WithShortAction(() => StartBathode(bathroom)));
+
             bathroom.CombineActuators(LowerBathroom.CombinedLights)
                 .WithActuator(bathroom.Lamp(LowerBathroom.LightCeilingDoor))
                 .WithActuator(bathroom.Lamp(LowerBathroom.LightCeilingMiddle))
@@ -53,6 +62,19 @@ namespace HA4IoT.Controller.Main.Rooms
             bathroom.SetupTurnOnAndOffAutomation()
                 .WithTrigger(bathroom.MotionDetector(LowerBathroom.MotionDetector))
                 .WithTarget(bathroom.BinaryStateOutput(LowerBathroom.CombinedLights));
+        }
+
+        private void StartBathode(IArea bathroom)
+        {
+            bathroom.MotionDetector().Settings.IsEnabled.Value = false;
+
+            bathroom.Lamp(LowerBathroom.LightCeilingDoor).TurnOn();
+            bathroom.Lamp(LowerBathroom.LightCeilingMiddle).TurnOff();
+            bathroom.Lamp(LowerBathroom.LightCeilingWindow).TurnOff();
+            bathroom.Lamp(LowerBathroom.LampMirror).TurnOff();
+
+            _bathmodeResetTimer?.Cancel();
+            _bathmodeResetTimer = bathroom.Controller.Timer.In(TimeSpan.FromHours(1)).Do(() => bathroom.MotionDetector().Settings.IsEnabled.Value = true);
         }
     }
 }

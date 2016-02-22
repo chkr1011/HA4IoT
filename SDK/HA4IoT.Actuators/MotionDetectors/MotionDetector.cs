@@ -11,7 +11,7 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public class MotionDetector : ActuatorBase, IMotionDetector
+    public class MotionDetector : ActuatorBase<ActuatorSettings>, IMotionDetector
     {
         private readonly Trigger _motionDetectedTrigger = new Trigger();
         private readonly Trigger _detectionCompletedTrigger = new Trigger();
@@ -26,6 +26,7 @@ namespace HA4IoT.Actuators
             
             input.StateChanged += (s, e) => HandleInputStateChanged(e);
 
+            base.Settings = new ActuatorSettings(id, logger);
             Settings.IsEnabled.ValueChanged += (s, e) =>
             {
                 HandleIsEnabledStateChanged(timer, logger);
@@ -33,6 +34,8 @@ namespace HA4IoT.Actuators
         }
 
         public event EventHandler<MotionDetectorStateChangedEventArgs> StateChanged;
+
+        public new IActuatorSettings Settings => base.Settings;
 
         public MotionDetectorState GetState()
         {
@@ -52,7 +55,9 @@ namespace HA4IoT.Actuators
         public override JsonObject ExportStatusToJsonObject()
         {
             var status = base.ExportStatusToJsonObject();
-            status.SetNamedValue("state", JsonValue.CreateStringValue(_state.ToString()));
+
+            status.SetNamedValue("state", _state.ToJsonValue());
+            status.SetNamedValue("IsEnabled", Settings.IsEnabled.ToJsonValue());
 
             return status;
         }

@@ -184,12 +184,12 @@ function setupController() {
           }
 
           $scope.toggleIsEnabled = function (actuator) {
-              var newState = !actuator.state.isEnabled;
+              var newState = !actuator.state.IsEnabled;
 
-              invokeActuator(actuator.id, {
-                  isEnabled: newState
+              updateActuatorSettings(actuator.id, {
+                  IsEnabled: newState
               }, function () {
-                  actuator.state.isEnabled = newState;
+                  actuator.state.IsEnabled = newState;
               });
           };
 
@@ -383,7 +383,24 @@ function invokeActuator(id, request, successCallback) {
 
     $.ajax({
         method: "POST",
-        async: false,
+        url: url,
+        contentType: "application/json; charset=utf-8",
+        timeout: 2500
+    }).done(function () {
+        if (successCallback != null) {
+            successCallback();
+        }
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        alert(textStatus);
+    });
+}
+
+function updateActuatorSettings(id, request, successCallback) {
+    // This hack is required for Safari because only one Ajax request at the same time is allowed.
+    var url = "/api/actuator/" + id + "/settings?body=" + JSON.stringify(request);
+
+    $.ajax({
+        method: "POST",
         url: url,
         contentType: "application/json; charset=utf-8",
         timeout: 2500

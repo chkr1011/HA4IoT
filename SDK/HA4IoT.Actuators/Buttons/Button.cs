@@ -5,7 +5,6 @@ using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Networking;
-using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {

@@ -28,6 +28,11 @@ namespace HA4IoT.Tests.Mockups
         {
         }
 
+        public void ExposeToApi()
+        {
+            
+        }
+
         public BinaryActuatorState GetState()
         {
             return State;

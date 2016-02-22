@@ -8,7 +8,7 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public abstract class SingleValueSensorActuatorBase : ActuatorBase, ISingleValueSensor
+    public abstract class SingleValueSensorActuatorBase<TSettings> : ActuatorBase<TSettings>, ISingleValueSensor where TSettings : ActuatorSettings
     {
         private DateTime? _valueLastChanged;
         private float _value;

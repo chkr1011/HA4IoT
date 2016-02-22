@@ -99,7 +99,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutomaticTurnOnAndOffAutomationTests.cs" />
-    <Compile Include="BinaryStateOutputTests.cs" />
     <Compile Include="ConditionsValidatorTests.cs" />
     <Compile Include="TimeRangeConditionTests.cs" />
     <Compile Include="FulfilledTestCondition.cs" />

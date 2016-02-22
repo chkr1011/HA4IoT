@@ -11,12 +11,12 @@ namespace HA4IoT.Networking
     {
         private readonly StreamSocketListener _serverSocket = new StreamSocketListener();
 
-        public async Task StartAsync(int port)
+        public void Start(int port)
         {
             _serverSocket.Control.KeepAlive = true;
             _serverSocket.ConnectionReceived += HandleConnection;
 
-            await _serverSocket.BindServiceNameAsync(port.ToString());
+            _serverSocket.BindServiceNameAsync(port.ToString()).AsTask().Wait();
         }
 
         public event EventHandler<HttpRequestReceivedEventArgs> RequestReceived;

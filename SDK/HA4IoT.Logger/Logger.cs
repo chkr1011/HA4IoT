@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Networking;
 using Windows.Networking.Sockets;
-using Windows.Storage.Streams;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
@@ -29,7 +29,7 @@ namespace HA4IoT.Logger
 
         public Logger()
         {
-            Task.Factory.StartNew(async () => await SendAsync(), TaskCreationOptions.LongRunning);
+            Task.Factory.StartNew(SendQueuedItems, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
         public void ExposeToApi(IHttpRequestController httpApiController)
@@ -111,12 +111,13 @@ namespace HA4IoT.Logger
             }
         }
 
-        private async Task SendAsync()
+        private async Task SendQueuedItems()
         {
             using (DatagramSocket socket = new DatagramSocket())
             {
                 await socket.ConnectAsync(new HostName("255.255.255.255"), "19227");
 
+                Stream outputStream = socket.OutputStream.AsStreamForWrite();
                 while (true)
                 {
                     List<LogEntry> pendingItems = GetPendingItems();
@@ -128,10 +129,10 @@ namespace HA4IoT.Logger
                             JsonObject package = CreatePackage(collection);
 
                             string data = package.Stringify();
-                            IBuffer buffer = Encoding.UTF8.GetBytes(data).AsBuffer();
+                            byte[] buffer = Encoding.UTF8.GetBytes(data);
 
-                            await socket.OutputStream.WriteAsync(buffer);
-                            await socket.OutputStream.FlushAsync();
+                            outputStream.Write(buffer, 0, buffer.Length);
+                            outputStream.Flush();
                         }
                     }
                     catch (Exception exception)
@@ -143,7 +144,7 @@ namespace HA4IoT.Logger
                         pendingItems.Clear();
                     }
 
-                    await Task.Delay(100);
+                    await Task.Delay(50);
                 }
             }
         }

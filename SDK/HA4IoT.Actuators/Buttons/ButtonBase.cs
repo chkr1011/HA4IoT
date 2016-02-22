@@ -7,11 +7,10 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.Triggers;
-using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public abstract class ButtonBase : ActuatorBase, IButton
+    public abstract class ButtonBase : ActuatorBase<ActuatorSettings>, IButton
     {
         private readonly Trigger _pressedShortlyTrigger = new Trigger();
         private readonly Trigger _pressedLongTrigger = new Trigger();
@@ -21,9 +20,10 @@ namespace HA4IoT.Actuators
 
         private ButtonState _state = ButtonState.Released;
 
-        protected ButtonBase(ActuatorId id, IHttpRequestController api, ILogger logger)
-            : base(id, api, logger)
+        protected ButtonBase(ActuatorId id, IHttpRequestController httpApiController, ILogger logger)
+            : base(id, httpApiController, logger)
         {
+            Settings = new ActuatorSettings(id, logger);
         }
 
         public event EventHandler<ButtonStateChangedEventArgs> StateChanged;

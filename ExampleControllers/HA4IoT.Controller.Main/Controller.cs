@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Storage;
 using HA4IoT.Configuration;
@@ -71,9 +69,8 @@ namespace HA4IoT.Controller.Main
 
             var ioBoardsInterruptMonitor = new InterruptMonitor(pi2PortController.GetInput(4), Logger);
 
-            Task.Factory.StartNew(async () => await ioBoardsInterruptMonitor.PollAsync(), TaskCreationOptions.LongRunning);
-
             ioBoardsInterruptMonitor.InterruptDetected += (s, e) => ccToolsBoardController.PollInputBoardStates();
+            ioBoardsInterruptMonitor.StartPollingAsync();
         }
 
         private RemoteSocketController SetupRemoteSwitchController()

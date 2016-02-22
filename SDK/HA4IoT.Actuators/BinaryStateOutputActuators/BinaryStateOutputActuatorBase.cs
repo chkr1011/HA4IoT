@@ -3,11 +3,10 @@ using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Networking;
-using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public abstract class BinaryStateOutputActuatorBase : ActuatorBase, IBinaryStateOutputActuator
+    public abstract class BinaryStateOutputActuatorBase<TSettings> : ActuatorBase<TSettings>, IBinaryStateOutputActuator where TSettings : ActuatorSettings
     {
         protected BinaryStateOutputActuatorBase(ActuatorId id, IHttpRequestController httpApiController, ILogger logger) 
             : base(id, httpApiController, logger)

@@ -6,11 +6,10 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Networking;
-using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public class LogicalBinaryStateOutputActuator : BinaryStateOutputActuatorBase
+    public class LogicalBinaryStateOutputActuator : BinaryStateOutputActuatorBase<ActuatorSettings>
     {
         private readonly IHomeAutomationTimer _timer;
 
@@ -21,6 +20,8 @@ namespace HA4IoT.Actuators
             if (timer == null) throw new ArgumentNullException(nameof(timer));
 
             _timer = timer;
+
+            Settings = new ActuatorSettings(id, logger);
         }
 
         public IList<IBinaryStateOutputActuator> Actuators { get; } = new List<IBinaryStateOutputActuator>();

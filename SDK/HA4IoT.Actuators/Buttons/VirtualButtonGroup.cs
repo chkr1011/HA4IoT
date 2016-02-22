@@ -8,7 +8,7 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public class VirtualButtonGroup : ActuatorBase
+    public class VirtualButtonGroup : ActuatorBase<ActuatorSettings>
     {
         private readonly Dictionary<ActuatorId, VirtualButton> _buttons = new Dictionary<ActuatorId, VirtualButton>();
 

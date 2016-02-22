@@ -110,6 +110,7 @@
     <Compile Include="Actuators\ActuatorId.cs" />
     <Compile Include="Actuators\ActuatorIdFactory.cs" />
     <Compile Include="Actuators\IActuatorSettings.cs" />
+    <Compile Include="Actuators\IRollerShutterSettings.cs" />
     <Compile Include="Automations\AutomationId.cs" />
     <Compile Include="Actuators\BinaryActuatorState.cs" />
     <Compile Include="Actuators\BinaryActuatorStateChangedEventArgs.cs" />

@@ -22,21 +22,17 @@ namespace HA4IoT.Hardware
 
         public event EventHandler InterruptDetected;
 
-        public void PollOne()
-        {
-            if (_pin.Read() == BinaryState.Low)
-            {
-                InterruptDetected?.Invoke(this, EventArgs.Empty);
-            }
-        }
-
         public async Task PollAsync()
         {
             while (true)
             {
                 try
                 {
-                    PollOne();
+                    if (_pin.Read() == BinaryState.Low)
+                    {
+                        InterruptDetected?.Invoke(this, EventArgs.Empty);
+                    }
+
                     await Task.Delay(10);
                 }
                 catch (Exception ex)
@@ -47,6 +43,11 @@ namespace HA4IoT.Hardware
                     await Task.Delay(2000);
                 }
             }
+        }
+
+        public Task StartPollingAsync()
+        {
+            return Task.Factory.StartNew(async () => await PollAsync(), CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
     }
 }

@@ -6,10 +6,12 @@ namespace HA4IoT.Contracts.Actuators
     {
         event EventHandler<RollerShutterStateChangedEventArgs> StateChanged;
 
+        bool IsClosed { get; }
+
+        IRollerShutterSettings Settings { get; }
+
         RollerShutterState GetState();
 
         void SetState(RollerShutterState state);
-
-        bool IsClosed { get; }
     }
 }

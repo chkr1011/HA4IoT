@@ -5,9 +5,9 @@ using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public class Lamp : BinaryStateOutputActuator<ActuatorSettings>
+    public class CustomBinaryStateOutputActuator : BinaryStateOutputActuator<ActuatorSettings>
     {
-        public Lamp(ActuatorId id, IBinaryOutput output, IHttpRequestController request, ILogger logger)
+        public CustomBinaryStateOutputActuator(ActuatorId id, IBinaryOutput output, IHttpRequestController request, ILogger logger)
             : base(id, output, request, logger)
         {
             Settings = new ActuatorSettings(id, logger);
