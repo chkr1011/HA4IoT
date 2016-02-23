@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using HA4IoT.ManagementConsole.Chrome.ViewModel;
 using HA4IoT.ManagementConsole.Controller;
@@ -77,7 +78,7 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels
                 UpdateActuatorSortValues();
                 foreach (var actuator in Areas.SelectedItem.Actuators)
                 {
-                    var configruation = JObject.FromObject(actuator.Settings);
+                    var configruation = actuator.SerializeSettings();
                     await _controllerClient.SetActuatorConfiguration(actuator.Id, configruation);
                 }
 
@@ -98,7 +99,7 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels
             int sortValue = 0;
             foreach (var actuator in Areas.SelectedItem.Actuators)
             {
-                actuator.Settings.AppSettings.SortValue = sortValue;
+                actuator.SortValue = sortValue;
                 sortValue++;
             }
         }

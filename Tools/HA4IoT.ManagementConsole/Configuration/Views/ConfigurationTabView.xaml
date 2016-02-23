@@ -7,7 +7,7 @@
              xmlns:viewModels="clr-namespace:HA4IoT.ManagementConsole.Configuration.ViewModels"
              Background="White"
              d:DataContext="{d:DesignInstance Type=viewModels:ConfigurationTabVM,
-                                              IsDesignTimeCreatable=True}"
+                                              IsDesignTimeCreatable=False}"
              d:DesignHeight="1024"
              d:DesignWidth="1280"
              mc:Ignorable="d">
@@ -84,6 +84,45 @@
                         </Style>
                     </DockPanel.Resources>
 
+                    <StackPanel MinWidth="400"
+                                Margin="10"
+                                DockPanel.Dock="Right"
+                                Grid.IsSharedSizeScope="True">
+                        <StackPanel.Resources>
+                            <DataTemplate DataType="{x:Type settings:StringSettingVM}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="ActuatorCaption" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Grid.Column="0" Content="{Binding Caption}" />
+                                    <TextBox Grid.Column="1" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" />
+                                </Grid>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type settings:BoolSettingVM}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="ActuatorCaption" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Grid.Column="0" Content="{Binding Caption}" />
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding Value, UpdateSourceTrigger=PropertyChanged}" />
+                                </Grid>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type settings:IntSettingVM}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="ActuatorCaption" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Grid.Column="0" Content="{Binding Caption}" />
+                                    <TextBox Grid.Column="1" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" />
+                                </Grid>
+                            </DataTemplate>
+                        </StackPanel.Resources>
+                        <ItemsControl ItemsSource="{Binding Areas.SelectedItem.Actuators.SelectedItem.Settings}" />
+                    </StackPanel>
+
                     <DataGrid ItemsSource="{Binding Areas.SelectedItem.Actuators}" SelectedItem="{Binding Areas.SelectedItem.Actuators.SelectedItem}">
                         <DataGrid.Columns>
                             <DataGridTemplateColumn>
@@ -105,58 +144,21 @@
                                                 Binding="{Binding Id}"
                                                 Header="ID"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Width="Auto"
-                                                Binding="{Binding Type}"
-                                                Header="Type"
-                                                IsReadOnly="True" />
                             <DataGridCheckBoxColumn Width="Auto"
-                                                    Binding="{Binding Settings.IsEnabled,
+                                                    Binding="{Binding IsEnabled.Value,
                                                                       UpdateSourceTrigger=PropertyChanged}"
                                                     Header="Enabled" />
                             <DataGridTextColumn Width="Auto"
-                                                Binding="{Binding Settings.AppSettings.Caption,
+                                                Binding="{Binding Caption.Value,
                                                                   UpdateSourceTrigger=PropertyChanged}"
                                                 Header="Caption" />
                             <DataGridTextColumn Width="Auto"
-                                                Binding="{Binding Settings.AppSettings.OverviewCaption,
-                                                                  UpdateSourceTrigger=PropertyChanged}"
-                                                Header="Caption (Overview)" />
-                            <DataGridTextColumn Width="Auto"
-                                                Binding="{Binding Settings.AppSettings.Image,
+                                                Binding="{Binding Image.Value,
                                                                   UpdateSourceTrigger=PropertyChanged}"
                                                 Header="Image" />
-                            <DataGridCheckBoxColumn Width="Auto"
-                                                    Binding="{Binding Settings.AppSettings.Hide,
-                                                                      UpdateSourceTrigger=PropertyChanged}"
-                                                    Header="Hidden" />
                         </DataGrid.Columns>
                     </DataGrid>
 
-                    <GroupBox Grid.IsSharedSizeScope="True" Header="Settings">
-                        <GroupBox.Resources>
-                            <DataTemplate DataType="{x:Type settings:StringSettingVM}">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" SharedSizeGroup="ActuatorCaption" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Label Grid.Column="0" Content="{Binding Caption}" />
-                                    <TextBox Grid.Column="1" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" />
-                                </Grid>
-                            </DataTemplate>
-                            <DataTemplate DataType="{x:Type settings:BoolSettingVM}">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" SharedSizeGroup="ActuatorCaption" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Label Grid.Column="0" Content="{Binding Caption}" />
-                                    <CheckBox Grid.Column="1" IsChecked="{Binding Value, UpdateSourceTrigger=PropertyChanged}" />
-                                </Grid>
-                            </DataTemplate>
-                        </GroupBox.Resources>
-                        <ItemsControl ItemsSource="{Binding Areas.SelectedItem.Actuators.SelectedItem.ExtendedSettings}" />
-                    </GroupBox>
                 </DockPanel>
 
                 <GridSplitter Grid.Row="1"

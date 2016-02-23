@@ -1,10 +1,13 @@
-﻿namespace HA4IoT.ManagementConsole.Configuration.ViewModels.Settings
+﻿using System;
+using Newtonsoft.Json.Linq;
+
+namespace HA4IoT.ManagementConsole.Configuration.ViewModels.Settings
 {
     public class IntSettingVM : SettingBaseVM
     {
         private int _value;
 
-        public IntSettingVM(string caption, int initialValue) : base(caption)
+        public IntSettingVM(string key, string caption, int initialValue) : base(key, caption)
         {
             _value = initialValue;
         }
@@ -17,6 +20,11 @@
                 _value = value;
                 OnPropertyChangedFromCaller();
             }
+        }
+
+        public override JValue SerializeValue()
+        {
+            return new JValue(Value);
         }
     }
 }

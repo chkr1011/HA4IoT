@@ -70,6 +70,7 @@ function setupController() {
                       roomControl.id = roomId;
                       roomControl.caption = getActuatorLocalization(roomId);
                       roomControl.actuators = [];
+                      room.onStateCount = 0;
 
                       $.each(room.Actuators, function (actuatorId, actuator) {
                           actuator.id = actuatorId;
@@ -361,8 +362,8 @@ function configureActuator(room, actuator) {
     actuator.hide = getConfigurationValue(actuator, "Hide", actuator.hide);
 
     actuator.displayVertical = getConfigurationValue(actuator, "DisplayVertical", actuator.displayVertical);
-    actuator.isPartOfOnStateCounter = getConfigurationValue(actuator, "IsPartOfOnStateCounter", true);
-    actuator.onStateId = getConfigurationValue(actuator, "OnState", "On");
+    actuator.isPartOfOnStateCounter = getConfigurationValue(actuator, "IsPartOfOnStateCounter", false);
+    actuator.onStateId = getConfigurationValue(actuator, "OnStateId", "On");
     actuator.onStateCount = 0;
 
     appConfiguration.actuatorExtender(actuator);
