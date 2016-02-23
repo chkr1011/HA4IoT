@@ -150,16 +150,18 @@ function setupController() {
                   c.previousHash = data.Hash;
                   console.log("Updating UI due to state changes");
 
-                  $.each(data.Actuators, function(id, state) {
+                  $.each(data.Actuators, function (id, state) {
                       c.updateStatus(id, state);
                   });
 
+                  updateOnStateCounters(c.rooms);
+
                   c.weatherStation = data.WeatherStation;
 
-                  $scope.$apply(function () { $scope.msgs = data; });                  
+                  $scope.$apply(function () { $scope.msgs = data; });
               }).fail(function (jqXHR, textStatus, errorThrown) {
                   c.errorMessage = textStatus;
-              }).always(function() {
+              }).always(function () {
                   setTimeout(function () { c.pollStatus(); }, c.appConfiguration.pollInterval);
               });
           };
@@ -357,10 +359,11 @@ function configureActuator(room, actuator) {
     actuator.sortValue = getConfigurationValue(actuator, "SortValue", actuator.sortValue);
     actuator.image = getConfigurationValue(actuator, "Image", actuator.image);
     actuator.hide = getConfigurationValue(actuator, "Hide", actuator.hide);
-    
+
     actuator.displayVertical = getConfigurationValue(actuator, "DisplayVertical", actuator.displayVertical);
     actuator.isPartOfOnStateCounter = getConfigurationValue(actuator, "IsPartOfOnStateCounter", true);
     actuator.onStateId = getConfigurationValue(actuator, "OnState", "On");
+    actuator.onStateCount = 0;
 
     appConfiguration.actuatorExtender(actuator);
 }
@@ -376,6 +379,23 @@ function getConfigurationValue(actuator, name, defaultValue) {
 
     return actuator.Settings.AppSettings[name];
 }
+
+function updateOnStateCounters(areas) {
+    areas.forEach(function (area) {
+        var count = 0;
+
+        area.actuators.forEach(function (actuator) {
+            if (actuator.isPartOfOnStateCounter) {
+                if (actuator.onStateId === actuator.state.state) {
+                    count++;
+                }
+            }
+        });
+
+        area.onStateCount = count;
+    });
+}
+
 
 function invokeActuator(id, request, successCallback) {
     // This hack is required for Safari because only one Ajax request at the same time is allowed.
