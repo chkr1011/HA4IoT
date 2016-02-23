@@ -78,6 +78,11 @@
     <Compile Include="Chrome\ViewModel\MainWindowVM.cs" />
     <Compile Include="Chrome\ViewModel\UnhandledExceptionPresenter.cs" />
     <Compile Include="Configuration\ViewModels\AutomationSettingsVM.cs" />
+    <Compile Include="Configuration\ViewModels\Settings\BoolSettingVM.cs" />
+    <Compile Include="Configuration\ViewModels\Settings\FloatSettingVM.cs" />
+    <Compile Include="Configuration\ViewModels\Settings\SettingBaseVM.cs" />
+    <Compile Include="Configuration\ViewModels\Settings\IntSettingVM.cs" />
+    <Compile Include="Configuration\ViewModels\Settings\StringSettingVM.cs" />
     <Compile Include="Controller\DiscoveryClient.cs" />
     <Compile Include="Core\DelegateCommand.cs" />
     <Compile Include="Configuration\ConfigurationParser.cs" />

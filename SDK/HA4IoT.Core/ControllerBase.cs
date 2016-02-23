@@ -248,6 +248,11 @@ namespace HA4IoT.Core
 
         private void LoadSettings()
         {
+            foreach (var area in _areas.GetAll())
+            {
+                area.LoadSettings();
+            }
+
             foreach (var actuator in _actuators.GetAll())
             {
                 actuator.LoadSettings();
@@ -262,6 +267,12 @@ namespace HA4IoT.Core
         private void ExposeToApi()
         {
             new ControllerApiDispatcher(this).ExposeToApi();
+
+            foreach (var area in _areas.GetAll())
+            {
+                area.ExposeToApi();
+            }
+
             foreach (var actuator in _actuators.GetAll())
             {
                 actuator.ExposeToApi();

@@ -80,6 +80,7 @@ namespace HA4IoT.Core
         private IJsonValue ExportAreaConfigurationToJsonValue(IArea area)
         {
             var configuration = new JsonObject();
+            configuration.SetNamedValue("Settings", area.ExportConfigurationToJsonObject());
 
             var actuators = new JsonObject();
             foreach (var actuator in area.Actuators())

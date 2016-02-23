@@ -1,4 +1,7 @@
-﻿namespace HA4IoT.ManagementConsole.Configuration.ViewModels
+﻿using System.Collections.ObjectModel;
+using HA4IoT.ManagementConsole.Configuration.ViewModels.Settings;
+
+namespace HA4IoT.ManagementConsole.Configuration.ViewModels
 {
     public class ActuatorSettingsVM
     {

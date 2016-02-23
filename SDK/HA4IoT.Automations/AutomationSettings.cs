@@ -9,7 +9,7 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.Automations
 {
-    public class AutomationSettings : SettingsContainer
+    public class AutomationSettings : SettingsContainer, IAutomationSettings
     {
         public AutomationSettings(AutomationId automationId, IHttpRequestController httpApiController, ILogger logger)
             : base(GenerateFilename(automationId), logger)

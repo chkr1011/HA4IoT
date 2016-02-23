@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.Data.Json;
+using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
 
 namespace HA4IoT.Tests.Mockups
@@ -11,6 +12,11 @@ namespace HA4IoT.Tests.Mockups
         public BinaryActuatorState State { get; private set; }
 
         public ActuatorId Id { get; set; }
+
+        public TestBinaryStateOutputActuator()
+        {
+            Settings = new ActuatorSettings(ActuatorIdFactory.EmptyId, new TestLogger());
+        }
 
         public IActuatorSettings Settings { get; }
 

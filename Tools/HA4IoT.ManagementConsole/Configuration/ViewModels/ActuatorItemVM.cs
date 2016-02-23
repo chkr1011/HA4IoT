@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using HA4IoT.ManagementConsole.Configuration.ViewModels.Settings;
 
 namespace HA4IoT.ManagementConsole.Configuration.ViewModels
 {
@@ -11,10 +13,13 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels
 
             Type = type;
             Settings = settings;
+            ExtendedSettings = new ObservableCollection<SettingBaseVM>();
         }
 
         public string Type { get; set; }
 
         public ActuatorSettingsVM Settings { get; private set; }
+
+        public ObservableCollection<SettingBaseVM> ExtendedSettings { get; private set; }
     }
 }

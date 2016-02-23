@@ -64,5 +64,10 @@ namespace HA4IoT.Core.Settings
         {
             Value = value.ToObject<TValue>();
         }
+
+        public override string ToString()
+        {
+            return Convert.ToString(Value);
+        }
     }
 }

@@ -3,8 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:settings="clr-namespace:HA4IoT.ManagementConsole.Configuration.ViewModels.Settings"
              xmlns:viewModels="clr-namespace:HA4IoT.ManagementConsole.Configuration.ViewModels"
              Background="White"
+             d:DataContext="{d:DesignInstance Type=viewModels:ConfigurationTabVM,
+                                              IsDesignTimeCreatable=True}"
              d:DesignHeight="1024"
              d:DesignWidth="1280"
              mc:Ignorable="d">
@@ -123,24 +126,37 @@
                                                                   UpdateSourceTrigger=PropertyChanged}"
                                                 Header="Image" />
                             <DataGridCheckBoxColumn Width="Auto"
-                                                    Binding="{Binding Settings.AppSettings.IsPartOfOnStateCounter,
-                                                                      UpdateSourceTrigger=PropertyChanged}"
-                                                    Header="Part of On-State counter" />
-                            <DataGridTextColumn Width="Auto"
-                                                Binding="{Binding Settings.AppSettings.OnState,
-                                                                  UpdateSourceTrigger=PropertyChanged}"
-                                                Header="On-State" />
-                            <DataGridCheckBoxColumn Width="Auto"
                                                     Binding="{Binding Settings.AppSettings.Hide,
                                                                       UpdateSourceTrigger=PropertyChanged}"
                                                     Header="Hidden" />
-                            <DataGridCheckBoxColumn Width="Auto"
-                                                    Binding="{Binding Settings.AppSettings.DisplayVertical,
-                                                                      UpdateSourceTrigger=PropertyChanged}"
-                                                    Header="Display vertical" />
-
                         </DataGrid.Columns>
                     </DataGrid>
+
+                    <GroupBox Grid.IsSharedSizeScope="True" Header="Settings">
+                        <GroupBox.Resources>
+                            <DataTemplate DataType="{x:Type settings:StringSettingVM}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="ActuatorCaption" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Grid.Column="0" Content="{Binding Caption}" />
+                                    <TextBox Grid.Column="1" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" />
+                                </Grid>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type settings:BoolSettingVM}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="ActuatorCaption" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Grid.Column="0" Content="{Binding Caption}" />
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding Value, UpdateSourceTrigger=PropertyChanged}" />
+                                </Grid>
+                            </DataTemplate>
+                        </GroupBox.Resources>
+                        <ItemsControl ItemsSource="{Binding Areas.SelectedItem.Actuators.SelectedItem.ExtendedSettings}" />
+                    </GroupBox>
                 </DockPanel>
 
                 <GridSplitter Grid.Row="1"

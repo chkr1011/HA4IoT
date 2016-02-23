@@ -121,7 +121,6 @@ namespace HA4IoT.Configuration
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
                 powerOutput,
                 directionOutput,
-                element.GetTimeSpanFromAttribute("autoOffTimeout", TimeSpan.FromSeconds(22)),
                 Controller.HttpApiController,
                 Controller.Logger,
                 Controller.Timer);

@@ -11,15 +11,33 @@ namespace HA4IoT.Automations
         public RollerShutterAutomationSettings(AutomationId automationId, IHttpRequestController httpApiController, ILogger logger) 
             : base(automationId, httpApiController, logger)
         {
-            DoNotOpenBefore = new Setting<TimeSpan?>(null);
-            MinOutsideTemperatureForDoNotOpen = new Setting<float?>(null);
-            MaxOutsideTemperatureForAutoClose = new Setting<float?>(null);
+            DoNotOpenBeforeIsEnabled = new Setting<bool>(false);
+            DoNotOpenBeforeTime = new Setting<TimeSpan>(TimeSpan.Parse("07:15"));
+
+            AutoCloseIfTooHotIsEnabled = new Setting<bool>(false);
+            AutoCloseIfTooHotTemperaure = new Setting<float>(25);
+
+            DoNotOpenIfTooColdIsEnabled = new Setting<bool>(false);
+            DoNotOpenIfTooColdTemperature = new Setting<float>(2);
+
+            OpenOnSunriseOffset = new Setting<TimeSpan>(TimeSpan.FromMinutes(-30));
+            CloseOnSunsetOffset = new Setting<TimeSpan>(TimeSpan.FromMinutes(30));
         }
 
-        public Setting<TimeSpan?> DoNotOpenBefore { get; private set; }
+        public Setting<bool> DoNotOpenBeforeIsEnabled { get; private set; } 
 
-        public Setting<float?> MaxOutsideTemperatureForAutoClose { get; private set; }
+        public Setting<TimeSpan> DoNotOpenBeforeTime { get; private set; }
 
-        public Setting<float?> MinOutsideTemperatureForDoNotOpen { get; private set; }
+        public Setting<bool> AutoCloseIfTooHotIsEnabled { get; private set; } 
+
+        public Setting<float> AutoCloseIfTooHotTemperaure { get; private set; }
+
+        public Setting<bool> DoNotOpenIfTooColdIsEnabled { get; private set; }
+
+        public Setting<float> DoNotOpenIfTooColdTemperature { get; private set; }
+
+        public Setting<TimeSpan> OpenOnSunriseOffset { get; private set; } 
+
+        public Setting<TimeSpan> CloseOnSunsetOffset { get; private set; } 
     }
 }

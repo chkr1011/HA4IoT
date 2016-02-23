@@ -3,6 +3,7 @@ using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using System;
 using System.Collections.Generic;
+using Windows.Data.Json;
 using HA4IoT.Contracts.Automations;
 
 namespace HA4IoT.Core
@@ -18,9 +19,13 @@ namespace HA4IoT.Core
 
             Id = id;
             Controller = controller;
+
+            Settings = new AreaSettings(id, controller.Logger);
         }
 
         public AreaId Id { get; }
+
+        public IAreaSettings Settings { get; }
 
         public IController Controller { get; }
 
@@ -69,6 +74,28 @@ namespace HA4IoT.Core
         public IList<IAutomation> Automations()
         {
             return _automations.GetAll();
+        }
+
+        public void LoadSettings()
+        {
+            Settings?.Load();
+        }
+
+        public JsonObject ExportConfigurationToJsonObject()
+        {
+            var result = new JsonObject();
+            
+            if (Settings != null)
+            {
+                result.SetNamedValue("Settings", Settings.ExportToJsonObject());
+            }
+
+            return result;
+        }
+
+        public void ExposeToApi()
+        {
+            new AreaSettingsHttpApiDispatcher(Settings, Controller.HttpApiController).ExposeToApi();
         }
     }
 }

@@ -64,5 +64,12 @@ namespace HA4IoT.Core.Settings
             value.DeserializeTo(this);
             Save();
         }
+
+        public void ImportFromJsonObjectWithoutSaving(JsonObject value)
+        {
+            if (value == null) throw new ArgumentNullException(nameof(value));
+
+            value.DeserializeTo(this);
+        }
     }
 }

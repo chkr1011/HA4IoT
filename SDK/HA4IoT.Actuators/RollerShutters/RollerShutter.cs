@@ -13,7 +13,6 @@ namespace HA4IoT.Actuators
 {
     public class RollerShutter : ActuatorBase<RollerShutterSettings>, IRollerShutter
     {
-        private readonly TimeSpan _autoOffTimeout;
         private readonly IBinaryOutput _directionGpioPin;
         private readonly Stopwatch _movingDuration = new Stopwatch();
         private readonly IBinaryOutput _powerGpioPin;
@@ -28,7 +27,6 @@ namespace HA4IoT.Actuators
             ActuatorId id, 
             IBinaryOutput powerOutput, 
             IBinaryOutput directionOutput, 
-            TimeSpan autoOffTimeout,
             IHttpRequestController httpApiController,
             ILogger logger, 
             IHomeAutomationTimer timer)
@@ -40,7 +38,6 @@ namespace HA4IoT.Actuators
 
             _powerGpioPin = powerOutput;
             _directionGpioPin = directionOutput;
-            _autoOffTimeout = autoOffTimeout;
             _timer = timer;
             
             timer.Tick += (s, e) => UpdatePosition(e);
@@ -49,8 +46,6 @@ namespace HA4IoT.Actuators
         }
 
         public event EventHandler<RollerShutterStateChangedEventArgs> StateChanged; 
-
-        public static TimeSpan DefaultMaxMovingDuration { get; } = TimeSpan.FromSeconds(20);
 
         public new IRollerShutterSettings Settings => base.Settings;
 
@@ -160,7 +155,7 @@ namespace HA4IoT.Actuators
             _movingDuration.Restart();
 
             _autoOffTimer?.Cancel();
-            _autoOffTimer = _timer.In(_autoOffTimeout).Do(() => SetState(RollerShutterState.Stopped));
+            _autoOffTimer = _timer.In(Settings.AutoOffTimeout.Value).Do(() => SetState(RollerShutterState.Stopped));
         }
 
         private void UpdatePosition(TimerTickEventArgs timerTickEventArgs)

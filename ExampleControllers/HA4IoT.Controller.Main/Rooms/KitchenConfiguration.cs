@@ -62,7 +62,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithLamp(Kitchen.LightCeilingPassageInner, hspe8.GetOutput(1).WithInvertedState())
                 .WithLamp(Kitchen.LightCeilingPassageOuter, hspe8.GetOutput(2).WithInvertedState())
                 .WithSocket(Kitchen.SocketWall, hsrel5.GetOutput(2))
-                .WithRollerShutter(Kitchen.RollerShutter, hsrel5.GetOutput(4), hsrel5.GetOutput(3), RollerShutter.DefaultMaxMovingDuration)
+                .WithRollerShutter(Kitchen.RollerShutter, hsrel5.GetOutput(4), hsrel5.GetOutput(3))
                 .WithButton(Kitchen.ButtonKitchenette, input1.GetInput(11))
                 .WithButton(Kitchen.ButtonPassage, input1.GetInput(9))
                 .WithRollerShutterButtons(Kitchen.RollerShutterButtons, input2.GetInput(15), input2.GetInput(14))

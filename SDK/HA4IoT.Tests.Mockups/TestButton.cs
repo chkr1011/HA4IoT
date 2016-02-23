@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.Data.Json;
+using HA4IoT.Actuators;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Triggers;
@@ -14,6 +15,11 @@ namespace HA4IoT.Tests.Mockups
         public ButtonState State { get; set; } = ButtonState.Released;
 
         public event EventHandler<ButtonStateChangedEventArgs> StateChanged;
+
+        public TestButton()
+        {
+            Settings = new ActuatorSettings(ActuatorIdFactory.EmptyId, new TestLogger());
+        }
 
         public ActuatorId Id { get; }
 
