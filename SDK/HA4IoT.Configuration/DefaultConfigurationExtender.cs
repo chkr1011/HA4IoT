@@ -52,7 +52,7 @@ namespace HA4IoT.Configuration
 
         private IDevice ParseI2CBus(XElement element)
         {
-            return new DefaultI2CBus(new DeviceId(element.GetMandatoryStringFromAttribute("id")), Controller.Logger);
+            return new BuiltInI2CBus(new DeviceId(element.GetMandatoryStringFromAttribute("id")), Controller.Logger);
         }
 
         private IDevice ParseWeatherStation(XElement element)

@@ -54,7 +54,7 @@ namespace HA4IoT.Controller.Cellar
 
             CreateWeatherStation();
 
-            var i2cBus = new DefaultI2CBus("II2CBus.default".ToDeviceId(), Logger);
+            var i2cBus = new BuiltInI2CBus("II2CBus.default".ToDeviceId(), Logger);
             AddDevice(i2cBus);
 
             var ccToolsFactory = new CCToolsBoardController(this, i2cBus, HttpApiController, Logger);

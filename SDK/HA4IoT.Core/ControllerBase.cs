@@ -15,6 +15,7 @@ using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Networking;
+using HA4IoT.Core.Discovery;
 using HA4IoT.Core.Timer;
 using HA4IoT.Hardware.Pi2;
 using HA4IoT.Networking;
@@ -35,7 +36,8 @@ namespace HA4IoT.Core
         public ILogger Logger { get; protected set; }
         public IHttpRequestController HttpApiController { get; protected set; }
         public IHomeAutomationTimer Timer { get; protected set; }
-        
+        public IControllerSettings Settings { get; private set; }
+
         public void RunAsync(IBackgroundTaskInstance taskInstance)
         {
             if (taskInstance == null) throw new ArgumentNullException(nameof(taskInstance));
@@ -212,13 +214,16 @@ namespace HA4IoT.Core
             try
             {
                 var stopwatch = Stopwatch.StartNew();
-
+                
                 InitializeHttpApi();
                 InitializeLogging();
+                LoadControllerSettings();
+                InitializeDiscovery();
+
                 HomeAutomationTimer timer = InitializeTimer();
 
                 TryInitialize();
-                LoadSettings();
+                LoadNonControllerSettings();
 
                 _httpServer.Start(80);
                 ExposeToApi();
@@ -234,6 +239,20 @@ namespace HA4IoT.Core
             }
         }
 
+        private void InitializeDiscovery()
+        {
+            var discoveryServer = new DiscoveryServer(this);
+            discoveryServer.Start();
+        }
+
+        private void LoadControllerSettings()
+        {
+            var settings = new ControllerSettings(StoragePath.WithFilename("Configuration.json"), Logger);
+            settings.Load();
+
+            Settings = settings;
+        }
+
         private void TryInitialize()
         {
             try
@@ -246,7 +265,7 @@ namespace HA4IoT.Core
             }
         }
 
-        private void LoadSettings()
+        private void LoadNonControllerSettings()
         {
             foreach (var area in _areas.GetAll())
             {

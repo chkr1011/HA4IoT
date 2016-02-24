@@ -27,7 +27,7 @@ namespace HA4IoT.Controller.Main
 
             var pi2PortController = new Pi2PortController();
             
-            var i2CBus = new DefaultI2CBus("II2CBus.default".ToDeviceId(), Logger);
+            var i2CBus = new BuiltInI2CBus("II2CBus.default".ToDeviceId(), Logger);
 
             CreateWeatherStation();
 

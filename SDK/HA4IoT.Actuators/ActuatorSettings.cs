@@ -1,9 +1,8 @@
-﻿using System.IO;
-using Windows.Data.Json;
-using Windows.Storage;
+﻿using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Core;
 using HA4IoT.Core.Settings;
 using HA4IoT.Networking;
 
@@ -29,7 +28,7 @@ namespace HA4IoT.Actuators
 
         private static string GenerateFilename(ActuatorId actuatorId)
         {
-            return Path.Combine(ApplicationData.Current.LocalFolder.Path, "Actuators", actuatorId.Value, "Configuration.json");
+            return StoragePath.WithFilename("Actuators", actuatorId.Value, "Configuration.json");
         }
     }
 }

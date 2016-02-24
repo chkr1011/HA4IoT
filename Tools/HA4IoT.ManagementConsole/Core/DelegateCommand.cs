@@ -4,7 +4,7 @@ using HA4IoT.ManagementConsole.Properties;
 
 namespace HA4IoT.ManagementConsole.Core
 {
-    public class DelegateCommand : ICommand
+    public class DelegateCommand : ICommand, ICheckCanExecute
     {
         private readonly Action _execute;
         private readonly Func<bool> _canExecute;

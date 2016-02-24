@@ -8,7 +8,7 @@ using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Hardware
 {
-    public class DefaultI2CBus : II2CBus
+    public class BuiltInI2CBus : II2CBus
     {
         private readonly Dictionary<int, I2cDevice> _deviceCache = new Dictionary<int, I2cDevice>();
 
@@ -17,7 +17,7 @@ namespace HA4IoT.Hardware
         private readonly ILogger _logger;
         private readonly object _syncRoot = new object();
 
-        public DefaultI2CBus(DeviceId id, ILogger logger)
+        public BuiltInI2CBus(DeviceId id, ILogger logger)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (logger == null) throw new ArgumentNullException(nameof(logger));

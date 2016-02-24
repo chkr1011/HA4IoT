@@ -6,6 +6,7 @@
         xmlns:viewModel="clr-namespace:HA4IoT.ManagementConsole.Chrome.ViewModel"
         xmlns:viewModels="clr-namespace:HA4IoT.ManagementConsole.Configuration.ViewModels"
         xmlns:views="clr-namespace:HA4IoT.ManagementConsole.Configuration.Views"
+        xmlns:views1="clr-namespace:HA4IoT.ManagementConsole.Discovery.Views"
         Title="Management Console - HA4IoT"
         Width="1280"
         Height="1024"
@@ -13,7 +14,7 @@
         SnapsToDevicePixels="True"
         TextOptions.TextFormattingMode="Display"
         d:DataContext="{d:DesignInstance Type=viewModel:MainWindowVM,
-                                         IsDesignTimeCreatable=True}"
+                                         IsDesignTimeCreatable=False}"
         mc:Ignorable="d">
     <Window.Resources>
         <DataTemplate DataType="{x:Type viewModels:ActuatorItemVM}">
@@ -148,5 +149,10 @@
                 </StackPanel>
             </StackPanel>
         </Border>
+
+        <Border Background="#DD000000" Visibility="{Binding IsDialogShown, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <ContentPresenter Content="{Binding Dialog}" />
+        </Border>
     </Grid>
 </Window>
+

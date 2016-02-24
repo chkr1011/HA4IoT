@@ -9,6 +9,7 @@ namespace HA4IoT.Contracts.Core
     {
         ILogger Logger { get; }
         IHttpRequestController HttpApiController { get; }
-        IHomeAutomationTimer Timer { get; }      
+        IHomeAutomationTimer Timer { get; }    
+        IControllerSettings Settings { get; }  
     }
 }

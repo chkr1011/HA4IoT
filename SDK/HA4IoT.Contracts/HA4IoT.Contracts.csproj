@@ -133,6 +133,7 @@
     <Compile Include="Automations\IAutomationSettings.cs" />
     <Compile Include="Configuration\ConfigurationInvalidException.cs" />
     <Compile Include="Actuators\IActuatorController.cs" />
+    <Compile Include="Core\Discovery\DiscoveryResponse.cs" />
     <Compile Include="Core\IAreaController.cs" />
     <Compile Include="Core\IAreaSettings.cs" />
     <Compile Include="Core\IController.cs" />
@@ -140,6 +141,7 @@
     <Compile Include="Actuators\AreaId.cs" />
     <Compile Include="Configuration\HandleConfigurationNodeResult.cs" />
     <Compile Include="Configuration\IConfigurationExtender.cs" />
+    <Compile Include="Core\IControllerSettings.cs" />
     <Compile Include="Core\IdBase.cs" />
     <Compile Include="Core\IDeviceController.cs" />
     <Compile Include="Core\IHomeAutomationTimer.cs" />

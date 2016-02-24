@@ -71,6 +71,27 @@
         <Setter Property="CanUserReorderColumns" Value="False" />
     </Style>
 
+    <Style TargetType="{x:Type ToolBar}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <ControlTemplate.Resources>
+                        <Style TargetType="{x:Type Button}">
+                            <Setter Property="Foreground" Value="Red" />
+                        </Style>
+                    </ControlTemplate.Resources>
+                    <Border Margin="0"
+                            Background="DimGray"
+                            BorderThickness="0">
+                        <ToolBarPanel x:Name="PART_ToolBarPanel"
+                                      Margin="2"
+                                      IsItemsHost="true" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="{x:Type DataGridColumnHeader}">
         <Setter Property="Template">
             <Setter.Value>

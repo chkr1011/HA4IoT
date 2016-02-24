@@ -75,7 +75,7 @@ namespace HA4IoT.Controller.Demo
             var pi2PortController = new Pi2PortController();
 
             // Setup the wrapper for I2C bus access.
-            var i2CBus = new DefaultI2CBus("II2CBus.default".ToDeviceId(), Logger);
+            var i2CBus = new BuiltInI2CBus("II2CBus.default".ToDeviceId(), Logger);
 
             // Setup the controller which creates ports for IO boards from CCTools (or based on PCF8574/MAX7311/PCA9555D).
             var ccToolsBoardController = new CCToolsBoardController(this, i2CBus, HttpApiController, Logger);

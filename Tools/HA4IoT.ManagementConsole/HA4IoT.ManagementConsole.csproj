@@ -66,6 +66,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Discovery\Views\ControllerSelectorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Images.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -82,9 +86,11 @@
     <Compile Include="Configuration\ViewModels\Settings\SettingBaseVM.cs" />
     <Compile Include="Configuration\ViewModels\Settings\IntSettingVM.cs" />
     <Compile Include="Configuration\ViewModels\Settings\StringSettingVM.cs" />
+    <Compile Include="Controller\DiscoveryResponseReceivedEventArgs.cs" />
     <Compile Include="Controller\DiscoveryClient.cs" />
+    <Compile Include="Controller\DiscoveryResponse.cs" />
     <Compile Include="Core\DelegateCommand.cs" />
-    <Compile Include="Configuration\ConfigurationParser.cs" />
+    <Compile Include="Configuration\Views\ConfigurationParser.cs" />
     <Compile Include="Configuration\StatusParser.cs" />
     <Compile Include="Configuration\ViewModels\ActuatorAppSettingsVM.cs" />
     <Compile Include="Configuration\ViewModels\ActuatorSettingsVM.cs" />
@@ -103,7 +109,13 @@
     <Compile Include="Configuration\ViewModels\ConfigurationItemVM.cs" />
     <Compile Include="Configuration\ViewModels\ConfigurationTabVM.cs" />
     <Compile Include="Controller\ControllerClient.cs" />
+    <Compile Include="Core\ICheckCanExecute.cs" />
     <Compile Include="Core\SelectableObservableCollection.cs" />
+    <Compile Include="Discovery\ViewModels\ControllerItemVM.cs" />
+    <Compile Include="Discovery\ViewModels\ControllerSelectorVM.cs" />
+    <Compile Include="Discovery\Views\ControllerSelectorView.xaml.cs">
+      <DependentUpon>ControllerSelectorView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Json\JObjectExtensions.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Core\ViewModelBase.cs" />
@@ -146,6 +158,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Gear.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Pi2.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

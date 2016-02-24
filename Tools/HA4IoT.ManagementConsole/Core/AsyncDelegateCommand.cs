@@ -5,7 +5,7 @@ using HA4IoT.ManagementConsole.Properties;
 
 namespace HA4IoT.ManagementConsole.Core
 {
-    public class AsyncDelegateCommand : ICommand
+    public class AsyncDelegateCommand : ICommand, ICheckCanExecute
     {
         private readonly Func<Task> _execute;
         private readonly Func<bool> _canExecute;
