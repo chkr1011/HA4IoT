@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Version 1.9.26
+# Version 1.9.35
 
 CACHE:
 
@@ -9,7 +9,6 @@ Style.css
 Configuration.js
 Localization.js
 
-ActuatorLocalizations.json
 UILocalizations.json
 
 Scripts/jquery-2.1.4.min.js

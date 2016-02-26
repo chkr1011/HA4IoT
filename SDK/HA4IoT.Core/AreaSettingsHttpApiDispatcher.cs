@@ -7,7 +7,7 @@ namespace HA4IoT.Core
     public class AreaSettingsHttpApiDispatcher : SettingsContainerHttpApiDispatcher<IAreaSettings>
     {
         public AreaSettingsHttpApiDispatcher(IAreaSettings settings, IHttpRequestController httpApiController)
-            : base(settings, $"actuator/{settings.AreaId}", httpApiController)
+            : base(settings, $"area/{settings.AreaId}", httpApiController)
         {
         }
     }

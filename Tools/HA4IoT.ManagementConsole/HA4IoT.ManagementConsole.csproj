@@ -80,6 +80,9 @@
     </Page>
     <Compile Include="Chrome\ViewModel\MainWindowVM.cs" />
     <Compile Include="Chrome\ViewModel\UnhandledExceptionPresenter.cs" />
+    <Compile Include="Configuration\ActuatorParser.cs" />
+    <Compile Include="Configuration\AreaParser.cs" />
+    <Compile Include="Configuration\AutomationParser.cs" />
     <Compile Include="Configuration\ViewModels\AutomationSettingsVM.cs" />
     <Compile Include="Configuration\ViewModels\Settings\BoolSettingVM.cs" />
     <Compile Include="Configuration\ViewModels\Settings\FloatSettingVM.cs" />
@@ -90,7 +93,7 @@
     <Compile Include="Controller\DiscoveryClient.cs" />
     <Compile Include="Controller\DiscoveryResponse.cs" />
     <Compile Include="Core\DelegateCommand.cs" />
-    <Compile Include="Configuration\Views\ConfigurationParser.cs" />
+    <Compile Include="Configuration\ConfigurationParser.cs" />
     <Compile Include="Configuration\StatusParser.cs" />
     <Compile Include="Configuration\ViewModels\ActuatorAppSettingsVM.cs" />
     <Compile Include="Configuration\ViewModels\ActuatorSettingsVM.cs" />
@@ -110,6 +113,7 @@
     <Compile Include="Configuration\ViewModels\ConfigurationTabVM.cs" />
     <Compile Include="Controller\ControllerClient.cs" />
     <Compile Include="Core\ICheckCanExecute.cs" />
+    <Compile Include="Core\PropertyVM.cs" />
     <Compile Include="Core\SelectableObservableCollection.cs" />
     <Compile Include="Discovery\ViewModels\ControllerItemVM.cs" />
     <Compile Include="Discovery\ViewModels\ControllerSelectorVM.cs" />

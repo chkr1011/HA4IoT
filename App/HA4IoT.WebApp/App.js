@@ -1,6 +1,5 @@
 setupController();
 
-var actuatorLocalizations = [];
 var uiLocalizations = [];
 
 function getVersion(callback) {
@@ -15,14 +14,6 @@ function getVersion(callback) {
 function loadUILocalizations(callback) {
     $.getJSON("/app/UILocalizations.json").success(function (result) {
         uiLocalizations = result;
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        alert(textStatus);
-    }).always(function () { callback(); });
-}
-
-function loadActuatorLocalizations(callback) {
-    $.getJSON("/app/ActuatorLocalizations.json").success(function (result) {
-        actuatorLocalizations = result;
     }).fail(function (jqXHR, textStatus, errorThrown) {
         alert(textStatus);
     }).always(function () { callback(); });
@@ -61,21 +52,23 @@ function setupController() {
 
               $http.get("/api/configuration").success(function (data) {
 
-                  $.each(data.Areas, function (roomId, room) {
-                      if (room.hide) {
+                  $.each(data.Areas, function (areaId, area) {
+                      if (area.Settings.AppSettings.Hide) {
                           return true;
                       }
 
-                      var roomControl = {};
-                      roomControl.id = roomId;
-                      roomControl.caption = getActuatorLocalization(roomId);
-                      roomControl.actuators = [];
-                      room.onStateCount = 0;
-
-                      $.each(room.Actuators, function (actuatorId, actuator) {
+                      var areaControl = {
+                          id: areaId,
+                          caption: getConfigurationValue(area, "Caption", areaId),
+                          sortValue: getConfigurationValue(area, "SortValue", 0),
+                          actuators: [],
+                          automations: [],
+                          onStateCount: 0 };
+                      
+                      $.each(area.Actuators, function (actuatorId, actuator) {
                           actuator.id = actuatorId;
-                          configureActuator(room, actuator);
-
+                          configureActuator(area, actuator);
+                          
                           if (actuator.hide) {
                               return true;
                           }
@@ -91,10 +84,10 @@ function setupController() {
                               c.windows.push(actuator);
                           }
 
-                          roomControl.actuators.push(actuator);
+                          areaControl.actuators.push(actuator);
                       });
 
-                      c.rooms.push(roomControl);
+                      c.rooms.push(areaControl);
                   });
 
                   if (c.sensors.length === 0) {
@@ -217,74 +210,60 @@ function setupController() {
               });
           };
 
-          loadUILocalizations(function () { loadActuatorLocalizations(function () { c.generateRooms(); }) });
+          loadUILocalizations(function () { c.generateRooms(); });
       }
     ]);
 }
 
 function configureActuator(room, actuator) {
-    actuator.caption = getActuatorLocalization(actuator.id);
-    actuator.overviewCaption = getActuatorLocalization(actuator.id + ".Overview");
+    actuator.sortValue = getConfigurationValue(actuator, "SortValue", 0);
+    actuator.image = getConfigurationValue(actuator, "Image", "DefaultActuator");
+    actuator.caption = getConfigurationValue(actuator, "Caption", actuator.id);
+    actuator.overviewCaption = getConfigurationValue(actuator, "OverviewCaption", actuator.id);
+    actuator.hide = getConfigurationValue(actuator, "Hide", false);
+    actuator.displayVertical = getConfigurationValue(actuator, "DisplayVertical", false);
+    actuator.isPartOfOnStateCounter = getConfigurationValue(actuator, "IsPartOfOnStateCounter", false);
+    actuator.onStateId = getConfigurationValue(actuator, "OnStateId", "On");
 
-    actuator.image = actuator.Type;
-    actuator.sortValue = 0;
-    actuator.hide = false;
-    actuator.displayVertical = false;
     actuator.state = {};
 
     switch (actuator.Type) {
         case "HA4IoT.Actuators.Lamp":
             {
                 actuator.template = "Views/ToggleTemplate.html";
-                actuator.image = "Lamp";
-                actuator.sortValue = 1000;
                 break;
             }
         case "HA4IoT.Actuators.Socket":
             {
                 actuator.template = "Views/ToggleTemplate.html";
-                actuator.image = "Socket";
-                actuator.sortValue = 2000;
                 break;
             }
 
         case "HA4IoT.Actuators.RollerShutter":
             {
-                actuator.caption = getUILocalization("UI.RollerShutter");
                 actuator.template = "Views/RollerShutterTemplate.html";
-                actuator.image = "RollerShutter";
-                actuator.sortValue = 3000;
                 break;
             }
 
         case "HA4IoT.Actuators.Window":
             {
-                actuator.caption = getUILocalization("UI.Window");
                 actuator.template = "Views/WindowTemplate.html";
-                actuator.image = "Window";
-                actuator.sortValue = 4000;
                 break;
             }
 
         case "HA4IoT.Actuators.StateMachine":
             {
                 actuator.template = "Views/StateMachineTemplate.html";
-                actuator.sortValue = 5000;
-                actuator.image = "StateMachine";
-
+                
                 var extendedStates = [];
                 $.each(actuator.states, function (i, state) {
 
-                    var stateCaption = null;
+                    var stateCaption = actuator.id + "." + state;
 
                     if (actuator.Settings.AppSettings !== undefined) {
                         if (actuator.Settings.AppSettings.StateCaptions !== undefined) {
                             stateCaption = actuator.Settings.AppSettings.StateCaptions[state];
                         }
-                    }
-
-                    if (stateCaption === undefined || stateCaption === null) {
-                        stateCaption = getActuatorLocalization(actuator.id + "." + state);
                     }
 
                     extendedStates.push({ value: state, caption: stateCaption });
@@ -297,50 +276,45 @@ function configureActuator(room, actuator) {
         case "HA4IoT.Actuators.TemperatureSensor":
             {
                 actuator.template = "Views/TemperatureSensorTemplate.html";
-                actuator.image = "TemperatureSensor";
-                actuator.caption = getUILocalization("UI.Temperature");
-                actuator.sortValue = 6000;
                 break;
             }
 
         case "HA4IoT.Actuators.HumiditySensor":
             {
                 actuator.template = "Views/HumiditySensorTemplate.html";
-                actuator.image = "HumiditySensor";
-                actuator.caption = getUILocalization("UI.Humidity");
-                actuator.sortValue = 7000;
-
-                actuator.dangerValue = getConfigurationValue(actuator, "dangerValue", 70);
-                actuator.warningValue = getConfigurationValue(actuator, "warningValue", 60);
+                actuator.dangerValue = getConfigurationValue(actuator, "DangerValue", 70);
+                actuator.warningValue = getConfigurationValue(actuator, "WarningValue", 60);
                 break;
             }
 
         case "HA4IoT.Actuators.MotionDetector":
             {
                 actuator.template = "Views/MotionDetectorTemplate.html";
-                actuator.image = "MotionDetector";
-                actuator.caption = getUILocalization("UI.MotionDetector");
-                actuator.sortValue = 8000;
                 break;
             }
 
         case "HA4IoT.Actuators.VirtualButton":
             {
                 actuator.template = "Views/VirtualButtonTemplate.html";
-                actuator.image = "VirtualButton";
-                actuator.sortValue = 9000;
                 break;
             }
 
         case "HA4IoT.Actuators.VirtualButtonGroup":
             {
                 actuator.template = "Views/VirtualButtonGroupTemplate.html";
-                actuator.image = "VirtualButton";
-                actuator.sortValue = 10000;
-
+                
                 var extendedButtons = [];
                 $.each(actuator.buttons, function (i, button) {
-                    extendedButtons.push({ id: button, caption: getActuatorLocalization(actuator.id + "." + button) });
+
+                    var buttonCaption = actuator.id + "." + button;
+
+                    if (actuator.Settings.AppSettings !== undefined) {
+                        if (actuator.Settings.AppSettings.ButtonCaptions !== undefined) {
+                            buttonCaption = actuator.Settings.AppSettings.ButtonCaptions[button];
+                        }
+                    }
+                    
+                    extendedButtons.push({ id: button, caption: buttonCaption });
                 });
 
                 actuator.buttons = extendedButtons;
@@ -353,32 +327,20 @@ function configureActuator(room, actuator) {
                 return;
             }
     }
-
-    actuator.caption = getConfigurationValue(actuator, "Caption", actuator.caption);
-    actuator.overviewCaption = getConfigurationValue(actuator, "OverviewCaption", actuator.overviewCaption);
-
-    actuator.sortValue = getConfigurationValue(actuator, "SortValue", actuator.sortValue);
-    actuator.image = getConfigurationValue(actuator, "Image", actuator.image);
-    actuator.hide = getConfigurationValue(actuator, "Hide", actuator.hide);
-
-    actuator.displayVertical = getConfigurationValue(actuator, "DisplayVertical", actuator.displayVertical);
-    actuator.isPartOfOnStateCounter = getConfigurationValue(actuator, "IsPartOfOnStateCounter", false);
-    actuator.onStateId = getConfigurationValue(actuator, "OnStateId", "On");
-    actuator.onStateCount = 0;
-
+    
     appConfiguration.actuatorExtender(actuator);
 }
 
-function getConfigurationValue(actuator, name, defaultValue) {
-    if (actuator.Settings.AppSettings === undefined) {
+function getConfigurationValue(component, name, defaultValue) {
+    if (component.Settings.AppSettings === undefined) {
         return defaultValue;
     }
 
-    if (actuator.Settings.AppSettings[name] === undefined) {
+    if (component.Settings.AppSettings[name] === undefined) {
         return defaultValue;
     }
 
-    return actuator.Settings.AppSettings[name];
+    return component.Settings.AppSettings[name];
 }
 
 function updateOnStateCounters(areas) {

@@ -44,7 +44,7 @@
                         </Grid.RowDefinitions>
                         <TabPanel Grid.Row="0" IsItemsHost="true" />
                         <Border Grid.Row="1">
-                            <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            <Border BorderBrush="{TemplateBinding BorderBrush}">
                                 <Border Background="{TemplateBinding Background}">
                                     <ContentPresenter ContentSource="SelectedContent" />
                                 </Border>
@@ -71,20 +71,29 @@
         <Setter Property="CanUserReorderColumns" Value="False" />
     </Style>
 
+    <Style TargetType="{x:Type GridSplitter}">
+        <Setter Property="Background" Value="WhiteSmoke" />
+    </Style>
+
+    <Style TargetType="{x:Type Button}">
+        <Setter Property="MinHeight" Value="26" />
+        <Setter Property="Padding" Value="5,2" />
+    </Style>
+
+    <Style TargetType="{x:Type StatusBar}">
+        <Setter Property="Background" Value="DimGray" />
+        <Setter Property="Foreground" Value="WhiteSmoke" />
+    </Style>
+
     <Style TargetType="{x:Type ToolBar}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <ControlTemplate.Resources>
-                        <Style TargetType="{x:Type Button}">
-                            <Setter Property="Foreground" Value="Red" />
-                        </Style>
-                    </ControlTemplate.Resources>
                     <Border Margin="0"
                             Background="DimGray"
                             BorderThickness="0">
                         <ToolBarPanel x:Name="PART_ToolBarPanel"
-                                      Margin="2"
+                                      Margin="4"
                                       IsItemsHost="true" />
                     </Border>
                 </ControlTemplate>
@@ -103,6 +112,12 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style x:Key="ToolBarButton" TargetType="{x:Type Button}">
+        <Setter Property="Foreground" Value="WhiteSmoke" />
+        <Setter Property="MinHeight" Value="26" />
+        <Setter Property="Padding" Value="10,2" />
     </Style>
 
     <Style TargetType="{x:Type DataGridCheckBoxColumn}">

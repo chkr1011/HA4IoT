@@ -23,16 +23,16 @@
             </Style>
         </DockPanel.Resources>
 
-        <DockPanel Background="LightGray" DockPanel.Dock="Top">
-            <Path Width="16"
-                  Height="16"
-                  Margin="10,0"
+        <DockPanel Background="DimGray" DockPanel.Dock="Top">
+            <Path Width="22"
+                  Height="22"
+                  Margin="10,10"
                   Data="M15.938994,0C23.835997,0,30.372999,5.7720337,31.636999,13.33905L28.546995,13.33905C27.320997,7.4790039 22.136,3.0640259 15.938994,3.0640259 8.8319998,3.0640259 3.0510023,8.868042 3.0510026,16 3.0510023,23.132019 8.8319998,28.936035 15.938994,28.936035 22.136,28.936035 26.964994,25.150024 30.208998,18.767029 28.964994,26.215027 23.994993,31.822021 16.306997,31.996033L15.999999,31.999023 15.999999,32 15.938994,32 14.291999,32 14.291999,31.915039 13.908996,31.871033C6.0639949,30.870056 -5.5485998E-08,24.14502 0,16 -5.5485998E-08,7.1640015 7.1350017,0 15.938994,0z"
                   DockPanel.Dock="Right"
-                  Fill="#FF337AB7"
+                  Fill="WhiteSmoke"
                   Stretch="Uniform">
                 <Path.RenderTransform>
-                    <RotateTransform CenterX="8" CenterY="8" />
+                    <RotateTransform CenterX="11" CenterY="11" />
                 </Path.RenderTransform>
                 <Path.Triggers>
                     <EventTrigger RoutedEvent="Path.Loaded">
@@ -47,7 +47,10 @@
                     </EventTrigger>
                 </Path.Triggers>
             </Path>
-            <Label Content="Searching for controllers at the local network..." />
+            <Label Margin="10,2"
+                   VerticalAlignment="Center"
+                   Content="Searching for controllers at the local network..."
+                   Foreground="WhiteSmoke" />
         </DockPanel>
 
         <DockPanel Margin="10,0,10,10"

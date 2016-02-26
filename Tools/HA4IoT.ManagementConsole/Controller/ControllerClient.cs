@@ -45,15 +45,30 @@ namespace HA4IoT.ManagementConsole.Controller
             return await GetJObject("configuration");
         }
 
-        public async Task SetAutomationConfiguration(string automationId, JObject configuration)
+        public async Task PostAutomationConfiguration(string automationId, JObject configuration)
         {
+            if (automationId == null) throw new ArgumentNullException(nameof(automationId));
+            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+
             string relativeUrl = "automation/" + automationId + "/settings";
             await PostJObject(relativeUrl, configuration);
         }
 
-        public async Task SetActuatorConfiguration(string actuatorId, JObject configuration)
+        public async Task PostActuatorConfiguration(string actuatorId, JObject configuration)
         {
+            if (actuatorId == null) throw new ArgumentNullException(nameof(actuatorId));
+            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+
             string relativeUrl = "actuator/" + actuatorId + "/settings";
+            await PostJObject(relativeUrl, configuration);
+        }
+
+        public async Task PostAreaConfiguration(string areaId, JObject configuration)
+        {
+            if (areaId == null) throw new ArgumentNullException(nameof(areaId));
+            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+
+            string relativeUrl = "area/" + areaId + "/settings";
             await PostJObject(relativeUrl, configuration);
         }
 

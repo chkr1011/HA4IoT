@@ -19,13 +19,16 @@ namespace HA4IoT.ManagementConsole.Chrome.ViewModel
 
         public MainWindowVM()
         {
-            _controllerClient.Address = Settings.Default.ControllerAddress;
+            ControllerAddress = new PropertyVM<string>("N/A");
+
             _controllerClient.IsWorkingChanged += OnIsWorkingChanged;
 
             _controllerSelector.StartBroadcasting();
             _controllerSelector.ControllerSelected += async (s, e) =>
             {
                 _controllerClient.Address = _controllerSelector.Controllers.SelectedItem.IPAddress.ToString();
+                ControllerAddress.Value = _controllerClient.Address;
+
                 await ConfigurationTab.RefreshAsync();
                 Dialog = null;
             };
@@ -43,6 +46,8 @@ namespace HA4IoT.ManagementConsole.Chrome.ViewModel
         public bool IsWorking => _controllerClient.IsWorking;
 
         public ConfigurationTabVM ConfigurationTab { get; }
+
+        public PropertyVM<string> ControllerAddress { get; private set; } 
 
         public UnhandledExceptionPresenter UnhandledExceptionPresenter => _unhandledExceptionPresenter;
 

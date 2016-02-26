@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
@@ -131,44 +129,6 @@ namespace HA4IoT.Core
         public IList<IAutomation> Automations()
         {
             return _automations.GetAll();
-        }
-
-        protected void PublishStatisticsNotification()
-        {
-            var message = new StringBuilder();
-            message.AppendLine("Controller statistics after initialization:");
-
-            message.AppendLine("- Devices total=" + Devices().Count);
-            var deviceGroups = Devices().GroupBy(d => d.GetType().Name).OrderBy(g => g.Key);
-            foreach (var deviceGroup in deviceGroups)
-            {
-                message.AppendLine("- Device '" + deviceGroup.Key + "'=" + deviceGroup.Count());
-            }
-
-            message.AppendLine("- Actuators total=" + Actuators().Count);
-            var actuatorGroups = Actuators().GroupBy(a => a.GetType().Name).OrderBy(g => g.Key);
-            foreach (var actuatorGroup in actuatorGroups)
-            {
-                message.AppendLine("- Actuator '" + actuatorGroup.Key + "'=" + actuatorGroup.Count());
-            }
-
-            message.AppendLine("- Automations total=" + Automations().Count);
-            var automationGroups = Actuators().GroupBy(a => a.GetType().Name).OrderBy(g => g.Key);
-            foreach (var automationGroup in automationGroups)
-            {
-                message.AppendLine("- Automation '" + automationGroup.Key + "'=" + automationGroup.Count());
-            }
-
-            message.AppendLine("- Areas total=" + Areas().Count);
-            foreach (var area in Areas())
-            {
-                var actuatorsCount = area.Actuators().Count;
-                
-                message.AppendFormat("- Area '{0}', Actuators={1}", area.Id, actuatorsCount);
-                message.AppendLine();
-            }
-            
-            Logger.Info(message.ToString());
         }
 
         protected virtual void Initialize()

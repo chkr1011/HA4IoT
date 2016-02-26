@@ -79,8 +79,6 @@ namespace HA4IoT.Controller.Cellar
                 .WithOnAtNightRange(Device<IWeatherStation>())
                 .WithOffBetweenRange(TimeSpan.Parse("22:30:00"), TimeSpan.Parse("05:00:00"));
 
-            PublishStatisticsNotification();
-
             Timer.Tick += (s, e) => { pi2PortController.PollOpenInputPorts(); };
         }
 

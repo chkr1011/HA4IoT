@@ -27,7 +27,7 @@ namespace HA4IoT.Controller.Main
 
             var pi2PortController = new Pi2PortController();
             
-            var i2CBus = new BuiltInI2CBus("II2CBus.default".ToDeviceId(), Logger);
+            var i2CBus = new BuiltInI2CBus(Logger);
 
             CreateWeatherStation();
 
@@ -58,9 +58,7 @@ namespace HA4IoT.Controller.Main
             new LowerBathroomConfiguration().Setup(this);
             new StoreroomConfiguration().Setup(this, ccToolsBoardController);
             new LivingRoomConfiguration().Setup(this, ccToolsBoardController);
-
-            PublishStatisticsNotification();
-
+            
             //AttachAzureEventHubPublisher(home);
 
             var localCsvFileWriter = new CsvHistory(Logger, HttpApiController);

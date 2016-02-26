@@ -126,9 +126,7 @@ namespace HA4IoT.Controller.Demo
                 .WithTarget(exampleRoom.BinaryStateOutput(ExampleRoom.BathroomFan))
                 .WithTarget(exampleRoom.BinaryStateOutput(ExampleRoom.Lamp2))
                 .WithOnDuration(TimeSpan.FromSeconds(10));
-
-            PublishStatisticsNotification();
-
+            
             // Setup the CSV writer which writes all state changes to the SD card (package directory).
             var localCsvFileWriter = new CsvHistory(Logger, HttpApiController);
             localCsvFileWriter.ConnectActuators(this);

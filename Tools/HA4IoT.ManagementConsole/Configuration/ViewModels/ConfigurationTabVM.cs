@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 using HA4IoT.ManagementConsole.Chrome.ViewModel;
 using HA4IoT.ManagementConsole.Controller;
@@ -26,8 +25,12 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels
 
             RefreshCommand = new AsyncDelegateCommand(RefreshAsync);
             SaveCommand = new AsyncDelegateCommand(SaveAsync);
-            MoveUpCommand = new DelegateCommand(MoveActuatorUp);
-            MoveDownCommand = new DelegateCommand(MoveActuatorDown);
+
+            MoveAreaUpCommand = new DelegateCommand(MoveAreaUp);
+            MoveAreaDownCommand = new DelegateCommand(MoveAreaDown);
+
+            MoveActuatorUpCommand = new DelegateCommand(MoveActuatorUp);
+            MoveActuatorDownCommand = new DelegateCommand(MoveActuatorDown);
         }
 
         public SelectableObservableCollection<AreaItemVM> Areas { get; }
@@ -36,9 +39,13 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels
 
         public ICommand SaveCommand { get; private set; }
         
-        public ICommand MoveUpCommand { get; private set; }
+        public ICommand MoveActuatorUpCommand { get; private set; }
 
-        public ICommand MoveDownCommand { get; private set; }
+        public ICommand MoveActuatorDownCommand { get; private set; }
+
+        public ICommand MoveAreaUpCommand { get; private set; }
+
+        public ICommand MoveAreaDownCommand { get; private set; }
 
         public async Task RefreshAsync()
         {
@@ -61,6 +68,16 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels
             }
         }
 
+        private void MoveAreaUp()
+        {
+            Areas.MoveItemUp(Areas.SelectedItem);
+        }
+
+        private void MoveAreaDown()
+        {
+            Areas.MoveItemDown(Areas.SelectedItem);
+        }
+
         private void MoveActuatorUp()
         {
             Areas.SelectedItem.Actuators.MoveItemUp(Areas.SelectedItem.Actuators.SelectedItem);
@@ -75,17 +92,25 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels
         {
             try
             {
+                UpdateAreaSortValues();
                 UpdateActuatorSortValues();
+
+                foreach (var area in Areas)
+                {
+                    var configuration = area.SerializeSettings();
+                    await _controllerClient.PostAreaConfiguration(area.Id, configuration);
+                }
+
                 foreach (var actuator in Areas.SelectedItem.Actuators)
                 {
                     var configruation = actuator.SerializeSettings();
-                    await _controllerClient.SetActuatorConfiguration(actuator.Id, configruation);
+                    await _controllerClient.PostActuatorConfiguration(actuator.Id, configruation);
                 }
 
                 foreach (var automation in Areas.SelectedItem.Automations)
                 {
                     var configuration = JObject.FromObject(automation.Settings);
-                    await _controllerClient.SetAutomationConfiguration(automation.Id, configuration);
+                    await _controllerClient.PostAutomationConfiguration(automation.Id, configuration);
                 }
             }
             catch (Exception exception)
@@ -94,13 +119,19 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels
             }
         }
 
+        private void UpdateAreaSortValues()
+        {
+            for (int i = 0; i < Areas.Count; i++)
+            {
+                Areas[i].SortValue = i;
+            }
+        }
+
         private void UpdateActuatorSortValues()
         {
-            int sortValue = 0;
-            foreach (var actuator in Areas.SelectedItem.Actuators)
+            for (int i = 0; i < Areas.SelectedItem.Actuators.Count; i++)
             {
-                actuator.SortValue = sortValue;
-                sortValue++;
+                Areas.SelectedItem.Actuators[i].SortValue = i;
             }
         }
     }

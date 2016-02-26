@@ -10,12 +10,19 @@ namespace HA4IoT.Hardware
 {
     public class BuiltInI2CBus : II2CBus
     {
+        public static readonly DeviceId DefaultId = new DeviceId("I2C.BuiltIn");
+
         private readonly Dictionary<int, I2cDevice> _deviceCache = new Dictionary<int, I2cDevice>();
 
         private readonly string _i2CBusId;
 
         private readonly ILogger _logger;
         private readonly object _syncRoot = new object();
+
+        public BuiltInI2CBus(ILogger logger) 
+            : this(DefaultId, logger)
+        {
+        }
 
         public BuiltInI2CBus(DeviceId id, ILogger logger)
         {

@@ -6,11 +6,11 @@
         xmlns:viewModel="clr-namespace:HA4IoT.ManagementConsole.Chrome.ViewModel"
         xmlns:viewModels="clr-namespace:HA4IoT.ManagementConsole.Configuration.ViewModels"
         xmlns:views="clr-namespace:HA4IoT.ManagementConsole.Configuration.Views"
-        xmlns:views1="clr-namespace:HA4IoT.ManagementConsole.Discovery.Views"
         Title="Management Console - HA4IoT"
-        Width="1280"
+        Width="1480"
         Height="1024"
         Background="White"
+        Icon="/Gear.ico"
         SnapsToDevicePixels="True"
         TextOptions.TextFormattingMode="Display"
         d:DataContext="{d:DesignInstance Type=viewModel:MainWindowVM,
@@ -49,7 +49,23 @@
     <Grid>
         <DockPanel>
             <StatusBar DockPanel.Dock="Bottom">
-                <Label Content="Version: 1.0" />
+                <StatusBar.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <DockPanel HorizontalAlignment="Stretch" LastChildFill="False" />
+                    </ItemsPanelTemplate>
+                </StatusBar.ItemsPanel>
+
+                <StatusBarItem Margin="0,2,10,2"
+                               Content="Version: 1.0"
+                               DockPanel.Dock="Right" />
+
+                <StatusBarItem Margin="10,2,10,2" DockPanel.Dock="Right">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Controller: " />
+                        <TextBlock Text="{Binding ControllerAddress.Value, Mode=OneWay}" />
+                    </StackPanel>
+                </StatusBarItem>
+
             </StatusBar>
 
             <TabControl Background="Transparent" Style="{StaticResource MainTabControl}">
