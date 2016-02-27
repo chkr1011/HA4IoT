@@ -1,31 +1,67 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Brush x:Key="PanelBackground">WhiteSmoke</Brush>
 
-    <Style x:Key="MainTabControl" TargetType="{x:Type TabControl}">
+    <Style TargetType="{x:Type Button}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border x:Name="Border"
+                            MinWidth="80"
+                            MinHeight="26"
+                            Background="#FF337AB7"
+                            BorderBrush="DimGray"
+                            BorderThickness="1">
+                        <Label VerticalAlignment="Center"
+                               HorizontalContentAlignment="Center"
+                               Foreground="WhiteSmoke">
+                            <Label.Style>
+                                <Style TargetType="{x:Type Label}" />
+                            </Label.Style>
+                            <ContentPresenter Margin="10,2"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Content="{TemplateBinding Content}" />
+                        </Label>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="#FF226AA6" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type TabControl}">
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
                 <Style TargetType="{x:Type TabItem}">
-                    <Setter Property="Background" Value="#FF337AB7" />
                     <Setter Property="FontWeight" Value="Light" />
-                    <Setter Property="Width" Value="200" />
-                    <Setter Property="FontSize" Value="16" />
                     <Setter Property="Foreground" Value="WhiteSmoke" />
                     <Setter Property="VerticalContentAlignment" Value="Center" />
                     <Setter Property="HorizontalContentAlignment" Value="Center" />
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type TabItem}">
-                                <Border Height="64"
-                                        Background="{TemplateBinding Background}"
-                                        BorderBrush="{TemplateBinding BorderBrush}"
-                                        BorderThickness="{TemplateBinding BorderThickness}">
-                                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                                      ContentSource="Header" />
+                                <Border HorizontalAlignment="Stretch" Background="Pink">
+                                    <Label x:Name="Border"
+                                           Margin="0"
+                                           Background="#FF226AA6"
+                                           Foreground="WhiteSmoke"
+                                           Padding="0">
+                                        <ContentPresenter Margin="20,10"
+                                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                          ContentSource="Header" />
+                                    </Label>
                                 </Border>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsSelected" Value="True">
-                                        <Setter Property="Background" Value="#FF226AA6" />
+                                        <Setter TargetName="Border" Property="Background" Value="#FF337AB7" />
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Border" Property="Background" Value="#FF337AB7" />
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
@@ -37,47 +73,25 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TabControl">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <TabPanel Grid.Row="0" IsItemsHost="true" />
-                        <Border Grid.Row="1">
-                            <Border BorderBrush="{TemplateBinding BorderBrush}">
-                                <Border Background="{TemplateBinding Background}">
-                                    <ContentPresenter ContentSource="SelectedContent" />
-                                </Border>
-                            </Border>
+                    <DockPanel Background="WhiteSmoke">
+                        <StackPanel DockPanel.Dock="Left" IsItemsHost="true" />
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter ContentSource="SelectedContent" />
                         </Border>
-                    </Grid>
+                    </DockPanel>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type DataGrid}">
-        <Setter Property="AlternatingRowBackground" Value="WhiteSmoke" />
-        <Setter Property="AutoGenerateColumns" Value="False" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="GridLinesVisibility" Value="None" />
-        <Setter Property="RowHeaderWidth" Value="0" />
-        <Setter Property="SelectionMode" Value="Single" />
-        <Setter Property="SelectionUnit" Value="FullRow" />
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="CanUserSortColumns" Value="False" />
-        <Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
-        <Setter Property="CanUserReorderColumns" Value="False" />
+    <Style x:Key="MainTabControl"
+           BasedOn="{StaticResource {x:Type TabControl}}"
+           TargetType="{x:Type TabControl}">
+        <!--<Setter Property="FontSize" Value="16" />-->
     </Style>
 
     <Style TargetType="{x:Type GridSplitter}">
         <Setter Property="Background" Value="WhiteSmoke" />
-    </Style>
-
-    <Style TargetType="{x:Type Button}">
-        <Setter Property="MinHeight" Value="26" />
-        <Setter Property="Padding" Value="5,2" />
     </Style>
 
     <Style TargetType="{x:Type StatusBar}">
@@ -120,21 +134,4 @@
         <Setter Property="Padding" Value="10,2" />
     </Style>
 
-    <Style TargetType="{x:Type DataGridCheckBoxColumn}">
-        <Setter Property="ElementStyle">
-            <Setter.Value>
-                <Style TargetType="{x:Type DataGridCell}">
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate>
-                                <CheckBox Background="Red"
-                                          Content="LALALALA"
-                                          IsChecked="{Binding}" />
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </Setter.Value>
-        </Setter>
-    </Style>
 </ResourceDictionary>

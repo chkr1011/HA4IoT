@@ -70,6 +70,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Home\Views\HomeTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Images.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -81,6 +85,7 @@
     <Compile Include="Chrome\ViewModel\MainWindowVM.cs" />
     <Compile Include="Chrome\ViewModel\UnhandledExceptionPresenter.cs" />
     <Compile Include="Configuration\ActuatorParser.cs" />
+    <Compile Include="Configuration\ActuatorTypeToImageConverter.cs" />
     <Compile Include="Configuration\AreaParser.cs" />
     <Compile Include="Configuration\AutomationParser.cs" />
     <Compile Include="Configuration\ViewModels\AutomationSettingsVM.cs" />
@@ -119,6 +124,11 @@
     <Compile Include="Discovery\ViewModels\ControllerSelectorVM.cs" />
     <Compile Include="Discovery\Views\ControllerSelectorView.xaml.cs">
       <DependentUpon>ControllerSelectorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Home\OpenLinkCommand.cs" />
+    <Compile Include="Home\ViewModels\HomeTabVM.cs" />
+    <Compile Include="Home\Views\HomeTabView.xaml.cs">
+      <DependentUpon>HomeTabView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Json\JObjectExtensions.cs" />
     <Compile Include="Properties\Annotations.cs" />
@@ -166,6 +176,10 @@
   <ItemGroup>
     <Resource Include="Images\Pi2.jpg" />
   </ItemGroup>
+  <ItemGroup>
+    <SplashScreen Include="Images\SplashScreen.png" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

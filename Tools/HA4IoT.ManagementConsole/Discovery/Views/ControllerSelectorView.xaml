@@ -49,32 +49,29 @@
             </Path>
             <Label Margin="10,2"
                    VerticalAlignment="Center"
-                   Content="Searching for controllers at the local network..."
+                   Content="Searching for controllers..."
+                   FontSize="16"
+                   FontWeight="Light"
                    Foreground="WhiteSmoke" />
         </DockPanel>
 
         <DockPanel Margin="10,0,10,10"
                    DockPanel.Dock="Bottom"
                    LastChildFill="False">
-            <Button MinWidth="80"
-                    Margin="10,0,0,0"
+            <Button Margin="10,0,0,0"
                     HorizontalAlignment="Left"
+                    Command="{Binding CancelCommand}"
                     Content="Cancel"
                     DockPanel.Dock="Right"
                     IsCancel="True" />
-
-            <Button Height="26"
-                    MinWidth="80"
-                    Command="{Binding AcceptCommand}"
+            <Button Command="{Binding AcceptCommand}"
                     Content="OK"
                     DockPanel.Dock="Right"
                     IsDefault="True" />
             <Button MinWidth="80"
-                    Command="{Binding CancelCommand}"
+                    Command="{Binding UseFromAppConfigCommand}"
                     Content="Use from app config"
-                    DockPanel.Dock="Left"
-                    IsCancel="True"
-                    Padding="10,2" />
+                    DockPanel.Dock="Left" />
         </DockPanel>
 
         <ListBox Margin="10"

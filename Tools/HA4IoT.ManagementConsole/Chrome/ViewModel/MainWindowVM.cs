@@ -4,7 +4,7 @@ using HA4IoT.ManagementConsole.Configuration.ViewModels;
 using HA4IoT.ManagementConsole.Controller;
 using HA4IoT.ManagementConsole.Core;
 using HA4IoT.ManagementConsole.Discovery.ViewModels;
-using HA4IoT.ManagementConsole.Properties;
+using HA4IoT.ManagementConsole.Home.ViewModels;
 
 namespace HA4IoT.ManagementConsole.Chrome.ViewModel
 {
@@ -26,7 +26,7 @@ namespace HA4IoT.ManagementConsole.Chrome.ViewModel
             _controllerSelector.StartBroadcasting();
             _controllerSelector.ControllerSelected += async (s, e) =>
             {
-                _controllerClient.Address = _controllerSelector.Controllers.SelectedItem.IPAddress.ToString();
+                _controllerClient.Address = _controllerSelector.SelectedControllerAddress;
                 ControllerAddress.Value = _controllerClient.Address;
 
                 await ConfigurationTab.RefreshAsync();
@@ -35,9 +35,10 @@ namespace HA4IoT.ManagementConsole.Chrome.ViewModel
 
             _controllerSelector.SelectionCanceled += (s, e) =>
             {
-                Dialog = null;
+                Application.Current.Shutdown();
             };
 
+            HomeTab = new HomeTabVM(_controllerClient);
             ConfigurationTab = new ConfigurationTabVM(_controllerClient, _unhandledExceptionPresenter);
 
             Dialog = _controllerSelector;
@@ -45,9 +46,11 @@ namespace HA4IoT.ManagementConsole.Chrome.ViewModel
 
         public bool IsWorking => _controllerClient.IsWorking;
 
+        public HomeTabVM HomeTab { get; }
+
         public ConfigurationTabVM ConfigurationTab { get; }
 
-        public PropertyVM<string> ControllerAddress { get; private set; } 
+        public PropertyVM<string> ControllerAddress { get; }
 
         public UnhandledExceptionPresenter UnhandledExceptionPresenter => _unhandledExceptionPresenter;
 

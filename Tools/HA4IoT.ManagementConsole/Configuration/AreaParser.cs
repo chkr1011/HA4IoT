@@ -25,19 +25,8 @@ namespace HA4IoT.ManagementConsole.Configuration
             _appSettings = settings.GetNamedObject("AppSettings", null);
 
             var areaItem = new AreaItemVM(_source.Name);
-
-            string caption = _source.Name;
-            int sortValue = 0;
-
-            if (_appSettings != null)
-            {
-                caption = _appSettings.GetNamedString("Caption", _source.Name);
-                sortValue = (int)_appSettings.GetNamedNumber("SortValue", 0);
-            }
-
-            areaItem.SortValue = sortValue;
-
-            areaItem.Caption = new StringSettingVM("Caption", "Caption", caption);
+            areaItem.SortValue = (int)_appSettings.GetNamedNumber("SortValue", 0);
+            areaItem.Caption = new StringSettingVM("Caption", _appSettings, _source.Name, "Caption");
             areaItem.Settings.Add(areaItem.Caption);
             
             areaItem.Actuators.AddRange(ParseActuators());

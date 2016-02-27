@@ -95,7 +95,7 @@ while($repeat)
 	
 	$clearRemoteDirectory = Confirm("Clear remote directory (y/n)?")
 	$sourceDir = ".\HA4IoT.WebApp"
-	$remoteDir = "$package\LocalState\app"
+	$remoteDir = "$package\LocalState\App"
 
 	#IncreaseVersion -Package "$remoteDir"
 

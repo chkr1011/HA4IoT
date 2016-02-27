@@ -5,6 +5,7 @@ using System.Windows;
 using HA4IoT.ManagementConsole.Controller;
 using HA4IoT.ManagementConsole.Core;
 using HA4IoT.ManagementConsole.Json;
+using HA4IoT.ManagementConsole.Properties;
 
 namespace HA4IoT.ManagementConsole.Discovery.ViewModels
 {
@@ -20,6 +21,7 @@ namespace HA4IoT.ManagementConsole.Discovery.ViewModels
 
             AcceptCommand = new DelegateCommand(Accept, () => Controllers.SelectedItem != null);
             CancelCommand = new DelegateCommand(Cancel);
+            UseFromAppConfigCommand = new DelegateCommand(AcceptFromAppConfig);
 
             Controllers.NotifyCommandIfSelectionChanged(AcceptCommand);
         }
@@ -30,9 +32,13 @@ namespace HA4IoT.ManagementConsole.Discovery.ViewModels
 
         public SelectableObservableCollection<ControllerItemVM> Controllers { get; }
 
+        public string SelectedControllerAddress { get; private set; }
+
         public DelegateCommand AcceptCommand { get; }
 
         public DelegateCommand CancelCommand { get; }
+
+        public DelegateCommand UseFromAppConfigCommand { get; }
 
         public void StartBroadcasting()
         {
@@ -41,6 +47,13 @@ namespace HA4IoT.ManagementConsole.Discovery.ViewModels
 
         private void Accept()
         {
+            SelectedControllerAddress = Controllers.SelectedItem.IPAddress.ToString();
+            ControllerSelected?.Invoke(this, EventArgs.Empty);
+        }
+        
+        private void AcceptFromAppConfig()
+        {
+            SelectedControllerAddress = Settings.Default.ControllerAddress;
             ControllerSelected?.Invoke(this, EventArgs.Empty);
         }
 

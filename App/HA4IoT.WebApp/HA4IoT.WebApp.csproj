@@ -75,9 +75,9 @@
     <Content Include="Images\Cat.png" />
     <Content Include="Images\Fan.png" />
     <Content Include="Images\Favorites.png" />
-    <Content Include="Images\HumiditySensor.png" />
+    <Content Include="Images\Humidity.png" />
     <Content Include="Images\Lamp.png" />
-    <Content Include="Images\MotionDetector.png" />
+    <Content Include="Images\Motion.png" />
     <Content Include="Images\NightLamp.png" />
     <Content Include="Images\Poison.png" />
     <Content Include="Images\Power.png" />
@@ -86,7 +86,7 @@
     <Content Include="Images\Spotlight.png" />
     <Content Include="Images\Sunrise.png" />
     <Content Include="Images\Sunset.png" />
-    <Content Include="Images\TemperatureSensor.png" />
+    <Content Include="Images\Temperature.png" />
     <Content Include="Images\TableLamp.png" />
     <Content Include="Images\WaterPump.png" />
     <Content Include="Images\WeatherSituation.png" />

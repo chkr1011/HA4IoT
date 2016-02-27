@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.ManagementConsole.Json;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.ManagementConsole.Configuration.ViewModels.Settings
@@ -7,9 +8,9 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels.Settings
     {
         private string _value;
 
-        public StringSettingVM(string key, string caption, string initialValue) : base(key, caption)
+        public StringSettingVM(string key, JObject source, string defaultValue, string caption) : base(key, caption)
         {
-            _value = initialValue;
+            _value = source.GetNamedString(key, defaultValue);
         }
 
         public string Value

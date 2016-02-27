@@ -24,58 +24,33 @@ namespace HA4IoT.ManagementConsole.Configuration
 
             var settings = (JObject)_source.Value["Settings"];
             _appSettings = settings.GetNamedObject("AppSettings", null);
-            //var settings = CreateActuatorSettingsVM((JObject)_source.Value["Settings"]);
+            
             var item = new ActuatorItemVM(_source.Name, type);
-
             item.SortValue = (int)_appSettings.GetNamedNumber("SortValue", 0);
 
-            var isEnabledSetting = new BoolSettingVM("IsEnabled", "IsEnabled", settings.GetNamedBoolean("IsEnabled", true)) { IsAppSetting = false };
+            var isEnabledSetting = new BoolSettingVM("IsEnabled", settings, true, "Enabled") { IsAppSetting = false };
             item.Settings.Add(isEnabledSetting);
             item.IsEnabled = isEnabledSetting;
 
-            var imageSetting = new StringSettingVM("Image", "Image", _appSettings.GetNamedString("Image", "DefaultActuator"));
+            var imageSetting = new StringSettingVM("Image", _appSettings, "DefaultActuator", "Image");
             item.Settings.Add(imageSetting);
             item.Image = imageSetting;
 
-            var captionSetting = new StringSettingVM("Caption", "Caption", _appSettings.GetNamedString("Caption", string.Empty));
+            var captionSetting = new StringSettingVM("Caption", _appSettings, _source.Name, "Caption");
             item.Settings.Add(captionSetting);
             item.Caption = captionSetting;
 
-            item.Settings.Add(new StringSettingVM("OverviewCaption", "Caption (Overviews)", _appSettings.GetNamedString("OverviewCaption", string.Empty)));
-            item.Settings.Add(new BoolSettingVM("Hide", "Hide", _appSettings.GetNamedBoolean("Hide", false)));
-            item.Settings.Add(new BoolSettingVM("DisplayVertical", "Display vertical", _appSettings.GetNamedBoolean("DisplayVertical", false)));
-            item.Settings.Add(new BoolSettingVM("IsPartOfOnStateCounter", "Is part of 'On-State' counter", _appSettings.GetNamedBoolean("IsPartOfOnStateCounter", false)));
-            item.Settings.Add(new StringSettingVM("OnStateId", "'On-State' ID", _appSettings.GetNamedString("OnStateId", "On")));
+            item.Settings.Add(new StringSettingVM("OverviewCaption", _appSettings, _source.Name, "Caption (Overviews)"));
+            item.Settings.Add(new BoolSettingVM("Hide", _appSettings, false, "Hidden"));
+            item.Settings.Add(new BoolSettingVM("DisplayVertical", _appSettings, false, "Display vertical"));
+            item.Settings.Add(new BoolSettingVM("IsPartOfOnStateCounter", _appSettings, false, "Is part of 'On-State' counter"));
+            item.Settings.Add(new StringSettingVM("OnStateId", _appSettings, "On", "'On-State' ID"));
 
-            item.Settings.Add(new IntSettingVM("MaxPosition", "Max position", (int)_appSettings.GetNamedNumber("MaxPosition", 20000)));
+            item.Settings.Add(new IntSettingVM("MaxPosition", _appSettings, 20000, "Max position"));
             //item.ExtendedSettings.Add(new FloatSettingVM("Max outside temperature for 'Auto Close'", (float)_appSettings.GetNamedNumber("MaxOutsideTemperatureForAutoClose", 26)));
-            //item.ExtendedSettings.Add(new IntSettingVM("Max moving duration", (int)_appSettings.GetNamedNumber("Max", 26)));
+            //item.Settings.Add(new IntSettingVM("MaxMovingDuration" "Max moving duration", (int)_appSettings.GetNamedNumber("MaxMovingDuration", 26)));
 
             return item;
         }
-
-        //public ActuatorSettingsVM CreateActuatorSettingsVM(JObject configuration)
-        //{
-        //    if (configuration == null) throw new ArgumentNullException(nameof(configuration));
-
-        //    var settings = new ActuatorSettingsVM();
-
-        //    settings.IsEnabled = configuration.GetNamedBoolean("IsEnabled");
-
-        //    _appSettings = configuration.GetNamedObject("AppSettings", null);
-        //    if (_appSettings != null)
-        //    {
-        //        settings.AppSettings.Caption = _appSettings.GetNamedString("Caption", string.Empty);
-        //        settings.AppSettings.OverviewCaption = _appSettings.GetNamedString("OverviewCaption", string.Empty);
-        //        settings.AppSettings.Image = _appSettings.GetNamedString("Image", string.Empty);
-        //        settings.AppSettings.SortValue = (int)_appSettings.GetNamedNumber("SortValue", 0.0M);
-        //        settings.AppSettings.Hide = _appSettings.GetNamedBoolean("Hide", false);
-        //        settings.AppSettings.IsPartOfOnStateCounter = _appSettings.GetNamedBoolean("IsPartOfOnStateCounter", false);
-        //        settings.AppSettings.OnState = _appSettings.GetNamedString("OnState", "On");
-        //        settings.AppSettings.DisplayVertical = _appSettings.GetNamedBoolean("DisplayVertical", false);
-        //    }
-
-        //    return settings;
-        //}
     }
 }
