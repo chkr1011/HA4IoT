@@ -21,5 +21,17 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels.Settings
         public bool IsAppSetting { get; set; }
 
         public abstract JValue SerializeValue();
+
+        public SettingItemVM WithIsNoAppSetting()
+        {
+            IsAppSetting = false;
+            return this;
+        }
+
+        public SettingItemVM WithIsReadOnly()
+        {
+            IsReadOnly = true;
+            return this;
+        }
     }
 }

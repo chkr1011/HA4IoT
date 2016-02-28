@@ -31,7 +31,7 @@ namespace HA4IoT.ManagementConsole.Configuration
 
             _root = (JObject)_source.Value;
             _settings = (JObject)_source.Value["Settings"];
-            _appSettings = _settings.GetNamedObject("AppSettings", null);
+            _appSettings = _settings.GetNamedObject("AppSettings", new JObject());
 
             var item = new ActuatorItemVM(_source.Name, _type);
             item.SortValue = (int)_appSettings.GetNamedNumber("SortValue", 0);
@@ -73,6 +73,12 @@ namespace HA4IoT.ManagementConsole.Configuration
                         item.Settings.AddRange(GenerateHumiditySensorSettings());
                         break;
                     }
+
+                case "HA4IoT.Actuators.VirtualButtonGroup":
+                    {
+                        item.Settings.AddRange(GenerateVirtualButtonGroupSettings());
+                        break;
+                    }
             }
 
             return item;
@@ -80,8 +86,8 @@ namespace HA4IoT.ManagementConsole.Configuration
 
         private IEnumerable<SettingItemVM> GenerateHumiditySensorSettings()
         {
-            yield return new FloatSettingVM("WarningValue", _appSettings, 60, "Warning value");
-            yield return new FloatSettingVM("DangerValue", _appSettings, 70, "Danger value");
+            yield return FloatSettingVM.CreateFrom(_appSettings, "WarningValue", 60, "Warning value");
+            yield return FloatSettingVM.CreateFrom(_appSettings, "DangerValue", 70, "Danger value");
         } 
 
         private IEnumerable<SettingItemVM> GenerateOnStateCounterSettings()
@@ -96,7 +102,7 @@ namespace HA4IoT.ManagementConsole.Configuration
         {
             yield return new StringSettingVM("Id", _source.Name, "ID") { IsReadOnly = true };
             yield return new StringSettingVM("Type", _type, "Type") { IsReadOnly = true };
-            yield return BoolSettingVM.CreateFrom(_appSettings, "IsEnabled", true, "Enabled").WithIsNoAppSetting();
+            yield return BoolSettingVM.CreateFrom(_settings, "IsEnabled", true, "Enabled").WithIsNoAppSetting();
             yield return BoolSettingVM.CreateFrom(_appSettings, "Hide", false, "Hidden");
             yield return StringSettingVM.CreateFrom(_appSettings, "Image", "DefaultActuator", "Image");
             yield return StringSettingVM.CreateFrom(_appSettings, "Caption", _source.Name, "Caption");
@@ -108,6 +114,17 @@ namespace HA4IoT.ManagementConsole.Configuration
             yield return BoolSettingVM.CreateFrom(_appSettings, "DisplayVertical", false, "Display vertical");
 
             foreach (var state in _root.GetNamedArray("states"))
+            {
+                string key = $"Caption.{state}";
+                yield return new StringSettingVM(key, _appSettings.GetNamedString(key, key), $"Caption for '{state}'");
+            }
+        }
+
+        private IEnumerable<SettingItemVM> GenerateVirtualButtonGroupSettings()
+        {
+            yield return BoolSettingVM.CreateFrom(_appSettings, "DisplayVertical", false, "Display vertical");
+
+            foreach (var state in _root.GetNamedArray("buttons"))
             {
                 string key = $"Caption.{state}";
                 yield return new StringSettingVM(key, _appSettings.GetNamedString(key, key), $"Caption for '{state}'");

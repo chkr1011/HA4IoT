@@ -36,7 +36,10 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0" Content="{Binding Caption}" />
-                    <CheckBox Grid.Column="1" IsChecked="{Binding Value, UpdateSourceTrigger=PropertyChanged}">
+                    <CheckBox Grid.Column="1"
+                              VerticalAlignment="Center"
+                              IsChecked="{Binding Value,
+                                                  UpdateSourceTrigger=PropertyChanged}">
                         <CheckBox.Style>
                             <Style TargetType="{x:Type CheckBox}">
                                 <Style.Triggers>

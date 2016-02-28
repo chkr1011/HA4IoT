@@ -1,6 +1,7 @@
 ﻿<Window x:Class="HA4IoT.ManagementConsole.Chrome.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:core="clr-namespace:HA4IoT.ManagementConsole.Core"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModel="clr-namespace:HA4IoT.ManagementConsole.Chrome.ViewModel"
@@ -70,7 +71,9 @@
 
             </StatusBar>
 
-            <TabControl Background="Transparent" Style="{StaticResource MainTabControl}">
+            <TabControl Background="Transparent"
+                        Style="{StaticResource MainTabControl}"
+                        core:TabControlAttachedProperties.VerticalHeaders="True">
                 <TabItem>
                     <TabItem.Header>
                         <DockPanel>

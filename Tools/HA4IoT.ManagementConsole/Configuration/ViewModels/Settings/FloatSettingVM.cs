@@ -1,4 +1,5 @@
-﻿using HA4IoT.ManagementConsole.Json;
+﻿using System;
+using HA4IoT.ManagementConsole.Json;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.ManagementConsole.Configuration.ViewModels.Settings
@@ -7,14 +8,17 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels.Settings
     {
         private float _value;
         
-        public FloatSettingVM(string key, JObject source, float initialValue, string caption) : base(key, caption)
+        public static FloatSettingVM CreateFrom(JObject source, string key, float defaultValue, string caption)
         {
-            _value = (float)source.GetNamedNumber(key, (decimal)initialValue);
+            if (source == null) throw new ArgumentNullException(nameof(source));
+
+            var value = (float)source.GetNamedNumber(key, (decimal)defaultValue);
+            return new FloatSettingVM(key, value, caption);
         }
 
-        public FloatSettingVM(string key, string caption, float initialValue) : base(key, caption)
+        public FloatSettingVM(string key, float value, string caption) : base(key, caption)
         {
-            _value = initialValue;
+            _value = value;
         }
 
         public float Value

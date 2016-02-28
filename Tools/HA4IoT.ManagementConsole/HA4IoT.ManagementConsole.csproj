@@ -100,10 +100,8 @@
     <Compile Include="Configuration\ViewModels\Settings\TimeSpanSettingVM.cs" />
     <Compile Include="Controller\DiscoveryResponseReceivedEventArgs.cs" />
     <Compile Include="Controller\DiscoveryClient.cs" />
-    <Compile Include="Controller\DiscoveryResponse.cs" />
     <Compile Include="Core\DelegateCommand.cs" />
     <Compile Include="Configuration\ConfigurationParser.cs" />
-    <Compile Include="Configuration\StatusParser.cs" />
     <Compile Include="Configuration\ViewModels\ActuatorItemVM.cs" />
     <Compile Include="Configuration\ViewModels\AreaItemVM.cs" />
     <Compile Include="Configuration\ViewModels\AutomationItemVM.cs" />
@@ -122,6 +120,7 @@
     <Compile Include="Core\ObservableCollectionExtensions.cs" />
     <Compile Include="Core\PropertyVM.cs" />
     <Compile Include="Core\SelectableObservableCollection.cs" />
+    <Compile Include="Core\TabControlAttachedProperties.cs" />
     <Compile Include="Discovery\ViewModels\ControllerItemVM.cs" />
     <Compile Include="Discovery\ViewModels\ControllerSelectorVM.cs" />
     <Compile Include="Discovery\Views\ControllerSelectorView.xaml.cs">

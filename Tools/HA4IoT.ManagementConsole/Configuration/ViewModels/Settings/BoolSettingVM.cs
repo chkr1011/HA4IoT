@@ -32,11 +32,5 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels.Settings
         {
             return new JValue(Value);
         }
-
-        public SettingItemVM WithIsNoAppSetting()
-        {
-            IsAppSetting = false;
-            return this;
-        }
     }
 }

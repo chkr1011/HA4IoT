@@ -12,8 +12,8 @@ namespace HA4IoT.Actuators
     {
         private readonly Dictionary<ActuatorId, VirtualButton> _buttons = new Dictionary<ActuatorId, VirtualButton>();
 
-        public VirtualButtonGroup(ActuatorId id, IHttpRequestController api, ILogger logger)
-            : base(id, api, logger)
+        public VirtualButtonGroup(ActuatorId id, IHttpRequestController httpApiController, ILogger logger)
+            : base(id, httpApiController, logger)
         {
         }
 
