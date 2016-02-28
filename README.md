@@ -1,3 +1,5 @@
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/MC_SplashScreen.png?raw=true" width="512">
+
 <h1 style="font-size:70px;">HA4IoT</h1>
 <h6>The first open source Home Automation SDK for Windows 10 IoT Core</h6>
 
@@ -41,7 +43,7 @@ hackster.io
 * State machine (for complex actuators like fans or 'moods' for lights)
 
 ## Quick start
-The software solution contains the project ``CK.HomeAutomation.Controller.Empty`` which can be used to start playing around with the SDK. The other projects ``CK.HomeAutomation.Controller.Cellar`` and ``CK.HomeAutomation.Controller`` containing a full "real life" configuration which can be used as an example.
+The software solution contains the project ``HA4IoT.Controller.Demo`` which can be used to start playing around with the SDK. The other projects ``HA4IoT.Controller.Main`` and ``HA4IoT.Controller.Main`` containing a full "real life" configuration which can be used as an example but will not work without the required hardware.
 
 ## Documentation
 
@@ -53,11 +55,26 @@ A detailed documentation at GitHub is in progress.
 This project requires contributors. If you are interested in supporting this project in any way (software, hardware, documentation, fritzing sketches, testing, design, donation) feel free to contact me.
 
 ## App
+Every actuator can be controlled using the web app which is hosted at the Raspberry Pi 2 using the build in webserver. The language for the examples is German but translation of each UI element is supported. The app shows every rooms/areas and provides several overviews like the overview of all temperature sensor. The app is based on Bootstrap and AngularJS and runs on Smartphones, Tables, PCs etc. 
 
-Every actuator can be controlled using the web app which is hosted at the Pi2 using the build in webserver. The language for the examples is German but translation of each UI element is supported.
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_SplashScreen.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_Areas.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_Bathroom.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_Bedroom-1.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_Bedroom-2.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_Bedroom-2.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_Storeroom.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_SensorsOverview.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_WindowOverview.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_WeatherStation.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_Info.PNG?raw=true" width="256">
 
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_Splash.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_ReadingRoom.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_Bedroom_1.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_Bedroom_2.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_WindowsOverview.PNG?raw=true" width="256">
+## Management Console
+
+The configuration of each actuator and automation can be updated using the Management Console. This application is a WPF application which runs at the local computer. It sends a discovery signal through the local area network and shows all available HA4IoT controller instances.   
+
+ <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/MC_HomeScreen.png?raw=true" width="512">
+ <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/MC_ControllerSelection.png?raw=true" width="512">
+ <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/MC_ActuatorConfiguration.png?raw=true" width="512">
+ <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/MC_AutomationConfiguration.png?raw=true" width="512">
+ <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/MC_TraceViewer.png?raw=true" width="512">
