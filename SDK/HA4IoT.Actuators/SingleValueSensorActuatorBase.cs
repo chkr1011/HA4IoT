@@ -13,13 +13,14 @@ namespace HA4IoT.Actuators
         private DateTime? _valueLastChanged;
         private float _value;
 
-        protected SingleValueSensorActuatorBase(ActuatorId id, IHttpRequestController api, ILogger logger)
-            : base(id, api, logger)
+        protected SingleValueSensorActuatorBase(ActuatorId id, IHttpRequestController httpApiController, ILogger logger)
+            : base(id, httpApiController, logger)
         {
         }
 
         public event EventHandler<SingleValueSensorValueChangedEventArgs> ValueChanged;
 
+        // TODO: Move to dedicated Actuator Settings (TemperatureSensorSettings / HumiditySensorSettings).
         public float ValueChangedMinDelta { get; set; } = 0.15F;
 
         public float GetValue()
@@ -47,7 +48,7 @@ namespace HA4IoT.Actuators
             _value = newValue;
             _valueLastChanged = DateTime.Now;
 
-            Logger.Info(Id + ": " + oldValue + "->" + newValue);
+            Logger.Info($"{Id}:{oldValue}->{newValue}");
             ValueChanged?.Invoke(this, new SingleValueSensorValueChangedEventArgs(oldValue, _value));
         }
     }

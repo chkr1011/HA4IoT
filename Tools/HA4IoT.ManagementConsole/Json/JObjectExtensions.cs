@@ -1,5 +1,4 @@
-﻿using System;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.ManagementConsole.Json
 {
@@ -7,7 +6,10 @@ namespace HA4IoT.ManagementConsole.Json
     {
         public static TValue GetNamedValue<TValue>(this JObject jObject, string name, TValue defaultValue)
         {
-            if (jObject == null) throw new ArgumentNullException(nameof(jObject));
+            if (jObject == null)
+            {
+                return defaultValue;
+            }
 
             JToken value;
             if (!jObject.TryGetValue(name, out value))
@@ -16,6 +18,11 @@ namespace HA4IoT.ManagementConsole.Json
             }
 
             return value.Value<TValue>();
+        }
+
+        public static JArray GetNamedArray(this JObject jObject, string name)
+        {
+            return (JArray) jObject[name];
         }
 
         public static TValue GetNamedValue<TValue>(this JObject jObject, string name)

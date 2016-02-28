@@ -257,14 +257,8 @@ function configureActuator(room, actuator) {
                 
                 var extendedStates = [];
                 $.each(actuator.states, function (i, state) {
-
-                    var stateCaption = actuator.id + "." + state;
-
-                    if (actuator.Settings.AppSettings !== undefined) {
-                        if (actuator.Settings.AppSettings.StateCaptions !== undefined) {
-                            stateCaption = actuator.Settings.AppSettings.StateCaptions[state];
-                        }
-                    }
+                    var key = "Caption." + state;
+                    var stateCaption = getConfigurationValue(actuator, key, key);
 
                     extendedStates.push({ value: state, caption: stateCaption });
                 });
@@ -305,14 +299,8 @@ function configureActuator(room, actuator) {
                 
                 var extendedButtons = [];
                 $.each(actuator.buttons, function (i, button) {
-
-                    var buttonCaption = actuator.id + "." + button;
-
-                    if (actuator.Settings.AppSettings !== undefined) {
-                        if (actuator.Settings.AppSettings.ButtonCaptions !== undefined) {
-                            buttonCaption = actuator.Settings.AppSettings.ButtonCaptions[button];
-                        }
-                    }
+                    var key = "Caption." + state;
+                    var buttonCaption = getConfigurationValue(actuator, key, key);
                     
                     extendedButtons.push({ id: button, caption: buttonCaption });
                 });

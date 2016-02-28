@@ -20,6 +20,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 {
     public class OWMWeatherStation : IWeatherStation
     {
+        private readonly IHomeAutomationTimer _timer;
         private readonly ILogger _logger;
         private readonly Uri _weatherDataSourceUrl;
         private readonly WeatherStationTemperatureSensor _temperature;
@@ -49,6 +50,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             SituationSensor = _situation;
 
             Id = id;
+            _timer = timer;
             _logger = logger;
             _weatherDataSourceUrl = new Uri($"http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&APPID={appId}&units=metric");
 
@@ -62,7 +64,10 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
         }
 
         public DeviceId Id { get; }
-        public Daylight Daylight => new Daylight(_sunrise, _sunset);
+
+        // TODO: Move Daylight to other service because it is not part of weather state.
+        public Daylight Daylight => new Daylight(_timer.CurrentTime, _sunrise, _sunset);
+
         public ITemperatureSensor TemperatureSensor { get; }
         public IHumiditySensor HumiditySensor { get; }
         public IWeatherSituationSensor SituationSensor { get; }
@@ -99,10 +104,10 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
                         ParseWeatherData(response);
 
                         _previousResponse = response;
-                        _lastFetchedDifferentResponse = DateTime.Now;
+                        _lastFetchedDifferentResponse = _timer.CurrentDateTime;
                     }
 
-                    _lastFetched = DateTime.Now;
+                    _lastFetched = _timer.CurrentDateTime;
                 }
                 catch (Exception exception)
                 {

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using HA4IoT.Conditions.Specialized;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
@@ -26,8 +25,7 @@ namespace HA4IoT.Automations
         private bool _autoOpenIsApplied;
         private bool _autoCloseIsApplied;
         private bool _doNotOpenBeforeIsTraced; // TODO: Create trace wrapper with flag and "Reset()" method?
-        private bool _doNotOpenIfTemperatureIsTraced;
-        
+
         public RollerShutterAutomation(AutomationId id, IHomeAutomationTimer timer, IWeatherStation weatherStation, IHttpRequestController httpApiController, IActuatorController actuatorController, ILogger logger)
             : base(id)
         {
@@ -42,8 +40,8 @@ namespace HA4IoT.Automations
             _logger = logger;
 
             Settings = new RollerShutterAutomationSettings(id, httpApiController, logger);
-          
-            timer.Every(TimeSpan.FromSeconds(10)).Do(PerformPendingActions);
+
+            timer.Every(TimeSpan.FromSeconds(30)).Do(PerformPendingActions);
         }
 
         public RollerShutterAutomation WithRollerShutters(params IRollerShutter[] rollerShutters)
@@ -74,7 +72,7 @@ namespace HA4IoT.Automations
         {
             Settings.AutoCloseIfTooHotIsEnabled.Value = true;
             Settings.AutoCloseIfTooHotTemperaure.Value = maxOutsideTemperature;
-            
+
             return this;
         }
 
@@ -98,67 +96,69 @@ namespace HA4IoT.Automations
                 }
             }
 
-            Daylight daylightNow = _weatherStation.Daylight;
-
-            bool daylightInformationIsAvailable = daylightNow.Sunrise != TimeSpan.Zero && daylightNow.Sunset != TimeSpan.Zero;
-            if (!daylightInformationIsAvailable)
-            {
-                return;
-            }
-
+            // TODO: Add check for heavy hailing
 
             bool autoOpenIsInRange = GetIsDayCondition().GetIsFulfilled();
             bool autoCloseIsInRange = !autoOpenIsInRange;
 
             if (!_autoOpenIsApplied && autoOpenIsInRange)
             {
-                TimeSpan time = DateTime.Now.TimeOfDay;
-                if (Settings.DoNotOpenBeforeIsEnabled.Value && Settings.DoNotOpenBeforeTime.Value > time)
+                if (GetDoNotOpenDueToTimeIsAffected())
                 {
-                    if (!_doNotOpenBeforeIsTraced)
-                    {
-                        _logger.Info(GetTracePrefix() + "Skipping opening because it is too early.");
-                        _doNotOpenBeforeIsTraced = true;
-                    }
-                    
                     return;
                 }
 
-                // Consider creating an object for conditional traces.
-                _doNotOpenBeforeIsTraced = false;
-
-                if (Settings.DoNotOpenIfTooColdIsEnabled.Value &&
-                    _weatherStation.TemperatureSensor.GetValue() < Settings.DoNotOpenIfTooColdTemperature.Value)
+                if (GetDoNotOpenDueToColdTemperatureIsAffected())
                 {
-                    if (!_doNotOpenIfTemperatureIsTraced)
-                    {
-                        _logger.Info(GetTracePrefix() + "Skipping opening because it is too cold (" + Settings.DoNotOpenIfTooColdTemperature + "°C).");
-                        _doNotOpenIfTemperatureIsTraced = true;
-                    }
-
-                    return;
+                    _logger.Info(GetTracePrefix() + "Canceling opening because the roller shutter is maybe frozen.");
+                    _autoOpenIsApplied = true;
                 }
-
-                _doNotOpenBeforeIsTraced = false;
-
+                
                 _autoOpenIsApplied = true;
                 _autoCloseIsApplied = false;
                 _maxOutsideTemperatureApplied = false;
 
                 StartMove(RollerShutterState.MovingUp);
-                _logger.Info(GetTracePrefix() + "Applied sunrise");
-
-                return;
+                _logger.Info(GetTracePrefix() + "Applied sunrise");                
             }
-
-            if (!_autoCloseIsApplied && autoCloseIsInRange)
+            else if (!_autoCloseIsApplied && autoCloseIsInRange)
             {
                 _autoCloseIsApplied = true;
                 _autoOpenIsApplied = false;
-                
+
                 StartMove(RollerShutterState.MovingDown);
                 _logger.Info(GetTracePrefix() + "Applied sunset");
             }
+        }
+
+        private bool GetDoNotOpenDueToTimeIsAffected()
+        {
+            TimeSpan time = _timer.CurrentTime;
+            if (Settings.DoNotOpenBeforeIsEnabled.Value && Settings.DoNotOpenBeforeTime.Value > time)
+            {
+                // TODO: Create "Resetable" trace message.
+                if (!_doNotOpenBeforeIsTraced)
+                {
+                    _logger.Info(GetTracePrefix() + "Skipping opening because it is too early.");
+                    _doNotOpenBeforeIsTraced = true;
+                }
+
+                return true;
+            }
+
+            _doNotOpenBeforeIsTraced = false;
+            return false;
+        }
+
+        private bool GetDoNotOpenDueToColdTemperatureIsAffected()
+        {
+            if (Settings.DoNotOpenIfTooColdIsEnabled.Value &&
+                _weatherStation.TemperatureSensor.GetValue() < Settings.DoNotOpenIfTooColdTemperature.Value)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private IsDayCondition GetIsDayCondition()

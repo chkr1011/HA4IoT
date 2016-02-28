@@ -16,7 +16,7 @@ namespace HA4IoT.Core
     {
         private readonly HashAlgorithmProvider _hashAlgorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha1);
         private readonly IController _controller;
-        
+
         public ControllerApiDispatcher(IController controller)
         {
             if (controller == null) throw new ArgumentNullException(nameof(controller));

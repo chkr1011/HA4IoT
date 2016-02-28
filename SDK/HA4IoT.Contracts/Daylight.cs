@@ -2,9 +2,9 @@ using System;
 
 namespace HA4IoT.Contracts
 {
-    public struct Daylight
+    public class Daylight
     {
-        public Daylight(TimeSpan sunrise, TimeSpan sunset)
+        public Daylight(TimeSpan timeOfDay, TimeSpan sunrise, TimeSpan sunset)
         {
             Sunrise = sunrise;
             Sunset = sunset;
@@ -15,8 +15,7 @@ namespace HA4IoT.Contracts
             }
             else
             {
-                TimeSpan time = DateTime.Now.TimeOfDay;
-                IsDay = time > Sunrise && time < Sunset;
+                IsDay = timeOfDay > Sunrise && timeOfDay < Sunset;
             }
 
             IsNight = !IsDay;
@@ -29,10 +28,5 @@ namespace HA4IoT.Contracts
         public bool IsDay { get; }
 
         public bool IsNight { get; }
-
-        public Daylight Move(TimeSpan sunriseDiff, TimeSpan sunsetDiff)
-        {
-            return new Daylight(Sunrise.Add(sunriseDiff), Sunset.Add(sunsetDiff));
-        }
     }
 }

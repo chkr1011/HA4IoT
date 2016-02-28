@@ -109,7 +109,7 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels
 
                 foreach (var automation in Areas.SelectedItem.Automations)
                 {
-                    var configuration = JObject.FromObject(automation.Settings);
+                    var configuration = automation.SerializeSettings();
                     await _controllerClient.PostAutomationConfiguration(automation.Id, configuration);
                 }
             }

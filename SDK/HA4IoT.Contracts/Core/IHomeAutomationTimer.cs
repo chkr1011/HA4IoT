@@ -8,6 +8,8 @@ namespace HA4IoT.Contracts.Core
 
         TimeSpan CurrentTime { get; }
 
+        DateTime CurrentDateTime { get; }
+
         TimedAction In(TimeSpan dueTime);
 
         TimedAction Every(TimeSpan interval);

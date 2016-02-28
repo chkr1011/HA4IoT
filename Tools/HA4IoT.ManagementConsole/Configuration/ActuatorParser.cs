@@ -12,6 +12,7 @@ namespace HA4IoT.ManagementConsole.Configuration
     {
         private readonly JProperty _source;
 
+        private JObject _root;
         private JObject _settings;
         private JObject _appSettings;
 
@@ -27,6 +28,8 @@ namespace HA4IoT.ManagementConsole.Configuration
         public ActuatorItemVM Parse()
         {
             _type = _source.Value["Type"].Value<string>();
+
+            _root = (JObject)_source.Value;
             _settings = (JObject)_source.Value["Settings"];
             _appSettings = _settings.GetNamedObject("AppSettings", null);
 
@@ -103,6 +106,11 @@ namespace HA4IoT.ManagementConsole.Configuration
         private IEnumerable<SettingItemVM> GenerateStateMachineSettings()
         {
             yield return BoolSettingVM.CreateFrom(_appSettings, "DisplayVertical", false, "Display vertical");
+
+            foreach (var state in _root.GetNamedArray("states"))
+            {
+                yield return new StringSettingVM($"Caption.{state}", (string)state, $"Caption for '{state}'");
+            }
         }
 
         private IEnumerable<SettingItemVM> GenerateRollerShutterSettings()

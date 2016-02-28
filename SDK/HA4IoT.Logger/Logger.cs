@@ -85,6 +85,7 @@ namespace HA4IoT.Logger
 
             PrintNotification(type, text);
 
+            // TODO: Refactor to use IHomeAutomationTimer.CurrentDateTime;
             var logEntry = new LogEntry(_currentId, DateTime.Now, Environment.CurrentManagedThreadId, type, text);
             lock (_syncRoot)
             {

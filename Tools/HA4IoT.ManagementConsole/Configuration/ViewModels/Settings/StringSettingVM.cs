@@ -1,5 +1,4 @@
-﻿using System;
-using HA4IoT.ManagementConsole.Json;
+﻿using HA4IoT.ManagementConsole.Json;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.ManagementConsole.Configuration.ViewModels.Settings
