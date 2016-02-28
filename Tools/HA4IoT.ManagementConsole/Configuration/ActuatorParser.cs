@@ -109,7 +109,8 @@ namespace HA4IoT.ManagementConsole.Configuration
 
             foreach (var state in _root.GetNamedArray("states"))
             {
-                yield return new StringSettingVM($"Caption.{state}", (string)state, $"Caption for '{state}'");
+                string key = $"Caption.{state}";
+                yield return new StringSettingVM(key, _appSettings.GetNamedString(key, key), $"Caption for '{state}'");
             }
         }
 
