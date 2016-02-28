@@ -1,13 +1,11 @@
 <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/MC_SplashScreen.png?raw=true" width="100%">
-
-<h1 style="font-size:70px;">HA4IoT</h1>
-<h6>The first open source Home Automation SDK for Windows 10 IoT Core</h6>
-
 <img style="margin:25px" src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/Overview_4to3.png?raw=true" width="100%">
+
+HA4IoT (Home Automation for IoT) is the first SDK for Home Automation using Windows 10 IoT Core and a Raspberry Pi 2. It is a private real live project which covers many Home Automation purposes.
 
 > This brilliant project explores uncharted home-automation territory; it even includes a cat litterbox controller, which detects the cat and channels the air into an outdoor flue! Be sure to check out the whole hack; it's an incredible embedded system with extensive wiring built right into the house.
 >
-hackster.io
+hackster.io (https://www.hackster.io/blog/win-10-winners)
 
 ## Key features
 * Virtual actuators like push buttons, motion motion detectors, lamps, sockets, roller shutters which can be interconnected using a fluent API
@@ -33,14 +31,30 @@ hackster.io
 
 ## Available virtual actuators
 * Button
+* Virtual Button (only available at the App)
+* Switch
 * Motion detector
-* Roller shutters
+* Roller shutter
 * Lamp
 * Socket
-* Combine multiple actuators into virtual ones
 * Humidity sensor
 * Temperature sensor
-* State machine (for complex actuators like fans or 'moods' for lights)
+* Window
+* State machine (for complex actuators like fans or 'moods' for lights or fans)
+* Combine multiple actuators into virtual ones
+
+## Available automations
+* Opening roller shutters after sunrise
+* Closing roller shutters after sunset
+* Closing roller shutters if outside temperature reaches a custom value (intended for rooms below the roof)
+* Prevent automatic opening of roller shutters if they maybe frozen (checking of outside temperature)
+* Prevent automatic opening of roller shutters if sunrise is too early (before your alarm clock)
+* Automatic light based on motion detectors
+* Autoamtic light based on time
+* Autoamtic lights can be configured to be only active at night
+* Disable automatic light if another light is already active
+* Disable every actuator temporary
+* The project provides a powerful condition framework which allows creating of complex autoamtions using C#
 
 ## Quick start
 The software solution contains the project ``HA4IoT.Controller.Demo`` which can be used to start playing around with the SDK. The other projects ``HA4IoT.Controller.Main`` and ``HA4IoT.Controller.Main`` containing a full "real life" configuration which can be used as an example but will not work without the required hardware.
