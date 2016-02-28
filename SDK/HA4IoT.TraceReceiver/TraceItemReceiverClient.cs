@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace HA4IoT.TraceReceiver
 {
-    public class TraceReceiverClient
+    public class TraceItemReceiverClient
     {
         private readonly UdpClient _udpClient;
         private CancellationTokenSource _cancellationTokenSource;
 
-        public TraceReceiverClient()
+        public TraceItemReceiverClient()
         {
             _udpClient = new UdpClient(19227);
             _udpClient.Client.ReceiveBufferSize = 64*1024;

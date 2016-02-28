@@ -8,7 +8,7 @@ namespace HA4IoT.TraceViewer
     public static class Program
     {
         private static readonly object SyncRoot = new object();
-        private static readonly TraceReceiverClient TraceItemReceiver = new TraceReceiverClient();
+        private static readonly TraceItemReceiverClient TraceItemReceiver = new TraceItemReceiverClient();
 
         private static bool _loggingIsEnabled;
 
@@ -73,10 +73,10 @@ namespace HA4IoT.TraceViewer
         private static void PrintTraceItem(object sender, TraceItemReceivedEventArgs e)
         {
             string timestamp = e.TraceItem.Timestamp.ToString("yyyy-MM-dd HH:mm:ss.fff");
-            var line = $"[{e.SenderAddress}] [{e.TraceItem.Id}] [{timestamp}] [{e.TraceItem.ThreadId}] [{e.TraceItem.Type}]: {e.TraceItem.Message}";
+            var line = $"[{e.SenderAddress}] [{e.TraceItem.Id}] [{timestamp}] [{e.TraceItem.ThreadId}] [{e.TraceItem.Severity}]: {e.TraceItem.Message}";
 
             var color = ConsoleColor.White;
-            switch (e.TraceItem.Type)
+            switch (e.TraceItem.Severity)
             {
                 case TraceItemSeverity.Verbose:
                 {

@@ -43,7 +43,7 @@
     <Compile Include="TraceItemReceivedEventArgs.cs" />
     <Compile Include="TraceItemSeverity.cs" />
     <Compile Include="TraceItemsParser.cs" />
-    <Compile Include="TraceReceiverClient.cs" />
+    <Compile Include="TraceItemReceiverClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -8,13 +8,13 @@ namespace HA4IoT.TraceReceiver
             long id,
             DateTime timestamp,
             int threadId,
-            TraceItemSeverity type,
+            TraceItemSeverity severity,
             string message)
         {
             Id = id;
             Timestamp = timestamp;
             ThreadId = threadId;
-            Type = type;
+            Severity = severity;
             Message = message;
         }
 
@@ -24,7 +24,7 @@ namespace HA4IoT.TraceReceiver
 
         public int ThreadId { get; }
 
-        public TraceItemSeverity Type { get; }
+        public TraceItemSeverity Severity { get; }
 
         public string Message { get; }
     }
