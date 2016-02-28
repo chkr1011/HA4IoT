@@ -31,6 +31,11 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels
 
             foreach (var setting in Settings)
             {
+                if (setting.IsReadOnly)
+                {
+                    continue;
+                }
+
                 if (setting.IsAppSetting)
                 {
                     appSettings[setting.Key] = setting.SerializeValue();

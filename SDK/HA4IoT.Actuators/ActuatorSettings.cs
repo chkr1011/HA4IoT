@@ -20,11 +20,11 @@ namespace HA4IoT.Actuators
         }
 
         [HideFromToJsonObject]
-        public ActuatorId ActuatorId { get; private set; }
-
-        public ISetting<JsonObject> AppSettings { get; }
+        public ActuatorId ActuatorId { get; }
 
         public ISetting<bool> IsEnabled { get; }
+
+        public ISetting<JsonObject> AppSettings { get; }
 
         private static string GenerateFilename(ActuatorId actuatorId)
         {

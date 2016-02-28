@@ -60,7 +60,7 @@ namespace HA4IoT.ManagementConsole.Configuration
                 automations.Add(new AutomationParser(automationProperty).Parse());
             }
 
-            automations.Sort((x, y) => string.Compare(x.Id, y.Id, StringComparison.Ordinal));
+            automations.Sort((x, y) => string.Compare(x.Caption.Value, y.Caption.Value, StringComparison.Ordinal));
 
             return automations;
         } 

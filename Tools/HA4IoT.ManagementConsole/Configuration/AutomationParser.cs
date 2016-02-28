@@ -36,6 +36,7 @@ namespace HA4IoT.ManagementConsole.Configuration
             item.Settings.AddRange(GenerateGeneralSettings());
 
             item.IsEnabled = (BoolSettingVM)item.Settings.First(s => s.Key == "IsEnabled");
+            item.Caption = (StringSettingVM)item.Settings.First(s => s.Key == "Caption");
 
             switch (_type)
             {
@@ -51,22 +52,22 @@ namespace HA4IoT.ManagementConsole.Configuration
 
         private IEnumerable<SettingItemVM> GenerateRollerShutterAutoamtionSettings()
         {
-            yield return BoolSettingVM.CreateFrom(_appSettings, "DoNotOpenBeforeIsEnabled", true, "'Do not open before' enabled");
-            yield return TimeSpanSettingVM.CreateFrom(_appSettings, "DoNotOpenBeforeTime", TimeSpan.Parse("07:15:00"), "'Do not open before' time");
+            yield return BoolSettingVM.CreateFrom(_appSettings, "DoNotOpenBeforeIsEnabled", true, "'Do not open before' enabled").WithIsNoAppSetting();
+            yield return TimeSpanSettingVM.CreateFrom(_appSettings, "DoNotOpenBeforeTime", TimeSpan.Parse("07:15:00"), "'Do not open before' time").WithIsNoAppSetting();
 
-            yield return BoolSettingVM.CreateFrom(_appSettings, "DoNotOpenIfTooColdIsEnabled", true, "'Do not open if frozen' enabled");
-            yield return FloatSettingVM.CreateFrom(_appSettings, "DoNotOpenIfTooColdTemperature", 2, "'Do not open if frozen' temperature");
+            yield return BoolSettingVM.CreateFrom(_appSettings, "DoNotOpenIfTooColdIsEnabled", true, "'Do not open if frozen' enabled").WithIsNoAppSetting();
+            yield return FloatSettingVM.CreateFrom(_appSettings, "DoNotOpenIfTooColdTemperature", 2, "'Do not open if frozen' temperature").WithIsNoAppSetting();
 
-            yield return BoolSettingVM.CreateFrom(_appSettings, "AutoCloseIfTooHotIsEnabled", true, "'Close if too hot' enabled");
-            yield return FloatSettingVM.CreateFrom(_appSettings, "AutoCloseIfTooHotTemperaure", 25F, "'Close if too hot' temperature");
+            yield return BoolSettingVM.CreateFrom(_appSettings, "AutoCloseIfTooHotIsEnabled", true, "'Close if too hot' enabled").WithIsNoAppSetting();
+            yield return FloatSettingVM.CreateFrom(_appSettings, "AutoCloseIfTooHotTemperaure", 25F, "'Close if too hot' temperature").WithIsNoAppSetting();
 
             yield return
                 TimeSpanSettingVM.CreateFrom(_appSettings, "OpenOnSunriseOffset", TimeSpan.Parse("-00:30:00"),
-                    "Sunrise offset");
+                    "Sunrise offset").WithIsNoAppSetting();
 
             yield return
                 TimeSpanSettingVM.CreateFrom(_appSettings, "CloseOnSunsetOffset", TimeSpan.Parse("00:30:00"),
-                    "Sunset offset");
+                    "Sunset offset").WithIsNoAppSetting();
         }
 
         private IEnumerable<SettingItemVM> GenerateGeneralSettings()
@@ -74,6 +75,7 @@ namespace HA4IoT.ManagementConsole.Configuration
             yield return new StringSettingVM("Id", _source.Name, "ID").WithIsReadOnly();
             yield return new StringSettingVM("Type", _type, "Type").WithIsReadOnly();
             yield return BoolSettingVM.CreateFrom(_settings, "IsEnabled", true, "Enabled").WithIsNoAppSetting();
+            yield return StringSettingVM.CreateFrom(_appSettings, "Caption", _source.Name, "Caption");
         }
     }
 }

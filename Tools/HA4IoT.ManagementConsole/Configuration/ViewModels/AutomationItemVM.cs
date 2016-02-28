@@ -19,6 +19,8 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels
 
         public BoolSettingVM IsEnabled { get; set; }
 
+        public StringSettingVM Caption { get; set; }
+        
         public JObject SerializeSettings()
         {
             var configuration = new JObject();
@@ -29,6 +31,11 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels
 
             foreach (var setting in Settings)
             {
+                if (setting.IsReadOnly)
+                {
+                    continue;
+                }
+
                 if (setting.IsAppSetting)
                 {
                     appSettings[setting.Key] = setting.SerializeValue();

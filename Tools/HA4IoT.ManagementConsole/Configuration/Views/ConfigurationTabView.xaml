@@ -199,9 +199,10 @@
                                                               Fill="#FF337AB7"
                                                               Stretch="Uniform" />
                                                     </StackPanel>
+
                                                     <Label Grid.Column="1"
                                                            Margin="10,0,0,0"
-                                                           Content="{Binding Id,
+                                                           Content="{Binding Caption.Value,
                                                                              Mode=OneWay}" />
 
                                                     <Label Grid.Column="2"
