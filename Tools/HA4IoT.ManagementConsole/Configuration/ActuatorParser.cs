@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using HA4IoT.ManagementConsole.Configuration.ViewModels;
 using HA4IoT.ManagementConsole.Configuration.ViewModels.Settings;
 using HA4IoT.ManagementConsole.Json;
@@ -9,7 +11,11 @@ namespace HA4IoT.ManagementConsole.Configuration
     public class ActuatorParser
     {
         private readonly JProperty _source;
+
+        private JObject _settings;
         private JObject _appSettings;
+
+        private string _type;
 
         public ActuatorParser(JProperty source)
         {
@@ -20,37 +26,89 @@ namespace HA4IoT.ManagementConsole.Configuration
 
         public ActuatorItemVM Parse()
         {
-            string type = _source.Value["Type"].Value<string>();
+            _type = _source.Value["Type"].Value<string>();
+            _settings = (JObject)_source.Value["Settings"];
+            _appSettings = _settings.GetNamedObject("AppSettings", null);
 
-            var settings = (JObject)_source.Value["Settings"];
-            _appSettings = settings.GetNamedObject("AppSettings", null);
-            
-            var item = new ActuatorItemVM(_source.Name, type);
+            var item = new ActuatorItemVM(_source.Name, _type);
             item.SortValue = (int)_appSettings.GetNamedNumber("SortValue", 0);
 
-            var isEnabledSetting = new BoolSettingVM("IsEnabled", settings, true, "Enabled") { IsAppSetting = false };
-            item.Settings.Add(isEnabledSetting);
-            item.IsEnabled = isEnabledSetting;
+            item.Settings.AddRange(GenerateGeneralSettings());
 
-            var imageSetting = new StringSettingVM("Image", _appSettings, "DefaultActuator", "Image");
-            item.Settings.Add(imageSetting);
-            item.Image = imageSetting;
+            item.IsEnabled = (BoolSettingVM)item.Settings.First(s => s.Key == "IsEnabled");
+            item.Caption = (StringSettingVM)item.Settings.First(s => s.Key == "Caption");
 
-            var captionSetting = new StringSettingVM("Caption", _appSettings, _source.Name, "Caption");
-            item.Settings.Add(captionSetting);
-            item.Caption = captionSetting;
+            switch (_type)
+            {
+                case "HA4IoT.Actuators.RollerShutter":
+                    {
+                        item.Settings.AddRange(GenerateRollerShutterSettings());
+                        break;
+                    }
 
-            item.Settings.Add(new StringSettingVM("OverviewCaption", _appSettings, _source.Name, "Caption (Overviews)"));
-            item.Settings.Add(new BoolSettingVM("Hide", _appSettings, false, "Hidden"));
-            item.Settings.Add(new BoolSettingVM("DisplayVertical", _appSettings, false, "Display vertical"));
-            item.Settings.Add(new BoolSettingVM("IsPartOfOnStateCounter", _appSettings, false, "Is part of 'On-State' counter"));
-            item.Settings.Add(new StringSettingVM("OnStateId", _appSettings, "On", "'On-State' ID"));
+                case "HA4IoT.Actuators.StateMachine":
+                    {
+                        item.Settings.AddRange(GenerateStateMachineSettings());
+                        item.Settings.AddRange(GenerateOnStateCounterSettings());
+                        break;
+                    }
 
-            item.Settings.Add(new IntSettingVM("MaxPosition", _appSettings, 20000, "Max position"));
-            //item.ExtendedSettings.Add(new FloatSettingVM("Max outside temperature for 'Auto Close'", (float)_appSettings.GetNamedNumber("MaxOutsideTemperatureForAutoClose", 26)));
-            //item.Settings.Add(new IntSettingVM("MaxMovingDuration" "Max moving duration", (int)_appSettings.GetNamedNumber("MaxMovingDuration", 26)));
+                case "HA4IoT.Actuators.Lamp":
+                    {
+                        item.Settings.AddRange(GenerateOnStateCounterSettings());
+                        break;
+                    }
+
+                case "HA4IoT.Actuators.Socket":
+                    {
+                        item.Settings.AddRange(GenerateOnStateCounterSettings());
+                        break;
+                    }
+
+                case "HA4IoT.Actuators.HumiditySensor":
+                    {
+                        item.Settings.AddRange(GenerateHumiditySensorSettings());
+                        break;
+                    }
+            }
 
             return item;
+        }
+
+        private IEnumerable<SettingItemVM> GenerateHumiditySensorSettings()
+        {
+            yield return new FloatSettingVM("WarningValue", _appSettings, 60, "Warning value");
+            yield return new FloatSettingVM("DangerValue", _appSettings, 70, "Danger value");
+        } 
+
+        private IEnumerable<SettingItemVM> GenerateOnStateCounterSettings()
+        {
+            yield return
+                BoolSettingVM.CreateFrom(_appSettings, "IsPartOfOnStateCounter", false, "Is part of 'On-State' counter");
+
+            yield return StringSettingVM.CreateFrom(_appSettings, "OnStateId", "On", "'On-State' ID");
+        }
+
+        private IEnumerable<SettingItemVM> GenerateGeneralSettings()
+        {
+            yield return new StringSettingVM("Id", _source.Name, "ID") { IsReadOnly = true };
+            yield return new StringSettingVM("Type", _type, "Type") { IsReadOnly = true };
+            yield return BoolSettingVM.CreateFrom(_appSettings, "IsEnabled", true, "Enabled").WithIsNoAppSetting();
+            yield return BoolSettingVM.CreateFrom(_appSettings, "Hide", false, "Hidden");
+            yield return StringSettingVM.CreateFrom(_appSettings, "Image", "DefaultActuator", "Image");
+            yield return StringSettingVM.CreateFrom(_appSettings, "Caption", _source.Name, "Caption");
+            yield return StringSettingVM.CreateFrom(_appSettings, "OverviewCaption", _source.Name, "Caption (Overviews)");
+        }
+
+        private IEnumerable<SettingItemVM> GenerateStateMachineSettings()
+        {
+            yield return BoolSettingVM.CreateFrom(_appSettings, "DisplayVertical", false, "Display vertical");
+        }
+
+        private IEnumerable<SettingItemVM> GenerateRollerShutterSettings()
+        {
+            yield return IntSettingVM.CreateFrom(_appSettings, "MaxPosition", 20000, "Max position");
+            yield return TimeSpanSettingVM.CreateFrom(_settings, "AutoOffTimeout", TimeSpan.FromSeconds(22), "Auto off");
         }
     }
 }

@@ -33,6 +33,41 @@
         </Setter>
     </Style>
 
+    <Style x:Key="ToolBarCheckBox" TargetType="{x:Type CheckBox}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type CheckBox}">
+                    <Border x:Name="Border"
+                            MinWidth="80"
+                            MinHeight="26"
+                            Background="#FF337AB7"
+                            BorderBrush="DimGray"
+                            BorderThickness="1">
+                        <Label VerticalAlignment="Center"
+                               HorizontalContentAlignment="Center"
+                               Foreground="WhiteSmoke">
+                            <Label.Style>
+                                <Style TargetType="{x:Type Label}" />
+                            </Label.Style>
+                            <ContentPresenter Margin="10,2"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Content="{TemplateBinding Content}" />
+                        </Label>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="False">
+                            <Setter TargetName="Border" Property="Background" Value="Transparent" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="#FF226AA6" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="{x:Type TabControl}">
         <Setter Property="ItemContainerStyle">
             <Setter.Value>

@@ -9,7 +9,7 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels
     {
         public AreaItemVM(string id) : base(id)
         {
-            Settings = new ObservableCollection<SettingBaseVM>();
+            Settings = new ObservableCollection<SettingItemVM>();
             Actuators = new SelectableObservableCollection<ActuatorItemVM>();
             Automations = new SelectableObservableCollection<AutomationItemVM>();
         }
@@ -18,7 +18,7 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels
 
         public StringSettingVM Caption { get; set; }
 
-        public ObservableCollection<SettingBaseVM> Settings { get; private set; }
+        public ObservableCollection<SettingItemVM> Settings { get; private set; }
 
         public SelectableObservableCollection<ActuatorItemVM> Actuators { get; private set; }
 

@@ -1,16 +1,21 @@
-﻿using System;
-using HA4IoT.ManagementConsole.Json;
+﻿using HA4IoT.ManagementConsole.Json;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.ManagementConsole.Configuration.ViewModels.Settings
 {
-    public class IntSettingVM : SettingBaseVM
+    public class IntSettingVM : SettingItemVM
     {
         private int _value;
 
-        public IntSettingVM(string key,  JObject source, int initalValue, string caption) : base(key, caption)
+        public IntSettingVM(string key, int value, string caption) : base(key, caption)
         {
-            _value = (int)source.GetNamedNumber(key, initalValue);
+            _value = value;
+        }
+
+        public static IntSettingVM CreateFrom(JObject source, string key, int defaultValue, string caption)
+        {
+            int value = (int)source.GetNamedNumber(key, defaultValue);
+            return new IntSettingVM(key, value, caption);
         }
 
         public int Value

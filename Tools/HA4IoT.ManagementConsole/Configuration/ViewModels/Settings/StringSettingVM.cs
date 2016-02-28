@@ -4,13 +4,19 @@ using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.ManagementConsole.Configuration.ViewModels.Settings
 {
-    public class StringSettingVM : SettingBaseVM
+    public class StringSettingVM : SettingItemVM
     {
         private string _value;
 
-        public StringSettingVM(string key, JObject source, string defaultValue, string caption) : base(key, caption)
+        public StringSettingVM(string key, string value, string caption) : base(key, caption)
         {
-            _value = source.GetNamedString(key, defaultValue);
+            _value = value;
+        }
+
+        public static StringSettingVM CreateFrom(JObject source, string key, string defaultValue, string caption)
+        {
+            string value = source.GetNamedString(key, defaultValue);
+            return new StringSettingVM(key, value, caption);
         }
 
         public string Value

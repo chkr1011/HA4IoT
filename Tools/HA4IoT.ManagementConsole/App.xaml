@@ -23,7 +23,10 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0" Content="{Binding Caption}" />
-                    <TextBox Grid.Column="1" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Grid.Column="1"
+                             IsReadOnly="{Binding IsReadOnly}"
+                             Text="{Binding Value,
+                                            UpdateSourceTrigger=PropertyChanged}" />
                 </Grid>
             </DataTemplate>
             <DataTemplate DataType="{x:Type settings:BoolSettingVM}">
@@ -33,7 +36,17 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0" Content="{Binding Caption}" />
-                    <CheckBox Grid.Column="1" IsChecked="{Binding Value, UpdateSourceTrigger=PropertyChanged}" />
+                    <CheckBox Grid.Column="1" IsChecked="{Binding Value, UpdateSourceTrigger=PropertyChanged}">
+                        <CheckBox.Style>
+                            <Style TargetType="{x:Type CheckBox}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsReadOnly}" Value="True">
+                                        <Setter Property="IsEnabled" Value="False" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </CheckBox.Style>
+                    </CheckBox>
                 </Grid>
             </DataTemplate>
             <DataTemplate DataType="{x:Type settings:IntSettingVM}">
@@ -43,7 +56,36 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0" Content="{Binding Caption}" />
-                    <TextBox Grid.Column="1" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Grid.Column="1"
+                             IsReadOnly="{Binding IsReadOnly}"
+                             Text="{Binding Value,
+                                            UpdateSourceTrigger=PropertyChanged}" />
+                </Grid>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type settings:FloatSettingVM}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ActuatorCaption" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Content="{Binding Caption}" />
+                    <TextBox Grid.Column="1"
+                             IsReadOnly="{Binding IsReadOnly}"
+                             Text="{Binding Value,
+                                            UpdateSourceTrigger=PropertyChanged}" />
+                </Grid>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type settings:TimeSpanSettingVM}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ActuatorCaption" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Content="{Binding Caption}" />
+                    <TextBox Grid.Column="1"
+                             IsReadOnly="{Binding IsReadOnly}"
+                             Text="{Binding Value,
+                                            UpdateSourceTrigger=PropertyChanged}" />
                 </Grid>
             </DataTemplate>
         </ResourceDictionary>

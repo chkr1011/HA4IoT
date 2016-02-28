@@ -4,6 +4,7 @@ using HA4IoT.ManagementConsole.Configuration.ViewModels;
 using HA4IoT.ManagementConsole.Controller;
 using HA4IoT.ManagementConsole.Core;
 using HA4IoT.ManagementConsole.Discovery.ViewModels;
+using HA4IoT.ManagementConsole.Health.ViewModels;
 using HA4IoT.ManagementConsole.Home.ViewModels;
 
 namespace HA4IoT.ManagementConsole.Chrome.ViewModel
@@ -40,6 +41,7 @@ namespace HA4IoT.ManagementConsole.Chrome.ViewModel
 
             HomeTab = new HomeTabVM(_controllerClient);
             ConfigurationTab = new ConfigurationTabVM(_controllerClient, _unhandledExceptionPresenter);
+            HealthTab = new HealthTabVM(_controllerClient);
 
             Dialog = _controllerSelector;
         }
@@ -49,6 +51,8 @@ namespace HA4IoT.ManagementConsole.Chrome.ViewModel
         public HomeTabVM HomeTab { get; }
 
         public ConfigurationTabVM ConfigurationTab { get; }
+
+        public HealthTabVM HealthTab { get; }
 
         public PropertyVM<string> ControllerAddress { get; }
 

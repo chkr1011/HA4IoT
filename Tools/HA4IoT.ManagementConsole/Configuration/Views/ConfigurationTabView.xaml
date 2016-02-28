@@ -11,7 +11,6 @@
              d:DesignHeight="1024"
              d:DesignWidth="1280"
              mc:Ignorable="d">
-
     <DockPanel>
         <ToolBar DockPanel.Dock="Top">
             <Button Command="{Binding SaveCommand}"
@@ -87,6 +86,7 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <ListBox Grid.Column="0"
+                                             MinWidth="200"
                                              HorizontalContentAlignment="Stretch"
                                              BorderThickness="0"
                                              Grid.IsSharedSizeScope="True"

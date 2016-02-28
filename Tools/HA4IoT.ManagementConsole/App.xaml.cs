@@ -24,8 +24,7 @@ namespace HA4IoT.ManagementConsole
             catch (Exception exception)
             {
                 MessageBox.Show(exception.ToString(), "Startup failed - HA4IoT Management Console", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            
+            }       
         }
     }
 }

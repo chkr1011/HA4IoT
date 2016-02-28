@@ -70,6 +70,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Health\Views\HealthTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Home\Views\HomeTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -88,21 +92,18 @@
     <Compile Include="Configuration\ActuatorTypeToImageConverter.cs" />
     <Compile Include="Configuration\AreaParser.cs" />
     <Compile Include="Configuration\AutomationParser.cs" />
-    <Compile Include="Configuration\ViewModels\AutomationSettingsVM.cs" />
     <Compile Include="Configuration\ViewModels\Settings\BoolSettingVM.cs" />
     <Compile Include="Configuration\ViewModels\Settings\FloatSettingVM.cs" />
-    <Compile Include="Configuration\ViewModels\Settings\SettingBaseVM.cs" />
+    <Compile Include="Configuration\ViewModels\Settings\SettingItemVM.cs" />
     <Compile Include="Configuration\ViewModels\Settings\IntSettingVM.cs" />
     <Compile Include="Configuration\ViewModels\Settings\StringSettingVM.cs" />
+    <Compile Include="Configuration\ViewModels\Settings\TimeSpanSettingVM.cs" />
     <Compile Include="Controller\DiscoveryResponseReceivedEventArgs.cs" />
     <Compile Include="Controller\DiscoveryClient.cs" />
     <Compile Include="Controller\DiscoveryResponse.cs" />
     <Compile Include="Core\DelegateCommand.cs" />
     <Compile Include="Configuration\ConfigurationParser.cs" />
     <Compile Include="Configuration\StatusParser.cs" />
-    <Compile Include="Configuration\ViewModels\ActuatorAppSettingsVM.cs" />
-    <Compile Include="Configuration\ViewModels\ActuatorSettingsVM.cs" />
-    <Compile Include="Configuration\ViewModels\RollerShutterAutomationEditorVM.cs" />
     <Compile Include="Configuration\ViewModels\ActuatorItemVM.cs" />
     <Compile Include="Configuration\ViewModels\AreaItemVM.cs" />
     <Compile Include="Configuration\ViewModels\AutomationItemVM.cs" />
@@ -118,12 +119,17 @@
     <Compile Include="Configuration\ViewModels\ConfigurationTabVM.cs" />
     <Compile Include="Controller\ControllerClient.cs" />
     <Compile Include="Core\ICheckCanExecute.cs" />
+    <Compile Include="Core\ObservableCollectionExtensions.cs" />
     <Compile Include="Core\PropertyVM.cs" />
     <Compile Include="Core\SelectableObservableCollection.cs" />
     <Compile Include="Discovery\ViewModels\ControllerItemVM.cs" />
     <Compile Include="Discovery\ViewModels\ControllerSelectorVM.cs" />
     <Compile Include="Discovery\Views\ControllerSelectorView.xaml.cs">
       <DependentUpon>ControllerSelectorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Health\ViewModels\HealthTabVM.cs" />
+    <Compile Include="Health\Views\HealthTabView.xaml.cs">
+      <DependentUpon>HealthTabView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Home\OpenLinkCommand.cs" />
     <Compile Include="Home\ViewModels\HomeTabVM.cs" />
@@ -179,7 +185,12 @@
   <ItemGroup>
     <SplashScreen Include="Images\SplashScreen.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\SDK\HA4IoT.TraceReceiver\HA4IoT.TraceReceiver.csproj">
+      <Project>{25C33CC4-07E7-41AA-B2DC-299AFBB9DE25}</Project>
+      <Name>HA4IoT.TraceReceiver</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -26,10 +26,11 @@ namespace HA4IoT.ManagementConsole.Configuration
 
             var areaItem = new AreaItemVM(_source.Name);
             areaItem.SortValue = (int)_appSettings.GetNamedNumber("SortValue", 0);
-            areaItem.Caption = new StringSettingVM("Caption", _appSettings, _source.Name, "Caption");
+            areaItem.Caption = StringSettingVM.CreateFrom(_appSettings, "Caption", _source.Name, "Caption");
             areaItem.Settings.Add(areaItem.Caption);
             
             areaItem.Actuators.AddRange(ParseActuators());
+            areaItem.Automations.AddRange(ParseAutomations());
             
             return areaItem;
         }
@@ -48,5 +49,20 @@ namespace HA4IoT.ManagementConsole.Configuration
 
             return actuators;
         }
+
+        private List<AutomationItemVM> ParseAutomations()
+        {
+            var automationProperties = ((JObject)_source.Value["Automations"]).Properties();
+
+            var automations = new List<AutomationItemVM>();
+            foreach (JProperty automationProperty in automationProperties)
+            {
+                automations.Add(new AutomationParser(automationProperty).Parse());
+            }
+
+            automations.Sort((x, y) => x.SortValue.CompareTo(y.SortValue));
+
+            return automations;
+        } 
     }
 }

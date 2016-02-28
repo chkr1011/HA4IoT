@@ -3,13 +3,19 @@ using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.ManagementConsole.Configuration.ViewModels.Settings
 {
-    public class BoolSettingVM : SettingBaseVM
+    public class BoolSettingVM : SettingItemVM
     {
         private bool _value;
 
-        public BoolSettingVM(string key, JObject source, bool initialValue, string caption) : base(key, caption)
+        public BoolSettingVM(string key, bool value, string caption) : base(key, caption)
         {
-            _value = source.GetNamedBoolean(key, initialValue);
+            _value = value;
+        }
+
+        public static BoolSettingVM CreateFrom(JObject source, string key, bool defaultValue, string caption)
+        {
+            bool value = source.GetNamedBoolean(key, defaultValue);
+            return new BoolSettingVM(key, value, caption);
         }
 
         public bool Value
@@ -25,6 +31,12 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels.Settings
         public override JValue SerializeValue()
         {
             return new JValue(Value);
+        }
+
+        public SettingItemVM WithIsNoAppSetting()
+        {
+            IsAppSetting = false;
+            return this;
         }
     }
 }

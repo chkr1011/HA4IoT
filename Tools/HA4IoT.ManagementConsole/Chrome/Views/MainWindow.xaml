@@ -7,6 +7,7 @@
         xmlns:viewModels="clr-namespace:HA4IoT.ManagementConsole.Configuration.ViewModels"
         xmlns:views="clr-namespace:HA4IoT.ManagementConsole.Configuration.Views"
         xmlns:views1="clr-namespace:HA4IoT.ManagementConsole.Home.Views"
+        xmlns:views2="clr-namespace:HA4IoT.ManagementConsole.Health.Views"
         Title="Management Console - HA4IoT"
         Width="1480"
         Height="1024"
@@ -106,7 +107,6 @@
                     </TabItem.Header>
                     <views:ConfigurationTabView DataContext="{Binding ConfigurationTab}" />
                 </TabItem>
-
                 <TabItem>
                     <TabItem.Header>
                         <DockPanel>
@@ -123,8 +123,8 @@
                             </TextBlock>
                         </DockPanel>
                     </TabItem.Header>
+                    <views2:HealthTabView DataContext="{Binding HealthTab}" />
                 </TabItem>
-
             </TabControl>
         </DockPanel>
 
