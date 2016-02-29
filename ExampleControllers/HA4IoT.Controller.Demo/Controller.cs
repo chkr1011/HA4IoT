@@ -1,7 +1,4 @@
 ﻿using System;
-using System.IO;
-using Windows.Data.Json;
-using Windows.Storage;
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Automations;
@@ -50,7 +47,7 @@ namespace HA4IoT.Controller.Demo
                 .WithRemoteSocket(0, ic.GetSequence(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1, RemoteSocketCommand.TurnOn), ic.GetSequence(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1, RemoteSocketCommand.TurnOff));
             
             // Setup the weather station which provides sunrise and sunset information.
-            SetupWeatherStation();
+            AddDevice(new OWMWeatherStationInitializer(Timer, HttpApiController, Logger).CreateWeatherStation());
 
             // Add the example area with the example actuators.
             var area = this.CreateArea(Room.ExampleRoom)
@@ -129,27 +126,6 @@ namespace HA4IoT.Controller.Demo
                 .WithButton(new ActuatorId("red1"), b => b.WithShortAction(() => ledStripRemote.TurnRed1()))
                 .WithButton(new ActuatorId("green1"), b => b.WithShortAction(() => ledStripRemote.TurnGreen1()))
                 .WithButton(new ActuatorId("blue1"), b => b.WithShortAction(() => ledStripRemote.TurnBlue1()));
-        }
-
-        private void SetupWeatherStation()
-        {
-            try
-            {
-                var configuration = JsonObject.Parse(File.ReadAllText(Path.Combine(ApplicationData.Current.LocalFolder.Path, "WeatherStationConfiguration.json")));
-
-                double lat = configuration.GetNamedNumber("lat");
-                double lon = configuration.GetNamedNumber("lon");
-                string appId = configuration.GetNamedString("appID");
-
-                var weatherStation = new OWMWeatherStation(DeviceIdFactory.CreateIdFrom(InstalledDevice.WeatherStation), lat, lon, appId, Timer, HttpApiController, Logger);
-                Logger.Info("WeatherStation initialized successfully");
-
-                AddDevice(weatherStation);
-            }
-            catch (Exception exception)
-            {
-                Logger.Warning("Unable to create weather station. " + exception.Message);
-            }            
         }
     }
 }

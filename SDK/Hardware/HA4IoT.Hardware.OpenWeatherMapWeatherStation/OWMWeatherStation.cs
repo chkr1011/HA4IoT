@@ -20,6 +20,11 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 {
     public class OWMWeatherStation : IWeatherStation
     {
+        private readonly string _cacheFilename = Path.Combine(ApplicationData.Current.LocalFolder.Path,
+            "WeatherStationValues.json");
+
+        public static readonly DeviceId DefaultDeviceId = new DeviceId("OWMWeatherStation");
+
         private readonly IHomeAutomationTimer _timer;
         private readonly ILogger _logger;
         private readonly Uri _weatherDataSourceUrl;
@@ -122,8 +127,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 
         private void PersistWeatherData(string weatherData)
         {
-            string filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "WeatherStationValues.json");
-            File.WriteAllText(filename, weatherData);
+            File.WriteAllText(_cacheFilename, weatherData);
         }
 
         private void ParseWeatherData(string weatherData)
@@ -185,20 +189,19 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 
         private void LoadPersistedValues()
         {
-            string filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "WeatherStationValues.json");
-            if (!File.Exists(filename))
+            if (!File.Exists(_cacheFilename))
             {
                 return;
             }
 
             try
             {
-                ParseWeatherData(File.ReadAllText(filename));
+                ParseWeatherData(File.ReadAllText(_cacheFilename));
             }
             catch (Exception)
             {
                 _logger.Warning("Unable to load persisted weather station values.");
-                File.Delete(filename);
+                File.Delete(_cacheFilename);
             }
         }
     }

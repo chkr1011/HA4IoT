@@ -28,10 +28,9 @@ namespace HA4IoT.Controller.Main
             var pi2PortController = new Pi2PortController();
             
             var i2CBus = new BuiltInI2CBus(Logger);
-
-            CreateWeatherStation();
-
             AddDevice(new I2CHardwareBridge(new DeviceId("HB"), new I2CSlaveAddress(50), i2CBus, Timer));
+
+            AddDevice(new OWMWeatherStationInitializer(Timer, HttpApiController, Logger).CreateWeatherStation());
 
             var ccToolsBoardController = new CCToolsBoardController(this, i2CBus, HttpApiController, Logger);
             
@@ -103,27 +102,6 @@ namespace HA4IoT.Controller.Main
             catch (Exception exception)
             {
                 Logger.Warning("Unable to create azure event hub publisher. " + exception.Message);
-            }
-        }
-
-        private void CreateWeatherStation()
-        {
-            try
-            {
-                var configuration = JsonObject.Parse(File.ReadAllText(Path.Combine(ApplicationData.Current.LocalFolder.Path, "WeatherStationConfiguration.json")));
-
-                double lat = configuration.GetNamedNumber("lat");
-                double lon = configuration.GetNamedNumber("lon");
-                string appId = configuration.GetNamedString("appID");
-
-                var weatherStation = new OWMWeatherStation(DeviceIdFactory.CreateIdFrom(Main.Device.WeatherStation), lat, lon, appId, Timer, HttpApiController, Logger);
-                Logger.Info("WeatherStation initialized successfully.");
-                
-                AddDevice(weatherStation);
-            }
-            catch (Exception exception)
-            {
-                Logger.Warning("Unable to create weather station. " + exception.Message);
             }
         }
     }

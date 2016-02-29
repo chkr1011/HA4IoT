@@ -107,6 +107,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OWMWeatherStationInitializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OWMWeatherStation.cs" />
     <Compile Include="WeatherSituationParser.cs" />
