@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Version 1.9.40
+# Version 1.9.44
 
 CACHE:
 
@@ -36,9 +36,12 @@ Images/Socket.png
 Images/StateMachine.png
 Images/Lamp.png
 Images/RollerShutter.png
-Images/TemperatureSensor.png
-Images/HumiditySensor.png
-Images/MotionDetector.png
+Images/Temperature.png
+Images/Humidity.png
+Images/Motion.png
+Images/NightLamp.png
+Images/Sunrise.png
+Images/Sunset.png
 
 NETWORK:
 *

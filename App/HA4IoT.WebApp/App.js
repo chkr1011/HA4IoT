@@ -299,7 +299,7 @@ function configureActuator(room, actuator) {
                 
                 var extendedButtons = [];
                 $.each(actuator.buttons, function (i, button) {
-                    var key = "Caption." + state;
+                    var key = "Caption." + button;
                     var buttonCaption = getConfigurationValue(actuator, key, key);
                     
                     extendedButtons.push({ id: button, caption: buttonCaption });
