@@ -15,6 +15,7 @@ namespace HA4IoT.Actuators
         public VirtualButtonGroup(ActuatorId id, IHttpRequestController httpApiController, ILogger logger)
             : base(id, httpApiController, logger)
         {
+            Settings = new ActuatorSettings(id, logger);
         }
 
         public VirtualButtonGroup WithButton(ActuatorId id, Action<VirtualButton> initializer)
