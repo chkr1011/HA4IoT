@@ -21,7 +21,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
     public class OWMWeatherStation : IWeatherStation
     {
         private readonly string _cacheFilename = Path.Combine(ApplicationData.Current.LocalFolder.Path,
-            "WeatherStationValues.json");
+            "OWMCache.json");
 
         public static readonly DeviceId DefaultDeviceId = new DeviceId("OWMWeatherStation");
 
@@ -101,6 +101,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             {
                 try
                 {
+                    _logger.Verbose("Fetching OWM weather data");
                     string response = await FetchWeatherData();
 
                     if (!string.Equals(response, _previousResponse))
@@ -116,11 +117,11 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
                 }
                 catch (Exception exception)
                 {
-                    _logger.Warning(exception, "Could not fetch weather information");
+                    _logger.Warning(exception, "Could not fetch OWM weather data");
                 }
                 finally
                 {
-                    await Task.Delay(5000);
+                    await Task.Delay(TimeSpan.FromMinutes(5));
                 }
             }
         }

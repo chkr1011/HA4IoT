@@ -41,7 +41,7 @@ namespace HA4IoT.Automations
 
             Settings = new RollerShutterAutomationSettings(id, httpApiController, logger);
 
-            timer.Every(TimeSpan.FromSeconds(30)).Do(PerformPendingActions);
+            timer.Every(TimeSpan.FromSeconds(10)).Do(PerformPendingActions);
         }
 
         public RollerShutterAutomation WithRollerShutters(params IRollerShutter[] rollerShutters)

@@ -69,6 +69,7 @@
     <Content Include="Images\Air.png" />
     <Content Include="Images\Car.png" />
     <Content Include="Images\DefaultActuator.png" />
+    <Content Include="Images\Palette.png" />
     <Content Include="Images\StateMachine.png" />
     <Content Include="Images\Swimming.png" />
     <Content Include="Images\VirtualButton.png" />
