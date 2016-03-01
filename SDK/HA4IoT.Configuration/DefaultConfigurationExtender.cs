@@ -59,9 +59,6 @@ namespace HA4IoT.Configuration
         {
             return new OWMWeatherStation(
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")), 
-                element.GetMandatoryDoubleFromAttribute("lat"),
-                element.GetMandatoryDoubleFromAttribute("lon"),
-                element.GetMandatoryStringFromAttribute("appId"),
                 Controller.Timer,
                 Controller.HttpApiController,
                 Controller.Logger);

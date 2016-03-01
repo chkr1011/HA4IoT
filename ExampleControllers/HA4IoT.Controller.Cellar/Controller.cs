@@ -48,12 +48,10 @@ namespace HA4IoT.Controller.Cellar
 
             var pi2PortController = new Pi2PortController();
 
-            AddDevice(new OWMWeatherStationInitializer(Timer, HttpApiController, Logger).CreateWeatherStation());
+            AddDevice(new BuiltInI2CBus(Logger));
+            AddDevice(new OWMWeatherStation(OWMWeatherStation.DefaultDeviceId, Timer, HttpApiController, Logger));
 
-            var i2cBus = new BuiltInI2CBus("II2CBus.default".ToDeviceId(), Logger);
-            AddDevice(i2cBus);
-
-            var ccToolsFactory = new CCToolsBoardController(this, i2cBus, HttpApiController, Logger);
+            var ccToolsFactory = new CCToolsBoardController(this, Device<II2CBus>(), HttpApiController, Logger);
             var hsrt16 = ccToolsFactory.CreateHSRT16(Device.CellarHSRT16, new I2CSlaveAddress(32));
             
             var garden = this.CreateArea(RoomId.Garden)

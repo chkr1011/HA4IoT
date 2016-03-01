@@ -107,10 +107,12 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="OWMWeatherStationInitializer.cs" />
+    <Compile Include="OWMResponseParser.cs" />
+    <Compile Include="OWMWeatherStationConfigurationParser.cs" />
+    <Compile Include="OWMWeatherStationHttpApiDispatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OWMWeatherStation.cs" />
-    <Compile Include="WeatherSituationParser.cs" />
+    <Compile Include="OWMWeatherSituationParser.cs" />
     <Compile Include="WeatherStationHumiditySensor.cs" />
     <Compile Include="WeatherStationSituationSensor.cs" />
     <Compile Include="WeatherStationTemperatureSensor.cs" />

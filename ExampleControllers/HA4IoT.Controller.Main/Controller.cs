@@ -27,12 +27,11 @@ namespace HA4IoT.Controller.Main
 
             var pi2PortController = new Pi2PortController();
             
-            var i2CBus = new BuiltInI2CBus(Logger);
-            AddDevice(new I2CHardwareBridge(new DeviceId("HB"), new I2CSlaveAddress(50), i2CBus, Timer));
+            AddDevice(new BuiltInI2CBus(Logger));
+            AddDevice(new I2CHardwareBridge(new DeviceId("HB"), new I2CSlaveAddress(50), Device<II2CBus>(), Timer));
+            AddDevice(new OWMWeatherStation(OWMWeatherStation.DefaultDeviceId, Timer, HttpApiController, Logger));
 
-            AddDevice(new OWMWeatherStationInitializer(Timer, HttpApiController, Logger).CreateWeatherStation());
-
-            var ccToolsBoardController = new CCToolsBoardController(this, i2CBus, HttpApiController, Logger);
+            var ccToolsBoardController = new CCToolsBoardController(this, Device<II2CBus>(), HttpApiController, Logger);
             
             var configurationParser = new ConfigurationParser(this);
             configurationParser.RegisterConfigurationExtender(new CCToolsConfigurationExtender(configurationParser, this));

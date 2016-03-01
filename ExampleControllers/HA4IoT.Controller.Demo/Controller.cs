@@ -45,9 +45,9 @@ namespace HA4IoT.Controller.Demo
             var ic = new IntertechnoCodeSequenceProvider();
             var remoteSwitchController = new RemoteSocketController(new DeviceId("RemoteSocketController"), remoteSwitchSender, Timer)
                 .WithRemoteSocket(0, ic.GetSequence(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1, RemoteSocketCommand.TurnOn), ic.GetSequence(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1, RemoteSocketCommand.TurnOff));
-            
+
             // Setup the weather station which provides sunrise and sunset information.
-            AddDevice(new OWMWeatherStationInitializer(Timer, HttpApiController, Logger).CreateWeatherStation());
+            AddDevice(new OWMWeatherStation(OWMWeatherStation.DefaultDeviceId, Timer, HttpApiController, Logger));
 
             // Add the example area with the example actuators.
             var area = this.CreateArea(Room.ExampleRoom)

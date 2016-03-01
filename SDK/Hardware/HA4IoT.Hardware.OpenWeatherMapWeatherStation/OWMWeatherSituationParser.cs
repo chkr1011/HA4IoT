@@ -4,7 +4,7 @@ using HA4IoT.Contracts.WeatherStation;
 
 namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 {
-    public class WeatherSituationParser
+    public class OWMWeatherSituationParser
     {
         public WeatherSituation Parse(JsonValue id)
         {
