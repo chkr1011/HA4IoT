@@ -21,11 +21,9 @@ namespace HA4IoT.Automations
         private readonly ILogger _logger;
 
         private bool _maxOutsideTemperatureApplied;
-
         private bool _autoOpenIsApplied;
         private bool _autoCloseIsApplied;
-        private bool _doNotOpenBeforeIsTraced; // TODO: Create trace wrapper with flag and "Reset()" method?
-
+        
         public RollerShutterAutomation(AutomationId id, IHomeAutomationTimer timer, IWeatherStation weatherStation, IHttpRequestController httpApiController, IActuatorController actuatorController, ILogger logger)
             : base(id)
         {
@@ -39,9 +37,7 @@ namespace HA4IoT.Automations
             _actuatorController = actuatorController;
             _logger = logger;
 
-            Settings = new RollerShutterAutomationSettings(id, httpApiController, logger);
-
-            timer.Every(TimeSpan.FromSeconds(10)).Do(PerformPendingActions);
+            Settings = new RollerShutterAutomationSettings(id, httpApiController, logger);           
         }
 
         public RollerShutterAutomation WithRollerShutters(params IRollerShutter[] rollerShutters)
@@ -52,48 +48,25 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public RollerShutterAutomation WithDoNotOpenBefore(TimeSpan minTime)
+        public void Activate()
         {
-            Settings.DoNotOpenBeforeIsEnabled.Value = true;
-            Settings.DoNotOpenBeforeTime.Value = minTime;
-
-            return this;
+            _timer.Every(TimeSpan.FromSeconds(10)).Do(PerformPendingActions);
         }
 
-        public RollerShutterAutomation WithDoNotOpenIfOutsideTemperatureIsBelowThan(float minOutsideTemperature)
-        {
-            Settings.DoNotOpenIfTooColdIsEnabled.Value = true;
-            Settings.DoNotOpenIfTooColdTemperature.Value = minOutsideTemperature;
-
-            return this;
-        }
-
-        public RollerShutterAutomation WithCloseIfOutsideTemperatureIsGreaterThan(float maxOutsideTemperature)
-        {
-            Settings.AutoCloseIfTooHotIsEnabled.Value = true;
-            Settings.AutoCloseIfTooHotTemperaure.Value = maxOutsideTemperature;
-
-            return this;
-        }
-
-        private void PerformPendingActions()
+        public void PerformPendingActions()
         {
             if (!Settings.IsEnabled.Value)
             {
                 return;
             }
 
-            if (Settings.AutoCloseIfTooHotIsEnabled.Value && !_maxOutsideTemperatureApplied)
+            if (!_maxOutsideTemperatureApplied && GetItIsTooHotIsAffected())
             {
-                if (_weatherStation.TemperatureSensor.GetValue() > Settings.AutoCloseIfTooHotTemperaure.Value)
-                {
-                    _maxOutsideTemperatureApplied = true;
-                    StartMove(RollerShutterState.MovingDown);
+                _maxOutsideTemperatureApplied = true;
+                _logger.Info(GetTracePrefix() + $"Closing because outside temperature reaches {Settings.AutoCloseIfTooHotTemperaure.Value}°C.");
+                StartMove(RollerShutterState.MovingDown);
 
-                    _logger.Info(GetTracePrefix() + "Closing because outside temperature reaches " + Settings.AutoCloseIfTooHotTemperaure.Value + "°C");
-
-                    return;
-                }
+                return;
             }
 
             // TODO: Add check for heavy hailing
@@ -110,8 +83,10 @@ namespace HA4IoT.Automations
 
                 if (GetDoNotOpenDueToColdTemperatureIsAffected())
                 {
-                    _logger.Info(GetTracePrefix() + "Canceling opening because the roller shutter is maybe frozen.");
+                    _logger.Info(GetTracePrefix() + $"Cancelling opening because outside temperature is lower than {Settings.DoNotOpenIfTooColdTemperature.Value}°C.");
                     _autoOpenIsApplied = true;
+
+                    return;
                 }
                 
                 _autoOpenIsApplied = true;
@@ -133,20 +108,23 @@ namespace HA4IoT.Automations
 
         private bool GetDoNotOpenDueToTimeIsAffected()
         {
-            TimeSpan time = _timer.CurrentTime;
-            if (Settings.DoNotOpenBeforeIsEnabled.Value && Settings.DoNotOpenBeforeTime.Value > time)
+            if (Settings.DoNotOpenBeforeIsEnabled.Value && 
+                Settings.DoNotOpenBeforeTime.Value > _timer.CurrentTime)
             {
-                // TODO: Create "Resetable" trace message.
-                if (!_doNotOpenBeforeIsTraced)
-                {
-                    _logger.Info(GetTracePrefix() + "Skipping opening because it is too early.");
-                    _doNotOpenBeforeIsTraced = true;
-                }
-
                 return true;
             }
 
-            _doNotOpenBeforeIsTraced = false;
+            return false;
+        }
+
+        private bool GetItIsTooHotIsAffected()
+        {
+            if (Settings.AutoCloseIfTooHotIsEnabled.Value && 
+                _weatherStation.TemperatureSensor.GetValue() > Settings.AutoCloseIfTooHotTemperaure.Value)
+            {
+                return true;
+            }
+
             return false;
         }
 

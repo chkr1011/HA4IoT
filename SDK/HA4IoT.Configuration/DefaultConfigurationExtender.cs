@@ -25,7 +25,7 @@ namespace HA4IoT.Configuration
             switch (element.Name.LocalName)
             {
                 case "I2CBus": return ParseI2CBus(element);
-                case "OWMWeatherStation": return ParseWeatherStation(element);
+                case "OpenWeatherMapWeatherStation": return ParseWeatherStation(element);
 
                 default: throw new ConfigurationInvalidException("Device not supported.", element);
             }
