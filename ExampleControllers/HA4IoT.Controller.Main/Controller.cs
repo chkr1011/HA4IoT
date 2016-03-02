@@ -29,7 +29,7 @@ namespace HA4IoT.Controller.Main
             
             AddDevice(new BuiltInI2CBus(Logger));
             AddDevice(new I2CHardwareBridge(new DeviceId("HB"), new I2CSlaveAddress(50), Device<II2CBus>(), Timer));
-            AddDevice(new OWMWeatherStation(OWMWeatherStation.DefaultDeviceId, Timer, HttpApiController, Logger));
+            AddDevice(new OpenWeatherMapWeatherStation(OpenWeatherMapWeatherStation.DefaultDeviceId, Timer, HttpApiController, Logger));
 
             var ccToolsBoardController = new CCToolsBoardController(this, Device<II2CBus>(), HttpApiController, Logger);
             

@@ -57,7 +57,7 @@ namespace HA4IoT.Configuration
 
         private IDevice ParseWeatherStation(XElement element)
         {
-            return new OWMWeatherStation(
+            return new OpenWeatherMapWeatherStation(
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")), 
                 Controller.Timer,
                 Controller.HttpApiController,

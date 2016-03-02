@@ -16,7 +16,7 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 {
-    public class OWMWeatherStation : IWeatherStation
+    public class OpenWeatherMapWeatherStation : IWeatherStation
     {
         private readonly string _cacheFilename = Path.Combine(ApplicationData.Current.LocalFolder.Path,
             "OWMCache.json");
@@ -36,7 +36,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
         private TimeSpan _sunrise;
         private TimeSpan _sunset;
         
-        public OWMWeatherStation(DeviceId id, IHomeAutomationTimer timer, IHttpRequestController httpApiController, ILogger logger)
+        public OpenWeatherMapWeatherStation(DeviceId id, IHomeAutomationTimer timer, IHttpRequestController httpApiController, ILogger logger)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (timer == null) throw new ArgumentNullException(nameof(timer));
@@ -61,7 +61,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             Task.Factory.StartNew(async () => await FetchWeahterData(), CancellationToken.None,
                 TaskCreationOptions.LongRunning, TaskScheduler.Default);
 
-            new OWMWeatherStationHttpApiDispatcher(this, httpApiController).ExposeToApi();
+            new OpenWeatherMapWeatherStationHttpApiDispatcher(this, httpApiController).ExposeToApi();
         }
 
         public DeviceId Id { get; }
@@ -77,7 +77,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
         {
             var result = new JsonObject();
 
-            var configurationParser = new OWMWeatherStationConfigurationParser(_logger);
+            var configurationParser = new OpenWeatherMapConfigurationParser(_logger);
             result.SetNamedValue("uri", configurationParser.GetUri().ToString().ToJsonValue());
 
             result.SetNamedValue("situation", SituationSensor.GetSituation().ToJsonValue());
@@ -141,7 +141,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 
         private void ParseWeatherData(string weatherData)
         {
-            var parser = new OWMResponseParser();
+            var parser = new OpenWeatherMapResponseParser();
             parser.Parse(weatherData);
 
             _situation.SetValue(parser.Situation);
@@ -154,7 +154,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 
         private async Task<string> FetchWeatherData()
         {
-            Uri uri = new OWMWeatherStationConfigurationParser(_logger).GetUri();
+            Uri uri = new OpenWeatherMapConfigurationParser(_logger).GetUri();
 
             using (var httpClient = new HttpClient())
             using (HttpResponseMessage result = await httpClient.GetAsync(uri))

@@ -5,7 +5,7 @@ using HA4IoT.Contracts.WeatherStation;
 
 namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 {
-    public class OWMResponseParser
+    public class OpenWeatherMapResponseParser
     {
         public float Temperature { get; private set; }
 
@@ -32,7 +32,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             Sunset = UnixTimeStampToDateTime(sunsetValue).TimeOfDay;
 
             var situationValue = weather.First().GetObject().GetNamedValue("id");
-            Situation = new OWMWeatherSituationParser().Parse(situationValue);
+            Situation = new OpenWeatherMapWeatherSituationParser().Parse(situationValue);
 
             Temperature = (float) main.GetNamedNumber("temp", 0);
             Humidity = (float) main.GetNamedNumber("humidity", 0);

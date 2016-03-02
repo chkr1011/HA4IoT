@@ -6,11 +6,11 @@ using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 {
-    public class OWMWeatherStationConfigurationParser
+    public class OpenWeatherMapConfigurationParser
     {
         private readonly ILogger _logger;
 
-        public OWMWeatherStationConfigurationParser(ILogger logger)
+        public OpenWeatherMapConfigurationParser(ILogger logger)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
 
@@ -33,7 +33,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             
             if (latitude == 0 || longitude == 0)
             {
-                _logger.Warning("OWM weather station coordinates invalid.");
+                _logger.Warning("Open Weather Map coordinates invalid.");
             }
 
             return new Uri($"http://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&APPID={appId}&units=metric");
@@ -43,10 +43,10 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
         {
             configuration = null;
 
-            string filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "WeatherStationConfiguration.json");
+            string filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "OpenWeatherMapConfiguration.json");
             if (!File.Exists(filename))
             {
-                _logger.Warning($"OWM weather station configuration ({filename}) not found.");
+                _logger.Warning($"Open Weather Map configuration ({filename}) not found.");
                 return false;
             }
 
@@ -57,7 +57,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             }
             catch (Exception exception)
             {
-                _logger.Warning(exception, "Unable to parse OWM weather station configuration.");
+                _logger.Warning(exception, "Unable to parse Open Weather Map configuration.");
             }
 
             return false;
