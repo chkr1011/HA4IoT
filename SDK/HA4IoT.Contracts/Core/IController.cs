@@ -1,7 +1,7 @@
 ﻿using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Networking;
+using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Contracts.Core
 {
@@ -9,6 +9,7 @@ namespace HA4IoT.Contracts.Core
     {
         ILogger Logger { get; }
         IHttpRequestController HttpApiController { get; }
-        IHomeAutomationTimer Timer { get; }      
+        IHomeAutomationTimer Timer { get; }    
+        IControllerSettings Settings { get; }  
     }
 }

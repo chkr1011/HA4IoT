@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 using Windows.Data.Json;
+using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Networking
 {
@@ -241,6 +243,13 @@ namespace HA4IoT.Networking
                 object value = jsonValue.ToObject(property.PropertyType);
                 property.SetValue(target, value);
             }
+        }
+
+        public static byte[] ToByteArray(this JsonObject jsonObject)
+        {
+            if (jsonObject == null) throw new ArgumentNullException(nameof(jsonObject));
+
+            return Encoding.UTF8.GetBytes(jsonObject.Stringify());
         }
     }
 }

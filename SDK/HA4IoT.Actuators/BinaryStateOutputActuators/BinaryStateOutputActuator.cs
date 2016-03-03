@@ -3,16 +3,16 @@ using System.Linq;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Networking;
+using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public class BinaryStateOutputActuator : BinaryStateOutputActuatorBase
+    public abstract class BinaryStateOutputActuator<TSettings> : BinaryStateOutputActuatorBase<TSettings> where TSettings : ActuatorSettings
     {
         private readonly IBinaryOutput _output;
 
-        public BinaryStateOutputActuator(ActuatorId id, IBinaryOutput output, IHttpRequestController httpApi, ILogger logger) 
-            : base(id, httpApi, logger)
+        protected BinaryStateOutputActuator(ActuatorId id, IBinaryOutput output, IHttpRequestController httpApiController, ILogger logger) 
+            : base(id, httpApiController, logger)
         {
             if (output == null) throw new ArgumentNullException(nameof(output));
 

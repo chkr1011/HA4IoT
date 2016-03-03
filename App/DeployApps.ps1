@@ -6,7 +6,7 @@ function Deploy
 {
 	param([string]$Source, [string]$Target, [string]$Clear)
 	 
-	Write-Host "Deploying to $Target..."
+	Write-Host "Deploying to $Target...";
 
 	New-Item -ItemType directory -Path $Target -ea SilentlyContinue
 
@@ -30,10 +30,12 @@ function Deploy
 
 function SelectIP
 {
-	Write-Host "Select IP of target:"
-	Write-Host "0 - 192.168.1.15"
-	Write-Host "1 - 192.168.1.16"
-	Write-Host "c - <custom>"
+	Write-Host "Select IP of target:";
+	Write-Host "0 - 192.168.1.15";
+	Write-Host "1 - 192.168.1.16";
+    Write-Host "2 - minwinpc";
+    Write-Host "----------------";
+	Write-Host "c - <custom>";
 	
 	$choice = Read-Host
 
@@ -41,12 +43,28 @@ function SelectIP
 	{
 		0 { return "192.168.1.15" }
 		1 { return "192.168.1.16" }
+        2 { return "minwinpc" }
 		"x" 
 		{
 			Write-Host "Enter IP: " 
 			return Read-Host
 		}
 	}
+}
+
+function Confirm()
+{
+	param([string]$message);
+
+	Write-Host $message;
+	$key = [Console]::ReadKey($true).KeyChar;
+
+	if ($key -eq "y")
+	{
+		return 1;
+	}
+
+	return 0;
 }
 
 function IncreaseVersion
@@ -61,35 +79,32 @@ function IncreaseVersion
 	#Set-Content - $versionFile
 }
 
-# Start...
+## Start...
 Set-Location $PSScriptRoot
 $ip = SelectIP
 
 $repeat = 1
 while($repeat)
 {
-	# Old version of Windows IoT Core: $package = Get-ChildItem("\\$ip\c$\Users\DefaultAccount\AppData\Local\Packages\HA4IoT.Controller*") -name
-	$package = Get-ChildItem("\\$ip\c$\Data\Users\DefaultAccount\AppData\Local\Packages\HA4IoT.Controller*") 
+	# Example path: \\minwinpc\c$\Data\Users\DefaultAccount\AppData\Local\Packages\HA4IoT.Controller.Demo-uwp_1.0.0.0_arm__p2wxv0ry6mv8g
+	$package = Get-ChildItem("\\$ip\c$\Data\Users\DefaultAccount\AppData\Local\Packages\HA4IoT.Controller.*") 
 	if (!$package)
 	{
 		Write-Host "No package found (Ensure that you opened the share via Windows Explorer before and being authenticated)!"
 		return
 	}
 
-	Write-Host("Found package: " + $package)
-	Write-Host "Clear remote directory (y/n)?"
-	$clearRemoteDirectory = Read-Host
-
+	Write-Host "Found package: $package";
+	
+	$clearRemoteDirectory = Confirm("Clear remote directory (y/n)?")
 	$sourceDir = ".\HA4IoT.WebApp"
-	$remoteDir = "$package\LocalState\app"
+	$remoteDir = "$package\LocalState\App"
 
 	#IncreaseVersion -Package "$remoteDir"
 
 	Deploy -Source ".\HA4IoT.WebApp" -Target "$remoteDir" -Clear $clearRemoteDirectory
-	#Deploy -Source ".\HA4IoT.Configurator" -Target "$remoteDir\configurator" -Clear $clearRemoteDirectory
 
-	Write-Host "Deployment completed. Repeat deploy? (y/n)"
-	if ((Read-Host) -eq "n")
+	if (-Not (Confirm("Deployment completed. Repeat deploy? (y/n)")))
 	{
 		return
 	}

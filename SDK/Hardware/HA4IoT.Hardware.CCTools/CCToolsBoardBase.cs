@@ -4,6 +4,7 @@ using System.Linq;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Hardware.CCTools
@@ -152,9 +153,9 @@ namespace HA4IoT.Hardware.CCTools
 
         private void ExposeToApi()
         {
-            _httpApi.Handle(HttpMethod.Get, "device").WithSegment(Id.Value).Using(HandleApiGet);
-            _httpApi.Handle(HttpMethod.Post, "device").WithSegment(Id.Value).Using(HandleApiPost);
-            _httpApi.Handle(HttpMethod.Patch, "device").WithSegment(Id.Value).Using(HandleApiPatch);
+            _httpApi.HandleGet($"device/{Id}").Using(HandleApiGet);
+            _httpApi.HandlePost($"device/{Id}").Using(HandleApiPost);
+            _httpApi.HandlePatch($"device/{Id}").Using(HandleApiPatch);
         }
 
         private void HandleApiGet(HttpContext httpContext)

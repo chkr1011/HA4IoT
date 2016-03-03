@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Networking
 {
@@ -17,13 +18,13 @@ namespace HA4IoT.Networking
 
         private string _request;
 
-        public bool TryParse(byte[] buffer, out HttpRequest request)
+        public bool TryParse(byte[] buffer, int bufferLength, out HttpRequest request)
         {
             if (buffer == null) throw new ArgumentNullException(nameof(buffer));
-
+            
             try
             {
-                _request = Encoding.UTF8.GetString(buffer);
+                _request = Encoding.UTF8.GetString(buffer, 0, bufferLength);
 
                 request = null;
 

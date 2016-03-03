@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.Data.Json;
+using HA4IoT.Contracts.Networking;
 using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.Networking;
 
@@ -18,7 +19,7 @@ namespace HA4IoT.Hardware.RemoteSwitch
             _i2CHardwareBridge = i2CHardwareBridge;
             _pin = pin;
 
-            httpApiController.Handle(HttpMethod.Post, "433MHz").WithRequiredJsonBody().Using(ApiPost);
+            httpApiController.HandlePost("433MHz").Using(ApiPost);
         }
 
         private void ApiPost(HttpContext context)

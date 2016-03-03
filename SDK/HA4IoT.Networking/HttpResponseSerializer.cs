@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Networking
 {

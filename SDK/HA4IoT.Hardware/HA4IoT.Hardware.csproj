@@ -117,7 +117,7 @@
     <Compile Include="BinaryOutputWithState.cs" />
     <Compile Include="ByteExtensions.cs" />
     <Compile Include="ControllerExtensions.cs" />
-    <Compile Include="DefaultI2CBus.cs" />
+    <Compile Include="BuiltInI2CBus.cs" />
     <Compile Include="DeviceIdFactory.cs" />
     <Compile Include="I2CDeviceWrapper.cs" />
     <Compile Include="InterruptMonitor.cs" />

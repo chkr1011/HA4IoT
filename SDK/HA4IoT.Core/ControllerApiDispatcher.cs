@@ -6,6 +6,7 @@ using Windows.Security.Cryptography.Core;
 using Windows.Storage.Streams;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Networking;
 
@@ -15,7 +16,7 @@ namespace HA4IoT.Core
     {
         private readonly HashAlgorithmProvider _hashAlgorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha1);
         private readonly IController _controller;
-        
+
         public ControllerApiDispatcher(IController controller)
         {
             if (controller == null) throw new ArgumentNullException(nameof(controller));
@@ -25,8 +26,8 @@ namespace HA4IoT.Core
 
         public void ExposeToApi()
         {
-            _controller.HttpApiController.Handle(HttpMethod.Get, "configuration").Using(HandleApiGetConfiguration);
-            _controller.HttpApiController.Handle(HttpMethod.Get, "status").Using(HandleApiGetStatus);
+            _controller.HttpApiController.HandleGet("configuration").Using(HandleApiGetConfiguration);
+            _controller.HttpApiController.HandleGet("status").Using(HandleApiGetStatus);
         }
 
         private void HandleApiGetStatus(HttpContext httpContext)
@@ -79,6 +80,7 @@ namespace HA4IoT.Core
         private IJsonValue ExportAreaConfigurationToJsonValue(IArea area)
         {
             var configuration = new JsonObject();
+            configuration.SetNamedValue("Settings", area.ExportConfigurationToJsonObject());
 
             var actuators = new JsonObject();
             foreach (var actuator in area.Actuators())

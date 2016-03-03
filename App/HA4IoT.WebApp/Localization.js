@@ -7,13 +7,3 @@
 
     return result;
 }
-
-function getActuatorLocalization(key) {
-    var result = actuatorLocalizations[key];
-
-    if (result === undefined) {
-        result = "#" + key;
-    }
-
-    return result;
-}

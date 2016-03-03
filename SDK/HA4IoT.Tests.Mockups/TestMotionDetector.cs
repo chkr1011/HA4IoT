@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.Data.Json;
+using HA4IoT.Actuators;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Triggers;
@@ -8,17 +9,19 @@ namespace HA4IoT.Tests.Mockups
 {
     public class TestMotionDetector : IMotionDetector
     {
-        private readonly Trigger _motionDetectedTrigger = new Trigger();
         private readonly Trigger _detectionCompletedTrigger = new Trigger();
+        private readonly Trigger _motionDetectedTrigger = new Trigger();
 
-        public event EventHandler<ActuatorIsEnabledChangedEventArgs> IsEnabledChanged;
         public event EventHandler<MotionDetectorStateChangedEventArgs> StateChanged;
-        
-        public ActuatorId Id { get; set; }
-        public bool IsEnabled { get; }
 
+        public TestMotionDetector()
+        {
+            Settings = new ActuatorSettings(ActuatorIdFactory.EmptyId,  new TestLogger());
+        }
+
+        public ActuatorId Id { get; set; }
+        public IActuatorSettings Settings { get; }
         public MotionDetectorState State { get; private set; } = MotionDetectorState.Idle;
-        public bool IsMotionDetected { get; set; }
 
         public JsonObject ExportConfigurationToJsonObject()
         {
@@ -40,6 +43,20 @@ namespace HA4IoT.Tests.Mockups
             return _detectionCompletedTrigger;
         }
 
+        public JsonObject ExportStatusToJsonObject()
+        {
+            return new JsonObject();
+        }
+
+        public void LoadSettings()
+        {
+        }
+
+        public void ExposeToApi()
+        {
+            
+        }
+
         public void SetState(MotionDetectorState newState)
         {
             var oldState = State;
@@ -58,16 +75,6 @@ namespace HA4IoT.Tests.Mockups
         {
             State = MotionDetectorState.Idle;
             _motionDetectedTrigger.Invoke();
-        }
-
-        public JsonObject ExportStatusToJsonObject()
-        {
-            return new JsonObject();
-        }
-
-        public void LoadSettings()
-        {
-            
         }
     }
 }

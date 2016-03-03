@@ -6,7 +6,7 @@
 
   <Devices>
     <Test:I2CBus id="II2CBus.default" />
-    <OWMWeatherStation id="WeatherStation" appId="ABC123" lat="51.518080" lon="6.531836" />
+    <OpenWeatherMapWeatherStation id="WeatherStation" />
     
     <!-- Shared input devices -->
     <CCTools:HSPE16InputOnly id="Input0" i2cAddress="42" i2cBus="II2CBus.default" />

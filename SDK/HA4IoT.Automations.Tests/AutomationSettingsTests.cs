@@ -47,21 +47,21 @@ namespace HA4IoT.Automations.Tests
         public void Serialize_AutomationSettings()
         {
             var settings = new RollerShutterAutomationSettings(AutomationIdFactory.EmptyId, new TestHttpRequestController(), new TestLogger());
-            settings.MaxOutsideTemperatureForAutoClose.Value = 24.5F;
-            settings.DoNotOpenBefore.Value = TimeSpan.Parse("07:30");
+            settings.AutoCloseIfTooHotTemperaure.Value = 24.5F;
+            settings.DoNotOpenBeforeTime.Value = TimeSpan.Parse("07:30");
 
             JsonObject jsonObject = settings.ExportToJsonObject();
             Debug.WriteLine(jsonObject.Stringify());
 
-            settings.MaxOutsideTemperatureForAutoClose.Value = 9F;
-            settings.MinOutsideTemperatureForDoNotOpen.Value = 10F;
-            settings.DoNotOpenBefore.Value = null;
+            settings.AutoCloseIfTooHotTemperaure.Value = 9F;
+            settings.DoNotOpenIfTooColdTemperature.Value = 10F;
+            settings.DoNotOpenBeforeTime.Value = TimeSpan.Parse("09:00");
             
-            settings.ImportFromJsonObject(jsonObject);
+            settings.ImportFromJsonObjectWithoutSaving(jsonObject);
 
-            settings.DoNotOpenBefore.Value.ShouldBeEquivalentTo(TimeSpan.Parse("07:30"));
-            settings.MinOutsideTemperatureForDoNotOpen.Value.ShouldBeEquivalentTo(null);
-            settings.MaxOutsideTemperatureForAutoClose.Value.ShouldBeEquivalentTo(24.5F);
+            settings.DoNotOpenBeforeTime.Value.ShouldBeEquivalentTo(TimeSpan.Parse("07:30"));
+            settings.DoNotOpenIfTooColdTemperature.Value.ShouldBeEquivalentTo(2);
+            settings.AutoCloseIfTooHotTemperaure.Value.ShouldBeEquivalentTo(24.5F);
         }
     }
 }

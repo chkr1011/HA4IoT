@@ -51,7 +51,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
     <PlatformTarget>ARM</PlatformTarget>
     <OutputPath>bin\ARM\Release\</OutputPath>
-    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <DefineConstants>NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <Optimize>true</Optimize>
     <NoWarn>;2008</NoWarn>
     <DebugType>pdbonly</DebugType>
@@ -117,6 +117,7 @@
     <Compile Include="ActuatorSettingsHttpApiDispatcher.cs" />
     <Compile Include="ActuatorIdFactory.cs" />
     <Compile Include="BinaryStateOutputActuators\BinaryStateOutputActuatorExtensions.cs" />
+    <Compile Include="BinaryStateOutputActuators\CustomBinaryStateOutputActuator.cs" />
     <Compile Include="BinaryStateOutputActuators\LogicalBinaryStateOutputActuatorExtensions.cs" />
     <Compile Include="Lamps\LampExtensions.cs" />
     <Compile Include="MotionDetectors\MotionDetectorExtensions.cs" />
@@ -130,6 +131,7 @@
     <Compile Include="ApiRequestContext.cs" />
     <Compile Include="BinaryStateOutputActuators\BinaryStateOutputActuatorBase.cs" />
     <Compile Include="Buttons\ButtonBase.cs" />
+    <Compile Include="RollerShutters\RollerShutterSettings.cs" />
     <Compile Include="StateMachines\StateMachineExtensions.cs" />
     <Compile Include="Triggers\IntervalTrigger.cs" />
     <Compile Include="Triggers\SensorValueUnderranTrigger.cs" />

@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Version 1.8.48
+# Version 1.9.44
 
 CACHE:
 
@@ -9,7 +9,6 @@ Style.css
 Configuration.js
 Localization.js
 
-ActuatorLocalizations.json
 UILocalizations.json
 
 Scripts/jquery-2.1.4.min.js
@@ -33,13 +32,16 @@ Images/Air.png
 Images/WaterPump.png
 Images/Sunrise.png
 Images/Sunset.png
-Images/HA4IoT.Actuators.Socket.png
-Images/HA4IoT.Actuators.StateMachine.png
-Images/HA4IoT.Actuators.Lamp.png
-Images/HA4IoT.Actuators.RollerShutter.png
-Images/HA4IoT.Actuators.TemperatureSensor.png
-Images/HA4IoT.Actuators.HumiditySensor.png
-Images/HA4IoT.Actuators.MotionDetector.png
+Images/Socket.png
+Images/StateMachine.png
+Images/Lamp.png
+Images/RollerShutter.png
+Images/Temperature.png
+Images/Humidity.png
+Images/Motion.png
+Images/NightLamp.png
+Images/Sunrise.png
+Images/Sunset.png
 
 NETWORK:
 *

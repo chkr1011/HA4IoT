@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public class VirtualButtonGroup : ActuatorBase
+    public class VirtualButtonGroup : ActuatorBase<ActuatorSettings>
     {
         private readonly Dictionary<ActuatorId, VirtualButton> _buttons = new Dictionary<ActuatorId, VirtualButton>();
 
-        public VirtualButtonGroup(ActuatorId id, IHttpRequestController api, ILogger logger)
-            : base(id, api, logger)
+        public VirtualButtonGroup(ActuatorId id, IHttpRequestController httpApiController, ILogger logger)
+            : base(id, httpApiController, logger)
         {
+            Settings = new ActuatorSettings(id, logger);
         }
 
         public VirtualButtonGroup WithButton(ActuatorId id, Action<VirtualButton> initializer)

@@ -7,6 +7,7 @@ using Windows.Storage;
 using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 using HA4IoT.Telemetry.Statistics;
 
@@ -31,14 +32,14 @@ namespace HA4IoT.Telemetry.Csv
             _apiRequestController = apiRequestController;
             _filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "History.csv");
 
-            Task.Factory.StartNew(WritePendingEntries, TaskCreationOptions.LongRunning);
+            Task.Factory.StartNew(async () => await WritePendingEntries(), TaskCreationOptions.LongRunning);
         }
 
         public void ExposeToApi(IHttpRequestController httpRequestController)
         {
             if (httpRequestController == null) throw new ArgumentNullException(nameof(httpRequestController));
 
-            httpRequestController.Handle(HttpMethod.Get, "history").Using(HandleApiGet);
+            httpRequestController.HandleGet("history").Using(HandleApiGet);
         }
 
         protected override void OnActuatorConnecting(IActuator actuator)
@@ -72,11 +73,11 @@ namespace HA4IoT.Telemetry.Csv
             }
         }
 
-        private void WritePendingEntries()
+        private async Task WritePendingEntries()
         {
             while (true)
             {
-                Task.Delay(100).Wait();
+                await Task.Delay(100);
 
                 var entries = new List<ActuatorHistoryEntry>();
                 lock (_queuedEntries)

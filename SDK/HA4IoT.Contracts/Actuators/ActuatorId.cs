@@ -10,11 +10,6 @@ namespace HA4IoT.Contracts.Actuators
             if (string.IsNullOrEmpty(value)) throw new ArgumentException("Actuator ID is invalid.");
         }
 
-        public static ActuatorId From(Enum value)
-        {
-            return new ActuatorId(value.ToString());
-        }
-
         public bool Equals(ActuatorId other)
         {
             if (other == null)

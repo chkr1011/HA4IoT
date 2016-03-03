@@ -1,7 +1,5 @@
 ﻿using System;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Core.Timer;
 
 namespace HA4IoT.Tests.Mockups
 {
@@ -9,7 +7,20 @@ namespace HA4IoT.Tests.Mockups
     {
         public event EventHandler<TimerTickEventArgs> Tick;
 
-        public TimeSpan CurrentTime { get; set; }
+        public TimeSpan CurrentTime { get; private set; }
+
+        public DateTime CurrentDateTime { get; private set; }
+
+        public void SetDate(DateTime value)
+        {
+            CurrentDateTime = value;
+            CurrentTime = value.TimeOfDay;
+        }
+
+        public void SetTime(TimeSpan value)
+        {
+            CurrentTime = value;
+        }
 
         public TimedAction In(TimeSpan dueTime)
         {
@@ -19,10 +30,6 @@ namespace HA4IoT.Tests.Mockups
         public TimedAction Every(TimeSpan interval)
         {
             return new TimedAction(TimeSpan.FromMilliseconds(1), TimeSpan.Zero, this);
-        }
-
-        public void Run()
-        {
         }
     }
 }

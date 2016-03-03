@@ -27,13 +27,11 @@ namespace HA4IoT.Controller.Main
 
             var pi2PortController = new Pi2PortController();
             
-            var i2CBus = new DefaultI2CBus("II2CBus.default".ToDeviceId(), Logger);
+            AddDevice(new BuiltInI2CBus(Logger));
+            AddDevice(new I2CHardwareBridge(new DeviceId("HB"), new I2CSlaveAddress(50), Device<II2CBus>(), Timer));
+            AddDevice(new OpenWeatherMapWeatherStation(OpenWeatherMapWeatherStation.DefaultDeviceId, Timer, HttpApiController, Logger));
 
-            CreateWeatherStation();
-
-            AddDevice(new I2CHardwareBridge(new DeviceId("HB"), new I2CSlaveAddress(50), i2CBus, Timer));
-
-            var ccToolsBoardController = new CCToolsBoardController(this, i2CBus, HttpApiController, Logger);
+            var ccToolsBoardController = new CCToolsBoardController(this, Device<II2CBus>(), HttpApiController, Logger);
             
             var configurationParser = new ConfigurationParser(this);
             configurationParser.RegisterConfigurationExtender(new CCToolsConfigurationExtender(configurationParser, this));
@@ -58,9 +56,7 @@ namespace HA4IoT.Controller.Main
             new LowerBathroomConfiguration().Setup(this);
             new StoreroomConfiguration().Setup(this, ccToolsBoardController);
             new LivingRoomConfiguration().Setup(this, ccToolsBoardController);
-
-            PublishStatisticsNotification();
-
+            
             //AttachAzureEventHubPublisher(home);
 
             var localCsvFileWriter = new CsvHistory(Logger, HttpApiController);
@@ -68,9 +64,9 @@ namespace HA4IoT.Controller.Main
             localCsvFileWriter.ExposeToApi(HttpApiController);
 
             var ioBoardsInterruptMonitor = new InterruptMonitor(pi2PortController.GetInput(4), Logger);
-            ioBoardsInterruptMonitor.StartPollingTaskAsync();
 
             ioBoardsInterruptMonitor.InterruptDetected += (s, e) => ccToolsBoardController.PollInputBoardStates();
+            ioBoardsInterruptMonitor.StartPollingAsync();
         }
 
         private RemoteSocketController SetupRemoteSwitchController()
@@ -105,27 +101,6 @@ namespace HA4IoT.Controller.Main
             catch (Exception exception)
             {
                 Logger.Warning("Unable to create azure event hub publisher. " + exception.Message);
-            }
-        }
-
-        private void CreateWeatherStation()
-        {
-            try
-            {
-                var configuration = JsonObject.Parse(File.ReadAllText(Path.Combine(ApplicationData.Current.LocalFolder.Path, "WeatherStationConfiguration.json")));
-
-                double lat = configuration.GetNamedNumber("lat");
-                double lon = configuration.GetNamedNumber("lon");
-                string appId = configuration.GetNamedString("appID");
-
-                var weatherStation = new OWMWeatherStation(DeviceIdFactory.CreateIdFrom(Main.Device.WeatherStation), lat, lon, appId, Timer, HttpApiController, Logger);
-                Logger.Info("WeatherStation initialized successfully.");
-                
-                AddDevice(weatherStation);
-            }
-            catch (Exception exception)
-            {
-                Logger.Warning("Unable to create weather station. " + exception.Message);
             }
         }
     }

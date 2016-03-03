@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Networking;
 using Windows.Networking.Sockets;
-using Windows.Storage.Streams;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Logger
@@ -17,52 +20,23 @@ namespace HA4IoT.Logger
         private readonly bool _isDebuggerAttached = Debugger.IsAttached;
 
         private readonly object _syncRoot = new object();
-        private readonly List<LogEntry> _items = new List<LogEntry>();
         private readonly List<LogEntry> _history = new List<LogEntry>();
-        
+
+        private List<LogEntry> _items = new List<LogEntry>();
+        private List<LogEntry> _itemsBuffer = new List<LogEntry>();
+
+        private long _currentId;
+
         public Logger()
         {
-            Task.Factory.StartNew(SendAsync, TaskCreationOptions.LongRunning);
+            Task.Factory.StartNew(SendQueuedItems, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
-        public void ExposeToApi(IHttpRequestController apiRequestController)
+        public void ExposeToApi(IHttpRequestController httpApiController)
         {
-            if (apiRequestController == null) throw new ArgumentNullException(nameof(apiRequestController));
+            if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
 
-            apiRequestController.Handle(HttpMethod.Get, "notifications").Using(HandleApiGet);
-        }
-
-        public void Publish(LogEntrySeverity type, string text, params object[] parameters)
-        {
-            if (parameters != null && parameters.Any())
-            {
-                try
-                {
-                    text = string.Format(text, parameters);
-                }
-                catch (FormatException)
-                {
-                    text = text + " (" + string.Join(",", parameters) + ")";
-                }
-            }
-
-            PrintNotification(type, text);
-
-            lock (_syncRoot)
-            {
-                var notification = new LogEntry(DateTime.Now, Environment.CurrentManagedThreadId, type, text);
-
-                _items.Add(notification);
-
-                if (notification.Severity != LogEntrySeverity.Verbose)
-                {
-                    _history.Add(notification);
-                    if (_history.Count > 100)
-                    {
-                        _history.RemoveAt(0);
-                    }
-                }
-            }
+            httpApiController.HandleGet("trace").Using(HandleApiGet);
         }
 
         public void Info(string message, params object[] parameters)
@@ -95,6 +69,41 @@ namespace HA4IoT.Logger
             Publish(LogEntrySeverity.Verbose, message, parameters);
         }
 
+        private void Publish(LogEntrySeverity type, string text, params object[] parameters)
+        {
+            if (parameters != null && parameters.Any())
+            {
+                try
+                {
+                    text = string.Format(text, parameters);
+                }
+                catch (FormatException)
+                {
+                    text = text + " (" + string.Join(",", parameters) + ")";
+                }
+            }
+
+            PrintNotification(type, text);
+
+            // TODO: Refactor to use IHomeAutomationTimer.CurrentDateTime;
+            var logEntry = new LogEntry(_currentId, DateTime.Now, Environment.CurrentManagedThreadId, type, text);
+            lock (_syncRoot)
+            {
+                _items.Add(logEntry);
+                _currentId++;
+
+                if (logEntry.Severity != LogEntrySeverity.Verbose)
+                {
+                    _history.Add(logEntry);
+
+                    if (_history.Count > 100)
+                    {
+                        _history.RemoveAt(0);
+                    }
+                }
+            }
+        }
+
         private void HandleApiGet(HttpContext httpContext)
         {
             lock (_syncRoot)
@@ -103,64 +112,68 @@ namespace HA4IoT.Logger
             }
         }
 
-        private async void SendAsync()
+        private async Task SendQueuedItems()
         {
             using (DatagramSocket socket = new DatagramSocket())
             {
-                socket.Control.DontFragment = true;
+                await socket.ConnectAsync(new HostName("255.255.255.255"), "19227");
 
-                using (IOutputStream streamReader = socket.GetOutputStreamAsync(new HostName("255.255.255.255"), "19227").AsTask().Result)
-                using (var writer = new DataWriter(streamReader))
+                Stream outputStream = socket.OutputStream.AsStreamForWrite();
+                while (true)
                 {
-                    while (true)
+                    List<LogEntry> pendingItems = GetPendingItems();
+                    try
                     {
-                        try
+                        foreach (var traceItem in pendingItems)
                         {
-                            var pendingItems = GetPendingItems();
-                            if (pendingItems.Any())
-                            {
-                                var package = CreatePackage(pendingItems);
+                            var collection = new[] {traceItem};
+                            JsonObject package = CreatePackage(collection);
 
-                                await writer.FlushAsync();
-                                writer.WriteString(package.Stringify());
-                                await writer.StoreAsync();
-                            }
-                        }
-                        catch (Exception exception)
-                        {
-                            Debug.WriteLine("Could not send notifications. " + exception.Message);
-                        }
+                            string data = package.Stringify();
+                            byte[] buffer = Encoding.UTF8.GetBytes(data);
 
-                        await Task.Delay(100);
+                            outputStream.Write(buffer, 0, buffer.Length);
+                            outputStream.Flush();
+                        }
                     }
+                    catch (Exception exception)
+                    {
+                        Debug.WriteLine("ERROR: Could not send trace items. " + exception);
+                    }
+                    finally
+                    {
+                        pendingItems.Clear();
+                    }
+
+                    await Task.Delay(50);
                 }
             }
         }
 
         private List<LogEntry> GetPendingItems()
         {
-            List<LogEntry> itemsToSend;
             lock (_syncRoot)
             {
-                itemsToSend = new List<LogEntry>(_items);
-                _items.Clear();
-            }
+                var buffer = _items;
+                _items = _itemsBuffer;
+                _itemsBuffer = buffer;
 
-            return itemsToSend;
+                return _itemsBuffer;
+            }
         }
 
-        private JsonObject CreatePackage(ICollection<LogEntry> notificationItems)
+        private JsonObject CreatePackage(IEnumerable<LogEntry> traceItems)
         {
-            JsonArray notifications = new JsonArray();
-            foreach (var notification in notificationItems)
+            var traceItemsCollection = new JsonArray();
+            foreach (var traceItem in traceItems)
             {
-                notifications.Add(notification.ToJsonObject());
+                traceItemsCollection.Add(traceItem.ExportToJsonObject());
             }
-
+            
             JsonObject package = new JsonObject();
-            package.SetNamedValue("type", JsonValue.CreateStringValue("HA4IoT.Notifications"));
-            package.SetNamedValue("version", JsonValue.CreateNumberValue(1));
-            package.SetNamedValue("notifications", notifications);
+            package.SetNamedValue("Type", "HA4IoT.Trace".ToJsonValue());
+            package.SetNamedValue("Version", 1.ToJsonValue());
+            package.SetNamedValue("TraceItems", traceItemsCollection);
 
             return package;
         }

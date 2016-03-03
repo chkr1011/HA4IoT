@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using Windows.Data.Json;
+using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Networking
 {
@@ -10,7 +11,7 @@ namespace HA4IoT.Networking
         {
             if (content == null) throw new ArgumentNullException(nameof(content));
             
-            Content = content;
+            Content = content;            
         }
 
         public IJsonValue Content { get; }

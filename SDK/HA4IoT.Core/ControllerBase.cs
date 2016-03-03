@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Storage;
@@ -12,6 +12,8 @@ using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Networking;
+using HA4IoT.Core.Discovery;
 using HA4IoT.Core.Timer;
 using HA4IoT.Hardware.Pi2;
 using HA4IoT.Networking;
@@ -32,13 +34,16 @@ namespace HA4IoT.Core
         public ILogger Logger { get; protected set; }
         public IHttpRequestController HttpApiController { get; protected set; }
         public IHomeAutomationTimer Timer { get; protected set; }
-        
+        public IControllerSettings Settings { get; private set; }
+
         public void RunAsync(IBackgroundTaskInstance taskInstance)
         {
             if (taskInstance == null) throw new ArgumentNullException(nameof(taskInstance));
 
             _deferral = taskInstance.GetDeferral();
-            Task.Factory.StartNew(InitializeCore, TaskCreationOptions.LongRunning);
+
+            Task.Factory.StartNew(InitializeCore, CancellationToken.None, TaskCreationOptions.LongRunning,
+                TaskScheduler.Default);
         }
         
         public void AddArea(IArea area)
@@ -64,6 +69,11 @@ namespace HA4IoT.Core
         public TActuator Actuator<TActuator>(ActuatorId id) where TActuator : IActuator
         {
             return _actuators.Get<TActuator>(id);
+        }
+
+        public TActuator Actuator<TActuator>() where TActuator : IActuator
+        {
+            return _actuators.Get<TActuator>();
         }
 
         public IList<TActuator> Actuators<TActuator>() where TActuator : IActuator
@@ -121,44 +131,6 @@ namespace HA4IoT.Core
             return _automations.GetAll();
         }
 
-        protected void PublishStatisticsNotification()
-        {
-            var message = new StringBuilder();
-            message.AppendLine("Controller statistics after initialization:");
-
-            message.AppendLine("- Devices total=" + Devices().Count);
-            var deviceGroups = Devices().GroupBy(d => d.GetType().Name).OrderBy(g => g.Key);
-            foreach (var deviceGroup in deviceGroups)
-            {
-                message.AppendLine("- Device '" + deviceGroup.Key + "'=" + deviceGroup.Count());
-            }
-
-            message.AppendLine("- Actuators total=" + Actuators().Count);
-            var actuatorGroups = Actuators().GroupBy(a => a.GetType().Name).OrderBy(g => g.Key);
-            foreach (var actuatorGroup in actuatorGroups)
-            {
-                message.AppendLine("- Actuator '" + actuatorGroup.Key + "'=" + actuatorGroup.Count());
-            }
-
-            message.AppendLine("- Automations total=" + Automations().Count);
-            var automationGroups = Actuators().GroupBy(a => a.GetType().Name).OrderBy(g => g.Key);
-            foreach (var automationGroup in automationGroups)
-            {
-                message.AppendLine("- Automation '" + automationGroup.Key + "'=" + automationGroup.Count());
-            }
-
-            message.AppendLine("- Areas total=" + Areas().Count);
-            foreach (var area in Areas())
-            {
-                var actuatorsCount = area.Actuators().Count;
-                
-                message.AppendFormat("- Area '{0}', Actuators={1}", area.Id, actuatorsCount);
-                message.AppendLine();
-            }
-            
-            Logger.Info(message.ToString());
-        }
-
         protected virtual void Initialize()
         {
         }
@@ -181,33 +153,64 @@ namespace HA4IoT.Core
             httpRequestDispatcher.MapFolder("app", appPath);
         }
 
-        private void InitializeTimer()
+        private HomeAutomationTimer InitializeTimer()
         {
-            Timer = new HomeAutomationTimer(Logger);
+            var timer = new HomeAutomationTimer(Logger);
+            Timer = timer;
+
+            return timer;
         }
 
         private void InitializeLogging()
         {
             var logger = new Logger.Logger();
             logger.ExposeToApi(HttpApiController);
-            logger.Info("Starting");
+            logger.Info("Starting...");
             Logger = logger;
         }
 
         private void InitializeCore()
         {
-            InitializeHttpApi();
-            InitializeLogging();
-            InitializeTimer();
+            try
+            {
+                var stopwatch = Stopwatch.StartNew();
+                
+                InitializeHttpApi();
+                InitializeLogging();
+                LoadControllerSettings();
+                InitializeDiscovery();
 
-            var controllerApiHandler = new ControllerApiDispatcher(this);
-            controllerApiHandler.ExposeToApi();
+                HomeAutomationTimer timer = InitializeTimer();
 
-            TryInitialize();
-            LoadSettings();
+                TryInitialize();
+                LoadNonControllerSettings();
 
-            _httpServer.StartAsync(80).Wait();
-            Timer.Run();
+                _httpServer.Start(80);
+                ExposeToApi();
+
+                stopwatch.Stop();
+                Logger.Info("Startup completed after " + stopwatch.Elapsed);
+
+                timer.Run();
+            }
+            catch (Exception exception)
+            {
+                Debug.WriteLine(exception.ToString());
+            }
+        }
+
+        private void InitializeDiscovery()
+        {
+            var discoveryServer = new DiscoveryServer(this);
+            discoveryServer.Start();
+        }
+
+        private void LoadControllerSettings()
+        {
+            var settings = new ControllerSettings(StoragePath.WithFilename("Configuration.json"), Logger);
+            settings.Load();
+
+            Settings = settings;
         }
 
         private void TryInitialize()
@@ -222,8 +225,13 @@ namespace HA4IoT.Core
             }
         }
 
-        private void LoadSettings()
+        private void LoadNonControllerSettings()
         {
+            foreach (var area in _areas.GetAll())
+            {
+                area.LoadSettings();
+            }
+
             foreach (var actuator in _actuators.GetAll())
             {
                 actuator.LoadSettings();
@@ -232,6 +240,21 @@ namespace HA4IoT.Core
             foreach (var automation in _automations.GetAll())
             {
                 automation.LoadSettings();
+            }
+        }
+
+        private void ExposeToApi()
+        {
+            new ControllerApiDispatcher(this).ExposeToApi();
+
+            foreach (var area in _areas.GetAll())
+            {
+                area.ExposeToApi();
+            }
+
+            foreach (var actuator in _actuators.GetAll())
+            {
+                actuator.ExposeToApi();
             }
         }
     }

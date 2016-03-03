@@ -118,11 +118,15 @@
     <Compile Include="TestController.cs" />
     <Compile Include="TestHttpRequestController.cs" />
     <Compile Include="TestHomeAutomationTimer.cs" />
+    <Compile Include="TestHumiditySensor.cs" />
     <Compile Include="TestI2CBus.cs" />
     <Compile Include="TestMotionDetector.cs" />
     <Compile Include="TestLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestRollerShutter.cs" />
     <Compile Include="TestSensor.cs" />
+    <Compile Include="TestTemperatureSensor.cs" />
+    <Compile Include="TestWeatherStation.cs" />
     <Content Include="Properties\HA4IoT.Tests.Mockups.rd.xml" />
   </ItemGroup>
   <ItemGroup>

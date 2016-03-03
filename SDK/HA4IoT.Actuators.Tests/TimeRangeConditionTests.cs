@@ -21,7 +21,7 @@ namespace HA4IoT.Actuators.Tests
         public void DayRange_IN_RANGE_ShouldBeFulfilled()
         {
             var timer = new TestHomeAutomationTimer();
-            timer.CurrentTime = TimeSpan.Parse("10:00");
+            timer.SetTime(TimeSpan.Parse("10:00"));
 
             var condition = new TimeRangeCondition(timer)
                 .WithStart(TimeSpan.Parse("08:00"))
@@ -34,7 +34,7 @@ namespace HA4IoT.Actuators.Tests
         public void DayRange_OUT_OF_RANGE_ShouldBeNotFulfilled()
         {
             var timer = new TestHomeAutomationTimer();
-            timer.CurrentTime = TimeSpan.Parse("21:00");
+            timer.SetTime(TimeSpan.Parse("21:00"));
 
             var condition = new TimeRangeCondition(timer)
                 .WithStart(TimeSpan.Parse("08:00"))
@@ -47,7 +47,7 @@ namespace HA4IoT.Actuators.Tests
         public void NightRange_IN_RANGE_ShouldBeFulfilled()
         {
             var timer = new TestHomeAutomationTimer();
-            timer.CurrentTime = new TimeSpan(21, 00, 00, 00);
+            timer.SetTime(new TimeSpan(21, 00, 00, 00));
 
             var condition = new TimeRangeCondition(timer)
                 .WithStart(TimeSpan.Parse("18:00"))
@@ -60,7 +60,7 @@ namespace HA4IoT.Actuators.Tests
         public void NightRange_OUT_OF_RANGE_ShouldBeNotFulfilled()
         {
             var timer = new TestHomeAutomationTimer();
-            timer.CurrentTime = TimeSpan.Parse("15:00");
+            timer.SetTime(TimeSpan.Parse("15:00"));
 
             var condition = new TimeRangeCondition(timer)
                 .WithStart(TimeSpan.Parse("18:00"))
@@ -73,7 +73,7 @@ namespace HA4IoT.Actuators.Tests
         public void AdjustedRange_OUT_OF_RANGE_ShouldBeNotFulfilled()
         {
             var timer = new TestHomeAutomationTimer();
-            timer.CurrentTime = TimeSpan.Parse("15:00");
+            timer.SetTime(TimeSpan.Parse("15:00"));
 
             // 10-18 adjusted to 16-18
             var condition = new TimeRangeCondition(timer)
@@ -88,7 +88,7 @@ namespace HA4IoT.Actuators.Tests
         public void AdjustedRange_IN_RANGE_ShouldBeFulfilled()
         {
             var timer = new TestHomeAutomationTimer();
-            timer.CurrentTime = TimeSpan.Parse("17:00");
+            timer.SetTime(TimeSpan.Parse("17:00"));
 
             // 10-18 adjusted to 16-18
             var condition = new TimeRangeCondition(timer)

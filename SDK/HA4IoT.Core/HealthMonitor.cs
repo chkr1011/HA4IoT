@@ -4,6 +4,7 @@ using System.Linq;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Networking;
 using HA4IoT.Core.Timer;
 using HA4IoT.Networking;
 
@@ -13,8 +14,9 @@ namespace HA4IoT.Core
     {
         private readonly List<int> _durations = new List<int>(100);
         private readonly Timeout _ledTimeout = new Timeout();
-        private readonly DateTime _startedDate = DateTime.Now;
+        private readonly DateTime _startedDate;
         private readonly IBinaryOutput _statusLed;
+        private readonly IHomeAutomationTimer _timer;
         private float? _averageTimerDuration;
 
         private bool _ledState;
@@ -28,24 +30,27 @@ namespace HA4IoT.Core
             if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
 
             _statusLed = statusLed;
+            _timer = timer;
+            _startedDate = _timer.CurrentDateTime;
+
             if (statusLed != null)
             {
                 _ledTimeout.Start(TimeSpan.FromMilliseconds(1));
             }
 
             timer.Tick += Tick;
-            httpApiController.Handle(HttpMethod.Get, "health").Using(HandleApiGet);
-            httpApiController.Handle(HttpMethod.Post, "health").WithSegment("reset").Using(c => ResetStatistics());
+            httpApiController.HandleGet("health").Using(HandleApiGet);
+            httpApiController.HandlePost("health/reset").Using(c => ResetStatistics());
         }
 
         private void HandleApiGet(HttpContext httpContext)
         {
             var status = new JsonObject();
-            status.SetNamedValue("timerMin", _minTimerDuration.ToJsonValue());
-            status.SetNamedValue("timerMax", _maxTimerDuration.ToJsonValue());
-            status.SetNamedValue("timerAverage", _averageTimerDuration.ToJsonValue());
-            status.SetNamedValue("upTime", (DateTime.Now - _startedDate).ToJsonValue());
-            status.SetNamedValue("systemTime", DateTime.Now.ToJsonValue());
+            status.SetNamedValue("TimerMin", _minTimerDuration.ToJsonValue());
+            status.SetNamedValue("TimerMax", _maxTimerDuration.ToJsonValue());
+            status.SetNamedValue("TimerAverage", _averageTimerDuration.ToJsonValue());
+            status.SetNamedValue("UpTime", (_timer.CurrentDateTime - _startedDate).ToJsonValue());
+            status.SetNamedValue("SystemTime", _timer.CurrentDateTime.ToJsonValue());
 
             httpContext.Response.Body = new JsonBody(status);
         }

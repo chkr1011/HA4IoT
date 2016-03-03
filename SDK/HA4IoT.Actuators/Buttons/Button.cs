@@ -4,7 +4,7 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Networking;
+using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Actuators
 {
@@ -42,7 +42,7 @@ namespace HA4IoT.Actuators
                 throw new NotSupportedException();
             }
 
-            if (!Settings.IsEnabled)
+            if (!Settings.IsEnabled.Value)
             {
                 return;
             }

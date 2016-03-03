@@ -7,7 +7,7 @@ namespace HA4IoT.Contracts.Actuators
     {
         event EventHandler<MotionDetectorStateChangedEventArgs> StateChanged;
 
-        event EventHandler<ActuatorIsEnabledChangedEventArgs> IsEnabledChanged;
+        IActuatorSettings Settings { get; }
 
         MotionDetectorState GetState();
 

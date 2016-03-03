@@ -1,53 +1,58 @@
 using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking.Sockets;
+using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Networking
 {
-    public class HttpServer
+    public sealed class HttpServer : IDisposable
     {
         private readonly StreamSocketListener _serverSocket = new StreamSocketListener();
 
-        public async Task StartAsync(int port)
+        public void Start(int port)
         {
             _serverSocket.Control.KeepAlive = true;
             _serverSocket.ConnectionReceived += HandleConnection;
 
-            await _serverSocket.BindServiceNameAsync(port.ToString());
+            _serverSocket.BindServiceNameAsync(port.ToString()).AsTask().Wait();
         }
 
-        public event EventHandler<RequestReceivedEventArgs> RequestReceived;
+        public event EventHandler<HttpRequestReceivedEventArgs> RequestReceived;
+
+        public void Dispose()
+        {
+            _serverSocket.Dispose();
+        }
 
         private void HandleConnection(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
-            Task.Factory.StartNew(() => HandleRequests(args.Socket), TaskCreationOptions.LongRunning);
+            Task.Factory.StartNew(() => HandleRequests(args.Socket), CancellationToken.None,
+                TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
-        private async Task HandleRequests(StreamSocket client)
+        private void HandleRequests(StreamSocket client)
         {
-            using (var clientHandler = new HttpClientHandler(client))
+            using (var clientHandler = new HttpClientHandler(client, HandleClientRequest))
             {
                 try
                 {
-                    clientHandler.RequestReceived += ForwardRequestReceivedEvents;
-                    await clientHandler.HandleRequests();
+                    clientHandler.HandleRequests();
                 }
                 catch (Exception exception)
                 {
-                    Debug.WriteLine("Error while handling HTTP client requests. " + exception.Message);
-                }
-                finally
-                {
-                    clientHandler.RequestReceived -= ForwardRequestReceivedEvents;
-                    Debug.WriteLine("Completed handling HTTP client requests.");
+                    Debug.WriteLine("ERROR: Error while handling HTTP client requests. " + exception);
                 }
             }
         }
 
-        private void ForwardRequestReceivedEvents(object sender, RequestReceivedEventArgs e)
+        private bool HandleClientRequest(HttpClientHandler clientHandler, HttpContext httpContext)
         {
-            RequestReceived?.Invoke(sender, e);
+            var eventArgs = new HttpRequestReceivedEventArgs(httpContext);
+            RequestReceived?.Invoke(clientHandler, eventArgs);
+
+            return eventArgs.IsHandled;
         }
     }
 }

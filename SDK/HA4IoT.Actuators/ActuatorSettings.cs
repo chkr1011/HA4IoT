@@ -1,15 +1,14 @@
-﻿using System;
-using System.IO;
-using Windows.Data.Json;
-using Windows.Storage;
+﻿using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Core;
 using HA4IoT.Core.Settings;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public class ActuatorSettings : SettingsContainer
+    public class ActuatorSettings : SettingsContainer, IActuatorSettings
     {
         public ActuatorSettings(ActuatorId actuatorId, ILogger logger) 
             : base(GenerateFilename(actuatorId), logger)
@@ -21,15 +20,15 @@ namespace HA4IoT.Actuators
         }
 
         [HideFromToJsonObject]
-        public ActuatorId ActuatorId { get; private set; }
+        public ActuatorId ActuatorId { get; }
 
-        public Setting<JsonObject> AppSettings { get; }
+        public ISetting<bool> IsEnabled { get; }
 
-        public Setting<bool> IsEnabled { get; }
+        public ISetting<JsonObject> AppSettings { get; }
 
         private static string GenerateFilename(ActuatorId actuatorId)
         {
-            return Path.Combine(ApplicationData.Current.LocalFolder.Path, "Actuators", actuatorId.Value, "Configuration.json");
+            return StoragePath.WithFilename("Actuators", actuatorId.Value, "Configuration.json");
         }
     }
 }

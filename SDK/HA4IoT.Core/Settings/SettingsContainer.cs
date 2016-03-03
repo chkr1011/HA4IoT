@@ -40,7 +40,7 @@ namespace HA4IoT.Core.Settings
             }
         }
 
-        public virtual void Save()
+        public void Save()
         {
             string directory = Path.GetDirectoryName(_filename);
             if (!Directory.Exists(directory))
@@ -52,7 +52,7 @@ namespace HA4IoT.Core.Settings
             _logger.Verbose("Saved settings at '{0}'.", _filename);
         }
 
-        public virtual JsonObject ExportToJsonObject()
+        public JsonObject ExportToJsonObject()
         {
             return this.ToJsonObject();
         }
@@ -63,6 +63,13 @@ namespace HA4IoT.Core.Settings
 
             value.DeserializeTo(this);
             Save();
+        }
+
+        public void ImportFromJsonObjectWithoutSaving(JsonObject value)
+        {
+            if (value == null) throw new ArgumentNullException(nameof(value));
+
+            value.DeserializeTo(this);
         }
     }
 }

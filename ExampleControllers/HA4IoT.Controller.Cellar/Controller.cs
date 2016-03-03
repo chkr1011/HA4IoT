@@ -1,7 +1,4 @@
 ﻿using System;
-using System.IO;
-using Windows.Data.Json;
-using Windows.Storage;
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Automations;
@@ -21,7 +18,6 @@ namespace HA4IoT.Controller.Cellar
     {
         private enum Device
         {
-            WeatherStation,
             CellarHSRT16
         }
 
@@ -52,12 +48,10 @@ namespace HA4IoT.Controller.Cellar
 
             var pi2PortController = new Pi2PortController();
 
-            CreateWeatherStation();
+            AddDevice(new BuiltInI2CBus(Logger));
+            AddDevice(new OpenWeatherMapWeatherStation(OpenWeatherMapWeatherStation.DefaultDeviceId, Timer, HttpApiController, Logger));
 
-            var i2cBus = new DefaultI2CBus("II2CBus.default".ToDeviceId(), Logger);
-            AddDevice(i2cBus);
-
-            var ccToolsFactory = new CCToolsBoardController(this, i2cBus, HttpApiController, Logger);
+            var ccToolsFactory = new CCToolsBoardController(this, Device<II2CBus>(), HttpApiController, Logger);
             var hsrt16 = ccToolsFactory.CreateHSRT16(Device.CellarHSRT16, new I2CSlaveAddress(32));
             
             var garden = this.CreateArea(RoomId.Garden)
@@ -78,8 +72,6 @@ namespace HA4IoT.Controller.Cellar
                 .WithActuator(garden.Lamp(Garden.LampParkingLot))
                 .WithOnAtNightRange(Device<IWeatherStation>())
                 .WithOffBetweenRange(TimeSpan.Parse("22:30:00"), TimeSpan.Parse("05:00:00"));
-
-            PublishStatisticsNotification();
 
             Timer.Tick += (s, e) => { pi2PortController.PollOpenInputPorts(); };
         }
@@ -148,27 +140,6 @@ namespace HA4IoT.Controller.Cellar
                 .WithActuator(garden.Lamp(Garden.LampTap), BinaryActuatorState.On)
                 .WithActuator(garden.Lamp(Garden.SpotlightRoof), BinaryActuatorState.On)
                 .WithActuator(garden.Lamp(Garden.LampRearArea), BinaryActuatorState.On);
-        }
-
-        private void CreateWeatherStation()
-        {
-            try
-            {
-                var configuration = JsonObject.Parse(File.ReadAllText(Path.Combine(ApplicationData.Current.LocalFolder.Path, "WeatherStationConfiguration.json")));
-
-                double lat = configuration.GetNamedNumber("lat");
-                double lon = configuration.GetNamedNumber("lon");
-                string appId = configuration.GetNamedString("appID");
-
-                var weatherStation = new OWMWeatherStation(DeviceIdFactory.CreateIdFrom(Device.WeatherStation),  lat, lon, appId, Timer, HttpApiController, Logger);
-                Logger.Info("WeatherStation initialized successfully");
-
-                AddDevice(weatherStation);
-            }
-            catch (Exception exception)
-            {
-                Logger.Warning("Unable to create weather station. " + exception.Message);
-            }
         }
     }
 }
