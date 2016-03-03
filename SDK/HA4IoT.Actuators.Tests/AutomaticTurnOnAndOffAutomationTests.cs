@@ -47,7 +47,7 @@ namespace HA4IoT.Actuators.Tests
         public void Should_NotTurnOn_IfMotionDetected_AndTimeRangeConditionIs_NotFulfilled()
         {
             var timer = new TestHomeAutomationTimer();
-            timer.CurrentTime = TimeSpan.Parse("18:00:00");
+            timer.SetTime(TimeSpan.Parse("18:00:00"));
 
             var automation = new TurnOnAndOffAutomation(AutomationIdFactory.EmptyId, timer, new TestHttpRequestController(), new TestLogger());
             var motionDetector = new TestMotionDetector();
@@ -67,7 +67,7 @@ namespace HA4IoT.Actuators.Tests
         public void Should_TurnOn_IfButtonPressed_EvenIfTimeRangeConditionIs_NotFulfilled()
         {
             var timer = new TestHomeAutomationTimer();
-            timer.CurrentTime = TimeSpan.Parse("18:00:00");
+            timer.SetTime(TimeSpan.Parse("18:00:00"));
 
             var automation = new TurnOnAndOffAutomation(AutomationIdFactory.EmptyId, timer, new TestHttpRequestController(), new TestLogger());
             var button = new TestButton();
@@ -87,7 +87,7 @@ namespace HA4IoT.Actuators.Tests
         public void Should_NotTurnOn_IfMotionDetected_AndSkipConditionIs_Fulfilled()
         {
             var timer = new TestHomeAutomationTimer();
-            timer.CurrentTime = TimeSpan.Parse("14:00:00");
+            timer.SetTime(TimeSpan.Parse("14:00:00"));
 
             var automation = new TurnOnAndOffAutomation(AutomationIdFactory.EmptyId, timer, new TestHttpRequestController(), new TestLogger());
             var motionDetector = new TestMotionDetector();
@@ -115,7 +115,7 @@ namespace HA4IoT.Actuators.Tests
         public void Should_TurnOn_IfMotionDetected_AndSkipConditionIs_NotFulfilled()
         {
             var timer = new TestHomeAutomationTimer();
-            timer.CurrentTime = TimeSpan.Parse("14:00:00");
+            timer.SetTime(TimeSpan.Parse("14:00:00"));
 
             var automation = new TurnOnAndOffAutomation(AutomationIdFactory.EmptyId, timer, new TestHttpRequestController(), new TestLogger());
             var motionDetector = new TestMotionDetector();
@@ -142,7 +142,7 @@ namespace HA4IoT.Actuators.Tests
         public void Should_TurnOff_IfButtonPressed_WhileTargetIsAlreadyOn()
         {
             var timer = new TestHomeAutomationTimer();
-            timer.CurrentTime = TimeSpan.Parse("14:00:00");
+            timer.SetTime(TimeSpan.Parse("14:00:00"));
 
             var automation = new TurnOnAndOffAutomation(AutomationIdFactory.EmptyId, timer, new TestHttpRequestController(), new TestLogger());
             var button = new TestButton();

@@ -30,7 +30,7 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void SensorValueReached_Trigger()
         {
-            var sensor = new TestSensor();
+            var sensor = new TestSensor(ActuatorIdFactory.EmptyId, new TestLogger());
             var trigger = new SensorValueReachedTrigger(sensor);
             trigger.Target = 10.2F;
             trigger.Delta = 3.0F;
@@ -38,32 +38,32 @@ namespace HA4IoT.Actuators.Tests
             int triggerCount = 0;
             trigger.Attach(() => triggerCount++);
 
-            sensor.InternalValue = 5;
+            sensor.SetValue(5);
             triggerCount.ShouldBeEquivalentTo(0);
 
-            sensor.InternalValue = 10;
+            sensor.SetValue(10);
             triggerCount.ShouldBeEquivalentTo(0);
 
-            sensor.InternalValue = 10.2F;
+            sensor.SetValue(10.2F);
             triggerCount.ShouldBeEquivalentTo(1);
 
-            sensor.InternalValue = 9.0F;
+            sensor.SetValue(9.0F);
             triggerCount.ShouldBeEquivalentTo(1);
 
-            sensor.InternalValue = 13.0F;
+            sensor.SetValue(13.0F);
             triggerCount.ShouldBeEquivalentTo(1);
 
-            sensor.InternalValue = 5.0F;
+            sensor.SetValue(5.0F);
             triggerCount.ShouldBeEquivalentTo(1);
 
-            sensor.InternalValue = 10.2F;
+            sensor.SetValue(10.2F);
             triggerCount.ShouldBeEquivalentTo(2);
         }
 
         [TestMethod]
         public void SensorValueUnderran_Trigger()
         {
-            var sensor = new TestSensor();
+            var sensor = new TestSensor(ActuatorIdFactory.EmptyId, new TestLogger());
             var trigger = new SensorValueUnderranTrigger(sensor);
             trigger.Target = 10F;
             trigger.Delta = 3F;
@@ -71,28 +71,28 @@ namespace HA4IoT.Actuators.Tests
             int triggerCount = 0;
             trigger.Attach(() => triggerCount++);
 
-            sensor.InternalValue = 5;
+            sensor.SetValue(5);
             triggerCount.ShouldBeEquivalentTo(1);
 
-            sensor.InternalValue = 10;
+            sensor.SetValue(10);
             triggerCount.ShouldBeEquivalentTo(1);
 
-            sensor.InternalValue = 13.1F;
+            sensor.SetValue(13.1F);
             triggerCount.ShouldBeEquivalentTo(1);
 
-            sensor.InternalValue = 9F;
+            sensor.SetValue(9F);
             triggerCount.ShouldBeEquivalentTo(2);
 
-            sensor.InternalValue = 13.0F;
+            sensor.SetValue(13.0F);
             triggerCount.ShouldBeEquivalentTo(2);
 
-            sensor.InternalValue = 5F;
+            sensor.SetValue(5F);
             triggerCount.ShouldBeEquivalentTo(2);
 
-            sensor.InternalValue = 13.1F;
+            sensor.SetValue(13.1F);
             triggerCount.ShouldBeEquivalentTo(2);
 
-            sensor.InternalValue = 9.9F;
+            sensor.SetValue(9.9F);
             triggerCount.ShouldBeEquivalentTo(3);
         }
     }
