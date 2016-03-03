@@ -78,6 +78,7 @@
                  HorizontalContentAlignment="Stretch"
                  AlternationCount="2"
                  ItemsSource="{Binding Controllers}"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  SelectedItem="{Binding Controllers.SelectedItem}">
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type viewModels:ControllerItemVM}">
@@ -109,9 +110,9 @@
                                    Grid.Column="0"
                                    Content="Caption" />
 
-                            <Label Grid.Row="1"
-                                   Grid.Column="1"
-                                   Content="{Binding Caption}" />
+                            <Label Grid.Row="1" Grid.Column="1">
+                                <TextBlock Text="{Binding Caption}" TextWrapping="Wrap" />
+                            </Label>
 
                             <Label Grid.Row="2"
                                    Grid.Column="0"
@@ -119,8 +120,9 @@
 
                             <Label Grid.Row="2"
                                    Grid.Column="1"
-                                   Content="{Binding Description}"
-                                   Foreground="Gray" />
+                                   Foreground="Gray">
+                                <TextBlock Text="{Binding Description}" TextWrapping="Wrap" />
+                            </Label>
                         </Grid>
                     </DockPanel>
                 </DataTemplate>
