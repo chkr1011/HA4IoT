@@ -9,7 +9,6 @@
     <meta name="mobile-web-app-capable" content="yes">
 
     <link rel="apple-touch-icon" sizes="120x120" href="touch-icon-iphone-retina.png" />
-    <link rel="stylesheet" href="Style.css">
 
     <title>HA4IoT</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -38,26 +37,12 @@
         <div ng-show="haCtrl.appConfiguration.showWindowsOverview" ng-include="'Views/WindowsOverviewTemplate.html'"></div>
         <div ng-show="haCtrl.appConfiguration.showMotionDetectorsOverview" ng-include="'Views/MotionDetectorsOverviewTemplate.html'"></div>
 
-        <div ng-include="'Views/NotificationsViewerTemplate.html'"></div>
         <div ng-include="'Views/BottomBarTemplate.html'"></div>
     </div>
 
     <link rel="stylesheet" href="Content/bootstrap.min.css" />
     <link rel="stylesheet" href="Content/bootstrap-theme.min.css">
-
-    <style type="text/css">
-        body {
-            padding-bottom: 70px;
-        }
-
-        .panel {
-            margin-bottom: 0;
-        }
-
-        * {
-            border-radius: 0 !important;
-        }
-    </style>
+    <link rel="stylesheet" href="Style.css">
 
     <script type="text/javascript" src="Scripts/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="Scripts/bootstrap.min.js"></script>

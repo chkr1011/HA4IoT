@@ -1,7 +1,9 @@
 ﻿using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
+using HA4IoT.Automations;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core;
+using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
 
@@ -37,11 +39,11 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 9;
 
-            var readingRoom = controller.CreateRoom(Room.ReadingRoom)
+            var readingRoom = controller.CreateArea(Room.ReadingRoom)
                 .WithTemperatureSensor(ReadingRoom.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(ReadingRoom.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
                 .WithLamp(ReadingRoom.LightCeilingMiddle, hsrel5.GetOutput(6).WithInvertedState())
-                .WithRollerShutter(ReadingRoom.RollerShutter, hsrel5[HSREL5Pin.Relay4], hsrel5[HSREL5Pin.Relay3], RollerShutter.DefaultMaxMovingDuration, 20000)
+                .WithRollerShutter(ReadingRoom.RollerShutter, hsrel5[HSREL5Pin.Relay4], hsrel5[HSREL5Pin.Relay3])
                 .WithSocket(ReadingRoom.SocketWindow, hsrel5[HSREL5Pin.Relay0])
                 .WithSocket(ReadingRoom.SocketWallLeft, hsrel5[HSREL5Pin.Relay1])
                 .WithSocket(ReadingRoom.SocketWallRight, hsrel5[HSREL5Pin.Relay2])
@@ -51,7 +53,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             readingRoom.Lamp(ReadingRoom.LightCeilingMiddle).ConnectToggleActionWith(readingRoom.Button(ReadingRoom.Button));
 
-            readingRoom.SetupAutomaticRollerShutters().WithRollerShutters(readingRoom.RollerShutter(ReadingRoom.RollerShutter));
+            readingRoom.SetupRollerShutterAutomation().WithRollerShutters(readingRoom.RollerShutter(ReadingRoom.RollerShutter));
             readingRoom.RollerShutter(ReadingRoom.RollerShutter)
                 .ConnectWith(readingRoom.RollerShutterButtons(ReadingRoom.RollerShutterButtons));
         }

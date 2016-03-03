@@ -25,7 +25,7 @@ namespace HA4IoT.Configuration
             switch (element.Name.LocalName)
             {
                 case "I2CBus": return ParseI2CBus(element);
-                case "OWMWeatherStation": return ParseWeatherStation(element);
+                case "OpenWeatherMapWeatherStation": return ParseWeatherStation(element);
 
                 default: throw new ConfigurationInvalidException("Device not supported.", element);
             }
@@ -35,7 +35,7 @@ namespace HA4IoT.Configuration
         {
             switch (element.Name.LocalName)
             {
-                case "BinaryStateOutputActuator": return ParseBinaryStateOutputActuator(element); 
+                case "CustomBinaryStateOutputActuator": return ParseCustomBinaryStateOutputActuator(element); 
                 case "Lamp": return ParseLamp(element);
                 case "Socket": return ParseSocket(element);
                 case "Button": return ParseButton(element);
@@ -52,26 +52,23 @@ namespace HA4IoT.Configuration
 
         private IDevice ParseI2CBus(XElement element)
         {
-            return new DefaultI2CBus(new DeviceId(element.GetMandatoryStringFromAttribute("id")), Controller.Logger);
+            return new BuiltInI2CBus(new DeviceId(element.GetMandatoryStringFromAttribute("id")), Controller.Logger);
         }
 
         private IDevice ParseWeatherStation(XElement element)
         {
-            return new OWMWeatherStation(
+            return new OpenWeatherMapWeatherStation(
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")), 
-                element.GetMandatoryDoubleFromAttribute("lat"),
-                element.GetMandatoryDoubleFromAttribute("lon"),
-                element.GetMandatoryStringFromAttribute("appId"),
                 Controller.Timer,
                 Controller.HttpApiController,
                 Controller.Logger);
         }
 
-        private IActuator ParseBinaryStateOutputActuator(XElement element)
+        private IActuator ParseCustomBinaryStateOutputActuator(XElement element)
         {
             IBinaryOutput output = Parser.ParseBinaryOutput(element.GetMandatorySingleChildElementOrFromContainer("Output"));
 
-            return new BinaryStateOutputActuator(
+            return new CustomBinaryStateOutputActuator(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
                 output,
                 Controller.HttpApiController,
@@ -121,8 +118,6 @@ namespace HA4IoT.Configuration
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
                 powerOutput,
                 directionOutput,
-                element.GetTimeSpanFromAttribute("autoOffTimeout", TimeSpan.FromSeconds(22)),
-                element.GetIntFromAttribute("maxPosition", 20000),
                 Controller.HttpApiController,
                 Controller.Logger,
                 Controller.Timer);

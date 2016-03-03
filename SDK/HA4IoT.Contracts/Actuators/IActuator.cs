@@ -1,18 +1,17 @@
-﻿using System;
-using Windows.Data.Json;
+﻿using Windows.Data.Json;
 
 namespace HA4IoT.Contracts.Actuators
 {
     public interface IActuator
     {
-        event EventHandler<ActuatorIsEnabledChangedEventArgs>  IsEnabledChanged;
-
         ActuatorId Id { get; }
 
-        bool IsEnabled { get; }
+        JsonObject ExportConfigurationToJsonObject();
 
-        JsonObject GetConfigurationForApi();
+        JsonObject ExportStatusToJsonObject();
 
-        JsonObject GetStatusForApi();
+        void LoadSettings();
+
+        void ExposeToApi();
     }
 }

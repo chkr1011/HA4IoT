@@ -1,11 +1,12 @@
 ﻿using System;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
 
 namespace HA4IoT.Actuators
 {
     public static class StateMachineExtensions
     {
-        public static IRoom WithStateMachine(this IRoom room, Enum id, Action<StateMachine, IRoom> initializer)
+        public static IArea WithStateMachine(this IArea room, Enum id, Action<StateMachine, IArea> initializer)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
@@ -18,11 +19,11 @@ namespace HA4IoT.Actuators
             return room;
         }
 
-        public static StateMachine StateMachine(this IRoom room, Enum id)
+        public static IStateMachine StateMachine(this IArea room, Enum id)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 
-            return room.Actuator<StateMachine>(ActuatorIdFactory.Create(room, id));
+            return room.Actuator<IStateMachine>(ActuatorIdFactory.Create(room, id));
         }
     }
 }

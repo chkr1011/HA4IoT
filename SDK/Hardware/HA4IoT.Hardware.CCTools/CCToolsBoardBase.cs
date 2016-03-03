@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Hardware.CCTools
@@ -15,14 +16,14 @@ namespace HA4IoT.Hardware.CCTools
         private readonly Dictionary<int, IOBoardPort> _openPorts = new Dictionary<int, IOBoardPort>();
 
         private readonly IHttpRequestController _httpApi;
-        private readonly INotificationHandler _logger;
+        private readonly ILogger _logger;
         private readonly IPortExpanderDriver _portExpanderDriver;
         
         private readonly byte[] _committedState;
         private readonly byte[] _state;
         private byte[] _peekedState;
 
-        protected CCToolsBoardBase(DeviceId id, IPortExpanderDriver portExpanderDriver, IHttpRequestController httpApi, INotificationHandler logger)
+        protected CCToolsBoardBase(DeviceId id, IPortExpanderDriver portExpanderDriver, IHttpRequestController httpApi, ILogger logger)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (portExpanderDriver == null) throw new ArgumentNullException(nameof(portExpanderDriver));
@@ -152,9 +153,9 @@ namespace HA4IoT.Hardware.CCTools
 
         private void ExposeToApi()
         {
-            _httpApi.Handle(HttpMethod.Get, "device").WithSegment(Id.Value).Using(HandleApiGet);
-            _httpApi.Handle(HttpMethod.Post, "device").WithSegment(Id.Value).Using(HandleApiPost);
-            _httpApi.Handle(HttpMethod.Patch, "device").WithSegment(Id.Value).Using(HandleApiPatch);
+            _httpApi.HandleGet($"device/{Id}").Using(HandleApiGet);
+            _httpApi.HandlePost($"device/{Id}").Using(HandleApiPost);
+            _httpApi.HandlePatch($"device/{Id}").Using(HandleApiPatch);
         }
 
         private void HandleApiGet(HttpContext httpContext)

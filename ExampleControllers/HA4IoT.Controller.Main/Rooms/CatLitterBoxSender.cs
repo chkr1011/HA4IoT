@@ -6,14 +6,14 @@ using Windows.Data.Json;
 using Windows.Storage;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Core.Timer;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
     internal class CatLitterBoxTwitterSender
     {
-        private readonly INotificationHandler _log;
+        private readonly ILogger _log;
         private const string Suffix = "\r\nTime in litter box: {0}s\r\nNr. this day: {1}\r\n@chkratky";
 
         private readonly Timeout _timeout = new Timeout(TimeSpan.FromSeconds(30));
@@ -41,7 +41,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 "Hey, this one looks like you :-)"         
             };
 
-        public CatLitterBoxTwitterSender(IHomeAutomationTimer timer, INotificationHandler log)
+        public CatLitterBoxTwitterSender(IHomeAutomationTimer timer, ILogger log)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
             if (log == null) throw new ArgumentNullException(nameof(log));

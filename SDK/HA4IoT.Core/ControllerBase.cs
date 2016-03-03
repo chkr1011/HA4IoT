@@ -1,69 +1,84 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Storage;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Notifications;
-using HA4IoT.Contracts.WeatherStation;
+using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Networking;
+using HA4IoT.Core.Discovery;
 using HA4IoT.Core.Timer;
 using HA4IoT.Hardware.Pi2;
 using HA4IoT.Networking;
-using HA4IoT.Notifications;
 
 namespace HA4IoT.Core
 {
     public abstract class ControllerBase : IController
     {
-        private readonly RoomCollection _rooms = new RoomCollection();
-        private readonly ActuatorCollection _actuators = new ActuatorCollection();
         private readonly DeviceCollection _devices = new DeviceCollection();
-
+        private readonly AreaCollection _areas = new AreaCollection();
+        private readonly ActuatorCollection _actuators = new ActuatorCollection();
+        private readonly AutomationCollection _automations = new AutomationCollection();
+        
         private HealthMonitor _healthMonitor;
         private BackgroundTaskDeferral _deferral;
         private HttpServer _httpServer;
 
-        public INotificationHandler Logger { get; protected set; }
+        public ILogger Logger { get; protected set; }
         public IHttpRequestController HttpApiController { get; protected set; }
         public IHomeAutomationTimer Timer { get; protected set; }
-        public IWeatherStation WeatherStation { get; protected set; }
-        
+        public IControllerSettings Settings { get; private set; }
+
         public void RunAsync(IBackgroundTaskInstance taskInstance)
         {
             if (taskInstance == null) throw new ArgumentNullException(nameof(taskInstance));
 
             _deferral = taskInstance.GetDeferral();
-            Task.Factory.StartNew(InitializeCore, TaskCreationOptions.LongRunning);
+
+            Task.Factory.StartNew(InitializeCore, CancellationToken.None, TaskCreationOptions.LongRunning,
+                TaskScheduler.Default);
         }
         
-        public void AddRoom(IRoom room)
+        public void AddArea(IArea area)
         {
-            _rooms.Add(room);
+            _areas.AddUnique(area.Id, area);
         }
 
-        public IRoom Room(RoomId id)
+        public IArea Area(AreaId id)
         {
-            return _rooms[id];
+            return _areas.Get(id);
         }
 
-        public IList<IRoom> Rooms()
+        public IList<IArea> Areas()
         {
-            return _rooms.GetAll();
+            return _areas.GetAll();
         }
 
         public void AddActuator(IActuator actuator)
         {
-            _actuators.Add(actuator);
+            _actuators.AddOrUpdate(actuator.Id, actuator);
         }
 
         public TActuator Actuator<TActuator>(ActuatorId id) where TActuator : IActuator
         {
             return _actuators.Get<TActuator>(id);
+        }
+
+        public TActuator Actuator<TActuator>() where TActuator : IActuator
+        {
+            return _actuators.Get<TActuator>();
+        }
+
+        public IList<TActuator> Actuators<TActuator>() where TActuator : IActuator
+        {
+            return _actuators.GetAll<TActuator>();
         }
 
         public IList<IActuator> Actuators()
@@ -73,12 +88,7 @@ namespace HA4IoT.Core
 
         public void AddDevice(IDevice device)
         {
-            _devices.Add(device);
-        }
-
-        public TDevice Device<TDevice>(Enum id) where TDevice : IDevice
-        {
-            return Device<TDevice>(new DeviceId(id.ToString()));
+            _devices.AddUnique(device.Id, device);
         }
 
         public TDevice Device<TDevice>(DeviceId id) where TDevice : IDevice
@@ -96,27 +106,29 @@ namespace HA4IoT.Core
             return _devices.GetAll<TDevice>();
         }
 
-        protected void PublishStatisticsNotification()
+        public IList<IDevice> Devices()
         {
-            int totalActuatorsCount = 0;
+            return _devices.GetAll();
+        }
 
-            var message = new StringBuilder();
-            message.AppendLine("Controller statistics after initialization:");
-            message.AppendFormat("- Devices={0}", Devices<IDevice>().Count);
-            message.AppendLine();
+        public void AddAutomation(IAutomation automation)
+        {
+            _automations.AddOrUpdate(automation.Id, automation);
+        }
 
-            foreach (var room in Rooms())
-            {
-                var actuatorsCount = room.Actuators().Count;
-                totalActuatorsCount += actuatorsCount;
+        public IList<TAutomation> Automations<TAutomation>() where TAutomation : IAutomation
+        {
+            return _automations.GetAll<TAutomation>();
+        }
 
-                message.AppendFormat("- Room '{0}', Actuators={1}", room.Id, actuatorsCount);
-                message.AppendLine();
-            }
+        public TAutomation Automation<TAutomation>(AutomationId id) where TAutomation : IAutomation
+        {
+            return _automations.Get<TAutomation>(id);
+        }
 
-            message.AppendLine("Total actuators=" + totalActuatorsCount);
-
-            Logger.Info(message.ToString());
+        public IList<IAutomation> Automations()
+        {
+            return _automations.GetAll();
         }
 
         protected virtual void Initialize()
@@ -141,43 +153,67 @@ namespace HA4IoT.Core
             httpRequestDispatcher.MapFolder("app", appPath);
         }
 
-        protected void InitializeWeatherStation(IWeatherStation weatherStation)
+        private HomeAutomationTimer InitializeTimer()
         {
-            if (weatherStation == null) throw new ArgumentNullException(nameof(weatherStation));
+            var timer = new HomeAutomationTimer(Logger);
+            Timer = timer;
 
-            WeatherStation = weatherStation;
+            return timer;
         }
 
-        private void InitializeTimer()
+        private void InitializeLogging()
         {
-            Timer = new HomeAutomationTimer(Logger);
-        }
-
-        private void InitializeNotificationHandler()
-        {
-            var logger = new NotificationHandler();
+            var logger = new Logger.Logger();
             logger.ExposeToApi(HttpApiController);
-            logger.Info("Starting");
+            logger.Info("Starting...");
             Logger = logger;
         }
 
         private void InitializeCore()
         {
-            InitializeHttpApi();
+            try
+            {
+                var stopwatch = Stopwatch.StartNew();
+                
+                InitializeHttpApi();
+                InitializeLogging();
+                LoadControllerSettings();
+                InitializeDiscovery();
 
-            InitializeNotificationHandler();
-            InitializeTimer();
+                HomeAutomationTimer timer = InitializeTimer();
 
-            var controllerApiHandler = new ControllerApiHandler(this);
-            controllerApiHandler.ExposeToApi();
+                TryInitialize();
+                LoadNonControllerSettings();
 
-            TryInitializeActuators();
+                _httpServer.Start(80);
+                ExposeToApi();
 
-            _httpServer.StartAsync(80).Wait();
-            Timer.Run();
+                stopwatch.Stop();
+                Logger.Info("Startup completed after " + stopwatch.Elapsed);
+
+                timer.Run();
+            }
+            catch (Exception exception)
+            {
+                Debug.WriteLine(exception.ToString());
+            }
         }
 
-        private void TryInitializeActuators()
+        private void InitializeDiscovery()
+        {
+            var discoveryServer = new DiscoveryServer(this);
+            discoveryServer.Start();
+        }
+
+        private void LoadControllerSettings()
+        {
+            var settings = new ControllerSettings(StoragePath.WithFilename("Configuration.json"), Logger);
+            settings.Load();
+
+            Settings = settings;
+        }
+
+        private void TryInitialize()
         {
             try
             {
@@ -185,7 +221,40 @@ namespace HA4IoT.Core
             }
             catch (Exception exception)
             {
-                Logger.Error("Error while initializing actuators. " + exception);
+                Logger.Error(exception, "Error while initializing");
+            }
+        }
+
+        private void LoadNonControllerSettings()
+        {
+            foreach (var area in _areas.GetAll())
+            {
+                area.LoadSettings();
+            }
+
+            foreach (var actuator in _actuators.GetAll())
+            {
+                actuator.LoadSettings();
+            }
+
+            foreach (var automation in _automations.GetAll())
+            {
+                automation.LoadSettings();
+            }
+        }
+
+        private void ExposeToApi()
+        {
+            new ControllerApiDispatcher(this).ExposeToApi();
+
+            foreach (var area in _areas.GetAll())
+            {
+                area.ExposeToApi();
+            }
+
+            foreach (var actuator in _actuators.GetAll())
+            {
+                actuator.ExposeToApi();
             }
         }
     }

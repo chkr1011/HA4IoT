@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using HA4IoT.Actuators.Conditions;
+using HA4IoT.Conditions;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace HA4IoT.Actuators.Tests

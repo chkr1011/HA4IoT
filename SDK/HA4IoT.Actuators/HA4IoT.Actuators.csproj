@@ -51,7 +51,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
     <PlatformTarget>ARM</PlatformTarget>
     <OutputPath>bin\ARM\Release\</OutputPath>
-    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <DefineConstants>NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <Optimize>true</Optimize>
     <NoWarn>;2008</NoWarn>
     <DebugType>pdbonly</DebugType>
@@ -114,39 +114,31 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActuatorSettingsHttpApiDispatcher.cs" />
     <Compile Include="ActuatorIdFactory.cs" />
-    <Compile Include="Automations\AutomaticConditionalOnAutomationExtensions.cs" />
-    <Compile Include="Automations\AutomaticTurnOnAndOffAutomationExtensions.cs" />
     <Compile Include="BinaryStateOutputActuators\BinaryStateOutputActuatorExtensions.cs" />
+    <Compile Include="BinaryStateOutputActuators\CustomBinaryStateOutputActuator.cs" />
     <Compile Include="BinaryStateOutputActuators\LogicalBinaryStateOutputActuatorExtensions.cs" />
     <Compile Include="Lamps\LampExtensions.cs" />
     <Compile Include="MotionDetectors\MotionDetectorExtensions.cs" />
-    <Compile Include="PersistedConfiguration.cs" />
+    <Compile Include="ActuatorSettings.cs" />
     <Compile Include="Animations\AnimateParameter.cs" />
     <Compile Include="Animations\Animation.cs" />
     <Compile Include="Buttons\ButtonExtensions.cs" />
-    <Compile Include="Conditions\Specialized\IsDayCondition.cs" />
-    <Compile Include="Conditions\Specialized\IsNightCondition.cs" />
     <Compile Include="Animations\PendingBinaryStateOutputActuatorState.cs" />
     <Compile Include="Animations\DirectionAnimation.cs" />
     <Compile Include="Animations\Frame.cs" />
     <Compile Include="ApiRequestContext.cs" />
-    <Compile Include="Automations\AutomaticBathroomFanAutomation.cs" />
-    <Compile Include="Automations\AutomaticConditionalOnAutomation.cs" />
-    <Compile Include="Automations\AutomaticRollerShutterAutomation.cs" />
-    <Compile Include="Automations\AutomaticTurnOnAndOffAutomation.cs" />
-    <Compile Include="Automations\Automation.cs" />
     <Compile Include="BinaryStateOutputActuators\BinaryStateOutputActuatorBase.cs" />
     <Compile Include="Buttons\ButtonBase.cs" />
+    <Compile Include="RollerShutters\RollerShutterSettings.cs" />
     <Compile Include="StateMachines\StateMachineExtensions.cs" />
+    <Compile Include="Triggers\IntervalTrigger.cs" />
+    <Compile Include="Triggers\SensorValueUnderranTrigger.cs" />
+    <Compile Include="Triggers\SensorValueReachedTrigger.cs" />
+    <Compile Include="Triggers\Trigger.cs" />
     <Compile Include="Windows\Casement.cs" />
     <Compile Include="Windows\CasementState.cs" />
-    <Compile Include="Conditions\Condition.cs" />
-    <Compile Include="Conditions\ConditionRelation.cs" />
-    <Compile Include="Conditions\ConditionState.cs" />
-    <Compile Include="Conditions\ConditionsValidator.cs" />
-    <Compile Include="Conditions\RelatedCondition.cs" />
-    <Compile Include="Conditions\Specialized\TimeRangeCondition.cs" />
     <Compile Include="DoNotCommitStateParameter.cs" />
     <Compile Include="ForceUpdateStateParameter.cs" />
     <Compile Include="RollerShutters\RollerShutterExtensions.cs" />
@@ -167,7 +159,6 @@
     <Compile Include="Sockets\SocketExtensions.cs" />
     <Compile Include="StateMachines\StateMachine.cs" />
     <Compile Include="StateMachines\StateMachineState.cs" />
-    <Compile Include="TimeRangeChecker.cs" />
     <Compile Include="Buttons\VirtualButton.cs" />
     <Compile Include="Lamps\Lamp.cs" />
     <Compile Include="MotionDetectors\MotionDetector.cs" />
@@ -191,10 +182,6 @@
     <ProjectReference Include="..\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
       <Name>HA4IoT.Networking</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\HA4IoT.Notifications\HA4IoT.Notifications.csproj">
-      <Project>{15DB669D-AF71-4E89-9748-0290A2E5D291}</Project>
-      <Name>HA4IoT.Notifications</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

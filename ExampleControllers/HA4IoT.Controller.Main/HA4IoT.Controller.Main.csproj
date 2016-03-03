@@ -33,6 +33,8 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Optimize>true</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
     <OutputPath>bin\ARM\Release\</OutputPath>
@@ -45,7 +47,7 @@
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -133,6 +135,10 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Automations\HA4IoT.Automations.csproj">
+      <Project>{1CA64C98-210A-4015-95C6-67D591115F7B}</Project>
+      <Name>HA4IoT.Automations</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Configuration\HA4IoT.Configuration.csproj">
       <Project>{F9D92EA6-3763-47F5-9EFD-6D83804C95E6}</Project>
       <Name>HA4IoT.Configuration</Name>
@@ -156,10 +162,6 @@
     <ProjectReference Include="..\..\SDK\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
       <Name>HA4IoT.Networking</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Notifications\HA4IoT.Notifications.csproj">
-      <Project>{15DB669D-AF71-4E89-9748-0290A2E5D291}</Project>
-      <Name>HA4IoT.Notifications</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Telemetry\HA4IoT.Telemetry.csproj">
       <Project>{97F3345C-33B6-4779-9212-5FFBCEEF3F96}</Project>

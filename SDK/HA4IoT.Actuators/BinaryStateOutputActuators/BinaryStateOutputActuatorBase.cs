@@ -1,15 +1,15 @@
 ﻿using System;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Notifications;
-using HA4IoT.Networking;
+using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public abstract class BinaryStateOutputActuatorBase : ActuatorBase, IBinaryStateOutputActuator
+    public abstract class BinaryStateOutputActuatorBase<TSettings> : ActuatorBase<TSettings>, IBinaryStateOutputActuator where TSettings : ActuatorSettings
     {
-        protected BinaryStateOutputActuatorBase(ActuatorId id, IHttpRequestController httpApi, INotificationHandler logger) 
-            : base(id, httpApi, logger)
+        protected BinaryStateOutputActuatorBase(ActuatorId id, IHttpRequestController httpApiController, ILogger logger) 
+            : base(id, httpApiController, logger)
         {
         }
 
@@ -29,6 +29,11 @@ namespace HA4IoT.Actuators
         public void SetState(BinaryActuatorState state, params IParameter[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+
+            if (!Settings.IsEnabled.Value)
+            {
+                return;
+            }
 
             SetStateInternal(state, parameters);
         }
@@ -61,7 +66,7 @@ namespace HA4IoT.Actuators
                     this.Toggle(new DoNotCommitStateParameter());    
                 }
 
-                context.Response = GetStatusForApi();
+                context.Response = ExportStatusToJsonObject();
                 return;
             }
 
@@ -76,14 +81,14 @@ namespace HA4IoT.Actuators
             }
         }
 
-        public override JsonObject GetStatusForApi()
+        public override JsonObject ExportStatusToJsonObject()
         {
-            var status = base.GetStatusForApi();
+            var status = base.ExportStatusToJsonObject();
             status.SetNamedValue("state", JsonValue.CreateStringValue(GetStateInternal().ToString()));
 
             return status;
         }
-        
+
         protected void OnStateChanged(BinaryActuatorState oldState, BinaryActuatorState newState)
         {
             StateChanged?.Invoke(this, new BinaryActuatorStateChangedEventArgs(oldState, newState));

@@ -1,5 +1,6 @@
 ﻿using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Networking;
 using HA4IoT.Hardware.PortExpanderDrivers;
 using HA4IoT.Networking;
 
@@ -7,7 +8,7 @@ namespace HA4IoT.Hardware.CCTools
 {
     public class HSPE16OutputOnly : CCToolsBoardBase, IBinaryOutputController
     {
-        public HSPE16OutputOnly(DeviceId id, I2CSlaveAddress address, II2CBus i2cBus, IHttpRequestController httpApi, INotificationHandler logger)
+        public HSPE16OutputOnly(DeviceId id, I2CSlaveAddress address, II2CBus i2cBus, IHttpRequestController httpApi, ILogger logger)
             : base(id, new MAX7311Driver(address, i2cBus), httpApi, logger)
         {
             CommitChanges(true);

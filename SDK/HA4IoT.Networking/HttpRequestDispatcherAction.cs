@@ -1,8 +1,9 @@
 ﻿using System;
+using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Networking
 {
-    public class HttpRequestDispatcherAction
+    public class HttpRequestDispatcherAction : IHttpRequestDispatcherAction
     {
         public HttpRequestDispatcherAction(HttpMethod method, string uri)
         {
@@ -12,31 +13,20 @@ namespace HA4IoT.Networking
             Uri = uri;
         }
 
-        public Action<HttpContext> Action { get; private set; }
         public HttpMethod Method { get; }
         public string Uri { get; private set; }
-        public bool IsJsonBodyRequired { get; private set; }
         public bool HandleRequestsWithDifferentSubUrl { get; private set; }
-
-        public HttpRequestDispatcherAction WithSegment(string value)
+        public Action<HttpContext> Handler { get; private set; }
+        
+        public IHttpRequestDispatcherAction Using(Action<HttpContext> handler)
         {
-            Uri = Uri + "/" + value;
+            if (handler == null) throw new ArgumentNullException(nameof(handler));
+
+            Handler = handler;
             return this;
         }
 
-        public HttpRequestDispatcherAction Using(Action<HttpContext> action)
-        {
-            Action = action;
-            return this;
-        }
-
-        public HttpRequestDispatcherAction WithRequiredJsonBody()
-        {
-            IsJsonBodyRequired = true;
-            return this;
-        }
-
-        public HttpRequestDispatcherAction WithAnySubUrl()
+        public IHttpRequestDispatcherAction WithAnySubUrl()
         {
             HandleRequestsWithDifferentSubUrl = true;
             return this;

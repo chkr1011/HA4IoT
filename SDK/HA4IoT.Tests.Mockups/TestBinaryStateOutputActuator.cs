@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.Data.Json;
+using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
 
 namespace HA4IoT.Tests.Mockups
@@ -7,20 +8,35 @@ namespace HA4IoT.Tests.Mockups
     public class TestBinaryStateOutputActuator : IBinaryStateOutputActuator
     {
         public event EventHandler<BinaryActuatorStateChangedEventArgs> StateChanged;
-        public event EventHandler<ActuatorIsEnabledChangedEventArgs> IsEnabledChanged;
-        public ActuatorId Id { get; set; }
-        public bool IsEnabled { get; }
 
         public BinaryActuatorState State { get; private set; }
 
-        public JsonObject GetConfigurationForApi()
+        public ActuatorId Id { get; set; }
+
+        public TestBinaryStateOutputActuator()
+        {
+            Settings = new ActuatorSettings(ActuatorIdFactory.EmptyId, new TestLogger());
+        }
+
+        public IActuatorSettings Settings { get; }
+
+        public JsonObject ExportConfigurationToJsonObject()
         {
             return new JsonObject();
         }
 
-        public JsonObject GetStatusForApi()
+        public JsonObject ExportStatusToJsonObject()
         {
             return new JsonObject();
+        }
+
+        public void LoadSettings()
+        {
+        }
+
+        public void ExposeToApi()
+        {
+            
         }
 
         public BinaryActuatorState GetState()
@@ -51,6 +67,11 @@ namespace HA4IoT.Tests.Mockups
             StateChanged?.Invoke(this, new BinaryActuatorStateChangedEventArgs(oldState, state));
         }
 
+        public void TurnOff(params IParameter[] parameters)
+        {
+            State = BinaryActuatorState.Off;
+        }
+
         public TestBinaryStateOutputActuator WithOnState()
         {
             State = BinaryActuatorState.On;
@@ -61,11 +82,6 @@ namespace HA4IoT.Tests.Mockups
         {
             State = BinaryActuatorState.Off;
             return this;
-        }
-
-        public void TurnOff(params IParameter[] parameters)
-        {
-            State = BinaryActuatorState.Off;
         }
     }
 }

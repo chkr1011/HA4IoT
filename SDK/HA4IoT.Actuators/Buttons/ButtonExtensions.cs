@@ -6,7 +6,7 @@ namespace HA4IoT.Actuators
 {
     public static class ButtonExtensions
     {
-        public static IRoom WithButton(this IRoom room, Enum id, IBinaryInput input)
+        public static IArea WithButton(this IArea room, Enum id, IBinaryInput input)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (input == null) throw new ArgumentNullException(nameof(input));
@@ -15,7 +15,7 @@ namespace HA4IoT.Actuators
             return room;
         }
 
-        public static IRoom WithRollerShutterButtons(this IRoom room, Enum id, IBinaryInput upInput, IBinaryInput downInput)
+        public static IArea WithRollerShutterButtons(this IArea room, Enum id, IBinaryInput upInput, IBinaryInput downInput)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (upInput == null) throw new ArgumentNullException(nameof(upInput));
@@ -28,7 +28,7 @@ namespace HA4IoT.Actuators
             return room;
         }
 
-        public static IRoom WithVirtualButton(this IRoom room, Enum id, Action<VirtualButton> initializer)
+        public static IArea WithVirtualButton(this IArea room, Enum id, Action<VirtualButton> initializer)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
@@ -40,7 +40,7 @@ namespace HA4IoT.Actuators
             return room;
         }
 
-        public static IRoom WithVirtualButtonGroup(this IRoom room, Enum id, Action<VirtualButtonGroup> initializer)
+        public static IArea WithVirtualButtonGroup(this IArea room, Enum id, Action<VirtualButtonGroup> initializer)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
@@ -52,14 +52,14 @@ namespace HA4IoT.Actuators
             return room;
         }
 
-        public static Button Button(this IRoom room, Enum id)
+        public static Button Button(this IArea room, Enum id)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 
             return room.Actuator<Button>(ActuatorIdFactory.Create(room, id));
         }
 
-        public static RollerShutterButtons RollerShutterButtons(this IRoom room, Enum id)
+        public static RollerShutterButtons RollerShutterButtons(this IArea room, Enum id)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 

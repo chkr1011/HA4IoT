@@ -6,7 +6,8 @@ using Windows.Data.Json;
 using Windows.Storage;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 using DayOfWeek = System.DayOfWeek;
 
@@ -15,19 +16,19 @@ namespace HA4IoT.Telemetry.Statistics
     public class ActuatorHistory : IStatusProvider
     {
         private readonly IActuator _actuator;
-        private readonly INotificationHandler _notificationHandler;
+        private readonly ILogger _logger;
         private readonly object _syncRoot = new object();
 
         private readonly List<ActuatorHistoryEntry> _entriesOfThisMonth = new List<ActuatorHistoryEntry>();
         private readonly string _filename;
 
-        public ActuatorHistory(IActuator actuator, IHttpRequestController apiRequestController, INotificationHandler notificationHandler)
+        public ActuatorHistory(IActuator actuator, IHttpRequestController apiRequestController, ILogger logger)
         {
             _actuator = actuator;
-            _notificationHandler = notificationHandler;
+            _logger = logger;
             _filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Actuators", actuator.Id.Value, "History.csv");
 
-            apiRequestController.Handle(HttpMethod.Get, "statistics").WithSegment(actuator.Id.Value).Using(HandleApiGet);
+            apiRequestController.HandleGet($"statistics/{actuator.Id}").Using(HandleApiGet);
         }
 
         public void AddEntry(ActuatorHistoryEntry entry)
@@ -39,7 +40,7 @@ namespace HA4IoT.Telemetry.Statistics
                 if (entry.Timestamp.Month != DateTime.Now.Month)
                 {
                     _entriesOfThisMonth.Clear();
-                    _notificationHandler.Verbose("Cleared rolling history due to month change.");
+                    _logger.Verbose("Cleared rolling history due to month change.");
                 }
 
                 _entriesOfThisMonth.Add(entry);
@@ -47,7 +48,7 @@ namespace HA4IoT.Telemetry.Statistics
                 string directory = Path.GetDirectoryName(_filename);
                 if (!Directory.Exists(directory))
                 {
-                    _notificationHandler.Verbose("Creating directory... " + directory);
+                    _logger.Verbose("Creating directory... " + directory);
 
                     Directory.CreateDirectory(directory);
                 }
@@ -57,7 +58,7 @@ namespace HA4IoT.Telemetry.Statistics
         }
 
 
-        public JsonObject GetStatusForApi()
+        public JsonObject ExportStatusToJsonObject()
         {
             var entries = new List<ActuatorHistoryEntry>();
             lock (_entriesOfThisMonth)
@@ -75,7 +76,7 @@ namespace HA4IoT.Telemetry.Statistics
             var entriesOfThisDay = entriesOfThisWeek.Where(e => e.Timestamp.Day == now.Day).ToList();
 
             var status = new JsonObject();
-            status.SetNamedValue("actuator", _actuator.Id.ToJsonValue());
+            status.SetNamedValue("actuator", _actuator.Id.ExportToJsonObject());
             status.SetNamedValue("durationsOfThisMonth", GetStateDurations(entriesOfThisMonth).ToIndexedJsonObject());
             status.SetNamedValue("durationsOfThisWeek", GetStateDurations(entriesOfThisWeek).ToIndexedJsonObject());
             status.SetNamedValue("durationsOfThisDay", GetStateDurations(entriesOfThisDay).ToIndexedJsonObject());
@@ -171,7 +172,7 @@ namespace HA4IoT.Telemetry.Statistics
 
         private void HandleApiGet(HttpContext httpContext)
         {
-            httpContext.Response.Body = new JsonBody(GetStatusForApi());
+            httpContext.Response.Body = new JsonBody(ExportStatusToJsonObject());
         }
     }
 }

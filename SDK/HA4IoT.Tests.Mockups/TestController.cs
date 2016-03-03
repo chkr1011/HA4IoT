@@ -1,4 +1,5 @@
-﻿using HA4IoT.Core;
+﻿using System;
+using HA4IoT.Core;
 
 namespace HA4IoT.Tests.Mockups
 {
@@ -6,9 +7,14 @@ namespace HA4IoT.Tests.Mockups
     {
         public TestController()
         {
-            Logger = new TestNotificationHandler();
+            Logger = new TestLogger();
             HttpApiController = new TestHttpRequestController();
             Timer = new TestHomeAutomationTimer();
+        }
+
+        public void SetTime(TimeSpan value)
+        {
+            ((TestHomeAutomationTimer)Timer).SetTime(value);
         }
     }
 }

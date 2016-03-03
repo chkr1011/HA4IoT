@@ -2,27 +2,30 @@
 using System.Collections.Generic;
 using System.Linq;
 using Windows.Data.Json;
-using HA4IoT.Contracts;
+using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Notifications;
-using HA4IoT.Networking;
+using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Networking;
+using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Actuators
 {
-    public abstract class ButtonBase : ActuatorBase, IButton
+    public abstract class ButtonBase : ActuatorBase<ActuatorSettings>, IButton
     {
+        private readonly Trigger _pressedShortlyTrigger = new Trigger();
+        private readonly Trigger _pressedLongTrigger = new Trigger();
+
         private readonly List<Action>  _actionsForPressedShort = new List<Action>();
         private readonly List<Action> _actionsForPressedLong = new List<Action>();
 
         private ButtonState _state = ButtonState.Released;
 
-        protected ButtonBase(ActuatorId id, IHttpRequestController api, INotificationHandler logger)
-            : base(id, api, logger)
+        protected ButtonBase(ActuatorId id, IHttpRequestController httpApiController, ILogger logger)
+            : base(id, httpApiController, logger)
         {
+            Settings = new ActuatorSettings(id, logger);
         }
 
-        public event EventHandler PressedShort;
-        public event EventHandler PressedLong;
         public event EventHandler<ButtonStateChangedEventArgs> StateChanged;
 
         public ButtonState GetState()
@@ -30,12 +33,22 @@ namespace HA4IoT.Actuators
             return _state;
         }
 
+        public ITrigger GetPressedShortlyTrigger()
+        {
+            return _pressedShortlyTrigger;
+        }
+
+        public ITrigger GetPressedLongTrigger()
+        {
+            return _pressedLongTrigger;
+        }
+
         protected void SetState(ButtonState newState)
         {
             var oldState = _state;
             _state = newState;
 
-            if (!IsEnabled)
+            if (!Settings.IsEnabled.Value)
             {
                 return;
             }
@@ -43,7 +56,8 @@ namespace HA4IoT.Actuators
             StateChanged?.Invoke(this, new ButtonStateChangedEventArgs(oldState, newState));
         }
 
-        protected bool IsActionForPressedLongAttached => _actionsForPressedLong.Any() || PressedLong != null;
+        protected bool IsActionForPressedLongAttached
+            => _actionsForPressedLong.Any() || _pressedLongTrigger.IsAnyAttached;
 
         public ButtonBase WithShortAction(Action action)
         {
@@ -70,9 +84,9 @@ namespace HA4IoT.Actuators
             }
         }
 
-        public override JsonObject GetStatusForApi()
+        public override JsonObject ExportStatusToJsonObject()
         {
-            var status = base.GetStatusForApi();
+            var status = base.ExportStatusToJsonObject();
             status.SetNamedValue("state", JsonValue.CreateStringValue(_state.ToString()));
 
             return status;
@@ -84,7 +98,7 @@ namespace HA4IoT.Actuators
 
             try
             {
-                PressedShort?.Invoke(this, EventArgs.Empty);
+                _pressedShortlyTrigger.Invoke();
             }
             finally
             {
@@ -98,7 +112,7 @@ namespace HA4IoT.Actuators
 
             try
             {
-                PressedLong?.Invoke(this, EventArgs.Empty);
+                _pressedLongTrigger.Invoke();
             }
             finally
             {

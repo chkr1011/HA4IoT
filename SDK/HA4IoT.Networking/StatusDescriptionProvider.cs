@@ -1,3 +1,5 @@
+using HA4IoT.Contracts.Networking;
+
 namespace HA4IoT.Networking
 {
     internal class StatusDescriptionProvider

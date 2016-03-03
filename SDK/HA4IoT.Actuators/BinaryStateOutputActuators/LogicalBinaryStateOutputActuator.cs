@@ -2,27 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using HA4IoT.Actuators.Animations;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Notifications;
-using HA4IoT.Core.Timer;
-using HA4IoT.Networking;
-using HA4IoT.Notifications;
+using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public class LogicalBinaryStateOutputActuator : BinaryStateOutputActuatorBase
+    public class LogicalBinaryStateOutputActuator : BinaryStateOutputActuatorBase<ActuatorSettings>
     {
         private readonly IHomeAutomationTimer _timer;
 
-        public LogicalBinaryStateOutputActuator(ActuatorId id, IHttpRequestController api, INotificationHandler logger,
+        public LogicalBinaryStateOutputActuator(ActuatorId id, IHttpRequestController apiController, ILogger logger,
             IHomeAutomationTimer timer) : base(
-                id, api, logger)
+                id, apiController, logger)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
 
             _timer = timer;
+
+            Settings = new ActuatorSettings(id, logger);
         }
 
         public IList<IBinaryStateOutputActuator> Actuators { get; } = new List<IBinaryStateOutputActuator>();

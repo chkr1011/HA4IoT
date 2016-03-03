@@ -1,7 +1,9 @@
 ﻿using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
+using HA4IoT.Automations;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core;
+using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
 
@@ -37,11 +39,11 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 7;
 
-            var childrensRoom = controller.CreateRoom(Room.ChildrensRoom)
+            var childrensRoom = controller.CreateArea(Room.ChildrensRoom)
                 .WithTemperatureSensor(ChildrensRoom.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(ChildrensRoom.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
                 .WithLamp(ChildrensRoom.LightCeilingMiddle, hsrel5[HSREL5Pin.GPIO1].WithInvertedState())
-                .WithRollerShutter(ChildrensRoom.RollerShutter, hsrel5[HSREL5Pin.Relay4], hsrel5[HSREL5Pin.Relay3], RollerShutter.DefaultMaxMovingDuration, 20000)
+                .WithRollerShutter(ChildrensRoom.RollerShutter, hsrel5[HSREL5Pin.Relay4], hsrel5[HSREL5Pin.Relay3])
                 .WithSocket(ChildrensRoom.SocketWindow, hsrel5[HSREL5Pin.Relay0])
                 .WithSocket(ChildrensRoom.SocketWallLeft, hsrel5[HSREL5Pin.Relay1])
                 .WithSocket(ChildrensRoom.SocketWallRight, hsrel5[HSREL5Pin.Relay2])
@@ -51,7 +53,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             childrensRoom.Lamp(ChildrensRoom.LightCeilingMiddle).ConnectToggleActionWith(childrensRoom.Button(ChildrensRoom.Button));
 
-            childrensRoom.SetupAutomaticRollerShutters().WithRollerShutters(childrensRoom.RollerShutter(ChildrensRoom.RollerShutter));
+            childrensRoom.SetupRollerShutterAutomation().WithRollerShutters(childrensRoom.RollerShutter(ChildrensRoom.RollerShutter));
             childrensRoom.RollerShutter(ChildrensRoom.RollerShutter)
                 .ConnectWith(childrensRoom.RollerShutterButtons(ChildrensRoom.RollerShutterButtons));
         }

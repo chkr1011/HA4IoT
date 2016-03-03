@@ -1,11 +1,11 @@
-<h1 style="font-size:70px;">HA4IoT</h1>
-<h6>The first open source Home Automation SDK for Windows 10 IoT Core</h6>
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/MC_SplashScreen.png?raw=true" width="100%">
+<img style="margin:25px" src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/Overview_4to3.png?raw=true" width="100%">
 
-<img style="margin:25px" src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/Overview_4to3.png?raw=true">
+HA4IoT (Home Automation for IoT) is the first SDK for Home Automation using Windows 10 IoT Core and a Raspberry Pi 2. It is a private real life award-winning project which covers many Home Automation purposes.
 
 > This brilliant project explores uncharted home-automation territory; it even includes a cat litterbox controller, which detects the cat and channels the air into an outdoor flue! Be sure to check out the whole hack; it's an incredible embedded system with extensive wiring built right into the house.
 >
-hackster.io
+hackster.io (https://www.hackster.io/blog/win-10-winners)
 
 ## Key features
 * Virtual actuators like push buttons, motion motion detectors, lamps, sockets, roller shutters which can be interconnected using a fluent API
@@ -31,17 +31,33 @@ hackster.io
 
 ## Available virtual actuators
 * Button
+* Virtual Button (only available at the App)
+* Switch
 * Motion detector
-* Roller shutters
+* Roller shutter
 * Lamp
 * Socket
-* Combine multiple actuators into virtual ones
 * Humidity sensor
 * Temperature sensor
-* State machine (for complex actuators like fans or 'moods' for lights)
+* Window
+* State machine (for complex actuators like fans or 'moods' for lights or fans)
+* Combine multiple actuators into virtual ones
+
+## Available automations
+* Opening roller shutters after sunrise
+* Closing roller shutters after sunset
+* Closing roller shutters if outside temperature reaches a custom value (intended for rooms below the roof)
+* Prevent automatic opening of roller shutters if they maybe frozen (checking of outside temperature)
+* Prevent automatic opening of roller shutters if sunrise is too early (before your alarm clock)
+* Automatic light based on motion detectors
+* Autoamtic light based on time
+* Autoamtic lights can be configured to be only active at night
+* Disable automatic light if another light is already active
+* Disable every actuator temporary
+* The project provides a powerful condition framework which allows creating of complex autoamtions using C#
 
 ## Quick start
-The software solution contains the project ``CK.HomeAutomation.Controller.Empty`` which can be used to start playing around with the SDK. The other projects ``CK.HomeAutomation.Controller.Cellar`` and ``CK.HomeAutomation.Controller`` containing a full "real life" configuration which can be used as an example.
+The software solution contains the project ``HA4IoT.Controller.Demo`` which can be used to start playing around with the SDK. The other projects ``HA4IoT.Controller.Main`` and ``HA4IoT.Controller.Main`` containing a full "real life" configuration which can be used as an example but will not work without the required hardware.
 
 ## Documentation
 
@@ -50,14 +66,29 @@ The software solution contains the project ``CK.HomeAutomation.Controller.Empty`
 A detailed documentation at GitHub is in progress.
 
 ## Contributors
-This project requires contributors. If you are interested in supporting this project in any way (software, hardware, documentation, fritzing sketches, testing, design, donation) feel free to contact me.
+We want you! If you are interested in supporting this project in any way (software, hardware, documentation, fritzing sketches, testing, design, donation) feel free to contact me.
 
 ## App
+Every actuator can be controlled using the web app which is hosted at the Raspberry Pi 2 using the build in webserver. The language for the examples is German but translation of each UI element is supported. The app shows every rooms/areas and provides several overviews like the overview of all temperature sensor. The app is based on Bootstrap and AngularJS and runs on Smartphones, Tables, PCs etc. 
 
-Every actuator can be controlled using the web app which is hosted at the Pi2 using the build in webserver. The language for the examples is German but translation of each UI element is supported.
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_SplashScreen.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_Areas.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_Bathroom.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_Bedroom-1.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_Bedroom-2.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_Bedroom-2.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_Storeroom.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_SensorsOverview.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_WindowOverview.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_WeatherStation.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_Info.PNG?raw=true" width="256">
 
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_Splash.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_ReadingRoom.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_Bedroom_1.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_Bedroom_2.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/App_WindowsOverview.PNG?raw=true" width="256">
+## Management Console
+
+The configuration of each actuator and automation can be updated using the Management Console. This application is a WPF application which runs at the local computer. It sends a discovery signal through the local area network and shows all available HA4IoT controller instances.   
+
+ <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/MC_HomeScreen.png?raw=true" width="100%">
+ <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/MC_ControllerSelection.png?raw=true" width="100%">
+ <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/MC_ActuatorConfiguration.png?raw=true" width="100%">
+ <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/MC_AutomationConfiguration.png?raw=true" width="100%">
+ <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/MC_TraceViewer.png?raw=true" width="100%">

@@ -1,4 +1,4 @@
-﻿using HA4IoT.Actuators.Conditions;
+﻿using HA4IoT.Conditions;
 
 namespace HA4IoT.Actuators.Tests
 {

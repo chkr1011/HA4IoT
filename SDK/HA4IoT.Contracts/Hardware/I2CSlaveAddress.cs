@@ -1,10 +1,10 @@
 ﻿using System;
 using Windows.Data.Json;
-using HA4IoT.Networking;
+using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Contracts.Hardware
 {
-    public class I2CSlaveAddress : IConvertibleToJsonValue
+    public class I2CSlaveAddress : IExportToJsonValue
     {
         public I2CSlaveAddress(int value)
         {
@@ -27,7 +27,7 @@ namespace HA4IoT.Contracts.Hardware
             return Value.GetHashCode();
         }
 
-        public IJsonValue ToJsonValue()
+        public IJsonValue ExportToJsonObject()
         {
             return JsonValue.CreateNumberValue(Value);
         }

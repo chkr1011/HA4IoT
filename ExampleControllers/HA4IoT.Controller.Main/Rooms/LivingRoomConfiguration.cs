@@ -2,6 +2,7 @@
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core;
+using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
 
@@ -55,7 +56,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 12;
 
-            var livingRoom = controller.CreateRoom(Room.LivingRoom)
+            var livingRoom = controller.CreateArea(Room.LivingRoom)
                 .WithTemperatureSensor(LivingRoom.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(LivingRoom.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
                 .WithLamp(LivingRoom.LampCouch, hsrel8.GetOutput(8).WithInvertedState())

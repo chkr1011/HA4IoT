@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Text;
 using Windows.Data.Json;
+using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Networking
 {
     public class JsonBody : IHttpBody
     {
-        public JsonBody(JsonObject content)
+        public JsonBody(IJsonValue content)
         {
             if (content == null) throw new ArgumentNullException(nameof(content));
-
-            Content = content;
+            
+            Content = content;            
         }
 
-        public JsonObject Content { get; }
+        public IJsonValue Content { get; }
 
         public string MimeType { get; private set; } = MimeTypeProvider.Json;
 

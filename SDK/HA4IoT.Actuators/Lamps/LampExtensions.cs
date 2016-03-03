@@ -6,7 +6,7 @@ namespace HA4IoT.Actuators
 {
     public static class LampExtensions
     {
-        public static IRoom WithLamp(this IRoom room, Enum id, IBinaryOutput output)
+        public static IArea WithLamp(this IArea room, Enum id, IBinaryOutput output)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (output == null) throw new ArgumentNullException(nameof(output));
@@ -18,7 +18,7 @@ namespace HA4IoT.Actuators
             return room;
         }
 
-        public static Lamp Lamp(this IRoom room, Enum id)
+        public static Lamp Lamp(this IArea room, Enum id)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 

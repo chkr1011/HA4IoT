@@ -3,19 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public class StateMachine : ActuatorBase, IActuatorWithOffState
+    public class StateMachine : ActuatorBase<ActuatorSettings>, IStateMachine
     {
         private int _index;
         private bool _turnOffIfStateIsAppliedTwice;
 
-        public StateMachine(ActuatorId id, IHttpRequestController api, INotificationHandler logger)
+        public StateMachine(ActuatorId id, IHttpRequestController api, ILogger logger)
             : base(id, api, logger)
         {
+            Settings = new ActuatorSettings(id, logger);
         }
 
         public List<StateMachineState> States { get; } = new List<StateMachineState>();
@@ -126,21 +128,21 @@ namespace HA4IoT.Actuators
             return this;
         }
 
-        public override JsonObject GetStatusForApi()
+        public override JsonObject ExportStatusToJsonObject()
         {
-            var status = base.GetStatusForApi();
+            var status = base.ExportStatusToJsonObject();
 
             if (States.Any())
             {
-                status.SetNamedValue("state", JsonValue.CreateStringValue(States[_index].Id));
+                status.SetNamedValue("state", States[_index].Id.ToJsonValue());
             }
 
             return status;
         }
 
-        public override JsonObject GetConfigurationForApi()
+        public override JsonObject ExportConfigurationToJsonObject()
         {
-            JsonObject configuration = base.GetConfigurationForApi();
+            JsonObject configuration = base.ExportConfigurationToJsonObject();
 
             JsonArray stateMachineStates = new JsonArray();
             foreach (var state in States)
