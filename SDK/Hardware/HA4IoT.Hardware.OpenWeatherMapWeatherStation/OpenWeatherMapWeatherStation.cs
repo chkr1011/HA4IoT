@@ -19,9 +19,9 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
     public class OpenWeatherMapWeatherStation : IWeatherStation
     {
         private readonly string _cacheFilename = Path.Combine(ApplicationData.Current.LocalFolder.Path,
-            "OWMCache.json");
+            "OpenWeatherMapCache.json");
 
-        public static readonly DeviceId DefaultDeviceId = new DeviceId("OWMWeatherStation");
+        public static readonly DeviceId DefaultDeviceId = new DeviceId("OpenWeatherMapWeatherStation");
 
         private readonly IHomeAutomationTimer _timer;
         private readonly ILogger _logger;
