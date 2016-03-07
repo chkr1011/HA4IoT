@@ -8,8 +8,6 @@ namespace HA4IoT.Contracts.Actuators
 
         BinaryActuatorState GetState();
 
-        void SetInitialState();
-
         void SetState(BinaryActuatorState state, params IParameter[] parameters);
     }
 }

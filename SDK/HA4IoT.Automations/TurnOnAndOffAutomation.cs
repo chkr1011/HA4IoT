@@ -256,7 +256,7 @@ namespace HA4IoT.Automations
                 return;
             }
 
-            _turnOffTimeout = _timer.In(_duration).Do(TurnOff);
+            _turnOffTimeout = _timer.In(Settings.Duration).Do(TurnOff);
         }
 
         private bool GetConditionsAreFulfilled()

@@ -109,6 +109,9 @@
   <ItemGroup>
     <Compile Include="Actuators\ActuatorId.cs" />
     <Compile Include="Actuators\IActuatorSettings.cs" />
+    <Compile Include="Actuators\ISocket.cs" />
+    <Compile Include="Actuators\ILamp.cs" />
+    <Compile Include="Actuators\IBinaryStateEndpoint.cs" />
     <Compile Include="Actuators\IRollerShutterSettings.cs" />
     <Compile Include="Automations\AutomationId.cs" />
     <Compile Include="Actuators\BinaryActuatorState.cs" />
