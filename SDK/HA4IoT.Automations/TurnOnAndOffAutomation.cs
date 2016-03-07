@@ -14,7 +14,7 @@ using HA4IoT.Contracts.WeatherStation;
 
 namespace HA4IoT.Automations
 {
-    public class TurnOnAndOffAutomation : AutomationBase<AutomationSettings>
+    public class TurnOnAndOffAutomation : AutomationBase<TurnOnAndOffAutomationSettings>
     {
         private readonly ConditionsValidator _enablingConditionsValidator = new ConditionsValidator().WithDefaultState(ConditionState.NotFulfilled);
         private readonly ConditionsValidator _disablingConditionsValidator = new ConditionsValidator().WithDefaultState(ConditionState.NotFulfilled);
@@ -26,7 +26,6 @@ namespace HA4IoT.Automations
         
         private readonly Stopwatch _lastTurnedOn = new Stopwatch();
 
-        private TimeSpan _duration;
         private TimeSpan? _pauseDuration;
         private TimedAction _turnOffTimeout;
         private bool _turnOffIfButtonPressedWhileAlreadyOn;
@@ -37,9 +36,7 @@ namespace HA4IoT.Automations
         {
             _timer = timer;
 
-            WithOnDuration(TimeSpan.FromMinutes(1));
-
-            Settings = new AutomationSettings(id, httpApiController, logger);
+            Settings = new TurnOnAndOffAutomationSettings(id, httpApiController, logger);
         }
 
         public TurnOnAndOffAutomation WithTrigger(IMotionDetector motionDetector, params IParameter[] parameters)
@@ -91,7 +88,7 @@ namespace HA4IoT.Automations
 
         public TurnOnAndOffAutomation WithOnDuration(TimeSpan duration)
         {
-            _duration = duration;
+            Settings.Duration.Value = duration;
             return this;
         }
 
