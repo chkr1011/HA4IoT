@@ -116,8 +116,7 @@ namespace HA4IoT.Configuration
 
             return new RollerShutter(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
-                powerOutput,
-                directionOutput,
+                new PortBasedRollerShutterEndpoint(powerOutput, directionOutput), 
                 Controller.HttpApiController,
                 Controller.Logger,
                 Controller.Timer);

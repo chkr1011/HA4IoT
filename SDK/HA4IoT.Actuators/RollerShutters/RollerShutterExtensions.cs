@@ -29,8 +29,12 @@ namespace HA4IoT.Actuators
             if (powerOutput == null) throw new ArgumentNullException(nameof(powerOutput));
             if (directionOutput == null) throw new ArgumentNullException(nameof(directionOutput));
 
-            var rollerShutter = new RollerShutter(ActuatorIdFactory.Create(area, id), powerOutput, directionOutput,
-                area.Controller.HttpApiController, area.Controller.Logger, area.Controller.Timer);
+            var rollerShutter = new RollerShutter(
+                ActuatorIdFactory.Create(area, id), 
+                new PortBasedRollerShutterEndpoint(powerOutput, directionOutput), 
+                area.Controller.HttpApiController, 
+                area.Controller.Logger, 
+                area.Controller.Timer);
 
             area.AddActuator(rollerShutter);
             return area;

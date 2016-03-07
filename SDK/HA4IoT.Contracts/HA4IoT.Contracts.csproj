@@ -109,6 +109,7 @@
   <ItemGroup>
     <Compile Include="Actuators\ActuatorId.cs" />
     <Compile Include="Actuators\IActuatorSettings.cs" />
+    <Compile Include="Actuators\IRollerShutterEndpoint.cs" />
     <Compile Include="Actuators\ISocket.cs" />
     <Compile Include="Actuators\ILamp.cs" />
     <Compile Include="Actuators\IBinaryStateEndpoint.cs" />
