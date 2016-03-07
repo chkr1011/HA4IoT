@@ -110,6 +110,7 @@
     <Compile Include="Actuators\ActuatorId.cs" />
     <Compile Include="Actuators\IActuatorSettings.cs" />
     <Compile Include="Actuators\IButtonEndpoint.cs" />
+    <Compile Include="Actuators\IMotionDetectorEndpoint.cs" />
     <Compile Include="Actuators\IRollerShutterButtons.cs" />
     <Compile Include="Actuators\IRollerShutterEndpoint.cs" />
     <Compile Include="Actuators\ISocket.cs" />

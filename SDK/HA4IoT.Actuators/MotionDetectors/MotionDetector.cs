@@ -3,7 +3,6 @@ using Windows.Data.Json;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.Triggers;
@@ -19,14 +18,16 @@ namespace HA4IoT.Actuators
         private TimedAction _autoEnableAction;
         private MotionDetectorState _state = MotionDetectorState.Idle;
 
-        public MotionDetector(ActuatorId id, IBinaryInput input, IHomeAutomationTimer timer, IHttpRequestController api, ILogger logger)
-            : base(id, api, logger)
+        public MotionDetector(ActuatorId id, IMotionDetectorEndpoint endpoint, IHomeAutomationTimer timer, IHttpRequestController httpApiController, ILogger logger)
+            : base(id, httpApiController, logger)
         {
-            if (input == null) throw new ArgumentNullException(nameof(input));
-            
-            input.StateChanged += (s, e) => HandleInputStateChanged(e);
+            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
+
+            endpoint.MotionDetected += (s, e) => UpdateState(MotionDetectorState.MotionDetected);
+            endpoint.DetectionCompleted += (s, e) => UpdateState(MotionDetectorState.Idle);
 
             base.Settings = new ActuatorSettings(id, logger);
+
             Settings.IsEnabled.ValueChanged += (s, e) =>
             {
                 HandleIsEnabledStateChanged(timer, logger);
@@ -77,20 +78,6 @@ namespace HA4IoT.Actuators
                 {
                     UpdateState(MotionDetectorState.Idle);
                 }
-            }
-        }
-
-        private void HandleInputStateChanged(BinaryStateChangedEventArgs eventArgs)
-        {
-            // The relay at the motion detector is awlays held to high.
-            // The signal is set to false if motion is detected.
-            if (eventArgs.NewState == BinaryState.Low)
-            {
-                UpdateState(MotionDetectorState.MotionDetected);
-            }
-            else
-            {
-                UpdateState(MotionDetectorState.Idle);
             }
         }
 
