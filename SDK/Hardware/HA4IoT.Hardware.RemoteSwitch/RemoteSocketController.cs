@@ -44,14 +44,13 @@ namespace HA4IoT.Hardware.RemoteSwitch
             }
         }
 
-        public RemoteSocketController WithRemoteSocket(int id, LPD433MHzCodeSequence onCodeSequence, LPD433MHzCodeSequence offCodeSequence)
+        public RemoteSocketController WithRemoteSocket(int id, LPD433MHzCodeSequencePair codeSequencePair)
         {
-            if (onCodeSequence == null) throw new ArgumentNullException(nameof(onCodeSequence));
-            if (offCodeSequence == null) throw new ArgumentNullException(nameof(offCodeSequence));
+            if (codeSequencePair == null) throw new ArgumentNullException(nameof(codeSequencePair));
 
             lock (_syncRoot)
             {
-                var port = new RemoteSocketOutputPort(id, onCodeSequence, offCodeSequence, _sender);
+                var port = new RemoteSocketOutputPort(id, codeSequencePair, _sender);
                 port.Write(BinaryState.Low);
 
                 _ports.Add(id, port);

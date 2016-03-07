@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Hardware;
 
@@ -13,6 +14,24 @@ namespace HA4IoT.Actuators
 
             room.AddActuator(new Button(ActuatorIdFactory.Create(room, id), input, room.Controller.HttpApiController, room.Controller.Logger, room.Controller.Timer));
             return room;
+        }
+
+        public static IButton WithPressedShortlyAction(this IButton button, Action action)
+        {
+            if (button == null) throw new ArgumentNullException(nameof(button));
+            if (action == null) throw new ArgumentNullException(nameof(action));
+
+            button.GetPressedShortlyTrigger().Attach(action);
+            return button;
+        }
+
+        public static IButton WithPressedLongAction(this IButton button, Action action)
+        {
+            if (button == null) throw new ArgumentNullException(nameof(button));
+            if (action == null) throw new ArgumentNullException(nameof(action));
+
+            button.GetPressedLongTrigger().Attach(action);
+            return button;
         }
 
         public static IArea WithRollerShutterButtons(this IArea room, Enum id, IBinaryInput upInput, IBinaryInput downInput)
@@ -52,18 +71,18 @@ namespace HA4IoT.Actuators
             return room;
         }
 
-        public static Button Button(this IArea room, Enum id)
+        public static IButton GetButton(this IArea room, Enum id)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 
-            return room.Actuator<Button>(ActuatorIdFactory.Create(room, id));
+            return room.GetActuator<IButton>(ActuatorIdFactory.Create(room, id));
         }
 
-        public static RollerShutterButtons RollerShutterButtons(this IArea room, Enum id)
+        public static IRollerShutterButtons GetRollerShutterButtons(this IArea room, Enum id)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 
-            return room.Actuator<RollerShutterButtons>(ActuatorIdFactory.Create(room, id));
+            return room.GetActuator<RollerShutterButtons>(ActuatorIdFactory.Create(room, id));
         }
     }
 }

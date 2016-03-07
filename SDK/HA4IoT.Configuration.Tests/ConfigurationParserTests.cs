@@ -19,7 +19,7 @@ namespace HA4IoT.Configuration.Tests
         [TestMethod]
         public void Parse_I2CBusDevice()
         {
-            GetController().Devices<II2CBus>().Count.ShouldBeEquivalentTo(1);
+            GetController().GetDevices<II2CBus>().Count.ShouldBeEquivalentTo(1);
         }
 
         [TestMethod]
@@ -27,8 +27,8 @@ namespace HA4IoT.Configuration.Tests
         {
             var controller = GetController();
 
-            controller.Devices<HSREL5>().Count.ShouldBeEquivalentTo(1);
-            controller.Devices<HSREL8>().Count.ShouldBeEquivalentTo(1);
+            controller.GetDevices<HSREL5>().Count.ShouldBeEquivalentTo(1);
+            controller.GetDevices<HSREL8>().Count.ShouldBeEquivalentTo(1);
         }
 
         [TestMethod]
@@ -36,7 +36,7 @@ namespace HA4IoT.Configuration.Tests
         {
             var controller = GetController();
 
-            controller.Areas().Count.ShouldBeEquivalentTo(1);
+            controller.GetAreas().Count.ShouldBeEquivalentTo(1);
         }
 
         [TestMethod]
@@ -44,7 +44,7 @@ namespace HA4IoT.Configuration.Tests
         {
             var controller = GetController();
 
-            var weatherStation = controller.Device<IWeatherStation>(new DeviceId("WeatherStation"));
+            var weatherStation = controller.GetDevice<IWeatherStation>(new DeviceId("WeatherStation"));
             if (weatherStation == null)
             {
                 throw new InvalidOperationException();
@@ -57,7 +57,7 @@ namespace HA4IoT.Configuration.Tests
             var controller = GetController();
 
             // TODO: Check parameters (expose properties).
-            controller.Area(new AreaId("Bedroom")).Actuator<Socket>(new ActuatorId("Bedroom.SocketWindowLeft"));
+            controller.GetArea(new AreaId("Bedroom")).GetActuator<Socket>(new ActuatorId("Bedroom.SocketWindowLeft"));
         }
 
         [TestMethod]
@@ -66,7 +66,7 @@ namespace HA4IoT.Configuration.Tests
             var controller = GetController();
 
             // TODO: Check parameters (expose properties).
-            controller.Area(new AreaId("Bedroom")).Actuator<Lamp>(new ActuatorId("Bedroom.LightCeiling"));
+            controller.GetArea(new AreaId("Bedroom")).GetActuator<Lamp>(new ActuatorId("Bedroom.LightCeiling"));
         }
 
         [TestMethod]
@@ -75,7 +75,7 @@ namespace HA4IoT.Configuration.Tests
             var controller = GetController();
 
             // TODO: Check parameters (expose properties).
-            controller.Area(new AreaId("Bedroom")).Actuator<Button>(new ActuatorId("Bedroom.ButtonDoor"));
+            controller.GetArea(new AreaId("Bedroom")).GetActuator<Button>(new ActuatorId("Bedroom.ButtonDoor"));
         }
 
         [TestMethod]
@@ -84,7 +84,7 @@ namespace HA4IoT.Configuration.Tests
             var controller = GetController();
 
             // TODO: Check parameters (expose properties).
-            controller.Area(new AreaId("Bedroom")).Actuator<RollerShutter>(new ActuatorId("Bedroom.RollerShutterLeft"));
+            controller.GetArea(new AreaId("Bedroom")).GetActuator<RollerShutter>(new ActuatorId("Bedroom.RollerShutterLeft"));
         }
 
         [TestMethod]
@@ -93,7 +93,7 @@ namespace HA4IoT.Configuration.Tests
             var controller = GetController();
 
             // TODO: Check parameters (expose properties).
-            controller.Area(new AreaId("Bedroom")).Actuator<RollerShutterButtons>(new ActuatorId("Bedroom.RollerShutterButtonsUpper"));
+            controller.GetArea(new AreaId("Bedroom")).GetActuator<RollerShutterButtons>(new ActuatorId("Bedroom.RollerShutterButtonsUpper"));
         }
 
         [TestMethod]
@@ -102,7 +102,7 @@ namespace HA4IoT.Configuration.Tests
             var controller = GetController();
 
             // TODO: Check parameters (expose properties).
-            controller.Area(new AreaId("Bedroom")).Actuator<Window>(new ActuatorId("Bedroom.WindowLeft"));
+            controller.GetArea(new AreaId("Bedroom")).GetActuator<Window>(new ActuatorId("Bedroom.WindowLeft"));
         }
 
         [TestMethod]
@@ -111,7 +111,7 @@ namespace HA4IoT.Configuration.Tests
             var controller = GetController();
 
             // TODO: Check parameters (expose properties).
-            controller.Area(new AreaId("Bedroom")).Actuator<TemperatureSensor>(new ActuatorId("Bedroom.TemperatureSensor"));
+            controller.GetArea(new AreaId("Bedroom")).GetActuator<TemperatureSensor>(new ActuatorId("Bedroom.TemperatureSensor"));
         }
 
         [TestMethod]
@@ -120,7 +120,7 @@ namespace HA4IoT.Configuration.Tests
             var controller = GetController();
 
             // TODO: Check parameters (expose properties).
-            controller.Area(new AreaId("Bedroom")).Actuator<HumiditySensor>(new ActuatorId("Bedroom.HumiditySensor"));
+            controller.GetArea(new AreaId("Bedroom")).GetActuator<HumiditySensor>(new ActuatorId("Bedroom.HumiditySensor"));
         }
         private IController GetController()
         {

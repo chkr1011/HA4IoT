@@ -32,11 +32,11 @@ namespace HA4IoT.Actuators
             return room;
         }
 
-        public static IHumiditySensor HumiditySensor(this IArea room, Enum id)
+        public static IHumiditySensor GetHumiditySensor(this IArea room, Enum id)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 
-            return room.Actuator<HumiditySensor>(ActuatorIdFactory.Create(room, id));
+            return room.GetActuator<IHumiditySensor>(ActuatorIdFactory.Create(room, id));
         }
     }
 }

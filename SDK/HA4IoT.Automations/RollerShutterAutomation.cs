@@ -152,7 +152,7 @@ namespace HA4IoT.Automations
         {
             foreach (var rollerShutter in _rollerShutters)
             {
-                _actuatorController.Actuator<IRollerShutter>(rollerShutter).SetState(state);
+                _actuatorController.GetActuator<IRollerShutter>(rollerShutter).SetState(state);
             }
         }
 

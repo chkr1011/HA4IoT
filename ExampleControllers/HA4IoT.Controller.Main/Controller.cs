@@ -28,10 +28,10 @@ namespace HA4IoT.Controller.Main
             var pi2PortController = new Pi2PortController();
             
             AddDevice(new BuiltInI2CBus(Logger));
-            AddDevice(new I2CHardwareBridge(new DeviceId("HB"), new I2CSlaveAddress(50), Device<II2CBus>(), Timer));
+            AddDevice(new I2CHardwareBridge(new DeviceId("HB"), new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer));
             AddDevice(new OpenWeatherMapWeatherStation(OpenWeatherMapWeatherStation.DefaultDeviceId, Timer, HttpApiController, Logger));
 
-            var ccToolsBoardController = new CCToolsBoardController(this, Device<II2CBus>(), HttpApiController, Logger);
+            var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>(), HttpApiController, Logger);
             
             var configurationParser = new ConfigurationParser(this);
             configurationParser.RegisterConfigurationExtender(new CCToolsConfigurationExtender(configurationParser, this));
@@ -73,12 +73,12 @@ namespace HA4IoT.Controller.Main
         {
             const int LDP433MhzSenderPin = 10;
 
-            var i2cHardwareBridge = Device<I2CHardwareBridge>();
-            var bc = new BrennenstuhlCodeSequenceProvider();
+            var i2cHardwareBridge = GetDevice<I2CHardwareBridge>();
+            var brennenstuhl = new BrennenstuhlCodeSequenceProvider();
             var ldp433MHzSender = new LPD433MHzSignalSender(i2cHardwareBridge, LDP433MhzSenderPin, HttpApiController);
 
             var remoteSwitchController = new RemoteSocketController(new DeviceId("RemoteSocketController"),  ldp433MHzSender, Timer)
-                .WithRemoteSocket(0, bc.GetSequence(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A, RemoteSocketCommand.TurnOn), bc.GetSequence(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A, RemoteSocketCommand.TurnOff));
+                .WithRemoteSocket(0, brennenstuhl.GetSequencePair(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A));
 
             return remoteSwitchController;
         }

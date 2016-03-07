@@ -8,18 +8,18 @@ namespace HA4IoT.Actuators
 {
     public static class RollerShutterExtensions
     {
-        public static IRollerShutter[] GetAllRollerShutters(this IArea area)
+        public static IRollerShutter[] GetRollerShutters(this IArea area)
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
 
-            return area.Actuators<IRollerShutter>().ToArray();
+            return area.GetActuators<IRollerShutter>().ToArray();
         }
 
-        public static IRollerShutter RollerShutter(this IArea area, Enum id)
+        public static IRollerShutter GetRollerShutter(this IArea area, Enum id)
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
 
-            return area.Actuator<RollerShutter>(ActuatorIdFactory.Create(area, id));
+            return area.GetActuator<RollerShutter>(ActuatorIdFactory.Create(area, id));
         }
 
         public static IArea WithRollerShutter(this IArea area, Enum id, IBinaryOutput powerOutput, IBinaryOutput directionOutput)

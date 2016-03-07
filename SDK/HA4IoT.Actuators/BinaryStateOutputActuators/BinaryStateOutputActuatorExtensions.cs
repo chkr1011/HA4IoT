@@ -10,7 +10,7 @@ namespace HA4IoT.Actuators
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 
-            return room.Actuator<IBinaryStateOutputActuator>(ActuatorIdFactory.Create(room, id));
+            return room.GetActuator<IBinaryStateOutputActuator>(ActuatorIdFactory.Create(room, id));
         }
     }
 }

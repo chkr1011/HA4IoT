@@ -51,12 +51,12 @@ namespace HA4IoT.Core
             _areas.AddUnique(area.Id, area);
         }
 
-        public IArea Area(AreaId id)
+        public IArea GetArea(AreaId id)
         {
             return _areas.Get(id);
         }
 
-        public IList<IArea> Areas()
+        public IList<IArea> GetAreas()
         {
             return _areas.GetAll();
         }
@@ -66,22 +66,22 @@ namespace HA4IoT.Core
             _actuators.AddOrUpdate(actuator.Id, actuator);
         }
 
-        public TActuator Actuator<TActuator>(ActuatorId id) where TActuator : IActuator
+        public TActuator GetActuator<TActuator>(ActuatorId id) where TActuator : IActuator
         {
             return _actuators.Get<TActuator>(id);
         }
 
-        public TActuator Actuator<TActuator>() where TActuator : IActuator
+        public TActuator GetActuator<TActuator>() where TActuator : IActuator
         {
             return _actuators.Get<TActuator>();
         }
 
-        public IList<TActuator> Actuators<TActuator>() where TActuator : IActuator
+        public IList<TActuator> GetActuators<TActuator>() where TActuator : IActuator
         {
             return _actuators.GetAll<TActuator>();
         }
 
-        public IList<IActuator> Actuators()
+        public IList<IActuator> GetActuators()
         {
             return _actuators.GetAll();
         }
@@ -91,22 +91,22 @@ namespace HA4IoT.Core
             _devices.AddUnique(device.Id, device);
         }
 
-        public TDevice Device<TDevice>(DeviceId id) where TDevice : IDevice
+        public TDevice GetDevice<TDevice>(DeviceId id) where TDevice : IDevice
         {
             return _devices.Get<TDevice>(id);
         }
 
-        public TDevice Device<TDevice>() where TDevice : IDevice
+        public TDevice GetDevice<TDevice>() where TDevice : IDevice
         {
             return _devices.Get<TDevice>();
         }
 
-        public IList<TDevice> Devices<TDevice>() where TDevice : IDevice
+        public IList<TDevice> GetDevices<TDevice>() where TDevice : IDevice
         {
             return _devices.GetAll<TDevice>();
         }
 
-        public IList<IDevice> Devices()
+        public IList<IDevice> GetDevices()
         {
             return _devices.GetAll();
         }
@@ -116,17 +116,17 @@ namespace HA4IoT.Core
             _automations.AddOrUpdate(automation.Id, automation);
         }
 
-        public IList<TAutomation> Automations<TAutomation>() where TAutomation : IAutomation
+        public IList<TAutomation> GetAutomations<TAutomation>() where TAutomation : IAutomation
         {
             return _automations.GetAll<TAutomation>();
         }
 
-        public TAutomation Automation<TAutomation>(AutomationId id) where TAutomation : IAutomation
+        public TAutomation GetAutomation<TAutomation>(AutomationId id) where TAutomation : IAutomation
         {
             return _automations.Get<TAutomation>(id);
         }
 
-        public IList<IAutomation> Automations()
+        public IList<IAutomation> GetAutomations()
         {
             return _automations.GetAll();
         }

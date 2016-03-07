@@ -78,7 +78,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
         public void Setup()
         {
-            var i2cHardwareBridge = _controller.Device<I2CHardwareBridge>();
+            var i2cHardwareBridge = _controller.GetDevice<I2CHardwareBridge>();
             const int SensorPin = 6;
 
             var bedroom = _controller.CreateArea(Room.Bedroom)
@@ -110,49 +110,50 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithWindow(Bedroom.WindowLeft, w => w.WithCenterCasement(_input5.GetInput(2)))
                 .WithWindow(Bedroom.WindowRight, w => w.WithCenterCasement(_input5.GetInput(3)));
 
-            bedroom.RollerShutter(Bedroom.RollerShutterLeft)
-                .ConnectWith(bedroom.RollerShutterButtons(Bedroom.RollerShutterButtonsUpper));
-            bedroom.RollerShutter(Bedroom.RollerShutterRight)
-                .ConnectWith(bedroom.RollerShutterButtons(Bedroom.RollerShutterButtonsLower));
+            bedroom.GetRollerShutter(Bedroom.RollerShutterLeft)
+                .ConnectWith(bedroom.GetRollerShutterButtons(Bedroom.RollerShutterButtonsUpper));
+
+            bedroom.GetRollerShutter(Bedroom.RollerShutterRight)
+                .ConnectWith(bedroom.GetRollerShutterButtons(Bedroom.RollerShutterButtonsLower));
 
             bedroom.CombineActuators(Bedroom.CombinedCeilingLights)
-                .WithActuator(bedroom.Lamp(Bedroom.LightCeilingWall))
-                .WithActuator(bedroom.Lamp(Bedroom.LightCeilingWindow))
-                .ConnectToggleActionWith(bedroom.Button(Bedroom.ButtonDoor))
-                .ConnectToggleActionWith(bedroom.Button(Bedroom.ButtonWindowUpper));
+                .WithActuator(bedroom.GetLamp(Bedroom.LightCeilingWall))
+                .WithActuator(bedroom.GetLamp(Bedroom.LightCeilingWindow))
+                .ConnectToggleActionWith(bedroom.GetButton(Bedroom.ButtonDoor))
+                .ConnectToggleActionWith(bedroom.GetButton(Bedroom.ButtonWindowUpper));
 
-            bedroom.Button(Bedroom.ButtonDoor).WithLongAction(() =>
+            bedroom.GetButton(Bedroom.ButtonDoor).GetPressedLongTrigger().Attach(() =>
             {
-                bedroom.Lamp(Bedroom.LampBedLeft).TurnOff();
-                bedroom.Lamp(Bedroom.LampBedRight).TurnOff();
-                bedroom.Lamp(Bedroom.CombinedCeilingLights).TurnOff();
+                bedroom.GetLamp(Bedroom.LampBedLeft).TurnOff();
+                bedroom.GetLamp(Bedroom.LampBedRight).TurnOff();
+                bedroom.GetLamp(Bedroom.CombinedCeilingLights).TurnOff();
             });
 
             bedroom.SetupRollerShutterAutomation()
-                .WithRollerShutters(bedroom.GetAllRollerShutters())
+                .WithRollerShutters(bedroom.GetRollerShutters())
                 .WithDoNotOpenBefore(TimeSpan.FromHours(7).Add(TimeSpan.FromMinutes(15)))
                 .WithCloseIfOutsideTemperatureIsGreaterThan(24)
                 .WithDoNotOpenIfOutsideTemperatureIsBelowThan(3);
 
             bedroom.SetupTurnOnAndOffAutomation()
-                .WithTrigger(bedroom.MotionDetector(Bedroom.MotionDetector))
+                .WithTrigger(bedroom.GetMotionDetector(Bedroom.MotionDetector))
                 .WithTarget(bedroom.BinaryStateOutput(Bedroom.LightCeiling))
                 .WithOnDuration(TimeSpan.FromSeconds(15))
-                .WithTurnOnIfAllRollerShuttersClosed(bedroom.RollerShutter(Bedroom.RollerShutterLeft), bedroom.RollerShutter(Bedroom.RollerShutterRight))
-                .WithEnabledAtNight(_controller.Device<IWeatherStation>())
-                .WithSkipIfAnyActuatorIsAlreadyOn(bedroom.Lamp(Bedroom.LampBedLeft), bedroom.Lamp(Bedroom.LampBedRight));
+                .WithTurnOnIfAllRollerShuttersClosed(bedroom.GetRollerShutter(Bedroom.RollerShutterLeft), bedroom.GetRollerShutter(Bedroom.RollerShutterRight))
+                .WithEnabledAtNight(_controller.GetDevice<IWeatherStation>())
+                .WithSkipIfAnyActuatorIsAlreadyOn(bedroom.GetLamp(Bedroom.LampBedLeft), bedroom.GetLamp(Bedroom.LampBedRight));
             
             bedroom.WithStateMachine(Bedroom.Fan, SetupFan);
             
-            bedroom.Button(Bedroom.ButtonBedLeftInner).WithShortAction(() => bedroom.Lamp(Bedroom.LampBedLeft).Toggle());
-            bedroom.Button(Bedroom.ButtonBedLeftInner).WithLongAction(() => bedroom.BinaryStateOutput(Bedroom.CombinedCeilingLights).Toggle());
-            bedroom.Button(Bedroom.ButtonBedLeftOuter).WithShortAction(() => bedroom.StateMachine(Bedroom.Fan).SetNextState());
-            bedroom.Button(Bedroom.ButtonBedLeftOuter).WithLongAction(() => bedroom.StateMachine(Bedroom.Fan).TurnOff());
+            bedroom.GetButton(Bedroom.ButtonBedLeftInner).WithPressedShortlyAction(() => bedroom.GetLamp(Bedroom.LampBedLeft).Toggle());
+            bedroom.GetButton(Bedroom.ButtonBedLeftInner).WithPressedLongAction(() => bedroom.BinaryStateOutput(Bedroom.CombinedCeilingLights).Toggle());
+            bedroom.GetButton(Bedroom.ButtonBedLeftOuter).WithPressedShortlyAction(() => bedroom.StateMachine(Bedroom.Fan).SetNextState());
+            bedroom.GetButton(Bedroom.ButtonBedLeftOuter).WithPressedLongAction(() => bedroom.StateMachine(Bedroom.Fan).TurnOff());
 
-            bedroom.Button(Bedroom.ButtonBedRightInner).WithShortAction(() => bedroom.Lamp(Bedroom.LampBedRight).Toggle());
-            bedroom.Button(Bedroom.ButtonBedRightInner).WithLongAction(() => bedroom.BinaryStateOutput(Bedroom.CombinedCeilingLights).Toggle());
-            bedroom.Button(Bedroom.ButtonBedRightOuter).WithShortAction(() => bedroom.StateMachine(Bedroom.Fan).SetNextState());
-            bedroom.Button(Bedroom.ButtonBedRightOuter).WithLongAction(() => bedroom.StateMachine(Bedroom.Fan).TurnOff());
+            bedroom.GetButton(Bedroom.ButtonBedRightInner).WithPressedShortlyAction(() => bedroom.GetLamp(Bedroom.LampBedRight).Toggle());
+            bedroom.GetButton(Bedroom.ButtonBedRightInner).WithPressedLongAction(() => bedroom.BinaryStateOutput(Bedroom.CombinedCeilingLights).Toggle());
+            bedroom.GetButton(Bedroom.ButtonBedRightOuter).WithPressedShortlyAction(() => bedroom.StateMachine(Bedroom.Fan).SetNextState());
+            bedroom.GetButton(Bedroom.ButtonBedRightOuter).WithPressedLongAction(() => bedroom.StateMachine(Bedroom.Fan).TurnOff());
         }
 
         private void SetupFan(StateMachine fan, IArea room)
@@ -171,7 +172,7 @@ namespace HA4IoT.Controller.Main.Rooms
             fan.AddState("3").WithHighPort(fanRelay1).WithHighPort(fanRelay2).WithHighPort(fanRelay3);
             fan.TurnOff();
 
-            fan.ConnectMoveNextAndToggleOffWith(room.Button(Bedroom.ButtonWindowLower));
+            fan.ConnectMoveNextAndToggleOffWith(room.GetButton(Bedroom.ButtonWindowLower));
         }
     }
 }

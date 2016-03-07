@@ -5,7 +5,7 @@ namespace HA4IoT.Actuators.Connectors
 {
     public static class RollerShutterWithRollerShutterButtonsConnector
     {
-        public static IRollerShutter ConnectWith(this IRollerShutter rollerShutter, RollerShutterButtons buttons)
+        public static IRollerShutter ConnectWith(this IRollerShutter rollerShutter, IRollerShutterButtons buttons)
         {
             if (rollerShutter == null) throw new ArgumentNullException(nameof(rollerShutter));
             if (buttons == null) throw new ArgumentNullException(nameof(buttons));

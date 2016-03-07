@@ -35,7 +35,7 @@ namespace HA4IoT.Controller.Main.Rooms
             var hsrel5 = ccToolsController.CreateHSREL5(Device.ReadingRoomHSREL5, new I2CSlaveAddress(62));
             var input2 = controller.Device<HSPE16InputOnly>(Device.Input2);
 
-            var i2cHardwareBridge = controller.Device<I2CHardwareBridge>();
+            var i2cHardwareBridge = controller.GetDevice<I2CHardwareBridge>();
 
             const int SensorPin = 9;
 
@@ -51,11 +51,11 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithWindow(ReadingRoom.Window, w => w.WithCenterCasement(input2.GetInput(8))) // Tilt = input2.GetInput(9) -- currently broken!
                 .WithRollerShutterButtons(ReadingRoom.RollerShutterButtons, input2.GetInput(12), input2.GetInput(11));
 
-            readingRoom.Lamp(ReadingRoom.LightCeilingMiddle).ConnectToggleActionWith(readingRoom.Button(ReadingRoom.Button));
+            readingRoom.GetLamp(ReadingRoom.LightCeilingMiddle).ConnectToggleActionWith(readingRoom.GetButton(ReadingRoom.Button));
 
-            readingRoom.SetupRollerShutterAutomation().WithRollerShutters(readingRoom.RollerShutter(ReadingRoom.RollerShutter));
-            readingRoom.RollerShutter(ReadingRoom.RollerShutter)
-                .ConnectWith(readingRoom.RollerShutterButtons(ReadingRoom.RollerShutterButtons));
+            readingRoom.SetupRollerShutterAutomation().WithRollerShutters(readingRoom.GetRollerShutter(ReadingRoom.RollerShutter));
+            readingRoom.GetRollerShutter(ReadingRoom.RollerShutter)
+                .ConnectWith(readingRoom.GetRollerShutterButtons(ReadingRoom.RollerShutterButtons));
         }
     }
 }

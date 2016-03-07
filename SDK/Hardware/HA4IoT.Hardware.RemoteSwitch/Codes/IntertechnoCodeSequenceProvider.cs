@@ -7,6 +7,13 @@ namespace HA4IoT.Hardware.RemoteSwitch.Codes
         private const byte LENGTH = 24;
         private const byte REPEATS = 3;
 
+        public LPD433MHzCodeSequencePair GetSequencePair(IntertechnoSystemCode systemCode, IntertechnoUnitCode unitCode)
+        {
+            return new LPD433MHzCodeSequencePair(
+                GetSequence(systemCode, unitCode, RemoteSocketCommand.TurnOn),
+                GetSequence(systemCode, unitCode, RemoteSocketCommand.TurnOff));
+        }
+
         public LPD433MHzCodeSequence GetSequence(IntertechnoSystemCode systemCode, IntertechnoUnitCode unitCode, RemoteSocketCommand command)
         {
             switch (systemCode)

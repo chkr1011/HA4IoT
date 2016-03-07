@@ -225,7 +225,7 @@ namespace HA4IoT.Configuration
                 {
                     var targetState = actuatorElement.GetMandatoryEnumFromAttribute<BinaryActuatorState>("targetState");
                     var actuatorId = new ActuatorId(actuatorElement.GetMandatoryStringFromAttribute("id"));
-                    var actuator = Controller.Actuator<IBinaryStateOutputActuator>(actuatorId);
+                    var actuator = Controller.GetActuator<IBinaryStateOutputActuator>(actuatorId);
 
                     state.WithActuator(actuator, targetState);
                 }

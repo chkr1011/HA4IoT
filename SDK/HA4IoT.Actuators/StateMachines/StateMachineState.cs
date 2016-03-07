@@ -49,11 +49,11 @@ namespace HA4IoT.Actuators
             return this;
         }
 
-        public StateMachineState ConnectApplyStateWith(Button button)
+        public StateMachineState ConnectApplyStateWith(IButton button)
         {
             if (button == null) throw new ArgumentNullException(nameof(button));
 
-            button.WithShortAction(() => _stateMachine.SetState(Id));
+            button.GetPressedShortlyTrigger().Attach(() => _stateMachine.SetState(Id));
             return this;
         }
 

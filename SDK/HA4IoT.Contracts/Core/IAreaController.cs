@@ -8,8 +8,8 @@ namespace HA4IoT.Contracts.Core
     {
         void AddArea(IArea room);
 
-        IArea Area(AreaId id);
+        IArea GetArea(AreaId id);
 
-        IList<IArea> Areas();
+        IList<IArea> GetAreas();
     }
 }

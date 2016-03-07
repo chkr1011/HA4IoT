@@ -65,12 +65,6 @@ namespace HA4IoT.Actuators
             return this;
         }
 
-        public ButtonBase WithLongAction(Action action)
-        {
-            _actionsForPressedLong.Add(action);
-            return this;
-        }
-
         public override void HandleApiPost(ApiRequestContext context)
         {
             string action = context.Request.GetNamedString("duration", string.Empty);

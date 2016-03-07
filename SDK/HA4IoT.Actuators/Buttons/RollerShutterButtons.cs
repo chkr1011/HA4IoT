@@ -7,7 +7,7 @@ using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public class RollerShutterButtons : ActuatorBase<ActuatorSettings>
+    public class RollerShutterButtons : ActuatorBase<ActuatorSettings>, IRollerShutterButtons
     {
         public RollerShutterButtons(ActuatorId id, IBinaryInput upInput, IBinaryInput downInput,
             IHttpRequestController httpApiController, ILogger logger, IHomeAutomationTimer timer) : base(id, httpApiController, logger)

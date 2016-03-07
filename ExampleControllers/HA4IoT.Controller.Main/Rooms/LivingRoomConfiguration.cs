@@ -52,7 +52,7 @@ namespace HA4IoT.Controller.Main.Rooms
             var input0 = controller.Device<HSPE16InputOnly>(Device.Input0);
             var input1 = controller.Device<HSPE16InputOnly>(Device.Input1);
 
-            var i2cHardwareBridge = controller.Device<I2CHardwareBridge>();
+            var i2cHardwareBridge = controller.GetDevice<I2CHardwareBridge>();
 
             const int SensorPin = 12;
 
@@ -80,15 +80,15 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithWindow(LivingRoom.WindowRight,
                     w => w.WithLeftCasement(input1.GetInput(14), input1.GetInput(15)).WithRightCasement(input1.GetInput(13), input1.GetInput(12)));
 
-            livingRoom.Lamp(LivingRoom.LampDiningTable)
-                .ConnectToggleActionWith(livingRoom.Button(LivingRoom.ButtonUpper))
-                .ConnectToggleActionWith(livingRoom.Button(LivingRoom.ButtonPassage));
+            livingRoom.GetLamp(LivingRoom.LampDiningTable)
+                .ConnectToggleActionWith(livingRoom.GetButton(LivingRoom.ButtonUpper))
+                .ConnectToggleActionWith(livingRoom.GetButton(LivingRoom.ButtonPassage));
 
-            livingRoom.Lamp(LivingRoom.LampCouch).
-                ConnectToggleActionWith(livingRoom.Button(LivingRoom.ButtonMiddle));
+            livingRoom.GetLamp(LivingRoom.LampCouch).
+                ConnectToggleActionWith(livingRoom.GetButton(LivingRoom.ButtonMiddle));
 
             livingRoom.Socket(LivingRoom.SocketWallRightEdgeRight).
-                ConnectToggleActionWith(livingRoom.Button(LivingRoom.ButtonLower));
+                ConnectToggleActionWith(livingRoom.GetButton(LivingRoom.ButtonLower));
         }
     }
 }

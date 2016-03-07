@@ -8,7 +8,7 @@ namespace HA4IoT.Hardware
     {
         public static TDevice Device<TDevice>(this IDeviceController controller, Enum id) where TDevice : IDevice
         {
-            return controller.Device<TDevice>(DeviceIdFactory.CreateIdFrom(id));
+            return controller.GetDevice<TDevice>(DeviceIdFactory.CreateIdFrom(id));
         }
     }
 }

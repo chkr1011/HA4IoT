@@ -39,12 +39,12 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithSocket(Storeroom.CatLitterBoxFan, hsrel8LowerHeatingValves.GetOutput(15));
 
             storeroom.SetupTurnOnAndOffAutomation()
-                .WithTrigger(storeroom.MotionDetector(Storeroom.MotionDetector))
-                .WithTarget(storeroom.Lamp(Storeroom.LightCeiling))
+                .WithTrigger(storeroom.GetMotionDetector(Storeroom.MotionDetector))
+                .WithTarget(storeroom.GetLamp(Storeroom.LightCeiling))
                 .WithOnDuration(TimeSpan.FromMinutes(1));
 
             storeroom.SetupTurnOnAndOffAutomation()
-                .WithTrigger(storeroom.MotionDetector(Storeroom.MotionDetectorCatLitterBox))
+                .WithTrigger(storeroom.GetMotionDetector(Storeroom.MotionDetectorCatLitterBox))
                 .WithTarget(storeroom.Socket(Storeroom.CatLitterBoxFan))
                 .WithOnDuration(TimeSpan.FromMinutes(2));
 
@@ -52,16 +52,16 @@ namespace HA4IoT.Controller.Main.Rooms
 
             // TODO: Create RoomIdFactory like ActuatorIdFactory.
             storeroom.SetupTurnOnAndOffAutomation()
-                .WithTrigger(controller.Area(new AreaId(Room.Kitchen.ToString())).MotionDetector(KitchenConfiguration.Kitchen.MotionDetector))
-                .WithTrigger(controller.Area(new AreaId(Room.LowerBathroom.ToString())).MotionDetector(LowerBathroomConfiguration.LowerBathroom.MotionDetector))
+                .WithTrigger(controller.GetArea(new AreaId(Room.Kitchen.ToString())).GetMotionDetector(KitchenConfiguration.Kitchen.MotionDetector))
+                .WithTrigger(controller.GetArea(new AreaId(Room.LowerBathroom.ToString())).GetMotionDetector(LowerBathroomConfiguration.LowerBathroom.MotionDetector))
                 .WithTarget(storeroom.Socket(Storeroom.CirculatingPump))
                 .WithPauseAfterEveryTurnOn(TimeSpan.FromHours(1))
                 .WithOnDuration(TimeSpan.FromMinutes(1))
-                .WithEnabledAtDay(controller.Device<IWeatherStation>());
+                .WithEnabledAtDay(controller.GetDevice<IWeatherStation>());
 
             _catLitterBoxTwitterSender =
                 new CatLitterBoxTwitterSender(controller.Timer, controller.Logger).WithTrigger(
-                    storeroom.MotionDetector(Storeroom.MotionDetectorCatLitterBox));
+                    storeroom.GetMotionDetector(Storeroom.MotionDetectorCatLitterBox));
         }
     }
 }

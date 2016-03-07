@@ -37,7 +37,7 @@ namespace HA4IoT.Controller.Main.Rooms
         {
             var hspe16_FloorAndLowerBathroom = controller.Device<HSPE16OutputOnly>(Device.LowerFloorAndLowerBathroomHSPE16);
             var input3 = controller.Device<HSPE16InputOnly>(Device.Input3);
-            var i2cHardwareBridge = controller.Device<I2CHardwareBridge>();
+            var i2cHardwareBridge = controller.GetDevice<I2CHardwareBridge>();
 
             const int SensorPin = 3;
 
@@ -51,30 +51,30 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithLamp(LowerBathroom.LampMirror, hspe16_FloorAndLowerBathroom.GetOutput(4).WithInvertedState())
                 .WithWindow(LowerBathroom.Window, w => w.WithCenterCasement(input3.GetInput(13), input3.GetInput(14)));
 
-            bathroom.WithVirtualButton(LowerBathroom.StartBathmodeButton, b => b.WithShortAction(() => StartBathode(bathroom)));
+            bathroom.WithVirtualButton(LowerBathroom.StartBathmodeButton, b => b.GetPressedShortlyTrigger().Attach(() => StartBathode(bathroom)));
 
             bathroom.CombineActuators(LowerBathroom.CombinedLights)
-                .WithActuator(bathroom.Lamp(LowerBathroom.LightCeilingDoor))
-                .WithActuator(bathroom.Lamp(LowerBathroom.LightCeilingMiddle))
-                .WithActuator(bathroom.Lamp(LowerBathroom.LightCeilingWindow))
-                .WithActuator(bathroom.Lamp(LowerBathroom.LampMirror));
+                .WithActuator(bathroom.GetLamp(LowerBathroom.LightCeilingDoor))
+                .WithActuator(bathroom.GetLamp(LowerBathroom.LightCeilingMiddle))
+                .WithActuator(bathroom.GetLamp(LowerBathroom.LightCeilingWindow))
+                .WithActuator(bathroom.GetLamp(LowerBathroom.LampMirror));
 
             bathroom.SetupTurnOnAndOffAutomation()
-                .WithTrigger(bathroom.MotionDetector(LowerBathroom.MotionDetector))
+                .WithTrigger(bathroom.GetMotionDetector(LowerBathroom.MotionDetector))
                 .WithTarget(bathroom.BinaryStateOutput(LowerBathroom.CombinedLights));
         }
 
         private void StartBathode(IArea bathroom)
         {
-            bathroom.MotionDetector().Settings.IsEnabled.Value = false;
+            bathroom.GetMotionDetector().Settings.IsEnabled.Value = false;
 
-            bathroom.Lamp(LowerBathroom.LightCeilingDoor).TurnOn();
-            bathroom.Lamp(LowerBathroom.LightCeilingMiddle).TurnOff();
-            bathroom.Lamp(LowerBathroom.LightCeilingWindow).TurnOff();
-            bathroom.Lamp(LowerBathroom.LampMirror).TurnOff();
+            bathroom.GetLamp(LowerBathroom.LightCeilingDoor).TurnOn();
+            bathroom.GetLamp(LowerBathroom.LightCeilingMiddle).TurnOff();
+            bathroom.GetLamp(LowerBathroom.LightCeilingWindow).TurnOff();
+            bathroom.GetLamp(LowerBathroom.LampMirror).TurnOff();
 
             _bathmodeResetTimer?.Cancel();
-            _bathmodeResetTimer = bathroom.Controller.Timer.In(TimeSpan.FromHours(1)).Do(() => bathroom.MotionDetector().Settings.IsEnabled.Value = true);
+            _bathmodeResetTimer = bathroom.Controller.Timer.In(TimeSpan.FromHours(1)).Do(() => bathroom.GetMotionDetector().Settings.IsEnabled.Value = true);
         }
     }
 }

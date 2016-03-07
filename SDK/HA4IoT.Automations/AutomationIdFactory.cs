@@ -13,7 +13,7 @@ namespace HA4IoT.Automations
             if (area == null) throw new ArgumentNullException(nameof(area));
 
             string value = area.Id.Value + "." + typeof (TAutomation).Name + "-";
-            value += area.Automations().Count;
+            value += area.GetAutomations().Count;
 
             return new AutomationId(value);
         }

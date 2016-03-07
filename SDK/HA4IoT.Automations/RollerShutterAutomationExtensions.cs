@@ -13,7 +13,7 @@ namespace HA4IoT.Automations
             var automation = new RollerShutterAutomation(
                 AutomationIdFactory.CreateIdFrom<RollerShutterAutomation>(area),
                 area.Controller.Timer, 
-                area.Controller.Device<IWeatherStation>(),
+                area.Controller.GetDevice<IWeatherStation>(),
                 area.Controller.HttpApiController,
                 area.Controller,
                 area.Controller.Logger);

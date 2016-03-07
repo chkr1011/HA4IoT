@@ -66,7 +66,7 @@ namespace HA4IoT.Core
             configuration.SetNamedValue("Version", JsonValue.CreateNumberValue(1));
 
             var areas = new JsonObject();
-            foreach (var area in _controller.Areas())
+            foreach (var area in _controller.GetAreas())
             {
                 areas.SetNamedValue(area.Id.Value, ExportAreaConfigurationToJsonValue(area));
             }
@@ -83,7 +83,7 @@ namespace HA4IoT.Core
             configuration.SetNamedValue("Settings", area.ExportConfigurationToJsonObject());
 
             var actuators = new JsonObject();
-            foreach (var actuator in area.Actuators())
+            foreach (var actuator in area.GetActuators())
             {
                 actuators.SetNamedValue(actuator.Id.Value, actuator.ExportConfigurationToJsonObject());
             }
@@ -91,7 +91,7 @@ namespace HA4IoT.Core
             configuration.SetNamedValue("Actuators", actuators);
 
             var automations = new JsonObject();
-            foreach (var automation in area.Automations())
+            foreach (var automation in area.GetAutomations())
             {
                 automations.SetNamedValue(automation.Id.Value, automation.ExportConfigurationAsJsonValue());
             }
@@ -108,7 +108,7 @@ namespace HA4IoT.Core
             result.SetNamedValue("Version", 1.ToJsonValue());
 
             var actuators = new JsonObject();
-            foreach (var actuator in _controller.Actuators())
+            foreach (var actuator in _controller.GetActuators())
             {
                 actuators.SetNamedValue(actuator.Id.Value, actuator.ExportStatusToJsonObject());
             }
@@ -116,14 +116,14 @@ namespace HA4IoT.Core
             result.SetNamedValue("Actuators", actuators);
 
             var automations = new JsonObject();
-            foreach (var automation in _controller.Automations())
+            foreach (var automation in _controller.GetAutomations())
             {
                 automations.SetNamedValue(automation.Id.Value, automation.ExportStatusToJsonObject());
             }
 
             result.SetNamedValue("Automations", automations);
 
-            var weatherStation = _controller.Device<IWeatherStation>();
+            var weatherStation = _controller.GetDevice<IWeatherStation>();
             if (weatherStation != null)
             {
                 result.SetNamedValue("WeatherStation", weatherStation.ExportStatusToJsonObject());
