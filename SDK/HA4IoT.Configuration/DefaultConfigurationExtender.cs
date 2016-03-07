@@ -70,7 +70,7 @@ namespace HA4IoT.Configuration
 
             return new CustomBinaryStateOutputActuator(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
-                new PortBasedLampEndpoint(output),
+                new PortBasedBinaryStateEndpoint(output),
                 Controller.HttpApiController,
                 Controller.Logger);
         }
@@ -81,7 +81,7 @@ namespace HA4IoT.Configuration
 
             return new Button(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
-                input,
+                new ButtonEndpoint(input), 
                 Controller.HttpApiController,
                 Controller.Logger,
                 Controller.Timer);
@@ -93,7 +93,7 @@ namespace HA4IoT.Configuration
 
             return new Socket(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
-                new PortBasedLampEndpoint(output),
+                new PortBasedBinaryStateEndpoint(output),
                 Controller.HttpApiController,
                 Controller.Logger);
         }
@@ -104,7 +104,7 @@ namespace HA4IoT.Configuration
 
             return new Lamp(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
-                new PortBasedLampEndpoint(output),
+                new PortBasedBinaryStateEndpoint(output),
                 Controller.HttpApiController,
                 Controller.Logger);
         }

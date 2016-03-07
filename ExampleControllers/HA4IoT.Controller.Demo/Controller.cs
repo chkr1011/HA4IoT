@@ -124,13 +124,13 @@ namespace HA4IoT.Controller.Demo
         {
             var ledStripRemote = new LEDStripRemote(i2CHardwareBridge, 4);
 
-            group.WithButton(new ActuatorId("on"), b => b.WithShortAction(() => ledStripRemote.TurnOn()))
-                .WithButton(new ActuatorId("off"), b => b.WithShortAction(() => ledStripRemote.TurnOff()))
-                .WithButton(new ActuatorId("white"), b => b.WithShortAction(() => ledStripRemote.TurnWhite()))
+            group.WithButton(new ActuatorId("on"), b => b.WithPressedShortlyAction(() => ledStripRemote.TurnOn()))
+                .WithButton(new ActuatorId("off"), b => b.WithPressedShortlyAction(() => ledStripRemote.TurnOff()))
+                .WithButton(new ActuatorId("white"), b => b.WithPressedShortlyAction(() => ledStripRemote.TurnWhite()))
 
-                .WithButton(new ActuatorId("red1"), b => b.WithShortAction(() => ledStripRemote.TurnRed1()))
-                .WithButton(new ActuatorId("green1"), b => b.WithShortAction(() => ledStripRemote.TurnGreen1()))
-                .WithButton(new ActuatorId("blue1"), b => b.WithShortAction(() => ledStripRemote.TurnBlue1()));
+                .WithButton(new ActuatorId("red1"), b => b.WithPressedShortlyAction(() => ledStripRemote.TurnRed1()))
+                .WithButton(new ActuatorId("green1"), b => b.WithPressedShortlyAction(() => ledStripRemote.TurnGreen1()))
+                .WithButton(new ActuatorId("blue1"), b => b.WithPressedShortlyAction(() => ledStripRemote.TurnBlue1()));
         }
     }
 }

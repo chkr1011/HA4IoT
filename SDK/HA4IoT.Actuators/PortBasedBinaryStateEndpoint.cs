@@ -5,11 +5,11 @@ using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Actuators
 {
-    public class PortBasedLampEndpoint : IBinaryStateEndpoint
+    public class PortBasedBinaryStateEndpoint : IBinaryStateEndpoint
     {
         private readonly IBinaryOutput _output;
 
-        public PortBasedLampEndpoint(IBinaryOutput output)
+        public PortBasedBinaryStateEndpoint(IBinaryOutput output)
         {
             if (output == null) throw new ArgumentNullException(nameof(output));
 

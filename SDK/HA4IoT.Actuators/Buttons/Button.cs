@@ -12,23 +12,21 @@ namespace HA4IoT.Actuators
     {
         private readonly Stopwatch _stopwatch = new Stopwatch();
 
-        public Button(ActuatorId id, IBinaryInput input, IHttpRequestController api, ILogger logger, IHomeAutomationTimer timer)
-            : base(id, api, logger)
+        public Button(ActuatorId id, IButtonEndpoint endpoint, IHttpRequestController httpAiController, ILogger logger, IHomeAutomationTimer timer)
+            : base(id, httpAiController, logger)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
-            if (input == null) throw new ArgumentNullException(nameof(input));
+            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
             
             timer.Tick += CheckForTimeout;
-            input.StateChanged += HandleInputStateChanged;
+            endpoint.Pressed += (s, e) => HandleInputStateChanged(true, false);
+            endpoint.Released += (s, e) => HandleInputStateChanged(false, true);
         }
 
         public TimeSpan TimeoutForPressedLongActions { get; set; } = TimeSpan.FromSeconds(1.5);
 
-        private void HandleInputStateChanged(object sender, BinaryStateChangedEventArgs e)
+        private void HandleInputStateChanged(bool buttonIsPressed, bool buttonIsReleased)
         {
-            bool buttonIsPressed = e.NewState == BinaryState.High;
-            bool buttonIsReleased = e.NewState == BinaryState.Low;
-
             if (buttonIsReleased)
             {
                 SetState(ButtonState.Released);

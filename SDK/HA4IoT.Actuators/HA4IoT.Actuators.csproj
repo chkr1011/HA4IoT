@@ -119,8 +119,9 @@
     <Compile Include="BinaryStateOutputActuators\BinaryStateOutputActuatorExtensions.cs" />
     <Compile Include="BinaryStateOutputActuators\CustomBinaryStateOutputActuator.cs" />
     <Compile Include="BinaryStateOutputActuators\LogicalBinaryStateOutputActuatorExtensions.cs" />
+    <Compile Include="Buttons\PortBasedButtonEndpoint.cs" />
     <Compile Include="Lamps\LampExtensions.cs" />
-    <Compile Include="Lamps\PortBasedLampEndpoint.cs" />
+    <Compile Include="PortBasedBinaryStateEndpoint.cs" />
     <Compile Include="MotionDetectors\MotionDetectorExtensions.cs" />
     <Compile Include="ActuatorSettings.cs" />
     <Compile Include="Animations\AnimateParameter.cs" />

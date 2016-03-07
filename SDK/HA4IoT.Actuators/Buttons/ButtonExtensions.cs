@@ -12,7 +12,14 @@ namespace HA4IoT.Actuators
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (input == null) throw new ArgumentNullException(nameof(input));
 
-            room.AddActuator(new Button(ActuatorIdFactory.Create(room, id), input, room.Controller.HttpApiController, room.Controller.Logger, room.Controller.Timer));
+            var button = new Button(
+                ActuatorIdFactory.Create(room, id), 
+                new ButtonEndpoint(input),
+                room.Controller.HttpApiController, 
+                room.Controller.Logger, 
+                room.Controller.Timer);
+
+            room.AddActuator(button);
             return room;
         }
 

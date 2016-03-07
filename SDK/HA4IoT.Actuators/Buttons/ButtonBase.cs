@@ -15,9 +15,6 @@ namespace HA4IoT.Actuators
         private readonly Trigger _pressedShortlyTrigger = new Trigger();
         private readonly Trigger _pressedLongTrigger = new Trigger();
 
-        private readonly List<Action>  _actionsForPressedShort = new List<Action>();
-        private readonly List<Action> _actionsForPressedLong = new List<Action>();
-
         private ButtonState _state = ButtonState.Released;
 
         protected ButtonBase(ActuatorId id, IHttpRequestController httpApiController, ILogger logger)
@@ -56,14 +53,7 @@ namespace HA4IoT.Actuators
             StateChanged?.Invoke(this, new ButtonStateChangedEventArgs(oldState, newState));
         }
 
-        protected bool IsActionForPressedLongAttached
-            => _actionsForPressedLong.Any() || _pressedLongTrigger.IsAnyAttached;
-
-        public ButtonBase WithShortAction(Action action)
-        {
-            _actionsForPressedShort.Add(action);
-            return this;
-        }
+        protected bool IsActionForPressedLongAttached => _pressedLongTrigger.IsAnyAttached;
 
         public override void HandleApiPost(ApiRequestContext context)
         {
@@ -88,30 +78,14 @@ namespace HA4IoT.Actuators
 
         protected void OnPressedShort()
         {
-            Logger.Info(Id + ": pressed short");
-
-            try
-            {
-                _pressedShortlyTrigger.Invoke();
-            }
-            finally
-            {
-                _actionsForPressedShort.ForEach(a => a.Invoke());
-            }
+            Logger.Info($"{Id}: pressed short");
+            _pressedShortlyTrigger.Invoke();
         }
 
         protected void OnPressedLong()
         {
-            Logger.Info(Id + ": pressed long");
-
-            try
-            {
-                _pressedLongTrigger.Invoke();
-            }
-            finally
-            {
-                _actionsForPressedLong.ForEach(a => a.Invoke());
-            }
+            Logger.Info($"{Id}: pressed long");
+            _pressedLongTrigger.Invoke();
         }
     }
 }
