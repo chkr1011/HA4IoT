@@ -60,9 +60,10 @@ namespace HA4IoT.Automations
                 return;
             }
 
-            if (!_maxOutsideTemperatureApplied && GetItIsTooHotIsAffected())
+            if (!_maxOutsideTemperatureApplied && TooHotIsAffected())
             {
                 _maxOutsideTemperatureApplied = true;
+
                 _logger.Info(GetTracePrefix() + $"Closing because outside temperature reaches {Settings.AutoCloseIfTooHotTemperaure.Value}°C.");
                 StartMove(RollerShutterState.MovingDown);
 
@@ -76,37 +77,46 @@ namespace HA4IoT.Automations
 
             if (!_autoOpenIsApplied && autoOpenIsInRange)
             {
-                if (GetDoNotOpenDueToTimeIsAffected())
+                if (DoNotOpenDueToTimeIsAffected())
                 {
                     return;
                 }
 
-                if (GetDoNotOpenDueToColdTemperatureIsAffected())
+                if (TooColdIsAffected())
                 {
                     _logger.Info(GetTracePrefix() + $"Cancelling opening because outside temperature is lower than {Settings.DoNotOpenIfTooColdTemperature.Value}°C.");
-                    _autoOpenIsApplied = true;
-
-                    return;
+                }
+                else
+                {
+                    StartMove(RollerShutterState.MovingUp);
                 }
                 
                 _autoOpenIsApplied = true;
                 _autoCloseIsApplied = false;
-                _maxOutsideTemperatureApplied = false;
 
-                StartMove(RollerShutterState.MovingUp);
+                _maxOutsideTemperatureApplied = false;
+                
                 _logger.Info(GetTracePrefix() + "Applied sunrise");                
             }
             else if (!_autoCloseIsApplied && autoCloseIsInRange)
             {
+                if (TooColdIsAffected())
+                {
+                    _logger.Info(GetTracePrefix() + $"Cancelling closing because outside temperature is lower than {Settings.DoNotOpenIfTooColdTemperature.Value}°C.");
+                }
+                else
+                {
+                    StartMove(RollerShutterState.MovingDown);
+                }
+
                 _autoCloseIsApplied = true;
                 _autoOpenIsApplied = false;
-
-                StartMove(RollerShutterState.MovingDown);
+                
                 _logger.Info(GetTracePrefix() + "Applied sunset");
             }
         }
 
-        private bool GetDoNotOpenDueToTimeIsAffected()
+        private bool DoNotOpenDueToTimeIsAffected()
         {
             if (Settings.DoNotOpenBeforeIsEnabled.Value && 
                 Settings.DoNotOpenBeforeTime.Value > _timer.CurrentTime)
@@ -117,7 +127,7 @@ namespace HA4IoT.Automations
             return false;
         }
 
-        private bool GetItIsTooHotIsAffected()
+        private bool TooHotIsAffected()
         {
             if (Settings.AutoCloseIfTooHotIsEnabled.Value && 
                 _weatherStation.TemperatureSensor.GetValue() > Settings.AutoCloseIfTooHotTemperaure.Value)
@@ -128,7 +138,7 @@ namespace HA4IoT.Automations
             return false;
         }
 
-        private bool GetDoNotOpenDueToColdTemperatureIsAffected()
+        private bool TooColdIsAffected()
         {
             if (Settings.DoNotOpenIfTooColdIsEnabled.Value &&
                 _weatherStation.TemperatureSensor.GetValue() < Settings.DoNotOpenIfTooColdTemperature.Value)
