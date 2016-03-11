@@ -1,5 +1,7 @@
 ﻿using System;
 using Windows.Data.Json;
+using HA4IoT.Actuators.Actions;
+using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Logging;
@@ -8,9 +10,26 @@ namespace HA4IoT.Actuators
 {
     public abstract class BinaryStateOutputActuatorBase<TSettings> : ActuatorBase<TSettings>, IBinaryStateOutputActuator where TSettings : ActuatorSettings
     {
+        private readonly IActuatorAction _turnOnAction;
+        private readonly IActuatorAction _turnOffAction;
+        private readonly IActuatorAction _toggleAction;
+
         protected BinaryStateOutputActuatorBase(ActuatorId id, IApiController apiController, ILogger logger) 
             : base(id, apiController, logger)
         {
+            _turnOnAction = new ActuatorAction(() => SetState(BinaryActuatorState.On));
+            _turnOffAction = new ActuatorAction(() => SetState(BinaryActuatorState.Off));
+            _toggleAction = new ActuatorAction(() =>
+            {
+                if (GetState() == BinaryActuatorState.On)
+                {
+                    SetState(BinaryActuatorState.Off);
+                }
+                else if (GetState() == BinaryActuatorState.Off)
+                {
+                    SetState(BinaryActuatorState.On);
+                }
+            });
         }
 
         public event EventHandler<BinaryActuatorStateChangedEventArgs> StateChanged;
@@ -35,6 +54,21 @@ namespace HA4IoT.Actuators
         public void TurnOff(params IParameter[] parameters)
         {
             SetState(BinaryActuatorState.Off, parameters);
+        }
+
+        public IActuatorAction GetTurnOnAction()
+        {
+            return _turnOnAction;
+        }
+
+        public IActuatorAction GetTurnOffAction()
+        {
+            return _turnOffAction;
+        }
+
+        public IActuatorAction GetToggleAction()
+        {
+            return _toggleAction;
         }
 
         public override void HandleApiPost(IApiContext apiContext)

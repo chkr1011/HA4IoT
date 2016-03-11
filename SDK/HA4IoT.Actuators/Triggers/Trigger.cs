@@ -6,7 +6,7 @@ namespace HA4IoT.Actuators.Triggers
 {
     public class Trigger : ITrigger
     {
-        private readonly List<Action> _actions = new List<Action>(); 
+        private readonly List<Action> _actions = new List<Action>();
 
         public event EventHandler<TriggeredEventArgs> Triggered;
 
@@ -21,7 +21,7 @@ namespace HA4IoT.Actuators.Triggers
 
         public void Invoke()
         {
-            Triggered?.Invoke(this, new TriggeredEventArgs());
+            Triggered?.Invoke(this, TriggeredEventArgs.Empty);
 
             foreach (var action in _actions)
             {

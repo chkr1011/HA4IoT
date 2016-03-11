@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using HA4IoT.Actuators.Triggers;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -94,6 +95,21 @@ namespace HA4IoT.Actuators.Tests
 
             sensor.SetValue(9.9F);
             triggerCount.ShouldBeEquivalentTo(3);
+        }
+
+        [TestMethod]
+        public void Associate_TriggerWithActuatorAction()
+        {
+            var testButton = new TestButton();
+            var testOutput = new TestBinaryStateOutputActuator();
+
+            testButton.GetPressedShortlyTrigger().AssociateWith(testOutput.GetToggleAction());
+
+            testOutput.GetState().ShouldBeEquivalentTo(BinaryActuatorState.Off);
+            testButton.PressShort();
+            testOutput.GetState().ShouldBeEquivalentTo(BinaryActuatorState.On);
+            testButton.PressShort();
+            testOutput.GetState().ShouldBeEquivalentTo(BinaryActuatorState.Off);
         }
     }
 }

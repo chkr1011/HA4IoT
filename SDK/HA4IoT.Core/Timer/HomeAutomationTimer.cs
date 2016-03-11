@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Core.Timer
 {

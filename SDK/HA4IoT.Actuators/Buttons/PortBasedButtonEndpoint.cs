@@ -18,11 +18,11 @@ namespace HA4IoT.Actuators
 
         private void DispatchState(object sender, BinaryStateChangedEventArgs e)
         {
-            if (e.NewState == BinaryState.High)
+            if (e.NewValue == BinaryState.High)
             {
                 Pressed?.Invoke(this, EventArgs.Empty);
             }
-            else if (e.NewState == BinaryState.Low)
+            else if (e.NewValue == BinaryState.Low)
             {
                 Released?.Invoke(this, EventArgs.Empty);
             }

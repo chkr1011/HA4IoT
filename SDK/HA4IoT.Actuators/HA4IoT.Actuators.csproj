@@ -114,11 +114,14 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\ActuatorAction.cs" />
+    <Compile Include="Actions\ActuatorActionExtensions.cs" />
     <Compile Include="ActuatorSettingsHttpApiDispatcher.cs" />
     <Compile Include="ActuatorIdFactory.cs" />
     <Compile Include="BinaryStateOutputActuators\BinaryStateOutputActuatorExtensions.cs" />
     <Compile Include="BinaryStateOutputActuators\CustomBinaryStateOutputActuator.cs" />
     <Compile Include="BinaryStateOutputActuators\LogicalBinaryStateOutputActuatorExtensions.cs" />
+    <Compile Include="Buttons\ButtonSettings.cs" />
     <Compile Include="Buttons\PortBasedButtonEndpoint.cs" />
     <Compile Include="Lamps\LampExtensions.cs" />
     <Compile Include="MotionDetectors\PortBasedMotionDetectorEndpoint.cs" />
@@ -132,7 +135,6 @@
     <Compile Include="Animations\DirectionAnimation.cs" />
     <Compile Include="Animations\Frame.cs" />
     <Compile Include="BinaryStateOutputActuators\BinaryStateOutputActuatorBase.cs" />
-    <Compile Include="Buttons\ButtonBase.cs" />
     <Compile Include="RollerShutters\PortBasedRollerShutterEndpoint.cs" />
     <Compile Include="RollerShutters\RollerShutterSettings.cs" />
     <Compile Include="StateMachines\StateMachineExtensions.cs" />
@@ -140,6 +142,7 @@
     <Compile Include="Triggers\SensorValueUnderranTrigger.cs" />
     <Compile Include="Triggers\SensorValueReachedTrigger.cs" />
     <Compile Include="Triggers\Trigger.cs" />
+    <Compile Include="Triggers\TriggerExtensions.cs" />
     <Compile Include="Windows\Casement.cs" />
     <Compile Include="Windows\CasementState.cs" />
     <Compile Include="DoNotCommitStateParameter.cs" />

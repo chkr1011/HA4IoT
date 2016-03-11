@@ -107,9 +107,11 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\IActuatorAction.cs" />
     <Compile Include="Actuators\ActuatorId.cs" />
     <Compile Include="Actuators\IActuatorSettings.cs" />
     <Compile Include="Actuators\IButtonEndpoint.cs" />
+    <Compile Include="Actuators\IButtonSettings.cs" />
     <Compile Include="Actuators\IMotionDetectorEndpoint.cs" />
     <Compile Include="Actuators\IRollerShutterButtons.cs" />
     <Compile Include="Actuators\IRollerShutterEndpoint.cs" />
@@ -185,7 +187,7 @@
     <Compile Include="Actuators\RollerShutterState.cs" />
     <Compile Include="Actuators\RollerShutterStateChangedEventArgs.cs" />
     <Compile Include="Actuators\StateMachineStateChangedEventArgs.cs" />
-    <Compile Include="Actuators\ValueChangedEventArgs.cs" />
+    <Compile Include="ValueChangedEventArgs.cs" />
     <Compile Include="Actuators\ButtonStateChangedEventArgs.cs" />
     <Compile Include="Core\IStatusProvider.cs" />
     <Compile Include="Daylight.cs" />

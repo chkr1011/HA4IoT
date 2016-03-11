@@ -1,5 +1,7 @@
 ﻿using System;
+using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Tests.Mockups
 {

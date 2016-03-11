@@ -12,7 +12,7 @@ namespace HA4IoT.Contracts.Actuators
             {
                 actuator.TurnOn();
             }
-            else
+            else if (actuator.GetState() == BinaryActuatorState.On)
             {
                 actuator.TurnOff();
             }

@@ -8,6 +8,7 @@ namespace HA4IoT.Actuators
     public abstract class BinaryStateOutputActuator<TSettings> : BinaryStateOutputActuatorBase<TSettings> where TSettings : ActuatorSettings
     {
         private readonly IBinaryStateEndpoint _endpoint;
+
         private BinaryActuatorState _state = BinaryActuatorState.Off;
 
         protected BinaryStateOutputActuator(ActuatorId id, IBinaryStateEndpoint endpoint, IApiController apiController, ILogger logger) 
@@ -18,7 +19,7 @@ namespace HA4IoT.Actuators
             _endpoint = endpoint;
             _endpoint.TurnOff();
         }
-    
+
         protected override void SetStateInternal(BinaryActuatorState state, params IParameter[] parameters)
         {
             if (state == _state)

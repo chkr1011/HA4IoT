@@ -19,12 +19,13 @@ namespace HA4IoT.Hardware.Test
             }
         }
         
-        public void SetInternalState(BinaryState newState)
+        public void SetInternalState(BinaryState state)
         {
             lock (_syncRoot)
             {
-                _state = newState;
-                StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(Read()));
+                var oldState = _state;
+                _state = state;
+                StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(oldState, state));
             }
         }
 

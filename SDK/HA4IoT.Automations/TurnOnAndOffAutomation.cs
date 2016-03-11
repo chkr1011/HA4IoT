@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;

@@ -5,7 +5,7 @@ namespace HA4IoT.Actuators.Triggers
 {
     public class IntervalTrigger : Trigger
     {
-        public IntervalTrigger(IHomeAutomationTimer timer, TimeSpan interval)
+        public IntervalTrigger(TimeSpan interval, IHomeAutomationTimer timer)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
 

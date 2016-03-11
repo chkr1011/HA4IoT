@@ -12,18 +12,15 @@ namespace HA4IoT.Tests.Mockups
         private readonly Trigger _pressedLongTrigger = new Trigger();
         private readonly Trigger _pressedShortlyTrigger = new Trigger();
 
-        public ButtonState State { get; set; } = ButtonState.Released;
-
-        public event EventHandler<ButtonStateChangedEventArgs> StateChanged;
-
         public TestButton()
         {
             Settings = new ActuatorSettings(ActuatorIdFactory.EmptyId, new TestLogger());
         }
 
+        public event EventHandler<ButtonStateChangedEventArgs> StateChanged;
         public ActuatorId Id { get; }
-
         public IActuatorSettings Settings { get; }
+        public ButtonState State { get; } = ButtonState.Released;
 
         public JsonObject ExportConfigurationToJsonObject()
         {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HA4IoT.Contracts.Actuators
+namespace HA4IoT.Contracts
 {
     public class ValueChangedEventArgs<TValue> : EventArgs
     {
