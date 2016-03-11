@@ -6,16 +6,26 @@ namespace HA4IoT.Actuators
 {
     public class ButtonEndpoint : IButtonEndpoint
     {
-        private readonly IBinaryInput _input;
-
         public ButtonEndpoint(IBinaryInput input)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
 
-            _input = input;
+            input.StateChanged += DispatchState;
         }
 
         public event EventHandler Pressed;
         public event EventHandler Released;
+
+        private void DispatchState(object sender, BinaryStateChangedEventArgs e)
+        {
+            if (e.NewState == BinaryState.High)
+            {
+                Pressed?.Invoke(this, EventArgs.Empty);
+            }
+            else if (e.NewState == BinaryState.Low)
+            {
+                Released?.Invoke(this, EventArgs.Empty);
+            }
+        }
     }
 }
