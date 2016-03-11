@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Windows.Data.Json;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Actuators
@@ -17,8 +15,8 @@ namespace HA4IoT.Actuators
 
         private ButtonState _state = ButtonState.Released;
 
-        protected ButtonBase(ActuatorId id, IHttpRequestController httpApiController, ILogger logger)
-            : base(id, httpApiController, logger)
+        protected ButtonBase(ActuatorId id, IApiController apiController, ILogger logger)
+            : base(id, apiController, logger)
         {
             Settings = new ActuatorSettings(id, logger);
         }
@@ -55,9 +53,9 @@ namespace HA4IoT.Actuators
 
         protected bool IsActionForPressedLongAttached => _pressedLongTrigger.IsAnyAttached;
 
-        public override void HandleApiPost(ApiRequestContext context)
+        public override void HandleApiPost(IApiContext apiContext)
         {
-            string action = context.Request.GetNamedString("duration", string.Empty);
+            string action = apiContext.Request.GetNamedString("duration", string.Empty);
             if (action.Equals(ButtonPressedDuration.Long.ToString(), StringComparison.OrdinalIgnoreCase))
             {
                 OnPressedLong();

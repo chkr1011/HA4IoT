@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Networking;
 using Windows.Networking.Sockets;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Logger
@@ -32,11 +32,11 @@ namespace HA4IoT.Logger
             Task.Factory.StartNew(SendQueuedItems, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
-        public void ExposeToApi(IHttpRequestController httpApiController)
+        public void ExposeToApi(IApiController apiController)
         {
-            if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
+            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
 
-            httpApiController.HandleGet("trace").Using(HandleApiGet);
+            apiController.RouteRequest("trace", HandleApiGet);
         }
 
         public void Info(string message, params object[] parameters)
@@ -104,11 +104,11 @@ namespace HA4IoT.Logger
             }
         }
 
-        private void HandleApiGet(HttpContext httpContext)
+        private void HandleApiGet(IApiContext apiContext)
         {
             lock (_syncRoot)
             {
-                httpContext.Response.Body = new JsonBody(CreatePackage(_history));
+                apiContext.Response = CreatePackage(_history);
             }
         }
 

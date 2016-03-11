@@ -14,7 +14,7 @@ namespace HA4IoT.Automations
                 AutomationIdFactory.CreateIdFrom<RollerShutterAutomation>(area),
                 area.Controller.Timer, 
                 area.Controller.GetDevice<IWeatherStation>(),
-                area.Controller.HttpApiController,
+                area.Controller.ApiController,
                 area.Controller,
                 area.Controller.Logger);
 

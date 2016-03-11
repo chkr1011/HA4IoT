@@ -15,7 +15,7 @@ namespace HA4IoT.Actuators
             var button = new Button(
                 ActuatorIdFactory.Create(room, id), 
                 new ButtonEndpoint(input),
-                room.Controller.HttpApiController, 
+                room.Controller.ApiController, 
                 room.Controller.Logger, 
                 room.Controller.Timer);
 
@@ -48,7 +48,7 @@ namespace HA4IoT.Actuators
             if (downInput == null) throw new ArgumentNullException(nameof(downInput));
 
             var rollerShutterButtons = new RollerShutterButtons(ActuatorIdFactory.Create(room, id), upInput, downInput,
-                room.Controller.HttpApiController, room.Controller.Logger, room.Controller.Timer);
+                room.Controller.ApiController, room.Controller.Logger, room.Controller.Timer);
 
             room.AddActuator(rollerShutterButtons);
             return room;
@@ -59,7 +59,7 @@ namespace HA4IoT.Actuators
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
 
-            var virtualButton = new VirtualButton(ActuatorIdFactory.Create(room, id), room.Controller.HttpApiController, room.Controller.Logger);
+            var virtualButton = new VirtualButton(ActuatorIdFactory.Create(room, id), room.Controller.ApiController, room.Controller.Logger);
             initializer.Invoke(virtualButton);
 
             room.AddActuator(virtualButton);
@@ -71,7 +71,7 @@ namespace HA4IoT.Actuators
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
 
-            var virtualButtonGroup = new VirtualButtonGroup(ActuatorIdFactory.Create(room, id), room.Controller.HttpApiController, room.Controller.Logger);
+            var virtualButtonGroup = new VirtualButtonGroup(ActuatorIdFactory.Create(room, id), room.Controller.ApiController, room.Controller.Logger);
             initializer.Invoke(virtualButtonGroup);
 
             room.AddActuator(virtualButtonGroup);

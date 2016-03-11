@@ -89,7 +89,7 @@ namespace HA4IoT.Automations.Tests
             _controller.AddActuator(_rollerShutter);
 
             _automation = new RollerShutterAutomation(AutomationIdFactory.EmptyId, _controller.Timer,
-                _weatherStation, _controller.HttpApiController, _controller, _controller.Logger);
+                _weatherStation, _controller.ApiController, _controller, _controller.Logger);
 
             _automation.WithRollerShutters(_rollerShutter);
         }

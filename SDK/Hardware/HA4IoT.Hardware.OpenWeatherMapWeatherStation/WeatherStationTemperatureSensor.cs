@@ -1,15 +1,15 @@
 ﻿using System;
 using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 {
     public class WeatherStationTemperatureSensor : SingleValueSensorActuatorBase<ActuatorSettings>, ITemperatureSensor
     {
-        public WeatherStationTemperatureSensor(ActuatorId id, IHttpRequestController api, ILogger logger) 
-            : base(id, api, logger)
+        public WeatherStationTemperatureSensor(ActuatorId id, IApiController apiController, ILogger logger) 
+            : base(id, apiController, logger)
         {
             Settings = new ActuatorSettings(id, logger);
         }

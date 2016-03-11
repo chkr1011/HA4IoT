@@ -1,4 +1,6 @@
-﻿namespace HA4IoT.Contracts.Networking
+﻿using System;
+
+namespace HA4IoT.Contracts.Networking
 {
     public interface IHttpRequestController
     {

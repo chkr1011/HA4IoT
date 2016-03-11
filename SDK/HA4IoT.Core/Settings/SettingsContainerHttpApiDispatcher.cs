@@ -1,48 +1,40 @@
 ﻿using System;
-using Windows.Data.Json;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core.Settings;
-using HA4IoT.Contracts.Networking;
-using HA4IoT.Networking;
 
 namespace HA4IoT.Core.Settings
 {
     public class SettingsContainerHttpApiDispatcher<TSettings> where TSettings : ISettingsContainer
     {
         private readonly TSettings _settingsContainer;
-        private readonly IHttpRequestController _httpApiController;
+        private readonly IApiController _apiController;
         private readonly string _relativeUri;
 
-        public SettingsContainerHttpApiDispatcher(TSettings settingsContainerContainer, string relativeUri, IHttpRequestController httpApiController)
+        public SettingsContainerHttpApiDispatcher(TSettings settingsContainerContainer, string relativeUri, IApiController apiController)
         {
             if (settingsContainerContainer == null) throw new ArgumentNullException(nameof(settingsContainerContainer));
-            if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
+            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
 
             _settingsContainer = settingsContainerContainer;
-            _httpApiController = httpApiController;
+            _apiController = apiController;
 
             _relativeUri = relativeUri;
         }
 
         public void ExposeToApi()
         {
-            _httpApiController.HandlePost($"{_relativeUri}/settings").Using(HandleApiPost);
-            _httpApiController.HandleGet($"{_relativeUri}/settings").Using(HandleApiGet);
+            _apiController.RouteCommand($"{_relativeUri}/settings", HandleApiPost);
+            _apiController.RouteRequest($"{_relativeUri}/settings", HandleApiGet);
         }
 
-        private void HandleApiGet(HttpContext httpContext)
+        private void HandleApiGet(IApiContext apiContext)
         {
-            httpContext.Response.Body = new JsonBody(_settingsContainer.ExportToJsonObject());
+            apiContext.Response = _settingsContainer.ExportToJsonObject();
         }
 
-        private void HandleApiPost(HttpContext httpContext)
+        private void HandleApiPost(IApiContext apiContext)
         {
-            JsonObject requestBody;
-            if (!JsonObject.TryParse(httpContext.Request.Body, out requestBody))
-            {
-                return;
-            }
-
-            _settingsContainer.ImportFromJsonObject(requestBody);
+            _settingsContainer.ImportFromJsonObject(apiContext.Request);
         }
     }
 }

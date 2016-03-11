@@ -2,9 +2,9 @@
 using Windows.Data.Json;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.Triggers;
 using HA4IoT.Networking;
 
@@ -18,8 +18,8 @@ namespace HA4IoT.Actuators
         private TimedAction _autoEnableAction;
         private MotionDetectorState _state = MotionDetectorState.Idle;
 
-        public MotionDetector(ActuatorId id, IMotionDetectorEndpoint endpoint, IHomeAutomationTimer timer, IHttpRequestController httpApiController, ILogger logger)
-            : base(id, httpApiController, logger)
+        public MotionDetector(ActuatorId id, IMotionDetectorEndpoint endpoint, IHomeAutomationTimer timer, IApiController apiController, ILogger logger)
+            : base(id, apiController, logger)
         {
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
 
@@ -63,13 +63,13 @@ namespace HA4IoT.Actuators
             return status;
         }
 
-        public override void HandleApiPost(ApiRequestContext context)
+        public override void HandleApiPost(IApiContext apiContext)
         {
-            base.HandleApiPost(context);
+            base.HandleApiPost(apiContext);
             
-            if (context.Request.ContainsKey("action"))
+            if (apiContext.Request.ContainsKey("action"))
             {
-                string action = context.Request.GetNamedString("action");
+                string action = apiContext.Request.GetNamedString("action");
                 if (action.Equals("detected", StringComparison.OrdinalIgnoreCase))
                 {
                     UpdateState(MotionDetectorState.MotionDetected);

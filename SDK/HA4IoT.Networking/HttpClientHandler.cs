@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Windows.Data.Json;
 using Windows.Networking.Sockets;
 using HA4IoT.Contracts.Networking;
 
@@ -101,7 +100,7 @@ namespace HA4IoT.Networking
                 if (context != null)
                 {
                     context.Response.StatusCode = HttpStatusCode.InternalServerError;
-                    context.Response.Body = new JsonBody(ExceptionToJson(exception));
+                    context.Response.Body = new JsonBody(exception.ToJsonObject());
                 }
             }
         }
@@ -121,11 +120,6 @@ namespace HA4IoT.Networking
             byte[] response = _responseSerializer.SerializeResponse(context);
             _outputStream.Write(response, 0, response.Length);
             _outputStream.Flush();
-        }
-
-        private JsonObject ExceptionToJson(Exception exception)
-        {
-            return exception.ToJsonObject();
         }
 
         public void Dispose()

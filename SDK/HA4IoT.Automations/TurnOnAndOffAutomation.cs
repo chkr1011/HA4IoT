@@ -5,6 +5,7 @@ using System.Linq;
 using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
@@ -31,12 +32,12 @@ namespace HA4IoT.Automations
         private bool _turnOffIfButtonPressedWhileAlreadyOn;
         private bool _isOn;
         
-        public TurnOnAndOffAutomation(AutomationId id, IHomeAutomationTimer timer, IHttpRequestController httpApiController, ILogger logger)
+        public TurnOnAndOffAutomation(AutomationId id, IHomeAutomationTimer timer, IApiController apiController, ILogger logger)
             : base(id)
         {
             _timer = timer;
 
-            Settings = new TurnOnAndOffAutomationSettings(id, httpApiController, logger);
+            Settings = new TurnOnAndOffAutomationSettings(id, apiController, logger);
         }
 
         public TurnOnAndOffAutomation WithTrigger(IMotionDetector motionDetector, params IParameter[] parameters)

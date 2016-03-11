@@ -139,6 +139,10 @@
     <Content Include="Properties\HA4IoT.Core.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\HA4IoT.Api\HA4IoT.Api.csproj">
+      <Project>{ED4B4304-0E5D-459D-857D-622F790C1A32}</Project>
+      <Name>HA4IoT.Api</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{551337E7-D1EF-4145-92B4-F7086F7665A6}</Project>
       <Name>HA4IoT.Contracts</Name>

@@ -1,7 +1,7 @@
 ﻿using System;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Actuators
 {
@@ -10,8 +10,8 @@ namespace HA4IoT.Actuators
         private readonly IBinaryStateEndpoint _endpoint;
         private BinaryActuatorState _state = BinaryActuatorState.Off;
 
-        protected BinaryStateOutputActuator(ActuatorId id, IBinaryStateEndpoint endpoint, IHttpRequestController httpApiController, ILogger logger) 
-            : base(id, httpApiController, logger)
+        protected BinaryStateOutputActuator(ActuatorId id, IBinaryStateEndpoint endpoint, IApiController apiController, ILogger logger) 
+            : base(id, apiController, logger)
         {
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
 

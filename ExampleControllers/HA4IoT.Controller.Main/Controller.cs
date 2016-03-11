@@ -29,9 +29,9 @@ namespace HA4IoT.Controller.Main
             
             AddDevice(new BuiltInI2CBus(Logger));
             AddDevice(new I2CHardwareBridge(new DeviceId("HB"), new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer));
-            AddDevice(new OpenWeatherMapWeatherStation(OpenWeatherMapWeatherStation.DefaultDeviceId, Timer, HttpApiController, Logger));
+            AddDevice(new OpenWeatherMapWeatherStation(OpenWeatherMapWeatherStation.DefaultDeviceId, Timer, ApiController, Logger));
 
-            var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>(), HttpApiController, Logger);
+            var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>(), ApiController, Logger);
             
             var configurationParser = new ConfigurationParser(this);
             configurationParser.RegisterConfigurationExtender(new CCToolsConfigurationExtender(configurationParser, this));
@@ -59,9 +59,9 @@ namespace HA4IoT.Controller.Main
             
             //AttachAzureEventHubPublisher(home);
 
-            var localCsvFileWriter = new CsvHistory(Logger, HttpApiController);
-            localCsvFileWriter.ConnectActuators(this);
-            localCsvFileWriter.ExposeToApi(HttpApiController);
+            ////var localCsvFileWriter = new CsvHistory(Logger, ApiController);
+            ////localCsvFileWriter.ConnectActuators(this);
+            ////localCsvFileWriter.ExposeToApi(ApiController);
 
             var ioBoardsInterruptMonitor = new InterruptMonitor(pi2PortController.GetInput(4), Logger);
 
@@ -75,7 +75,7 @@ namespace HA4IoT.Controller.Main
 
             var i2cHardwareBridge = GetDevice<I2CHardwareBridge>();
             var brennenstuhl = new BrennenstuhlCodeSequenceProvider();
-            var ldp433MHzSender = new LPD433MHzSignalSender(i2cHardwareBridge, LDP433MhzSenderPin, HttpApiController);
+            var ldp433MHzSender = new LPD433MHzSignalSender(i2cHardwareBridge, LDP433MhzSenderPin, ApiController);
 
             var remoteSwitchController = new RemoteSocketController(new DeviceId("RemoteSocketController"),  ldp433MHzSender, Timer)
                 .WithRemoteSocket(0, brennenstuhl.GetSequencePair(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A));

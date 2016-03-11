@@ -13,8 +13,8 @@ namespace HA4IoT.Core
             Description = new Setting<string>("The HA4IoT Controller");
         }
 
-        public ISetting<string> Name { get; private set; }
+        public ISetting<string> Name { get; }
 
-        public ISetting<string> Description { get; private set; }       
+        public ISetting<string> Description { get; }       
     }
 }

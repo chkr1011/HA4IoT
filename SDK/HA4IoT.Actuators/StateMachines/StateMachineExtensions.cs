@@ -11,7 +11,7 @@ namespace HA4IoT.Actuators
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
 
-            var stateMachine = new StateMachine(ActuatorIdFactory.Create(room, id), room.Controller.HttpApiController, room.Controller.Logger);
+            var stateMachine = new StateMachine(ActuatorIdFactory.Create(room, id), room.Controller.ApiController, room.Controller.Logger);
             initializer(stateMachine, room);
             stateMachine.SetInitialState();
 

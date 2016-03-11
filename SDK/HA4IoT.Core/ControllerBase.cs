@@ -6,7 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Storage;
+using HA4IoT.Api;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
@@ -32,7 +34,7 @@ namespace HA4IoT.Core
         private HttpServer _httpServer;
 
         public ILogger Logger { get; protected set; }
-        public IHttpRequestController HttpApiController { get; protected set; }
+        public IApiController ApiController { get; } = new ApiController("api"); 
         public IHomeAutomationTimer Timer { get; protected set; }
         public IControllerSettings Settings { get; private set; }
 
@@ -140,16 +142,19 @@ namespace HA4IoT.Core
             var pi2PortController = new Pi2PortController();
             var ledPin = pi2PortController.GetOutput(pi2GpioPinWithLed);
 
-            _healthMonitor = new HealthMonitor(ledPin, Timer, HttpApiController);
+            _healthMonitor = new HealthMonitor(ledPin, Timer, ApiController);
         }
 
         private void InitializeHttpApi()
         {
             _httpServer = new HttpServer();
-            var httpRequestDispatcher = new HttpRequestDispatcher(_httpServer);
-            HttpApiController = httpRequestDispatcher.GetController("api");
 
-            var appPath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "app");
+            var httpApiDispatcherEndpoint = new HttpApiDispatcherEndpoint(_httpServer);
+            ApiController.RegisterEndpoint(httpApiDispatcherEndpoint);
+
+            var httpRequestDispatcher = new HttpRequestDispatcher(_httpServer);
+
+            var appPath = StoragePath.WithFilename("app");
             httpRequestDispatcher.MapFolder("app", appPath);
         }
 
@@ -164,7 +169,7 @@ namespace HA4IoT.Core
         private void InitializeLogging()
         {
             var logger = new Logger.Logger();
-            logger.ExposeToApi(HttpApiController);
+            logger.ExposeToApi(ApiController);
             logger.Info("Starting...");
             Logger = logger;
         }
@@ -207,7 +212,7 @@ namespace HA4IoT.Core
 
         private void LoadControllerSettings()
         {
-            var settings = new ControllerSettings(StoragePath.WithFilename("Configuration.json"), Logger);
+            var settings = new ControllerSettings(StoragePath.WithFilename("Settings.json"), Logger);
             settings.Load();
 
             Settings = settings;

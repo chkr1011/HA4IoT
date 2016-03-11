@@ -1,15 +1,15 @@
 ﻿using System;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Actuators
 {
     public abstract class BinaryStateOutputActuatorBase<TSettings> : ActuatorBase<TSettings>, IBinaryStateOutputActuator where TSettings : ActuatorSettings
     {
-        protected BinaryStateOutputActuatorBase(ActuatorId id, IHttpRequestController httpApiController, ILogger logger) 
-            : base(id, httpApiController, logger)
+        protected BinaryStateOutputActuatorBase(ActuatorId id, IApiController apiController, ILogger logger) 
+            : base(id, apiController, logger)
         {
         }
 
@@ -37,17 +37,17 @@ namespace HA4IoT.Actuators
             SetState(BinaryActuatorState.Off, parameters);
         }
 
-        public override void HandleApiPost(ApiRequestContext context)
+        public override void HandleApiPost(IApiContext apiContext)
         {
-            base.HandleApiPost(context);
+            base.HandleApiPost(apiContext);
 
-            if (!context.Request.ContainsKey("state"))
+            if (!apiContext.Request.ContainsKey("state"))
             {
                 return;
             }
 
-            string action = context.Request.GetNamedString("state", "toggle");
-            bool commit = context.Request.GetNamedBoolean("commit", true);
+            string action = apiContext.Request.GetNamedString("state", "toggle");
+            bool commit = apiContext.Request.GetNamedBoolean("commit", true);
 
             if (action.Equals("toggle", StringComparison.OrdinalIgnoreCase))
             {
@@ -60,7 +60,7 @@ namespace HA4IoT.Actuators
                     this.Toggle(new DoNotCommitStateParameter());    
                 }
 
-                context.Response = ExportStatusToJsonObject();
+                apiContext.Response = ExportStatusToJsonObject();
                 return;
             }
 

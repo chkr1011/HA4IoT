@@ -24,13 +24,13 @@ namespace HA4IoT.Core
         }
         
         [HideFromToJsonObject]
-        public AreaId AreaId { get; private set; }
+        public AreaId AreaId { get; }
 
         public ISetting<JsonObject> AppSettings { get; }
 
         private static string GenerateFilename(AreaId areaId)
         {
-            return Path.Combine(ApplicationData.Current.LocalFolder.Path, "Areas", areaId.Value, "Configuration.json");
+            return StoragePath.WithFilename("Areas", areaId.Value, "Settings.json");
         }
     }
 }

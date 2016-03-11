@@ -104,7 +104,7 @@ namespace HA4IoT.Hardware.CCTools
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")), 
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
                 Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()),
-                Controller.HttpApiController,
+                Controller.ApiController,
                 Controller.Logger);
         }
 
@@ -114,7 +114,7 @@ namespace HA4IoT.Hardware.CCTools
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")),
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
                 Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()),
-                Controller.HttpApiController,
+                Controller.ApiController,
                 Controller.Logger);
         }
 
@@ -124,7 +124,7 @@ namespace HA4IoT.Hardware.CCTools
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")),
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
                 Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()),
-                Controller.HttpApiController,
+                Controller.ApiController,
                 Controller.Logger);
         }
 
@@ -134,7 +134,7 @@ namespace HA4IoT.Hardware.CCTools
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")),
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
                 Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()),
-                Controller.HttpApiController,
+                Controller.ApiController,
                 Controller.Logger);
         }
 
@@ -144,7 +144,7 @@ namespace HA4IoT.Hardware.CCTools
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")),
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
                 Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()),
-                Controller.HttpApiController,
+                Controller.ApiController,
                 Controller.Logger);
         }
 
@@ -154,7 +154,7 @@ namespace HA4IoT.Hardware.CCTools
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")),
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
                 Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()),
-                Controller.HttpApiController,
+                Controller.ApiController,
                 Controller.Logger);
         }
 
@@ -164,7 +164,7 @@ namespace HA4IoT.Hardware.CCTools
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")),
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
                 Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()),
-                Controller.HttpApiController,
+                Controller.ApiController,
                 Controller.Logger);
         }
     }

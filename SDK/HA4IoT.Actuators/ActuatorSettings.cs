@@ -28,7 +28,7 @@ namespace HA4IoT.Actuators
 
         private static string GenerateFilename(ActuatorId actuatorId)
         {
-            return StoragePath.WithFilename("Actuators", actuatorId.Value, "Configuration.json");
+            return StoragePath.WithFilename("Actuators", actuatorId.Value, "Settings.json");
         }
     }
 }

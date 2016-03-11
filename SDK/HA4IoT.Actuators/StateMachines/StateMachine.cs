@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
@@ -14,8 +14,8 @@ namespace HA4IoT.Actuators
         private int _index;
         private bool _turnOffIfStateIsAppliedTwice;
 
-        public StateMachine(ActuatorId id, IHttpRequestController api, ILogger logger)
-            : base(id, api, logger)
+        public StateMachine(ActuatorId id, IApiController apiController, ILogger logger)
+            : base(id, apiController, logger)
         {
             Settings = new ActuatorSettings(id, logger);
         }
@@ -155,14 +155,14 @@ namespace HA4IoT.Actuators
             return configuration;
         }
 
-        public override void HandleApiPost(ApiRequestContext context)
+        public override void HandleApiPost(IApiContext apiContext)
         {
-            if (!context.Request.ContainsKey("state"))
+            if (!apiContext.Request.ContainsKey("state"))
             {
                 return;
             }
 
-            string stateId = context.Request.GetNamedString("state", string.Empty);
+            string stateId = apiContext.Request.GetNamedString("state", string.Empty);
             SetState(stateId);
         }
     }

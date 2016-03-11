@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using HA4IoT.Actuators.Animations;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Actuators
 {
@@ -13,7 +13,7 @@ namespace HA4IoT.Actuators
     {
         private readonly IHomeAutomationTimer _timer;
 
-        public LogicalBinaryStateOutputActuator(ActuatorId id, IHttpRequestController apiController, ILogger logger,
+        public LogicalBinaryStateOutputActuator(ActuatorId id, IApiController apiController, ILogger logger,
             IHomeAutomationTimer timer) : base(
                 id, apiController, logger)
         {

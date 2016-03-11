@@ -29,7 +29,7 @@ namespace HA4IoT.Actuators
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
             bool commit = !parameters.Any(p => p is DoNotCommitStateParameter);
-            _output.Write(BinaryState.High, commit);
+            _output.Write(BinaryState.Low, commit);
         }
     }
 }

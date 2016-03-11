@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using HA4IoT.Conditions;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Automations
@@ -17,7 +17,7 @@ namespace HA4IoT.Automations
         public IList<Action> ActionsIfFulfilled { get; } = new List<Action>();
         public IList<Action> ActionsIfNotFulfilled { get; } = new List<Action>();
 
-        public Automation(AutomationId id, IHomeAutomationTimer timer, IHttpRequestController httpApiController, ILogger logger)
+        public Automation(AutomationId id, IHomeAutomationTimer timer, IApiController apiController, ILogger logger)
             : base(id)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
@@ -25,7 +25,7 @@ namespace HA4IoT.Automations
             Timer = timer;
             _conditionsValidator = new ConditionsValidator(Conditions);
 
-            Settings = new AutomationSettings(id, httpApiController, logger);
+            Settings = new AutomationSettings(id, apiController, logger);
         }
 
         protected IHomeAutomationTimer Timer { get; }

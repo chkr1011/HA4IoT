@@ -131,7 +131,6 @@
     <Compile Include="Animations\PendingBinaryStateOutputActuatorState.cs" />
     <Compile Include="Animations\DirectionAnimation.cs" />
     <Compile Include="Animations\Frame.cs" />
-    <Compile Include="ApiRequestContext.cs" />
     <Compile Include="BinaryStateOutputActuators\BinaryStateOutputActuatorBase.cs" />
     <Compile Include="Buttons\ButtonBase.cs" />
     <Compile Include="RollerShutters\PortBasedRollerShutterEndpoint.cs" />

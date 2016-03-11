@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
@@ -24,7 +25,7 @@ namespace HA4IoT.Automations
         private bool _autoOpenIsApplied;
         private bool _autoCloseIsApplied;
         
-        public RollerShutterAutomation(AutomationId id, IHomeAutomationTimer timer, IWeatherStation weatherStation, IHttpRequestController httpApiController, IActuatorController actuatorController, ILogger logger)
+        public RollerShutterAutomation(AutomationId id, IHomeAutomationTimer timer, IWeatherStation weatherStation, IApiController apiController, IActuatorController actuatorController, ILogger logger)
             : base(id)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
@@ -37,7 +38,7 @@ namespace HA4IoT.Automations
             _actuatorController = actuatorController;
             _logger = logger;
 
-            Settings = new RollerShutterAutomationSettings(id, httpApiController, logger);           
+            Settings = new RollerShutterAutomationSettings(id, apiController, logger);           
         }
 
         public RollerShutterAutomation WithRollerShutters(params IRollerShutter[] rollerShutters)

@@ -13,7 +13,7 @@ namespace HA4IoT.Automations
                 new ConditionalOnAutomation(
                     AutomationIdFactory.CreateIdFrom<ConditionalOnAutomation>(area), 
                     area.Controller.Timer,
-                    area.Controller.HttpApiController,
+                    area.Controller.ApiController,
                     area.Controller.Logger);
 
             area.AddAutomation(automation);

@@ -32,7 +32,7 @@ namespace HA4IoT.Controller.Demo
             var pi2PortController = new Pi2PortController();
             
             // Setup the controller which creates ports for IO boards from CCTools (or based on PCF8574/MAX7311/PCA9555D).
-            var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>(), HttpApiController, Logger);
+            var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>(), ApiController, Logger);
 
             SetupRoom(ccToolsBoardController);
 
@@ -51,14 +51,14 @@ namespace HA4IoT.Controller.Demo
 
             // Setup the remote switch 433Mhz sender which is attached to the I2C bus (Arduino Nano).
             var i2CHardwareBridge = new I2CHardwareBridge(new DeviceId("HB"), new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer);
-            var remoteSwitchSender = new LPD433MHzSignalSender(i2CHardwareBridge, I2CHardwareBridge433MHzSenderPin, HttpApiController);
+            var remoteSwitchSender = new LPD433MHzSignalSender(i2CHardwareBridge, I2CHardwareBridge433MHzSenderPin, ApiController);
 
             var intertechno = new IntertechnoCodeSequenceProvider();
             var remoteSwitchController = new RemoteSocketController(new DeviceId("RemoteSocketController"), remoteSwitchSender, Timer)
                 .WithRemoteSocket(0, intertechno.GetSequencePair(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1))
                 .WithRemoteSocket(1, intertechno.GetSequencePair(IntertechnoSystemCode.B, IntertechnoUnitCode.Unit1));
 
-            AddDevice(new OpenWeatherMapWeatherStation(OpenWeatherMapWeatherStation.DefaultDeviceId, Timer, HttpApiController, Logger));
+            AddDevice(new OpenWeatherMapWeatherStation(OpenWeatherMapWeatherStation.DefaultDeviceId, Timer, ApiController, Logger));
 
             var area = this.CreateArea(Room.ExampleRoom)
                 .WithTemperatureSensor(ExampleRoom.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(5))

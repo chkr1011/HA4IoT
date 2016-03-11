@@ -7,10 +7,10 @@ using Windows.Storage;
 using Windows.Web.Http;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Networking;
 
@@ -36,20 +36,20 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
         private TimeSpan _sunrise;
         private TimeSpan _sunset;
         
-        public OpenWeatherMapWeatherStation(DeviceId id, IHomeAutomationTimer timer, IHttpRequestController httpApiController, ILogger logger)
+        public OpenWeatherMapWeatherStation(DeviceId id, IHomeAutomationTimer timer, IApiController apiController, ILogger logger)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (timer == null) throw new ArgumentNullException(nameof(timer));
-            if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
+            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
 
-            _temperature = new WeatherStationTemperatureSensor(new ActuatorId("WeatherStation.Temperature"), httpApiController, logger);
+            _temperature = new WeatherStationTemperatureSensor(new ActuatorId("WeatherStation.Temperature"), apiController, logger);
             TemperatureSensor = _temperature;
 
-            _humidity = new WeatherStationHumiditySensor(new ActuatorId("WeatherStation.Humidity"), httpApiController, logger);
+            _humidity = new WeatherStationHumiditySensor(new ActuatorId("WeatherStation.Humidity"), apiController, logger);
             HumiditySensor = _humidity;
 
-            _situation = new WeatherStationSituationSensor(new ActuatorId("WeatherStation.Situation"), httpApiController, logger);
+            _situation = new WeatherStationSituationSensor(new ActuatorId("WeatherStation.Situation"), apiController, logger);
             SituationSensor = _situation;
 
             Id = id;
@@ -61,7 +61,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             Task.Factory.StartNew(async () => await FetchWeahterData(), CancellationToken.None,
                 TaskCreationOptions.LongRunning, TaskScheduler.Default);
 
-            new OpenWeatherMapWeatherStationHttpApiDispatcher(this, httpApiController).ExposeToApi();
+            new OpenWeatherMapWeatherStationHttpApiDispatcher(this, apiController).ExposeToApi();
         }
 
         public DeviceId Id { get; }

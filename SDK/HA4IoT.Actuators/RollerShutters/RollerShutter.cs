@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
@@ -23,10 +23,10 @@ namespace HA4IoT.Actuators
         public RollerShutter(
             ActuatorId id, 
             IRollerShutterEndpoint endpoint,
-            IHttpRequestController httpApiController,
+            IApiController apiController,
             ILogger logger, 
             IHomeAutomationTimer timer)
-            : base(id, httpApiController, logger)
+            : base(id, apiController, logger)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
@@ -97,14 +97,14 @@ namespace HA4IoT.Actuators
             return status;
         }
 
-        public override void HandleApiPost(ApiRequestContext context)
+        public override void HandleApiPost(IApiContext apiContext)
         {
-            if (!context.Request.ContainsKey("state"))
+            if (!apiContext.Request.ContainsKey("state"))
             {
                 return;
             }
 
-            var state = (RollerShutterState)Enum.Parse(typeof(RollerShutterState), context.Request.GetNamedString("state"), true);
+            var state = (RollerShutterState)Enum.Parse(typeof(RollerShutterState), apiContext.Request.GetNamedString("state"), true);
             SetState(state);
         }
 

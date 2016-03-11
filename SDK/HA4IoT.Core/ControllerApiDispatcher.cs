@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using Windows.Data.Json;
-using Windows.Security.Cryptography;
-using Windows.Security.Cryptography.Core;
-using Windows.Storage.Streams;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Networking;
 
@@ -14,7 +11,6 @@ namespace HA4IoT.Core
 {
     public class ControllerApiDispatcher
     {
-        private readonly HashAlgorithmProvider _hashAlgorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha1);
         private readonly IController _controller;
 
         public ControllerApiDispatcher(IController controller)
@@ -26,38 +22,24 @@ namespace HA4IoT.Core
 
         public void ExposeToApi()
         {
-            _controller.HttpApiController.HandleGet("configuration").Using(HandleApiGetConfiguration);
-            _controller.HttpApiController.HandleGet("status").Using(HandleApiGetStatus);
+            _controller.ApiController.RouteRequest("configuration", HandleApiGetConfiguration);
+            _controller.ApiController.RouteRequest("status", HandleApiGetStatus);
         }
 
-        private void HandleApiGetStatus(HttpContext httpContext)
+        private void HandleApiGetStatus(IApiContext apiContext)
         {
             var stopwatch = Stopwatch.StartNew();
 
             var status = GetControllerStatus();
-            var hash = GenerateHash(status.Stringify());
-            var hashWithQuotes = "\"" + hash + "\"";
 
-            string clientHash;
-            if (httpContext.Request.Headers.TryGetValue(HttpHeaderNames.IfNoneMatch, out clientHash))
-            {
-                if (clientHash.Equals(hashWithQuotes))
-                {
-                    httpContext.Response.StatusCode = HttpStatusCode.NotModified;
-                    return;
-                }
-            }
+            // TODO: Add hash to response without overhead.
+            //status.SetNamedValue("Hash", hash.ToJsonValue());
+            //status.SetNamedValue("GenerationDuration", stopwatch.Elapsed.ToJsonValue());
 
-            status.SetNamedValue("Hash", hash.ToJsonValue());
-            status.SetNamedValue("GenerationDuration", stopwatch.Elapsed.ToJsonValue());
-
-            httpContext.Response.StatusCode = HttpStatusCode.OK;
-            httpContext.Response.Headers[HttpHeaderNames.ETag] = hashWithQuotes;
-
-            httpContext.Response.Body = new JsonBody(status);
+            apiContext.Response = status;
         }
 
-        private void HandleApiGetConfiguration(HttpContext httpContex)
+        private void HandleApiGetConfiguration(IApiContext apiContext)
         {
             var stopwatch = Stopwatch.StartNew();
 
@@ -74,7 +56,7 @@ namespace HA4IoT.Core
             configuration.SetNamedValue("Areas", areas);
             configuration.SetNamedValue("GenerationDuration", stopwatch.Elapsed.ToJsonValue());
 
-            httpContex.Response.Body = new JsonBody(configuration);
+            apiContext.Response = configuration;
         }
 
         private IJsonValue ExportAreaConfigurationToJsonValue(IArea area)
@@ -130,14 +112,6 @@ namespace HA4IoT.Core
             }
 
             return result;
-        }
-
-        private string GenerateHash(string input)
-        {
-            IBuffer buffer = CryptographicBuffer.ConvertStringToBinary(input, BinaryStringEncoding.Utf8);
-            IBuffer hashBuffer = _hashAlgorithm.HashData(buffer);
-
-            return CryptographicBuffer.EncodeToBase64String(hashBuffer);
         }
     }
 }

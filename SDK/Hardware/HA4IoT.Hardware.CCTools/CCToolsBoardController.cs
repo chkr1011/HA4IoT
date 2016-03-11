@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Hardware.CCTools
 {
@@ -11,25 +11,25 @@ namespace HA4IoT.Hardware.CCTools
     {
         private readonly II2CBus _i2CBus;
         private readonly IController _controller;
-        private readonly IHttpRequestController _httpApi;
+        private readonly IApiController _apiController;
         private readonly ILogger _log;
 
-        public CCToolsBoardController(IController controller, II2CBus i2cBus, IHttpRequestController httpApi, ILogger log)
+        public CCToolsBoardController(IController controller, II2CBus i2cBus, IApiController apiController, ILogger log)
         {
             if (i2cBus == null) throw new ArgumentNullException(nameof(i2cBus));
             if (controller == null) throw new ArgumentNullException(nameof(controller));
-            if (httpApi == null) throw new ArgumentNullException(nameof(httpApi));
+            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
 
             _controller = controller;
             _i2CBus = i2cBus;
-            
-            _httpApi = httpApi;
+
+            _apiController = apiController;
             _log = log;
         }
 
         public HSPE16InputOnly CreateHSPE16InputOnly(Enum id, I2CSlaveAddress address)
         {
-            var device = new HSPE16InputOnly(DeviceIdFactory.CreateIdFrom(id), address, _i2CBus, _httpApi, _log)
+            var device = new HSPE16InputOnly(DeviceIdFactory.CreateIdFrom(id), address, _i2CBus, _apiController, _log)
             {
                 AutomaticallyFetchState = true
             };
@@ -41,7 +41,7 @@ namespace HA4IoT.Hardware.CCTools
 
         public HSPE16OutputOnly CreateHSPE16OutputOnly(Enum id, I2CSlaveAddress address)
         {
-            var device = new HSPE16OutputOnly(DeviceIdFactory.CreateIdFrom(id), address, _i2CBus, _httpApi, _log);
+            var device = new HSPE16OutputOnly(DeviceIdFactory.CreateIdFrom(id), address, _i2CBus, _apiController, _log);
             _controller.AddDevice(device);
 
             return device;
@@ -49,7 +49,7 @@ namespace HA4IoT.Hardware.CCTools
 
         public HSPE8OutputOnly CreateHSPE8OutputOnly(Enum id, I2CSlaveAddress i2CAddress)
         {
-            var device = new HSPE8OutputOnly(DeviceIdFactory.CreateIdFrom(id), i2CAddress, _i2CBus, _httpApi, _log);
+            var device = new HSPE8OutputOnly(DeviceIdFactory.CreateIdFrom(id), i2CAddress, _i2CBus, _apiController, _log);
             _controller.AddDevice(device);
 
             return device;
@@ -57,7 +57,7 @@ namespace HA4IoT.Hardware.CCTools
 
         public HSPE8InputOnly CreateHSPE8InputOnly(Enum id, I2CSlaveAddress i2CAddress)
         {
-            var device = new HSPE8InputOnly(DeviceIdFactory.CreateIdFrom(id), i2CAddress, _i2CBus, _httpApi, _log);
+            var device = new HSPE8InputOnly(DeviceIdFactory.CreateIdFrom(id), i2CAddress, _i2CBus, _apiController, _log);
             _controller.AddDevice(device);
 
             return device;
@@ -65,7 +65,7 @@ namespace HA4IoT.Hardware.CCTools
 
         public HSREL5 CreateHSREL5(Enum id, I2CSlaveAddress i2CAddress)
         {
-            var device = new HSREL5(DeviceIdFactory.CreateIdFrom(id), i2CAddress, _i2CBus, _httpApi, _log);
+            var device = new HSREL5(DeviceIdFactory.CreateIdFrom(id), i2CAddress, _i2CBus, _apiController, _log);
             _controller.AddDevice(device);
 
             return device;
@@ -73,7 +73,7 @@ namespace HA4IoT.Hardware.CCTools
 
         public HSREL8 CreateHSREL8(Enum id, I2CSlaveAddress i2CAddress)
         {
-            var device = new HSREL8(DeviceIdFactory.CreateIdFrom(id), i2CAddress, _i2CBus, _httpApi, _log);
+            var device = new HSREL8(DeviceIdFactory.CreateIdFrom(id), i2CAddress, _i2CBus, _apiController, _log);
             _controller.AddDevice(device);
 
             return device;
@@ -81,7 +81,7 @@ namespace HA4IoT.Hardware.CCTools
 
         public HSRT16 CreateHSRT16(Enum id, I2CSlaveAddress address)
         {
-            var device = new HSRT16(DeviceIdFactory.CreateIdFrom(id), address, _i2CBus, _httpApi, _log);
+            var device = new HSRT16(DeviceIdFactory.CreateIdFrom(id), address, _i2CBus, _apiController, _log);
             _controller.AddDevice(device);
 
             return device;

@@ -49,10 +49,23 @@ namespace HA4IoT.Networking
 
         private bool HandleClientRequest(HttpClientHandler clientHandler, HttpContext httpContext)
         {
-            var eventArgs = new HttpRequestReceivedEventArgs(httpContext);
-            RequestReceived?.Invoke(clientHandler, eventArgs);
+            var handlerCollection = RequestReceived;
+            if (handlerCollection == null)
+            {
+                return false;
+            }
 
-            return eventArgs.IsHandled;
+            var eventArgs = new HttpRequestReceivedEventArgs(httpContext);
+            foreach (var handler in handlerCollection.GetInvocationList())
+            {
+                handler.DynamicInvoke(this, eventArgs);
+                if (eventArgs.IsHandled)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

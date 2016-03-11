@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Windows.Data.Json;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Hardware.CCTools
@@ -15,7 +15,7 @@ namespace HA4IoT.Hardware.CCTools
 
         private readonly Dictionary<int, IOBoardPort> _openPorts = new Dictionary<int, IOBoardPort>();
 
-        private readonly IHttpRequestController _httpApi;
+        private readonly IApiController _apiController;
         private readonly ILogger _logger;
         private readonly IPortExpanderDriver _portExpanderDriver;
         
@@ -23,11 +23,11 @@ namespace HA4IoT.Hardware.CCTools
         private readonly byte[] _state;
         private byte[] _peekedState;
 
-        protected CCToolsBoardBase(DeviceId id, IPortExpanderDriver portExpanderDriver, IHttpRequestController httpApi, ILogger logger)
+        protected CCToolsBoardBase(DeviceId id, IPortExpanderDriver portExpanderDriver, IApiController apiController, ILogger logger)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (portExpanderDriver == null) throw new ArgumentNullException(nameof(portExpanderDriver));
-            if (httpApi == null) throw new ArgumentNullException(nameof(httpApi));
+            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
 
             Id = id;
@@ -35,8 +35,8 @@ namespace HA4IoT.Hardware.CCTools
 
             _committedState = new byte[portExpanderDriver.StateSize];
             _state = new byte[portExpanderDriver.StateSize];
-            
-            _httpApi = httpApi;
+
+            _apiController = apiController;
             _logger = logger;
 
             ExposeToApi();
@@ -153,58 +153,29 @@ namespace HA4IoT.Hardware.CCTools
 
         private void ExposeToApi()
         {
-            _httpApi.HandleGet($"device/{Id}").Using(HandleApiGet);
-            _httpApi.HandlePost($"device/{Id}").Using(HandleApiPost);
-            _httpApi.HandlePatch($"device/{Id}").Using(HandleApiPatch);
+            _apiController.RouteRequest($"device/{Id}", HandleApiGet);
+            _apiController.RouteCommand($"device/{Id}", HandleApiPost);
         }
 
-        private void HandleApiGet(HttpContext httpContext)
+        private void HandleApiGet(IApiContext apiContext)
         {
             var result = new JsonObject();
             result.SetNamedValue("state", GetState().ToJsonValue());
             result.SetNamedValue("committed-state", GetCommittedState().ToJsonValue());
 
-            httpContext.Response.Body = new JsonBody(result);
+            apiContext.Response = result;
         }
 
-        private void HandleApiPost(HttpContext httpContext)
+        private void HandleApiPost(IApiContext apiContext)
         {
-            JsonObject requestData;
-            if (!JsonObject.TryParse(httpContext.Request.Body, out requestData))
-            {
-                httpContext.Response.StatusCode = HttpStatusCode.BadRequest;
-                return;
-            }
-
-            JsonArray state = requestData.GetNamedArray("state", null);
+            JsonArray state = apiContext.Request.GetNamedArray("state", null);
             if (state != null)
             {
                 byte[] buffer = JsonValueToByteArray(state);
                 SetState(buffer);
             }
 
-            var commit = requestData.GetNamedBoolean("commit", true);
-            if (commit)
-            {
-                CommitChanges();
-            }
-        }
-
-        private void HandleApiPatch(HttpContext httpContext)
-        {
-            JsonObject requestData;
-            if (!JsonObject.TryParse(httpContext.Request.Body, out requestData))
-            {
-                httpContext.Response.StatusCode = HttpStatusCode.BadRequest;
-                return;
-            }
-
-            int port = (int)requestData.GetNamedNumber("port", 0);
-            bool state = requestData.GetNamedBoolean("state", false);
-            bool commit = requestData.GetNamedBoolean("commit", true);
-
-            SetPortState(port, state ? BinaryState.High : BinaryState.Low);
-
+            var commit = apiContext.Request.GetNamedBoolean("commit", true);
             if (commit)
             {
                 CommitChanges();

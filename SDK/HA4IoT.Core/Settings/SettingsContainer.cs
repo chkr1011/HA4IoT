@@ -36,10 +36,11 @@ namespace HA4IoT.Core.Settings
             }
             catch (Exception exception)
             {
-                _logger.Warning(exception, "Error while loading settings from '{0}'.", _filename);
+                _logger.Warning(exception, $"Error while loading settings from '{_filename}'.");
+                File.Delete(_filename);
             }
         }
-
+        
         public void Save()
         {
             string directory = Path.GetDirectoryName(_filename);
@@ -49,7 +50,7 @@ namespace HA4IoT.Core.Settings
             }
 
             File.WriteAllText(_filename, ExportToJsonObject().Stringify());
-            _logger.Verbose("Saved settings at '{0}'.", _filename);
+            _logger.Verbose($"Saved settings at '{_filename}'.");
         }
 
         public JsonObject ExportToJsonObject()

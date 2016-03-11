@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.WeatherStation;
 
 namespace HA4IoT.Automations
@@ -15,8 +15,8 @@ namespace HA4IoT.Automations
     {
         private readonly List<IBinaryStateOutputActuator> _actuators = new List<IBinaryStateOutputActuator>();
 
-        public ConditionalOnAutomation(AutomationId id, IHomeAutomationTimer timer, IHttpRequestController httpApiController, ILogger logger) 
-            : base(id, timer, httpApiController, logger)
+        public ConditionalOnAutomation(AutomationId id, IHomeAutomationTimer timer, IApiController apiController, ILogger logger) 
+            : base(id, timer, apiController, logger)
         {
             WithAutoTrigger(TimeSpan.FromMinutes(1));
 

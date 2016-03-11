@@ -117,6 +117,12 @@
     <Compile Include="Actuators\ILamp.cs" />
     <Compile Include="Actuators\IBinaryStateEndpoint.cs" />
     <Compile Include="Actuators\IRollerShutterSettings.cs" />
+    <Compile Include="Api\ApiCallType.cs" />
+    <Compile Include="Api\ApiRequestReceivedEventArgs.cs" />
+    <Compile Include="Api\ApiResultCode.cs" />
+    <Compile Include="Api\IApiContext.cs" />
+    <Compile Include="Api\IApiController.cs" />
+    <Compile Include="Api\IApiDispatcherEndpoint.cs" />
     <Compile Include="Automations\AutomationId.cs" />
     <Compile Include="Actuators\BinaryActuatorState.cs" />
     <Compile Include="Actuators\BinaryActuatorStateChangedEventArgs.cs" />

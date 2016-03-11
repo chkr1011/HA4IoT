@@ -1,8 +1,8 @@
 ﻿using System;
 using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.WeatherStation;
 
 namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
@@ -11,11 +11,11 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
     {
         private WeatherSituation _value = WeatherSituation.Unknown;
 
-        public WeatherStationSituationSensor(ActuatorId id, IHttpRequestController httpApiController, ILogger logger) 
-            : base(id, httpApiController, logger)
+        public WeatherStationSituationSensor(ActuatorId id, IApiController apiController, ILogger logger) 
+            : base(id, apiController, logger)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
-            if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
+            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
 
             Settings = new ActuatorSettings(id, logger);

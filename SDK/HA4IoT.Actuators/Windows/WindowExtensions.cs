@@ -10,7 +10,7 @@ namespace HA4IoT.Actuators
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
 
-            var window = new Window(ActuatorIdFactory.Create(room, id), room.Controller.HttpApiController, room.Controller.Logger);
+            var window = new Window(ActuatorIdFactory.Create(room, id), room.Controller.ApiController, room.Controller.Logger);
             initializer(window);
 
             room.AddActuator(window);

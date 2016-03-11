@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
@@ -12,8 +12,8 @@ namespace HA4IoT.Actuators
     {
         private readonly Dictionary<ActuatorId, VirtualButton> _buttons = new Dictionary<ActuatorId, VirtualButton>();
 
-        public VirtualButtonGroup(ActuatorId id, IHttpRequestController httpApiController, ILogger logger)
-            : base(id, httpApiController, logger)
+        public VirtualButtonGroup(ActuatorId id, IApiController apiController, ILogger logger)
+            : base(id, apiController, logger)
         {
             Settings = new ActuatorSettings(id, logger);
         }
@@ -27,7 +27,7 @@ namespace HA4IoT.Actuators
                 throw new InvalidOperationException("Button with id " + id + " already part of the button group.");
             }
 
-            var virtualButton = new VirtualButton(id, HttpApiController, Logger);
+            var virtualButton = new VirtualButton(id, ApiController, Logger);
             initializer(virtualButton);
 
             _buttons.Add(id, virtualButton);
@@ -35,9 +35,9 @@ namespace HA4IoT.Actuators
             return this;
         }
 
-        public override void HandleApiPost(ApiRequestContext context)
+        public override void HandleApiPost(IApiContext apiContext)
         {
-            var button = context.Request.GetNamedString("button", string.Empty);
+            var button = apiContext.Request.GetNamedString("button", string.Empty);
 
             if (string.IsNullOrEmpty(button))
             {
@@ -50,7 +50,7 @@ namespace HA4IoT.Actuators
                 throw new BadRequestException("The specified button is unknown.");
             }
 
-            virtualButton.HandleApiPost(context);
+            virtualButton.HandleApiPost(apiContext);
         }
 
         public override JsonObject ExportConfigurationToJsonObject()

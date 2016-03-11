@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Networking;
@@ -9,8 +10,8 @@ namespace HA4IoT.Hardware.CCTools
 {
     public class HSRT16 : CCToolsBoardBase, IBinaryOutputController
     {
-        public HSRT16(DeviceId id, I2CSlaveAddress address, II2CBus i2CBus, IHttpRequestController httpApi, ILogger logger)
-            : base(id, new MAX7311Driver(address, i2CBus), httpApi, logger)
+        public HSRT16(DeviceId id, I2CSlaveAddress address, II2CBus i2CBus, IApiController apiController, ILogger logger)
+            : base(id, new MAX7311Driver(address, i2CBus), apiController, logger)
         {
             SetState(new byte[] { 0x00, 0x00 });
             CommitChanges(true);

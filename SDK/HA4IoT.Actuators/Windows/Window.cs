@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
@@ -12,7 +12,7 @@ namespace HA4IoT.Actuators
     {
         private readonly List<Casement> _casements = new List<Casement>(); 
 
-        public Window(ActuatorId id, IHttpRequestController api, ILogger logger) : base(id, api, logger)
+        public Window(ActuatorId id, IApiController apiController, ILogger logger) : base(id, apiController, logger)
         {
             Settings = new ActuatorSettings(id, logger);
         }

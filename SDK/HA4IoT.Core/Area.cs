@@ -88,7 +88,7 @@ namespace HA4IoT.Core
 
         public void ExposeToApi()
         {
-            new AreaSettingsHttpApiDispatcher(Settings, Controller.HttpApiController).ExposeToApi();
+            new AreaSettingsHttpApiDispatcher(Settings, Controller.ApiController).ExposeToApi();
         }
     }
 }

@@ -60,7 +60,7 @@ namespace HA4IoT.Configuration
             return new OpenWeatherMapWeatherStation(
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")), 
                 Controller.Timer,
-                Controller.HttpApiController,
+                Controller.ApiController,
                 Controller.Logger);
         }
 
@@ -71,7 +71,7 @@ namespace HA4IoT.Configuration
             return new CustomBinaryStateOutputActuator(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
                 new PortBasedBinaryStateEndpoint(output),
-                Controller.HttpApiController,
+                Controller.ApiController,
                 Controller.Logger);
         }
 
@@ -82,7 +82,7 @@ namespace HA4IoT.Configuration
             return new Button(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
                 new ButtonEndpoint(input), 
-                Controller.HttpApiController,
+                Controller.ApiController,
                 Controller.Logger,
                 Controller.Timer);
         }
@@ -94,7 +94,7 @@ namespace HA4IoT.Configuration
             return new Socket(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
                 new PortBasedBinaryStateEndpoint(output),
-                Controller.HttpApiController,
+                Controller.ApiController,
                 Controller.Logger);
         }
 
@@ -105,7 +105,7 @@ namespace HA4IoT.Configuration
             return new Lamp(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
                 new PortBasedBinaryStateEndpoint(output),
-                Controller.HttpApiController,
+                Controller.ApiController,
                 Controller.Logger);
         }
 
@@ -117,7 +117,7 @@ namespace HA4IoT.Configuration
             return new RollerShutter(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
                 new PortBasedRollerShutterEndpoint(powerOutput, directionOutput), 
-                Controller.HttpApiController,
+                Controller.ApiController,
                 Controller.Logger,
                 Controller.Timer);
         }
@@ -131,7 +131,7 @@ namespace HA4IoT.Configuration
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
                 upInput,
                 downInput,
-                Controller.HttpApiController,
+                Controller.ApiController,
                 Controller.Logger,
                 Controller.Timer);
         }
@@ -140,7 +140,7 @@ namespace HA4IoT.Configuration
         {
             var window = new Window(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
-                Controller.HttpApiController,
+                Controller.ApiController,
                 Controller.Logger);
 
             var leftCasementElement = element.Element("LeftCasement");
@@ -185,7 +185,7 @@ namespace HA4IoT.Configuration
             return new HumiditySensor(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
                 sensor,
-                Controller.HttpApiController,
+                Controller.ApiController,
                 Controller.Logger);
         }
 
@@ -196,7 +196,7 @@ namespace HA4IoT.Configuration
             return new TemperatureSensor(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
                 sensor,
-                Controller.HttpApiController,
+                Controller.ApiController,
                 Controller.Logger);
         }
 
@@ -204,7 +204,7 @@ namespace HA4IoT.Configuration
         {
             var id = new ActuatorId(element.GetMandatoryStringFromAttribute("id"));
 
-            var stateMachine = new StateMachine(id, Controller.HttpApiController, Controller.Logger);
+            var stateMachine = new StateMachine(id, Controller.ApiController, Controller.Logger);
 
             foreach (var stateElement in element.Element("States").Elements("State"))
             {

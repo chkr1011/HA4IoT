@@ -1,31 +1,31 @@
 ﻿using System;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
     public abstract class ActuatorBase<TSettings> : IActuator, IStatusProvider where TSettings : IActuatorSettings
     {
-        protected ActuatorBase(ActuatorId id, IHttpRequestController httpApiController, ILogger logger)
+        protected ActuatorBase(ActuatorId id, IApiController apiController, ILogger logger)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
-            if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
+            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
 
             Id = id;
             Logger = logger;
-            HttpApiController = httpApiController;
+            ApiController = apiController;
         }
 
         public ActuatorId Id { get; }
 
         protected ILogger Logger { get; }
 
-        protected IHttpRequestController HttpApiController { get; }
+        protected IApiController ApiController { get; }
 
         public TSettings Settings { get; protected set; }
 
@@ -52,34 +52,20 @@ namespace HA4IoT.Actuators
             Settings?.Load();
         }
 
-        public virtual void HandleApiPost(ApiRequestContext context)
+        public virtual void HandleApiPost(IApiContext apiContext)
         {
         }
 
         public void ExposeToApi()
         {
-            new ActuatorSettingsHttpApiDispatcher(Settings, HttpApiController).ExposeToApi();
+            new ActuatorSettingsHttpApiDispatcher(Settings, ApiController).ExposeToApi();
             
-            HttpApiController.HandlePost($"actuator/{Id.Value}/status")
-                .Using(c =>
+            ApiController.RouteCommand($"actuator/{Id.Value}/status", HandleApiPost);
+
+            ApiController.RouteRequest($"actuator/{Id.Value}/status",
+                apiContext =>
                 {
-                    JsonObject requestData;
-                    if (!JsonObject.TryParse(c.Request.Body, out requestData))
-                    {
-                        c.Response.StatusCode = HttpStatusCode.BadRequest;
-                        return;
-                    }
-
-                    var apiContext = new ApiRequestContext(requestData, new JsonObject());
-                    HandleApiPost(apiContext);
-
-                    c.Response.Body = new JsonBody(apiContext.Response);
-                });
-
-            HttpApiController.HandleGet($"actuator/{Id.Value}/status")
-                .Using(c =>
-                {
-                    c.Response.Body = new JsonBody(ExportStatusToJsonObject());
+                    apiContext.Response = ExportStatusToJsonObject();
                 });
         }
     }
