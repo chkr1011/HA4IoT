@@ -50,6 +50,8 @@ namespace HA4IoT.Actuators
 
             Logger.Info($"{Id}:{oldValue}->{newValue}");
             ValueChanged?.Invoke(this, new SingleValueSensorValueChangedEventArgs(oldValue, _value));
+
+            ApiController.NotifyStateChanged(this);
         }
     }
 }

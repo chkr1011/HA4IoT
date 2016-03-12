@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Networking;
 
@@ -16,6 +17,13 @@ namespace HA4IoT.Api
             if (name == null) throw new ArgumentNullException(nameof(name));
 
             _name = name;
+        }
+
+        public void NotifyStateChanged(IActuator actuator)
+        {
+            if (actuator == null) throw new ArgumentNullException(nameof(actuator));
+
+            // TODO: Use information for optimized state generation, pushing to Azure, writing Csv etc.
         }
 
         public void RouteRequest(string uri, Action<IApiContext> handler)

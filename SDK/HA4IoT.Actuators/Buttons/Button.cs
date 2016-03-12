@@ -81,8 +81,14 @@ namespace HA4IoT.Actuators
             }
 
             StateChanged?.Invoke(this, new ButtonStateChangedEventArgs(oldState, state));
+            ApiController.NotifyStateChanged(this);
 
-            if (state == ButtonState.Pressed)
+            InvokeTriggers();
+        }
+
+        private void InvokeTriggers()
+        {
+            if (_state == ButtonState.Pressed)
             {
                 if (!_pressedLongTrigger.IsAnyAttached)
                 {
@@ -93,7 +99,7 @@ namespace HA4IoT.Actuators
                     _stopwatch.Restart();
                 }
             }
-            else if (state == ButtonState.Released)
+            else if (_state == ButtonState.Released)
             {
                 if (!_stopwatch.IsRunning)
                 {

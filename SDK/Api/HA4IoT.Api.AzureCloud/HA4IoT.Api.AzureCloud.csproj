@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{ED4B4304-0E5D-459D-857D-622F790C1A32}</ProjectGuid>
+    <ProjectGuid>{B03D2D62-A682-44AD-9BB8-E88B53973AFA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HA4IoT.Api</RootNamespace>
-    <AssemblyName>HA4IoT.Api</AssemblyName>
+    <RootNamespace>HA4IoT.Api.AzureCloud</RootNamespace>
+    <AssemblyName>HA4IoT.Api.AzureCloud</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
@@ -107,21 +107,9 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ApiContext.cs" />
-    <Compile Include="ApiController.cs" />
-    <Compile Include="HttpApiDispatcherEndpoint.cs" />
+    <Compile Include="AzureQueuesApiDispatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Properties\HA4IoT.Api.rd.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
-      <Project>{551337E7-D1EF-4145-92B4-F7086F7665A6}</Project>
-      <Name>HA4IoT.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\HA4IoT.Networking\HA4IoT.Networking.csproj">
-      <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
-      <Name>HA4IoT.Networking</Name>
-    </ProjectReference>
+    <EmbeddedResource Include="Properties\HA4IoT.Api.AzureCloud.rd.xml" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

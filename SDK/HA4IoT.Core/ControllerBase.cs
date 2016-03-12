@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using HA4IoT.Api;
+using HA4IoT.Api.LocalHttpServer;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
@@ -41,7 +42,10 @@ namespace HA4IoT.Core
 
             _deferral = taskInstance.GetDeferral();
 
-            Task.Factory.StartNew(InitializeCore, CancellationToken.None, TaskCreationOptions.LongRunning,
+            Task.Factory.StartNew(
+                InitializeCore, 
+                CancellationToken.None, 
+                TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);
         }
         

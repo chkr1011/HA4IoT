@@ -103,6 +103,7 @@ namespace HA4IoT.Actuators
             }
 
             StateChanged?.Invoke(this, new MotionDetectorStateChangedEventArgs(oldState, newState));
+            ApiController.NotifyStateChanged(this);
         }
 
         private void HandleIsEnabledStateChanged(IHomeAutomationTimer timer, ILogger logger)

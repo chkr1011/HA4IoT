@@ -48,7 +48,7 @@ namespace HA4IoT.Actuators
             _turnOffAction = new HomeAutomationAction(() => SetState(RollerShutterState.Stopped));
             _startMoveDownAction = new HomeAutomationAction(() => SetState(RollerShutterState.MovingDown));
 
-            _endpoint.Stop();
+            _endpoint.Stop(new ForceUpdateStateParameter());
         }
 
         public event EventHandler<RollerShutterStateChangedEventArgs> StateChanged; 
@@ -98,6 +98,7 @@ namespace HA4IoT.Actuators
             }
 
             StateChanged?.Invoke(this, new RollerShutterStateChangedEventArgs(oldState, _state));
+            ApiController.NotifyStateChanged(this);
         }
 
         public void TurnOff(params IHardwareParameter[] parameters)

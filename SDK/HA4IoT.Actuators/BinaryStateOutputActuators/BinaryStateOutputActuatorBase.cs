@@ -123,6 +123,8 @@ namespace HA4IoT.Actuators
         protected void OnStateChanged(BinaryActuatorState oldState, BinaryActuatorState newState)
         {
             StateChanged?.Invoke(this, new BinaryActuatorStateChangedEventArgs(oldState, newState));
+
+            ApiController.NotifyStateChanged(this);
         }
 
         protected abstract void SetStateInternal(BinaryActuatorState state, params IHardwareParameter[] parameters);
