@@ -11,30 +11,30 @@ namespace HA4IoT.Automations
         public RollerShutterAutomationSettings(AutomationId automationId, IApiController apiController, ILogger logger) 
             : base(automationId, apiController, logger)
         {
-            DoNotOpenBeforeIsEnabled = new Setting<bool>(false);
-            DoNotOpenBeforeTime = new Setting<TimeSpan>(TimeSpan.Parse("07:15"));
+            SkipBeforeTimestampIsEnabled = new Setting<bool>(false);
+            SkipBeforeTimestamp = new Setting<TimeSpan>(TimeSpan.Parse("07:15"));
 
             AutoCloseIfTooHotIsEnabled = new Setting<bool>(false);
             AutoCloseIfTooHotTemperaure = new Setting<float>(25);
 
-            DoNotOpenIfTooColdIsEnabled = new Setting<bool>(false);
-            DoNotOpenIfTooColdTemperature = new Setting<float>(2);
+            SkipIfRollerShutterFrozenIsEnabled = new Setting<bool>(true);
+            SkipIfRollerShutterFrozenTemperature = new Setting<float>(2);
 
             OpenOnSunriseOffset = new Setting<TimeSpan>(TimeSpan.FromMinutes(-30));
             CloseOnSunsetOffset = new Setting<TimeSpan>(TimeSpan.FromMinutes(30));
         }
 
-        public Setting<bool> DoNotOpenBeforeIsEnabled { get; private set; } 
+        public Setting<bool> SkipBeforeTimestampIsEnabled { get; private set; } 
 
-        public Setting<TimeSpan> DoNotOpenBeforeTime { get; private set; }
+        public Setting<TimeSpan> SkipBeforeTimestamp { get; private set; }
 
         public Setting<bool> AutoCloseIfTooHotIsEnabled { get; private set; } 
 
         public Setting<float> AutoCloseIfTooHotTemperaure { get; private set; }
 
-        public Setting<bool> DoNotOpenIfTooColdIsEnabled { get; private set; }
+        public Setting<bool> SkipIfRollerShutterFrozenIsEnabled { get; private set; }
 
-        public Setting<float> DoNotOpenIfTooColdTemperature { get; private set; }
+        public Setting<float> SkipIfRollerShutterFrozenTemperature { get; private set; }
 
         public Setting<TimeSpan> OpenOnSunriseOffset { get; private set; } 
 

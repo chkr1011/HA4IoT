@@ -1,9 +1,12 @@
 ﻿using System;
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
+using HA4IoT.Actuators.Triggers;
 using HA4IoT.Automations;
+using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Triggers;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
@@ -60,31 +63,39 @@ namespace HA4IoT.Controller.Demo
 
             AddDevice(new OpenWeatherMapWeatherStation(OpenWeatherMapWeatherStation.DefaultDeviceId, Timer, ApiController, Logger));
 
+            const int SensorPin = 5;
+
             var area = this.CreateArea(Room.ExampleRoom)
-                .WithTemperatureSensor(ExampleRoom.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(5))
-                .WithHumiditySensor(ExampleRoom.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(5))
+                .WithTemperatureSensor(ExampleRoom.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
+                .WithHumiditySensor(ExampleRoom.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
                 .WithMotionDetector(ExampleRoom.MotionDetector, hspe16[HSPE16Pin.GPIO8])
-                .WithWindow(ExampleRoom.Window, w => w.WithCenterCasement(hspe16[HSPE16Pin.GPIO0]))
+
                 .WithLamp(ExampleRoom.Lamp1, remoteSwitchController.GetOutput(0))
+                .WithLamp(ExampleRoom.Lamp2, remoteSwitchController.GetOutput(0))
+
                 .WithSocket(ExampleRoom.Socket1, hsrel5[HSREL5Pin.Relay0])
                 .WithSocket(ExampleRoom.Socket2, hsrel5[HSREL5Pin.Relay4])
                 .WithSocket(ExampleRoom.BathroomFan, hsrel5[HSREL5Pin.Relay3])
-                .WithLamp(ExampleRoom.Lamp2, hsrel8[HSREL8Pin.Relay0])
-                .WithLamp(ExampleRoom.Lamp3, hsrel8[HSREL8Pin.Relay1])
-                .WithLamp(ExampleRoom.Lamp4, hsrel8[HSREL8Pin.Relay2])
-                .WithLamp(ExampleRoom.Lamp5, hsrel8[HSREL8Pin.Relay3])
-                .WithLamp(ExampleRoom.Lamp6, hsrel8[HSREL8Pin.Relay4])
+                .WithLamp(ExampleRoom.Lamp3, hsrel8[HSREL8Pin.Relay0])
+                .WithLamp(ExampleRoom.Lamp4, hsrel8[HSREL8Pin.Relay1])
+                .WithLamp(ExampleRoom.Lamp5, hsrel8[HSREL8Pin.Relay2])
+                .WithLamp(ExampleRoom.Lamp6, hsrel8[HSREL8Pin.Relay3])
+                .WithLamp(ExampleRoom.Lamp7, hsrel8[HSREL8Pin.Relay4])
+                .WithLamp(ExampleRoom.Lamp8, hsrel8[HSREL8Pin.Relay5])
+
                 .WithButton(ExampleRoom.Button1, hspe16[HSPE16Pin.GPIO1])
                 .WithButton(ExampleRoom.Button2, hspe16[HSPE16Pin.GPIO2])
-                .WithVirtualButtonGroup(ExampleRoom.LedStripRemote, g => SetupLEDStripRemote(i2CHardwareBridge, g))
-                .WithStateMachine(ExampleRoom.CeilingFan, (sm, r) => SetupCeilingFan(sm));
 
-            area.GetButton(ExampleRoom.Button1).ConnectToggleActionWith(area.GetLamp(ExampleRoom.Lamp5));
+                .WithVirtualButtonGroup(ExampleRoom.LedStripRemote, g => SetupLEDStripRemote(i2CHardwareBridge, g))
+                .WithStateMachine(ExampleRoom.CeilingFan, (sm, r) => SetupCeilingFan(sm))
+                .WithWindow(ExampleRoom.Window, w => w.WithCenterCasement(hspe16[HSPE16Pin.GPIO0]));
+
+            area.GetButton(ExampleRoom.Button1).GetPressedShortlyTrigger().AssociateWith(area.GetLamp(ExampleRoom.Lamp5).GetToggleStateAction());
             area.GetButton(ExampleRoom.Button1).ConnectToggleActionWith(area.GetLamp(ExampleRoom.Lamp6), ButtonPressedDuration.Long);
 
-            area.StateMachine(ExampleRoom.CeilingFan).ConnectMoveNextAndToggleOffWith(area.GetButton(ExampleRoom.Button2));
+            area.GetStateMachine(ExampleRoom.CeilingFan).ConnectMoveNextAndToggleOffWith(area.GetButton(ExampleRoom.Button2));
 
-            SetupHumidityDependingOutput(area.GetHumiditySensor(ExampleRoom.HumiditySensor), hsrel8[HSREL8Pin.Relay5]);
+            SetupHumidityDependingLamp(area.GetHumiditySensor(ExampleRoom.HumiditySensor), area.GetLamp(ExampleRoom.Lamp7));
 
             area.SetupTurnOnAndOffAutomation()
                 .WithTrigger(area.GetMotionDetector(ExampleRoom.MotionDetector))
@@ -93,19 +104,12 @@ namespace HA4IoT.Controller.Demo
                 .WithOnDuration(TimeSpan.FromSeconds(10));
         }
 
-        private void SetupHumidityDependingOutput(IHumiditySensor sensor, IBinaryOutput output)
+        private void SetupHumidityDependingLamp(IHumiditySensor sensor, ILamp lamp)
         {
-            sensor.ValueChanged += (s, e) =>
-            {
-                if (e.NewValue > 80.0F)
-                {
-                    output.Write(BinaryState.High);
-                }
-                else
-                {
-                    output.Write(BinaryState.Low);
-                }
-            };
+            ITrigger trigger = sensor.GetHumidityReachedTrigger(80);
+            IHomeAutomationAction action = lamp.GetTurnOnAction();
+
+            trigger.AssociateWith(action);
         }
 
         private void SetupCeilingFan(StateMachine stateMachine)
@@ -122,7 +126,9 @@ namespace HA4IoT.Controller.Demo
 
         private void SetupLEDStripRemote(I2CHardwareBridge i2CHardwareBridge, VirtualButtonGroup group)
         {
-            var ledStripRemote = new LEDStripRemote(i2CHardwareBridge, 4);
+            const int SenderPin = 4;
+
+            var ledStripRemote = new LEDStripRemote(i2CHardwareBridge, SenderPin);
 
             group.WithButton(new ActuatorId("on"), b => b.WithPressedShortlyAction(() => ledStripRemote.TurnOn()))
                 .WithButton(new ActuatorId("off"), b => b.WithPressedShortlyAction(() => ledStripRemote.TurnOff()))

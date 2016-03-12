@@ -15,8 +15,8 @@ namespace HA4IoT.Actuators
             if (upInput == null) throw new ArgumentNullException(nameof(upInput));
             if (downInput == null) throw new ArgumentNullException(nameof(downInput));
 
-            Up = new Button(new ActuatorId(id + "-up"), new ButtonEndpoint(upInput), apiController, logger, timer);
-            Down = new Button(new ActuatorId(id + "-down"), new ButtonEndpoint(downInput), apiController, logger, timer);
+            Up = new Button(new ActuatorId(id + "-up"), new PortBasedButtonEndpoint(upInput), apiController, logger, timer);
+            Down = new Button(new ActuatorId(id + "-down"), new PortBasedButtonEndpoint(downInput), apiController, logger, timer);
 
             Settings = new ActuatorSettings(id, logger);
         }

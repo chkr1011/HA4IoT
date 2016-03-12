@@ -109,7 +109,7 @@
   <ItemGroup>
     <Compile Include="OpenWeatherMapResponseParser.cs" />
     <Compile Include="OpenWeatherMapConfigurationParser.cs" />
-    <Compile Include="OpenWeatherMapWeatherStationHttpApiDispatcher.cs" />
+    <Compile Include="OpenWeatherMapWeatherStationApiDispatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OpenWeatherMapWeatherStation.cs" />
     <Compile Include="OpenWeatherMapWeatherSituationParser.cs" />

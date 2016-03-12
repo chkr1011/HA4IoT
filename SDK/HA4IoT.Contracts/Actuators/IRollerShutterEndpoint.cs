@@ -2,10 +2,10 @@
 {
     public interface IRollerShutterEndpoint
     {
-        void StartMoveUp(params IParameter[] parameters);
+        void StartMoveUp(params IHardwareParameter[] parameters);
 
-        void Stop(params IParameter[] parameters);
+        void Stop(params IHardwareParameter[] parameters);
 
-        void StartMoveDown(params IParameter[] parameters);
+        void StartMoveDown(params IHardwareParameter[] parameters);
     }
 }

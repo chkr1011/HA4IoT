@@ -1,5 +1,4 @@
-﻿using System;
-using HA4IoT.Contracts.Actuators;
+﻿using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Logging;
 

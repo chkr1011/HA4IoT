@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using Windows.Data.Json;
+using HA4IoT.Actuators.Actions;
+using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
@@ -11,9 +13,14 @@ namespace HA4IoT.Actuators
 {
     public class RollerShutter : ActuatorBase<RollerShutterSettings>, IRollerShutter
     {
+        private readonly object _syncRoot = new object();
         private readonly Stopwatch _movingDuration = new Stopwatch();
         private readonly IHomeAutomationTimer _timer;
         private readonly IRollerShutterEndpoint _endpoint;
+
+        private readonly IHomeAutomationAction _startMoveUpAction;
+        private readonly IHomeAutomationAction _turnOffAction;
+        private readonly IHomeAutomationAction _startMoveDownAction;
 
         private RollerShutterState _state = RollerShutterState.Stopped;
 
@@ -37,6 +44,10 @@ namespace HA4IoT.Actuators
 
             base.Settings = new RollerShutterSettings(id, logger);
 
+            _startMoveUpAction = new HomeAutomationAction(() => SetState(RollerShutterState.MovingUp));
+            _turnOffAction = new HomeAutomationAction(() => SetState(RollerShutterState.Stopped));
+            _startMoveDownAction = new HomeAutomationAction(() => SetState(RollerShutterState.MovingDown));
+
             _endpoint.Stop();
         }
 
@@ -48,42 +59,65 @@ namespace HA4IoT.Actuators
 
         public RollerShutterState GetState()
         {
-            return _state;
+            lock (_syncRoot)
+            {
+                return _state;
+            }
         }
 
         public void SetState(RollerShutterState state)
         {
-            if (state == _state)
+            RollerShutterState oldState;
+            lock (_syncRoot)
             {
-                return;
-            }
+                if (state == _state)
+                {
+                    return;
+                }
 
-            if (state == RollerShutterState.Stopped)
-            {
-                _endpoint.Stop();
-                Logger.Info($"{Id}: Stopped (Duration: {_movingDuration.ElapsedMilliseconds} ms)");
-            }
-            else if (state == RollerShutterState.MovingUp)
-            {
-                _endpoint.StartMoveUp();
-                RestartTracking();
-            }
-            else if (state == RollerShutterState.MovingDown)
-            {
-                _endpoint.StartMoveDown();
-                RestartTracking();
-            }
+                if (state == RollerShutterState.Stopped)
+                {
+                    _endpoint.Stop();
+                    Logger.Info($"{Id}: Stopped (Duration: {_movingDuration.ElapsedMilliseconds} ms)");
+                }
+                else if (state == RollerShutterState.MovingUp)
+                {
+                    _endpoint.StartMoveUp();
+                    RestartTracking();
+                }
+                else if (state == RollerShutterState.MovingDown)
+                {
+                    _endpoint.StartMoveDown();
+                    RestartTracking();
+                }
 
-            RollerShutterState oldState = _state;
-            _state = state;
+                oldState = _state;
+                _state = state;
+                
+                Logger.Info($"{Id}:{oldState}->{state}");
+            }
 
             StateChanged?.Invoke(this, new RollerShutterStateChangedEventArgs(oldState, _state));
-            Logger.Info($"{Id}:{oldState}->{state}");
         }
 
-        public void TurnOff(params IParameter[] parameters)
+        public void TurnOff(params IHardwareParameter[] parameters)
         {
             SetState(RollerShutterState.Stopped);
+        }
+
+        public IHomeAutomationAction GetTurnOffAction()
+        {
+            return _turnOffAction;
+        }
+
+        public IHomeAutomationAction GetStartMoveUpAction()
+        {
+            return _startMoveUpAction;
+        }
+
+        public IHomeAutomationAction GetStartMoveDownAction()
+        {
+            return _startMoveDownAction;
         }
 
         public override JsonObject ExportStatusToJsonObject()
@@ -97,7 +131,7 @@ namespace HA4IoT.Actuators
             return status;
         }
 
-        public override void HandleApiPost(IApiContext apiContext)
+        protected override void HandleApiCommand(IApiContext apiContext)
         {
             if (!apiContext.Request.ContainsKey("state"))
             {

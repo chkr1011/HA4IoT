@@ -103,7 +103,7 @@ namespace HA4IoT.Actuators.Tests
             var testButton = new TestButton();
             var testOutput = new TestBinaryStateOutputActuator();
 
-            testButton.GetPressedShortlyTrigger().AssociateWith(testOutput.GetToggleAction());
+            testButton.GetPressedShortlyTrigger().AssociateWith(testOutput.GetToggleStateAction());
 
             testOutput.GetState().ShouldBeEquivalentTo(BinaryActuatorState.Off);
             testButton.PressShort();

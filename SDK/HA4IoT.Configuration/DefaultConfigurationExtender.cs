@@ -81,7 +81,7 @@ namespace HA4IoT.Configuration
 
             return new Button(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
-                new ButtonEndpoint(input), 
+                new PortBasedButtonEndpoint(input), 
                 Controller.ApiController,
                 Controller.Logger,
                 Controller.Timer);

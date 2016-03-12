@@ -120,7 +120,7 @@
     <Compile Include="AutomationBase.cs" />
     <Compile Include="AutomationIdFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AutomationSettingsHttpApiDispatcher.cs" />
+    <Compile Include="AutomationSettingsApiDispatcher.cs" />
     <Compile Include="TurnOnAndOffAutomationSettings.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.Automations.rd.xml" />
   </ItemGroup>

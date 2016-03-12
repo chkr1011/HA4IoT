@@ -5,15 +5,22 @@ using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Actuators.Actions
 {
-    public static class ActuatorActionExtensions
+    public static class HomeAutomationActionExtensions
     {
-        public static IActuatorAction AssociateWith(this IActuatorAction actuatorAction, ITrigger trigger)
+        public static IHomeAutomationAction AssociateWith(this IHomeAutomationAction actuatorAction, ITrigger trigger)
         {
             if (actuatorAction == null) throw new ArgumentNullException(nameof(actuatorAction));
             if (trigger == null) throw new ArgumentNullException(nameof(trigger));
 
             trigger.AssociateWith(actuatorAction);
             return actuatorAction;
+        }
+
+        public static IHomeAutomationAction ToHomeAutomationAction(Action callback)
+        {
+            if (callback == null) throw new ArgumentNullException(nameof(callback));
+
+            return new HomeAutomationAction(callback);
         }
     }
 }

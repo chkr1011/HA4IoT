@@ -4,15 +4,16 @@ using HA4IoT.Contracts.Core.Settings;
 
 namespace HA4IoT.Core.Settings
 {
-    public class SettingsContainerHttpApiDispatcher<TSettings> where TSettings : ISettingsContainer
+    public class SettingsContainerApiDispatcher<TSettings> where TSettings : ISettingsContainer
     {
         private readonly TSettings _settingsContainer;
         private readonly IApiController _apiController;
         private readonly string _relativeUri;
 
-        public SettingsContainerHttpApiDispatcher(TSettings settingsContainerContainer, string relativeUri, IApiController apiController)
+        public SettingsContainerApiDispatcher(TSettings settingsContainerContainer, string relativeUri, IApiController apiController)
         {
             if (settingsContainerContainer == null) throw new ArgumentNullException(nameof(settingsContainerContainer));
+            if (relativeUri == null) throw new ArgumentNullException(nameof(relativeUri));
             if (apiController == null) throw new ArgumentNullException(nameof(apiController));
 
             _settingsContainer = settingsContainerContainer;
@@ -23,16 +24,16 @@ namespace HA4IoT.Core.Settings
 
         public void ExposeToApi()
         {
-            _apiController.RouteCommand($"{_relativeUri}/settings", HandleApiPost);
-            _apiController.RouteRequest($"{_relativeUri}/settings", HandleApiGet);
+            _apiController.RouteCommand($"{_relativeUri}/settings", HandleApiCommand);
+            _apiController.RouteRequest($"{_relativeUri}/settings", HandleApiRequest);
         }
 
-        private void HandleApiGet(IApiContext apiContext)
+        private void HandleApiRequest(IApiContext apiContext)
         {
             apiContext.Response = _settingsContainer.ExportToJsonObject();
         }
 
-        private void HandleApiPost(IApiContext apiContext)
+        private void HandleApiCommand(IApiContext apiContext)
         {
             _settingsContainer.ImportFromJsonObject(apiContext.Request);
         }

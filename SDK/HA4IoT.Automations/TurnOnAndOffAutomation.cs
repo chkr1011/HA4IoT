@@ -41,7 +41,7 @@ namespace HA4IoT.Automations
             Settings = new TurnOnAndOffAutomationSettings(id, apiController, logger);
         }
 
-        public TurnOnAndOffAutomation WithTrigger(IMotionDetector motionDetector, params IParameter[] parameters)
+        public TurnOnAndOffAutomation WithTrigger(IMotionDetector motionDetector, params IHardwareParameter[] parameters)
         {
             if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
@@ -53,7 +53,7 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public TurnOnAndOffAutomation WithTrigger(ITrigger trigger, params IParameter[] parameters)
+        public TurnOnAndOffAutomation WithTrigger(ITrigger trigger, params IHardwareParameter[] parameters)
         {
             if (trigger == null) throw new ArgumentNullException(nameof(trigger));
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));

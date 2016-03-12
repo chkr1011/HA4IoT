@@ -1,6 +1,7 @@
 ﻿using System;
 using Windows.Data.Json;
 using HA4IoT.Actuators;
+using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Logging;
 
@@ -42,9 +43,14 @@ namespace HA4IoT.Tests.Mockups
         {
         }
 
-        public void TurnOff(params IParameter[] parameters)
+        public void TurnOff(params IHardwareParameter[] parameters)
         {
             SetState(RollerShutterState.Stopped);
+        }
+
+        public IHomeAutomationAction GetTurnOffAction()
+        {
+            return null;
         }
 
         public RollerShutterState GetState()

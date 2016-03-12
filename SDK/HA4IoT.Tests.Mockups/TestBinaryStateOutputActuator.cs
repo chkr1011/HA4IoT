@@ -9,15 +9,15 @@ namespace HA4IoT.Tests.Mockups
 {
     public class TestBinaryStateOutputActuator : IBinaryStateOutputActuator
     {
-        private readonly IActuatorAction _turnOnAction;
-        private readonly IActuatorAction _turnOffAction;
-        private readonly IActuatorAction _toggleAction;
+        private readonly IHomeAutomationAction _turnOnAction;
+        private readonly IHomeAutomationAction _turnOffAction;
+        private readonly IHomeAutomationAction _toggleAction;
 
         public TestBinaryStateOutputActuator()
         {
-            _turnOnAction = new ActuatorAction(() => SetState(BinaryActuatorState.On));
-            _turnOffAction = new ActuatorAction(() => SetState(BinaryActuatorState.Off));
-            _toggleAction = new ActuatorAction(() =>
+            _turnOnAction = new HomeAutomationAction(() => SetState(BinaryActuatorState.On));
+            _turnOffAction = new HomeAutomationAction(() => SetState(BinaryActuatorState.Off));
+            _toggleAction = new HomeAutomationAction(() =>
             {
                 if (GetState() == BinaryActuatorState.On)
                 {
@@ -62,7 +62,7 @@ namespace HA4IoT.Tests.Mockups
             return State;
         }
 
-        public void SetState(BinaryActuatorState state, params IParameter[] parameters)
+        public void SetState(BinaryActuatorState state, params IHardwareParameter[] parameters)
         {
             if (state == State)
             {
@@ -80,22 +80,26 @@ namespace HA4IoT.Tests.Mockups
             StateChanged?.Invoke(this, new BinaryActuatorStateChangedEventArgs(oldState, state));
         }
 
-        public IActuatorAction GetTurnOnAction()
+        public void ToggleState(params IHardwareParameter[] parameters)
+        {
+        }
+
+        public IHomeAutomationAction GetTurnOnAction()
         {
             return _turnOnAction;
         }
 
-        public IActuatorAction GetTurnOffAction()
+        public IHomeAutomationAction GetTurnOffAction()
         {
             return _turnOffAction;
         }
 
-        public IActuatorAction GetToggleAction()
+        public IHomeAutomationAction GetToggleStateAction()
         {
             return _toggleAction;
         }
 
-        public void TurnOff(params IParameter[] parameters)
+        public void TurnOff(params IHardwareParameter[] parameters)
         {
             State = BinaryActuatorState.Off;
         }

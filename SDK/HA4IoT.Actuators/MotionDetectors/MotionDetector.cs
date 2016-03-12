@@ -63,9 +63,9 @@ namespace HA4IoT.Actuators
             return status;
         }
 
-        public override void HandleApiPost(IApiContext apiContext)
+        protected override void HandleApiCommand(IApiContext apiContext)
         {
-            base.HandleApiPost(apiContext);
+            base.HandleApiCommand(apiContext);
             
             if (apiContext.Request.ContainsKey("action"))
             {

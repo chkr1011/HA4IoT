@@ -3,11 +3,11 @@ using HA4IoT.Contracts.Actions;
 
 namespace HA4IoT.Actuators.Actions
 {
-    public class ActuatorAction : IActuatorAction
+    public class HomeAutomationAction : IHomeAutomationAction
     {
         private readonly Action _callback;
 
-        public ActuatorAction(Action callback)
+        public HomeAutomationAction(Action callback)
         {
             if (callback == null) throw new ArgumentNullException(nameof(callback));
 

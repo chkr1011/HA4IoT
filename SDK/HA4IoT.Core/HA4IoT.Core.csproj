@@ -114,7 +114,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AreaSettingsHttpApiDispatcher.cs" />
+    <Compile Include="AreaSettingsApiDispatcher.cs" />
     <Compile Include="AreaIdFactory.cs" />
     <Compile Include="AreaSettings.cs" />
     <Compile Include="AutomationCollection.cs" />
@@ -129,7 +129,7 @@
     <Compile Include="HealthMonitor.cs" />
     <Compile Include="Area.cs" />
     <Compile Include="AreaCollection.cs" />
-    <Compile Include="Settings\SettingsContainerHttpApiDispatcher.cs" />
+    <Compile Include="Settings\SettingsContainerApiDispatcher.cs" />
     <Compile Include="Settings\Setting.cs" />
     <Compile Include="Settings\SettingsContainer.cs" />
     <Compile Include="StoragePath.cs" />

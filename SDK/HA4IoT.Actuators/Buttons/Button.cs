@@ -49,7 +49,7 @@ namespace HA4IoT.Actuators
             return _pressedLongTrigger;
         }
 
-        public override void HandleApiPost(IApiContext apiContext)
+        protected override void HandleApiCommand(IApiContext apiContext)
         {
             string action = apiContext.Request.GetNamedString("duration", string.Empty);
             if (action.Equals(ButtonPressedDuration.Long.ToString(), StringComparison.OrdinalIgnoreCase))

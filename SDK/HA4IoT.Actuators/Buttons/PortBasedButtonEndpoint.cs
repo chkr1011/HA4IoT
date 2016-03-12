@@ -4,9 +4,9 @@ using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Actuators
 {
-    public class ButtonEndpoint : IButtonEndpoint
+    public class PortBasedButtonEndpoint : IButtonEndpoint
     {
-        public ButtonEndpoint(IBinaryInput input)
+        public PortBasedButtonEndpoint(IBinaryInput input)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
 

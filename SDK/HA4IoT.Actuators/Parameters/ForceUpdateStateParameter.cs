@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Actuators
 {
-    public class DoNotCommitStateParameter : IParameter
+    public class ForceUpdateStateParameter : IHardwareParameter
     {
     }
 }

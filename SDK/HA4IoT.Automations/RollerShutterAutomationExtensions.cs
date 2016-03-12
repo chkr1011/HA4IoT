@@ -29,8 +29,8 @@ namespace HA4IoT.Automations
         {
             if (automation == null) throw new ArgumentNullException(nameof(automation));
 
-            automation.Settings.DoNotOpenBeforeIsEnabled.Value = true;
-            automation.Settings.DoNotOpenBeforeTime.Value = minTime;
+            automation.Settings.SkipBeforeTimestampIsEnabled.Value = true;
+            automation.Settings.SkipBeforeTimestamp.Value = minTime;
 
             return automation;
         }
@@ -39,8 +39,8 @@ namespace HA4IoT.Automations
         {
             if (automation == null) throw new ArgumentNullException(nameof(automation));
 
-            automation.Settings.DoNotOpenIfTooColdIsEnabled.Value = true;
-            automation.Settings.DoNotOpenIfTooColdTemperature.Value = minOutsideTemperature;
+            automation.Settings.SkipIfRollerShutterFrozenIsEnabled.Value = true;
+            automation.Settings.SkipIfRollerShutterFrozenTemperature.Value = minOutsideTemperature;
 
             return automation;
         }

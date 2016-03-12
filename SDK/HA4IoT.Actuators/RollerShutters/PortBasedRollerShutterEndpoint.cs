@@ -19,14 +19,14 @@ namespace HA4IoT.Actuators
             _directionOutput = directionOutput;
         }
 
-        public void StartMoveUp(params IParameter[] parameters)
+        public void StartMoveUp(params IHardwareParameter[] parameters)
         {
             StopAndWait();
             _directionOutput.Write(BinaryState.Low);
             Start();
         }
 
-        public void Stop(params IParameter[] parameters)
+        public void Stop(params IHardwareParameter[] parameters)
         {
             _powerOutput.Write(BinaryState.Low);
 
@@ -34,7 +34,7 @@ namespace HA4IoT.Actuators
             _directionOutput.Write(BinaryState.Low);
         }
 
-        public void StartMoveDown(params IParameter[] parameters)
+        public void StartMoveDown(params IHardwareParameter[] parameters)
         {
             StopAndWait();
             _directionOutput.Write(BinaryState.High);

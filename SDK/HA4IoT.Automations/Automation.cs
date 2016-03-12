@@ -22,8 +22,8 @@ namespace HA4IoT.Automations
         }
 
         public IList<RelatedCondition> Conditions { get; } = new List<RelatedCondition>();
-        public IList<IActuatorAction> ActionsIfFulfilled { get; } = new List<IActuatorAction>();
-        public IList<IActuatorAction> ActionsIfNotFulfilled { get; } = new List<IActuatorAction>();
+        public IList<IHomeAutomationAction> ActionsIfFulfilled { get; } = new List<IHomeAutomationAction>();
+        public IList<IHomeAutomationAction> ActionsIfNotFulfilled { get; } = new List<IHomeAutomationAction>();
 
         public Automation WithTrigger(ITrigger trigger)
         {
@@ -41,7 +41,7 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public Automation WithActionIfConditionsFulfilled(IActuatorAction action)
+        public Automation WithActionIfConditionsFulfilled(IHomeAutomationAction action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
 
@@ -49,7 +49,7 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public Automation WithActionIfConditionsNotFulfilled(IActuatorAction action)
+        public Automation WithActionIfConditionsNotFulfilled(IHomeAutomationAction action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
 

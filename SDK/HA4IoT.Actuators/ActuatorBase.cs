@@ -52,21 +52,21 @@ namespace HA4IoT.Actuators
             Settings?.Load();
         }
 
-        public virtual void HandleApiPost(IApiContext apiContext)
+        protected virtual void HandleApiCommand(IApiContext apiContext)
         {
+        }
+
+        protected virtual void HandleApiRequest(IApiContext apiContext)
+        {
+            apiContext.Response = ExportStatusToJsonObject();
         }
 
         public void ExposeToApi()
         {
-            new ActuatorSettingsHttpApiDispatcher(Settings, ApiController).ExposeToApi();
+            new ActuatorSettingsApiDispatcher(Settings, ApiController).ExposeToApi();
             
-            ApiController.RouteCommand($"actuator/{Id.Value}/status", HandleApiPost);
-
-            ApiController.RouteRequest($"actuator/{Id.Value}/status",
-                apiContext =>
-                {
-                    apiContext.Response = ExportStatusToJsonObject();
-                });
+            ApiController.RouteCommand($"actuator/{Id}/status", HandleApiCommand);
+            ApiController.RouteRequest($"actuator/{Id}/status", HandleApiRequest);
         }
     }
 }

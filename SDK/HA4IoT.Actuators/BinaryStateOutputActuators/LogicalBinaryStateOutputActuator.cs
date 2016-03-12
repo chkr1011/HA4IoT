@@ -13,9 +13,8 @@ namespace HA4IoT.Actuators
     {
         private readonly IHomeAutomationTimer _timer;
 
-        public LogicalBinaryStateOutputActuator(ActuatorId id, IApiController apiController, ILogger logger,
-            IHomeAutomationTimer timer) : base(
-                id, apiController, logger)
+        public LogicalBinaryStateOutputActuator(ActuatorId id, IApiController apiController, ILogger logger, IHomeAutomationTimer timer) 
+            : base(id, apiController, logger)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
 
@@ -26,7 +25,15 @@ namespace HA4IoT.Actuators
 
         public IList<IBinaryStateOutputActuator> Actuators { get; } = new List<IBinaryStateOutputActuator>();
 
-        protected override void SetStateInternal(BinaryActuatorState newState, params IParameter[] parameters)
+        public LogicalBinaryStateOutputActuator WithActuator(IBinaryStateOutputActuator actuator)
+        {
+            if (actuator == null) throw new ArgumentNullException(nameof(actuator));
+
+            Actuators.Add(actuator);
+            return this;
+        }
+
+        protected override void SetStateInternal(BinaryActuatorState state, params IHardwareParameter[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
@@ -35,37 +42,29 @@ namespace HA4IoT.Actuators
             var animationParameter = parameters.SingleOrDefault(p => p is AnimateParameter) as AnimateParameter;
             if (animationParameter != null)
             {
-                var directionAnimation = new DirectionAnimation(_timer);
-                directionAnimation.WithActuator(this);
-                directionAnimation.WithTargetState(newState);
-
-                if (animationParameter.Reverse)
-                {
-                    directionAnimation.WithReversed();
-                }
-
-                directionAnimation.Start();
-                
-                OnStateChanged(oldState, newState);
+                Animate(animationParameter, oldState, state);
                 return;
             }
 
             // Set the state of the actuators without a commit to ensure that the state is applied at once without a delay.
             foreach (var actuator in Actuators)
             {
-                actuator.SetState(newState, new DoNotCommitStateParameter());
+                actuator.SetState(state, new IsPartOfPartialUpdateParameter());
             }
 
-            bool commit = !parameters.Any(p => p is DoNotCommitStateParameter);
-            if (commit)
+            bool commit = !parameters.Any(p => p is IsPartOfPartialUpdateParameter);
+            bool forceUpdate = parameters.Any(p => p is ForceUpdateStateParameter);
+            if (!commit && !forceUpdate)
             {
-                foreach (var actuator in Actuators)
-                {
-                    actuator.SetState(newState);
-                }
+                return;
             }
 
-            OnStateChanged(newState, GetStateInternal());
+            foreach (var actuator in Actuators)
+            {
+                actuator.SetState(state);
+            }
+
+            OnStateChanged(oldState, GetStateInternal());
         }
 
         protected override BinaryActuatorState GetStateInternal()
@@ -82,13 +81,21 @@ namespace HA4IoT.Actuators
 
             return BinaryActuatorState.Off;
         }
-        
-        public LogicalBinaryStateOutputActuator WithActuator(IBinaryStateOutputActuator actuator)
-        {
-            if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
-            Actuators.Add(actuator);
-            return this;
+        private void Animate(AnimateParameter animateParameter, BinaryActuatorState oldState, BinaryActuatorState newState)
+        {
+            var directionAnimation = new DirectionAnimation(_timer);
+            directionAnimation.WithActuator(this);
+            directionAnimation.WithTargetState(newState);
+
+            if (animateParameter.Reverse)
+            {
+                directionAnimation.WithReversed();
+            }
+
+            directionAnimation.Start();
+
+            OnStateChanged(oldState, newState);
         }
     }
 }

@@ -65,8 +65,8 @@ namespace HA4IoT.Controller.Cellar
                 .WithLamp(Garden.LampParkingLot, new LogicalBinaryOutput().WithOutput(hsrt16[HSRT16Pin.Relay8]).WithOutput(hsrt16[HSRT16Pin.Relay6]).WithOutput(hsrt16[HSRT16Pin.Relay7]))
                 .WithButton(Garden.Button, pi2PortController.GetInput(4).WithInvertedState())
                 .WithStateMachine(Garden.StateMachine, SetupStateMachine);
-            
-            garden.StateMachine(Garden.StateMachine).ConnectMoveNextAndToggleOffWith(garden.GetButton(Garden.Button));
+
+            garden.GetStateMachine(Garden.StateMachine).ConnectMoveNextAndToggleOffWith(garden.GetButton(Garden.Button));
 
             garden.SetupConditionalOnAutomation()
                 .WithActuator(garden.GetLamp(Garden.LampParkingLot))

@@ -91,7 +91,7 @@ namespace HA4IoT.Controller.Main.Rooms
             
             office.GetButton(Office.ButtonUpperLeft).GetPressedLongTrigger().Attach(() =>
             {
-                office.StateMachine(Office.CombinedCeilingLights).TurnOff();
+                office.GetStateMachine(Office.CombinedCeilingLights).TurnOff();
                 office.Socket(Office.SocketRearLeftEdge).TurnOff();
                 office.Socket(Office.SocketRearLeft).TurnOff();
                 office.Socket(Office.SocketFrontLeft).TurnOff();

@@ -14,7 +14,7 @@ namespace HA4IoT.Actuators
 
             var button = new Button(
                 ActuatorIdFactory.Create(room, id), 
-                new ButtonEndpoint(input),
+                new PortBasedButtonEndpoint(input),
                 room.Controller.ApiController, 
                 room.Controller.Logger, 
                 room.Controller.Timer);

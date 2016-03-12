@@ -57,7 +57,7 @@ namespace HA4IoT.Actuators
             return this;
         }
 
-        internal void Apply(params IParameter[] parameters)
+        internal void Apply(params IHardwareParameter[] parameters)
         {
             foreach (var port in _outputs)
             {
@@ -66,10 +66,10 @@ namespace HA4IoT.Actuators
 
             foreach (var actuator in _actuators)
             {
-                actuator.Item1.SetState(actuator.Item2, new DoNotCommitStateParameter());
+                actuator.Item1.SetState(actuator.Item2, new IsPartOfPartialUpdateParameter());
             }
 
-            if (!parameters.Any(p => p is DoNotCommitStateParameter))
+            if (!parameters.Any(p => p is IsPartOfPartialUpdateParameter))
             {
                 foreach (var port in _outputs)
                 {

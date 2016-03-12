@@ -61,7 +61,7 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             Task.Factory.StartNew(async () => await FetchWeahterData(), CancellationToken.None,
                 TaskCreationOptions.LongRunning, TaskScheduler.Default);
 
-            new OpenWeatherMapWeatherStationHttpApiDispatcher(this, apiController).ExposeToApi();
+            new OpenWeatherMapWeatherStationApiDispatcher(this, apiController).ExposeToApi();
         }
 
         public DeviceId Id { get; }

@@ -19,7 +19,7 @@ namespace HA4IoT.Actuators
             return room;
         }
 
-        public static IStateMachine StateMachine(this IArea room, Enum id)
+        public static IStateMachine GetStateMachine(this IArea room, Enum id)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 

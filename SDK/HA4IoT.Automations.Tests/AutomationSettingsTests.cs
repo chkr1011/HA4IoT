@@ -48,19 +48,19 @@ namespace HA4IoT.Automations.Tests
         {
             var settings = new RollerShutterAutomationSettings(AutomationIdFactory.EmptyId, new TestHttpRequestController(), new TestLogger());
             settings.AutoCloseIfTooHotTemperaure.Value = 24.5F;
-            settings.DoNotOpenBeforeTime.Value = TimeSpan.Parse("07:30");
+            settings.SkipBeforeTimestamp.Value = TimeSpan.Parse("07:30");
 
             JsonObject jsonObject = settings.ExportToJsonObject();
             Debug.WriteLine(jsonObject.Stringify());
 
             settings.AutoCloseIfTooHotTemperaure.Value = 9F;
-            settings.DoNotOpenIfTooColdTemperature.Value = 10F;
-            settings.DoNotOpenBeforeTime.Value = TimeSpan.Parse("09:00");
+            settings.SkipIfRollerShutterFrozenTemperature.Value = 10F;
+            settings.SkipBeforeTimestamp.Value = TimeSpan.Parse("09:00");
             
             settings.ImportFromJsonObjectWithoutSaving(jsonObject);
 
-            settings.DoNotOpenBeforeTime.Value.ShouldBeEquivalentTo(TimeSpan.Parse("07:30"));
-            settings.DoNotOpenIfTooColdTemperature.Value.ShouldBeEquivalentTo(2);
+            settings.SkipBeforeTimestamp.Value.ShouldBeEquivalentTo(TimeSpan.Parse("07:30"));
+            settings.SkipIfRollerShutterFrozenTemperature.Value.ShouldBeEquivalentTo(2);
             settings.AutoCloseIfTooHotTemperaure.Value.ShouldBeEquivalentTo(24.5F);
         }
     }

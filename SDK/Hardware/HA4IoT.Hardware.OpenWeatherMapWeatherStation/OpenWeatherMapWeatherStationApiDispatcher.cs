@@ -4,12 +4,12 @@ using HA4IoT.Contracts.WeatherStation;
 
 namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 {
-    public class OpenWeatherMapWeatherStationHttpApiDispatcher
+    public class OpenWeatherMapWeatherStationApiDispatcher
     {
         private readonly OpenWeatherMapWeatherStation _weatherStation;
         private readonly IApiController _apiController;
 
-        public OpenWeatherMapWeatherStationHttpApiDispatcher(OpenWeatherMapWeatherStation weatherStation, IApiController apiController)
+        public OpenWeatherMapWeatherStationApiDispatcher(OpenWeatherMapWeatherStation weatherStation, IApiController apiController)
         {
             if (weatherStation == null) throw new ArgumentNullException(nameof(weatherStation));
             if (apiController == null) throw new ArgumentNullException(nameof(apiController));

@@ -2,8 +2,8 @@
 {
     public interface IBinaryStateEndpoint
     {
-        void TurnOn(params IParameter[] parameters);
+        void TurnOn(params IHardwareParameter[] parameters);
 
-        void TurnOff(params IParameter[] parameters);
+        void TurnOff(params IHardwareParameter[] parameters);
     }
 }

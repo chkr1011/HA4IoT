@@ -145,15 +145,15 @@ namespace HA4IoT.Controller.Main.Rooms
             
             bedroom.WithStateMachine(Bedroom.Fan, SetupFan);
             
-            bedroom.GetButton(Bedroom.ButtonBedLeftInner).WithPressedShortlyAction(() => bedroom.GetLamp(Bedroom.LampBedLeft).Toggle());
-            bedroom.GetButton(Bedroom.ButtonBedLeftInner).WithPressedLongAction(() => bedroom.BinaryStateOutput(Bedroom.CombinedCeilingLights).Toggle());
-            bedroom.GetButton(Bedroom.ButtonBedLeftOuter).WithPressedShortlyAction(() => bedroom.StateMachine(Bedroom.Fan).SetNextState());
-            bedroom.GetButton(Bedroom.ButtonBedLeftOuter).WithPressedLongAction(() => bedroom.StateMachine(Bedroom.Fan).TurnOff());
+            bedroom.GetButton(Bedroom.ButtonBedLeftInner).WithPressedShortlyAction(() => bedroom.GetLamp(Bedroom.LampBedLeft).ToggleState());
+            bedroom.GetButton(Bedroom.ButtonBedLeftInner).WithPressedLongAction(() => bedroom.BinaryStateOutput(Bedroom.CombinedCeilingLights).ToggleState());
+            bedroom.GetButton(Bedroom.ButtonBedLeftOuter).WithPressedShortlyAction(() => bedroom.GetStateMachine(Bedroom.Fan).SetNextState());
+            bedroom.GetButton(Bedroom.ButtonBedLeftOuter).WithPressedLongAction(() => bedroom.GetStateMachine(Bedroom.Fan).TurnOff());
 
-            bedroom.GetButton(Bedroom.ButtonBedRightInner).WithPressedShortlyAction(() => bedroom.GetLamp(Bedroom.LampBedRight).Toggle());
-            bedroom.GetButton(Bedroom.ButtonBedRightInner).WithPressedLongAction(() => bedroom.BinaryStateOutput(Bedroom.CombinedCeilingLights).Toggle());
-            bedroom.GetButton(Bedroom.ButtonBedRightOuter).WithPressedShortlyAction(() => bedroom.StateMachine(Bedroom.Fan).SetNextState());
-            bedroom.GetButton(Bedroom.ButtonBedRightOuter).WithPressedLongAction(() => bedroom.StateMachine(Bedroom.Fan).TurnOff());
+            bedroom.GetButton(Bedroom.ButtonBedRightInner).WithPressedShortlyAction(() => bedroom.GetLamp(Bedroom.LampBedRight).ToggleState());
+            bedroom.GetButton(Bedroom.ButtonBedRightInner).WithPressedLongAction(() => bedroom.BinaryStateOutput(Bedroom.CombinedCeilingLights).ToggleState());
+            bedroom.GetButton(Bedroom.ButtonBedRightOuter).WithPressedShortlyAction(() => bedroom.GetStateMachine(Bedroom.Fan).SetNextState());
+            bedroom.GetButton(Bedroom.ButtonBedRightOuter).WithPressedLongAction(() => bedroom.GetStateMachine(Bedroom.Fan).TurnOff());
         }
 
         private void SetupFan(StateMachine fan, IArea room)

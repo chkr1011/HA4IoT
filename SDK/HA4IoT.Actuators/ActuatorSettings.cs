@@ -1,4 +1,5 @@
-﻿using Windows.Data.Json;
+﻿using System.IO;
+using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Contracts.Logging;
@@ -28,7 +29,20 @@ namespace HA4IoT.Actuators
 
         private static string GenerateFilename(ActuatorId actuatorId)
         {
-            return StoragePath.WithFilename("Actuators", actuatorId.Value, "Settings.json");
+            string oldFilename = StoragePath.WithFilename("Actuators", actuatorId.Value, "Configuration.json");
+            string newFilename = StoragePath.WithFilename("Actuators", actuatorId.Value, "Settings.json");
+
+            if (File.Exists(oldFilename))
+            {
+                if (File.Exists(newFilename))
+                {
+                    File.Delete(oldFilename);
+                }
+
+                File.Move(oldFilename, newFilename);
+            }
+
+            return newFilename;
         }
     }
 }

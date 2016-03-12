@@ -7,7 +7,6 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.WeatherStation;
 
 namespace HA4IoT.Automations
@@ -85,7 +84,7 @@ namespace HA4IoT.Automations
 
                 if (TooColdIsAffected())
                 {
-                    _logger.Info(GetTracePrefix() + $"Cancelling opening because outside temperature is lower than {Settings.DoNotOpenIfTooColdTemperature.Value}°C.");
+                    _logger.Info(GetTracePrefix() + $"Cancelling opening because outside temperature is lower than {Settings.SkipIfRollerShutterFrozenTemperature.Value}°C.");
                 }
                 else
                 {
@@ -103,7 +102,7 @@ namespace HA4IoT.Automations
             {
                 if (TooColdIsAffected())
                 {
-                    _logger.Info(GetTracePrefix() + $"Cancelling closing because outside temperature is lower than {Settings.DoNotOpenIfTooColdTemperature.Value}°C.");
+                    _logger.Info(GetTracePrefix() + $"Cancelling closing because outside temperature is lower than {Settings.SkipIfRollerShutterFrozenTemperature.Value}°C.");
                 }
                 else
                 {
@@ -119,8 +118,8 @@ namespace HA4IoT.Automations
 
         private bool DoNotOpenDueToTimeIsAffected()
         {
-            if (Settings.DoNotOpenBeforeIsEnabled.Value && 
-                Settings.DoNotOpenBeforeTime.Value > _timer.CurrentTime)
+            if (Settings.SkipBeforeTimestampIsEnabled.Value && 
+                Settings.SkipBeforeTimestamp.Value > _timer.CurrentTime)
             {
                 return true;
             }
@@ -141,8 +140,8 @@ namespace HA4IoT.Automations
 
         private bool TooColdIsAffected()
         {
-            if (Settings.DoNotOpenIfTooColdIsEnabled.Value &&
-                _weatherStation.TemperatureSensor.GetValue() < Settings.DoNotOpenIfTooColdTemperature.Value)
+            if (Settings.SkipIfRollerShutterFrozenIsEnabled.Value &&
+                _weatherStation.TemperatureSensor.GetValue() < Settings.SkipIfRollerShutterFrozenTemperature.Value)
             {
                 return true;
             }

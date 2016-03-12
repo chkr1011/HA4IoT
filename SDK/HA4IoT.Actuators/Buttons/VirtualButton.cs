@@ -17,6 +17,7 @@ namespace HA4IoT.Actuators
         public VirtualButton(ActuatorId id, IApiController apiController, ILogger logger)
             : base(id, apiController, logger)
         {
+            Settings = new ActuatorSettings(id, logger);
         }
 
         public event EventHandler<ButtonStateChangedEventArgs> StateChanged;
@@ -36,7 +37,14 @@ namespace HA4IoT.Actuators
             return _pressedLongTrigger;
         }
 
-        public override void HandleApiPost(IApiContext apiContext)
+        public void ForwardApiCommand(IApiContext apiContext)
+        {
+            if (apiContext == null) throw new ArgumentNullException(nameof(apiContext));
+
+            HandleApiCommand(apiContext);
+        }
+
+        protected override void HandleApiCommand(IApiContext apiContext)
         {
             string action = apiContext.Request.GetNamedString("duration", string.Empty);
             if (action.Equals(ButtonPressedDuration.Long.ToString(), StringComparison.OrdinalIgnoreCase))

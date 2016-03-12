@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Logging;
@@ -17,12 +18,13 @@ namespace HA4IoT.Actuators
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
 
             _endpoint = endpoint;
-            _endpoint.TurnOff();
+            _endpoint.TurnOff(new ForceUpdateStateParameter());
         }
 
-        protected override void SetStateInternal(BinaryActuatorState state, params IParameter[] parameters)
+        protected override void SetStateInternal(BinaryActuatorState state, params IHardwareParameter[] parameters)
         {
-            if (state == _state)
+            bool forceUpdate = parameters.Any(p => p is ForceUpdateStateParameter);
+            if (!forceUpdate && state == _state)
             {
                 return;
             }
@@ -36,9 +38,14 @@ namespace HA4IoT.Actuators
                 _endpoint.TurnOff(parameters);
             }
 
+            bool commit = !parameters.Any(p => p is IsPartOfPartialUpdateParameter);
+            if (!commit)
+            {
+                return;
+            }
+
             BinaryActuatorState oldState = _state;
             _state = state;
-
             
             OnStateChanged(oldState, _state);
             Logger.Info($"{Id}:{oldState}->{state}");

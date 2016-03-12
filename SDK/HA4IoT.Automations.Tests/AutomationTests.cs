@@ -19,7 +19,7 @@ namespace HA4IoT.Automations.Tests
 
             CreateAutomation()
                 .WithTrigger(testButton.GetPressedShortlyTrigger())
-                .WithActionIfConditionsFulfilled(testOutput.GetToggleAction());
+                .WithActionIfConditionsFulfilled(testOutput.GetToggleStateAction());
 
             testOutput.GetState().ShouldBeEquivalentTo(BinaryActuatorState.Off);
             testButton.PressShort();
@@ -42,7 +42,7 @@ namespace HA4IoT.Automations.Tests
             automation
                 .WithTrigger(testButton.GetPressedShortlyTrigger())
                 .WithCondition(ConditionRelation.And, new TimeRangeCondition(testController.Timer).WithStart(TimeSpan.FromHours(1)).WithEnd(TimeSpan.FromHours(2)))
-                .WithActionIfConditionsFulfilled(testOutput.GetToggleAction());
+                .WithActionIfConditionsFulfilled(testOutput.GetToggleStateAction());
             
             testOutput.GetState().ShouldBeEquivalentTo(BinaryActuatorState.Off);
             testController.SetTime(TimeSpan.FromHours(0));

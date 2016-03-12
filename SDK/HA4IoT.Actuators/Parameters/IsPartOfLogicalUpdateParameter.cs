@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Actuators
 {
-    public class ForceUpdateStateParameter : IParameter
+    public class IsPartOfPartialUpdateParameter : IHardwareParameter
     {
     }
 }

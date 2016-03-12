@@ -22,7 +22,7 @@ namespace HA4IoT.Automations
             IsEnabled = new Setting<bool>(true);
             AppSettings = new Setting<JsonObject>(new JsonObject());
 
-            new AutomationSettingsHttpApiDispatcher(this, apiController).ExposeToApi();
+            new AutomationSettingsApiDispatcher(this, apiController).ExposeToApi();
         }
 
         [HideFromToJsonObject]
@@ -34,7 +34,20 @@ namespace HA4IoT.Automations
          
         private static string GenerateFilename(AutomationId automationId)
         {
-            return StoragePath.WithFilename("Automations", automationId.Value, "Settings.json");
+            string oldFilename = StoragePath.WithFilename("Automations", automationId.Value, "Configuration.json");
+            string newFilename = StoragePath.WithFilename("Automations", automationId.Value, "Settings.json");
+
+            if (File.Exists(oldFilename))
+            {
+                if (File.Exists(newFilename))
+                {
+                    File.Delete(oldFilename);
+                }
+
+                File.Move(oldFilename, newFilename);
+            }
+
+            return newFilename;
         }
     }
 }

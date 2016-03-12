@@ -4,9 +4,9 @@ using HA4IoT.Core.Settings;
 
 namespace HA4IoT.Actuators
 {
-    public class ActuatorSettingsHttpApiDispatcher : SettingsContainerHttpApiDispatcher<IActuatorSettings>
+    public class ActuatorSettingsApiDispatcher : SettingsContainerApiDispatcher<IActuatorSettings>
     {
-        public ActuatorSettingsHttpApiDispatcher(IActuatorSettings settings, IApiController apiController)
+        public ActuatorSettingsApiDispatcher(IActuatorSettings settings, IApiController apiController)
             : base(settings, $"actuator/{settings.ActuatorId}", apiController)
         {
         }

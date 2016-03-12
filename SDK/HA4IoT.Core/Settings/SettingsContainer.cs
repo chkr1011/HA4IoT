@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Networking;
@@ -27,16 +28,17 @@ namespace HA4IoT.Core.Settings
                 return;
             }
 
+            string fileContent = string.Empty;
             try
             {
-                string fileContent = File.ReadAllText(_filename);
+                fileContent = File.ReadAllText(_filename, Encoding.UTF8);
                 JsonObject jsonObject = JsonObject.Parse(fileContent);
 
                 ImportFromJsonObject(jsonObject);
             }
             catch (Exception exception)
             {
-                _logger.Warning(exception, $"Error while loading settings from '{_filename}'.");
+                _logger.Warning(exception, $"Error while loading settings from '{_filename}' ({fileContent}).");
                 File.Delete(_filename);
             }
         }
@@ -49,7 +51,7 @@ namespace HA4IoT.Core.Settings
                 Directory.CreateDirectory(directory);
             }
 
-            File.WriteAllText(_filename, ExportToJsonObject().Stringify());
+            File.WriteAllText(_filename, ExportToJsonObject().Stringify(), Encoding.UTF8);
             _logger.Verbose($"Saved settings at '{_filename}'.");
         }
 

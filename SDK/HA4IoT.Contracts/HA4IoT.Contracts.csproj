@@ -138,7 +138,7 @@
     <Compile Include="Actuators\IButton.cs" />
     <Compile Include="Actuators\IHumiditySensor.cs" />
     <Compile Include="Actuators\IMotionDetector.cs" />
-    <Compile Include="Actuators\IParameter.cs" />
+    <Compile Include="Actuators\IHardwareParameter.cs" />
     <Compile Include="Actuators\IRollerShutter.cs" />
     <Compile Include="Actuators\ISingleValueSensorActuator.cs" />
     <Compile Include="Actuators\ITemperatureSensor.cs" />

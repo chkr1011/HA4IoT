@@ -114,15 +114,17 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\ActuatorAction.cs" />
-    <Compile Include="Actions\ActuatorActionExtensions.cs" />
-    <Compile Include="ActuatorSettingsHttpApiDispatcher.cs" />
+    <Compile Include="Actions\HomeAutomationAction.cs" />
+    <Compile Include="Actions\HomeAutomationActionExtensions.cs" />
+    <Compile Include="ActuatorSettingsApiDispatcher.cs" />
     <Compile Include="ActuatorIdFactory.cs" />
     <Compile Include="BinaryStateOutputActuators\BinaryStateOutputActuatorExtensions.cs" />
     <Compile Include="BinaryStateOutputActuators\CustomBinaryStateOutputActuator.cs" />
     <Compile Include="BinaryStateOutputActuators\LogicalBinaryStateOutputActuatorExtensions.cs" />
     <Compile Include="Buttons\ButtonSettings.cs" />
     <Compile Include="Buttons\PortBasedButtonEndpoint.cs" />
+    <Compile Include="Connectors\BinaryStateActuatorWithButtonConnector.cs" />
+    <Compile Include="Connectors\StateMachineWithButtonConnector.cs" />
     <Compile Include="Lamps\LampExtensions.cs" />
     <Compile Include="MotionDetectors\PortBasedMotionDetectorEndpoint.cs" />
     <Compile Include="PortBasedBinaryStateEndpoint.cs" />
@@ -145,15 +147,13 @@
     <Compile Include="Triggers\TriggerExtensions.cs" />
     <Compile Include="Windows\Casement.cs" />
     <Compile Include="Windows\CasementState.cs" />
-    <Compile Include="DoNotCommitStateParameter.cs" />
-    <Compile Include="ForceUpdateStateParameter.cs" />
+    <Compile Include="Parameters\IsPartOfLogicalUpdateParameter.cs" />
+    <Compile Include="Parameters\ForceUpdateStateParameter.cs" />
     <Compile Include="RollerShutters\RollerShutterExtensions.cs" />
     <Compile Include="Sensors\HumiditySensorExtensions.cs" />
     <Compile Include="Sensors\TemperatureSensorExtensions.cs" />
     <Compile Include="SingleValueSensorActuatorBase.cs" />
     <Compile Include="Buttons\ButtonPressedDuration.cs" />
-    <Compile Include="Connectors\BinaryStateActuatorWithButtonConnector.cs" />
-    <Compile Include="Connectors\StateMachineWithButtonConnector.cs" />
     <Compile Include="ActuatorBase.cs" />
     <Compile Include="Connectors\RollerShutterWithRollerShutterButtonsConnector.cs" />
     <Compile Include="RollerShutters\RollerShutter.cs" />

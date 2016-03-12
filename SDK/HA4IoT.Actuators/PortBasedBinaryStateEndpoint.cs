@@ -16,19 +16,19 @@ namespace HA4IoT.Actuators
             _output = output;
         }
 
-        public void TurnOn(params IParameter[] parameters)
+        public void TurnOn(params IHardwareParameter[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
-            bool commit = !parameters.Any(p => p is DoNotCommitStateParameter);
+            bool commit = !parameters.Any(p => p is IsPartOfPartialUpdateParameter);
             _output.Write(BinaryState.High, commit);
         }
 
-        public void TurnOff(params IParameter[] parameters)
+        public void TurnOff(params IHardwareParameter[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
-            bool commit = !parameters.Any(p => p is DoNotCommitStateParameter);
+            bool commit = !parameters.Any(p => p is IsPartOfPartialUpdateParameter);
             _output.Write(BinaryState.Low, commit);
         }
     }

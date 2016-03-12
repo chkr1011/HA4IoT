@@ -9,12 +9,12 @@ namespace HA4IoT.Contracts.Actuators
 
         BinaryActuatorState GetState();
 
-        void SetState(BinaryActuatorState state, params IParameter[] parameters);
+        void SetState(BinaryActuatorState state, params IHardwareParameter[] parameters);
 
-        IActuatorAction GetTurnOnAction();
+        void ToggleState(params IHardwareParameter[] parameters);
 
-        IActuatorAction GetTurnOffAction();
+        IHomeAutomationAction GetTurnOnAction();
 
-        IActuatorAction GetToggleAction();
+        IHomeAutomationAction GetToggleStateAction();
     }
 }
