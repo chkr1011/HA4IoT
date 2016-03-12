@@ -22,7 +22,7 @@ namespace HA4IoT.Actuators.Tests
             trigger.Triggered += (s, e) => eventTriggered = true;
             trigger.IsAnyAttached.ShouldBeEquivalentTo(true);
 
-            trigger.Invoke();
+            trigger.Execute();
 
             attachTriggered.ShouldBeEquivalentTo(true);
             eventTriggered.ShouldBeEquivalentTo(true);

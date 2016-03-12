@@ -1,8 +1,6 @@
 ﻿using System;
 using Windows.Data.Json;
-using Windows.Security.Cryptography;
-using Windows.Security.Cryptography.Core;
-using Windows.Storage.Streams;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
@@ -10,11 +8,9 @@ using HttpMethod = HA4IoT.Contracts.Networking.HttpMethod;
 
 namespace HA4IoT.Api.LocalHttpServer
 {
-    public class HttpApiDispatcherEndpoint : IApiDispatcherEndpoint
+    public class LocalHttpServerApiDispatcherEndpoint : IApiDispatcherEndpoint
     {
-        private readonly HashAlgorithmProvider _hashAlgorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha1);
-
-        public HttpApiDispatcherEndpoint(HttpServer httpRequestController)
+        public LocalHttpServerApiDispatcherEndpoint(HttpServer httpRequestController)
         {
             if (httpRequestController == null) throw new ArgumentNullException(nameof(httpRequestController));
 
@@ -22,6 +18,11 @@ namespace HA4IoT.Api.LocalHttpServer
         }
 
         public event EventHandler<ApiRequestReceivedEventArgs> RequestReceived;
+
+        public void NotifyStateChanged(IActuator actuator)
+        {
+            // Let the NEXT client create a new state which is cached for all.
+        }
 
         private void DispatchRequest(object sender, HttpRequestReceivedEventArgs eventArgs)
         {
@@ -61,7 +62,7 @@ namespace HA4IoT.Api.LocalHttpServer
 
             if (apiContext.CallType == ApiCallType.Request)
             {
-                var serverHash = GenerateHash(eventArgs.Context.Response.Stringify());
+                var serverHash = apiContext.Response.GetNamedObject("Meta").GetNamedString("Hash");
                 var serverHashWithQuotes = "\"" + serverHash + "\"";
 
                 string clientHash;
@@ -75,7 +76,6 @@ namespace HA4IoT.Api.LocalHttpServer
                 }
 
                 httpContext.Response.Headers[HttpHeaderNames.ETag] = serverHashWithQuotes;
-                apiContext.Response.SetNamedValue("Hash", serverHash.ToJsonValue());
             }
             
             httpContext.Response.Body = new JsonBody(eventArgs.Context.Response);
@@ -123,14 +123,6 @@ namespace HA4IoT.Api.LocalHttpServer
             }
 
             return JsonObject.Parse(source);
-        }
-
-        private string GenerateHash(string input)
-        {
-            IBuffer buffer = CryptographicBuffer.ConvertStringToBinary(input, BinaryStringEncoding.Utf8);
-            IBuffer hashBuffer = _hashAlgorithm.HashData(buffer);
-
-            return CryptographicBuffer.EncodeToBase64String(hashBuffer);
         }
     }
 }

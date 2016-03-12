@@ -9,7 +9,7 @@ namespace HA4IoT.Actuators.Triggers
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
 
-            timer.Every(interval).Do(Invoke);
+            timer.Every(interval).Do(Execute);
         }
     }
 }

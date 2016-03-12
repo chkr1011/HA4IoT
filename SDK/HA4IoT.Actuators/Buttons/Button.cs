@@ -135,13 +135,13 @@ namespace HA4IoT.Actuators
         private void OnPressedShort()
         {
             Logger.Info($"{Id}: pressed short");
-            _pressedShortlyTrigger.Invoke();
+            _pressedShortlyTrigger.Execute();
         }
 
         private void OnPressedLong()
         {
             Logger.Info($"{Id}: pressed long");
-            _pressedLongTrigger.Invoke();
+            _pressedLongTrigger.Execute();
         }
     }
 }

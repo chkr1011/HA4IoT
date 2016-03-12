@@ -109,6 +109,8 @@
   <ItemGroup>
     <Compile Include="Actions\IActuatorAction.cs" />
     <Compile Include="Actuators\ActuatorId.cs" />
+    <Compile Include="Actuators\CasementState.cs" />
+    <Compile Include="Actuators\CasementStateChangedEventArgs.cs" />
     <Compile Include="Actuators\IActuatorSettings.cs" />
     <Compile Include="Actuators\IButtonEndpoint.cs" />
     <Compile Include="Actuators\IButtonSettings.cs" />

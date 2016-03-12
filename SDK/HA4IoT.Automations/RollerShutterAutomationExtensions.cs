@@ -39,8 +39,8 @@ namespace HA4IoT.Automations
         {
             if (automation == null) throw new ArgumentNullException(nameof(automation));
 
-            automation.Settings.SkipIfRollerShutterFrozenIsEnabled.Value = true;
-            automation.Settings.SkipIfRollerShutterFrozenTemperature.Value = minOutsideTemperature;
+            automation.Settings.SkipIfFrozenIsEnabled.Value = true;
+            automation.Settings.SkipIfFrozenTemperature.Value = minOutsideTemperature;
 
             return automation;
         }

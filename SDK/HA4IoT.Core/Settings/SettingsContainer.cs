@@ -34,7 +34,7 @@ namespace HA4IoT.Core.Settings
                 fileContent = File.ReadAllText(_filename, Encoding.UTF8);
                 JsonObject jsonObject = JsonObject.Parse(fileContent);
 
-                ImportFromJsonObject(jsonObject);
+                jsonObject.DeserializeTo(this);
             }
             catch (Exception exception)
             {

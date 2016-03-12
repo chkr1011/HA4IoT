@@ -146,7 +146,6 @@
     <Compile Include="Triggers\Trigger.cs" />
     <Compile Include="Triggers\TriggerExtensions.cs" />
     <Compile Include="Windows\Casement.cs" />
-    <Compile Include="Windows\CasementState.cs" />
     <Compile Include="Parameters\IsPartOfLogicalUpdateParameter.cs" />
     <Compile Include="Parameters\ForceUpdateStateParameter.cs" />
     <Compile Include="RollerShutters\RollerShutterExtensions.cs" />

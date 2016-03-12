@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Configuration;
@@ -28,21 +27,11 @@ namespace HA4IoT.Core
 
         private void HandleApiGetStatus(IApiContext apiContext)
         {
-            var stopwatch = Stopwatch.StartNew();
-
-            var status = GetControllerStatus();
-
-            // TODO: Add hash to response without overhead.
-            //status.SetNamedValue("Hash", hash.ToJsonValue());
-            //status.SetNamedValue("GenerationDuration", stopwatch.Elapsed.ToJsonValue());
-
-            apiContext.Response = status;
+            apiContext.Response = GetControllerStatus();
         }
 
         private void HandleApiGetConfiguration(IApiContext apiContext)
         {
-            var stopwatch = Stopwatch.StartNew();
-
             var configuration = new JsonObject();
             configuration.SetNamedValue("Type", JsonValue.CreateStringValue("HA4IoT.Configuration"));
             configuration.SetNamedValue("Version", JsonValue.CreateNumberValue(1));
@@ -54,7 +43,6 @@ namespace HA4IoT.Core
             }
 
             configuration.SetNamedValue("Areas", areas);
-            configuration.SetNamedValue("GenerationDuration", stopwatch.Elapsed.ToJsonValue());
 
             apiContext.Response = configuration;
         }

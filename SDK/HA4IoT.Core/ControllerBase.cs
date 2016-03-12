@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using HA4IoT.Api;
+using HA4IoT.Api.AzureCloud;
 using HA4IoT.Api.LocalHttpServer;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
@@ -146,17 +147,26 @@ namespace HA4IoT.Core
             _healthMonitor = new HealthMonitor(ledPin, Timer, ApiController);
         }
 
-        private void InitializeHttpApi()
+        private void InitializeHttpApiEndpoint()
         {
             _httpServer = new HttpServer();
 
-            var httpApiDispatcherEndpoint = new HttpApiDispatcherEndpoint(_httpServer);
+            var httpApiDispatcherEndpoint = new LocalHttpServerApiDispatcherEndpoint(_httpServer);
             ApiController.RegisterEndpoint(httpApiDispatcherEndpoint);
 
-            var httpRequestDispatcher = new HttpRequestDispatcher(_httpServer);
-
             var appPath = StoragePath.WithFilename("app");
+            var httpRequestDispatcher = new HttpRequestDispatcher(_httpServer);
             httpRequestDispatcher.MapFolder("app", appPath);
+        }
+
+        protected void InitializeAzureCloudApiEndpoint()
+        {
+            var azureCloudApiDispatcherEndpoint = new AzureCloudApiDispatcherEndpoint(this, Logger);
+
+            azureCloudApiDispatcherEndpoint.TryInitializeFromConfigurationFile(
+                StoragePath.WithFilename("AzureCloudApiDispatcherEndpointSettings.json"));
+
+            ApiController.RegisterEndpoint(azureCloudApiDispatcherEndpoint);
         }
 
         private HomeAutomationTimer InitializeTimer()
@@ -181,7 +191,7 @@ namespace HA4IoT.Core
             {
                 var stopwatch = Stopwatch.StartNew();
                 
-                InitializeHttpApi();
+                InitializeHttpApiEndpoint();
                 InitializeLogging();
                 LoadControllerSettings();
                 InitializeDiscovery();

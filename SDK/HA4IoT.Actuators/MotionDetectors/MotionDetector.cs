@@ -94,12 +94,12 @@ namespace HA4IoT.Actuators
             if (newState == MotionDetectorState.MotionDetected)
             {
                 Logger.Info(Id + ": Motion detected");
-                _motionDetectedTrigger.Invoke();
+                _motionDetectedTrigger.Execute();
             }
             else
             {
                 Logger.Verbose(Id+ ": Detection completed");
-                _detectionCompletedTrigger.Invoke();
+                _detectionCompletedTrigger.Execute();
             }
 
             StateChanged?.Invoke(this, new MotionDetectorStateChangedEventArgs(oldState, newState));

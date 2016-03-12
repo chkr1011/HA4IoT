@@ -68,13 +68,13 @@ namespace HA4IoT.Tests.Mockups
         public void WalkIntoMotionDetector()
         {
             State = MotionDetectorState.MotionDetected;
-            _motionDetectedTrigger.Invoke();
+            _motionDetectedTrigger.Execute();
         }
 
         public void FireDetectionCompleted()
         {
             State = MotionDetectorState.Idle;
-            _motionDetectedTrigger.Invoke();
+            _motionDetectedTrigger.Execute();
         }
     }
 }

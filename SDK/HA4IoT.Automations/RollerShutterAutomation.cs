@@ -84,7 +84,7 @@ namespace HA4IoT.Automations
 
                 if (TooColdIsAffected())
                 {
-                    _logger.Info(GetTracePrefix() + $"Cancelling opening because outside temperature is lower than {Settings.SkipIfRollerShutterFrozenTemperature.Value}°C.");
+                    _logger.Info(GetTracePrefix() + $"Cancelling opening because outside temperature is lower than {Settings.SkipIfFrozenTemperature.Value}°C.");
                 }
                 else
                 {
@@ -102,7 +102,7 @@ namespace HA4IoT.Automations
             {
                 if (TooColdIsAffected())
                 {
-                    _logger.Info(GetTracePrefix() + $"Cancelling closing because outside temperature is lower than {Settings.SkipIfRollerShutterFrozenTemperature.Value}°C.");
+                    _logger.Info(GetTracePrefix() + $"Cancelling closing because outside temperature is lower than {Settings.SkipIfFrozenTemperature.Value}°C.");
                 }
                 else
                 {
@@ -140,8 +140,8 @@ namespace HA4IoT.Automations
 
         private bool TooColdIsAffected()
         {
-            if (Settings.SkipIfRollerShutterFrozenIsEnabled.Value &&
-                _weatherStation.TemperatureSensor.GetValue() < Settings.SkipIfRollerShutterFrozenTemperature.Value)
+            if (Settings.SkipIfFrozenIsEnabled.Value &&
+                _weatherStation.TemperatureSensor.GetValue() < Settings.SkipIfFrozenTemperature.Value)
             {
                 return true;
             }

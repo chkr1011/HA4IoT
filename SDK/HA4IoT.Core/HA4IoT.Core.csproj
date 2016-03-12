@@ -139,6 +139,10 @@
     <Content Include="Properties\HA4IoT.Core.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Api\HA4IoT.Api.AzureCloud\HA4IoT.Api.AzureCloud.csproj">
+      <Project>{B03D2D62-A682-44AD-9BB8-E88B53973AFA}</Project>
+      <Name>HA4IoT.Api.AzureCloud</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Api\HA4IoT.Api.LocalHttpServer\HA4IoT.Api.LocalHttpServer.csproj">
       <Project>{88CB819A-3CD6-4AC3-B767-1E5360F5124D}</Project>
       <Name>HA4IoT.Api.LocalHttpServer</Name>

@@ -58,12 +58,12 @@ namespace HA4IoT.Tests.Mockups
 
         public void PressShort()
         {
-            _pressedShortlyTrigger.Invoke();
+            _pressedShortlyTrigger.Execute();
         }
 
         public void PressLong()
         {
-            _pressedLongTrigger.Invoke();
+            _pressedLongTrigger.Execute();
         }
     }
 }

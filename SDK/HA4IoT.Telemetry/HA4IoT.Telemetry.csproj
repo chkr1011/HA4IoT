@@ -114,7 +114,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActuatorMonitor.cs" />
-    <Compile Include="Azure\AzureEventHubPublisher.cs" />
     <Compile Include="ActuatorHistoryEntry.cs" />
     <Compile Include="Csv\CsvHistory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

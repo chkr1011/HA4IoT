@@ -1,4 +1,5 @@
 ﻿using System;
+using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Networking;

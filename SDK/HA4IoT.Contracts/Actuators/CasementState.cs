@@ -1,4 +1,4 @@
-﻿namespace HA4IoT.Actuators
+﻿namespace HA4IoT.Contracts.Actuators
 {
     public enum CasementState
     {

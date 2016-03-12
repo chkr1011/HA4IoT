@@ -17,8 +17,8 @@ namespace HA4IoT.Automations
             AutoCloseIfTooHotIsEnabled = new Setting<bool>(false);
             AutoCloseIfTooHotTemperaure = new Setting<float>(25);
 
-            SkipIfRollerShutterFrozenIsEnabled = new Setting<bool>(true);
-            SkipIfRollerShutterFrozenTemperature = new Setting<float>(2);
+            SkipIfFrozenIsEnabled = new Setting<bool>(true);
+            SkipIfFrozenTemperature = new Setting<float>(2);
 
             OpenOnSunriseOffset = new Setting<TimeSpan>(TimeSpan.FromMinutes(-30));
             CloseOnSunsetOffset = new Setting<TimeSpan>(TimeSpan.FromMinutes(30));
@@ -32,9 +32,9 @@ namespace HA4IoT.Automations
 
         public Setting<float> AutoCloseIfTooHotTemperaure { get; private set; }
 
-        public Setting<bool> SkipIfRollerShutterFrozenIsEnabled { get; private set; }
+        public Setting<bool> SkipIfFrozenIsEnabled { get; private set; }
 
-        public Setting<float> SkipIfRollerShutterFrozenTemperature { get; private set; }
+        public Setting<float> SkipIfFrozenTemperature { get; private set; }
 
         public Setting<TimeSpan> OpenOnSunriseOffset { get; private set; } 
 

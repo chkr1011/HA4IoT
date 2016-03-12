@@ -1,5 +1,8 @@
 ﻿using System;
+using HA4IoT.Actuators.Triggers;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Actuators
 {
@@ -9,8 +12,12 @@ namespace HA4IoT.Actuators
         public const string CenterCasementId = "Center";
         public const string RightCasementId = "Right";
 
+        // TODO: Implement endpoint
         private readonly IBinaryInput _fullOpenReedSwitch;
         private readonly IBinaryInput _tiltReedSwitch;
+
+        private readonly Trigger _openedTrigger = new Trigger();
+        private readonly Trigger _closedTrigger = new Trigger();
 
         private CasementState _state = CasementState.Closed;
 
@@ -29,43 +36,58 @@ namespace HA4IoT.Actuators
             }
 
             _fullOpenReedSwitch.StateChanged += (s, e) => Update();
-
+            
             Update();
         }
 
         public string Id { get; private set; }
 
-        public CasementState State
-        {
-            get
-            {
-                return _state;
-            }
+        public event EventHandler<CasementStateChangedEventArgs> StateChanged;
 
-            private set
-            {
-                _state = value;
-                StateChanged?.Invoke(this, EventArgs.Empty);
-            }
+        public CasementState GetState()
+        {
+            return _state;
         }
 
-        public event EventHandler StateChanged;
+        private ITrigger GetOpenedTrigger()
+        {
+            return _openedTrigger;
+        }
+
+        public ITrigger GetClosedTrigger()
+        {
+            return _closedTrigger;
+        }
 
         private void Update()
         {
+            var oldState = _state;
+
             if (_fullOpenReedSwitch.Read() == BinaryState.Low)
             {
-                State = CasementState.Open;
+                _state = CasementState.Open;
+                _openedTrigger.Execute();
                 return;
             }
 
             if (_tiltReedSwitch != null && _tiltReedSwitch.Read() == BinaryState.Low)
             {
-                State = CasementState.Tilt;
+                _state = CasementState.Tilt;
+                _closedTrigger.Execute();
                 return;
             }
+            else
+            {
+                _state = CasementState.Closed;
+                _closedTrigger.Execute();
+            }
+            
+            OnStateChanged(oldState, _state);
+        }
 
-            State = CasementState.Closed;
+        private void OnStateChanged(CasementState oldState, CasementState newState)
+        {
+            StateChanged?.Invoke(this, new CasementStateChangedEventArgs(oldState, newState));
         }
     }
 }

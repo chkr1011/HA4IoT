@@ -37,11 +37,12 @@ namespace HA4IoT.Actuators
             return _pressedLongTrigger;
         }
 
-        public void ForwardApiCommand(IApiContext apiContext)
+        public override JsonObject ExportStatusToJsonObject()
         {
-            if (apiContext == null) throw new ArgumentNullException(nameof(apiContext));
+            var status = base.ExportStatusToJsonObject();
+            status.SetNamedValue("state", GetState().ToJsonValue());
 
-            HandleApiCommand(apiContext);
+            return status;
         }
 
         protected override void HandleApiCommand(IApiContext apiContext)
@@ -49,20 +50,28 @@ namespace HA4IoT.Actuators
             string action = apiContext.Request.GetNamedString("duration", string.Empty);
             if (action.Equals(ButtonPressedDuration.Long.ToString(), StringComparison.OrdinalIgnoreCase))
             {
-                _pressedLongTrigger.Invoke();
+                _pressedLongTrigger.Execute();
             }
             else
             {
-                _pressedShortlyTrigger.Invoke();
+                _pressedShortlyTrigger.Execute();
             }
+
+            OnStateChanged(ButtonState.Released, ButtonState.Pressed);
+            OnStateChanged(ButtonState.Pressed, ButtonState.Released);
         }
 
-        public override JsonObject ExportStatusToJsonObject()
+        public void ForwardApiCommand(IApiContext apiContext)
         {
-            var status = base.ExportStatusToJsonObject();
-            status.SetNamedValue("state", GetState().ToJsonValue());
+            if (apiContext == null) throw new ArgumentNullException(nameof(apiContext));
 
-            return status;
+            HandleApiCommand(apiContext);
+        }
+
+        private void OnStateChanged(ButtonState oldState, ButtonState newState)
+        {
+            StateChanged?.Invoke(this, new ButtonStateChangedEventArgs(oldState, newState));
+            ApiController.NotifyStateChanged(this);
         }
     }
 }

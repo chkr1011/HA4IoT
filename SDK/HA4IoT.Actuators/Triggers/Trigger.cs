@@ -19,7 +19,7 @@ namespace HA4IoT.Actuators.Triggers
             _actions.Add(action);
         }
 
-        public void Invoke()
+        public void Execute()
         {
             Triggered?.Invoke(this, TriggeredEventArgs.Empty);
 

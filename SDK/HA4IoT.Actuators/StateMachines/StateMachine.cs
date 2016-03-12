@@ -56,12 +56,6 @@ namespace HA4IoT.Actuators
             return state;
         }
 
-        public StateMachineState AddState()
-        {
-            string id = (States.Count + 1).ToString();
-            return AddState(id);
-        }
-
         public void SetState(string id, params IHardwareParameter[] parameters)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
@@ -89,7 +83,8 @@ namespace HA4IoT.Actuators
 
                     _index = i;
                     state.Apply(parameters);
-                    StateChanged?.Invoke(this, new StateMachineStateChangedEventArgs(oldState, state.Id));
+
+                    OnStateChanged(oldState, state.Id);
                     return;
                 }
             }
@@ -110,9 +105,8 @@ namespace HA4IoT.Actuators
             string newState = States[_index].Id;
 
             States[_index].Apply(parameters);
-            StateChanged?.Invoke(this, new StateMachineStateChangedEventArgs(oldState, newState));
 
-            Logger.Info(Id + ": " + oldState + "->" + newState);
+            OnStateChanged(oldState, newState);
         }
 
         public void SetInitialState()
@@ -189,6 +183,14 @@ namespace HA4IoT.Actuators
 
             string stateId = apiContext.Request.GetNamedString("state", string.Empty);
             SetState(stateId);
+        }
+
+        private void OnStateChanged(string oldState, string newState)
+        {
+            StateChanged?.Invoke(this, new StateMachineStateChangedEventArgs(oldState, newState));
+            ApiController.NotifyStateChanged(this);
+
+            Logger.Info(Id + ": " + oldState + "->" + newState);
         }
     }
 }

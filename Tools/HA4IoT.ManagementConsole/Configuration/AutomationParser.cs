@@ -52,11 +52,11 @@ namespace HA4IoT.ManagementConsole.Configuration
 
         private IEnumerable<SettingItemVM> GenerateRollerShutterAutoamtionSettings()
         {
-            yield return BoolSettingVM.CreateFrom(_appSettings, "DoNotOpenBeforeIsEnabled", true, "'Do not open before' enabled").WithIsNoAppSetting();
-            yield return TimeSpanSettingVM.CreateFrom(_appSettings, "DoNotOpenBeforeTime", TimeSpan.Parse("07:15:00"), "'Do not open before' time").WithIsNoAppSetting();
+            yield return BoolSettingVM.CreateFrom(_appSettings, "SkipBeforeTimestampIsEnabled", true, "Skip before timestamp").WithIsNoAppSetting();
+            yield return TimeSpanSettingVM.CreateFrom(_appSettings, "SkipBeforeTimestamp", TimeSpan.Parse("07:15:00"), "Skip before timestamp time").WithIsNoAppSetting();
 
-            yield return BoolSettingVM.CreateFrom(_appSettings, "DoNotOpenIfTooColdIsEnabled", true, "'Do not open if frozen' enabled").WithIsNoAppSetting();
-            yield return FloatSettingVM.CreateFrom(_appSettings, "DoNotOpenIfTooColdTemperature", 2, "'Do not open if frozen' temperature").WithIsNoAppSetting();
+            yield return BoolSettingVM.CreateFrom(_appSettings, "SkipIfFrozenIsEnabled", true, "Skip if frozen").WithIsNoAppSetting();
+            yield return FloatSettingVM.CreateFrom(_appSettings, "SkipIfFrozenTemperature", 2, "Skip if frozen temperature").WithIsNoAppSetting();
 
             yield return BoolSettingVM.CreateFrom(_appSettings, "AutoCloseIfTooHotIsEnabled", true, "'Close if too hot' enabled").WithIsNoAppSetting();
             yield return FloatSettingVM.CreateFrom(_appSettings, "AutoCloseIfTooHotTemperaure", 25F, "'Close if too hot' temperature").WithIsNoAppSetting();

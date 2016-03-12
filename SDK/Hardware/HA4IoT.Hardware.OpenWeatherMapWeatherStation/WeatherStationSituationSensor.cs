@@ -35,8 +35,10 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
                 return;
             }
 
-            SituationChanged?.Invoke(this, new WeatherSituationSensorValueChangedEventArgs(_value, weatherSituation));
             _value = weatherSituation;
+
+            SituationChanged?.Invoke(this, new WeatherSituationSensorValueChangedEventArgs(_value, weatherSituation));
+            ApiController.NotifyStateChanged(this);
         }
     }
 }

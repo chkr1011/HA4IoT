@@ -83,6 +83,7 @@ namespace HA4IoT.Automations.Tests
             _controller = new TestController();
             _controller.SetTime(TimeSpan.Parse("12:00"));
             _weatherStation = new TestWeatherStation(new DeviceId("Test.WeatherStation"), _controller.Timer, _controller.Logger);
+            _weatherStation.SetTemperature(20);
 
             _rollerShutter = new TestRollerShutter(new ActuatorId("Test.RollerShutter"), _controller.Logger);
             _controller.AddDevice(_weatherStation);

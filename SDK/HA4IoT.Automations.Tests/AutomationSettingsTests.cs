@@ -54,13 +54,13 @@ namespace HA4IoT.Automations.Tests
             Debug.WriteLine(jsonObject.Stringify());
 
             settings.AutoCloseIfTooHotTemperaure.Value = 9F;
-            settings.SkipIfRollerShutterFrozenTemperature.Value = 10F;
+            settings.SkipIfFrozenTemperature.Value = 10F;
             settings.SkipBeforeTimestamp.Value = TimeSpan.Parse("09:00");
             
             settings.ImportFromJsonObjectWithoutSaving(jsonObject);
 
             settings.SkipBeforeTimestamp.Value.ShouldBeEquivalentTo(TimeSpan.Parse("07:30"));
-            settings.SkipIfRollerShutterFrozenTemperature.Value.ShouldBeEquivalentTo(2);
+            settings.SkipIfFrozenTemperature.Value.ShouldBeEquivalentTo(2);
             settings.AutoCloseIfTooHotTemperaure.Value.ShouldBeEquivalentTo(24.5F);
         }
     }
