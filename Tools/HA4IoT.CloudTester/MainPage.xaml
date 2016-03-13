@@ -14,94 +14,95 @@
         </Grid.RowDefinitions>
 
         <Border Grid.Row="0" Background="#FF337AB7">
-            <TextBlock Margin="10"
+            <TextBlock Margin="10,25"
                        FontWeight="Light"
                        Foreground="White"
+                       FontSize="26"
                        Text="HA4IoT Cloud tester"
                        TextAlignment="Center" />
         </Border>
 
-        <Grid Grid.Row="1" Margin="10">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
+        <FlipView Grid.Row="1" Margin="10" Background="Transparent">
+            <FlipViewItem>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="0">
-                <TextBlock Text="Namespace:" />
-                <TextBox x:Name="NamespaceTextBox" />
+                    <StackPanel Grid.Row="0">
+                        <Button HorizontalAlignment="Stretch"
+                                Click="StartWaitForMessages"
+                                Content="Start wait for mesages (Inbound)" />
+                        <Button HorizontalAlignment="Stretch"
+                                Click="StartWaitForOutboundMessages"
+                                Content="Start wait for mesages (Outbound)" />
+                        <Button HorizontalAlignment="Stretch"
+                                Click="SendTestEvent"
+                                Content="Send test event" />
+                        <Button HorizontalAlignment="Stretch"
+                                Click="SendTestMessageToInboundQueue"
+                                Content="Send test message to inbound queue" />
+                        <Button HorizontalAlignment="Stretch"
+                                Click="SendTestMessageToOutboundQueue"
+                                Content="Send test message to outbound queue" />
+                    </StackPanel>
 
-                <TextBlock Text="EventHub name:" />
-                <TextBox x:Name="EventHubNameTextBox" />
+                    <ScrollViewer Grid.Row="1" Margin="0,10,0,0">
+                        <TextBox x:Name="LogTextBox"
+                                 VerticalAlignment="Stretch"
+                                 AcceptsReturn="True"
+                                 Background="Black"
+                                 FontFamily="Consolas"
+                                 FontSize="12"
+                                 Foreground="White"
+                                 IsReadOnly="True"
+                                 TextWrapping="NoWrap" />
+                    </ScrollViewer>
+                </Grid>
+            </FlipViewItem>
+            <FlipViewItem>
+                <StackPanel>
+                    <TextBlock FontSize="26"
+                               FontWeight="Light"
+                               Text="Configuration" />
 
-                <TextBlock Text="EventHub publisher:" />
-                <TextBox x:Name="EventHubPublisherTextBox" />
+                    <TextBlock Text="Namespace:" />
+                    <TextBox x:Name="NamespaceTextBox" />
 
-                <TextBlock Text="Outbound queue name:" />
-                <TextBox x:Name="OutboundQueueNameTextBox" />
+                    <TextBlock Text="EventHub name:" />
+                    <TextBox x:Name="EventHubNameTextBox" />
 
-                <TextBlock Text="Inbound queue name:" />
-                <TextBox x:Name="InboundQueueNameTextBox" />
+                    <TextBlock Text="EventHub publisher:" />
+                    <TextBox x:Name="EventHubPublisherTextBox" />
 
-                <TextBlock Text="Events SAS token:" />
-                <TextBox x:Name="EventHubSasTokenTextBox" />
+                    <TextBlock Text="Outbound queue name:" />
+                    <TextBox x:Name="OutboundQueueNameTextBox" />
 
-                <TextBlock Text="Outbound queue SAS token (Send):" />
-                <TextBox x:Name="OutboundQueueSendSasTokenTextBox" />
+                    <TextBlock Text="Inbound queue name:" />
+                    <TextBox x:Name="InboundQueueNameTextBox" />
 
-                <TextBlock Text="Outbound queue SAS token (Listen):" />
-                <TextBox x:Name="OutboundQueueListenSasTokenTextBox" />
+                    <TextBlock Text="Events SAS token:" />
+                    <TextBox x:Name="EventHubSasTokenTextBox" />
 
-                <TextBlock Text="Inbound queue SAS token (Send):" />
-                <TextBox x:Name="InboundQueueSendSasTokenTextBox" />
+                    <TextBlock Text="Outbound queue SAS token (Send):" />
+                    <TextBox x:Name="OutboundQueueSendSasTokenTextBox" />
 
-                <TextBlock Text="Inbound queue SAS token (Listen):" />
-                <TextBox x:Name="InboundQueueListenSasTokenTextBox" />
+                    <TextBlock Text="Outbound queue SAS token (Listen):" />
+                    <TextBox x:Name="OutboundQueueListenSasTokenTextBox" />
 
-                <Button Margin="0,10,0,0"
-                        HorizontalAlignment="Stretch"
-                        Click="SaveSettings"
-                        Content="Save settings" />
+                    <TextBlock Text="Inbound queue SAS token (Send):" />
+                    <TextBox x:Name="InboundQueueSendSasTokenTextBox" />
 
-                <Button Margin="0,10,0,0"
-                        HorizontalAlignment="Stretch"
-                        Click="StartWaitForMessages"
-                        Content="Start wait for mesages (Inbound)" />
-                <Button HorizontalAlignment="Stretch"
-                        Click="StartWaitForOutboundMessages"
-                        Content="Start wait for mesages (Outbound)" />
-                <Button HorizontalAlignment="Stretch"
-                        Click="SendTestEvent"
-                        Content="Send test event" />
-                <Button HorizontalAlignment="Stretch"
-                        Click="SendTestMessageToInboundQueue"
-                        Content="Send test message to inbound queue" />
-                <Button HorizontalAlignment="Stretch"
-                        Click="SendTestMessageToOutboundQueue"
-                        Content="Send test message to outbound queue" />
+                    <TextBlock Text="Inbound queue SAS token (Listen):" />
+                    <TextBox x:Name="InboundQueueListenSasTokenTextBox" />
 
-            </StackPanel>
-
-            <Grid Grid.Row="1" VerticalAlignment="Stretch">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Text="Log:" />
-
-                <ScrollViewer Grid.Row="1">
-                    <TextBox x:Name="LogTextBox"
-                             VerticalAlignment="Stretch"
-                             AcceptsReturn="True"
-                             Background="Black"
-                             FontFamily="Consolas"
-                             FontSize="12"
-                             Foreground="White"
-                             IsReadOnly="True"
-                             TextWrapping="NoWrap" />
-                </ScrollViewer>
-            </Grid>
-        </Grid>
-
+                    <Button Margin="0,10,0,0"
+                            HorizontalAlignment="Stretch"
+                            Click="SaveSettings"
+                            Content="Save settings" />
+                </StackPanel>
+            </FlipViewItem>
+        </FlipView>
     </Grid>
 </Page>
