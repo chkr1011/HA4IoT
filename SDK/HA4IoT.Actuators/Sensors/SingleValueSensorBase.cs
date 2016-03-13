@@ -8,20 +8,17 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public abstract class SingleValueSensorActuatorBase<TSettings> : ActuatorBase<TSettings>, ISingleValueSensor where TSettings : ActuatorSettings
+    public abstract class SingleValueSensorBase<TSettings> : ActuatorBase<TSettings>, ISingleValueSensor where TSettings : SingleValueSensorSettings
     {
         private DateTime? _valueLastChanged;
         private float _value;
 
-        protected SingleValueSensorActuatorBase(ActuatorId id, IApiController apiController, ILogger logger)
+        protected SingleValueSensorBase(ActuatorId id, IApiController apiController, ILogger logger)
             : base(id, apiController, logger)
         {
         }
 
         public event EventHandler<SingleValueSensorValueChangedEventArgs> ValueChanged;
-
-        // TODO: Move to dedicated Actuator Settings (TemperatureSensorSettings / HumiditySensorSettings).
-        public float ValueChangedMinDelta { get; set; } = 0.15F;
 
         public float GetValue()
         {
@@ -40,7 +37,7 @@ namespace HA4IoT.Actuators
         protected void SetValueInternal(float newValue)
         {
             float oldValue = _value;
-            if (Math.Abs(oldValue - newValue) < ValueChangedMinDelta)
+            if (Math.Abs(oldValue - newValue) < Settings.MinDelta.Value)
             {
                 return;
             }

@@ -139,6 +139,7 @@
     <Compile Include="BinaryStateOutputActuators\BinaryStateOutputActuatorBase.cs" />
     <Compile Include="RollerShutters\PortBasedRollerShutterEndpoint.cs" />
     <Compile Include="RollerShutters\RollerShutterSettings.cs" />
+    <Compile Include="Sensors\SingleValueSensorSettings.cs" />
     <Compile Include="StateMachines\StateMachineExtensions.cs" />
     <Compile Include="Triggers\IntervalTrigger.cs" />
     <Compile Include="Triggers\SensorValueUnderranTrigger.cs" />
@@ -151,7 +152,7 @@
     <Compile Include="RollerShutters\RollerShutterExtensions.cs" />
     <Compile Include="Sensors\HumiditySensorExtensions.cs" />
     <Compile Include="Sensors\TemperatureSensorExtensions.cs" />
-    <Compile Include="SingleValueSensorActuatorBase.cs" />
+    <Compile Include="Sensors\SingleValueSensorBase.cs" />
     <Compile Include="Buttons\ButtonPressedDuration.cs" />
     <Compile Include="ActuatorBase.cs" />
     <Compile Include="Connectors\RollerShutterWithRollerShutterButtonsConnector.cs" />
