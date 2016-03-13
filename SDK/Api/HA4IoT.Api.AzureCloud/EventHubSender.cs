@@ -25,11 +25,11 @@ namespace HA4IoT.Api.AzureCloud
             _sasToken = sasToken;
         }
 
-        public void Send(JsonObject eventData)
+        public async Task SendAsync(JsonObject eventData)
         {
             if (eventData == null) throw new ArgumentNullException(nameof(eventData));
 
-            Task.Run(() => SendToAzureEventHubAsync(eventData).Wait());
+            await SendToAzureEventHubAsync(eventData);
         }
 
         private async Task SendToAzureEventHubAsync(JsonObject body)

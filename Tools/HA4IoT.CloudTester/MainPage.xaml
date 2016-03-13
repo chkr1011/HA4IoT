@@ -4,6 +4,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       Background="WhiteSmoke"
+      d:DesignHeight="1200"
       mc:Ignorable="d">
 
     <Grid Background="WhiteSmoke">
@@ -45,8 +46,11 @@
                 <TextBlock Text="Events SAS token:" />
                 <TextBox x:Name="EventHubSasTokenTextBox" />
 
-                <TextBlock Text="Outbound queue SAS token:" />
-                <TextBox x:Name="OutboundQueueSasTokenTextBox" />
+                <TextBlock Text="Outbound queue SAS token (Send):" />
+                <TextBox x:Name="OutboundQueueSendSasTokenTextBox" />
+
+                <TextBlock Text="Outbound queue SAS token (Listen):" />
+                <TextBox x:Name="OutboundQueueListenSasTokenTextBox" />
 
                 <TextBlock Text="Inbound queue SAS token (Send):" />
                 <TextBox x:Name="InboundQueueSendSasTokenTextBox" />
@@ -62,7 +66,10 @@
                 <Button Margin="0,10,0,0"
                         HorizontalAlignment="Stretch"
                         Click="StartWaitForMessages"
-                        Content="Start wait for mesages" />
+                        Content="Start wait for mesages (Inbound)" />
+                <Button HorizontalAlignment="Stretch"
+                        Click="StartWaitForOutboundMessages"
+                        Content="Start wait for mesages (Outbound)" />
                 <Button HorizontalAlignment="Stretch"
                         Click="SendTestEvent"
                         Content="Send test event" />
@@ -75,12 +82,16 @@
 
             </StackPanel>
 
-            <StackPanel Grid.Row="1">
-                <TextBlock Text="Log:" />
+            <Grid Grid.Row="1" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="Log:" />
 
-                <ScrollViewer>
+                <ScrollViewer Grid.Row="1">
                     <TextBox x:Name="LogTextBox"
-                             Height="200"
+                             VerticalAlignment="Stretch"
                              AcceptsReturn="True"
                              Background="Black"
                              FontFamily="Consolas"
@@ -89,7 +100,7 @@
                              IsReadOnly="True"
                              TextWrapping="NoWrap" />
                 </ScrollViewer>
-            </StackPanel>
+            </Grid>
         </Grid>
 
     </Grid>

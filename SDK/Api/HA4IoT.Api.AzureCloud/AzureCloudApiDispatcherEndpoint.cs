@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
@@ -57,12 +58,17 @@ namespace HA4IoT.Api.AzureCloud
 
         public void NotifyStateChanged(IActuator actuator)
         {
+            if (_eventHubSender == null)
+            {
+                return;
+            }
+
             JsonObject eventData = new JsonObject();
             eventData.SetNamedValue("Type", "StateChanged".ToJsonValue());
             eventData.SetNamedValue("ActuatorId", actuator.Id.ToJsonValue());
             eventData.SetNamedValue("State", actuator.ExportStatusToJsonObject());
 
-            _eventHubSender?.Send(eventData);
+            Task.Run(async () => await _eventHubSender?.SendAsync(eventData));
         }
 
         private void SetupEventHubSender(JsonObject settings)
@@ -129,10 +135,10 @@ namespace HA4IoT.Api.AzureCloud
                 return;
             }
 
-            SendResponseMessage(context);
+            SendResponseMessage(context).Wait();
         }
 
-        private void SendResponseMessage(QueueBasedApiContext context)
+        private async Task SendResponseMessage(QueueBasedApiContext context)
         {
             context.ProcessingStopwatch.Stop();
 
@@ -161,7 +167,7 @@ namespace HA4IoT.Api.AzureCloud
                 message.SetNamedValue("Content", context.Response);
             }
 
-            _outboundQueue.Send(brokerProperties, message);
+            await _outboundQueue.SendAsync(brokerProperties, message);
         }
     }
 }

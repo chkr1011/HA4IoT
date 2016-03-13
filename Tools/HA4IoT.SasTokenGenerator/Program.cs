@@ -16,7 +16,7 @@ namespace HA4IoT.SasTokenGenerator
             Console.WriteLine(GenerateKeyForEventHub("ha4iot", "events", "main", policy, key, TimeSpan.FromDays(365)));
 
             Console.WriteLine("ServiceBus queue token:");
-            Console.WriteLine(GenerateKeyForServiceBus("ha4iot", "ha4iot.controller.main-inbound", policy, key, TimeSpan.FromDays(365)));
+            Console.WriteLine(GenerateKeyForServiceBus("ha4iot", "ha4iot.controller.main-outbound", policy, key, TimeSpan.FromDays(365)));
 
             Console.WriteLine("Press any key to exit.");
             Console.ReadKey(true);

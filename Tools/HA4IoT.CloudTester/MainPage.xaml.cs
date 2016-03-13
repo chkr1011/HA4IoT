@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.UI.Xaml;
 using HA4IoT.Api.AzureCloud;
@@ -30,7 +31,8 @@ namespace HA4IoT.CloudTester
             InboundQueueListenSasTokenTextBox.Text = Convert.ToString(localSettings.Values["InboundQueueListenSasToken"]);
 
             OutboundQueueNameTextBox.Text = Convert.ToString(localSettings.Values["OutboundQueueName"]);
-            OutboundQueueSasTokenTextBox.Text = Convert.ToString(localSettings.Values["OutboundQueueSasToken"]);
+            OutboundQueueSendSasTokenTextBox.Text = Convert.ToString(localSettings.Values["OutboundQueueSasToken"]);
+            OutboundQueueListenSasTokenTextBox.Text = Convert.ToString(localSettings.Values["OutboundQueueListenSasToken"]);
         }
 
         private void SaveSettings(object sender, RoutedEventArgs e)
@@ -49,7 +51,8 @@ namespace HA4IoT.CloudTester
             localSettings.Values["InboundQueueListenSasToken"] = InboundQueueListenSasTokenTextBox.Text;
 
             localSettings.Values["OutboundQueueName"] = OutboundQueueNameTextBox.Text;
-            localSettings.Values["OutboundQueueSasToken"] = OutboundQueueSasTokenTextBox.Text;
+            localSettings.Values["OutboundQueueSasToken"] = OutboundQueueSendSasTokenTextBox.Text;
+            localSettings.Values["OutboundQueueListenSasToken"] = OutboundQueueListenSasTokenTextBox.Text;
 
             applicationData.SignalDataChanged();
         }
@@ -63,7 +66,7 @@ namespace HA4IoT.CloudTester
                 EventHubSasTokenTextBox.Text,
                 new TextBoxLogger(LogTextBox));
 
-            eventHubSender.Send(new JsonObject());
+            Task.Run(async () => await eventHubSender.SendAsync(new JsonObject()));
         }
 
         private void SendTestMessageToOutboundQueue(object sender, RoutedEventArgs e)
@@ -71,12 +74,12 @@ namespace HA4IoT.CloudTester
             var queueSender = new QueueSender(
                 NamespaceTextBox.Text, 
                 OutboundQueueNameTextBox.Text,
-                OutboundQueueSasTokenTextBox.Text, new TextBoxLogger(LogTextBox));
+                OutboundQueueSendSasTokenTextBox.Text, new TextBoxLogger(LogTextBox));
 
            var properties = new JsonObject();
            var body = new JsonObject();
 
-           queueSender.Send(properties, body);
+            Task.Run(async () => await queueSender.SendAsync(properties, body));
         }
 
         private void StartWaitForMessages(object sender, RoutedEventArgs e)
@@ -85,7 +88,7 @@ namespace HA4IoT.CloudTester
                 NamespaceTextBox.Text,
                 InboundQueueNameTextBox.Text,
                 InboundQueueListenSasTokenTextBox.Text,
-                TimeSpan.FromSeconds(5),
+                TimeSpan.FromSeconds(60),
                 new TextBoxLogger(LogTextBox));
 
             queueReceiver.MessageReceived += LogMessage;
@@ -118,7 +121,20 @@ namespace HA4IoT.CloudTester
 
             body.SetNamedValue("Content", content);
 
-            queueSender.Send(systemProperties, body);
+            Task.Run(async () => await queueSender.SendAsync(systemProperties, body));
+        }
+
+        private void StartWaitForOutboundMessages(object sender, RoutedEventArgs e)
+        {
+            var queueReceiver = new QueueReceiver(
+                NamespaceTextBox.Text,
+                OutboundQueueNameTextBox.Text,
+                OutboundQueueListenSasTokenTextBox.Text,
+                TimeSpan.FromSeconds(60),
+                new TextBoxLogger(LogTextBox));
+
+            queueReceiver.MessageReceived += LogMessage;
+            queueReceiver.Start();
         }
     }
 }

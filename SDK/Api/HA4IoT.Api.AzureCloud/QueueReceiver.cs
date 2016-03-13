@@ -41,7 +41,7 @@ namespace HA4IoT.Api.AzureCloud
             _wasStarted = true;
 
             Task.Factory.StartNew(
-                async () => await WaitForMessages(),
+                WaitForMessages,
                 _cancellationTokenSource.Token,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);
@@ -52,14 +52,14 @@ namespace HA4IoT.Api.AzureCloud
             _cancellationTokenSource.Cancel();
         }
 
-        private async Task WaitForMessages()
+        private void WaitForMessages()
         {
             _logger.Verbose("Started waiting for messages on Azure queue.");
             while (!_cancellationTokenSource.IsCancellationRequested)
             {
                 try
                 {
-                    await WaitForMessage();
+                    WaitForMessage();
                 }
                 catch (Exception exception)
                 {
@@ -68,11 +68,11 @@ namespace HA4IoT.Api.AzureCloud
             }
         }
 
-        private async Task WaitForMessage()
+        private void WaitForMessage()
         {
             // DELETE will force a "Receive & Delete".
             // POST will force a "Peek-Lock"
-            HttpResponseMessage result = await _httpClient.DeleteAsync(_uri);
+            HttpResponseMessage result = _httpClient.DeleteAsync(_uri).AsTask().Result;
             if (result.StatusCode == HttpStatusCode.NoContent)
             {
                 _logger.Verbose("Azure queue timeout reached. Reconnecting...");
@@ -81,7 +81,9 @@ namespace HA4IoT.Api.AzureCloud
 
             if (result.IsSuccessStatusCode)
             {
-                await HandleQueueMessage(result.Headers, result.Content);
+                Task.Run(
+                    async () => await HandleQueueMessage(result.Headers, result.Content),
+                    _cancellationTokenSource.Token);
             }
             else
             {

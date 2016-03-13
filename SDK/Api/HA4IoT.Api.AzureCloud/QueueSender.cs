@@ -24,12 +24,12 @@ namespace HA4IoT.Api.AzureCloud
             _sasToken = sasToken;
         }
 
-        public void Send(JsonObject brokerProperties, JsonObject body)
+        public async Task SendAsync(JsonObject brokerProperties, JsonObject body)
         {
             if (brokerProperties == null) throw new ArgumentNullException(nameof(brokerProperties));
             if (body == null) throw new ArgumentNullException(nameof(body));
 
-            Task.Run(() => SendToAzureQueueAsync(brokerProperties, body).Wait());
+            await SendToAzureQueueAsync(brokerProperties, body);
         }
 
         private async Task SendToAzureQueueAsync(JsonObject brokerProperties, JsonObject body)
@@ -69,9 +69,9 @@ namespace HA4IoT.Api.AzureCloud
         private HttpStringContent CreateContent(JsonObject body)
         {
             var content = new HttpStringContent(body.Stringify());
-            content.Headers.ContentType = new HttpMediaTypeHeaderValue("application/atom+xml");
-            content.Headers.ContentType.Parameters.Add(new HttpNameValueHeaderValue("type", "entry"));
-            content.Headers.ContentType.CharSet = "utf-8";
+            ////content.Headers.ContentType = new HttpMediaTypeHeaderValue("application/atom+xml");
+            ////content.Headers.ContentType.Parameters.Add(new HttpNameValueHeaderValue("type", "entry"));
+            ////content.Headers.ContentType.CharSet = "utf-8";
 
             return content;
         }

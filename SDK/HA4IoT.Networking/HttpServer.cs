@@ -28,8 +28,11 @@ namespace HA4IoT.Networking
 
         private void HandleConnection(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
-            Task.Factory.StartNew(() => HandleRequests(args.Socket), CancellationToken.None,
-                TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            Task.Factory.StartNew(
+                () => HandleRequests(args.Socket),
+                CancellationToken.None,
+                TaskCreationOptions.LongRunning, 
+                TaskScheduler.Default);
         }
 
         private void HandleRequests(StreamSocket client)
