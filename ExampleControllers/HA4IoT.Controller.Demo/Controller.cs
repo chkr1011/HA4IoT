@@ -8,6 +8,7 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Triggers;
 using HA4IoT.Core;
+using HA4IoT.ExternalServices.Twitter;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
@@ -110,6 +111,10 @@ namespace HA4IoT.Controller.Demo
             IHomeAutomationAction action = lamp.GetTurnOnAction();
 
             trigger.AssociateWith(action);
+
+
+            var twitterClient = new TwitterClient();
+            trigger.AssociateWith(twitterClient.GetTweetAction("Hello World"));
         }
 
         private void SetupCeilingFan(StateMachine stateMachine)

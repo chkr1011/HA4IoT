@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using Windows.Storage.Streams;
+using HA4IoT.Contracts.Actions;
 
 namespace HA4IoT.ExternalServices.Twitter
 {
@@ -43,6 +44,16 @@ namespace HA4IoT.ExternalServices.Twitter
                     throw new HttpRequestException(response.StatusCode.ToString());
                 }
             }
+        }
+
+        public IHomeAutomationAction GetTweetAction(string message)
+        {
+            return new TweetAction(message, this);
+        }
+
+        public IHomeAutomationAction GetTweetAction(Func<string> messageProvider)
+        {
+            return new TweetAction(messageProvider, this);
         }
 
         private string GetAuthorizationToken(string signature)
