@@ -15,6 +15,7 @@ namespace HA4IoT.Api.AzureCloud
         private readonly ILogger _logger;
 
         private EventHubSender _eventHubSender;
+        private QueueSender _outboundQueue;
 
         public AzureCloudApiDispatcherEndpoint(IController controller, ILogger logger)
         {
@@ -39,12 +40,12 @@ namespace HA4IoT.Api.AzureCloud
             try
             {
                 var settings = JsonObject.Parse(File.ReadAllText(filename));
+                var eventsSettings = settings.GetNamedObject("Events");
+                SetupEventHubSender(eventsSettings);
+                
+                var outboundQueueSettings = settings.GetNamedObject("OutboundQueue");
+                SetupOutboundQueueSender(outboundQueueSettings);
 
-                _eventHubSender = new EventHubSender(
-                    settings.GetNamedString("NamespaceName"),
-                    settings.GetNamedString("EventHubName"),
-                    settings.GetNamedString("SasToken"),
-                    _logger);
             }
             catch (Exception exception)
             {
@@ -62,6 +63,25 @@ namespace HA4IoT.Api.AzureCloud
             eventData.SetNamedValue("State", actuator.ExportStatusToJsonObject());
 
             _eventHubSender?.Send(eventData);
+        }
+
+        private void SetupEventHubSender(JsonObject settings)
+        {
+            _eventHubSender = new EventHubSender(
+                settings.GetNamedString("NamespaceName"),
+                settings.GetNamedString("EventHubName"),
+                settings.GetNamedString("PublisherName"),
+                settings.GetNamedString("SasToken"),
+                _logger);
+        }
+
+        private void SetupOutboundQueueSender(JsonObject settings)
+        {
+            _outboundQueue = new QueueSender(
+                settings.GetNamedString("NamespaceName"),
+                settings.GetNamedString("QueueName"),
+                settings.GetNamedString("SasToken"),
+                _logger);
         }
     }
 }

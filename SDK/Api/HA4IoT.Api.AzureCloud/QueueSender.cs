@@ -7,52 +7,54 @@ using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Api.AzureCloud
 {
-    public class EventHubSender
+    public class QueueSender
     {
         private readonly ILogger _logger;
         private readonly Uri _uri;
         private readonly string _sasToken;
 
-        public EventHubSender(string namespaceName, string eventHubName, string publisherName, string sasToken, ILogger logger)
+        public QueueSender(string namespaceName, string queueName, string sasToken, ILogger logger)
         {
             if (namespaceName == null) throw new ArgumentNullException(nameof(namespaceName));
-            if (eventHubName == null) throw new ArgumentNullException(nameof(eventHubName));
-            if (publisherName == null) throw new ArgumentNullException(nameof(publisherName));
+            if (queueName == null) throw new ArgumentNullException(nameof(queueName));
             if (sasToken == null) throw new ArgumentNullException(nameof(sasToken));
 
             _logger = logger;
-            _uri = new Uri($"https://{namespaceName}.servicebus.windows.net/{eventHubName}/publishers/{publisherName}/messages");
+            _uri = new Uri($"https://{namespaceName}.servicebus.windows.net/{queueName}/messages");
             _sasToken = sasToken;
         }
 
-        public void Send(JsonObject eventData)
+        public void Send(JsonObject properties, JsonObject body)
         {
-            if (eventData == null) throw new ArgumentNullException(nameof(eventData));
+            if (properties == null) throw new ArgumentNullException(nameof(properties));
+            if (body == null) throw new ArgumentNullException(nameof(body));
 
-            Task.Run(() => SendToAzureEventHubAsync(eventData).Wait());
+            Task.Run(() => SendToAzureQueueAsync(properties, body).Wait());
         }
 
-        private async Task SendToAzureEventHubAsync(JsonObject body)
+        private async Task SendToAzureQueueAsync(JsonObject properties, JsonObject body)
         {
             try
             {
                 using (var httpClient = CreateHttpClient())
                 using (var content = CreateContent(body))
                 {
+                    httpClient.DefaultRequestHeaders.Add("BrokerProperties", properties.Stringify());
+
                     HttpResponseMessage result = await httpClient.PostAsync(_uri, content);
                     if (result.IsSuccessStatusCode)
                     {
-                        _logger.Verbose("Sent event to Azure EventHub.");
+                        _logger.Verbose("Sent message to Azure queue.");
                     }
                     else
                     {
-                        _logger.Warning("Failed to send Azure EventHub event (Error code: {0}).", result.StatusCode);
+                        _logger.Warning("Failed to send Azure queue message (Error code: {0}).", result.StatusCode);
                     }
                 }
             }
             catch (Exception exception)
             {
-                _logger.Warning(exception, "Error while sending Azure EventHub event.");
+                _logger.Warning(exception, "Error while sending Azure queue message.");
             }
         }
 
@@ -64,9 +66,9 @@ namespace HA4IoT.Api.AzureCloud
             return httpClient;
         }
 
-        private HttpStringContent CreateContent(JsonObject data)
+        private HttpStringContent CreateContent(JsonObject body)
         {
-            var content = new HttpStringContent(data.Stringify());
+            var content = new HttpStringContent(body.Stringify());
             content.Headers.ContentType = new HttpMediaTypeHeaderValue("application/atom+xml");
             content.Headers.ContentType.Parameters.Add(new HttpNameValueHeaderValue("type", "entry"));
             content.Headers.ContentType.CharSet = "utf-8";

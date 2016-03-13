@@ -54,7 +54,7 @@ namespace HA4IoT.Controller.Main
             ////localCsvFileWriter.ConnectActuators(this);
             ////localCsvFileWriter.ExposeToApi(ApiController);
 
-            //InitializeAzureCloudApiEndpoint();
+            InitializeAzureCloudApiEndpoint();
 
             var ioBoardsInterruptMonitor = new InterruptMonitor(pi2PortController.GetInput(4), Logger);
             ioBoardsInterruptMonitor.InterruptDetected += (s, e) => ccToolsBoardController.PollInputBoardStates();

@@ -4,6 +4,6 @@ namespace HA4IoT.Contracts.Triggers
 {
     public class TriggeredEventArgs : EventArgs
     {
-        public static readonly TriggeredEventArgs Empty = new TriggeredEventArgs();
+        public new static readonly TriggeredEventArgs Empty = new TriggeredEventArgs();
     }
 }
