@@ -8,9 +8,9 @@ using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using Windows.Storage.Streams;
 
-namespace HA4IoT.Controller.Main.Rooms
+namespace HA4IoT.ExternalServices.Twitter
 {
-    internal class TwitterApi
+    public class TwitterClient
     {
         private string _nonce;
         private string _timestamp;
@@ -31,6 +31,7 @@ namespace HA4IoT.Controller.Main.Rooms
             using (var httpClient = new HttpClient())
             {
                 string url = "https://api.twitter.com/1.1/statuses/update.json?status=" + Uri.EscapeDataString(message);
+
                 var request = new HttpRequestMessage(HttpMethod.Post, url);
                 request.Headers.Add("Authorization", oAuthToken);
                 request.Version = new Version(1, 1);
@@ -47,12 +48,12 @@ namespace HA4IoT.Controller.Main.Rooms
         private string GetAuthorizationToken(string signature)
         {
             var values = new List<string>();
-            values.Add(string.Format("oauth_consumer_key=\"{0}\"", Uri.EscapeDataString(ConsumerKey)));
-            values.Add(string.Format("oauth_nonce=\"{0}\"", _nonce));
-            values.Add(string.Format("oauth_signature=\"{0}\"", Uri.EscapeDataString(signature)));
+            values.Add($"oauth_consumer_key=\"{Uri.EscapeDataString(ConsumerKey)}\"");
+            values.Add($"oauth_nonce=\"{_nonce}\"");
+            values.Add($"oauth_signature=\"{Uri.EscapeDataString(signature)}\"");
             values.Add("oauth_signature_method=\"HMAC-SHA1\"");
-            values.Add(string.Format("oauth_timestamp=\"{0}\"", _timestamp));
-            values.Add(string.Format("oauth_token=\"{0}\"", Uri.EscapeDataString(AccessToken)));
+            values.Add($"oauth_timestamp=\"{_timestamp}\"");
+            values.Add($"oauth_token=\"{Uri.EscapeDataString(AccessToken)}\"");
             values.Add("oauth_version=\"1.0\"");
 
             return "OAuth " + string.Join(", ", values);
@@ -61,13 +62,13 @@ namespace HA4IoT.Controller.Main.Rooms
         private string GetSignatureForRequest(string message)
         {
             var parameters = new List<string>();
-            parameters.Add(string.Format("oauth_consumer_key={0}", Uri.EscapeDataString(ConsumerKey)));
-            parameters.Add(string.Format("oauth_nonce={0}", _nonce));
+            parameters.Add($"oauth_consumer_key={Uri.EscapeDataString(ConsumerKey)}");
+            parameters.Add($"oauth_nonce={_nonce}");
             parameters.Add("oauth_signature_method=HMAC-SHA1");
-            parameters.Add(string.Format("oauth_timestamp={0}", _timestamp));
-            parameters.Add(string.Format("oauth_token={0}", Uri.EscapeDataString(AccessToken)));
+            parameters.Add($"oauth_timestamp={_timestamp}");
+            parameters.Add($"oauth_token={Uri.EscapeDataString(AccessToken)}");
             parameters.Add("oauth_version=1.0");
-            parameters.Add(string.Format("status={0}", Uri.EscapeDataString(message)));
+            parameters.Add($"status={Uri.EscapeDataString(message)}");
 
             var parametersString = Uri.EscapeDataString(string.Join("&", parameters));
             var url = Uri.EscapeDataString("https://api.twitter.com/1.1/statuses/update.json");

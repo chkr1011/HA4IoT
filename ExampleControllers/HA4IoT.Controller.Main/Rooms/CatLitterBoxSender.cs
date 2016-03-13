@@ -8,6 +8,7 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Core.Timer;
+using HA4IoT.ExternalServices.Twitter;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
@@ -163,7 +164,7 @@ namespace HA4IoT.Controller.Main.Rooms
             }
         }
 
-        private TwitterApi GetTwitterApiWithCredentials()
+        private TwitterClient GetTwitterApiWithCredentials()
         {
             string filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "TwitterConfiguration.json"); ;
             if (!File.Exists(filename))
@@ -171,17 +172,17 @@ namespace HA4IoT.Controller.Main.Rooms
                 return null;
             }
 
-            var twitterApi = new TwitterApi();
+            var twitterClient = new TwitterClient();
 
             string fileContent = File.ReadAllText(filename);
             JsonObject configuration = JsonObject.Parse(fileContent);
 
-            twitterApi.AccessToken = configuration.GetNamedString("AccessToken");
-            twitterApi.AccessTokenSecret = configuration.GetNamedString("AccessTokenSecret");
-            twitterApi.CosumerSecret = configuration.GetNamedString("ConsumerSecret");
-            twitterApi.ConsumerKey = configuration.GetNamedString("ConsumerKey");
+            twitterClient.AccessToken = configuration.GetNamedString("AccessToken");
+            twitterClient.AccessTokenSecret = configuration.GetNamedString("AccessTokenSecret");
+            twitterClient.CosumerSecret = configuration.GetNamedString("ConsumerSecret");
+            twitterClient.ConsumerKey = configuration.GetNamedString("ConsumerKey");
 
-            return twitterApi;
+            return twitterClient;
         }
 
     }
