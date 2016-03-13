@@ -91,7 +91,7 @@ namespace HA4IoT.Controller.Demo
                 .WithStateMachine(ExampleRoom.CeilingFan, (sm, r) => SetupCeilingFan(sm))
                 .WithWindow(ExampleRoom.Window, w => w.WithCenterCasement(hspe16[HSPE16Pin.GPIO0]));
 
-            area.GetButton(ExampleRoom.Button1).GetPressedShortlyTrigger().AssociateWith(area.GetLamp(ExampleRoom.Lamp5).GetToggleStateAction());
+            area.GetButton(ExampleRoom.Button1).GetPressedShortlyTrigger().OnTriggered(area.GetLamp(ExampleRoom.Lamp5).GetToggleStateAction());
             area.GetButton(ExampleRoom.Button1).ConnectToggleActionWith(area.GetLamp(ExampleRoom.Lamp6), ButtonPressedDuration.Long);
 
             area.GetStateMachine(ExampleRoom.CeilingFan).ConnectMoveNextAndToggleOffWith(area.GetButton(ExampleRoom.Button2));
@@ -110,11 +110,10 @@ namespace HA4IoT.Controller.Demo
             ITrigger trigger = sensor.GetHumidityReachedTrigger(80);
             IHomeAutomationAction action = lamp.GetTurnOnAction();
 
-            trigger.AssociateWith(action);
-
-
+            trigger.OnTriggered(action);
+            
             var twitterClient = new TwitterClient();
-            trigger.AssociateWith(twitterClient.GetTweetAction("Hello World"));
+            trigger.OnTriggered(twitterClient.GetTweetAction("Hello World"));
         }
 
         private void SetupCeilingFan(StateMachine stateMachine)

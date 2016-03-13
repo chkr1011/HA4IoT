@@ -6,7 +6,7 @@ namespace HA4IoT.Actuators.Triggers
 {
     public static class TriggerExtensions
     {
-        public static ITrigger AssociateWith(this ITrigger trigger, IHomeAutomationAction actuatorAction)
+        public static ITrigger OnTriggered(this ITrigger trigger, IHomeAutomationAction actuatorAction)
         {
             if (trigger == null) throw new ArgumentNullException(nameof(trigger));
             if (actuatorAction == null) throw new ArgumentNullException(nameof(actuatorAction));
