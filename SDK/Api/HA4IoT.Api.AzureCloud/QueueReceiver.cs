@@ -10,9 +10,9 @@ namespace HA4IoT.Api.AzureCloud
 {
     public class QueueReceiver
     {
+        private readonly HttpClient _httpClient = new HttpClient();
         private readonly ILogger _logger;
         private readonly Uri _uri;
-        private readonly string _sasToken;
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
         private bool _wasStarted;
@@ -25,7 +25,8 @@ namespace HA4IoT.Api.AzureCloud
 
             _logger = logger;
             _uri = new Uri($"https://{namespaceName}.servicebus.windows.net/{queueName}/messages/head?api-version=2015-01&timeout={(int)timeout.TotalSeconds}");
-            _sasToken = sasToken;            
+
+            _httpClient.DefaultRequestHeaders.Authorization = new HttpCredentialsHeaderValue("SharedAccessSignature", sasToken);
         }
 
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
@@ -38,7 +39,12 @@ namespace HA4IoT.Api.AzureCloud
             }
 
             _wasStarted = true;
-            Task.Run(() => WaitForMessages().Wait());
+
+            Task.Factory.StartNew(
+                async () => await WaitForMessages(),
+                _cancellationTokenSource.Token,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default);
         }
 
         public void Stop()
@@ -64,26 +70,22 @@ namespace HA4IoT.Api.AzureCloud
 
         private async Task WaitForMessage()
         {
-            using (var httpClient = CreateHttpClient())
+            // DELETE will force a "Receive & Delete".
+            // POST will force a "Peek-Lock"
+            HttpResponseMessage result = await _httpClient.DeleteAsync(_uri);
+            if (result.StatusCode == HttpStatusCode.NoContent)
             {
-                // DELETE will force a "Receive & Delete".
-                // POST will force a "Peek-Lock"
-                HttpResponseMessage result = await httpClient.DeleteAsync(_uri);
-                if (result.StatusCode == HttpStatusCode.NoContent)
-                {
-                    _logger.Verbose("Azure queue timeout reached. Reconnecting...");
-                    return;
-                }
+                _logger.Verbose("Azure queue timeout reached. Reconnecting...");
+                return;
+            }
 
-                if (result.IsSuccessStatusCode)
-                {
-                    _logger.Verbose("Received Azure queue message.");
-                    await HandleQueueMessage(result.Headers, result.Content);
-                }
-                else
-                {
-                    _logger.Warning("Failed to wait for Azure queue message (Error code: {0}).", result.StatusCode);
-                }
+            if (result.IsSuccessStatusCode)
+            {
+                await HandleQueueMessage(result.Headers, result.Content);
+            }
+            else
+            {
+                _logger.Warning($"Failed to wait for Azure queue message (Error code: {result.StatusCode}).");
             }
         }
 
@@ -95,7 +97,7 @@ namespace HA4IoT.Api.AzureCloud
                 _logger.Warning("Received Azure queue message without broker properties.");
                 return;
             }
-
+            
             string bodySource = await content.ReadAsStringAsync();
             if (string.IsNullOrEmpty(bodySource))
             {
@@ -117,15 +119,8 @@ namespace HA4IoT.Api.AzureCloud
                 return;
             }
 
+            _logger.Verbose("Received valid Azure queue message.");
             MessageReceived?.Invoke(this, new MessageReceivedEventArgs(brokerProperties, body));
-        }
-
-        private HttpClient CreateHttpClient()
-        {
-            var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Authorization = new HttpCredentialsHeaderValue("SharedAccessSignature", _sasToken);
-
-            return httpClient;
         }
     }
 }

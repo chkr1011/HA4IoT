@@ -161,7 +161,7 @@ namespace HA4IoT.Core
 
         protected void InitializeAzureCloudApiEndpoint()
         {
-            var azureCloudApiDispatcherEndpoint = new AzureCloudApiDispatcherEndpoint(this, Logger);
+            var azureCloudApiDispatcherEndpoint = new AzureCloudApiDispatcherEndpoint(Logger);
 
             azureCloudApiDispatcherEndpoint.TryInitializeFromConfigurationFile(
                 StoragePath.WithFilename("AzureCloudApiDispatcherEndpointSettings.json"));

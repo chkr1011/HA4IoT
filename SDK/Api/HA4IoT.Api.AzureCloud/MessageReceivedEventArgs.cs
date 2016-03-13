@@ -5,16 +5,16 @@ namespace HA4IoT.Api.AzureCloud
 {
     public class MessageReceivedEventArgs : EventArgs
     {
-        public MessageReceivedEventArgs(JsonObject properties, JsonObject body)
+        public MessageReceivedEventArgs(JsonObject brokerProperties, JsonObject body)
         {
-            if (properties == null) throw new ArgumentNullException(nameof(properties));
+            if (brokerProperties == null) throw new ArgumentNullException(nameof(brokerProperties));
             if (body == null) throw new ArgumentNullException(nameof(body));
 
-            Properties = properties;
+            BrokerProperties = brokerProperties;
             Body = body;
         }
 
-        public JsonObject Properties { get; }
+        public JsonObject BrokerProperties { get; }
 
         public JsonObject Body { get; }
     }

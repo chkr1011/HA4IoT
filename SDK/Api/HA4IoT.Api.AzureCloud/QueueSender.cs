@@ -24,22 +24,22 @@ namespace HA4IoT.Api.AzureCloud
             _sasToken = sasToken;
         }
 
-        public void Send(JsonObject properties, JsonObject body)
+        public void Send(JsonObject brokerProperties, JsonObject body)
         {
-            if (properties == null) throw new ArgumentNullException(nameof(properties));
+            if (brokerProperties == null) throw new ArgumentNullException(nameof(brokerProperties));
             if (body == null) throw new ArgumentNullException(nameof(body));
 
-            Task.Run(() => SendToAzureQueueAsync(properties, body).Wait());
+            Task.Run(() => SendToAzureQueueAsync(brokerProperties, body).Wait());
         }
 
-        private async Task SendToAzureQueueAsync(JsonObject properties, JsonObject body)
+        private async Task SendToAzureQueueAsync(JsonObject brokerProperties, JsonObject body)
         {
             try
             {
                 using (var httpClient = CreateHttpClient())
                 using (var content = CreateContent(body))
                 {
-                    httpClient.DefaultRequestHeaders.Add("BrokerProperties", properties.Stringify());
+                    httpClient.DefaultRequestHeaders.Add("BrokerProperties", brokerProperties.Stringify());
 
                     HttpResponseMessage result = await httpClient.PostAsync(_uri, content);
                     if (result.IsSuccessStatusCode)

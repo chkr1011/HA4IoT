@@ -94,7 +94,7 @@ namespace HA4IoT.CloudTester
 
         private void LogMessage(object sender, MessageReceivedEventArgs e)
         {
-            new TextBoxLogger(LogTextBox).Info("MESSAGE: " + e.Properties.Stringify() + " " + e.Body.Stringify());
+            new TextBoxLogger(LogTextBox).Info("MESSAGE: " + e.BrokerProperties.Stringify() + " " + e.Body.Stringify());
         }
 
         private void SendTestMessageToInboundQueue(object sender, RoutedEventArgs e)
@@ -105,13 +105,20 @@ namespace HA4IoT.CloudTester
                 InboundQueueSendSasTokenTextBox.Text, 
                 new TextBoxLogger(LogTextBox));
 
-            var properties = new JsonObject();
-            properties.SetNamedValue("CorrelationId", JsonValue.CreateStringValue(Guid.NewGuid().ToString()));
-
+            var systemProperties = new JsonObject();
+            systemProperties.SetNamedValue("CorrelationId", JsonValue.CreateStringValue(Guid.NewGuid().ToString()));
+            
             var body = new JsonObject();
-            body.SetNamedValue("Message", JsonValue.CreateStringValue("Hello World"));
+            body.SetNamedValue("CallType", JsonValue.CreateStringValue("Command"));
+            body.SetNamedValue("Uri", JsonValue.CreateStringValue("/api/actuator/Office.LightCeilingFrontLeft/status"));
 
-            queueSender.Send(properties, body);
+            var content = new JsonObject();
+            content.SetNamedValue("state", JsonValue.CreateStringValue("Toggle"));
+            //body.SetNamedValue("Message", JsonValue.CreateStringValue("Hello World"));
+
+            body.SetNamedValue("Content", content);
+
+            queueSender.Send(systemProperties, body);
         }
     }
 }
