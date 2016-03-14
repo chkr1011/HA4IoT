@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Web.Http;
-using Windows.Web.Http.Headers;
 using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Api.AzureCloud
@@ -11,18 +10,18 @@ namespace HA4IoT.Api.AzureCloud
     {
         private readonly ILogger _logger;
         private readonly Uri _uri;
-        private readonly string _sasToken;
+        private readonly string _authorization;
 
-        public EventHubSender(string namespaceName, string eventHubName, string publisherName, string sasToken, ILogger logger)
+        public EventHubSender(string namespaceName, string eventHubName, string publisherName, string authorization, ILogger logger)
         {
             if (namespaceName == null) throw new ArgumentNullException(nameof(namespaceName));
             if (eventHubName == null) throw new ArgumentNullException(nameof(eventHubName));
             if (publisherName == null) throw new ArgumentNullException(nameof(publisherName));
-            if (sasToken == null) throw new ArgumentNullException(nameof(sasToken));
+            if (authorization == null) throw new ArgumentNullException(nameof(authorization));
 
             _logger = logger;
             _uri = new Uri($"https://{namespaceName}.servicebus.windows.net/{eventHubName}/publishers/{publisherName}/messages");
-            _sasToken = sasToken;
+            _authorization = authorization;
         }
 
         public async Task SendAsync(JsonObject eventData)
@@ -59,7 +58,7 @@ namespace HA4IoT.Api.AzureCloud
         private HttpClient CreateHttpClient()
         {
             var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Authorization = new HttpCredentialsHeaderValue("SharedAccessSignature", _sasToken);
+            httpClient.DefaultRequestHeaders.TryAppendWithoutValidation("Authorization", _authorization);
 
             return httpClient;
         }
@@ -67,9 +66,9 @@ namespace HA4IoT.Api.AzureCloud
         private HttpStringContent CreateContent(JsonObject data)
         {
             var content = new HttpStringContent(data.Stringify());
-            content.Headers.ContentType = new HttpMediaTypeHeaderValue("application/atom+xml");
-            content.Headers.ContentType.Parameters.Add(new HttpNameValueHeaderValue("type", "entry"));
-            content.Headers.ContentType.CharSet = "utf-8";
+            ////content.Headers.ContentType = new HttpMediaTypeHeaderValue("application/atom+xml");
+            ////content.Headers.ContentType.Parameters.Add(new HttpNameValueHeaderValue("type", "entry"));
+            ////content.Headers.ContentType.CharSet = "utf-8";
 
             return content;
         }

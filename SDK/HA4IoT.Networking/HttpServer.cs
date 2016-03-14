@@ -15,6 +15,7 @@ namespace HA4IoT.Networking
         {
             _serverSocket.Control.KeepAlive = true;
             _serverSocket.ConnectionReceived += HandleConnection;
+            _serverSocket.Control.NoDelay = true;
 
             _serverSocket.BindServiceNameAsync(port.ToString()).AsTask().Wait();
         }

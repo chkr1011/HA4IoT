@@ -17,7 +17,7 @@ namespace HA4IoT.Automations
             AutoCloseIfTooHotIsEnabled = new Setting<bool>(false);
             AutoCloseIfTooHotTemperaure = new Setting<float>(25);
 
-            SkipIfFrozenIsEnabled = new Setting<bool>(true);
+            SkipIfFrozenIsEnabled = new Setting<bool>(false);
             SkipIfFrozenTemperature = new Setting<float>(2);
 
             OpenOnSunriseOffset = new Setting<TimeSpan>(TimeSpan.FromMinutes(-30));

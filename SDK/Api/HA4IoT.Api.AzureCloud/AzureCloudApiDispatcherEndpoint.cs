@@ -77,7 +77,7 @@ namespace HA4IoT.Api.AzureCloud
                 settings.GetNamedString("NamespaceName"),
                 settings.GetNamedString("EventHubName"),
                 settings.GetNamedString("PublisherName"),
-                settings.GetNamedString("SasToken"),
+                settings.GetNamedString("Authorization"),
                 _logger);
         }
 
@@ -86,7 +86,7 @@ namespace HA4IoT.Api.AzureCloud
             _outboundQueue = new QueueSender(
                 settings.GetNamedString("NamespaceName"),
                 settings.GetNamedString("QueueName"),
-                settings.GetNamedString("SasToken"),
+                settings.GetNamedString("Authorization"),
                 _logger);
         }
 
@@ -95,7 +95,7 @@ namespace HA4IoT.Api.AzureCloud
             _inboundQueue = new QueueReceiver(
                 settings.GetNamedString("NamespaceName"),
                 settings.GetNamedString("QueueName"),
-                settings.GetNamedString("SasToken"),
+                settings.GetNamedString("Authorization"),
                 TimeSpan.FromSeconds(60),
                 _logger);
 

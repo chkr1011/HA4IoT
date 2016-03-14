@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Threading.Tasks;
-using Windows.Data.Json;
-using Windows.Storage;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
@@ -105,14 +102,14 @@ namespace HA4IoT.Controller.Main.Rooms
 
             try
             {
-                var twitterApi = GetTwitterApiWithCredentials();
-                if (twitterApi == null)
+                TwitterClient twitterClient;
+                if (!TwitterClientFactory.TryCreateFromDefaultConfigurationFile(out twitterClient))
                 {
                     _log.Verbose("Twitter API is disabled.");
                     return;
                 }
-
-                await twitterApi.Tweet(message);
+                
+                await twitterClient.Tweet(message);
 
                 _lastTweetTimestamp = DateTime.Now;
                 _log.Info("Successfully tweeted: " + message);
@@ -163,27 +160,5 @@ namespace HA4IoT.Controller.Main.Rooms
                 _count = 1;
             }
         }
-
-        private TwitterClient GetTwitterApiWithCredentials()
-        {
-            string filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "TwitterConfiguration.json"); ;
-            if (!File.Exists(filename))
-            {
-                return null;
-            }
-
-            var twitterClient = new TwitterClient();
-
-            string fileContent = File.ReadAllText(filename);
-            JsonObject configuration = JsonObject.Parse(fileContent);
-
-            twitterClient.AccessToken = configuration.GetNamedString("AccessToken");
-            twitterClient.AccessTokenSecret = configuration.GetNamedString("AccessTokenSecret");
-            twitterClient.CosumerSecret = configuration.GetNamedString("ConsumerSecret");
-            twitterClient.ConsumerKey = configuration.GetNamedString("ConsumerKey");
-
-            return twitterClient;
-        }
-
     }
 }

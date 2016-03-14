@@ -17,16 +17,16 @@ namespace HA4IoT.Api.AzureCloud
 
         private bool _wasStarted;
 
-        public QueueReceiver(string namespaceName, string queueName, string sasToken, TimeSpan timeout, ILogger logger)
+        public QueueReceiver(string namespaceName, string queueName, string authorization, TimeSpan timeout, ILogger logger)
         {
             if (namespaceName == null) throw new ArgumentNullException(nameof(namespaceName));
             if (queueName == null) throw new ArgumentNullException(nameof(queueName));
-            if (sasToken == null) throw new ArgumentNullException(nameof(sasToken));
+            if (authorization == null) throw new ArgumentNullException(nameof(authorization));
 
             _logger = logger;
             _uri = new Uri($"https://{namespaceName}.servicebus.windows.net/{queueName}/messages/head?api-version=2015-01&timeout={(int)timeout.TotalSeconds}");
 
-            _httpClient.DefaultRequestHeaders.Authorization = new HttpCredentialsHeaderValue("SharedAccessSignature", sasToken);
+            _httpClient.DefaultRequestHeaders.TryAppendWithoutValidation("Authorization", authorization);
         }
 
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
