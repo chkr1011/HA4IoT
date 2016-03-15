@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Windows.Storage;
 
-namespace HA4IoT.Core
+namespace HA4IoT.Contracts.Core
 {
     public class StoragePath
     {

@@ -109,6 +109,7 @@
   <ItemGroup>
     <Compile Include="Actions\IActuatorAction.cs" />
     <Compile Include="Actuators\ActuatorId.cs" />
+    <Compile Include="Actuators\ButtonPressedDuration.cs" />
     <Compile Include="Actuators\CasementState.cs" />
     <Compile Include="Actuators\CasementStateChangedEventArgs.cs" />
     <Compile Include="Actuators\IActuatorSettings.cs" />
@@ -164,6 +165,7 @@
     <Compile Include="Core\IHomeAutomationTimer.cs" />
     <Compile Include="Core\Settings\ISetting.cs" />
     <Compile Include="Core\Settings\ISettingsContainer.cs" />
+    <Compile Include="Core\StoragePath.cs" />
     <Compile Include="Core\TimedAction.cs" />
     <Compile Include="Core\TimerTickEventArgs.cs" />
     <Compile Include="Hardware\DeviceIdExtensions.cs" />

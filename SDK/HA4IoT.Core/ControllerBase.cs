@@ -18,6 +18,7 @@ using HA4IoT.Core.Discovery;
 using HA4IoT.Core.Timer;
 using HA4IoT.Hardware.Pi2;
 using HA4IoT.Networking;
+using HA4IoT.Telemetry.History;
 
 namespace HA4IoT.Core
 {
@@ -204,6 +205,8 @@ namespace HA4IoT.Core
                 _httpServer.Start(80);
                 ExposeToApi();
 
+                AttachActuatorHistory();
+
                 stopwatch.Stop();
                 Logger.Info("Startup completed after " + stopwatch.Elapsed);
 
@@ -257,6 +260,20 @@ namespace HA4IoT.Core
             {
                 automation.LoadSettings();
             }
+        }
+
+        private void AttachActuatorHistory()
+        {
+            foreach (IActuator actuator in GetActuators())
+            {
+                var sensorActuator = actuator as ISingleValueSensorActuator;
+                if (sensorActuator != null)
+                {
+                    var history = new SensorActuatorHistory(sensorActuator, Logger);
+                    history.ExposeToApi(ApiController);
+                }
+            }
+
         }
 
         private void ExposeToApi()

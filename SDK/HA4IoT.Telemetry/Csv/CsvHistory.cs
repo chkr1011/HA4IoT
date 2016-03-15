@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.Storage;
-using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Networking;
@@ -57,7 +56,7 @@ namespace HA4IoT.Telemetry.Csv
             QueueEntry(actuator, newValue.ToString(CultureInfo.InvariantCulture));
         }
 
-        protected override void OnStateMachineStateChanged(StateMachine stateMachine, string newState)
+        protected override void OnStateMachineStateChanged(IStateMachine stateMachine, string newState)
         {
             QueueEntry(stateMachine, newState);
         }

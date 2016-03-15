@@ -12,8 +12,6 @@ namespace HA4IoT.Contracts.Logging
 
         void Warning(Exception exception, string message, params object[] parameters);
 
-        void Error(string message, params object[] parameters);
-
         void Error(Exception exception, string message, params object[] parameters);
     }
 }

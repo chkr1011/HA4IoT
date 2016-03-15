@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Core;

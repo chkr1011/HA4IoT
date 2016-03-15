@@ -7,12 +7,14 @@ namespace HA4IoT.Logger
 {
     internal sealed class LogEntry : IExportToJsonValue
     {
-        public LogEntry(long id, DateTime timestamp, int threadId, LogEntrySeverity severity, string message)
+        public LogEntry(long id, DateTime timestamp, int threadId, LogEntrySeverity severity, string source, string message)
         {
             Id = id;
             Timestamp = timestamp;
             ThreadId = threadId;
             Severity = severity;
+
+            Source = source;
             Message = message;
         }
 
@@ -24,6 +26,8 @@ namespace HA4IoT.Logger
 
         public LogEntrySeverity Severity { get; }
 
+        public string Source { get; }
+
         public string Message { get; }
 
         public IJsonValue ExportToJsonObject()
@@ -33,8 +37,9 @@ namespace HA4IoT.Logger
             buffer.SetNamedValue("Timestamp", Timestamp.ToJsonValue());
             buffer.SetNamedValue("ThreadId", ThreadId.ToJsonValue());
             buffer.SetNamedValue("Severity", Severity.ToJsonValue());
+            buffer.SetNamedValue("Source", Source.ToJsonValue());
             buffer.SetNamedValue("Message", Message.ToJsonValue());
-
+            
             return buffer;
         }
     }

@@ -4,6 +4,7 @@ using Windows.Data.Json;
 using Windows.Storage;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Core;
 using HA4IoT.Core.Settings;

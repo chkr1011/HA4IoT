@@ -28,7 +28,7 @@ namespace HA4IoT.Telemetry.Statistics
             _logger = logger;
             _filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Actuators", actuator.Id.Value, "History.csv");
 
-            apiRequestController.HandleGet($"statistics/{actuator.Id}").Using(HandleApiGet);
+            apiRequestController.HandleGet($"actuator/{actuator.Id}/history").Using(HandleApiGet);
         }
 
         public void AddEntry(ActuatorHistoryEntry entry)
