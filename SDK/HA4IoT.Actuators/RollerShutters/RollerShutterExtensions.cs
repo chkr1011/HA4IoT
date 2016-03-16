@@ -32,8 +32,7 @@ namespace HA4IoT.Actuators
             var rollerShutter = new RollerShutter(
                 ActuatorIdFactory.Create(area, id), 
                 new PortBasedRollerShutterEndpoint(powerOutput, directionOutput), 
-                area.Controller.ApiController, 
-                area.Controller.Logger, 
+                area.Controller.ApiController,
                 area.Controller.Timer);
 
             area.AddActuator(rollerShutter);

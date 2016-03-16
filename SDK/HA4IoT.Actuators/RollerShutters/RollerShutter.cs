@@ -31,9 +31,8 @@ namespace HA4IoT.Actuators
             ActuatorId id, 
             IRollerShutterEndpoint endpoint,
             IApiController apiController,
-            ILogger logger, 
             IHomeAutomationTimer timer)
-            : base(id, apiController, logger)
+            : base(id, apiController)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
@@ -42,7 +41,7 @@ namespace HA4IoT.Actuators
             _timer = timer;
             timer.Tick += (s, e) => UpdatePosition(e);
 
-            base.Settings = new RollerShutterSettings(id, logger);
+            base.Settings = new RollerShutterSettings(id);
 
             _startMoveUpAction = new HomeAutomationAction(() => SetState(RollerShutterState.MovingUp));
             _turnOffAction = new HomeAutomationAction(() => SetState(RollerShutterState.Stopped));
@@ -78,7 +77,7 @@ namespace HA4IoT.Actuators
                 if (state == RollerShutterState.Stopped)
                 {
                     _endpoint.Stop();
-                    Logger.Info($"{Id}: Stopped (Duration: {_movingDuration.ElapsedMilliseconds} ms)");
+                    Log.Info($"{Id}: Stopped (Duration: {_movingDuration.ElapsedMilliseconds} ms)");
                 }
                 else if (state == RollerShutterState.MovingUp)
                 {
@@ -94,7 +93,7 @@ namespace HA4IoT.Actuators
                 oldState = _state;
                 _state = state;
                 
-                Logger.Info($"{Id}:{oldState}->{state}");
+                Log.Info($"{Id}:{oldState}->{state}");
             }
 
             StateChanged?.Invoke(this, new RollerShutterStateChangedEventArgs(oldState, _state));

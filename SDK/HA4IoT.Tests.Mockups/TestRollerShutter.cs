@@ -3,7 +3,6 @@ using Windows.Data.Json;
 using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Tests.Mockups
 {
@@ -11,13 +10,12 @@ namespace HA4IoT.Tests.Mockups
     {
         private RollerShutterState _state = RollerShutterState.Stopped;
 
-        public TestRollerShutter(ActuatorId id, ILogger logger)
+        public TestRollerShutter(ActuatorId id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
 
             Id = id;
-            Settings = new RollerShutterSettings(id, logger);
+            Settings = new RollerShutterSettings(id);
         }
 
         public event EventHandler<RollerShutterStateChangedEventArgs> StateChanged;

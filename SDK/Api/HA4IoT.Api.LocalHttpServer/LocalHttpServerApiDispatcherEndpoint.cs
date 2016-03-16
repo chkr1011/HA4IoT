@@ -78,7 +78,7 @@ namespace HA4IoT.Api.LocalHttpServer
                 httpContext.Response.Headers[HttpHeaderNames.ETag] = serverHashWithQuotes;
             }
             
-            httpContext.Response.Body = new JsonBody(eventArgs.Context.Response);
+            httpContext.Response.Body = new StringBody(eventArgs.Context.SerializedResponse).WithMimeType(MimeTypeProvider.Json);
         }
 
         private HttpStatusCode ConvertResultCode(ApiResultCode resultCode)

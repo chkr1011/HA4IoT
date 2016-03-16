@@ -19,13 +19,13 @@ namespace HA4IoT.Actuators
 
         private ButtonState _state = ButtonState.Released;
 
-        public Button(ActuatorId id, IButtonEndpoint endpoint, IApiController apiController, ILogger logger, IHomeAutomationTimer timer)
-            : base(id, apiController, logger)
+        public Button(ActuatorId id, IButtonEndpoint endpoint, IApiController apiController, IHomeAutomationTimer timer)
+            : base(id, apiController)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
 
-            Settings = new ButtonSettings(id, logger);
+            Settings = new ButtonSettings(id);
 
             timer.Tick += CheckForTimeout;
             endpoint.Pressed += (s, e) => HandleInputStateChanged(ButtonState.Pressed);
@@ -134,13 +134,13 @@ namespace HA4IoT.Actuators
 
         private void OnPressedShort()
         {
-            Logger.Info($"{Id}: pressed short");
+            Log.Info($"{Id}: pressed short");
             _pressedShortlyTrigger.Execute();
         }
 
         private void OnPressedLong()
         {
-            Logger.Info($"{Id}: pressed long");
+            Log.Info($"{Id}: pressed long");
             _pressedLongTrigger.Execute();
         }
     }

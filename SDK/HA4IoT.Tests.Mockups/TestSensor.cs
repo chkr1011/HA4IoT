@@ -3,7 +3,6 @@ using Windows.Data.Json;
 using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Tests.Mockups
 {
@@ -11,13 +10,12 @@ namespace HA4IoT.Tests.Mockups
     {
         private float _value;
 
-        public TestSensor(ActuatorId id, ILogger logger)
+        public TestSensor(ActuatorId id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
 
             Id = Id;
-            Settings = new ActuatorSettings(id, logger);
+            Settings = new ActuatorSettings(id);
         }
 
         public event EventHandler<SingleValueSensorValueChangedEventArgs> ValueChanged;

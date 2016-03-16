@@ -11,7 +11,6 @@ namespace HA4IoT.Controller.Main.Rooms
 {
     internal class CatLitterBoxTwitterSender
     {
-        private readonly ILogger _log;
         private const string Suffix = "\r\nTime in litter box: {0}s\r\nNr. this day: {1}\r\n@chkratky";
 
         private readonly Timeout _timeout = new Timeout(TimeSpan.FromSeconds(30));
@@ -39,12 +38,10 @@ namespace HA4IoT.Controller.Main.Rooms
                 "Hey, this one looks like you :-)"         
             };
 
-        public CatLitterBoxTwitterSender(IHomeAutomationTimer timer, ILogger log)
+        public CatLitterBoxTwitterSender(IHomeAutomationTimer timer)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
-            if (log == null) throw new ArgumentNullException(nameof(log));
 
-            _log = log;
             timer.Tick += Tick;
         }
 
@@ -98,25 +95,27 @@ namespace HA4IoT.Controller.Main.Rooms
             UpdateCounter();
 
             string message = GenerateMessage();
-            _log.Verbose("Trying to tweet '" + message + "'.");
+            Log.Verbose("Trying to tweet '" + message + "'.");
 
             try
             {
                 TwitterClient twitterClient;
                 if (!TwitterClientFactory.TryCreateFromDefaultConfigurationFile(out twitterClient))
                 {
-                    _log.Verbose("Twitter API is disabled.");
+                    Log.Verbose("Twitter API is disabled.");
                     return;
                 }
                 
                 await twitterClient.Tweet(message);
 
                 _lastTweetTimestamp = DateTime.Now;
-                _log.Info("Successfully tweeted: " + message);
+                Log.Info("Successfully tweeted: " + message);
             }
             catch (Exception exception)
             {
-                _log.Warning("Failed to tweet. " + exception.Message);
+                Log.Warning("Failed to tweet. " + exception.Message);
+                Log.Warning("Failed to tweet. " + exception.Message);
+                Log.Warning("Failed to tweet. " + exception.Message);
             }
         }
 

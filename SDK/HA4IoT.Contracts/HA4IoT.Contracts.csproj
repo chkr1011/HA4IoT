@@ -173,6 +173,7 @@
     <Compile Include="Hardware\IDevice.cs" />
     <Compile Include="Hardware\DeviceId.cs" />
     <Compile Include="Actuators\ISwitch.cs" />
+    <Compile Include="Logging\Log.cs" />
     <Compile Include="Networking\HttpContext.cs" />
     <Compile Include="Networking\HttpHeaderCollection.cs" />
     <Compile Include="Networking\HttpMethod.cs" />

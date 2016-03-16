@@ -28,7 +28,7 @@ namespace HA4IoT.Actuators
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (sensor == null) throw new ArgumentNullException(nameof(sensor));
 
-            room.AddActuator(new TemperatureSensor(ActuatorIdFactory.Create(room, id), sensor, room.Controller.ApiController, room.Controller.Logger));
+            room.AddActuator(new TemperatureSensor(ActuatorIdFactory.Create(room, id), sensor, room.Controller.ApiController));
             return room;
         }
         

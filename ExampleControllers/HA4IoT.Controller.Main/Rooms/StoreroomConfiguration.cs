@@ -60,7 +60,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithEnabledAtDay(controller.GetDevice<IWeatherStation>());
 
             _catLitterBoxTwitterSender =
-                new CatLitterBoxTwitterSender(controller.Timer, controller.Logger).WithTrigger(
+                new CatLitterBoxTwitterSender(controller.Timer).WithTrigger(
                     storeroom.GetMotionDetector(Storeroom.MotionDetectorCatLitterBox));
         }
     }

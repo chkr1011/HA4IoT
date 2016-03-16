@@ -16,15 +16,12 @@ namespace HA4IoT.Telemetry.History
         private readonly object _syncRoot = new object();
         private readonly string _filename;
         private readonly ISingleValueSensorActuator _sensor;
-        private readonly ILogger _logger;
 
-        public SensorActuatorHistory(ISingleValueSensorActuator sensor, ILogger logger)
+        public SensorActuatorHistory(ISingleValueSensorActuator sensor)
         {
             if (sensor == null) throw new ArgumentNullException(nameof(sensor));
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
 
             _sensor = sensor;
-            _logger = logger;
 
             _filename = StoragePath.WithFilename("Actuators", sensor.Id.Value, "History.csv");
 
@@ -103,7 +100,7 @@ namespace HA4IoT.Telemetry.History
                 }
                 catch (Exception exception)
                 {
-                    _logger.Error(exception, "Error while adding data point.");
+                    Log.Error(exception, "Error while adding data point.");
                 }
             }
         }

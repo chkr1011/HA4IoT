@@ -16,8 +16,7 @@ namespace HA4IoT.Actuators
                 ActuatorIdFactory.Create(room, id), 
                 new PortBasedMotionDetectorEndpoint(input), 
                 room.Controller.Timer, 
-                room.Controller.ApiController, 
-                room.Controller.Logger);
+                room.Controller.ApiController);
 
             room.AddActuator(motionDetector);
             return room;

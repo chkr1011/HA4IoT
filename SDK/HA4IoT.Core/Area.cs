@@ -20,7 +20,7 @@ namespace HA4IoT.Core
             Id = id;
             Controller = controller;
 
-            Settings = new AreaSettings(id, controller.Logger);
+            Settings = new AreaSettings(id);
         }
 
         public AreaId Id { get; }

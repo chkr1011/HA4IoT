@@ -4,7 +4,6 @@ using HA4IoT.Actuators.Actions;
 using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
-using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Actuators
 {
@@ -16,8 +15,8 @@ namespace HA4IoT.Actuators
         private readonly IHomeAutomationAction _turnOffAction;
         private readonly IHomeAutomationAction _toggleAction;
 
-        protected BinaryStateOutputActuatorBase(ActuatorId id, IApiController apiController, ILogger logger) 
-            : base(id, apiController, logger)
+        protected BinaryStateOutputActuatorBase(ActuatorId id, IApiController apiController) 
+            : base(id, apiController)
         {
             _turnOnAction = new HomeAutomationAction(() => SetState(BinaryActuatorState.On));
             _turnOffAction = new HomeAutomationAction(() => SetState(BinaryActuatorState.Off));

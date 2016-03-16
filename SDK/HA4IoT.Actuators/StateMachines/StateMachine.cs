@@ -19,10 +19,10 @@ namespace HA4IoT.Actuators
         private int _index;
         private bool _turnOffIfStateIsAppliedTwice;
 
-        public StateMachine(ActuatorId id, IApiController apiController, ILogger logger)
-            : base(id, apiController, logger)
+        public StateMachine(ActuatorId id, IApiController apiController)
+            : base(id, apiController)
         {
-            Settings = new ActuatorSettings(id, logger);
+            Settings = new ActuatorSettings(id);
 
             _turnOffAction = new HomeAutomationAction(() => TurnOff());
             _setNextStateAction = new HomeAutomationAction(() => SetNextState());
@@ -190,7 +190,7 @@ namespace HA4IoT.Actuators
             StateChanged?.Invoke(this, new StateMachineStateChangedEventArgs(oldState, newState));
             ApiController.NotifyStateChanged(this);
 
-            Logger.Info(Id + ": " + oldState + "->" + newState);
+            Log.Info(Id + ": " + oldState + "->" + newState);
         }
     }
 }

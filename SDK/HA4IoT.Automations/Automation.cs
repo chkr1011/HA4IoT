@@ -4,7 +4,6 @@ using HA4IoT.Conditions;
 using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
-using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Automations
@@ -13,12 +12,12 @@ namespace HA4IoT.Automations
     {
         private readonly ConditionsValidator _conditionsValidator;
 
-        public Automation(AutomationId id, IApiController apiController, ILogger logger)
+        public Automation(AutomationId id, IApiController apiController)
             : base(id)
         {
             _conditionsValidator = new ConditionsValidator(Conditions);
 
-            Settings = new AutomationSettings(id, apiController, logger);
+            Settings = new AutomationSettings(id, apiController);
         }
 
         public IList<RelatedCondition> Conditions { get; } = new List<RelatedCondition>();

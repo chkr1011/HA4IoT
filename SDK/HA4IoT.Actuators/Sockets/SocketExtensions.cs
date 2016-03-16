@@ -12,7 +12,7 @@ namespace HA4IoT.Actuators
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (output == null) throw new ArgumentNullException(nameof(output));
 
-            var socket = new Socket(ActuatorIdFactory.Create(room, id), new PortBasedBinaryStateEndpoint(output), room.Controller.ApiController, room.Controller.Logger);
+            var socket = new Socket(ActuatorIdFactory.Create(room, id), new PortBasedBinaryStateEndpoint(output), room.Controller.ApiController);
             room.AddActuator(socket);
 
             return room;

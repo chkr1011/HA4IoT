@@ -8,18 +8,16 @@ namespace HA4IoT.Api.AzureCloud
 {
     public class EventHubSender
     {
-        private readonly ILogger _logger;
         private readonly Uri _uri;
         private readonly string _authorization;
 
-        public EventHubSender(string namespaceName, string eventHubName, string publisherName, string authorization, ILogger logger)
+        public EventHubSender(string namespaceName, string eventHubName, string publisherName, string authorization)
         {
             if (namespaceName == null) throw new ArgumentNullException(nameof(namespaceName));
             if (eventHubName == null) throw new ArgumentNullException(nameof(eventHubName));
             if (publisherName == null) throw new ArgumentNullException(nameof(publisherName));
             if (authorization == null) throw new ArgumentNullException(nameof(authorization));
 
-            _logger = logger;
             _uri = new Uri($"https://{namespaceName}.servicebus.windows.net/{eventHubName}/publishers/{publisherName}/messages");
             _authorization = authorization;
         }
@@ -41,17 +39,17 @@ namespace HA4IoT.Api.AzureCloud
                     HttpResponseMessage result = await httpClient.PostAsync(_uri, content);
                     if (result.IsSuccessStatusCode)
                     {
-                        _logger.Verbose("Sent event to Azure EventHub.");
+                        Log.Verbose("Sent event to Azure EventHub.");
                     }
                     else
                     {
-                        _logger.Warning("Failed to send Azure EventHub event (Error code: {0}).", result.StatusCode);
+                        Log.Warning("Failed to send Azure EventHub event (Error code: {0}).", result.StatusCode);
                     }
                 }
             }
             catch (Exception exception)
             {
-                _logger.Warning(exception, "Error while sending Azure EventHub event.");
+                Log.Warning(exception, "Error while sending Azure EventHub event.");
             }
         }
 

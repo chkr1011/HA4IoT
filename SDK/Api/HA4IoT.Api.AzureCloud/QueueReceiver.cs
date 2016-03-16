@@ -11,19 +11,17 @@ namespace HA4IoT.Api.AzureCloud
     public class QueueReceiver
     {
         private readonly HttpClient _httpClient = new HttpClient();
-        private readonly ILogger _logger;
         private readonly Uri _uri;
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
         private bool _wasStarted;
 
-        public QueueReceiver(string namespaceName, string queueName, string authorization, TimeSpan timeout, ILogger logger)
+        public QueueReceiver(string namespaceName, string queueName, string authorization, TimeSpan timeout)
         {
             if (namespaceName == null) throw new ArgumentNullException(nameof(namespaceName));
             if (queueName == null) throw new ArgumentNullException(nameof(queueName));
             if (authorization == null) throw new ArgumentNullException(nameof(authorization));
 
-            _logger = logger;
             _uri = new Uri($"https://{namespaceName}.servicebus.windows.net/{queueName}/messages/head?api-version=2015-01&timeout={(int)timeout.TotalSeconds}");
 
             _httpClient.DefaultRequestHeaders.TryAppendWithoutValidation("Authorization", authorization);
@@ -54,7 +52,7 @@ namespace HA4IoT.Api.AzureCloud
 
         private void WaitForMessages()
         {
-            _logger.Verbose("Started waiting for messages on Azure queue.");
+            Log.Verbose("Started waiting for messages on Azure queue.");
             while (!_cancellationTokenSource.IsCancellationRequested)
             {
                 try
@@ -63,7 +61,7 @@ namespace HA4IoT.Api.AzureCloud
                 }
                 catch (Exception exception)
                 {
-                    _logger.Error(exception, "Error while waiting for message.");
+                    Log.Error(exception, "Error while waiting for message.");
                 }
             }
         }
@@ -75,7 +73,7 @@ namespace HA4IoT.Api.AzureCloud
             HttpResponseMessage result = _httpClient.DeleteAsync(_uri).AsTask().Result;
             if (result.StatusCode == HttpStatusCode.NoContent)
             {
-                _logger.Verbose("Azure queue timeout reached. Reconnecting...");
+                Log.Verbose("Azure queue timeout reached. Reconnecting...");
                 return;
             }
 
@@ -87,7 +85,7 @@ namespace HA4IoT.Api.AzureCloud
             }
             else
             {
-                _logger.Warning($"Failed to wait for Azure queue message (Error code: {result.StatusCode}).");
+                Log.Warning($"Failed to wait for Azure queue message (Error code: {result.StatusCode}).");
             }
         }
 
@@ -96,32 +94,32 @@ namespace HA4IoT.Api.AzureCloud
             string brokerPropertiesSource;
             if (!headers.TryGetValue("BrokerProperties", out brokerPropertiesSource))
             {
-                _logger.Warning("Received Azure queue message without broker properties.");
+                Log.Warning("Received Azure queue message without broker properties.");
                 return;
             }
             
             string bodySource = await content.ReadAsStringAsync();
             if (string.IsNullOrEmpty(bodySource))
             {
-                _logger.Warning("Received Azure queue message with empty body.");
+                Log.Warning("Received Azure queue message with empty body.");
                 return;
             }
 
             JsonObject brokerProperties;
             if (!JsonObject.TryParse(brokerPropertiesSource, out brokerProperties))
             {
-                _logger.Warning("Received Azure queue message with invalid broker properties.");
+                Log.Warning("Received Azure queue message with invalid broker properties.");
                 return;
             }
 
             JsonObject body;
             if (!JsonObject.TryParse(bodySource, out body))
             {
-                _logger.Warning("Received Azure queue message with not supported body (JSON expected).");
+                Log.Warning("Received Azure queue message with not supported body (JSON expected).");
                 return;
             }
 
-            _logger.Verbose("Received valid Azure queue message.");
+            Log.Verbose("Received valid Azure queue message.");
             MessageReceived?.Invoke(this, new MessageReceivedEventArgs(brokerProperties, body));
         }
     }

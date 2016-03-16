@@ -13,8 +13,8 @@ namespace HA4IoT.Actuators
         private DateTime? _valueLastChanged;
         private float _value;
 
-        protected SingleValueSensorBase(ActuatorId id, IApiController apiController, ILogger logger)
-            : base(id, apiController, logger)
+        protected SingleValueSensorBase(ActuatorId id, IApiController apiController)
+            : base(id, apiController)
         {
         }
 
@@ -45,7 +45,7 @@ namespace HA4IoT.Actuators
             _value = newValue;
             _valueLastChanged = DateTime.Now;
 
-            Logger.Info($"{Id}:{oldValue}->{newValue}");
+            Log.Info($"{Id}:{oldValue}->{newValue}");
             ValueChanged?.Invoke(this, new SingleValueSensorValueChangedEventArgs(oldValue, _value));
 
             ApiController.NotifyStateChanged(this);

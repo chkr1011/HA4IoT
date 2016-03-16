@@ -16,7 +16,6 @@ namespace HA4IoT.Actuators
                 ActuatorIdFactory.Create(room, id), 
                 new PortBasedButtonEndpoint(input),
                 room.Controller.ApiController, 
-                room.Controller.Logger, 
                 room.Controller.Timer);
 
             room.AddActuator(button);
@@ -48,7 +47,7 @@ namespace HA4IoT.Actuators
             if (downInput == null) throw new ArgumentNullException(nameof(downInput));
 
             var rollerShutterButtons = new RollerShutterButtons(ActuatorIdFactory.Create(room, id), upInput, downInput,
-                room.Controller.ApiController, room.Controller.Logger, room.Controller.Timer);
+                room.Controller.ApiController, room.Controller.Timer);
 
             room.AddActuator(rollerShutterButtons);
             return room;
@@ -59,7 +58,7 @@ namespace HA4IoT.Actuators
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
 
-            var virtualButton = new VirtualButton(ActuatorIdFactory.Create(room, id), room.Controller.ApiController, room.Controller.Logger);
+            var virtualButton = new VirtualButton(ActuatorIdFactory.Create(room, id), room.Controller.ApiController);
             initializer.Invoke(virtualButton);
 
             room.AddActuator(virtualButton);
@@ -71,7 +70,7 @@ namespace HA4IoT.Actuators
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
 
-            var virtualButtonGroup = new VirtualButtonGroup(ActuatorIdFactory.Create(room, id), room.Controller.ApiController, room.Controller.Logger);
+            var virtualButtonGroup = new VirtualButtonGroup(ActuatorIdFactory.Create(room, id), room.Controller.ApiController);
             initializer.Invoke(virtualButtonGroup);
 
             room.AddActuator(virtualButtonGroup);

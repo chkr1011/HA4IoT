@@ -31,7 +31,7 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void SensorValueReached_Trigger()
         {
-            var sensor = new TestSensor(ActuatorIdFactory.EmptyId, new TestLogger());
+            var sensor = new TestSensor(ActuatorIdFactory.EmptyId);
             var trigger = new SensorValueReachedTrigger(sensor);
             trigger.Target = 10.2F;
             trigger.Delta = 3.0F;
@@ -64,7 +64,7 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void SensorValueUnderran_Trigger()
         {
-            var sensor = new TestSensor(ActuatorIdFactory.EmptyId, new TestLogger());
+            var sensor = new TestSensor(ActuatorIdFactory.EmptyId);
             var trigger = new SensorValueUnderranTrigger(sensor);
             trigger.Target = 10F;
             trigger.Delta = 3F;

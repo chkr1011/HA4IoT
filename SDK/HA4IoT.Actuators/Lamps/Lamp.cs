@@ -6,10 +6,10 @@ namespace HA4IoT.Actuators
 {
     public class Lamp : BinaryStateOutputActuator<ActuatorSettings>, ILamp
     {
-        public Lamp(ActuatorId id, IBinaryStateEndpoint endpoint, IApiController apiController, ILogger logger)
-            : base(id, endpoint, apiController, logger)
+        public Lamp(ActuatorId id, IBinaryStateEndpoint endpoint, IApiController apiController)
+            : base(id, endpoint, apiController)
         {
-            Settings = new ActuatorSettings(id, logger);
+            Settings = new ActuatorSettings(id);
         }
     }
 }

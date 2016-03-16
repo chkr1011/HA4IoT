@@ -46,7 +46,7 @@ namespace HA4IoT.Automations.Tests
         [TestMethod]
         public void Serialize_AutomationSettings()
         {
-            var settings = new RollerShutterAutomationSettings(AutomationIdFactory.EmptyId, new TestHttpRequestController(), new TestLogger());
+            var settings = new RollerShutterAutomationSettings(AutomationIdFactory.EmptyId, new TestHttpRequestController());
             settings.AutoCloseIfTooHotTemperaure.Value = 24.5F;
             settings.SkipBeforeTimestamp.Value = TimeSpan.Parse("07:30");
 

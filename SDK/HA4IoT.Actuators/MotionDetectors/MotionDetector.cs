@@ -18,19 +18,19 @@ namespace HA4IoT.Actuators
         private TimedAction _autoEnableAction;
         private MotionDetectorState _state = MotionDetectorState.Idle;
 
-        public MotionDetector(ActuatorId id, IMotionDetectorEndpoint endpoint, IHomeAutomationTimer timer, IApiController apiController, ILogger logger)
-            : base(id, apiController, logger)
+        public MotionDetector(ActuatorId id, IMotionDetectorEndpoint endpoint, IHomeAutomationTimer timer, IApiController apiController)
+            : base(id, apiController)
         {
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
 
             endpoint.MotionDetected += (s, e) => UpdateState(MotionDetectorState.MotionDetected);
             endpoint.DetectionCompleted += (s, e) => UpdateState(MotionDetectorState.Idle);
 
-            base.Settings = new ActuatorSettings(id, logger);
+            base.Settings = new ActuatorSettings(id);
 
             Settings.IsEnabled.ValueChanged += (s, e) =>
             {
-                HandleIsEnabledStateChanged(timer, logger);
+                HandleIsEnabledStateChanged(timer);
             };
         }
 
@@ -93,12 +93,12 @@ namespace HA4IoT.Actuators
 
             if (newState == MotionDetectorState.MotionDetected)
             {
-                Logger.Info(Id + ": Motion detected");
+                Log.Info(Id + ": Motion detected");
                 _motionDetectedTrigger.Execute();
             }
             else
             {
-                Logger.Verbose(Id+ ": Detection completed");
+                Log.Verbose(Id + ": Detection completed");
                 _detectionCompletedTrigger.Execute();
             }
 
@@ -106,11 +106,11 @@ namespace HA4IoT.Actuators
             ApiController.NotifyStateChanged(this);
         }
 
-        private void HandleIsEnabledStateChanged(IHomeAutomationTimer timer, ILogger logger)
+        private void HandleIsEnabledStateChanged(IHomeAutomationTimer timer)
         {
             if (!Settings.IsEnabled.Value)
             {
-                logger.Info(Id + ": Disabled for 1 hour");
+                Log.Info(Id + ": Disabled for 1 hour");
                 _autoEnableAction = timer.In(TimeSpan.FromHours(1)).Do(() => Settings.IsEnabled.Value = true);
             }
             else

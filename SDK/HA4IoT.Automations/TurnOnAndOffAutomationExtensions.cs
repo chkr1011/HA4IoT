@@ -13,8 +13,7 @@ namespace HA4IoT.Automations
                 new TurnOnAndOffAutomation(
                     AutomationIdFactory.CreateIdFrom<TurnOnAndOffAutomation>(area),
                     area.Controller.Timer,
-                    area.Controller.ApiController,
-                    area.Controller.Logger);
+                    area.Controller.ApiController);
 
             area.AddAutomation(automation);
 

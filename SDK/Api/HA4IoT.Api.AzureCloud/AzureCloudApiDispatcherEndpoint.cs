@@ -12,18 +12,9 @@ namespace HA4IoT.Api.AzureCloud
 {
     public class AzureCloudApiDispatcherEndpoint : IApiDispatcherEndpoint
     {
-        private readonly ILogger _logger;
-
         private EventHubSender _eventHubSender;
         private QueueSender _outboundQueue;
         private QueueReceiver _inboundQueue;
-
-        public AzureCloudApiDispatcherEndpoint(ILogger logger)
-        {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
-
-            _logger = logger;
-        }
 
         public event EventHandler<ApiRequestReceivedEventArgs> RequestReceived;
 
@@ -50,7 +41,7 @@ namespace HA4IoT.Api.AzureCloud
             }
             catch (Exception exception)
             {
-                _logger.Warning(exception, "Unable to initialize AzureCloudApiDispatcherEndpoint from file.");
+                Log.Warning(exception, "Unable to initialize AzureCloudApiDispatcherEndpoint from file.");
             }
 
             return false;
@@ -77,8 +68,7 @@ namespace HA4IoT.Api.AzureCloud
                 settings.GetNamedString("NamespaceName"),
                 settings.GetNamedString("EventHubName"),
                 settings.GetNamedString("PublisherName"),
-                settings.GetNamedString("Authorization"),
-                _logger);
+                settings.GetNamedString("Authorization"));
         }
 
         private void SetupOutboundQueueSender(JsonObject settings)
@@ -86,8 +76,7 @@ namespace HA4IoT.Api.AzureCloud
             _outboundQueue = new QueueSender(
                 settings.GetNamedString("NamespaceName"),
                 settings.GetNamedString("QueueName"),
-                settings.GetNamedString("Authorization"),
-                _logger);
+                settings.GetNamedString("Authorization"));
         }
 
         private void SetupInboundQueue(JsonObject settings)
@@ -96,8 +85,7 @@ namespace HA4IoT.Api.AzureCloud
                 settings.GetNamedString("NamespaceName"),
                 settings.GetNamedString("QueueName"),
                 settings.GetNamedString("Authorization"),
-                TimeSpan.FromSeconds(60),
-                _logger);
+                TimeSpan.FromSeconds(60));
 
             _inboundQueue.MessageReceived += DistpachMessage;
             _inboundQueue.Start();
@@ -110,7 +98,7 @@ namespace HA4IoT.Api.AzureCloud
             string uri = e.Body.GetNamedString("Uri", string.Empty);
             if (string.IsNullOrEmpty(uri))
             {
-                _logger.Warning("Received Azure queue message with missing or invalid URI property.");
+                Log.Warning("Received Azure queue message with missing or invalid URI property.");
                 return;
             }
 
@@ -119,7 +107,7 @@ namespace HA4IoT.Api.AzureCloud
             ApiCallType callType;
             if (!Enum.TryParse(callTypeSource, true, out callType))
             {
-                _logger.Warning("Received Azure queue message with missing or invalid CallType property.");
+                Log.Warning("Received Azure queue message with missing or invalid CallType property.");
                 return;
             }
 
@@ -131,7 +119,8 @@ namespace HA4IoT.Api.AzureCloud
 
             if (!eventArgs.IsHandled)
             {
-                _logger.Warning("Received Azure queue message is not handled.");
+                Log.Warning("Received Azure queue message is not handled.");
+                Log.Warning("Received Azure queue message is not handled.");
                 return;
             }
 
@@ -146,16 +135,16 @@ namespace HA4IoT.Api.AzureCloud
             string clientEtag = context.Request.GetNamedString("ETag", string.Empty);
             
             var brokerProperties = new JsonObject();
-            brokerProperties.SetNamedValue("CorrelationId", JsonValue.CreateStringValue(correlationId));
+            brokerProperties.SetNamedString("CorrelationId", correlationId);
 
             var message = new JsonObject();
-            message.SetNamedValue("ResultCode", JsonValue.CreateStringValue(context.ResultCode.ToString()));
-            message.SetNamedValue("ProcessingDuration", JsonValue.CreateNumberValue(context.ProcessingStopwatch.ElapsedMilliseconds));
+            message.SetNamedString("ResultCode", context.ResultCode.ToString());
+            message.SetNamedNumber("ProcessingDuration", context.ProcessingStopwatch.ElapsedMilliseconds);
 
             if (context.CallType == ApiCallType.Request)
             {
                 string serverEtag = context.Response.GetNamedObject("Meta", new JsonObject()).GetNamedString("Hash", string.Empty);
-                message.SetNamedValue("ETag", JsonValue.CreateStringValue(serverEtag));
+                message.SetNamedString("ETag", serverEtag);
 
                 if (!string.Equals(clientEtag, serverEtag))
                 {

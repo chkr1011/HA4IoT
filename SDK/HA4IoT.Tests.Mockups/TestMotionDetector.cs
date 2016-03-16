@@ -16,7 +16,7 @@ namespace HA4IoT.Tests.Mockups
 
         public TestMotionDetector()
         {
-            Settings = new ActuatorSettings(ActuatorIdFactory.EmptyId,  new TestLogger());
+            Settings = new ActuatorSettings(ActuatorIdFactory.EmptyId);
         }
 
         public ActuatorId Id { get; set; }

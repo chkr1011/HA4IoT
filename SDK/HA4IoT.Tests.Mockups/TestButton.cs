@@ -14,7 +14,7 @@ namespace HA4IoT.Tests.Mockups
 
         public TestButton()
         {
-            Settings = new ActuatorSettings(ActuatorIdFactory.EmptyId, new TestLogger());
+            Settings = new ActuatorSettings(ActuatorIdFactory.EmptyId);
         }
 
         public event EventHandler<ButtonStateChangedEventArgs> StateChanged;

@@ -9,15 +9,12 @@ namespace HA4IoT.Core.Settings
 {
     public abstract class SettingsContainer
     {
-        private readonly ILogger _logger;
         private readonly string _filename;
 
-        protected SettingsContainer(string filename, ILogger logger)
+        protected SettingsContainer(string filename)
         {
             if (filename == null) throw new ArgumentNullException(nameof(filename));
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
 
-            _logger = logger;
             _filename = filename;
         }
 
@@ -38,7 +35,7 @@ namespace HA4IoT.Core.Settings
             }
             catch (Exception exception)
             {
-                _logger.Warning(exception, $"Error while loading settings from '{_filename}' ({fileContent}).");
+                Log.Warning(exception, $"Error while loading settings from '{_filename}' ({fileContent}).");
                 File.Delete(_filename);
             }
         }
@@ -52,7 +49,7 @@ namespace HA4IoT.Core.Settings
             }
 
             File.WriteAllText(_filename, ExportToJsonObject().Stringify(), Encoding.UTF8);
-            _logger.Verbose($"Saved settings at '{_filename}'.");
+            Log.Verbose($"Saved settings at '{_filename}'.");
         }
 
         public JsonObject ExportToJsonObject()

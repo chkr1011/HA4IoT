@@ -12,7 +12,7 @@ namespace HA4IoT.Automations.Tests
         public void Empty_ConditionalOnAutomation()
         {
             var testController = new TestController();
-            var automation = new ConditionalOnAutomation(AutomationIdFactory.EmptyId, testController.Timer, testController.ApiController, testController.Logger);
+            var automation = new ConditionalOnAutomation(AutomationIdFactory.EmptyId, testController.Timer, testController.ApiController);
 
             var testButton = new TestButton();
             var testOutput = new TestBinaryStateOutputActuator();

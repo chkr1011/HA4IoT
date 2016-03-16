@@ -13,14 +13,14 @@ namespace HA4IoT.Actuators
     {
         private readonly IHomeAutomationTimer _timer;
 
-        public LogicalBinaryStateOutputActuator(ActuatorId id, IApiController apiController, ILogger logger, IHomeAutomationTimer timer) 
-            : base(id, apiController, logger)
+        public LogicalBinaryStateOutputActuator(ActuatorId id, IApiController apiController, IHomeAutomationTimer timer) 
+            : base(id, apiController)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
 
             _timer = timer;
 
-            Settings = new ActuatorSettings(id, logger);
+            Settings = new ActuatorSettings(id);
         }
 
         public IList<IBinaryStateOutputActuator> Actuators { get; } = new List<IBinaryStateOutputActuator>();

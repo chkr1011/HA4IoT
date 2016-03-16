@@ -8,17 +8,15 @@ namespace HA4IoT.Api.AzureCloud
 {
     public class QueueSender
     {
-        private readonly ILogger _logger;
         private readonly Uri _uri;
         private readonly string _authorization;
 
-        public QueueSender(string namespaceName, string queueName, string authorization, ILogger logger)
+        public QueueSender(string namespaceName, string queueName, string authorization)
         {
             if (namespaceName == null) throw new ArgumentNullException(nameof(namespaceName));
             if (queueName == null) throw new ArgumentNullException(nameof(queueName));
             if (authorization == null) throw new ArgumentNullException(nameof(authorization));
 
-            _logger = logger;
             _uri = new Uri($"https://{namespaceName}.servicebus.windows.net/{queueName}/messages");
             _authorization = authorization;
         }
@@ -43,17 +41,17 @@ namespace HA4IoT.Api.AzureCloud
                     HttpResponseMessage result = await httpClient.PostAsync(_uri, content);
                     if (result.IsSuccessStatusCode)
                     {
-                        _logger.Verbose("Sent message to Azure queue.");
+                        Log.Verbose("Sent message to Azure queue.");
                     }
                     else
                     {
-                        _logger.Warning("Failed to send Azure queue message (Error code: {0}).", result.StatusCode);
+                        Log.Warning("Failed to send Azure queue message (Error code: {0}).", result.StatusCode);
                     }
                 }
             }
             catch (Exception exception)
             {
-                _logger.Warning(exception, "Error while sending Azure queue message.");
+                Log.Warning(exception, "Error while sending Azure queue message.");
             }
         }
 

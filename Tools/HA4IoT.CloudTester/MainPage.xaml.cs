@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.UI.Xaml;
 using HA4IoT.Api.AzureCloud;
+using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.CloudTester
 {
@@ -11,6 +12,8 @@ namespace HA4IoT.CloudTester
         public MainPage()
         {
             InitializeComponent();
+            
+            Log.Instance = new TextBoxLogger(LogTextBox);
 
             var applicationData = Windows.Storage.ApplicationData.Current;
             var localSettings = applicationData.LocalSettings;
@@ -63,8 +66,7 @@ namespace HA4IoT.CloudTester
                 NamespaceTextBox.Text,
                 EventHubNameTextBox.Text,
                 EventHubPublisherTextBox.Text,
-                EventHubSasTokenTextBox.Text,
-                new TextBoxLogger(LogTextBox));
+                EventHubSasTokenTextBox.Text);
 
             Task.Run(async () => await eventHubSender.SendAsync(new JsonObject()));
         }
@@ -74,7 +76,7 @@ namespace HA4IoT.CloudTester
             var queueSender = new QueueSender(
                 NamespaceTextBox.Text, 
                 OutboundQueueNameTextBox.Text,
-                OutboundQueueSendSasTokenTextBox.Text, new TextBoxLogger(LogTextBox));
+                OutboundQueueSendSasTokenTextBox.Text);
 
            var properties = new JsonObject();
            var body = new JsonObject();
@@ -88,8 +90,7 @@ namespace HA4IoT.CloudTester
                 NamespaceTextBox.Text,
                 InboundQueueNameTextBox.Text,
                 InboundQueueListenSasTokenTextBox.Text,
-                TimeSpan.FromSeconds(60),
-                new TextBoxLogger(LogTextBox));
+                TimeSpan.FromSeconds(60));
 
             queueReceiver.MessageReceived += LogMessage;
             queueReceiver.Start();
@@ -105,8 +106,7 @@ namespace HA4IoT.CloudTester
             var queueSender = new QueueSender(
                 NamespaceTextBox.Text, 
                 InboundQueueNameTextBox.Text,
-                InboundQueueSendSasTokenTextBox.Text, 
-                new TextBoxLogger(LogTextBox));
+                InboundQueueSendSasTokenTextBox.Text);
 
             var systemProperties = new JsonObject();
             systemProperties.SetNamedValue("CorrelationId", JsonValue.CreateStringValue(Guid.NewGuid().ToString()));
@@ -130,8 +130,7 @@ namespace HA4IoT.CloudTester
                 NamespaceTextBox.Text,
                 OutboundQueueNameTextBox.Text,
                 OutboundQueueListenSasTokenTextBox.Text,
-                TimeSpan.FromSeconds(60),
-                new TextBoxLogger(LogTextBox));
+                TimeSpan.FromSeconds(60));
 
             queueReceiver.MessageReceived += LogMessage;
             queueReceiver.Start();

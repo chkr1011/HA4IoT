@@ -3,8 +3,6 @@ using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Core.Settings;
-using HA4IoT.Contracts.Logging;
-using HA4IoT.Core;
 using HA4IoT.Core.Settings;
 using HA4IoT.Networking;
 
@@ -12,8 +10,8 @@ namespace HA4IoT.Actuators
 {
     public class ActuatorSettings : SettingsContainer, IActuatorSettings
     {
-        public ActuatorSettings(ActuatorId actuatorId, ILogger logger) 
-            : base(GenerateFilename(actuatorId), logger)
+        public ActuatorSettings(ActuatorId actuatorId) 
+            : base(GenerateFilename(actuatorId))
         {
             ActuatorId = actuatorId;
 

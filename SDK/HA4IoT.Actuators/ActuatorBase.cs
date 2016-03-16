@@ -10,20 +10,16 @@ namespace HA4IoT.Actuators
 {
     public abstract class ActuatorBase<TSettings> : IActuator, IStatusProvider where TSettings : IActuatorSettings
     {
-        protected ActuatorBase(ActuatorId id, IApiController apiController, ILogger logger)
+        protected ActuatorBase(ActuatorId id, IApiController apiController)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (apiController == null) throw new ArgumentNullException(nameof(apiController));
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
 
             Id = id;
-            Logger = logger;
             ApiController = apiController;
         }
 
         public ActuatorId Id { get; }
-
-        protected ILogger Logger { get; }
 
         protected IApiController ApiController { get; }
 

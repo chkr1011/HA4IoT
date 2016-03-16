@@ -3,7 +3,6 @@ using Windows.Data.Json;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
-using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Triggers;
 using HA4IoT.Networking;
 
@@ -14,10 +13,10 @@ namespace HA4IoT.Actuators
         private readonly Trigger _pressedShortlyTrigger = new Trigger();
         private readonly Trigger _pressedLongTrigger = new Trigger();
 
-        public VirtualButton(ActuatorId id, IApiController apiController, ILogger logger)
-            : base(id, apiController, logger)
+        public VirtualButton(ActuatorId id, IApiController apiController)
+            : base(id, apiController)
         {
-            Settings = new ActuatorSettings(id, logger);
+            Settings = new ActuatorSettings(id);
         }
 
         public event EventHandler<ButtonStateChangedEventArgs> StateChanged;

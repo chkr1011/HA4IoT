@@ -6,7 +6,6 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.WeatherStation;
 
 namespace HA4IoT.Automations
@@ -15,8 +14,8 @@ namespace HA4IoT.Automations
     {
         private readonly IHomeAutomationTimer _timer;
 
-        public ConditionalOnAutomation(AutomationId id, IHomeAutomationTimer timer, IApiController apiController, ILogger logger) 
-            : base(id, apiController, logger)
+        public ConditionalOnAutomation(AutomationId id, IHomeAutomationTimer timer, IApiController apiController) 
+            : base(id, apiController)
         {
             _timer = timer;
 

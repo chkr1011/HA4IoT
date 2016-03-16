@@ -52,7 +52,7 @@ namespace HA4IoT.Configuration
 
         private IDevice ParseI2CBus(XElement element)
         {
-            return new BuiltInI2CBus(new DeviceId(element.GetMandatoryStringFromAttribute("id")), Controller.Logger);
+            return new BuiltInI2CBus(new DeviceId(element.GetMandatoryStringFromAttribute("id")));
         }
 
         private IDevice ParseWeatherStation(XElement element)
@@ -60,8 +60,7 @@ namespace HA4IoT.Configuration
             return new OpenWeatherMapWeatherStation(
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")), 
                 Controller.Timer,
-                Controller.ApiController,
-                Controller.Logger);
+                Controller.ApiController);
         }
 
         private IActuator ParseCustomBinaryStateOutputActuator(XElement element)
@@ -71,8 +70,7 @@ namespace HA4IoT.Configuration
             return new CustomBinaryStateOutputActuator(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
                 new PortBasedBinaryStateEndpoint(output),
-                Controller.ApiController,
-                Controller.Logger);
+                Controller.ApiController);
         }
 
         private IActuator ParseButton(XElement element)
@@ -83,7 +81,6 @@ namespace HA4IoT.Configuration
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
                 new PortBasedButtonEndpoint(input), 
                 Controller.ApiController,
-                Controller.Logger,
                 Controller.Timer);
         }
 
@@ -94,8 +91,7 @@ namespace HA4IoT.Configuration
             return new Socket(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
                 new PortBasedBinaryStateEndpoint(output),
-                Controller.ApiController,
-                Controller.Logger);
+                Controller.ApiController);
         }
 
         private IActuator ParseLamp(XElement element)
@@ -105,8 +101,7 @@ namespace HA4IoT.Configuration
             return new Lamp(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
                 new PortBasedBinaryStateEndpoint(output),
-                Controller.ApiController,
-                Controller.Logger);
+                Controller.ApiController);
         }
 
         private IActuator ParseRollerShutter(XElement element)
@@ -118,7 +113,6 @@ namespace HA4IoT.Configuration
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
                 new PortBasedRollerShutterEndpoint(powerOutput, directionOutput), 
                 Controller.ApiController,
-                Controller.Logger,
                 Controller.Timer);
         }
 
@@ -132,7 +126,6 @@ namespace HA4IoT.Configuration
                 upInput,
                 downInput,
                 Controller.ApiController,
-                Controller.Logger,
                 Controller.Timer);
         }
 
@@ -140,8 +133,7 @@ namespace HA4IoT.Configuration
         {
             var window = new Window(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
-                Controller.ApiController,
-                Controller.Logger);
+                Controller.ApiController);
 
             var leftCasementElement = element.Element("LeftCasement");
             if (leftCasementElement != null)
@@ -185,8 +177,7 @@ namespace HA4IoT.Configuration
             return new HumiditySensor(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
                 sensor,
-                Controller.ApiController,
-                Controller.Logger);
+                Controller.ApiController);
         }
 
         private IActuator ParseTemperatureSensor(XElement element)
@@ -196,15 +187,14 @@ namespace HA4IoT.Configuration
             return new TemperatureSensor(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
                 sensor,
-                Controller.ApiController,
-                Controller.Logger);
+                Controller.ApiController);
         }
 
         private IActuator ParseStateMachine(XElement element)
         {
             var id = new ActuatorId(element.GetMandatoryStringFromAttribute("id"));
 
-            var stateMachine = new StateMachine(id, Controller.ApiController, Controller.Logger);
+            var stateMachine = new StateMachine(id, Controller.ApiController);
 
             foreach (var stateElement in element.Element("States").Elements("State"))
             {

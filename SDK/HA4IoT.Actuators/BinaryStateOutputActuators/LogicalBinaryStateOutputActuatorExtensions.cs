@@ -9,7 +9,7 @@ namespace HA4IoT.Actuators
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 
-            var actuator = new LogicalBinaryStateOutputActuator(ActuatorIdFactory.Create(room, id), room.Controller.ApiController, room.Controller.Logger, room.Controller.Timer);
+            var actuator = new LogicalBinaryStateOutputActuator(ActuatorIdFactory.Create(room, id), room.Controller.ApiController, room.Controller.Timer);
             room.AddActuator(actuator);
             return actuator;
         }

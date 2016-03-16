@@ -30,13 +30,13 @@ namespace HA4IoT.Controller.Demo
             InitializeHealthMonitor(LedGpio);
 
             // Setup the wrapper for I2C bus access.
-            AddDevice(new BuiltInI2CBus(Logger));
+            AddDevice(new BuiltInI2CBus());
 
             // Setup the controller which provides ports from the GPIOs of the Pi2.
             var pi2PortController = new Pi2PortController();
             
             // Setup the controller which creates ports for IO boards from CCTools (or based on PCF8574/MAX7311/PCA9555D).
-            var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>(), ApiController, Logger);
+            var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>(), ApiController);
 
             SetupRoom(ccToolsBoardController);
 
@@ -62,7 +62,7 @@ namespace HA4IoT.Controller.Demo
                 .WithRemoteSocket(0, intertechno.GetSequencePair(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1))
                 .WithRemoteSocket(1, intertechno.GetSequencePair(IntertechnoSystemCode.B, IntertechnoUnitCode.Unit1));
 
-            AddDevice(new OpenWeatherMapWeatherStation(OpenWeatherMapWeatherStation.DefaultDeviceId, Timer, ApiController, Logger));
+            AddDevice(new OpenWeatherMapWeatherStation(OpenWeatherMapWeatherStation.DefaultDeviceId, Timer, ApiController));
 
             const int SensorPin = 5;
 

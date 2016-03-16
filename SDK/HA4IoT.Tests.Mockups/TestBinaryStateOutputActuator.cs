@@ -29,7 +29,7 @@ namespace HA4IoT.Tests.Mockups
                 }
             });
 
-            Settings = new ActuatorSettings(ActuatorIdFactory.EmptyId, new TestLogger());
+            Settings = new ActuatorSettings(ActuatorIdFactory.EmptyId);
         }
 
         public event EventHandler<BinaryActuatorStateChangedEventArgs> StateChanged;

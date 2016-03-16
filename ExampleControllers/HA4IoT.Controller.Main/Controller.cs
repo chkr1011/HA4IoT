@@ -20,11 +20,11 @@ namespace HA4IoT.Controller.Main
 
             var pi2PortController = new Pi2PortController();
             
-            AddDevice(new BuiltInI2CBus(Logger));
+            AddDevice(new BuiltInI2CBus());
             AddDevice(new I2CHardwareBridge(new DeviceId("HB"), new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer));
-            AddDevice(new OpenWeatherMapWeatherStation(OpenWeatherMapWeatherStation.DefaultDeviceId, Timer, ApiController, Logger));
+            AddDevice(new OpenWeatherMapWeatherStation(OpenWeatherMapWeatherStation.DefaultDeviceId, Timer, ApiController));
 
-            var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>(), ApiController, Logger);
+            var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>(), ApiController);
             
             var configurationParser = new ConfigurationParser(this);
             configurationParser.RegisterConfigurationExtender(new CCToolsConfigurationExtender(configurationParser, this));
@@ -56,7 +56,7 @@ namespace HA4IoT.Controller.Main
 
             InitializeAzureCloudApiEndpoint();
 
-            var ioBoardsInterruptMonitor = new InterruptMonitor(pi2PortController.GetInput(4), Logger);
+            var ioBoardsInterruptMonitor = new InterruptMonitor(pi2PortController.GetInput(4));
             ioBoardsInterruptMonitor.InterruptDetected += (s, e) => ccToolsBoardController.PollInputBoardStates();
             ioBoardsInterruptMonitor.StartPollingAsync();
         }

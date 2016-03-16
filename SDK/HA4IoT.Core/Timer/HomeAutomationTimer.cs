@@ -3,21 +3,12 @@ using System.Diagnostics;
 using System.Threading;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Core.Timer
 {
     public class HomeAutomationTimer : IHomeAutomationTimer
     {
-        private readonly ILogger _logger;
         private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
-
-        public HomeAutomationTimer(ILogger logger)
-        {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
-
-            _logger = logger;
-        }
 
         public event EventHandler<TimerTickEventArgs> Tick;
         
@@ -37,7 +28,7 @@ namespace HA4IoT.Core.Timer
 
         public void Run()
         {
-            _logger.Verbose($"Timer is running on thread {Environment.CurrentManagedThreadId}");
+            Log.Verbose($"Timer is running on thread {Environment.CurrentManagedThreadId}");
 
             while (true)
             {
@@ -58,7 +49,7 @@ namespace HA4IoT.Core.Timer
             }
             catch (Exception exception)
             {
-                _logger.Error(exception, "Timer tick has catched an unhandled exception");
+                Log.Error(exception, "Timer tick has catched an unhandled exception");
             }
         }
     }

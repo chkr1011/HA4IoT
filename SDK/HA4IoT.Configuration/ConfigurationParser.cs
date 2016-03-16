@@ -7,6 +7,7 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Core;
 
 namespace HA4IoT.Configuration
@@ -77,7 +78,7 @@ namespace HA4IoT.Configuration
             string filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Configuration.xml");
             if (!File.Exists(filename))
             {
-                _controller.Logger.Info("Skipped loading XML configuration because file '{0}' does not exist.", filename);
+                Log.Info("Skipped loading XML configuration because file '{0}' does not exist.", filename);
                 return null;
             }
 
@@ -99,7 +100,7 @@ namespace HA4IoT.Configuration
                 }
                 catch (Exception exception)
                 {
-                    _controller.Logger.Warning(exception, "Unable to parse device node '{0}'.", deviceElement.Name);
+                    Log.Warning(exception, "Unable to parse device node '{0}'.", deviceElement.Name);
                 }
             }
         }
@@ -115,7 +116,7 @@ namespace HA4IoT.Configuration
                 }
                 catch (Exception exception)
                 {
-                    _controller.Logger.Warning(exception, "Unable to parse area node '{0}'.", areaElement.Name);
+                    Log.Warning(exception, "Unable to parse area node '{0}'.", areaElement.Name);
                 }
             }
         }
@@ -133,7 +134,7 @@ namespace HA4IoT.Configuration
                 }
                 catch (Exception exception)
                 {
-                    _controller.Logger.Warning(exception, "Unable to parse actuator node '{0}'.", actuatorElement.Name);
+                    Log.Warning(exception, "Unable to parse actuator node '{0}'.", actuatorElement.Name);
                 }
             }
 

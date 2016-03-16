@@ -16,19 +16,17 @@ namespace HA4IoT.Hardware.CCTools
         private readonly Dictionary<int, IOBoardPort> _openPorts = new Dictionary<int, IOBoardPort>();
 
         private readonly IApiController _apiController;
-        private readonly ILogger _logger;
         private readonly IPortExpanderDriver _portExpanderDriver;
         
         private readonly byte[] _committedState;
         private readonly byte[] _state;
         private byte[] _peekedState;
 
-        protected CCToolsBoardBase(DeviceId id, IPortExpanderDriver portExpanderDriver, IApiController apiController, ILogger logger)
+        protected CCToolsBoardBase(DeviceId id, IPortExpanderDriver portExpanderDriver, IApiController apiController)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (portExpanderDriver == null) throw new ArgumentNullException(nameof(portExpanderDriver));
             if (apiController == null) throw new ArgumentNullException(nameof(apiController));
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
 
             Id = id;
             _portExpanderDriver = portExpanderDriver;
@@ -37,7 +35,6 @@ namespace HA4IoT.Hardware.CCTools
             _state = new byte[portExpanderDriver.StateSize];
 
             _apiController = apiController;
-            _logger = logger;
 
             ExposeToApi();
         }
@@ -96,7 +93,7 @@ namespace HA4IoT.Hardware.CCTools
                 _portExpanderDriver.Write(_state);
                 Array.Copy(_state, _committedState, _state.Length);
 
-                _logger.Verbose(Id + ": Committed state");
+                Log.Verbose(Id + ": Committed state");
             }
         }
 
@@ -110,7 +107,7 @@ namespace HA4IoT.Hardware.CCTools
             {
                 if (_peekedState != null)
                 {
-                    _logger.Warning("Peeking state while previous peeked state is not processed at " + Id + "'.");
+                    Log.Warning("Peeking state while previous peeked state is not processed at " + Id + "'.");
                 }
 
                 _peekedState = _portExpanderDriver.Read();
@@ -143,7 +140,7 @@ namespace HA4IoT.Hardware.CCTools
                 Array.Copy(newState, _state, _state.Length);
                 Array.Copy(newState, _committedState, _committedState.Length);
 
-                _logger.Verbose("'" + Id + "' fetched different state (" +
+                Log.Verbose("'" + Id + "' fetched different state (" +
                                              ByteExtensions.ToString(oldState) + "->" +
                                              ByteExtensions.ToString(newState) + ").");
 

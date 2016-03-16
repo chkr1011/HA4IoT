@@ -12,8 +12,8 @@ namespace HA4IoT.Actuators
 
         private BinaryActuatorState _state = BinaryActuatorState.Off;
 
-        protected BinaryStateOutputActuator(ActuatorId id, IBinaryStateEndpoint endpoint, IApiController apiController, ILogger logger) 
-            : base(id, apiController, logger)
+        protected BinaryStateOutputActuator(ActuatorId id, IBinaryStateEndpoint endpoint, IApiController apiController) 
+            : base(id, apiController)
         {
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
 
@@ -48,7 +48,7 @@ namespace HA4IoT.Actuators
             _state = state;
             
             OnStateChanged(oldState, _state);
-            Logger.Info($"{Id}:{oldState}->{state}");
+            Log.Info($"{Id}:{oldState}->{state}");
         }
 
         protected override BinaryActuatorState GetStateInternal()

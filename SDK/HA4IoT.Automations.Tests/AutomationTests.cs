@@ -34,7 +34,7 @@ namespace HA4IoT.Automations.Tests
         public void Automation_WithCondition()
         {
             var testController = new TestController();
-            var automation = new Automation(AutomationIdFactory.EmptyId, testController.ApiController, testController.Logger);
+            var automation = new Automation(AutomationIdFactory.EmptyId, testController.ApiController);
 
             var testButton = new TestButton();
             var testOutput = new TestBinaryStateOutputActuator();
@@ -57,7 +57,7 @@ namespace HA4IoT.Automations.Tests
         private Automation CreateAutomation()
         {
             var testController = new TestController();
-            return new Automation(AutomationIdFactory.EmptyId, testController.ApiController, testController.Logger);
+            return new Automation(AutomationIdFactory.EmptyId, testController.ApiController);
         }
     }
 }

@@ -1,12 +1,9 @@
 ﻿using System;
 using System.IO;
 using Windows.Data.Json;
-using Windows.Storage;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Logging;
-using HA4IoT.Core;
 using HA4IoT.Core.Settings;
 using HA4IoT.Networking;
 
@@ -14,8 +11,8 @@ namespace HA4IoT.Automations
 {
     public class AutomationSettings : SettingsContainer, IAutomationSettings
     {
-        public AutomationSettings(AutomationId automationId, IApiController apiController, ILogger logger)
-            : base(GenerateFilename(automationId), logger)
+        public AutomationSettings(AutomationId automationId, IApiController apiController)
+            : base(GenerateFilename(automationId))
         {
             if (apiController == null) throw new ArgumentNullException(nameof(apiController));
 

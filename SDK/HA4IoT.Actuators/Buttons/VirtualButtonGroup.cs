@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
-using HA4IoT.Contracts.Logging;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
@@ -12,10 +11,10 @@ namespace HA4IoT.Actuators
     {
         private readonly Dictionary<ActuatorId, VirtualButton> _buttons = new Dictionary<ActuatorId, VirtualButton>();
 
-        public VirtualButtonGroup(ActuatorId id, IApiController apiController, ILogger logger)
-            : base(id, apiController, logger)
+        public VirtualButtonGroup(ActuatorId id, IApiController apiController)
+            : base(id, apiController)
         {
-            Settings = new ActuatorSettings(id, logger);
+            Settings = new ActuatorSettings(id);
         }
 
         public VirtualButtonGroup WithButton(ActuatorId id, Action<VirtualButton> initializer)
@@ -27,7 +26,7 @@ namespace HA4IoT.Actuators
                 throw new InvalidOperationException("Button with id " + id + " already part of the button group.");
             }
 
-            var virtualButton = new VirtualButton(id, ApiController, Logger);
+            var virtualButton = new VirtualButton(id, ApiController);
             initializer(virtualButton);
 
             _buttons.Add(id, virtualButton);

@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Core;
 
 namespace HA4IoT.Tests.Mockups
@@ -7,7 +8,7 @@ namespace HA4IoT.Tests.Mockups
     {
         public TestController()
         {
-            Logger = new TestLogger();
+            Log.Instance = new TestLogger();
             Timer = new TestHomeAutomationTimer();
         }
 

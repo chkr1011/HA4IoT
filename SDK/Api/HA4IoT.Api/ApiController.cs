@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using Windows.Data.Json;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
@@ -24,6 +25,8 @@ namespace HA4IoT.Api
             if (name == null) throw new ArgumentNullException(nameof(name));
 
             _name = name;
+
+            RouteRequest("requests", HandleRequestApiDescription);
         }
 
         public void NotifyStateChanged(IActuator actuator)
@@ -39,6 +42,7 @@ namespace HA4IoT.Api
 
         public void RouteRequest(string uri, Action<IApiContext> handler)
         {
+            if (uri == null) throw new ArgumentNullException(nameof(uri));
             if (handler == null) throw new ArgumentNullException(nameof(handler));
 
             _requestRoutes.Add(GenerateUri(uri), handler);
@@ -46,6 +50,7 @@ namespace HA4IoT.Api
 
         public void RouteCommand(string uri, Action<IApiContext> handler)
         {
+            if (uri == null) throw new ArgumentNullException(nameof(uri));
             if (handler == null) throw new ArgumentNullException(nameof(handler));
 
             _commandRoutes.Add(GenerateUri(uri), handler);
@@ -94,19 +99,26 @@ namespace HA4IoT.Api
             try
             {
                 handler(apiContext);
-
                 stopwatch.Stop();
 
                 var metaInformation = new JsonObject();
+                metaInformation.SetNamedString("Hash", "[HASH]");
+                metaInformation.SetNamedString("ProcessingDuration", "[PROCESSING_DURATION]");
+                apiContext.Response.SetNamedObject("Meta", metaInformation);
 
+                apiContext.SerializedResponse = apiContext.Response.Stringify();
+
+                string hash = null;
                 if (apiContext.CallType == ApiCallType.Request)
                 {
-                    metaInformation.SetNamedValue("Hash", GenerateHash(apiContext.Response).ToJsonValue());
+                    hash = GenerateHash(apiContext.SerializedResponse);
                 }
 
-                metaInformation.SetNamedValue("ProcessingDuration", stopwatch.ElapsedMilliseconds.ToJsonValue());
+                metaInformation.SetNamedString("Hash", hash);
+                metaInformation.SetNamedNumber("ProcessingDuration", stopwatch.ElapsedMilliseconds);
 
-                apiContext.Response.SetNamedValue("Meta", metaInformation);
+                apiContext.SerializedResponse = apiContext.SerializedResponse.Replace("[HASH]", hash);
+                apiContext.SerializedResponse = apiContext.SerializedResponse.Replace("[PROCESSING_DURATION]", stopwatch.ElapsedMilliseconds.ToString(NumberFormatInfo.InvariantInfo));
             }
             catch (Exception exception)
             {
@@ -115,12 +127,31 @@ namespace HA4IoT.Api
             }
         }
 
-        private string GenerateHash(JsonObject input)
+        private string GenerateHash(string input)
         {
-            IBuffer buffer = CryptographicBuffer.ConvertStringToBinary(input.Stringify(), BinaryStringEncoding.Utf8);
+            IBuffer buffer = CryptographicBuffer.ConvertStringToBinary(input, BinaryStringEncoding.Utf8);
             IBuffer hashBuffer = _hashAlgorithm.HashData(buffer);
 
             return CryptographicBuffer.EncodeToBase64String(hashBuffer);
+        }
+
+        private void HandleRequestApiDescription(IApiContext apiContext)
+        {
+            var requestRoutes = new JsonArray();
+            foreach (var requestRoute in _requestRoutes)
+            {
+                requestRoutes.Add(JsonValue.CreateStringValue(requestRoute.Key));
+            }
+
+            apiContext.Response.SetNamedArray("Requests", requestRoutes);
+
+            var commandRoutes = new JsonArray();
+            foreach (var commandRoute in _commandRoutes)
+            {
+                commandRoutes.Add(JsonValue.CreateStringValue(commandRoute.Key));
+            }
+
+            apiContext.Response.SetNamedArray("Commands", requestRoutes);
         }
     }
 }

@@ -33,7 +33,6 @@ namespace HA4IoT.Core
         private BackgroundTaskDeferral _deferral;
         private HttpServer _httpServer;
 
-        public ILogger Logger { get; protected set; }
         public IApiController ApiController { get; } = new ApiController("api"); 
         public IHomeAutomationTimer Timer { get; protected set; }
         public IControllerSettings Settings { get; private set; }
@@ -162,7 +161,7 @@ namespace HA4IoT.Core
 
         protected void InitializeAzureCloudApiEndpoint()
         {
-            var azureCloudApiDispatcherEndpoint = new AzureCloudApiDispatcherEndpoint(Logger);
+            var azureCloudApiDispatcherEndpoint = new AzureCloudApiDispatcherEndpoint();
 
             azureCloudApiDispatcherEndpoint.TryInitializeFromConfigurationFile(
                 StoragePath.WithFilename("AzureCloudApiDispatcherEndpointSettings.json"));
@@ -172,7 +171,7 @@ namespace HA4IoT.Core
 
         private HomeAutomationTimer InitializeTimer()
         {
-            var timer = new HomeAutomationTimer(Logger);
+            var timer = new HomeAutomationTimer();
             Timer = timer;
 
             return timer;
@@ -181,9 +180,10 @@ namespace HA4IoT.Core
         private void InitializeLogging()
         {
             var logger = new Logger.Logger();
+            Log.Instance = logger;
+
             logger.ExposeToApi(ApiController);
             logger.Info("Starting...");
-            Logger = logger;
         }
 
         private void InitializeCore()
@@ -208,7 +208,7 @@ namespace HA4IoT.Core
                 AttachActuatorHistory();
 
                 stopwatch.Stop();
-                Logger.Info("Startup completed after " + stopwatch.Elapsed);
+                Log.Info("Startup completed after " + stopwatch.Elapsed);
 
                 timer.Run();
             }
@@ -226,7 +226,7 @@ namespace HA4IoT.Core
 
         private void LoadControllerSettings()
         {
-            var settings = new ControllerSettings(StoragePath.WithFilename("Settings.json"), Logger);
+            var settings = new ControllerSettings(StoragePath.WithFilename("Settings.json"));
             settings.Load();
 
             Settings = settings;
@@ -240,7 +240,7 @@ namespace HA4IoT.Core
             }
             catch (Exception exception)
             {
-                Logger.Error(exception, "Error while initializing");
+                Log.Error(exception, "Error while initializing");
             }
         }
 
@@ -269,7 +269,7 @@ namespace HA4IoT.Core
                 var sensorActuator = actuator as ISingleValueSensorActuator;
                 if (sensorActuator != null)
                 {
-                    var history = new SensorActuatorHistory(sensorActuator, Logger);
+                    var history = new SensorActuatorHistory(sensorActuator);
                     history.ExposeToApi(ApiController);
                 }
             }

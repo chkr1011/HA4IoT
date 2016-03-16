@@ -9,8 +9,6 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.Triggers;
 using HA4IoT.Contracts.WeatherStation;
 
@@ -33,12 +31,12 @@ namespace HA4IoT.Automations
         private bool _turnOffIfButtonPressedWhileAlreadyOn;
         private bool _isOn;
         
-        public TurnOnAndOffAutomation(AutomationId id, IHomeAutomationTimer timer, IApiController apiController, ILogger logger)
+        public TurnOnAndOffAutomation(AutomationId id, IHomeAutomationTimer timer, IApiController apiController)
             : base(id)
         {
             _timer = timer;
 
-            Settings = new TurnOnAndOffAutomationSettings(id, apiController, logger);
+            Settings = new TurnOnAndOffAutomationSettings(id, apiController);
         }
 
         public TurnOnAndOffAutomation WithTrigger(IMotionDetector motionDetector, params IHardwareParameter[] parameters)
