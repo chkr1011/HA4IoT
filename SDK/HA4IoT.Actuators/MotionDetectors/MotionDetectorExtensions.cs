@@ -12,23 +12,28 @@ namespace HA4IoT.Actuators
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (input == null) throw new ArgumentNullException(nameof(input));
 
-            var motionDetector = new MotionDetector(ActuatorIdFactory.Create(room, id), input, room.Controller.Timer, room.Controller.HttpApiController, room.Controller.Logger);
+            var motionDetector = new MotionDetector(
+                ActuatorIdFactory.Create(room, id), 
+                new PortBasedMotionDetectorEndpoint(input), 
+                room.Controller.Timer, 
+                room.Controller.ApiController);
+
             room.AddActuator(motionDetector);
             return room;
         }
 
-        public static IMotionDetector MotionDetector(this IArea room, Enum id)
+        public static IMotionDetector GetMotionDetector(this IArea room, Enum id)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 
-            return room.Actuator<IMotionDetector>(ActuatorIdFactory.Create(room, id));
+            return room.GetActuator<IMotionDetector>(ActuatorIdFactory.Create(room, id));
         }
 
-        public static IMotionDetector MotionDetector(this IArea room)
+        public static IMotionDetector GetMotionDetector(this IArea room)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 
-            return room.Actuator<IMotionDetector>();
+            return room.GetActuator<IMotionDetector>();
         }
     }
 }

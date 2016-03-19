@@ -12,25 +12,20 @@ namespace HA4IoT.Hardware
     {
         public static readonly DeviceId DefaultId = new DeviceId("I2C.BuiltIn");
 
-        private readonly Dictionary<int, I2cDevice> _deviceCache = new Dictionary<int, I2cDevice>();
-
-        private readonly string _i2CBusId;
-
-        private readonly ILogger _logger;
         private readonly object _syncRoot = new object();
-
-        public BuiltInI2CBus(ILogger logger) 
-            : this(DefaultId, logger)
+        private readonly Dictionary<int, I2cDevice> _deviceCache = new Dictionary<int, I2cDevice>();
+        private readonly string _i2CBusId;
+        
+        public BuiltInI2CBus() 
+            : this(DefaultId)
         {
         }
 
-        public BuiltInI2CBus(DeviceId id, ILogger logger)
+        public BuiltInI2CBus(DeviceId id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
 
             Id = id;
-            _logger = logger;
 
             string deviceSelector = I2cDevice.GetDeviceSelector();
             
@@ -60,7 +55,7 @@ namespace HA4IoT.Hardware
                 catch (Exception exception)
                 {
                     // Ensure that the application will not crash if some devices are currently not available etc.
-                    _logger.Warning("Error while accessing I2C device with address " + address + ". " + exception.Message);
+                    Log.Warning(exception, $"Error while accessing I2C device with address {address}.");
                 }
                 finally
                 {

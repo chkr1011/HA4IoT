@@ -11,8 +11,8 @@ namespace HA4IoT.Conditions
         public RelatedCondition WithCondition(Condition condition)
         {
             if (condition == null) throw new ArgumentNullException(nameof(condition));
-            Condition = condition;
 
+            Condition = condition;
             return this;
         }
 

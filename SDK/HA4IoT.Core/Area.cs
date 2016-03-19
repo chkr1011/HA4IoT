@@ -20,7 +20,7 @@ namespace HA4IoT.Core
             Id = id;
             Controller = controller;
 
-            Settings = new AreaSettings(id, controller.Logger);
+            Settings = new AreaSettings(id);
         }
 
         public AreaId Id { get; }
@@ -35,22 +35,22 @@ namespace HA4IoT.Core
             Controller.AddActuator(actuator);
         }
 
-        public TActuator Actuator<TActuator>() where TActuator : IActuator
+        public TActuator GetActuator<TActuator>() where TActuator : IActuator
         {
             return _actuators.Get<TActuator>();
         }
 
-        public IList<TActuator> Actuators<TActuator>() where TActuator : IActuator
+        public IList<TActuator> GetActuators<TActuator>() where TActuator : IActuator
         {
             return _actuators.GetAll<TActuator>();
         }
 
-        public IList<IActuator> Actuators()
+        public IList<IActuator> GetActuators()
         {
             return _actuators.GetAll();
         }
 
-        public TActuator Actuator<TActuator>(ActuatorId id) where TActuator : IActuator
+        public TActuator GetActuator<TActuator>(ActuatorId id) where TActuator : IActuator
         {
             return _actuators.Get<TActuator>(id);
         }
@@ -61,17 +61,17 @@ namespace HA4IoT.Core
             Controller.AddAutomation(automation);
         }
 
-        public IList<TAutomation> Automations<TAutomation>() where TAutomation : IAutomation
+        public IList<TAutomation> GetAutomations<TAutomation>() where TAutomation : IAutomation
         {
             return _automations.GetAll<TAutomation>();
         }
 
-        public TAutomation Automation<TAutomation>(AutomationId id) where TAutomation : IAutomation
+        public TAutomation GetAutomation<TAutomation>(AutomationId id) where TAutomation : IAutomation
         {
             return _automations.Get<TAutomation>(id);
         }
 
-        public IList<IAutomation> Automations()
+        public IList<IAutomation> GetAutomations()
         {
             return _automations.GetAll();
         }
@@ -88,7 +88,7 @@ namespace HA4IoT.Core
 
         public void ExposeToApi()
         {
-            new AreaSettingsHttpApiDispatcher(Settings, Controller.HttpApiController).ExposeToApi();
+            new AreaSettingsApiDispatcher(Settings, Controller.ApiController).ExposeToApi();
         }
     }
 }

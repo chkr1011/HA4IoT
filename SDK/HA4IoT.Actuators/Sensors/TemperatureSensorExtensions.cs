@@ -28,15 +28,15 @@ namespace HA4IoT.Actuators
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (sensor == null) throw new ArgumentNullException(nameof(sensor));
 
-            room.AddActuator(new TemperatureSensor(ActuatorIdFactory.Create(room, id), sensor, room.Controller.HttpApiController, room.Controller.Logger));
+            room.AddActuator(new TemperatureSensor(ActuatorIdFactory.Create(room, id), sensor, room.Controller.ApiController));
             return room;
         }
         
-        public static ITemperatureSensor TemperatureSensor(this IArea room, Enum id)
+        public static ITemperatureSensor GetTemperatureSensor(this IArea room, Enum id)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 
-            return room.Actuator<TemperatureSensor>(ActuatorIdFactory.Create(room, id));
+            return room.GetActuator<ITemperatureSensor>(ActuatorIdFactory.Create(room, id));
         }
     }
 }

@@ -1,55 +1,96 @@
 ﻿using System;
 using System.Diagnostics;
+using Windows.Data.Json;
+using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
+using HA4IoT.Contracts.Triggers;
+using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public class Button : ButtonBase
+    public class Button : ActuatorBase<ButtonSettings>, IButton
     {
         private readonly Stopwatch _stopwatch = new Stopwatch();
+        private readonly Trigger _pressedShortlyTrigger = new Trigger();
+        private readonly Trigger _pressedLongTrigger = new Trigger();
 
-        public Button(ActuatorId id, IBinaryInput input, IHttpRequestController api, ILogger logger, IHomeAutomationTimer timer)
-            : base(id, api, logger)
+        private ButtonState _state = ButtonState.Released;
+
+        public Button(ActuatorId id, IButtonEndpoint endpoint, IApiController apiController, IHomeAutomationTimer timer)
+            : base(id, apiController)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
-            if (input == null) throw new ArgumentNullException(nameof(input));
-            
+            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
+
+            Settings = new ButtonSettings(id);
+
             timer.Tick += CheckForTimeout;
-            input.StateChanged += HandleInputStateChanged;
+            endpoint.Pressed += (s, e) => HandleInputStateChanged(ButtonState.Pressed);
+            endpoint.Released += (s, e) => HandleInputStateChanged(ButtonState.Released);
         }
 
-        public TimeSpan TimeoutForPressedLongActions { get; set; } = TimeSpan.FromSeconds(1.5);
+        public event EventHandler<ButtonStateChangedEventArgs> StateChanged;
 
-        private void HandleInputStateChanged(object sender, BinaryStateChangedEventArgs e)
+        public ButtonState GetState()
         {
-            bool buttonIsPressed = e.NewState == BinaryState.High;
-            bool buttonIsReleased = e.NewState == BinaryState.Low;
+            return _state;
+        }
 
-            if (buttonIsReleased)
+        public ITrigger GetPressedShortlyTrigger()
+        {
+            return _pressedShortlyTrigger;
+        }
+
+        public ITrigger GetPressedLongTrigger()
+        {
+            return _pressedLongTrigger;
+        }
+
+        protected override void HandleApiCommand(IApiContext apiContext)
+        {
+            string action = apiContext.Request.GetNamedString("duration", string.Empty);
+            if (action.Equals(ButtonPressedDuration.Long.ToString(), StringComparison.OrdinalIgnoreCase))
             {
-                SetState(ButtonState.Released);
-            }
-            else if (buttonIsPressed)
-            {
-                SetState(ButtonState.Pressed);
+                OnPressedLong();
             }
             else
             {
-                throw new NotSupportedException();
+                OnPressedShort();
             }
+        }
+
+        public override JsonObject ExportStatusToJsonObject()
+        {
+            var status = base.ExportStatusToJsonObject();
+            status.SetNamedValue("state", _state.ToJsonValue());
+
+            return status;
+        }
+
+        private void HandleInputStateChanged(ButtonState state)
+        {
+            var oldState = _state;
+            _state = state;
 
             if (!Settings.IsEnabled.Value)
             {
                 return;
             }
 
-            if (buttonIsPressed)
+            StateChanged?.Invoke(this, new ButtonStateChangedEventArgs(oldState, state));
+            ApiController.NotifyStateChanged(this);
+
+            InvokeTriggers();
+        }
+
+        private void InvokeTriggers()
+        {
+            if (_state == ButtonState.Pressed)
             {
-                if (!IsActionForPressedLongAttached)
+                if (!_pressedLongTrigger.IsAnyAttached)
                 {
                     OnPressedShort();
                 }
@@ -58,7 +99,7 @@ namespace HA4IoT.Actuators
                     _stopwatch.Restart();
                 }
             }
-            else
+            else if (_state == ButtonState.Released)
             {
                 if (!_stopwatch.IsRunning)
                 {
@@ -66,7 +107,7 @@ namespace HA4IoT.Actuators
                 }
 
                 _stopwatch.Stop();
-                if (_stopwatch.Elapsed >= TimeoutForPressedLongActions)
+                if (_stopwatch.Elapsed >= Settings.PressedLongDuration.Value)
                 {
                     OnPressedLong();
                 }
@@ -84,11 +125,23 @@ namespace HA4IoT.Actuators
                 return;
             }
 
-            if (_stopwatch.Elapsed > TimeoutForPressedLongActions)
+            if (_stopwatch.Elapsed > Settings.PressedLongDuration.Value)
             {
                 _stopwatch.Stop();
                 OnPressedLong();
             }
+        }
+
+        private void OnPressedShort()
+        {
+            Log.Info($"{Id}: pressed short");
+            _pressedShortlyTrigger.Execute();
+        }
+
+        private void OnPressedLong()
+        {
+            Log.Info($"{Id}: pressed long");
+            _pressedLongTrigger.Execute();
         }
     }
 }

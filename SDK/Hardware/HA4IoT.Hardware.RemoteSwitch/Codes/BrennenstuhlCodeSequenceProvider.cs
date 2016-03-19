@@ -4,6 +4,13 @@ namespace HA4IoT.Hardware.RemoteSwitch.Codes
 {
     public class BrennenstuhlCodeSequenceProvider
     {
+        public LPD433MHzCodeSequencePair GetSequencePair(BrennenstuhlSystemCode systemCode, BrennenstuhlUnitCode unitCode)
+        {
+            return new LPD433MHzCodeSequencePair(
+                GetSequence(systemCode, unitCode, RemoteSocketCommand.TurnOn),
+                GetSequence(systemCode, unitCode, RemoteSocketCommand.TurnOff));
+        }
+
         public LPD433MHzCodeSequence GetSequence(BrennenstuhlSystemCode systemCode, BrennenstuhlUnitCode unitCode, RemoteSocketCommand command)
         {
             // Examples:

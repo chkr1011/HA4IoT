@@ -11,7 +11,7 @@ namespace HA4IoT.Actuators
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
 
-            var stateMachine = new StateMachine(ActuatorIdFactory.Create(room, id), room.Controller.HttpApiController, room.Controller.Logger);
+            var stateMachine = new StateMachine(ActuatorIdFactory.Create(room, id), room.Controller.ApiController);
             initializer(stateMachine, room);
             stateMachine.SetInitialState();
 
@@ -19,11 +19,11 @@ namespace HA4IoT.Actuators
             return room;
         }
 
-        public static IStateMachine StateMachine(this IArea room, Enum id)
+        public static IStateMachine GetStateMachine(this IArea room, Enum id)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 
-            return room.Actuator<IStateMachine>(ActuatorIdFactory.Create(room, id));
+            return room.GetActuator<IStateMachine>(ActuatorIdFactory.Create(room, id));
         }
     }
 }

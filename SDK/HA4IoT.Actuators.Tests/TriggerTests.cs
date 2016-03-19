@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using HA4IoT.Actuators.Triggers;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -21,7 +22,7 @@ namespace HA4IoT.Actuators.Tests
             trigger.Triggered += (s, e) => eventTriggered = true;
             trigger.IsAnyAttached.ShouldBeEquivalentTo(true);
 
-            trigger.Invoke();
+            trigger.Execute();
 
             attachTriggered.ShouldBeEquivalentTo(true);
             eventTriggered.ShouldBeEquivalentTo(true);
@@ -30,7 +31,7 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void SensorValueReached_Trigger()
         {
-            var sensor = new TestSensor(ActuatorIdFactory.EmptyId, new TestLogger());
+            var sensor = new TestSensor(ActuatorIdFactory.EmptyId);
             var trigger = new SensorValueReachedTrigger(sensor);
             trigger.Target = 10.2F;
             trigger.Delta = 3.0F;
@@ -63,7 +64,7 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void SensorValueUnderran_Trigger()
         {
-            var sensor = new TestSensor(ActuatorIdFactory.EmptyId, new TestLogger());
+            var sensor = new TestSensor(ActuatorIdFactory.EmptyId);
             var trigger = new SensorValueUnderranTrigger(sensor);
             trigger.Target = 10F;
             trigger.Delta = 3F;
@@ -94,6 +95,21 @@ namespace HA4IoT.Actuators.Tests
 
             sensor.SetValue(9.9F);
             triggerCount.ShouldBeEquivalentTo(3);
+        }
+
+        [TestMethod]
+        public void Associate_TriggerWithActuatorAction()
+        {
+            var testButton = new TestButton();
+            var testOutput = new TestBinaryStateOutputActuator();
+
+            testButton.GetPressedShortlyTrigger().OnTriggered(testOutput.GetToggleStateAction());
+
+            testOutput.GetState().ShouldBeEquivalentTo(BinaryActuatorState.Off);
+            testButton.PressShort();
+            testOutput.GetState().ShouldBeEquivalentTo(BinaryActuatorState.On);
+            testButton.PressShort();
+            testOutput.GetState().ShouldBeEquivalentTo(BinaryActuatorState.Off);
         }
     }
 }

@@ -47,7 +47,7 @@ namespace HA4IoT.Controller.Main.Rooms
             var input1 = controller.Device<HSPE16InputOnly>(Device.Input1);
             var input2 = controller.Device<HSPE16InputOnly>(Device.Input2);
 
-            var i2cHardwareBridge = controller.Device<I2CHardwareBridge>();
+            var i2cHardwareBridge = controller.GetDevice<I2CHardwareBridge>();
 
             const int SensorPin = 11;
 
@@ -68,21 +68,21 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithRollerShutterButtons(Kitchen.RollerShutterButtons, input2.GetInput(15), input2.GetInput(14))
                 .WithWindow(Kitchen.Window, w => w.WithCenterCasement(input0.GetInput(6), input0.GetInput(7)));
 
-            kitchen.Lamp(Kitchen.LightCeilingMiddle).ConnectToggleActionWith(kitchen.Button(Kitchen.ButtonKitchenette));
-            kitchen.Lamp(Kitchen.LightCeilingMiddle).ConnectToggleActionWith(kitchen.Button(Kitchen.ButtonPassage));
+            kitchen.GetLamp(Kitchen.LightCeilingMiddle).ConnectToggleActionWith(kitchen.GetButton(Kitchen.ButtonKitchenette));
+            kitchen.GetLamp(Kitchen.LightCeilingMiddle).ConnectToggleActionWith(kitchen.GetButton(Kitchen.ButtonPassage));
 
-            kitchen.SetupRollerShutterAutomation().WithRollerShutters(kitchen.RollerShutter(Kitchen.RollerShutter));
-            kitchen.RollerShutter(Kitchen.RollerShutter).ConnectWith(kitchen.RollerShutterButtons(Kitchen.RollerShutterButtons));
+            kitchen.SetupRollerShutterAutomation().WithRollerShutters(kitchen.GetRollerShutter(Kitchen.RollerShutter));
+            kitchen.GetRollerShutter(Kitchen.RollerShutter).ConnectWith(kitchen.GetRollerShutterButtons(Kitchen.RollerShutterButtons));
 
             kitchen.CombineActuators(Kitchen.CombinedAutomaticLights)
-                .WithActuator(kitchen.Lamp(Kitchen.LightCeilingWall))
-                .WithActuator(kitchen.Lamp(Kitchen.LightCeilingDoor))
-                .WithActuator(kitchen.Lamp(Kitchen.LightCeilingWindow));
+                .WithActuator(kitchen.GetLamp(Kitchen.LightCeilingWall))
+                .WithActuator(kitchen.GetLamp(Kitchen.LightCeilingDoor))
+                .WithActuator(kitchen.GetLamp(Kitchen.LightCeilingWindow));
 
             kitchen.SetupTurnOnAndOffAutomation()
-                .WithTrigger(kitchen.MotionDetector(Kitchen.MotionDetector))
+                .WithTrigger(kitchen.GetMotionDetector(Kitchen.MotionDetector))
                 .WithTarget(kitchen.BinaryStateOutput(Kitchen.CombinedAutomaticLights))
-                .WithEnabledAtNight(controller.Device<IWeatherStation>());
+                .WithEnabledAtNight(controller.GetDevice<IWeatherStation>());
         }
     }
 }

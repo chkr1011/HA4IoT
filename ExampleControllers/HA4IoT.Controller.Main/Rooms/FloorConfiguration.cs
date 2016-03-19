@@ -60,7 +60,7 @@ namespace HA4IoT.Controller.Main.Rooms
             var input2 = controller.Device<HSPE16InputOnly>(Device.Input2);
             var input4 = controller.Device<HSPE16InputOnly>(Device.Input4);
 
-            var i2cHardwareBridge = controller.Device<I2CHardwareBridge>();
+            var i2cHardwareBridge = controller.GetDevice<I2CHardwareBridge>();
 
             const int SensorPin = 5;
 
@@ -87,35 +87,35 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithButton(Floor.ButtonStairway, input1.GetInput(6));
 
             floor.CombineActuators(Floor.CombinedStairwayLamp)
-                .WithActuator(floor.Lamp(Floor.StairwayLampCeiling))
-                .WithActuator(floor.Lamp(Floor.StairwayLampWall));
+                .WithActuator(floor.GetLamp(Floor.StairwayLampCeiling))
+                .WithActuator(floor.GetLamp(Floor.StairwayLampWall));
 
             floor.SetupTurnOnAndOffAutomation()
-                .WithTrigger(floor.MotionDetector(Floor.StairwayMotionDetector))
-                .WithTrigger(floor.Button(Floor.ButtonStairway).GetPressedShortlyTrigger())
+                .WithTrigger(floor.GetMotionDetector(Floor.StairwayMotionDetector))
+                .WithTrigger(floor.GetButton(Floor.ButtonStairway).GetPressedShortlyTrigger())
                 .WithTarget(floor.BinaryStateOutput(Floor.CombinedStairwayLamp))
-                .WithEnabledAtNight(controller.Device<IWeatherStation>())
+                .WithEnabledAtNight(controller.GetDevice<IWeatherStation>())
                 .WithOnDuration(TimeSpan.FromSeconds(30));
 
             floor.CombineActuators(Floor.CombinedLamps)
-                .WithActuator(floor.Lamp(Floor.Lamp1))
-                .WithActuator(floor.Lamp(Floor.Lamp2))
-                .WithActuator(floor.Lamp(Floor.Lamp3));
+                .WithActuator(floor.GetLamp(Floor.Lamp1))
+                .WithActuator(floor.GetLamp(Floor.Lamp2))
+                .WithActuator(floor.GetLamp(Floor.Lamp3));
 
             floor.SetupTurnOnAndOffAutomation()
-                .WithTrigger(floor.MotionDetector(Floor.LowerFloorMotionDetector))
-                .WithTrigger(floor.Button(Floor.ButtonLowerFloorUpper).GetPressedShortlyTrigger())
-                .WithTrigger(floor.Button(Floor.ButtonLowerFloorAtBathroom).GetPressedShortlyTrigger())
-                .WithTrigger(floor.Button(Floor.ButtonLowerFloorAtKitchen).GetPressedShortlyTrigger())
+                .WithTrigger(floor.GetMotionDetector(Floor.LowerFloorMotionDetector))
+                .WithTrigger(floor.GetButton(Floor.ButtonLowerFloorUpper).GetPressedShortlyTrigger())
+                .WithTrigger(floor.GetButton(Floor.ButtonLowerFloorAtBathroom).GetPressedShortlyTrigger())
+                .WithTrigger(floor.GetButton(Floor.ButtonLowerFloorAtKitchen).GetPressedShortlyTrigger())
                 .WithTarget(floor.BinaryStateOutput(Floor.CombinedLamps))
-                .WithEnabledAtNight(controller.Device<IWeatherStation>())
+                .WithEnabledAtNight(controller.GetDevice<IWeatherStation>())
                 .WithTurnOffIfButtonPressedWhileAlreadyOn()
                 .WithOnDuration(TimeSpan.FromSeconds(20));
 
             SetupStairsCeilingLamps(floor, hspe8UpperFloor);
-            SetupStairsLamps(floor, controller.Device<IWeatherStation>(), hspe16FloorAndLowerBathroom);
+            SetupStairsLamps(floor, controller.GetDevice<IWeatherStation>(), hspe16FloorAndLowerBathroom);
             
-            floor.SetupRollerShutterAutomation().WithRollerShutters(floor.RollerShutter(Floor.StairwayRollerShutter));
+            floor.SetupRollerShutterAutomation().WithRollerShutters(floor.GetRollerShutter(Floor.StairwayRollerShutter));
         }
 
         private void SetupStairsCeilingLamps(IArea floor, HSPE8OutputOnly hspe8UpperFloor)
@@ -130,15 +130,15 @@ namespace HA4IoT.Controller.Main.Rooms
             floor.WithLamp(Floor.LampStairsCeiling, output);
 
             floor.SetupTurnOnAndOffAutomation()
-                .WithTrigger(floor.MotionDetector(Floor.StairsLowerMotionDetector), new AnimateParameter())
-                .WithTrigger(floor.MotionDetector(Floor.StairsUpperMotionDetector))
+                .WithTrigger(floor.GetMotionDetector(Floor.StairsLowerMotionDetector), new AnimateParameter())
+                .WithTrigger(floor.GetMotionDetector(Floor.StairsUpperMotionDetector))
                 //.WithTrigger(floor.Button(Floor.ButtonStairsUpper))
                 .WithTarget(floor.BinaryStateOutput(Floor.LampStairsCeiling))
                 .WithOnDuration(TimeSpan.FromSeconds(10));
 
-            var lamp = floor.Lamp(Floor.LampStairsCeiling);
+            var lamp = floor.GetLamp(Floor.LampStairsCeiling);
 
-            floor.Button(Floor.ButtonStairsUpper).GetPressedShortlyTrigger().Triggered += (s, e) =>
+            floor.GetButton(Floor.ButtonStairsUpper).GetPressedShortlyTrigger().Triggered += (s, e) =>
             {
                 if (lamp.GetState() == BinaryActuatorState.On)
                 {
@@ -150,7 +150,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 }
             };
 
-            floor.Button(Floor.ButtonStairsLowerUpper).GetPressedShortlyTrigger().Triggered += (s, e) =>
+            floor.GetButton(Floor.ButtonStairsLowerUpper).GetPressedShortlyTrigger().Triggered += (s, e) =>
             {
                 if (lamp.GetState() == BinaryActuatorState.On)
                 {
@@ -177,7 +177,7 @@ namespace HA4IoT.Controller.Main.Rooms
             floor.WithLamp(Floor.LampStairs, output);
 
             floor.SetupConditionalOnAutomation()
-                .WithActuator(floor.Lamp(Floor.LampStairs))
+                .WithActuator(floor.GetLamp(Floor.LampStairs))
                 .WithOnAtNightRange(weatherStation)
                 .WithOffBetweenRange(TimeSpan.FromHours(23), TimeSpan.FromHours(4));
         }

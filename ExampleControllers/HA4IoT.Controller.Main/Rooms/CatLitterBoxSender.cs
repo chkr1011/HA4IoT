@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Threading.Tasks;
-using Windows.Data.Json;
-using Windows.Storage;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Core.Timer;
+using HA4IoT.ExternalServices.Twitter;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
     internal class CatLitterBoxTwitterSender
     {
-        private readonly ILogger _log;
         private const string Suffix = "\r\nTime in litter box: {0}s\r\nNr. this day: {1}\r\n@chkratky";
 
         private readonly Timeout _timeout = new Timeout(TimeSpan.FromSeconds(30));
@@ -41,12 +38,10 @@ namespace HA4IoT.Controller.Main.Rooms
                 "Hey, this one looks like you :-)"         
             };
 
-        public CatLitterBoxTwitterSender(IHomeAutomationTimer timer, ILogger log)
+        public CatLitterBoxTwitterSender(IHomeAutomationTimer timer)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
-            if (log == null) throw new ArgumentNullException(nameof(log));
 
-            _log = log;
             timer.Tick += Tick;
         }
 
@@ -100,25 +95,27 @@ namespace HA4IoT.Controller.Main.Rooms
             UpdateCounter();
 
             string message = GenerateMessage();
-            _log.Verbose("Trying to tweet '" + message + "'.");
+            Log.Verbose("Trying to tweet '" + message + "'.");
 
             try
             {
-                var twitterApi = GetTwitterApiWithCredentials();
-                if (twitterApi == null)
+                TwitterClient twitterClient;
+                if (!TwitterClientFactory.TryCreateFromDefaultConfigurationFile(out twitterClient))
                 {
-                    _log.Verbose("Twitter API is disabled.");
+                    Log.Verbose("Twitter API is disabled.");
                     return;
                 }
-
-                await twitterApi.Tweet(message);
+                
+                await twitterClient.Tweet(message);
 
                 _lastTweetTimestamp = DateTime.Now;
-                _log.Info("Successfully tweeted: " + message);
+                Log.Info("Successfully tweeted: " + message);
             }
             catch (Exception exception)
             {
-                _log.Warning("Failed to tweet. " + exception.Message);
+                Log.Warning("Failed to tweet. " + exception.Message);
+                Log.Warning("Failed to tweet. " + exception.Message);
+                Log.Warning("Failed to tweet. " + exception.Message);
             }
         }
 
@@ -162,27 +159,5 @@ namespace HA4IoT.Controller.Main.Rooms
                 _count = 1;
             }
         }
-
-        private TwitterApi GetTwitterApiWithCredentials()
-        {
-            string filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "TwitterConfiguration.json"); ;
-            if (!File.Exists(filename))
-            {
-                return null;
-            }
-
-            var twitterApi = new TwitterApi();
-
-            string fileContent = File.ReadAllText(filename);
-            JsonObject configuration = JsonObject.Parse(fileContent);
-
-            twitterApi.AccessToken = configuration.GetNamedString("AccessToken");
-            twitterApi.AccessTokenSecret = configuration.GetNamedString("AccessTokenSecret");
-            twitterApi.CosumerSecret = configuration.GetNamedString("ConsumerSecret");
-            twitterApi.ConsumerKey = configuration.GetNamedString("ConsumerKey");
-
-            return twitterApi;
-        }
-
     }
 }

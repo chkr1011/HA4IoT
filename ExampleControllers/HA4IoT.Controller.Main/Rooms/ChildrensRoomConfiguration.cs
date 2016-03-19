@@ -35,7 +35,7 @@ namespace HA4IoT.Controller.Main.Rooms
             var hsrel5 = ccToolsController.CreateHSREL5(Device.ChildrensRoomHSREL5, new I2CSlaveAddress(63));
             var input0 = controller.Device<HSPE16InputOnly>(Device.Input0);
 
-            var i2cHardwareBridge = controller.Device<I2CHardwareBridge>();
+            var i2cHardwareBridge = controller.GetDevice<I2CHardwareBridge>();
 
             const int SensorPin = 7;
 
@@ -51,11 +51,11 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithWindow(ChildrensRoom.Window, w => w.WithCenterCasement(input0.GetInput(5), input0.GetInput(4)))
                 .WithRollerShutterButtons(ChildrensRoom.RollerShutterButtons, input0.GetInput(1), input0.GetInput(2));
 
-            childrensRoom.Lamp(ChildrensRoom.LightCeilingMiddle).ConnectToggleActionWith(childrensRoom.Button(ChildrensRoom.Button));
+            childrensRoom.GetLamp(ChildrensRoom.LightCeilingMiddle).ConnectToggleActionWith(childrensRoom.GetButton(ChildrensRoom.Button));
 
-            childrensRoom.SetupRollerShutterAutomation().WithRollerShutters(childrensRoom.RollerShutter(ChildrensRoom.RollerShutter));
-            childrensRoom.RollerShutter(ChildrensRoom.RollerShutter)
-                .ConnectWith(childrensRoom.RollerShutterButtons(ChildrensRoom.RollerShutterButtons));
+            childrensRoom.SetupRollerShutterAutomation().WithRollerShutters(childrensRoom.GetRollerShutter(ChildrensRoom.RollerShutter));
+            childrensRoom.GetRollerShutter(ChildrensRoom.RollerShutter)
+                .ConnectWith(childrensRoom.GetRollerShutterButtons(ChildrensRoom.RollerShutterButtons));
         }
     }
 }

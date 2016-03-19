@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using HA4IoT.ManagementConsole.Chrome.ViewModel;
 using HA4IoT.ManagementConsole.Controller;
 using HA4IoT.ManagementConsole.Core;
+using HA4IoT.ManagementConsole.MainWindow.ViewModel;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.ManagementConsole.Configuration.ViewModels

@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using HA4IoT.ManagementConsole.Configuration.ViewModels.Settings;
+﻿using HA4IoT.ManagementConsole.Configuration.ViewModels.Settings;
 using HA4IoT.ManagementConsole.Core;
 using Newtonsoft.Json.Linq;
 
@@ -9,7 +8,6 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels
     {
         public AreaItemVM(string id) : base(id)
         {
-            Settings = new ObservableCollection<SettingItemVM>();
             Actuators = new SelectableObservableCollection<ActuatorItemVM>();
             Automations = new SelectableObservableCollection<AutomationItemVM>();
         }
@@ -17,8 +15,6 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels
         public int SortValue { get; set; }
 
         public StringSettingVM Caption { get; set; }
-
-        public ObservableCollection<SettingItemVM> Settings { get; private set; }
 
         public SelectableObservableCollection<ActuatorItemVM> Actuators { get; private set; }
 

@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Actuators.Animations
 {
-    public class AnimateParameter : IParameter
+    public class AnimateParameter : IHardwareParameter
     {
         public bool Reverse { get; set; }
 

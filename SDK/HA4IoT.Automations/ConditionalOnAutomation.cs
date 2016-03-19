@@ -1,32 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
+using HA4IoT.Actuators.Triggers;
 using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.WeatherStation;
 
 namespace HA4IoT.Automations
 {
     public class ConditionalOnAutomation : Automation
     {
-        private readonly List<IBinaryStateOutputActuator> _actuators = new List<IBinaryStateOutputActuator>();
+        private readonly IHomeAutomationTimer _timer;
 
-        public ConditionalOnAutomation(AutomationId id, IHomeAutomationTimer timer, IHttpRequestController httpApiController, ILogger logger) 
-            : base(id, timer, httpApiController, logger)
+        public ConditionalOnAutomation(AutomationId id, IHomeAutomationTimer timer, IApiController apiController) 
+            : base(id, apiController)
         {
-            WithAutoTrigger(TimeSpan.FromMinutes(1));
+            _timer = timer;
 
-            WithActionIfFulfilled(TurnOn);
-            WithActionIfNotFulfilled(TurnOff);
+            WithTrigger(new IntervalTrigger(TimeSpan.FromMinutes(1), timer));
         }
 
         public ConditionalOnAutomation WithOnAtNightRange(IWeatherStation weatherStation)
         {
-            var nightCondition = new TimeRangeCondition(Timer).WithStart(() => weatherStation.Daylight.Sunset).WithEnd(() => weatherStation.Daylight.Sunrise);
+            var nightCondition = new TimeRangeCondition(_timer).WithStart(() => weatherStation.Daylight.Sunset).WithEnd(() => weatherStation.Daylight.Sunrise);
             WithCondition(ConditionRelation.And, nightCondition);
 
             return this;
@@ -34,30 +32,17 @@ namespace HA4IoT.Automations
 
         public ConditionalOnAutomation WithOffBetweenRange(TimeSpan from, TimeSpan until)
         {
-            WithCondition(ConditionRelation.AndNot, new TimeRangeCondition(Timer).WithStart(() => from).WithEnd(() => until));
+            WithCondition(ConditionRelation.AndNot, new TimeRangeCondition(_timer).WithStart(() => from).WithEnd(() => until));
+
             return this;
         }
 
         public ConditionalOnAutomation WithActuator(IBinaryStateOutputActuator actuator)
         {
-            _actuators.Add(actuator);
+            WithActionIfConditionsFulfilled(actuator.GetTurnOnAction());
+            WithActionIfConditionsNotFulfilled(actuator.GetTurnOffAction());
+
             return this;
-        }
-
-        private void TurnOn()
-        {
-            foreach (var actuator in _actuators)
-            {
-                actuator.SetState(BinaryActuatorState.On);
-            }
-        }
-
-        private void TurnOff()
-        {
-            foreach (var actuator in _actuators)
-            {
-                actuator.SetState(BinaryActuatorState.Off);
-            }
         }
     }
 }

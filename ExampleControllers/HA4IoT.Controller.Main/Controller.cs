@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using Windows.Data.Json;
-using Windows.Storage;
-using HA4IoT.Configuration;
-using HA4IoT.Contracts.Core;
+﻿using HA4IoT.Configuration;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Controller.Main.Rooms;
 using HA4IoT.Core;
@@ -14,8 +9,6 @@ using HA4IoT.Hardware.OpenWeatherMapWeatherStation;
 using HA4IoT.Hardware.Pi2;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
-using HA4IoT.Telemetry.Azure;
-using HA4IoT.Telemetry.Csv;
 
 namespace HA4IoT.Controller.Main
 {
@@ -27,22 +20,22 @@ namespace HA4IoT.Controller.Main
 
             var pi2PortController = new Pi2PortController();
             
-            AddDevice(new BuiltInI2CBus(Logger));
-            AddDevice(new I2CHardwareBridge(new DeviceId("HB"), new I2CSlaveAddress(50), Device<II2CBus>(), Timer));
-            AddDevice(new OpenWeatherMapWeatherStation(OpenWeatherMapWeatherStation.DefaultDeviceId, Timer, HttpApiController, Logger));
+            AddDevice(new BuiltInI2CBus());
+            AddDevice(new I2CHardwareBridge(new DeviceId("HB"), new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer));
+            AddDevice(new OpenWeatherMapWeatherStation(OpenWeatherMapWeatherStation.DefaultDeviceId, Timer, ApiController));
 
-            var ccToolsBoardController = new CCToolsBoardController(this, Device<II2CBus>(), HttpApiController, Logger);
+            var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>(), ApiController);
             
             var configurationParser = new ConfigurationParser(this);
             configurationParser.RegisterConfigurationExtender(new CCToolsConfigurationExtender(configurationParser, this));
             configurationParser.ParseConfiguration();
             
-            ccToolsBoardController.CreateHSPE16InputOnly(Main.Device.Input0, new I2CSlaveAddress(42));
-            ccToolsBoardController.CreateHSPE16InputOnly(Main.Device.Input1, new I2CSlaveAddress(43));
-            ccToolsBoardController.CreateHSPE16InputOnly(Main.Device.Input2, new I2CSlaveAddress(47));
-            ccToolsBoardController.CreateHSPE16InputOnly(Main.Device.Input3, new I2CSlaveAddress(45));
-            ccToolsBoardController.CreateHSPE16InputOnly(Main.Device.Input4, new I2CSlaveAddress(46));
-            ccToolsBoardController.CreateHSPE16InputOnly(Main.Device.Input5, new I2CSlaveAddress(44));
+            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input0, new I2CSlaveAddress(42));
+            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input1, new I2CSlaveAddress(43));
+            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input2, new I2CSlaveAddress(47));
+            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input3, new I2CSlaveAddress(45));
+            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input4, new I2CSlaveAddress(46));
+            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input5, new I2CSlaveAddress(44));
 
             RemoteSocketController remoteSwitchController = SetupRemoteSwitchController();
             
@@ -57,14 +50,13 @@ namespace HA4IoT.Controller.Main
             new StoreroomConfiguration().Setup(this, ccToolsBoardController);
             new LivingRoomConfiguration().Setup(this, ccToolsBoardController);
             
-            //AttachAzureEventHubPublisher(home);
+            ////var localCsvFileWriter = new CsvHistory(Logger, ApiController);
+            ////localCsvFileWriter.ConnectActuators(this);
+            ////localCsvFileWriter.ExposeToApi(ApiController);
 
-            var localCsvFileWriter = new CsvHistory(Logger, HttpApiController);
-            localCsvFileWriter.ConnectActuators(this);
-            localCsvFileWriter.ExposeToApi(HttpApiController);
+            InitializeAzureCloudApiEndpoint();
 
-            var ioBoardsInterruptMonitor = new InterruptMonitor(pi2PortController.GetInput(4), Logger);
-
+            var ioBoardsInterruptMonitor = new InterruptMonitor(pi2PortController.GetInput(4));
             ioBoardsInterruptMonitor.InterruptDetected += (s, e) => ccToolsBoardController.PollInputBoardStates();
             ioBoardsInterruptMonitor.StartPollingAsync();
         }
@@ -73,35 +65,14 @@ namespace HA4IoT.Controller.Main
         {
             const int LDP433MhzSenderPin = 10;
 
-            var i2cHardwareBridge = Device<I2CHardwareBridge>();
-            var bc = new BrennenstuhlCodeSequenceProvider();
-            var ldp433MHzSender = new LPD433MHzSignalSender(i2cHardwareBridge, LDP433MhzSenderPin, HttpApiController);
+            var i2cHardwareBridge = GetDevice<I2CHardwareBridge>();
+            var brennenstuhl = new BrennenstuhlCodeSequenceProvider();
+            var ldp433MHzSender = new LPD433MHzSignalSender(i2cHardwareBridge, LDP433MhzSenderPin, ApiController);
 
             var remoteSwitchController = new RemoteSocketController(new DeviceId("RemoteSocketController"),  ldp433MHzSender, Timer)
-                .WithRemoteSocket(0, bc.GetSequence(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A, RemoteSocketCommand.TurnOn), bc.GetSequence(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A, RemoteSocketCommand.TurnOff));
+                .WithRemoteSocket(0, brennenstuhl.GetSequencePair(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A));
 
             return remoteSwitchController;
-        }
-
-        private void AttachAzureEventHubPublisher(IController controller)
-        {
-            try
-            {
-                var configuration = JsonObject.Parse(File.ReadAllText(Path.Combine(ApplicationData.Current.LocalFolder.Path, "EventHubConfiguration.json")));
-
-                var azureEventHubPublisher = new AzureEventHubPublisher(
-                    configuration.GetNamedString("eventHubNamespace"),
-                    configuration.GetNamedString("eventHubName"),
-                    configuration.GetNamedString("sasToken"),
-                    Logger);
-
-                azureEventHubPublisher.ConnectActuators(controller);
-                Logger.Info("AzureEventHubPublisher initialized successfully.");
-            }
-            catch (Exception exception)
-            {
-                Logger.Warning("Unable to create azure event hub publisher. " + exception.Message);
-            }
         }
     }
 }

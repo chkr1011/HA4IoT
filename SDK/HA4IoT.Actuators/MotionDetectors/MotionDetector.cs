@@ -2,10 +2,9 @@
 using Windows.Data.Json;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.Triggers;
 using HA4IoT.Networking;
 
@@ -19,17 +18,19 @@ namespace HA4IoT.Actuators
         private TimedAction _autoEnableAction;
         private MotionDetectorState _state = MotionDetectorState.Idle;
 
-        public MotionDetector(ActuatorId id, IBinaryInput input, IHomeAutomationTimer timer, IHttpRequestController api, ILogger logger)
-            : base(id, api, logger)
+        public MotionDetector(ActuatorId id, IMotionDetectorEndpoint endpoint, IHomeAutomationTimer timer, IApiController apiController)
+            : base(id, apiController)
         {
-            if (input == null) throw new ArgumentNullException(nameof(input));
-            
-            input.StateChanged += (s, e) => HandleInputStateChanged(e);
+            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
 
-            base.Settings = new ActuatorSettings(id, logger);
+            endpoint.MotionDetected += (s, e) => UpdateState(MotionDetectorState.MotionDetected);
+            endpoint.DetectionCompleted += (s, e) => UpdateState(MotionDetectorState.Idle);
+
+            base.Settings = new ActuatorSettings(id);
+
             Settings.IsEnabled.ValueChanged += (s, e) =>
             {
-                HandleIsEnabledStateChanged(timer, logger);
+                HandleIsEnabledStateChanged(timer);
             };
         }
 
@@ -62,13 +63,13 @@ namespace HA4IoT.Actuators
             return status;
         }
 
-        public override void HandleApiPost(ApiRequestContext context)
+        protected override void HandleApiCommand(IApiContext apiContext)
         {
-            base.HandleApiPost(context);
+            base.HandleApiCommand(apiContext);
             
-            if (context.Request.ContainsKey("action"))
+            if (apiContext.Request.ContainsKey("action"))
             {
-                string action = context.Request.GetNamedString("action");
+                string action = apiContext.Request.GetNamedString("action");
                 if (action.Equals("detected", StringComparison.OrdinalIgnoreCase))
                 {
                     UpdateState(MotionDetectorState.MotionDetected);
@@ -77,20 +78,6 @@ namespace HA4IoT.Actuators
                 {
                     UpdateState(MotionDetectorState.Idle);
                 }
-            }
-        }
-
-        private void HandleInputStateChanged(BinaryStateChangedEventArgs eventArgs)
-        {
-            // The relay at the motion detector is awlays held to high.
-            // The signal is set to false if motion is detected.
-            if (eventArgs.NewState == BinaryState.Low)
-            {
-                UpdateState(MotionDetectorState.MotionDetected);
-            }
-            else
-            {
-                UpdateState(MotionDetectorState.Idle);
             }
         }
 
@@ -106,23 +93,24 @@ namespace HA4IoT.Actuators
 
             if (newState == MotionDetectorState.MotionDetected)
             {
-                Logger.Info(Id + ": Motion detected");
-                _motionDetectedTrigger.Invoke();
+                Log.Info(Id + ": Motion detected");
+                _motionDetectedTrigger.Execute();
             }
             else
             {
-                Logger.Verbose(Id+ ": Detection completed");
-                _detectionCompletedTrigger.Invoke();
+                Log.Verbose(Id + ": Detection completed");
+                _detectionCompletedTrigger.Execute();
             }
 
             StateChanged?.Invoke(this, new MotionDetectorStateChangedEventArgs(oldState, newState));
+            ApiController.NotifyStateChanged(this);
         }
 
-        private void HandleIsEnabledStateChanged(IHomeAutomationTimer timer, ILogger logger)
+        private void HandleIsEnabledStateChanged(IHomeAutomationTimer timer)
         {
             if (!Settings.IsEnabled.Value)
             {
-                logger.Info(Id + ": Disabled for 1 hour");
+                Log.Info(Id + ": Disabled for 1 hour");
                 _autoEnableAction = timer.In(TimeSpan.FromHours(1)).Do(() => Settings.IsEnabled.Value = true);
             }
             else

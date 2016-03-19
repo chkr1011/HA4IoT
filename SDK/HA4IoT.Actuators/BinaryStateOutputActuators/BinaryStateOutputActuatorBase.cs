@@ -1,32 +1,39 @@
 ﻿using System;
 using Windows.Data.Json;
+using HA4IoT.Actuators.Actions;
+using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
+using HA4IoT.Contracts.Api;
 
 namespace HA4IoT.Actuators
 {
     public abstract class BinaryStateOutputActuatorBase<TSettings> : ActuatorBase<TSettings>, IBinaryStateOutputActuator where TSettings : ActuatorSettings
     {
-        protected BinaryStateOutputActuatorBase(ActuatorId id, IHttpRequestController httpApiController, ILogger logger) 
-            : base(id, httpApiController, logger)
+        private readonly object _syncRoot = new object();
+
+        private readonly IHomeAutomationAction _turnOnAction;
+        private readonly IHomeAutomationAction _turnOffAction;
+        private readonly IHomeAutomationAction _toggleAction;
+
+        protected BinaryStateOutputActuatorBase(ActuatorId id, IApiController apiController) 
+            : base(id, apiController)
         {
+            _turnOnAction = new HomeAutomationAction(() => SetState(BinaryActuatorState.On));
+            _turnOffAction = new HomeAutomationAction(() => SetState(BinaryActuatorState.Off));
+            _toggleAction = new HomeAutomationAction(() => ToggleState());
         }
 
         public event EventHandler<BinaryActuatorStateChangedEventArgs> StateChanged;
 
-        public virtual void SetInitialState()
-        {
-            // TODO: Load state from file
-            SetState(BinaryActuatorState.Off, new ForceUpdateStateParameter());
-        }
-
         public BinaryActuatorState GetState()
         {
-            return GetStateInternal();
+            lock (_syncRoot)
+            {
+                return GetStateInternal();
+            }
         }
 
-        public void SetState(BinaryActuatorState state, params IParameter[] parameters)
+        public void SetState(BinaryActuatorState state, params IHardwareParameter[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
@@ -35,50 +42,73 @@ namespace HA4IoT.Actuators
                 return;
             }
 
-            SetStateInternal(state, parameters);
+            lock (_syncRoot)
+            {
+                SetStateInternal(state, parameters);
+            }
         }
 
-        public void TurnOff(params IParameter[] parameters)
+        public void TurnOff(params IHardwareParameter[] parameters)
         {
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+
             SetState(BinaryActuatorState.Off, parameters);
         }
 
-        public override void HandleApiPost(ApiRequestContext context)
+        public void ToggleState(params IHardwareParameter[] parameters)
         {
-            base.HandleApiPost(context);
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
-            if (!context.Request.ContainsKey("state"))
+            lock (_syncRoot)
             {
-                return;
-            }
-
-            string action = context.Request.GetNamedString("state", "toggle");
-            bool commit = context.Request.GetNamedBoolean("commit", true);
-
-            if (action.Equals("toggle", StringComparison.OrdinalIgnoreCase))
-            {
-                if (commit)
+                if (GetState() == BinaryActuatorState.Off)
                 {
-                    this.Toggle();
+                    SetState(BinaryActuatorState.On, parameters);
                 }
                 else
                 {
-                    this.Toggle(new DoNotCommitStateParameter());    
+                    SetState(BinaryActuatorState.Off, parameters);
                 }
+            }
+        }
 
-                context.Response = ExportStatusToJsonObject();
+        public IHomeAutomationAction GetTurnOnAction()
+        {
+            return _turnOnAction;
+        }
+
+        public IHomeAutomationAction GetTurnOffAction()
+        {
+            return _turnOffAction;
+        }
+
+        public IHomeAutomationAction GetToggleStateAction()
+        {
+            return _toggleAction;
+        }
+
+        protected override void HandleApiCommand(IApiContext apiContext)
+        {
+            base.HandleApiCommand(apiContext);
+
+            if (!apiContext.Request.ContainsKey("state"))
+            {
+                apiContext.ResultCode = ApiResultCode.InvalidBody;
+                return;
+            }
+
+            string action = apiContext.Request.GetNamedString("state", "toggle");
+ 
+            if (action.Equals("toggle", StringComparison.OrdinalIgnoreCase))
+            {
+                ToggleState();
+
+                apiContext.Response = ExportStatusToJsonObject();
                 return;
             }
 
             BinaryActuatorState state = (BinaryActuatorState)Enum.Parse(typeof (BinaryActuatorState), action, true);
-            if (commit)
-            {
-                SetState(state);
-            }
-            else
-            {
-                SetState(state, new DoNotCommitStateParameter());
-            }
+            SetState(state);
         }
 
         public override JsonObject ExportStatusToJsonObject()
@@ -92,9 +122,11 @@ namespace HA4IoT.Actuators
         protected void OnStateChanged(BinaryActuatorState oldState, BinaryActuatorState newState)
         {
             StateChanged?.Invoke(this, new BinaryActuatorStateChangedEventArgs(oldState, newState));
+
+            ApiController.NotifyStateChanged(this);
         }
 
-        protected abstract void SetStateInternal(BinaryActuatorState state, params IParameter[] parameters);
+        protected abstract void SetStateInternal(BinaryActuatorState state, params IHardwareParameter[] parameters);
 
         protected abstract BinaryActuatorState GetStateInternal();
     }

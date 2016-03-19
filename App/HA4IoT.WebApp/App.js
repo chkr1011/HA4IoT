@@ -137,11 +137,11 @@ function setupController() {
               $.ajax({ method: "GET", url: "/api/status", timeout: 2500 }).done(function (data) {
                   c.errorMessage = null;
 
-                  if (data.Hash === c.previousHash) {
+                  if (data.Meta.Hash === c.previousHash) {
                       return;
                   }
 
-                  c.previousHash = data.Hash;
+                  c.previousHash = data.Meta.Hash;
                   console.log("Updating UI due to state changes");
 
                   $.each(data.Actuators, function (id, state) {

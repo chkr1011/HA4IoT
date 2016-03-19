@@ -13,10 +13,9 @@ namespace HA4IoT.Automations
             var automation = new RollerShutterAutomation(
                 AutomationIdFactory.CreateIdFrom<RollerShutterAutomation>(area),
                 area.Controller.Timer, 
-                area.Controller.Device<IWeatherStation>(),
-                area.Controller.HttpApiController,
-                area.Controller,
-                area.Controller.Logger);
+                area.Controller.GetDevice<IWeatherStation>(),
+                area.Controller.ApiController,
+                area.Controller);
 
             automation.Activate();
 
@@ -29,8 +28,8 @@ namespace HA4IoT.Automations
         {
             if (automation == null) throw new ArgumentNullException(nameof(automation));
 
-            automation.Settings.DoNotOpenBeforeIsEnabled.Value = true;
-            automation.Settings.DoNotOpenBeforeTime.Value = minTime;
+            automation.Settings.SkipBeforeTimestampIsEnabled.Value = true;
+            automation.Settings.SkipBeforeTimestamp.Value = minTime;
 
             return automation;
         }
@@ -39,8 +38,8 @@ namespace HA4IoT.Automations
         {
             if (automation == null) throw new ArgumentNullException(nameof(automation));
 
-            automation.Settings.DoNotOpenIfTooColdIsEnabled.Value = true;
-            automation.Settings.DoNotOpenIfTooColdTemperature.Value = minOutsideTemperature;
+            automation.Settings.SkipIfFrozenIsEnabled.Value = true;
+            automation.Settings.SkipIfFrozenTemperature.Value = minOutsideTemperature;
 
             return automation;
         }

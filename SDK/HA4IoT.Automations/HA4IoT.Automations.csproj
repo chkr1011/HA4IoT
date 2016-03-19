@@ -120,10 +120,15 @@
     <Compile Include="AutomationBase.cs" />
     <Compile Include="AutomationIdFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AutomationSettingsHttpApiDispatcher.cs" />
+    <Compile Include="AutomationSettingsApiDispatcher.cs" />
+    <Compile Include="TurnOnAndOffAutomationSettings.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.Automations.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\HA4IoT.Actuators\HA4IoT.Actuators.csproj">
+      <Project>{808ABECF-D9C2-4AB2-95D8-EAF228B44576}</Project>
+      <Name>HA4IoT.Actuators</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Conditions\HA4IoT.Conditions.csproj">
       <Project>{3822E69D-FD79-4797-98E2-7C05973B6522}</Project>
       <Name>HA4IoT.Conditions</Name>

@@ -40,7 +40,7 @@ namespace HA4IoT.Actuators.Triggers
                 }
 
                 _invoked = true;
-                Invoke();
+                Execute();
 
                 return;
             }

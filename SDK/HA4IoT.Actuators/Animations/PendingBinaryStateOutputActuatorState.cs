@@ -11,7 +11,7 @@ namespace HA4IoT.Actuators.Animations
 
         public BinaryActuatorState State { get; private set; }
 
-        public IList<IParameter> Parameters { get; } = new List<IParameter>();
+        public IList<IHardwareParameter> Parameters { get; } = new List<IHardwareParameter>();
 
         public PendingBinaryStateOutputActuatorState WithActuator(IBinaryStateOutputActuator actuator)
         {
@@ -27,7 +27,7 @@ namespace HA4IoT.Actuators.Animations
             return this;
         }
 
-        public PendingBinaryStateOutputActuatorState WithParameter(IParameter parameter)
+        public PendingBinaryStateOutputActuatorState WithParameter(IHardwareParameter parameter)
         {
             if (parameter == null) throw new ArgumentNullException(nameof(parameter));
 

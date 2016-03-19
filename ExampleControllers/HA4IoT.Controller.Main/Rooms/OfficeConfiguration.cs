@@ -59,7 +59,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 2;
 
-            var i2cHardwareBridge = controller.Device<I2CHardwareBridge>();
+            var i2cHardwareBridge = controller.GetDevice<I2CHardwareBridge>();
 
             var office = controller.CreateArea(Room.Office)
                 .WithMotionDetector(Office.MotionDetector, input4.GetInput(13))
@@ -89,9 +89,9 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithSocket(Office.RemoteSocketDesk, remoteSwitchController.GetOutput(0))
                 .WithStateMachine(Office.CombinedCeilingLights, SetupLight);
             
-            office.Button(Office.ButtonUpperLeft).WithLongAction(() =>
+            office.GetButton(Office.ButtonUpperLeft).GetPressedLongTrigger().Attach(() =>
             {
-                office.StateMachine(Office.CombinedCeilingLights).TurnOff();
+                office.GetStateMachine(Office.CombinedCeilingLights).TurnOff();
                 office.Socket(Office.SocketRearLeftEdge).TurnOff();
                 office.Socket(Office.SocketRearLeft).TurnOff();
                 office.Socket(Office.SocketFrontLeft).TurnOff();
@@ -101,18 +101,18 @@ namespace HA4IoT.Controller.Main.Rooms
         private void SetupLight(StateMachine light, IArea room)
         {
             var lightsCouchOnly = room.CombineActuators(Office.CombinedCeilingLightsCouchOnly)
-                .WithActuator(room.Lamp(Office.LightCeilingRearRight));
+                .WithActuator(room.GetLamp(Office.LightCeilingRearRight));
 
             var lightsDeskOnly = room.CombineActuators(Office.CombinedCeilingLightsDeskOnly)
-                .WithActuator(room.Lamp(Office.LightCeilingFrontMiddle))
-                .WithActuator(room.Lamp(Office.LightCeilingFrontLeft))
-                .WithActuator(room.Lamp(Office.LightCeilingMiddleLeft));
+                .WithActuator(room.GetLamp(Office.LightCeilingFrontMiddle))
+                .WithActuator(room.GetLamp(Office.LightCeilingFrontLeft))
+                .WithActuator(room.GetLamp(Office.LightCeilingMiddleLeft));
 
             var lightsOther = room.CombineActuators(Office.CombinedCeilingLightsOther)
-                .WithActuator(room.Lamp(Office.LightCeilingFrontRight))
-                .WithActuator(room.Lamp(Office.LightCeilingMiddleMiddle))
-                .WithActuator(room.Lamp(Office.LightCeilingMiddleRight))
-                .WithActuator(room.Lamp(Office.LightCeilingRearLeft));
+                .WithActuator(room.GetLamp(Office.LightCeilingFrontRight))
+                .WithActuator(room.GetLamp(Office.LightCeilingMiddleMiddle))
+                .WithActuator(room.GetLamp(Office.LightCeilingMiddleRight))
+                .WithActuator(room.GetLamp(Office.LightCeilingRearLeft));
 
             light.WithTurnOffIfStateIsAppliedTwice();
 
@@ -125,19 +125,19 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithActuator(lightsDeskOnly, BinaryActuatorState.On)
                 .WithActuator(lightsCouchOnly, BinaryActuatorState.On)
                 .WithActuator(lightsOther, BinaryActuatorState.On).
-                ConnectApplyStateWith(room.Button(Office.ButtonUpperLeft));
+                ConnectApplyStateWith(room.GetButton(Office.ButtonUpperLeft));
 
             light.AddState("DeskOnly")
                 .WithActuator(lightsDeskOnly, BinaryActuatorState.On)
                 .WithActuator(lightsCouchOnly, BinaryActuatorState.Off)
                 .WithActuator(lightsOther, BinaryActuatorState.Off)
-                .ConnectApplyStateWith(room.Button(Office.ButtonLowerLeft));
+                .ConnectApplyStateWith(room.GetButton(Office.ButtonLowerLeft));
 
             light.AddState("CouchOnly")
                 .WithActuator(lightsDeskOnly, BinaryActuatorState.Off)
                 .WithActuator(lightsCouchOnly, BinaryActuatorState.On)
                 .WithActuator(lightsOther, BinaryActuatorState.Off)
-                .ConnectApplyStateWith(room.Button(Office.ButtonLowerRight));
+                .ConnectApplyStateWith(room.GetButton(Office.ButtonLowerRight));
         }
     }
 }

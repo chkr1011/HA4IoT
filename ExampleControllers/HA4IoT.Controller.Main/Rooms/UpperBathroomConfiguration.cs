@@ -47,7 +47,7 @@ namespace HA4IoT.Controller.Main.Rooms
         {
             const int SensorPin = 4;
 
-            var i2cHardwareBridge = _controller.Device<I2CHardwareBridge>();
+            var i2cHardwareBridge = _controller.GetDevice<I2CHardwareBridge>();
 
             var bathroom = _controller.CreateArea(Room.UpperBathroom)
                 .WithTemperatureSensor(UpperBathroom.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
@@ -61,21 +61,21 @@ namespace HA4IoT.Controller.Main.Rooms
 
             var combinedLights =
                 bathroom.CombineActuators(UpperBathroom.CombinedCeilingLights)
-                    .WithActuator(bathroom.Lamp(UpperBathroom.LightCeilingDoor))
-                    .WithActuator(bathroom.Lamp(UpperBathroom.LightCeilingEdge))
-                    .WithActuator(bathroom.Lamp(UpperBathroom.LightCeilingMirrorCabinet))
-                    .WithActuator(bathroom.Lamp(UpperBathroom.LampMirrorCabinet));
+                    .WithActuator(bathroom.GetLamp(UpperBathroom.LightCeilingDoor))
+                    .WithActuator(bathroom.GetLamp(UpperBathroom.LightCeilingEdge))
+                    .WithActuator(bathroom.GetLamp(UpperBathroom.LightCeilingMirrorCabinet))
+                    .WithActuator(bathroom.GetLamp(UpperBathroom.LampMirrorCabinet));
 
             bathroom.SetupTurnOnAndOffAutomation()
-                .WithTrigger(bathroom.MotionDetector(UpperBathroom.MotionDetector))
+                .WithTrigger(bathroom.GetMotionDetector(UpperBathroom.MotionDetector))
                 .WithTarget(combinedLights)
                 .WithOnDuration(TimeSpan.FromMinutes(8));
             
             new BathroomFanAutomation(AutomationIdFactory.CreateIdFrom<BathroomFanAutomation>(bathroom), _controller.Timer)
-                .WithTrigger(bathroom.MotionDetector(UpperBathroom.MotionDetector))
+                .WithTrigger(bathroom.GetMotionDetector(UpperBathroom.MotionDetector))
                 .WithSlowDuration(TimeSpan.FromMinutes(8))
                 .WithFastDuration(TimeSpan.FromMinutes(12))
-                .WithActuator(bathroom.StateMachine(UpperBathroom.Fan));
+                .WithActuator(bathroom.GetStateMachine(UpperBathroom.Fan));
         }
 
         private void SetupFan(StateMachine stateMachine, IArea room)

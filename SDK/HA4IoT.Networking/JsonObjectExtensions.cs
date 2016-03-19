@@ -251,5 +251,121 @@ namespace HA4IoT.Networking
 
             return Encoding.UTF8.GetBytes(jsonObject.Stringify());
         }
+
+        public static void SetNamedString(this JsonObject jsonObject, string name, string value)
+        {
+            if (jsonObject == null) throw new ArgumentNullException(nameof(jsonObject));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
+            if (value == null)
+            {
+                jsonObject.SetNamedValue(name, JsonValue.CreateNullValue());
+            }
+            else
+            {
+                jsonObject.SetNamedValue(name, JsonValue.CreateStringValue(value));
+            }
+        }
+
+        public static void SetNamedNumber(this JsonObject jsonObject, string name, double value)
+        {
+            if (jsonObject == null) throw new ArgumentNullException(nameof(jsonObject));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
+            jsonObject.SetNamedValue(name, JsonValue.CreateNumberValue(value));
+        }
+
+        public static void SetNamedBoolean(this JsonObject jsonObject, string name, bool value)
+        {
+            if (jsonObject == null) throw new ArgumentNullException(nameof(jsonObject));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
+            jsonObject.SetNamedValue(name, JsonValue.CreateBooleanValue(value));
+        }
+
+        public static void SetNamedNullValue(this JsonObject jsonObject, string name)
+        {
+            if (jsonObject == null) throw new ArgumentNullException(nameof(jsonObject));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
+            jsonObject.SetNamedValue(name, JsonValue.CreateNullValue());
+        }
+
+        public static void SetNamedObject(this JsonObject jsonObject, string name, JsonObject value)
+        {
+            if (jsonObject == null) throw new ArgumentNullException(nameof(jsonObject));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
+            if (value == null)
+            {
+                jsonObject.SetNamedValue(name, JsonValue.CreateNullValue());
+            }
+            else
+            {
+                jsonObject.SetNamedValue(name, value);
+            }
+        }
+
+        public static void SetNamedArray(this JsonObject jsonObject, string name, JsonArray array)
+        {
+            if (jsonObject == null) throw new ArgumentNullException(nameof(jsonObject));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
+            jsonObject.SetNamedValue(name, array);
+        }
+
+        public static JsonObject WithNamedString(this JsonObject jsonObject, string name, string value)
+        {
+            if (jsonObject == null) throw new ArgumentNullException(nameof(jsonObject));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
+            jsonObject.SetNamedString(name, value);
+            return jsonObject;
+        }
+
+        public static JsonObject WithNamedNumber(this JsonObject jsonObject, string name, double value)
+        {
+            if (jsonObject == null) throw new ArgumentNullException(nameof(jsonObject));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
+            jsonObject.SetNamedNumber(name, value);
+            return jsonObject;
+        }
+
+        public static JsonObject WithNamedBoolean(this JsonObject jsonObject, string name, bool value)
+        {
+            if (jsonObject == null) throw new ArgumentNullException(nameof(jsonObject));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
+            jsonObject.SetNamedBoolean(name, value);
+            return jsonObject;
+        }
+
+        public static JsonObject WithNamedNullValue(this JsonObject jsonObject, string name)
+        {
+            if (jsonObject == null) throw new ArgumentNullException(nameof(jsonObject));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
+            jsonObject.SetNamedNullValue(name);
+            return jsonObject;
+        }
+
+        public static JsonObject WithNamedObject(this JsonObject jsonObject, string name, JsonObject value)
+        {
+            if (jsonObject == null) throw new ArgumentNullException(nameof(jsonObject));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
+            jsonObject.SetNamedObject(name, value);
+            return jsonObject;
+        }
+
+        public static JsonObject WithNamedArray(this JsonObject jsonObject, string name, JsonArray value)
+        {
+            if (jsonObject == null) throw new ArgumentNullException(nameof(jsonObject));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
+            jsonObject.SetNamedArray(name, value);
+            return jsonObject;
+        }
     }
 }

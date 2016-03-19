@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts.Actions;
 
 namespace HA4IoT.Contracts.Actuators
 {
@@ -8,8 +9,12 @@ namespace HA4IoT.Contracts.Actuators
 
         BinaryActuatorState GetState();
 
-        void SetInitialState();
+        void SetState(BinaryActuatorState state, params IHardwareParameter[] parameters);
 
-        void SetState(BinaryActuatorState state, params IParameter[] parameters);
+        void ToggleState(params IHardwareParameter[] parameters);
+
+        IHomeAutomationAction GetTurnOnAction();
+
+        IHomeAutomationAction GetToggleStateAction();
     }
 }

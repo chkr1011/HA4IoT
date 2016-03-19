@@ -124,6 +124,7 @@
     <Compile Include="HttpHeaderNames.cs" />
     <Compile Include="HttpResponseSerializer.cs" />
     <Compile Include="IHttpRequestDispatcher.cs" />
+    <Compile Include="StringBody.cs" />
     <Compile Include="JsonObjectExtensions.cs" />
     <Compile Include="JsonObjectSerializer.cs" />
     <Compile Include="MappedFolderController.cs" />

@@ -75,8 +75,14 @@ namespace HA4IoT.Hardware.CCTools
                 return;
             }
 
-            BinaryState state = Read();
-            StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(state));
+            BinaryState newBinaryState = Read();
+            BinaryState oldBinaryState = BinaryState.High;
+            if (newBinaryState == BinaryState.High)
+            {
+                oldBinaryState = BinaryState.Low;
+            }
+
+            StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(oldBinaryState, newBinaryState));
         }
     }
 }

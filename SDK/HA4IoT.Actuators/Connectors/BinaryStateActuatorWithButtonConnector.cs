@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
 
 namespace HA4IoT.Actuators.Connectors
@@ -29,11 +30,11 @@ namespace HA4IoT.Actuators.Connectors
         {
             if (pressedDuration == ButtonPressedDuration.Short)
             {
-                button.GetPressedShortlyTrigger().Attach(() => actuator.Toggle());
+                button.GetPressedShortlyTrigger().OnTriggered(actuator.GetToggleStateAction());
             }
             else if (pressedDuration == ButtonPressedDuration.Long)
             {
-                button.GetPressedLongTrigger().Attach(() => actuator.Toggle());
+                button.GetPressedLongTrigger().OnTriggered(actuator.GetToggleStateAction());
             }
             else
             {

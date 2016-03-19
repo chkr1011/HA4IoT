@@ -13,6 +13,8 @@
         Lamp4,
         Lamp5,
         Lamp6,
+        Lamp7,
+        Lamp8,
 
         Socket1,
         Socket2,

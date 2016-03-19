@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
 using Windows.Data.Json;
-using Windows.Security.Cryptography;
-using Windows.Security.Cryptography.Core;
-using Windows.Storage.Streams;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.WeatherStation;
 using HA4IoT.Networking;
 
@@ -14,7 +10,6 @@ namespace HA4IoT.Core
 {
     public class ControllerApiDispatcher
     {
-        private readonly HashAlgorithmProvider _hashAlgorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha1);
         private readonly IController _controller;
 
         public ControllerApiDispatcher(IController controller)
@@ -26,55 +21,30 @@ namespace HA4IoT.Core
 
         public void ExposeToApi()
         {
-            _controller.HttpApiController.HandleGet("configuration").Using(HandleApiGetConfiguration);
-            _controller.HttpApiController.HandleGet("status").Using(HandleApiGetStatus);
+            _controller.ApiController.RouteRequest("configuration", HandleApiGetConfiguration);
+            _controller.ApiController.RouteRequest("status", HandleApiGetStatus);
         }
 
-        private void HandleApiGetStatus(HttpContext httpContext)
+        private void HandleApiGetStatus(IApiContext apiContext)
         {
-            var stopwatch = Stopwatch.StartNew();
-
-            var status = GetControllerStatus();
-            var hash = GenerateHash(status.Stringify());
-            var hashWithQuotes = "\"" + hash + "\"";
-
-            string clientHash;
-            if (httpContext.Request.Headers.TryGetValue(HttpHeaderNames.IfNoneMatch, out clientHash))
-            {
-                if (clientHash.Equals(hashWithQuotes))
-                {
-                    httpContext.Response.StatusCode = HttpStatusCode.NotModified;
-                    return;
-                }
-            }
-
-            status.SetNamedValue("Hash", hash.ToJsonValue());
-            status.SetNamedValue("GenerationDuration", stopwatch.Elapsed.ToJsonValue());
-
-            httpContext.Response.StatusCode = HttpStatusCode.OK;
-            httpContext.Response.Headers[HttpHeaderNames.ETag] = hashWithQuotes;
-
-            httpContext.Response.Body = new JsonBody(status);
+            apiContext.Response = GetControllerStatus();
         }
 
-        private void HandleApiGetConfiguration(HttpContext httpContex)
+        private void HandleApiGetConfiguration(IApiContext apiContext)
         {
-            var stopwatch = Stopwatch.StartNew();
-
             var configuration = new JsonObject();
             configuration.SetNamedValue("Type", JsonValue.CreateStringValue("HA4IoT.Configuration"));
             configuration.SetNamedValue("Version", JsonValue.CreateNumberValue(1));
 
             var areas = new JsonObject();
-            foreach (var area in _controller.Areas())
+            foreach (var area in _controller.GetAreas())
             {
                 areas.SetNamedValue(area.Id.Value, ExportAreaConfigurationToJsonValue(area));
             }
 
             configuration.SetNamedValue("Areas", areas);
-            configuration.SetNamedValue("GenerationDuration", stopwatch.Elapsed.ToJsonValue());
 
-            httpContex.Response.Body = new JsonBody(configuration);
+            apiContext.Response = configuration;
         }
 
         private IJsonValue ExportAreaConfigurationToJsonValue(IArea area)
@@ -83,7 +53,7 @@ namespace HA4IoT.Core
             configuration.SetNamedValue("Settings", area.ExportConfigurationToJsonObject());
 
             var actuators = new JsonObject();
-            foreach (var actuator in area.Actuators())
+            foreach (var actuator in area.GetActuators())
             {
                 actuators.SetNamedValue(actuator.Id.Value, actuator.ExportConfigurationToJsonObject());
             }
@@ -91,7 +61,7 @@ namespace HA4IoT.Core
             configuration.SetNamedValue("Actuators", actuators);
 
             var automations = new JsonObject();
-            foreach (var automation in area.Automations())
+            foreach (var automation in area.GetAutomations())
             {
                 automations.SetNamedValue(automation.Id.Value, automation.ExportConfigurationAsJsonValue());
             }
@@ -108,7 +78,7 @@ namespace HA4IoT.Core
             result.SetNamedValue("Version", 1.ToJsonValue());
 
             var actuators = new JsonObject();
-            foreach (var actuator in _controller.Actuators())
+            foreach (var actuator in _controller.GetActuators())
             {
                 actuators.SetNamedValue(actuator.Id.Value, actuator.ExportStatusToJsonObject());
             }
@@ -116,28 +86,20 @@ namespace HA4IoT.Core
             result.SetNamedValue("Actuators", actuators);
 
             var automations = new JsonObject();
-            foreach (var automation in _controller.Automations())
+            foreach (var automation in _controller.GetAutomations())
             {
                 automations.SetNamedValue(automation.Id.Value, automation.ExportStatusToJsonObject());
             }
 
             result.SetNamedValue("Automations", automations);
 
-            var weatherStation = _controller.Device<IWeatherStation>();
+            var weatherStation = _controller.GetDevice<IWeatherStation>();
             if (weatherStation != null)
             {
                 result.SetNamedValue("WeatherStation", weatherStation.ExportStatusToJsonObject());
             }
 
             return result;
-        }
-
-        private string GenerateHash(string input)
-        {
-            IBuffer buffer = CryptographicBuffer.ConvertStringToBinary(input, BinaryStringEncoding.Utf8);
-            IBuffer hashBuffer = _hashAlgorithm.HashData(buffer);
-
-            return CryptographicBuffer.EncodeToBase64String(hashBuffer);
         }
     }
 }

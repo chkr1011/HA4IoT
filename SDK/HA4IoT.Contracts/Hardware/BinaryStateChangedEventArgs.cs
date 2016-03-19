@@ -1,14 +1,9 @@
-﻿using System;
-
-namespace HA4IoT.Contracts.Hardware
+﻿namespace HA4IoT.Contracts.Hardware
 {
-    public class BinaryStateChangedEventArgs : EventArgs
+    public class BinaryStateChangedEventArgs : ValueChangedEventArgs<BinaryState>
     {
-        public BinaryStateChangedEventArgs(BinaryState newState)
+        public BinaryStateChangedEventArgs(BinaryState oldState, BinaryState newState)  : base(oldState, newState)
         {
-            NewState = newState;
         }
-
-        public BinaryState NewState { get; }
     }
 }

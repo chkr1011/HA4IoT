@@ -43,7 +43,7 @@ namespace HA4IoT.Hardware.I2CHardwareBridge
         private ISingleValueSensor ParseHumiditySensor(XElement element)
         {
             var i2cHardwareBridge =
-                Controller.Device<I2CHardwareBridge>(
+                Controller.GetDevice<I2CHardwareBridge>(
                     new DeviceId(element.GetMandatoryStringFromAttribute("i2cHardwareBridgeDeviceId")));
 
             return i2cHardwareBridge.DHT22Accessor.GetHumiditySensor((byte)element.GetMandatoryIntFromAttribute("sensorId"));
@@ -52,7 +52,7 @@ namespace HA4IoT.Hardware.I2CHardwareBridge
         private ISingleValueSensor ParseTemperatureSensor(XElement element)
         {
             var i2cHardwareBridge =
-                Controller.Device<I2CHardwareBridge>(
+                Controller.GetDevice<I2CHardwareBridge>(
                     new DeviceId(element.GetMandatoryStringFromAttribute("i2cHardwareBridgeDeviceId")));
 
             return i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor((byte)element.GetMandatoryIntFromAttribute("sensorId"));
@@ -63,7 +63,7 @@ namespace HA4IoT.Hardware.I2CHardwareBridge
             return new I2CHardwareBridge(
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")),
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
-                Controller.Device<II2CBus>(new DeviceId(element.GetStringFromAttribute("i2cBus", "II2CBus.default"))),
+                Controller.GetDevice<II2CBus>(new DeviceId(element.GetStringFromAttribute("i2cBus", "II2CBus.default"))),
                 Controller.Timer);
         }
     }

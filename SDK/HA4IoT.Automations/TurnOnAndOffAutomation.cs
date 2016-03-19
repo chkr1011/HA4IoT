@@ -4,17 +4,17 @@ using System.Diagnostics;
 using System.Linq;
 using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.Triggers;
 using HA4IoT.Contracts.WeatherStation;
 
 namespace HA4IoT.Automations
 {
-    public class TurnOnAndOffAutomation : AutomationBase<AutomationSettings>
+    public class TurnOnAndOffAutomation : AutomationBase<TurnOnAndOffAutomationSettings>
     {
         private readonly ConditionsValidator _enablingConditionsValidator = new ConditionsValidator().WithDefaultState(ConditionState.NotFulfilled);
         private readonly ConditionsValidator _disablingConditionsValidator = new ConditionsValidator().WithDefaultState(ConditionState.NotFulfilled);
@@ -26,23 +26,20 @@ namespace HA4IoT.Automations
         
         private readonly Stopwatch _lastTurnedOn = new Stopwatch();
 
-        private TimeSpan _duration;
         private TimeSpan? _pauseDuration;
         private TimedAction _turnOffTimeout;
         private bool _turnOffIfButtonPressedWhileAlreadyOn;
         private bool _isOn;
         
-        public TurnOnAndOffAutomation(AutomationId id, IHomeAutomationTimer timer, IHttpRequestController httpApiController, ILogger logger)
+        public TurnOnAndOffAutomation(AutomationId id, IHomeAutomationTimer timer, IApiController apiController)
             : base(id)
         {
             _timer = timer;
 
-            WithOnDuration(TimeSpan.FromMinutes(1));
-
-            Settings = new AutomationSettings(id, httpApiController, logger);
+            Settings = new TurnOnAndOffAutomationSettings(id, apiController);
         }
 
-        public TurnOnAndOffAutomation WithTrigger(IMotionDetector motionDetector, params IParameter[] parameters)
+        public TurnOnAndOffAutomation WithTrigger(IMotionDetector motionDetector, params IHardwareParameter[] parameters)
         {
             if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
@@ -54,7 +51,7 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public TurnOnAndOffAutomation WithTrigger(ITrigger trigger, params IParameter[] parameters)
+        public TurnOnAndOffAutomation WithTrigger(ITrigger trigger, params IHardwareParameter[] parameters)
         {
             if (trigger == null) throw new ArgumentNullException(nameof(trigger));
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
@@ -91,7 +88,7 @@ namespace HA4IoT.Automations
 
         public TurnOnAndOffAutomation WithOnDuration(TimeSpan duration)
         {
-            _duration = duration;
+            Settings.Duration.Value = duration;
             return this;
         }
 
@@ -259,7 +256,7 @@ namespace HA4IoT.Automations
                 return;
             }
 
-            _turnOffTimeout = _timer.In(_duration).Do(TurnOff);
+            _turnOffTimeout = _timer.In(Settings.Duration).Do(TurnOff);
         }
 
         private bool GetConditionsAreFulfilled()

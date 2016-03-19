@@ -16,7 +16,7 @@ namespace HA4IoT.Tests.Mockups
 
         public TestMotionDetector()
         {
-            Settings = new ActuatorSettings(ActuatorIdFactory.EmptyId,  new TestLogger());
+            Settings = new ActuatorSettings(ActuatorIdFactory.EmptyId);
         }
 
         public ActuatorId Id { get; set; }
@@ -68,13 +68,13 @@ namespace HA4IoT.Tests.Mockups
         public void WalkIntoMotionDetector()
         {
             State = MotionDetectorState.MotionDetected;
-            _motionDetectedTrigger.Invoke();
+            _motionDetectedTrigger.Execute();
         }
 
         public void FireDetectionCompleted()
         {
             State = MotionDetectorState.Idle;
-            _motionDetectedTrigger.Invoke();
+            _motionDetectedTrigger.Execute();
         }
     }
 }

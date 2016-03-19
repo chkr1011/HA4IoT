@@ -42,7 +42,7 @@ namespace HA4IoT.ManagementConsole.Controller
         
         public async Task<JObject> GetConfiguration()
         {
-            return await GetJObject("configuration");
+            return await GetJObject("api/configuration");
         }
 
         public async Task PostAutomationConfiguration(string automationId, JObject configuration)
@@ -50,7 +50,7 @@ namespace HA4IoT.ManagementConsole.Controller
             if (automationId == null) throw new ArgumentNullException(nameof(automationId));
             if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
-            string relativeUrl = "automation/" + automationId + "/settings";
+            string relativeUrl = $"api/area/{automationId}/settings";
             await PostJObject(relativeUrl, configuration);
         }
 
@@ -59,7 +59,7 @@ namespace HA4IoT.ManagementConsole.Controller
             if (actuatorId == null) throw new ArgumentNullException(nameof(actuatorId));
             if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
-            string relativeUrl = "actuator/" + actuatorId + "/settings";
+            string relativeUrl = $"api/area/{actuatorId}/settings";
             await PostJObject(relativeUrl, configuration);
         }
 
@@ -68,23 +68,38 @@ namespace HA4IoT.ManagementConsole.Controller
             if (areaId == null) throw new ArgumentNullException(nameof(areaId));
             if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
-            string relativeUrl = "area/" + areaId + "/settings";
+            string relativeUrl = $"api/area/{areaId}/settings";
             await PostJObject(relativeUrl, configuration);
         }
 
         public async Task<JObject> GetStatus()
         {
-            return await GetJObject("status");
+            return await GetJObject("api/status");
         }
 
         public async Task<JObject> GetHealth()
         {
-            return await GetJObject("health");
+            return await GetJObject("api/health");
         }
 
         public async Task<JObject> GetLog()
         {
-            return await GetJObject("notifications");
+            return await GetJObject("api/notifications");
+        }
+
+        public async Task<JObject> GetStorageJsonFile(string filename)
+        {
+            if (filename == null) throw new ArgumentNullException(nameof(filename));
+
+            return await GetJObject($"storage/{filename}");
+        }
+
+        public async Task PostStorageJsonFile(string filename, JObject content)
+        {
+            if (filename == null) throw new ArgumentNullException(nameof(filename));
+            if (content == null) throw new ArgumentNullException(nameof(content));
+
+            await PostJObject($"storage/{filename}", content);
         }
 
         private async Task<JObject> GetJObject(string relativeUrl)
@@ -143,7 +158,7 @@ namespace HA4IoT.ManagementConsole.Controller
 
         private Uri GenerateUri(string relativePath)
         {
-            return new Uri("http://" + _address + ":80/api/" + relativePath);
+            return new Uri("http://" + _address + ":80/" + relativePath);
         }
 
         private void ThrowIfAddressInvalid()

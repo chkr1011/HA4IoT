@@ -120,6 +120,7 @@
     <Compile Include="Codes\IntertechnoUnitCode.cs" />
     <Compile Include="Codes\IntertechnoSystemCode.cs" />
     <Compile Include="ILPD433MHzSignalSender.cs" />
+    <Compile Include="LPD433MHzCodeSequencePair.cs" />
     <Compile Include="LPD433MHzCodeSequence.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LPD433MHzSignalSender.cs" />

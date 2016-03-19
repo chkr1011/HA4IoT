@@ -1,10 +1,9 @@
 ﻿using System;
 using System.IO;
 using Windows.Data.Json;
-using Windows.Storage;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
-using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Core.Settings;
 using HA4IoT.Networking;
 
@@ -12,16 +11,16 @@ namespace HA4IoT.Automations
 {
     public class AutomationSettings : SettingsContainer, IAutomationSettings
     {
-        public AutomationSettings(AutomationId automationId, IHttpRequestController httpApiController, ILogger logger)
-            : base(GenerateFilename(automationId), logger)
+        public AutomationSettings(AutomationId automationId, IApiController apiController)
+            : base(GenerateFilename(automationId))
         {
-            if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
+            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
 
             AutomationId = automationId;
             IsEnabled = new Setting<bool>(true);
             AppSettings = new Setting<JsonObject>(new JsonObject());
 
-            new AutomationSettingsHttpApiDispatcher(this, httpApiController).ExposeToApi();
+            new AutomationSettingsApiDispatcher(this, apiController).ExposeToApi();
         }
 
         [HideFromToJsonObject]
@@ -33,7 +32,20 @@ namespace HA4IoT.Automations
          
         private static string GenerateFilename(AutomationId automationId)
         {
-            return Path.Combine(ApplicationData.Current.LocalFolder.Path, "Automations", automationId.Value, "Settings.json");
+            string oldFilename = StoragePath.WithFilename("Automations", automationId.Value, "Configuration.json");
+            string newFilename = StoragePath.WithFilename("Automations", automationId.Value, "Settings.json");
+
+            if (File.Exists(oldFilename))
+            {
+                if (File.Exists(newFilename))
+                {
+                    File.Delete(oldFilename);
+                }
+
+                File.Move(oldFilename, newFilename);
+            }
+
+            return newFilename;
         }
     }
 }

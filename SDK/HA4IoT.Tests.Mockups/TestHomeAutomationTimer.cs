@@ -11,6 +11,16 @@ namespace HA4IoT.Tests.Mockups
 
         public DateTime CurrentDateTime { get; private set; }
 
+        public TimedAction In(TimeSpan dueTime)
+        {
+            return new TimedAction(dueTime, TimeSpan.Zero, this);
+        }
+
+        public TimedAction Every(TimeSpan interval)
+        {
+            return new TimedAction(TimeSpan.FromMilliseconds(1), TimeSpan.Zero, this);
+        }
+
         public void SetDate(DateTime value)
         {
             CurrentDateTime = value;
@@ -22,14 +32,9 @@ namespace HA4IoT.Tests.Mockups
             CurrentTime = value;
         }
 
-        public TimedAction In(TimeSpan dueTime)
+        public void ExecuteTick(TimeSpan elapsedTime)
         {
-            return new TimedAction(dueTime, TimeSpan.Zero, this);
-        }
-
-        public TimedAction Every(TimeSpan interval)
-        {
-            return new TimedAction(TimeSpan.FromMilliseconds(1), TimeSpan.Zero, this);
+            Tick?.Invoke(this, new TimerTickEventArgs(elapsedTime));
         }
     }
 }

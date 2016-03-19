@@ -15,6 +15,7 @@ namespace HA4IoT.Networking
         {
             _serverSocket.Control.KeepAlive = true;
             _serverSocket.ConnectionReceived += HandleConnection;
+            _serverSocket.Control.NoDelay = true;
 
             _serverSocket.BindServiceNameAsync(port.ToString()).AsTask().Wait();
         }
@@ -28,8 +29,11 @@ namespace HA4IoT.Networking
 
         private void HandleConnection(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
-            Task.Factory.StartNew(() => HandleRequests(args.Socket), CancellationToken.None,
-                TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            Task.Factory.StartNew(
+                () => HandleRequests(args.Socket),
+                CancellationToken.None,
+                TaskCreationOptions.LongRunning, 
+                TaskScheduler.Default);
         }
 
         private void HandleRequests(StreamSocket client)
@@ -49,10 +53,23 @@ namespace HA4IoT.Networking
 
         private bool HandleClientRequest(HttpClientHandler clientHandler, HttpContext httpContext)
         {
-            var eventArgs = new HttpRequestReceivedEventArgs(httpContext);
-            RequestReceived?.Invoke(clientHandler, eventArgs);
+            var handlerCollection = RequestReceived;
+            if (handlerCollection == null)
+            {
+                return false;
+            }
 
-            return eventArgs.IsHandled;
+            var eventArgs = new HttpRequestReceivedEventArgs(httpContext);
+            foreach (var handler in handlerCollection.GetInvocationList())
+            {
+                handler.DynamicInvoke(this, eventArgs);
+                if (eventArgs.IsHandled)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

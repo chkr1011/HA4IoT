@@ -107,9 +107,27 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\IActuatorAction.cs" />
     <Compile Include="Actuators\ActuatorId.cs" />
+    <Compile Include="Actuators\ButtonPressedDuration.cs" />
+    <Compile Include="Actuators\CasementState.cs" />
+    <Compile Include="Actuators\CasementStateChangedEventArgs.cs" />
     <Compile Include="Actuators\IActuatorSettings.cs" />
+    <Compile Include="Actuators\IButtonEndpoint.cs" />
+    <Compile Include="Actuators\IButtonSettings.cs" />
+    <Compile Include="Actuators\IMotionDetectorEndpoint.cs" />
+    <Compile Include="Actuators\IRollerShutterButtons.cs" />
+    <Compile Include="Actuators\IRollerShutterEndpoint.cs" />
+    <Compile Include="Actuators\ISocket.cs" />
+    <Compile Include="Actuators\ILamp.cs" />
+    <Compile Include="Actuators\IBinaryStateEndpoint.cs" />
     <Compile Include="Actuators\IRollerShutterSettings.cs" />
+    <Compile Include="Api\ApiCallType.cs" />
+    <Compile Include="Api\ApiRequestReceivedEventArgs.cs" />
+    <Compile Include="Api\ApiResultCode.cs" />
+    <Compile Include="Api\IApiContext.cs" />
+    <Compile Include="Api\IApiController.cs" />
+    <Compile Include="Api\IApiDispatcherEndpoint.cs" />
     <Compile Include="Automations\AutomationId.cs" />
     <Compile Include="Actuators\BinaryActuatorState.cs" />
     <Compile Include="Actuators\BinaryActuatorStateChangedEventArgs.cs" />
@@ -123,7 +141,7 @@
     <Compile Include="Actuators\IButton.cs" />
     <Compile Include="Actuators\IHumiditySensor.cs" />
     <Compile Include="Actuators\IMotionDetector.cs" />
-    <Compile Include="Actuators\IParameter.cs" />
+    <Compile Include="Actuators\IHardwareParameter.cs" />
     <Compile Include="Actuators\IRollerShutter.cs" />
     <Compile Include="Actuators\ISingleValueSensorActuator.cs" />
     <Compile Include="Actuators\ITemperatureSensor.cs" />
@@ -147,6 +165,7 @@
     <Compile Include="Core\IHomeAutomationTimer.cs" />
     <Compile Include="Core\Settings\ISetting.cs" />
     <Compile Include="Core\Settings\ISettingsContainer.cs" />
+    <Compile Include="Core\StoragePath.cs" />
     <Compile Include="Core\TimedAction.cs" />
     <Compile Include="Core\TimerTickEventArgs.cs" />
     <Compile Include="Hardware\DeviceIdExtensions.cs" />
@@ -154,6 +173,7 @@
     <Compile Include="Hardware\IDevice.cs" />
     <Compile Include="Hardware\DeviceId.cs" />
     <Compile Include="Actuators\ISwitch.cs" />
+    <Compile Include="Logging\Log.cs" />
     <Compile Include="Networking\HttpContext.cs" />
     <Compile Include="Networking\HttpHeaderCollection.cs" />
     <Compile Include="Networking\HttpMethod.cs" />
@@ -172,7 +192,7 @@
     <Compile Include="Actuators\RollerShutterState.cs" />
     <Compile Include="Actuators\RollerShutterStateChangedEventArgs.cs" />
     <Compile Include="Actuators\StateMachineStateChangedEventArgs.cs" />
-    <Compile Include="Actuators\ValueChangedEventArgs.cs" />
+    <Compile Include="ValueChangedEventArgs.cs" />
     <Compile Include="Actuators\ButtonStateChangedEventArgs.cs" />
     <Compile Include="Core\IStatusProvider.cs" />
     <Compile Include="Daylight.cs" />

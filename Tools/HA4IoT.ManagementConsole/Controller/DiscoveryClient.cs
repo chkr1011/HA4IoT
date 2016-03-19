@@ -74,7 +74,7 @@ namespace HA4IoT.ManagementConsole.Controller
             while (!_cancellationTokenSource.IsCancellationRequested)
             {
                 _broadcastSocket.Send(new byte[0], 0);
-                Thread.Sleep(500);
+                Thread.Sleep(2500);
             }
         }
         

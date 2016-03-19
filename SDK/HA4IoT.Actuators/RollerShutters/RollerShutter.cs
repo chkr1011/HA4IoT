@@ -1,22 +1,26 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using Windows.Data.Json;
+using HA4IoT.Actuators.Actions;
+using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
     public class RollerShutter : ActuatorBase<RollerShutterSettings>, IRollerShutter
     {
-        private readonly IBinaryOutput _directionGpioPin;
+        private readonly object _syncRoot = new object();
         private readonly Stopwatch _movingDuration = new Stopwatch();
-        private readonly IBinaryOutput _powerGpioPin;
         private readonly IHomeAutomationTimer _timer;
+        private readonly IRollerShutterEndpoint _endpoint;
+
+        private readonly IHomeAutomationAction _startMoveUpAction;
+        private readonly IHomeAutomationAction _turnOffAction;
+        private readonly IHomeAutomationAction _startMoveDownAction;
 
         private RollerShutterState _state = RollerShutterState.Stopped;
 
@@ -25,24 +29,25 @@ namespace HA4IoT.Actuators
 
         public RollerShutter(
             ActuatorId id, 
-            IBinaryOutput powerOutput, 
-            IBinaryOutput directionOutput, 
-            IHttpRequestController httpApiController,
-            ILogger logger, 
+            IRollerShutterEndpoint endpoint,
+            IApiController apiController,
             IHomeAutomationTimer timer)
-            : base(id, httpApiController, logger)
+            : base(id, apiController)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
-            if (powerOutput == null) throw new ArgumentNullException(nameof(powerOutput));
-            if (directionOutput == null) throw new ArgumentNullException(nameof(directionOutput));
+            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
 
-            _powerGpioPin = powerOutput;
-            _directionGpioPin = directionOutput;
+            _endpoint = endpoint;
             _timer = timer;
-            
             timer.Tick += (s, e) => UpdatePosition(e);
 
-            base.Settings = new RollerShutterSettings(id, logger);
+            base.Settings = new RollerShutterSettings(id);
+
+            _startMoveUpAction = new HomeAutomationAction(() => SetState(RollerShutterState.MovingUp));
+            _turnOffAction = new HomeAutomationAction(() => SetState(RollerShutterState.Stopped));
+            _startMoveDownAction = new HomeAutomationAction(() => SetState(RollerShutterState.MovingDown));
+
+            _endpoint.Stop(new ForceUpdateStateParameter());
         }
 
         public event EventHandler<RollerShutterStateChangedEventArgs> StateChanged; 
@@ -53,39 +58,66 @@ namespace HA4IoT.Actuators
 
         public RollerShutterState GetState()
         {
-            return _state;
+            lock (_syncRoot)
+            {
+                return _state;
+            }
         }
 
-        public void SetState(RollerShutterState newState)
+        public void SetState(RollerShutterState state)
         {
-            var oldState = _state;
-
-            if (newState == RollerShutterState.MovingUp || newState == RollerShutterState.MovingDown)
+            RollerShutterState oldState;
+            lock (_syncRoot)
             {
-                StartMove(newState).Wait();
-            }
-            else
-            {
-                _movingDuration.Stop();
-
-                StopInternal();
-
-                // Ensure that the direction relay is not wasting energy.
-                _directionGpioPin.Write(BinaryState.Low);
-
-                if (oldState != RollerShutterState.Stopped)
+                if (state == _state)
                 {
-                    Logger.Info(Id + ": Stopped (Duration: " + _movingDuration.ElapsedMilliseconds + "ms)");
+                    return;
                 }
+
+                if (state == RollerShutterState.Stopped)
+                {
+                    _endpoint.Stop();
+                    Log.Info($"{Id}: Stopped (Duration: {_movingDuration.ElapsedMilliseconds} ms)");
+                }
+                else if (state == RollerShutterState.MovingUp)
+                {
+                    _endpoint.StartMoveUp();
+                    RestartTracking();
+                }
+                else if (state == RollerShutterState.MovingDown)
+                {
+                    _endpoint.StartMoveDown();
+                    RestartTracking();
+                }
+
+                oldState = _state;
+                _state = state;
+                
+                Log.Info($"{Id}:{oldState}->{state}");
             }
 
-            _state = newState;
-            OnStateChanged(oldState, newState);
+            StateChanged?.Invoke(this, new RollerShutterStateChangedEventArgs(oldState, _state));
+            ApiController.NotifyStateChanged(this);
         }
 
-        public void TurnOff(params IParameter[] parameters)
+        public void TurnOff(params IHardwareParameter[] parameters)
         {
             SetState(RollerShutterState.Stopped);
+        }
+
+        public IHomeAutomationAction GetTurnOffAction()
+        {
+            return _turnOffAction;
+        }
+
+        public IHomeAutomationAction GetStartMoveUpAction()
+        {
+            return _startMoveUpAction;
+        }
+
+        public IHomeAutomationAction GetStartMoveDownAction()
+        {
+            return _startMoveDownAction;
         }
 
         public override JsonObject ExportStatusToJsonObject()
@@ -99,59 +131,19 @@ namespace HA4IoT.Actuators
             return status;
         }
 
-        public override void HandleApiPost(ApiRequestContext context)
+        protected override void HandleApiCommand(IApiContext apiContext)
         {
-            if (!context.Request.ContainsKey("state"))
+            if (!apiContext.Request.ContainsKey("state"))
             {
                 return;
             }
 
-            var state = (RollerShutterState)Enum.Parse(typeof(RollerShutterState), context.Request.GetNamedString("state"), true);
+            var state = (RollerShutterState)Enum.Parse(typeof(RollerShutterState), apiContext.Request.GetNamedString("state"), true);
             SetState(state);
         }
 
-        private async Task StartMove(RollerShutterState newState)
+        private void RestartTracking()
         {
-            if (_state != RollerShutterState.Stopped)
-            {
-                StopInternal();
-
-                // Ensure that the relay is completely fallen off before switching the direction.
-                await Task.Delay(50);
-            }
-
-            BinaryState binaryState;
-            if (newState == RollerShutterState.MovingDown)
-            {
-                binaryState = BinaryState.High;
-            }
-            else if (newState == RollerShutterState.MovingUp)
-            {
-                binaryState = BinaryState.Low;
-            }
-            else
-            {
-                throw new InvalidOperationException();
-            }
-
-            _directionGpioPin.Write(binaryState, false);
-            Start();
-        }
-
-        private void OnStateChanged(RollerShutterState oldState, RollerShutterState newState)
-        {
-            StateChanged?.Invoke(this, new RollerShutterStateChangedEventArgs(oldState, newState));
-            Logger.Info(Id + ": " + oldState + "->" + newState);
-        }
-
-        private void StopInternal()
-        {
-            _powerGpioPin.Write(BinaryState.Low);
-        }
-
-        private void Start()
-        {
-            _powerGpioPin.Write(BinaryState.High);
             _movingDuration.Restart();
 
             _autoOffTimer?.Cancel();

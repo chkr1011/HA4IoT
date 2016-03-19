@@ -10,6 +10,7 @@ namespace HA4IoT.Hardware.PortExpanderDrivers
 
         public PCF8574Driver(I2CSlaveAddress address, II2CBus i2CBus)
         {
+            if (address == null) throw new ArgumentNullException(nameof(address));
             if (i2CBus == null) throw new ArgumentNullException(nameof(i2CBus));
 
             _address = address;
@@ -23,15 +24,11 @@ namespace HA4IoT.Hardware.PortExpanderDrivers
             if (state == null) throw new ArgumentNullException(nameof(state));
             if (state.Length != StateSize) throw new ArgumentException("Length is invalid.", nameof(state));
 
-            // TODO: Check error handling here if device is currently not available.
-
             _i2CBus.Execute(_address, bus => bus.Write(state));
         }
 
         public byte[] Read()
         {
-            // TODO: Check error handling here if device is currently not available.
-
             var buffer = new byte[StateSize];
             _i2CBus.Execute(_address, bus => bus.Read(buffer));
 

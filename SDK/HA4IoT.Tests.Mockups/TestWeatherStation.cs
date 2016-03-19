@@ -4,7 +4,6 @@ using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.WeatherStation;
 
 namespace HA4IoT.Tests.Mockups
@@ -13,17 +12,16 @@ namespace HA4IoT.Tests.Mockups
     {
         private readonly IHomeAutomationTimer _timer;
 
-        public TestWeatherStation(DeviceId id, IHomeAutomationTimer timer, ILogger logger)
+        public TestWeatherStation(DeviceId id, IHomeAutomationTimer timer)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (timer == null) throw new ArgumentNullException(nameof(timer));
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
 
             Id = id;
             _timer = timer;
 
-            TemperatureSensor = new TestTemperatureSensor(new ActuatorId("Test.Temperature"), logger);
-            HumiditySensor = new TestHumiditySensor(new ActuatorId("Test.Humidity"), logger);
+            TemperatureSensor = new TestTemperatureSensor(new ActuatorId("Test.Temperature"));
+            HumiditySensor = new TestHumiditySensor(new ActuatorId("Test.Humidity"));
 
             Sunrise = TimeSpan.Parse("06:00");
             Sunset = TimeSpan.Parse("18:00");

@@ -1,5 +1,4 @@
 ﻿using System;
-using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 
@@ -11,7 +10,7 @@ namespace HA4IoT.Telemetry
         {
             if (controller == null) throw new ArgumentNullException(nameof(controller));
 
-            foreach (var actuator in controller.Actuators<IActuator>())
+            foreach (var actuator in controller.GetActuators<IActuator>())
             {
                 OnActuatorConnecting(actuator);
 
@@ -22,7 +21,7 @@ namespace HA4IoT.Telemetry
                     continue;
                 }
 
-                var stateMachineOutput = actuator as StateMachine;
+                var stateMachineOutput = actuator as IStateMachine;
                 if (stateMachineOutput != null)
                 {
                     HandleStateMachineOutputActuator(stateMachineOutput);
@@ -73,7 +72,7 @@ namespace HA4IoT.Telemetry
         {
         }
 
-        protected virtual void OnStateMachineStateChanged(StateMachine stateMachine, string newState)
+        protected virtual void OnStateMachineStateChanged(IStateMachine stateMachine, string newState)
         {
         }
 
@@ -91,7 +90,7 @@ namespace HA4IoT.Telemetry
             };
         }
 
-        private void HandleStateMachineOutputActuator(StateMachine stateMachine)
+        private void HandleStateMachineOutputActuator(IStateMachine stateMachine)
         {
             OnStateMachineStateChanged(stateMachine, stateMachine.GetState());
 

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.WeatherStation;
 
 namespace HA4IoT.Automations
@@ -18,26 +18,23 @@ namespace HA4IoT.Automations
         private readonly IHomeAutomationTimer _timer;
         private readonly IWeatherStation _weatherStation;
         private readonly IActuatorController _actuatorController;
-        private readonly ILogger _logger;
 
         private bool _maxOutsideTemperatureApplied;
         private bool _autoOpenIsApplied;
         private bool _autoCloseIsApplied;
         
-        public RollerShutterAutomation(AutomationId id, IHomeAutomationTimer timer, IWeatherStation weatherStation, IHttpRequestController httpApiController, IActuatorController actuatorController, ILogger logger)
+        public RollerShutterAutomation(AutomationId id, IHomeAutomationTimer timer, IWeatherStation weatherStation, IApiController apiController, IActuatorController actuatorController)
             : base(id)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
             if (weatherStation == null) throw new ArgumentNullException(nameof(weatherStation));
             if (actuatorController == null) throw new ArgumentNullException(nameof(actuatorController));
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
 
             _timer = timer;
             _weatherStation = weatherStation;
             _actuatorController = actuatorController;
-            _logger = logger;
 
-            Settings = new RollerShutterAutomationSettings(id, httpApiController, logger);           
+            Settings = new RollerShutterAutomationSettings(id, apiController);           
         }
 
         public RollerShutterAutomation WithRollerShutters(params IRollerShutter[] rollerShutters)
@@ -60,10 +57,11 @@ namespace HA4IoT.Automations
                 return;
             }
 
-            if (!_maxOutsideTemperatureApplied && GetItIsTooHotIsAffected())
+            if (!_maxOutsideTemperatureApplied && TooHotIsAffected())
             {
                 _maxOutsideTemperatureApplied = true;
-                _logger.Info(GetTracePrefix() + $"Closing because outside temperature reaches {Settings.AutoCloseIfTooHotTemperaure.Value}°C.");
+
+                Log.Info(GetTracePrefix() + $"Closing because outside temperature reaches {Settings.AutoCloseIfTooHotTemperaure.Value}°C.");
                 StartMove(RollerShutterState.MovingDown);
 
                 return;
@@ -76,40 +74,49 @@ namespace HA4IoT.Automations
 
             if (!_autoOpenIsApplied && autoOpenIsInRange)
             {
-                if (GetDoNotOpenDueToTimeIsAffected())
+                if (DoNotOpenDueToTimeIsAffected())
                 {
                     return;
                 }
 
-                if (GetDoNotOpenDueToColdTemperatureIsAffected())
+                if (TooColdIsAffected())
                 {
-                    _logger.Info(GetTracePrefix() + $"Cancelling opening because outside temperature is lower than {Settings.DoNotOpenIfTooColdTemperature.Value}°C.");
-                    _autoOpenIsApplied = true;
-
-                    return;
+                    Log.Info(GetTracePrefix() + $"Cancelling opening because outside temperature is lower than {Settings.SkipIfFrozenTemperature.Value}°C.");
+                }
+                else
+                {
+                    StartMove(RollerShutterState.MovingUp);
                 }
                 
                 _autoOpenIsApplied = true;
                 _autoCloseIsApplied = false;
-                _maxOutsideTemperatureApplied = false;
 
-                StartMove(RollerShutterState.MovingUp);
-                _logger.Info(GetTracePrefix() + "Applied sunrise");                
+                _maxOutsideTemperatureApplied = false;
+                
+                Log.Info(GetTracePrefix() + "Applied sunrise");                
             }
             else if (!_autoCloseIsApplied && autoCloseIsInRange)
             {
+                if (TooColdIsAffected())
+                {
+                    Log.Info(GetTracePrefix() + $"Cancelling closing because outside temperature is lower than {Settings.SkipIfFrozenTemperature.Value}°C.");
+                }
+                else
+                {
+                    StartMove(RollerShutterState.MovingDown);
+                }
+
                 _autoCloseIsApplied = true;
                 _autoOpenIsApplied = false;
-
-                StartMove(RollerShutterState.MovingDown);
-                _logger.Info(GetTracePrefix() + "Applied sunset");
+                
+                Log.Info(GetTracePrefix() + "Applied sunset");
             }
         }
 
-        private bool GetDoNotOpenDueToTimeIsAffected()
+        private bool DoNotOpenDueToTimeIsAffected()
         {
-            if (Settings.DoNotOpenBeforeIsEnabled.Value && 
-                Settings.DoNotOpenBeforeTime.Value > _timer.CurrentTime)
+            if (Settings.SkipBeforeTimestampIsEnabled.Value && 
+                Settings.SkipBeforeTimestamp.Value > _timer.CurrentTime)
             {
                 return true;
             }
@@ -117,7 +124,7 @@ namespace HA4IoT.Automations
             return false;
         }
 
-        private bool GetItIsTooHotIsAffected()
+        private bool TooHotIsAffected()
         {
             if (Settings.AutoCloseIfTooHotIsEnabled.Value && 
                 _weatherStation.TemperatureSensor.GetValue() > Settings.AutoCloseIfTooHotTemperaure.Value)
@@ -128,10 +135,10 @@ namespace HA4IoT.Automations
             return false;
         }
 
-        private bool GetDoNotOpenDueToColdTemperatureIsAffected()
+        private bool TooColdIsAffected()
         {
-            if (Settings.DoNotOpenIfTooColdIsEnabled.Value &&
-                _weatherStation.TemperatureSensor.GetValue() < Settings.DoNotOpenIfTooColdTemperature.Value)
+            if (Settings.SkipIfFrozenIsEnabled.Value &&
+                _weatherStation.TemperatureSensor.GetValue() < Settings.SkipIfFrozenTemperature.Value)
             {
                 return true;
             }
@@ -152,7 +159,7 @@ namespace HA4IoT.Automations
         {
             foreach (var rollerShutter in _rollerShutters)
             {
-                _actuatorController.Actuator<IRollerShutter>(rollerShutter).SetState(state);
+                _actuatorController.GetActuator<IRollerShutter>(rollerShutter).SetState(state);
             }
         }
 

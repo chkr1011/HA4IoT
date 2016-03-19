@@ -1,25 +1,43 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Windows.Data.Json;
+using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
+using HA4IoT.Contracts.Triggers;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
     public class Window : ActuatorBase<ActuatorSettings>
     {
-        private readonly List<Casement> _casements = new List<Casement>(); 
+        private readonly Trigger _openedTrigger = new Trigger();
+        private readonly Trigger _closedTrigger = new Trigger();
 
-        public Window(ActuatorId id, IHttpRequestController api, ILogger logger) : base(id, api, logger)
+        public Window(ActuatorId id, IApiController apiController) 
+            : base(id, apiController)
         {
-            Settings = new ActuatorSettings(id, logger);
+            Settings = new ActuatorSettings(id);
+        }
+
+        public IList<Casement> Casements { get; } = new List<Casement>();
+
+        public ITrigger GetOpenedTrigger()
+        {
+            return _openedTrigger;
+        }
+
+        public ITrigger GetClosedTrigger()
+        {
+            return _closedTrigger;
         }
 
         public Window WithCasement(Casement casement)
         {
-            _casements.Add(casement);
+            Casements.Add(casement);
+            casement.StateChanged += ExecuteTriggers;
+
             return this;
         }
 
@@ -48,9 +66,9 @@ namespace HA4IoT.Actuators
             var status = base.ExportStatusToJsonObject();
 
             var state = new JsonObject();
-            foreach (var casement in _casements)
+            foreach (var casement in Casements)
             {
-                state.SetNamedValue(casement.Id, casement.State.ToJsonValue());
+                state.SetNamedValue(casement.Id, casement.GetState().ToJsonValue());
             }
 
             status.SetNamedValue("state", state);
@@ -63,7 +81,7 @@ namespace HA4IoT.Actuators
             JsonObject configuration = base.ExportConfigurationToJsonObject();
 
             JsonArray casements = new JsonArray();
-            foreach (var casement in _casements)
+            foreach (var casement in Casements)
             {
                 casements.Add(JsonValue.CreateStringValue(casement.Id));
             }
@@ -71,6 +89,20 @@ namespace HA4IoT.Actuators
             configuration.SetNamedValue("casements", casements);
 
             return configuration;
+        }
+
+        private void ExecuteTriggers(object sender, CasementStateChangedEventArgs e)
+        {
+            if (Casements.Count(c => c.GetState() != CasementState.Closed) == 1)
+            {
+                _openedTrigger.Execute();
+            }
+            else if (Casements.All(c => c.GetState() == CasementState.Closed))
+            {
+                _closedTrigger.Execute();
+            }
+
+            ApiController.NotifyStateChanged(this);
         }
     }
 }

@@ -9,18 +9,18 @@ namespace HA4IoT.Actuators
 {
     public static class HumiditySensorExtensions
     {
-        public static ITrigger GetHumidityReachedTrigger(this IHumiditySensor sensor, float target, float delta)
+        public static ITrigger GetHumidityReachedTrigger(this IHumiditySensor sensor, float value, float delta = 5)
         {
             if (sensor == null) throw new ArgumentNullException(nameof(sensor));
 
-            return new SensorValueReachedTrigger(sensor).WithTarget(target).WithDelta(delta);
+            return new SensorValueReachedTrigger(sensor).WithTarget(value).WithDelta(delta);
         }
 
-        public static ITrigger GetHumidityUnderranTrigger(this IHumiditySensor sensor, float target, float delta)
+        public static ITrigger GetHumidityUnderranTrigger(this IHumiditySensor sensor, float value, float delta = 5)
         {
             if (sensor == null) throw new ArgumentNullException(nameof(sensor));
 
-            return new SensorValueUnderranTrigger(sensor).WithTarget(target).WithDelta(delta);
+            return new SensorValueUnderranTrigger(sensor).WithTarget(value).WithDelta(delta);
         }
 
         public static IArea WithHumiditySensor(this IArea room, Enum id, ISingleValueSensor sensor)
@@ -28,15 +28,15 @@ namespace HA4IoT.Actuators
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (sensor == null) throw new ArgumentNullException(nameof(sensor));
 
-            room.AddActuator(new HumiditySensor(ActuatorIdFactory.Create(room, id), sensor, room.Controller.HttpApiController, room.Controller.Logger));
+            room.AddActuator(new HumiditySensor(ActuatorIdFactory.Create(room, id), sensor, room.Controller.ApiController));
             return room;
         }
 
-        public static IHumiditySensor HumiditySensor(this IArea room, Enum id)
+        public static IHumiditySensor GetHumiditySensor(this IArea room, Enum id)
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 
-            return room.Actuator<HumiditySensor>(ActuatorIdFactory.Create(room, id));
+            return room.GetActuator<IHumiditySensor>(ActuatorIdFactory.Create(room, id));
         }
     }
 }
