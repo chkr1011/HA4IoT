@@ -154,9 +154,10 @@ namespace HA4IoT.Core
             var httpApiDispatcherEndpoint = new LocalHttpServerApiDispatcherEndpoint(_httpServer);
             ApiController.RegisterEndpoint(httpApiDispatcherEndpoint);
 
-            var appPath = StoragePath.WithFilename("app");
             var httpRequestDispatcher = new HttpRequestDispatcher(_httpServer);
-            httpRequestDispatcher.MapFolder("app", appPath);
+            
+            httpRequestDispatcher.MapFolder("App", StoragePath.WithFilename("App"));
+            httpRequestDispatcher.MapFolder("Storage", StoragePath.Root);
         }
 
         protected void InitializeAzureCloudApiEndpoint()
