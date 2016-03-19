@@ -6,6 +6,7 @@ using HA4IoT.ManagementConsole.Core;
 using HA4IoT.ManagementConsole.Discovery.ViewModels;
 using HA4IoT.ManagementConsole.Health.ViewModels;
 using HA4IoT.ManagementConsole.Home.ViewModels;
+using HA4IoT.ManagementConsole.WeatherStation.Model;
 
 namespace HA4IoT.ManagementConsole.MainWindow.ViewModel
 {
@@ -41,6 +42,7 @@ namespace HA4IoT.ManagementConsole.MainWindow.ViewModel
 
             HomeTab = new HomeTabVM(_controllerClient);
             ConfigurationTab = new ConfigurationTabVM(_controllerClient, _unhandledExceptionPresenter);
+            WeatherStationTab = new WeatherStationTabVM(_controllerClient);
             HealthTab = new HealthTabVM(_controllerClient);
 
             Dialog = _controllerSelector;
@@ -53,6 +55,8 @@ namespace HA4IoT.ManagementConsole.MainWindow.ViewModel
         public ConfigurationTabVM ConfigurationTab { get; }
 
         public HealthTabVM HealthTab { get; }
+
+        public WeatherStationTabVM WeatherStationTab { get; }
 
         public PropertyVM<string> ControllerAddress { get; }
 

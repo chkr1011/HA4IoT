@@ -59,7 +59,7 @@ namespace HA4IoT.Networking
                 Directory.CreateDirectory(path);
             }
 
-            File.WriteAllText(path, httpContext.Request.Body, Encoding.UTF8);
+            File.WriteAllText(filename, httpContext.Request.Body, Encoding.UTF8);
         }
 
         private void LoadFile(string filename, HttpContext httpContext)

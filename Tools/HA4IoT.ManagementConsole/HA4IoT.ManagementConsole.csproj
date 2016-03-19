@@ -82,9 +82,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="WeatherStationConfiguration\Model\WeatherStationConfigurationVM.cs" />
-    <Compile Include="WeatherStationConfiguration\Views\WeatherStationConfigurationView.xaml.cs">
-      <DependentUpon>WeatherStationConfigurationView.xaml</DependentUpon>
+    <Compile Include="WeatherStation\Model\WeatherStationTabVM.cs" />
+    <Compile Include="WeatherStation\Views\WeatherStationTabView.xaml.cs">
+      <DependentUpon>WeatherStationTabView.xaml</DependentUpon>
     </Compile>
     <Page Include="Configuration\Views\ConfigurationTabView.xaml">
       <SubType>Designer</SubType>
@@ -170,7 +170,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WeatherStationConfiguration\Views\WeatherStationConfigurationView.xaml">
+    <Page Include="WeatherStation\Views\WeatherStationTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

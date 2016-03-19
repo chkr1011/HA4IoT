@@ -1,11 +1,11 @@
 ﻿using System.Diagnostics;
 using System.Windows.Input;
 
-namespace HA4IoT.ManagementConsole.WeatherStationConfiguration.Views
+namespace HA4IoT.ManagementConsole.WeatherStation.Views
 {
-    public partial class WeatherStationConfigurationView
+    public partial class WeatherStationTabView
     {
-        public WeatherStationConfigurationView()
+        public WeatherStationTabView()
         {
             InitializeComponent();
         }
