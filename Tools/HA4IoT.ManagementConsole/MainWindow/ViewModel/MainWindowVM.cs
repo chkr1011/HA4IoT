@@ -7,7 +7,7 @@ using HA4IoT.ManagementConsole.Discovery.ViewModels;
 using HA4IoT.ManagementConsole.Health.ViewModels;
 using HA4IoT.ManagementConsole.Home.ViewModels;
 
-namespace HA4IoT.ManagementConsole.Chrome.ViewModel
+namespace HA4IoT.ManagementConsole.MainWindow.ViewModel
 {
     public class MainWindowVM : ViewModelBase
     {

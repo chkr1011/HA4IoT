@@ -82,6 +82,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="WeatherStationConfiguration\Model\WeatherStationConfigurationVM.cs" />
+    <Compile Include="WeatherStationConfiguration\Views\WeatherStationConfigurationView.xaml.cs">
+      <DependentUpon>WeatherStationConfigurationView.xaml</DependentUpon>
+    </Compile>
     <Page Include="Configuration\Views\ConfigurationTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -102,12 +106,12 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Chrome\Views\MainWindow.xaml">
+    <Page Include="MainWindow\Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="Chrome\ViewModel\MainWindowVM.cs" />
-    <Compile Include="Chrome\ViewModel\UnhandledExceptionPresenter.cs" />
+    <Compile Include="MainWindow\ViewModel\MainWindowVM.cs" />
+    <Compile Include="MainWindow\ViewModel\UnhandledExceptionPresenter.cs" />
     <Compile Include="Configuration\ActuatorParser.cs" />
     <Compile Include="Configuration\ActuatorTypeToImageConverter.cs" />
     <Compile Include="Configuration\AreaParser.cs" />
@@ -158,11 +162,15 @@
     <Compile Include="Json\JObjectExtensions.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Core\ViewModelBase.cs" />
-    <Compile Include="Chrome\Views\MainWindow.xaml.cs">
+    <Compile Include="MainWindow\Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Style.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WeatherStationConfiguration\Views\WeatherStationConfigurationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -210,6 +218,7 @@
       <Name>HA4IoT.TraceReceiver</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

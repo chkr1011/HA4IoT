@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Input;
 using HA4IoT.ManagementConsole.Core;
 
-namespace HA4IoT.ManagementConsole.Chrome.ViewModel
+namespace HA4IoT.ManagementConsole.MainWindow.ViewModel
 {
     public class UnhandledExceptionPresenter : ViewModelBase
     {

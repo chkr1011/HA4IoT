@@ -1,4 +1,4 @@
-﻿namespace HA4IoT.ManagementConsole.Chrome.Views
+﻿namespace HA4IoT.ManagementConsole.MainWindow.Views
 {
     public partial class MainWindow
     {

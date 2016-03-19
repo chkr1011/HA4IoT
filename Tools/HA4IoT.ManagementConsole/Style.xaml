@@ -38,6 +38,14 @@
         </Setter>
     </Style>
 
+    <Style x:Key="MainToolBarImage" TargetType="{x:Type Path}">
+        <Setter Property="Width" Value="48" />
+        <Setter Property="Height" Value="48" />
+        <Setter Property="Margin" Value="0,5" />
+        <Setter Property="Fill" Value="WhiteSmoke" />
+        <Setter Property="Stretch" Value="Uniform" />
+    </Style>
+
     <Style x:Key="ToolBarCheckBox" TargetType="{x:Type CheckBox}">
         <Setter Property="Template">
             <Setter.Value>
@@ -116,9 +124,10 @@
                     <DockPanel Background="WhiteSmoke">
                         <Border x:Name="HeaderContainer"
                                 BorderBrush="LightGray"
-                                BorderThickness="0,0,0,1"
+                                BorderThickness="0"
                                 DockPanel.Dock="Top">
                             <StackPanel x:Name="HeaderHost"
+                                        Background="#FF337AB7"
                                         IsItemsHost="true"
                                         Orientation="Horizontal" />
                         </Border>
@@ -126,12 +135,6 @@
                             <ContentPresenter ContentSource="SelectedContent" />
                         </Border>
                     </DockPanel>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="core:TabControlAttachedProperties.VerticalHeaders" Value="True">
-                            <Setter TargetName="HeaderContainer" Property="DockPanel.Dock" Value="Left" />
-                            <Setter TargetName="HeaderHost" Property="Orientation" Value="Vertical" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
