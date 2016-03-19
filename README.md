@@ -1,4 +1,4 @@
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/MC_SplashScreen.png?raw=true" width="100%">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/MC_SplashScreen.png?raw=true" width="100%">
 <img style="margin:25px" src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/Overview_4to3.png?raw=true" width="100%">
 
 HA4IoT (Home Automation for IoT) is the first SDK for Home Automation using Windows 10 IoT Core and a Raspberry Pi 2. It is a private real life award-winning project which covers many Home Automation purposes.
@@ -71,24 +71,24 @@ We want you! If you are interested in supporting this project in any way (softwa
 ## App
 Every actuator can be controlled using the web app which is hosted at the Raspberry Pi 2 using the build in webserver. The language for the examples is German but translation of each UI element is supported. The app shows every rooms/areas and provides several overviews like the overview of all temperature sensor. The app is based on Bootstrap and AngularJS and runs on Smartphones, Tables, PCs etc. 
 
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_SplashScreen.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_Areas.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_Bathroom.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_Bedroom-1.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_Bedroom-2.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_Bedroom-2.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_Storeroom.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_SensorsOverview.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_WindowOverview.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_WeatherStation.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/WA_Info.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/WA_SplashScreen.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/WA_Areas.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/WA_Bathroom.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/WA_Bedroom-1.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/WA_Bedroom-2.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/WA_Bedroom-2.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/WA_Storeroom.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/WA_SensorsOverview.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/WA_WindowOverview.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/WA_WeatherStation.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/WA_Info.PNG?raw=true" width="256">
 
 ## Management Console
 
 The configuration of each actuator and automation can be updated using the Management Console. This application is a WPF application which runs at the local computer. It sends a discovery signal through the local area network and shows all available HA4IoT controller instances.   
 
- <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/MC_HomeScreen.png?raw=true" width="100%">
- <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/MC_ControllerSelection.png?raw=true" width="100%">
- <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/MC_ActuatorConfiguration.png?raw=true" width="100%">
- <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/MC_AutomationConfiguration.png?raw=true" width="100%">
- <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/ManagementConsole/Documentation/Screens/1.11.0/MC_TraceViewer.png?raw=true" width="100%">
+ <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/MC_HomeScreen.png?raw=true" width="100%">
+ <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/MC_ControllerSelection.png?raw=true" width="100%">
+ <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/MC_ActuatorConfiguration.png?raw=true" width="100%">
+ <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/MC_AutomationConfiguration.png?raw=true" width="100%">
+ <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/MC_TraceViewer.png?raw=true" width="100%">
