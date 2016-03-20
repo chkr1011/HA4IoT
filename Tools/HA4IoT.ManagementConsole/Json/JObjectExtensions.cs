@@ -70,6 +70,11 @@ namespace HA4IoT.ManagementConsole.Json
             return jObject.GetNamedValue<decimal>(name);
         }
 
+        public static void SetNamedNumber(this JObject jObject, string name, decimal value)
+        {
+            jObject[name] = new JValue(value);
+        }
+
         public static JObject GetNamedObject(this JObject jObject, string name, JObject defaultValue)
         {
             return jObject.GetNamedValue(name, defaultValue);

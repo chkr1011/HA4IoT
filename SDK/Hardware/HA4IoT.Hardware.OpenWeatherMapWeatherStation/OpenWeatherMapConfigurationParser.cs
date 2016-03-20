@@ -1,13 +1,15 @@
 ﻿using System;
 using System.IO;
 using Windows.Data.Json;
-using Windows.Storage;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
 {
     public class OpenWeatherMapConfigurationParser
     {
+        private static readonly string Filename = StoragePath.WithFilename("OpenWeatherMapConfiguration.json");
+
         public Uri GetUri()
         {
             double latitude = 0;
@@ -30,20 +32,24 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             return new Uri($"http://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&APPID={appId}&units=metric");
         }
 
+        public static bool ConfigurationFileExists()
+        {
+            return File.Exists(Filename);
+        }
+
         private bool TryGetConfiguration(out JsonObject configuration)
         {
             configuration = null;
-
-            string filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "OpenWeatherMapConfiguration.json");
-            if (!File.Exists(filename))
+            
+            if (!ConfigurationFileExists())
             {
-                Log.Warning($"Open Weather Map configuration ({filename}) not found.");
+                Log.Warning($"Open Weather Map configuration ({Filename}) not found.");
                 return false;
             }
 
             try
             {
-                configuration = JsonObject.Parse(File.ReadAllText(filename));
+                configuration = JsonObject.Parse(File.ReadAllText(Filename));
                 return true;
             }
             catch (Exception exception)

@@ -49,8 +49,8 @@ namespace HA4IoT.ManagementConsole.WeatherStation.Model
         {
             var configuration = new JObject();
             configuration.SetNamedString("appID", ApiKey.Value);
-            configuration.SetNamedString("lat", Latitude.Value);
-            configuration.SetNamedString("lon", Longitude.Value);
+            configuration.SetNamedNumber("lat", decimal.Parse(Latitude.Value));
+            configuration.SetNamedNumber("lon", decimal.Parse(Longitude.Value));
 
             await _controllerClient.PostStorageJsonFile("OpenWeatherMapConfiguration.json", configuration);
         }

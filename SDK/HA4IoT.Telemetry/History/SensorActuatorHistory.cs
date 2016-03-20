@@ -24,6 +24,7 @@ namespace HA4IoT.Telemetry.History
             _sensor = sensor;
 
             _filename = StoragePath.WithFilename("Actuators", sensor.Id.Value, "History.csv");
+            StoragePath.EnsureDirectoryExists(_filename);
 
             sensor.ValueChanged += CreateDataPointAsync;
         }
