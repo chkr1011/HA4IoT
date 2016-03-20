@@ -25,6 +25,5 @@ namespace HA4IoT.Api
         public ApiResultCode ResultCode { get; set; }
         public JsonObject Request { get; }
         public JsonObject Response { get; set; }
-        public string SerializedResponse { get; set; }
     }
 }

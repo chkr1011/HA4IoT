@@ -62,7 +62,7 @@ namespace HA4IoT.Api.LocalHttpServer
 
             if (apiContext.CallType == ApiCallType.Request)
             {
-                var serverHash = apiContext.Response.GetNamedObject("Meta").GetNamedString("Hash");
+                var serverHash = apiContext.Response.GetNamedObject("Meta", new JsonObject()).GetNamedString("Hash", string.Empty);
                 var serverHashWithQuotes = "\"" + serverHash + "\"";
 
                 string clientHash;
@@ -77,8 +77,8 @@ namespace HA4IoT.Api.LocalHttpServer
 
                 httpContext.Response.Headers[HttpHeaderNames.ETag] = serverHashWithQuotes;
             }
-            
-            httpContext.Response.Body = new StringBody(eventArgs.Context.SerializedResponse).WithMimeType(MimeTypeProvider.Json);
+
+            httpContext.Response.Body = new JsonBody(eventArgs.Context.Response);
         }
 
         private HttpStatusCode ConvertResultCode(ApiResultCode resultCode)

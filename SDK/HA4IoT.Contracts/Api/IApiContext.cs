@@ -9,6 +9,5 @@ namespace HA4IoT.Contracts.Api
         JsonObject Request { get; }
         ApiResultCode ResultCode { get; set; }
         JsonObject Response { get; set; }
-        string SerializedResponse { get; set; }
     }
 }

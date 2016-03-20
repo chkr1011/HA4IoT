@@ -95,35 +95,30 @@ namespace HA4IoT.Api
 
         private void HandleRequest(IApiContext apiContext, Action<IApiContext> handler)
         {
-            Stopwatch stopwatch = Stopwatch.StartNew();
             try
             {
+                Stopwatch stopwatch = Stopwatch.StartNew();
                 handler(apiContext);
                 stopwatch.Stop();
 
                 var metaInformation = new JsonObject();
-                metaInformation.SetNamedString("Hash", "[HASH]");
-                metaInformation.SetNamedString("ProcessingDuration", "[PROCESSING_DURATION]");
+                metaInformation.SetNamedNullValue("Hash");
+                metaInformation.SetNamedNullValue("ProcessingDuration");
                 apiContext.Response.SetNamedObject("Meta", metaInformation);
-
-                apiContext.SerializedResponse = apiContext.Response.Stringify();
 
                 string hash = null;
                 if (apiContext.CallType == ApiCallType.Request)
                 {
-                    hash = GenerateHash(apiContext.SerializedResponse);
+                    hash = GenerateHash(apiContext.Response.Stringify());
                 }
 
                 metaInformation.SetNamedString("Hash", hash);
                 metaInformation.SetNamedNumber("ProcessingDuration", stopwatch.ElapsedMilliseconds);
-
-                apiContext.SerializedResponse = apiContext.SerializedResponse.Replace("[HASH]", hash);
-                apiContext.SerializedResponse = apiContext.SerializedResponse.Replace("[PROCESSING_DURATION]", stopwatch.ElapsedMilliseconds.ToString(NumberFormatInfo.InvariantInfo));
             }
             catch (Exception exception)
             {
                 apiContext.ResultCode = ApiResultCode.InternalError;
-                apiContext.Response = exception.ToJsonObject();
+                apiContext.Response = ConvertExceptionToJsonObject(exception);
             }
         }
 
@@ -152,6 +147,28 @@ namespace HA4IoT.Api
             }
 
             apiContext.Response.SetNamedArray("Commands", requestRoutes);
+        }
+
+        private JsonObject ConvertExceptionToJsonObject(Exception exception)
+        {
+            // Do not use a generic serializer because sometines not all propterties are readable
+            // and throwing exceptions in the getter.
+            var jsonObject = new JsonObject()
+                .WithNamedString("Type", exception.GetType().FullName)
+                .WithNamedString("Source", exception.Source)
+                .WithNamedString("Message", exception.Message)
+                .WithNamedString("StackTrace", exception.StackTrace);
+
+            if (exception.InnerException != null)
+            {
+                jsonObject.SetNamedValue("InnerException", ConvertExceptionToJsonObject(exception.InnerException));
+            }
+            else
+            {
+                jsonObject.SetNamedValue("InnerException", JsonValue.CreateNullValue());
+            }
+
+            return jsonObject;
         }
     }
 }
