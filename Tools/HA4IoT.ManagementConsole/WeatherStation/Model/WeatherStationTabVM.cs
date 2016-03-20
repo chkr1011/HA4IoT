@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using HA4IoT.ManagementConsole.Controller;
@@ -41,8 +42,8 @@ namespace HA4IoT.ManagementConsole.WeatherStation.Model
             JObject configuration = await _controllerClient.GetStorageJsonFile("OpenWeatherMapConfiguration.json");
 
             ApiKey.Value = configuration.GetNamedString("appID", string.Empty);
-            Latitude.Value = configuration.GetNamedString("lat", string.Empty);
-            Longitude.Value = configuration.GetNamedString("lon", string.Empty);
+            Latitude.Value = configuration.GetNamedNumber("lat", 0M).ToString(CultureInfo.InvariantCulture);
+            Longitude.Value = configuration.GetNamedNumber("lon", 0M).ToString(CultureInfo.InvariantCulture);
         }
 
         private async Task Save()
