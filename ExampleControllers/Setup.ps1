@@ -6,6 +6,7 @@ Write-Output "Change host address (y/n)?"
 if ([Console]::ReadKey($true).KeyChar -eq "y")
 {
 	$hostAddress = Read-Host("Enter host address");
+    $hostAddress = "$hostAddress";
 }
 
 ### Setup and connect remote session
