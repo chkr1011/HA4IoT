@@ -2,7 +2,8 @@
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Automations;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.WeatherStation;
+using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.WeatherService;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
@@ -82,7 +83,7 @@ namespace HA4IoT.Controller.Main.Rooms
             kitchen.SetupTurnOnAndOffAutomation()
                 .WithTrigger(kitchen.GetMotionDetector(Kitchen.MotionDetector))
                 .WithTarget(kitchen.BinaryStateOutput(Kitchen.CombinedAutomaticLights))
-                .WithEnabledAtNight(controller.GetDevice<IWeatherStation>());
+                .WithEnabledAtNight(controller.GetService<IDaylightService>());
         }
     }
 }

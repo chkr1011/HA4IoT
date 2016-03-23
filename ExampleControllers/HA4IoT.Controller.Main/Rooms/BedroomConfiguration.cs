@@ -5,7 +5,8 @@ using HA4IoT.Automations;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.WeatherStation;
+using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.WeatherService;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
@@ -140,7 +141,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTarget(bedroom.BinaryStateOutput(Bedroom.LightCeiling))
                 .WithOnDuration(TimeSpan.FromSeconds(15))
                 .WithTurnOnIfAllRollerShuttersClosed(bedroom.GetRollerShutter(Bedroom.RollerShutterLeft), bedroom.GetRollerShutter(Bedroom.RollerShutterRight))
-                .WithEnabledAtNight(_controller.GetDevice<IWeatherStation>())
+                .WithEnabledAtNight(_controller.GetService<IDaylightService>())
                 .WithSkipIfAnyActuatorIsAlreadyOn(bedroom.GetLamp(Bedroom.LampBedLeft), bedroom.GetLamp(Bedroom.LampBedRight));
             
             bedroom.WithStateMachine(Bedroom.Fan, SetupFan);

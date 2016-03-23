@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 using Windows.Data.Json;
-using HA4IoT.Contracts.WeatherStation;
+using HA4IoT.Contracts.Services.WeatherService;
 
-namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
+namespace HA4IoT.ExternalServices.OpenWeatherMap
 {
     public class OpenWeatherMapResponseParser
     {

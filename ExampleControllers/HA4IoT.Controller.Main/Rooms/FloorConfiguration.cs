@@ -5,7 +5,7 @@ using HA4IoT.Automations;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.WeatherStation;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
@@ -94,7 +94,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTrigger(floor.GetMotionDetector(Floor.StairwayMotionDetector))
                 .WithTrigger(floor.GetButton(Floor.ButtonStairway).GetPressedShortlyTrigger())
                 .WithTarget(floor.BinaryStateOutput(Floor.CombinedStairwayLamp))
-                .WithEnabledAtNight(controller.GetDevice<IWeatherStation>())
+                .WithEnabledAtNight(controller.GetService<IDaylightService>())
                 .WithOnDuration(TimeSpan.FromSeconds(30));
 
             floor.CombineActuators(Floor.CombinedLamps)
@@ -108,12 +108,12 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTrigger(floor.GetButton(Floor.ButtonLowerFloorAtBathroom).GetPressedShortlyTrigger())
                 .WithTrigger(floor.GetButton(Floor.ButtonLowerFloorAtKitchen).GetPressedShortlyTrigger())
                 .WithTarget(floor.BinaryStateOutput(Floor.CombinedLamps))
-                .WithEnabledAtNight(controller.GetDevice<IWeatherStation>())
+                .WithEnabledAtNight(controller.GetService<IDaylightService>())
                 .WithTurnOffIfButtonPressedWhileAlreadyOn()
                 .WithOnDuration(TimeSpan.FromSeconds(20));
 
             SetupStairsCeilingLamps(floor, hspe8UpperFloor);
-            SetupStairsLamps(floor, controller.GetDevice<IWeatherStation>(), hspe16FloorAndLowerBathroom);
+            SetupStairsLamps(floor, controller.GetService<IDaylightService>(), hspe16FloorAndLowerBathroom);
             
             floor.SetupRollerShutterAutomation().WithRollerShutters(floor.GetRollerShutter(Floor.StairwayRollerShutter));
         }
@@ -163,7 +163,7 @@ namespace HA4IoT.Controller.Main.Rooms
             };
         }
 
-        private void SetupStairsLamps(IArea floor, IWeatherStation weatherStation, HSPE16OutputOnly hspe16FloorAndLowerBathroom)
+        private void SetupStairsLamps(IArea floor, IDaylightService daylightService, HSPE16OutputOnly hspe16FloorAndLowerBathroom)
         {
             var output = new LogicalBinaryOutput()
                 .WithOutput(hspe16FloorAndLowerBathroom[HSPE16Pin.GPIO8])
@@ -178,7 +178,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             floor.SetupConditionalOnAutomation()
                 .WithActuator(floor.GetLamp(Floor.LampStairs))
-                .WithOnAtNightRange(weatherStation)
+                .WithOnAtNightRange(daylightService)
                 .WithOffBetweenRange(TimeSpan.FromHours(23), TimeSpan.FromHours(4));
         }
     }

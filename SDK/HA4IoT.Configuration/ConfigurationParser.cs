@@ -8,6 +8,7 @@ using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Core;
 
 namespace HA4IoT.Configuration
@@ -41,6 +42,7 @@ namespace HA4IoT.Configuration
 
             _configuration = configuration;
 
+            ParseServices();
             ParseDevices();
             ParseAreas();
 
@@ -85,6 +87,23 @@ namespace HA4IoT.Configuration
             using (var fileStream = File.OpenRead(filename))
             {
                 return XDocument.Load(fileStream);
+            }
+        }
+
+        private void ParseServices()
+        {
+            var devicesElement = _configuration.Root.Element("Services");
+            foreach (XElement serviceElement in devicesElement.Elements())
+            {
+                try
+                {
+                    IService service = GetConfigurationExtender(serviceElement).ParseService(serviceElement);
+                    _controller.RegisterService(service);
+                }
+                catch (Exception exception)
+                {
+                    Log.Warning(exception, "Unable to parse service node '{0}'.", serviceElement.Name);
+                }
             }
         }
 

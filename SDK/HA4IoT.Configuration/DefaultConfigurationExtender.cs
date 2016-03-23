@@ -5,8 +5,9 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Services;
+using HA4IoT.ExternalServices.OpenWeatherMap;
 using HA4IoT.Hardware;
-using HA4IoT.Hardware.OpenWeatherMapWeatherStation;
 
 namespace HA4IoT.Configuration
 {
@@ -25,6 +26,15 @@ namespace HA4IoT.Configuration
             switch (element.Name.LocalName)
             {
                 case "I2CBus": return ParseI2CBus(element);
+
+                default: throw new ConfigurationInvalidException("Device not supported.", element);
+            }
+        }
+
+        public override IService ParseService(XElement element)
+        {
+            switch (element.Name.LocalName)
+            {
                 case "OpenWeatherMapWeatherStation": return ParseWeatherStation(element);
 
                 default: throw new ConfigurationInvalidException("Device not supported.", element);
@@ -55,10 +65,9 @@ namespace HA4IoT.Configuration
             return new BuiltInI2CBus(new DeviceId(element.GetMandatoryStringFromAttribute("id")));
         }
 
-        private IDevice ParseWeatherStation(XElement element)
+        private IService ParseWeatherStation(XElement element)
         {
-            return new OpenWeatherMapWeatherStation(
-                new DeviceId(element.GetMandatoryStringFromAttribute("id")), 
+            return new OpenWeatherMapWeatherService( 
                 Controller.Timer,
                 Controller.ApiController);
         }

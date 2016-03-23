@@ -5,7 +5,7 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.WeatherStation;
+using HA4IoT.Contracts.Services.WeatherService;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.Tests.Mockups;
@@ -44,8 +44,8 @@ namespace HA4IoT.Configuration.Tests
         {
             var controller = GetController();
 
-            var weatherStation = controller.GetDevice<IWeatherStation>(new DeviceId("WeatherStation"));
-            if (weatherStation == null)
+            IWeatherService weatherStation;
+            if (!controller.TryGetService(out weatherStation))
             {
                 throw new InvalidOperationException();
             }

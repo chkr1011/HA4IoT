@@ -1,6 +1,7 @@
 ﻿using System;
 using HA4IoT.Contracts.Configuration;
-using HA4IoT.Contracts.WeatherStation;
+using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.WeatherService;
 
 namespace HA4IoT.Automations
 {
@@ -12,8 +13,9 @@ namespace HA4IoT.Automations
 
             var automation = new RollerShutterAutomation(
                 AutomationIdFactory.CreateIdFrom<RollerShutterAutomation>(area),
-                area.Controller.Timer, 
-                area.Controller.GetDevice<IWeatherStation>(),
+                area.Controller.Timer,
+                area.Controller.GetService<IDaylightService>(),
+                area.Controller.GetService<IWeatherService>(),
                 area.Controller.ApiController,
                 area.Controller);
 

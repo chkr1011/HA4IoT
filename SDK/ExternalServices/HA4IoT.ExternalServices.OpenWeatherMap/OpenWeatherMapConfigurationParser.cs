@@ -4,7 +4,7 @@ using Windows.Data.Json;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 
-namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
+namespace HA4IoT.ExternalServices.OpenWeatherMap
 {
     public class OpenWeatherMapConfigurationParser
     {

@@ -6,7 +6,7 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.WeatherStation;
+using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Automations
 {
@@ -22,9 +22,11 @@ namespace HA4IoT.Automations
             WithTrigger(new IntervalTrigger(TimeSpan.FromMinutes(1), timer));
         }
 
-        public ConditionalOnAutomation WithOnAtNightRange(IWeatherStation weatherStation)
+        public ConditionalOnAutomation WithOnAtNightRange(IDaylightService daylightService)
         {
-            var nightCondition = new TimeRangeCondition(_timer).WithStart(() => weatherStation.Daylight.Sunset).WithEnd(() => weatherStation.Daylight.Sunrise);
+            if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
+
+            var nightCondition = new TimeRangeCondition(_timer).WithStart(() => daylightService.Sunset).WithEnd(() => daylightService.Sunrise);
             WithCondition(ConditionRelation.And, nightCondition);
 
             return this;
@@ -39,6 +41,8 @@ namespace HA4IoT.Automations
 
         public ConditionalOnAutomation WithActuator(IBinaryStateOutputActuator actuator)
         {
+            if (actuator == null) throw new ArgumentNullException(nameof(actuator));
+
             WithActionIfConditionsFulfilled(actuator.GetTurnOnAction());
             WithActionIfConditionsNotFulfilled(actuator.GetTurnOffAction());
 

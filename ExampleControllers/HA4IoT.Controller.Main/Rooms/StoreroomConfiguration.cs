@@ -3,7 +3,8 @@ using HA4IoT.Actuators;
 using HA4IoT.Automations;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.WeatherStation;
+using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.WeatherService;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
@@ -57,7 +58,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTarget(storeroom.Socket(Storeroom.CirculatingPump))
                 .WithPauseAfterEveryTurnOn(TimeSpan.FromHours(1))
                 .WithOnDuration(TimeSpan.FromMinutes(1))
-                .WithEnabledAtDay(controller.GetDevice<IWeatherStation>());
+                .WithEnabledAtDay(controller.GetService<IDaylightService>());
 
             _catLitterBoxTwitterSender =
                 new CatLitterBoxTwitterSender(controller.Timer).WithTrigger(

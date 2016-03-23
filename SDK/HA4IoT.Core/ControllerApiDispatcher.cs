@@ -3,7 +3,7 @@ using Windows.Data.Json;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.WeatherStation;
+using HA4IoT.Contracts.Services.WeatherService;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Core
@@ -28,8 +28,8 @@ namespace HA4IoT.Core
         private void HandleApiGetStatus(IApiContext apiContext)
         {
             var result = new JsonObject();
-            result.SetNamedValue("Type", "HA4IoT.Status".ToJsonValue());
-            result.SetNamedValue("Version", 1.ToJsonValue());
+            result.SetNamedString("Type", "HA4IoT.Status");
+            result.SetNamedNumber("Version", 1D);
 
             var actuators = new JsonObject();
             foreach (var actuator in _controller.GetActuators())
@@ -44,10 +44,10 @@ namespace HA4IoT.Core
             {
                 automations.SetNamedValue(automation.Id.Value, automation.ExportStatusToJsonObject());
             }
-
+             
             result.SetNamedValue("Automations", automations);
 
-            var weatherStation = _controller.GetDevice<IWeatherStation>();
+            var weatherStation = _controller.GetService<IWeatherService>();
             if (weatherStation != null)
             {
                 result.SetNamedValue("WeatherStation", weatherStation.ExportStatusToJsonObject());

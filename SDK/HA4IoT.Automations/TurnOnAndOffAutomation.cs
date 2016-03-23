@@ -9,8 +9,8 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Triggers;
-using HA4IoT.Contracts.WeatherStation;
 
 namespace HA4IoT.Automations
 {
@@ -121,23 +121,23 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public TurnOnAndOffAutomation WithEnabledAtDay(IWeatherStation weatherStation)
+        public TurnOnAndOffAutomation WithEnabledAtDay(IDaylightService daylightService)
         {
-            if (weatherStation == null) throw new ArgumentNullException(nameof(weatherStation));
+            if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
 
-            Func<TimeSpan> start = () => weatherStation.Daylight.Sunrise.Add(TimeSpan.FromHours(1));
-            Func<TimeSpan> end = () => weatherStation.Daylight.Sunset.Subtract(TimeSpan.FromHours(1));
+            Func<TimeSpan> start = () => daylightService.Sunrise.Add(TimeSpan.FromHours(1));
+            Func<TimeSpan> end = () => daylightService.Sunset.Subtract(TimeSpan.FromHours(1));
 
             _enablingConditionsValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_timer).WithStart(start).WithEnd(end));
             return this;
         }
 
-        public TurnOnAndOffAutomation WithEnabledAtNight(IWeatherStation weatherStation)
+        public TurnOnAndOffAutomation WithEnabledAtNight(IDaylightService daylightService)
         {
-            if (weatherStation == null) throw new ArgumentNullException(nameof(weatherStation));
+            if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
 
-            Func<TimeSpan> start = () => weatherStation.Daylight.Sunset.Subtract(TimeSpan.FromHours(1));
-            Func<TimeSpan> end = () => weatherStation.Daylight.Sunrise.Add(TimeSpan.FromHours(1));
+            Func<TimeSpan> start = () => daylightService.Sunset.Subtract(TimeSpan.FromHours(1));
+            Func<TimeSpan> end = () => daylightService.Sunrise.Add(TimeSpan.FromHours(1));
 
             _enablingConditionsValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_timer).WithStart(start).WithEnd(end));
             return this;

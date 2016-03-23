@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
@@ -14,6 +15,7 @@ using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Core.Discovery;
 using HA4IoT.Core.Timer;
 using HA4IoT.Hardware.Pi2;
@@ -28,7 +30,8 @@ namespace HA4IoT.Core
         private readonly AreaCollection _areas = new AreaCollection();
         private readonly ActuatorCollection _actuators = new ActuatorCollection();
         private readonly AutomationCollection _automations = new AutomationCollection();
-        
+        private readonly List<IService> _services = new List<IService>(); 
+
         private HealthMonitor _healthMonitor;
         private BackgroundTaskDeferral _deferral;
         private HttpServer _httpServer;
@@ -133,6 +136,41 @@ namespace HA4IoT.Core
         public IList<IAutomation> GetAutomations()
         {
             return _automations.GetAll();
+        }
+
+        public void RegisterService(IService service)
+        {
+            if (service == null) throw new ArgumentNullException(nameof(service));
+
+            IService tmp;
+            if (TryGetService(out tmp))
+            {
+                throw new InvalidOperationException($"Service {service.GetType().FullName} is already registered.");
+            }
+
+            _services.Add(service);
+        }
+
+        public TService GetService<TService>() where TService : IService
+        {
+            TService service;
+            if (!TryGetService(out service))
+            {
+                throw new InvalidOperationException($"Service {typeof(TService).FullName} is not registered.");
+            }
+
+            return service;
+        }
+
+        public bool TryGetService<TService>(out TService service) where TService : IService
+        {
+            service = _services.OfType<TService>().FirstOrDefault();
+            if (service == null)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         protected virtual void Initialize()
@@ -263,20 +301,6 @@ namespace HA4IoT.Core
             }
         }
 
-        private void AttachActuatorHistory()
-        {
-            foreach (IActuator actuator in GetActuators())
-            {
-                var sensorActuator = actuator as ISingleValueSensorActuator;
-                if (sensorActuator != null)
-                {
-                    var history = new SensorActuatorHistory(sensorActuator);
-                    history.ExposeToApi(ApiController);
-                }
-            }
-
-        }
-
         private void ExposeToApi()
         {
             new ControllerApiDispatcher(this).ExposeToApi();
@@ -289,6 +313,19 @@ namespace HA4IoT.Core
             foreach (var actuator in _actuators.GetAll())
             {
                 actuator.ExposeToApi();
+            }
+        }
+
+        private void AttachActuatorHistory()
+        {
+            foreach (IActuator actuator in GetActuators())
+            {
+                var sensorActuator = actuator as ISingleValueSensorActuator;
+                if (sensorActuator != null)
+                {
+                    var history = new SensorActuatorHistory(sensorActuator);
+                    history.ExposeToApi(ApiController);
+                }
             }
         }
     }

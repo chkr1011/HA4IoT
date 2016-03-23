@@ -4,6 +4,7 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Configuration
 {
@@ -23,6 +24,11 @@ namespace HA4IoT.Configuration
         public virtual IDevice ParseDevice(XElement element)
         {
             throw new NotSupportedException("Configuratio extender '" + Namespace + "' does not support any devices.");
+        }
+
+        public virtual IService ParseService(XElement element)
+        {
+            throw new NotSupportedException("Configuratio extender '" + Namespace + "' does not support any services.");
         }
 
         public virtual IBinaryOutput ParseBinaryOutput(XElement element)

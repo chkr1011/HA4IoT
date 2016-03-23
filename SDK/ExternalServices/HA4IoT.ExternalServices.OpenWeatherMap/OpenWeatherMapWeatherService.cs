@@ -9,19 +9,16 @@ using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.WeatherStation;
+using HA4IoT.Contracts.Services.WeatherService;
 using HA4IoT.Networking;
 
-namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
+namespace HA4IoT.ExternalServices.OpenWeatherMap
 {
-    public class OpenWeatherMapWeatherStation : IWeatherStation
+    public class OpenWeatherMapWeatherService : IWeatherService
     {
         private readonly string _cacheFilename = Path.Combine(ApplicationData.Current.LocalFolder.Path,
             "OpenWeatherMapCache.json");
-
-        public static readonly DeviceId DefaultDeviceId = new DeviceId("OpenWeatherMapWeatherStation");
 
         private readonly IHomeAutomationTimer _timer;
 
@@ -35,9 +32,8 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
         private TimeSpan _sunrise;
         private TimeSpan _sunset;
         
-        public OpenWeatherMapWeatherStation(DeviceId id, IHomeAutomationTimer timer, IApiController apiController)
+        public OpenWeatherMapWeatherService(IHomeAutomationTimer timer, IApiController apiController)
         {
-            if (id == null) throw new ArgumentNullException(nameof(id));
             if (timer == null) throw new ArgumentNullException(nameof(timer));
             if (apiController == null) throw new ArgumentNullException(nameof(apiController));
 
@@ -50,7 +46,6 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             _situation = new WeatherStationSituationSensor(new ActuatorId("WeatherStation.Situation"), apiController);
             SituationSensor = _situation;
 
-            Id = id;
             _timer = timer;
     
             LoadPersistedValues();
@@ -64,8 +59,6 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             new OpenWeatherMapWeatherStationApiDispatcher(this, apiController).ExposeToApi();
         }
 
-        public DeviceId Id { get; }
-
         // TODO: Move Daylight to other service because it is not part of weather state.
         public Daylight Daylight => new Daylight(_timer.CurrentTime, _sunrise, _sunset);
 
@@ -78,17 +71,17 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
             var result = new JsonObject();
 
             var configurationParser = new OpenWeatherMapConfigurationParser();
-            result.SetNamedValue("uri", configurationParser.GetUri().ToString().ToJsonValue());
+            result.SetNamedString("uri", configurationParser.GetUri().ToString());
 
             result.SetNamedValue("situation", SituationSensor.GetSituation().ToJsonValue());
-            result.SetNamedValue("temperature", TemperatureSensor.GetValue().ToJsonValue());
-            result.SetNamedValue("humidity", HumiditySensor.GetValue().ToJsonValue());
+            result.SetNamedNumber("temperature", TemperatureSensor.GetValue());
+            result.SetNamedNumber("humidity", HumiditySensor.GetValue());
 
-            result.SetNamedValue("lastFetched", _lastFetched.ToJsonValue());
-            result.SetNamedValue("lastFetchedDifferentResponse", _lastFetchedDifferentResponse.ToJsonValue());
+            result.SetNamedDateTime("lastFetched", _lastFetched);
+            result.SetNamedDateTime("lastFetchedDifferentResponse", _lastFetchedDifferentResponse);
 
-            result.SetNamedValue("sunrise", _sunrise.ToJsonValue());
-            result.SetNamedValue("sunset", _sunset.ToJsonValue());
+            result.SetNamedTimeSpan("sunrise", _sunrise);
+            result.SetNamedTimeSpan("sunset", _sunset);
 
             return result;
         }

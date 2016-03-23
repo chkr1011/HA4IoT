@@ -126,6 +126,7 @@
     <Compile Include="TestRollerShutter.cs" />
     <Compile Include="TestSensor.cs" />
     <Compile Include="TestTemperatureSensor.cs" />
+    <Compile Include="TestDaylightService.cs" />
     <Compile Include="TestWeatherStation.cs" />
     <Content Include="Properties\HA4IoT.Tests.Mockups.rd.xml" />
   </ItemGroup>

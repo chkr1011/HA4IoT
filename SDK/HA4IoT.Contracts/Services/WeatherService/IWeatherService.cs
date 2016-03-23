@@ -1,13 +1,11 @@
 ﻿using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Hardware;
 
-namespace HA4IoT.Contracts.WeatherStation
+namespace HA4IoT.Contracts.Services.WeatherService
 {
-    public interface IWeatherStation : IDevice, IStatusProvider
+    public interface IWeatherService : IService, IStatusProvider
     {
-        Daylight Daylight { get; }
-
+        // TODO: Consider split into ExternalTemperatureService, ExternalHumidityService, ExternalWeatherSituationService
         IWeatherSituationSensor SituationSensor { get; }
         ITemperatureSensor TemperatureSensor { get; }
         IHumiditySensor HumiditySensor { get; }

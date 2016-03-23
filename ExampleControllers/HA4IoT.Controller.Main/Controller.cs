@@ -2,10 +2,11 @@
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Controller.Main.Rooms;
 using HA4IoT.Core;
+using HA4IoT.ExternalServices.OpenWeatherMap;
+using HA4IoT.ExternalServices.Twitter;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
-using HA4IoT.Hardware.OpenWeatherMapWeatherStation;
 using HA4IoT.Hardware.Pi2;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
@@ -22,8 +23,14 @@ namespace HA4IoT.Controller.Main
             
             AddDevice(new BuiltInI2CBus());
             AddDevice(new I2CHardwareBridge(new DeviceId("HB"), new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer));
-            AddDevice(new OpenWeatherMapWeatherStation(OpenWeatherMapWeatherStation.DefaultDeviceId, Timer, ApiController));
+            RegisterService(new OpenWeatherMapWeatherService(Timer, ApiController));
 
+            TwitterClient twitterClient;
+            if (TwitterClientFactory.TryCreateFromDefaultConfigurationFile(out twitterClient))
+            {
+                RegisterService(twitterClient);
+            }
+           
             var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>(), ApiController);
             
             var configurationParser = new ConfigurationParser(this);

@@ -121,6 +121,10 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\SDK\ExternalServices\HA4IoT.ExternalServices.OpenWeatherMap\HA4IoT.ExternalServices.OpenWeatherMap.csproj">
+      <Project>{6788E4A8-580E-4C2E-9754-95229F24F217}</Project>
+      <Name>HA4IoT.ExternalServices.OpenWeatherMap</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Automations\HA4IoT.Automations.csproj">
       <Project>{1CA64C98-210A-4015-95C6-67D591115F7B}</Project>
       <Name>HA4IoT.Automations</Name>
@@ -148,10 +152,6 @@
     <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.CCTools\HA4IoT.Hardware.CCTools.csproj">
       <Project>{B0A7EF01-9382-422C-81AF-C90DC5A7AFFD}</Project>
       <Name>HA4IoT.Hardware.CCTools</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.OpenWeatherMapWeatherStation\HA4IoT.Hardware.OpenWeatherMapWeatherStation.csproj">
-      <Project>{25A0003B-E68E-481A-92AD-F4BDABC65700}</Project>
-      <Name>HA4IoT.Hardware.OpenWeatherMapWeatherStation</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.Pi2\HA4IoT.Hardware.Pi2.csproj">
       <Project>{39819B8F-40F8-418A-AD3A-92A8C8D63268}</Project>

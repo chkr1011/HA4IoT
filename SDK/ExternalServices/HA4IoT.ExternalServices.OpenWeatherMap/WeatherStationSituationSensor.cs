@@ -2,9 +2,9 @@
 using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
-using HA4IoT.Contracts.WeatherStation;
+using HA4IoT.Contracts.Services.WeatherService;
 
-namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
+namespace HA4IoT.ExternalServices.OpenWeatherMap
 {
     public class WeatherStationSituationSensor : ActuatorBase<ActuatorSettings>, IWeatherSituationSensor
     {

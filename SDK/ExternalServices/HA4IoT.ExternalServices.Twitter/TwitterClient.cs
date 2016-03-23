@@ -8,10 +8,11 @@ using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using Windows.Storage.Streams;
 using HA4IoT.Contracts.Actions;
+using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.ExternalServices.Twitter
 {
-    public class TwitterClient
+    public class TwitterClient : IService
     {
         private string _nonce;
         private string _timestamp;

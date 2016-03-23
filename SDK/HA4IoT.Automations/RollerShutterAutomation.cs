@@ -7,7 +7,8 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.WeatherStation;
+using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.WeatherService;
 
 namespace HA4IoT.Automations
 {
@@ -16,22 +17,31 @@ namespace HA4IoT.Automations
         private readonly List<ActuatorId> _rollerShutters = new List<ActuatorId>();
 
         private readonly IHomeAutomationTimer _timer;
-        private readonly IWeatherStation _weatherStation;
+        private readonly IDaylightService _daylightService;
+        private readonly IWeatherService _weatherService;
         private readonly IActuatorController _actuatorController;
 
         private bool _maxOutsideTemperatureApplied;
         private bool _autoOpenIsApplied;
         private bool _autoCloseIsApplied;
         
-        public RollerShutterAutomation(AutomationId id, IHomeAutomationTimer timer, IWeatherStation weatherStation, IApiController apiController, IActuatorController actuatorController)
+        public RollerShutterAutomation(
+            AutomationId id, 
+            IHomeAutomationTimer timer,
+            IDaylightService daylightService,
+            IWeatherService weatherService,
+            IApiController apiController,
+            IActuatorController actuatorController)
             : base(id)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
-            if (weatherStation == null) throw new ArgumentNullException(nameof(weatherStation));
+            if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
+            if (weatherService == null) throw new ArgumentNullException(nameof(weatherService));
             if (actuatorController == null) throw new ArgumentNullException(nameof(actuatorController));
 
             _timer = timer;
-            _weatherStation = weatherStation;
+            _daylightService = daylightService;
+            _weatherService = weatherService;
             _actuatorController = actuatorController;
 
             Settings = new RollerShutterAutomationSettings(id, apiController);           
@@ -127,7 +137,7 @@ namespace HA4IoT.Automations
         private bool TooHotIsAffected()
         {
             if (Settings.AutoCloseIfTooHotIsEnabled.Value && 
-                _weatherStation.TemperatureSensor.GetValue() > Settings.AutoCloseIfTooHotTemperaure.Value)
+                _weatherService.TemperatureSensor.GetValue() > Settings.AutoCloseIfTooHotTemperaure.Value)
             {
                 return true;
             }
@@ -138,7 +148,7 @@ namespace HA4IoT.Automations
         private bool TooColdIsAffected()
         {
             if (Settings.SkipIfFrozenIsEnabled.Value &&
-                _weatherStation.TemperatureSensor.GetValue() < Settings.SkipIfFrozenTemperature.Value)
+                _weatherService.TemperatureSensor.GetValue() < Settings.SkipIfFrozenTemperature.Value)
             {
                 return true;
             }
@@ -148,7 +158,7 @@ namespace HA4IoT.Automations
 
         private IsDayCondition GetIsDayCondition()
         {
-            var condition = new IsDayCondition(_weatherStation, _timer);
+            var condition = new IsDayCondition(_daylightService, _timer);
             condition.WithStartAdjustment(Settings.OpenOnSunriseOffset.Value);
             condition.WithEndAdjustment(Settings.CloseOnSunsetOffset.Value);
 

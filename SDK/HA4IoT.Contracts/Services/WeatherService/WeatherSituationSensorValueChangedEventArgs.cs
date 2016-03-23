@@ -1,6 +1,4 @@
-﻿using HA4IoT.Contracts.Actuators;
-
-namespace HA4IoT.Contracts.WeatherStation
+﻿namespace HA4IoT.Contracts.Services.WeatherService
 {
     public class WeatherSituationSensorValueChangedEventArgs : ValueChangedEventArgs<WeatherSituation>
     {

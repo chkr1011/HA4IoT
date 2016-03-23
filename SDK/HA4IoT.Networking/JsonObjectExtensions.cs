@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
 using System.Text;
 using Windows.Data.Json;
@@ -312,6 +313,36 @@ namespace HA4IoT.Networking
             if (name == null) throw new ArgumentNullException(nameof(name));
 
             jsonObject.SetNamedValue(name, array);
+        }
+
+        public static void SetNamedDateTime(this JsonObject jsonObject, string name, DateTime? value)
+        {
+            if (jsonObject == null) throw new ArgumentNullException(nameof(jsonObject));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
+            if (!value.HasValue)
+            {
+                jsonObject.SetNamedNullValue(name);
+            }
+            else
+            {
+                jsonObject.SetNamedString(name, value.Value.ToString("O"));
+            }
+        }
+
+        public static void SetNamedTimeSpan(this JsonObject jsonObject, string name, TimeSpan? value)
+        {
+            if (jsonObject == null) throw new ArgumentNullException(nameof(jsonObject));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
+            if (!value.HasValue)
+            {
+                jsonObject.SetNamedNullValue(name);
+            }
+            else
+            {
+                jsonObject.SetNamedString(name, value.Value.ToString("c"));
+            }
         }
 
         public static JsonObject WithNamedString(this JsonObject jsonObject, string name, string value)

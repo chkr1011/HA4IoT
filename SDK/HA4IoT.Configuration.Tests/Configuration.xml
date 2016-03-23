@@ -6,8 +6,7 @@
 
   <Devices>
     <Test:I2CBus id="II2CBus.default" />
-    <OpenWeatherMapWeatherStation id="WeatherStation" />
-    
+
     <!-- Shared input devices -->
     <CCTools:HSPE16InputOnly id="Input0" i2cAddress="42" i2cBus="II2CBus.default" />
     <CCTools:HSPE16InputOnly id="Input1" i2cAddress="43" />
@@ -16,11 +15,16 @@
     <CCTools:HSPE16InputOnly id="Input4" i2cAddress="46" />
     <CCTools:HSPE16InputOnly id="Input5" i2cAddress="44" />
 
+    <!-- Dedicated devices per room -->
     <CCTools:HSRel5 id="Bedroom.HSRel5" i2cAddress="38" />
     <CCTools:HSRel8 id="Bedroom.HSRel8" i2cAddress="21" />
 
     <I2CHardwareBridge:I2CHardwareBridge id="I2CHardwareBridge" i2cAddress="50" />
   </Devices>
+
+  <Services>
+    <OpenWeatherMapWeatherStation />
+  </Services>
 
   <Areas>
     <Area id="Bedroom">

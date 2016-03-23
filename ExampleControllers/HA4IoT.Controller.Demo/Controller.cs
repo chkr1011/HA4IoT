@@ -8,11 +8,11 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Triggers;
 using HA4IoT.Core;
+using HA4IoT.ExternalServices.OpenWeatherMap;
 using HA4IoT.ExternalServices.Twitter;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
-using HA4IoT.Hardware.OpenWeatherMapWeatherStation;
 using HA4IoT.Hardware.Pi2;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
@@ -62,7 +62,7 @@ namespace HA4IoT.Controller.Demo
                 .WithRemoteSocket(0, intertechno.GetSequencePair(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1))
                 .WithRemoteSocket(1, intertechno.GetSequencePair(IntertechnoSystemCode.B, IntertechnoUnitCode.Unit1));
 
-            AddDevice(new OpenWeatherMapWeatherStation(OpenWeatherMapWeatherStation.DefaultDeviceId, Timer, ApiController));
+            RegisterService(new OpenWeatherMapWeatherService(Timer, ApiController));
 
             const int SensorPin = 5;
 

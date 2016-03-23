@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using HA4IoT.Contracts.Actuators;
 
-namespace HA4IoT.Contracts.Actuators
+namespace HA4IoT.Contracts.Core
 {
     public interface IActuatorController
     {

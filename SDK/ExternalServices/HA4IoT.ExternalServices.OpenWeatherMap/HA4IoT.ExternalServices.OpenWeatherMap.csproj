@@ -4,15 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{25A0003B-E68E-481A-92AD-F4BDABC65700}</ProjectGuid>
+    <ProjectGuid>{6788E4A8-580E-4C2E-9754-95229F24F217}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HA4IoT.Hardware.OpenWeatherMapWeatherStation</RootNamespace>
-    <AssemblyName>HA4IoT.Hardware.OpenWeatherMapWeatherStation</AssemblyName>
+    <RootNamespace>HA4IoT.ExternalServices.OpenWeatherMap</RootNamespace>
+    <AssemblyName>HA4IoT.ExternalServices.OpenWeatherMap</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -35,6 +35,28 @@
     <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <PlatformTarget>ARM</PlatformTarget>
@@ -80,43 +102,21 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <PlatformTarget>x86</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <NoWarn>;2008</NoWarn>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <Optimize>true</Optimize>
-    <NoWarn>;2008</NoWarn>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="OpenWeatherMapResponseParser.cs" />
     <Compile Include="OpenWeatherMapConfigurationParser.cs" />
+    <Compile Include="OpenWeatherMapResponseParser.cs" />
+    <Compile Include="OpenWeatherMapWeatherService.cs" />
+    <Compile Include="OpenWeatherMapWeatherSituationParser.cs" />
     <Compile Include="OpenWeatherMapWeatherStationApiDispatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="OpenWeatherMapWeatherStation.cs" />
-    <Compile Include="OpenWeatherMapWeatherSituationParser.cs" />
     <Compile Include="WeatherStationHumiditySensor.cs" />
     <Compile Include="WeatherStationSituationSensor.cs" />
     <Compile Include="WeatherStationTemperatureSensor.cs" />
-    <Content Include="Properties\HA4IoT.Hardware.OpenWeatherMapWeatherStation.rd.xml" />
+    <EmbeddedResource Include="Properties\HA4IoT.ExternalServices.OpenWeatherMap.rd.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\HA4IoT.Actuators\HA4IoT.Actuators.csproj">
@@ -128,7 +128,7 @@
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\HA4IoT.Core\HA4IoT.Core.csproj">
-      <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
+      <Project>{2bbef090-4fee-4fb7-9cf1-f6597f2c53ea}</Project>
       <Name>HA4IoT.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\HA4IoT.Networking\HA4IoT.Networking.csproj">
