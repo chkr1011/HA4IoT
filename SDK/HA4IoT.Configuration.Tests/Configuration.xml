@@ -4,6 +4,12 @@
                xmlns:I2CHardwareBridge="http://www.ha4iot.de/ConfigurationExtenders/I2CHardwareBridge"
                xmlns:Test="http://www.ha4iot.de/ConfigurationExtenders/Test">
 
+  <!-- Register all unique services -->
+  <Services>
+    <OpenWeatherMapWeatherService />
+  </Services>
+  
+  <!-- Register all physical hardware which is attached to the system -->
   <Devices>
     <Test:I2CBus id="II2CBus.default" />
 
@@ -21,10 +27,6 @@
 
     <I2CHardwareBridge:I2CHardwareBridge id="I2CHardwareBridge" i2cAddress="50" />
   </Devices>
-
-  <Services>
-    <OpenWeatherMapWeatherStation />
-  </Services>
 
   <Areas>
     <Area id="Bedroom">
