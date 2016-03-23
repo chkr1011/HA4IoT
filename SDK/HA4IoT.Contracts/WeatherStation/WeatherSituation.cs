@@ -74,6 +74,12 @@
 
         HeavyShowerSnow,
 
-        Mist
+        Mist,
+
+        LightIntensityDrizzle,
+
+        Drizzle,
+
+        HeavyIntensityDrizzle
     }
 }

@@ -21,6 +21,18 @@ namespace HA4IoT.Hardware.OpenWeatherMapWeatherStation
                 case 231: return WeatherSituation.ThunderstormWithDrizzle;
                 case 232: return WeatherSituation.ThunderstormWithHeavyDrizzle;
 
+                case 300: return WeatherSituation.LightIntensityDrizzle;
+                case 301: return WeatherSituation.Drizzle;
+                case 302: return WeatherSituation.HeavyIntensityDrizzle;
+
+                    //TODO:
+////310 light intensity drizzle rain     09d
+////311 drizzle rain     09d
+////312 heavy intensity drizzle rain     09d
+////313 shower rain and drizzle  09d
+////314 heavy shower rain and drizzle    09d
+////321 shower drizzle   09d
+
                 case 500: return WeatherSituation.LightRain;
                 case 501: return WeatherSituation.ModerateRain;
                 case 502: return WeatherSituation.HeavyIntensityRain;
