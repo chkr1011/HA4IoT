@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{551337E7-D1EF-4145-92B4-F7086F7665A6}</ProjectGuid>
+    <ProjectGuid>{E1EDAC4B-83B9-46F4-9F6A-3BAE97D79F29}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>HA4IoT.Contracts</RootNamespace>
