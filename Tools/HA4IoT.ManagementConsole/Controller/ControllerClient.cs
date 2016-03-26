@@ -50,7 +50,7 @@ namespace HA4IoT.ManagementConsole.Controller
             if (automationId == null) throw new ArgumentNullException(nameof(automationId));
             if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
-            string relativeUrl = $"api/area/{automationId}/settings";
+            string relativeUrl = $"api/automation/{automationId}/settings";
             await PostJObject(relativeUrl, configuration);
         }
 
@@ -59,7 +59,7 @@ namespace HA4IoT.ManagementConsole.Controller
             if (actuatorId == null) throw new ArgumentNullException(nameof(actuatorId));
             if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
-            string relativeUrl = $"api/area/{actuatorId}/settings";
+            string relativeUrl = $"api/actuator/{actuatorId}/settings";
             await PostJObject(relativeUrl, configuration);
         }
 
