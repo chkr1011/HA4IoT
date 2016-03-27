@@ -12,7 +12,7 @@ namespace HA4IoT.Controller.Main.Rooms
 {
     internal class OfficeConfiguration
     {
-        private enum Office
+        public enum Office
         {
             TemperatureSensor,
             HumiditySensor,

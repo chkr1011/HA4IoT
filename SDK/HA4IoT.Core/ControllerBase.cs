@@ -138,11 +138,11 @@ namespace HA4IoT.Core
             return _automations.GetAll();
         }
 
-        public void RegisterService(IService service)
+        public void RegisterService<TService>(TService service) where TService : IService
         {
             if (service == null) throw new ArgumentNullException(nameof(service));
 
-            IService tmp;
+            TService tmp;
             if (TryGetService(out tmp))
             {
                 throw new InvalidOperationException($"Service {service.GetType().FullName} is already registered.");

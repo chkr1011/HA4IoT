@@ -115,6 +115,7 @@
     <Compile Include="Actuators\IActuatorSettings.cs" />
     <Compile Include="Actuators\IButtonEndpoint.cs" />
     <Compile Include="Actuators\IButtonSettings.cs" />
+    <Compile Include="Actuators\ICasement.cs" />
     <Compile Include="Actuators\IMotionDetectorEndpoint.cs" />
     <Compile Include="Actuators\IRollerShutterButtons.cs" />
     <Compile Include="Actuators\IRollerShutterEndpoint.cs" />
@@ -122,6 +123,7 @@
     <Compile Include="Actuators\ILamp.cs" />
     <Compile Include="Actuators\IBinaryStateEndpoint.cs" />
     <Compile Include="Actuators\IRollerShutterSettings.cs" />
+    <Compile Include="Actuators\IWindow.cs" />
     <Compile Include="Api\ApiCallType.cs" />
     <Compile Include="Api\ApiRequestReceivedEventArgs.cs" />
     <Compile Include="Api\ApiResultCode.cs" />

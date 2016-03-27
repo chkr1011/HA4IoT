@@ -6,7 +6,7 @@ using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Actuators
 {
-    public class Casement
+    public class Casement : ICasement
     {
         public const string LeftCasementId = "Left";
         public const string CenterCasementId = "Center";

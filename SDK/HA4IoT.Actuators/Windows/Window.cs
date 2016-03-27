@@ -10,7 +10,7 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public class Window : ActuatorBase<ActuatorSettings>
+    public class Window : ActuatorBase<ActuatorSettings>, IWindow
     {
         private readonly Trigger _openedTrigger = new Trigger();
         private readonly Trigger _closedTrigger = new Trigger();
@@ -21,7 +21,7 @@ namespace HA4IoT.Actuators
             Settings = new ActuatorSettings(id);
         }
 
-        public IList<Casement> Casements { get; } = new List<Casement>();
+        public IList<ICasement> Casements { get; } = new List<ICasement>();
 
         public ITrigger GetOpenedTrigger()
         {

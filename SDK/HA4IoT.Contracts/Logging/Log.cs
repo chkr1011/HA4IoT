@@ -4,11 +4,14 @@ namespace HA4IoT.Contracts.Logging
 {
     public static class Log
     {
-        public static ILogger Instance { get; set; }
+        public static event EventHandler ErrorLogged;
 
+        public static ILogger Instance { get; set; }
+        
         public static void Error(Exception exception, string message, params object[] parameters)
         {
             Instance?.Error(exception, message, parameters);
+            ErrorLogged?.Invoke(null, new EventArgs());
         }
 
         public static void Info(string message, params object[] parameters)

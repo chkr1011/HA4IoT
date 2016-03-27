@@ -3,22 +3,20 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Data.Json;
-using Windows.Storage;
 using Windows.Web.Http;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.WeatherService;
 using HA4IoT.Networking;
 
 namespace HA4IoT.ExternalServices.OpenWeatherMap
 {
-    public class OpenWeatherMapWeatherService : IWeatherService
+    public class OpenWeatherMapWeatherService : IWeatherService, IDaylightService
     {
-        private readonly string _cacheFilename = Path.Combine(ApplicationData.Current.LocalFolder.Path,
-            "OpenWeatherMapCache.json");
+        private readonly string _cacheFilename = StoragePath.WithFilename("OpenWeatherMapCache.json");
 
         private readonly IHomeAutomationTimer _timer;
 
@@ -29,8 +27,6 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
         private string _previousResponse;
         private DateTime? _lastFetched;
         private DateTime? _lastFetchedDifferentResponse;
-        private TimeSpan _sunrise;
-        private TimeSpan _sunset;
         
         public OpenWeatherMapWeatherService(IHomeAutomationTimer timer, IApiController apiController)
         {
@@ -59,13 +55,13 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             new OpenWeatherMapWeatherStationApiDispatcher(this, apiController).ExposeToApi();
         }
 
-        // TODO: Move Daylight to other service because it is not part of weather state.
-        public Daylight Daylight => new Daylight(_timer.CurrentTime, _sunrise, _sunset);
-
         public IWeatherSituationSensor SituationSensor { get; }
         public ITemperatureSensor TemperatureSensor { get; }
         public IHumiditySensor HumiditySensor { get; }
-        
+
+        public TimeSpan Sunrise { get; private set; }
+        public TimeSpan Sunset { get; private set; }
+
         public JsonObject ExportStatusToJsonObject()
         {
             var result = new JsonObject();
@@ -80,8 +76,8 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             result.SetNamedDateTime("lastFetched", _lastFetched);
             result.SetNamedDateTime("lastFetchedDifferentResponse", _lastFetchedDifferentResponse);
 
-            result.SetNamedTimeSpan("sunrise", _sunrise);
-            result.SetNamedTimeSpan("sunset", _sunset);
+            result.SetNamedTimeSpan("sunrise", Sunrise);
+            result.SetNamedTimeSpan("sunset", Sunset);
 
             return result;
         }
@@ -92,8 +88,8 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             _temperature.SetValue(temperature);
             _humidity.SetValue(humidity);
 
-            _sunrise = sunrise;
-            _sunset = sunset;
+            Sunrise = sunrise;
+            Sunset = sunset;
         }
 
         private async Task FetchWeahterData()
@@ -141,8 +137,8 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             _temperature.SetValue(parser.Temperature);
             _humidity.SetValue(parser.Humidity);
 
-            _sunrise = parser.Sunrise;
-            _sunset = parser.Sunset;
+            Sunrise = parser.Sunrise;
+            Sunset = parser.Sunset;
         }
 
         private async Task<string> FetchWeatherData()

@@ -4,7 +4,7 @@ namespace HA4IoT.Contracts.Core
 {
     public interface IServiceController
     {
-        void RegisterService(IService service);
+        void RegisterService<TService>(TService service) where TService : IService;
 
         TService GetService<TService>() where TService : IService;
 
