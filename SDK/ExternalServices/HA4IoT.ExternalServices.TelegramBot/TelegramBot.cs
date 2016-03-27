@@ -23,6 +23,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
         public string AuthenticationToken { get; set; }
 
         public HashSet<int> Administrators { get; } = new HashSet<int>();
+        public HashSet<int> ChatWhitelist { get; } = new HashSet<int>();
 
         public async Task TrySendMessageToAdministratorsAsync(string text)
         {
@@ -106,11 +107,11 @@ namespace HA4IoT.ExternalServices.TelegramBot
                 }
 
                 string body = await response.Content.ReadAsStringAsync();
-                ProcessUpdates(body);
+                await ProcessUpdates(body);
             }
         }
 
-        private void ProcessUpdates(string body)
+        private async Task ProcessUpdates(string body)
         {
             JsonObject response;
             if (!JsonObject.TryParse(body, out response))
@@ -123,14 +124,25 @@ namespace HA4IoT.ExternalServices.TelegramBot
                 return;
             }
 
-            foreach (var updateItem in response.GetNamedArray("result", new JsonArray()))
+            foreach (var updateItem in response.GetNamedArray("result"))
             {
                 JsonObject update = updateItem.GetObject();
 
                 _latestUpdateId = (int)update.GetNamedNumber("update_id");
-                JsonObject message = update.GetNamedObject("message");
-                InboundMessage inboundMessage = ConvertJsonMessageToInboundMessage(message);
+                await ProcessMessage(update.GetNamedObject("message"));
+            }
+        }
 
+        private async Task ProcessMessage(JsonObject message)
+        {
+            InboundMessage inboundMessage = ConvertJsonMessageToInboundMessage(message);
+
+            if (!ChatWhitelist.Contains(inboundMessage.ChatId))
+            {
+                await TrySendMessageAsync(inboundMessage.CreateResponse("Not authorized!"));
+            }
+            else
+            {
                 MessageReceived?.Invoke(this, new TelegramBotMessageReceivedEventArgs(this, inboundMessage));
             }
         }

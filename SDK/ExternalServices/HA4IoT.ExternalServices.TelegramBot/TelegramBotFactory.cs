@@ -37,6 +37,11 @@ namespace HA4IoT.ExternalServices.TelegramBot
                     telegramBot.Administrators.Add((int)administratorItem.GetNumber());
                 }
 
+                foreach (var chatWhitelistItem in json.GetNamedArray("ChatWhitelist", new JsonArray()))
+                {
+                    telegramBot.ChatWhitelist.Add((int)chatWhitelistItem.GetNumber());
+                }
+
                 telegramBot.StartWaitForMessages();
 
                 return true;
