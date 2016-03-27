@@ -6,12 +6,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Networking;
 using HttpClient = System.Net.Http.HttpClient;
 
 namespace HA4IoT.ExternalServices.TelegramBot
 {
-    public class TelegramBot
+    public class TelegramBot : IService
     {
         public const string BaseUri = "https://api.telegram.org/bot";
 
@@ -23,20 +24,14 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
         public HashSet<int> Administrators { get; } = new HashSet<int>();
 
-        public async Task<bool> TrySendMessageToAdministrators(string text)
+        public async Task TrySendMessageToAdministratorsAsync(string text)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
-            bool success = true;
             foreach (var chatId in Administrators)
             {
-                if (!await TrySendMessageAsync(new OutboundMessage(chatId, text)))
-                {
-                    success = false;
-                }
+                await TrySendMessageAsync(new OutboundMessage(chatId, text));
             }
-
-            return success;
         }
 
         public async Task<bool> TrySendMessageAsync(OutboundMessage message)
@@ -62,7 +57,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
             using (var httpClient = new HttpClient())
             {
                 string uri = $"{BaseUri}{AuthenticationToken}/sendMessage";
-                StringContent body = ConvertOutboundMessageToHttpBody(message);
+                StringContent body = ConvertOutboundMessageToJsonMessage(message);
                 HttpResponseMessage response = await httpClient.PostAsync(uri, body);
 
                 if (!response.IsSuccessStatusCode)
@@ -151,7 +146,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
             return new InboundMessage(timestamp, chatId, text);
         }
 
-        private StringContent ConvertOutboundMessageToHttpBody(OutboundMessage message)
+        private StringContent ConvertOutboundMessageToJsonMessage(OutboundMessage message)
         {
             var json = new JsonObject();
             json.SetNamedNumber("chat_id", message.ChatId);

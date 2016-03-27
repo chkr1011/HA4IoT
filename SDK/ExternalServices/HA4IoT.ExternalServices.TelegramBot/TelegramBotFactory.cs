@@ -32,6 +32,11 @@ namespace HA4IoT.ExternalServices.TelegramBot
                 telegramBot = new TelegramBot();
                 telegramBot.AuthenticationToken = json.GetNamedString("AuthenticationToken");
 
+                foreach (var administratorItem in json.GetNamedArray("Administrators", new JsonArray()))
+                {
+                    telegramBot.Administrators.Add((int)administratorItem.GetNumber());
+                }
+
                 telegramBot.StartWaitForMessages();
 
                 return true;

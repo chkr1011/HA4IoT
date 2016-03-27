@@ -32,23 +32,8 @@ namespace HA4IoT.Controller.Main
             AddDevice(new I2CHardwareBridge(new DeviceId("HB"), new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer));
             RegisterService(new OpenWeatherMapWeatherService(Timer, ApiController));
 
-            TwitterClient twitterClient;
-            if (TwitterClientFactory.TryCreateFromDefaultConfigurationFile(out twitterClient))
-            {
-                RegisterService(twitterClient);
-            }
-
-            TelegramBot telegramBot;
-            if (TelegramBotFactory.TryCreateFromDefaultConfigurationFile(out telegramBot))
-            {
-                Log.ErrorLogged += (s, e) =>
-                {
-                    Task.Run(async () => await telegramBot.TrySendMessageToAdministrators("Ein Fehler wurde gelogged."));
-                };
-
-                Task.Run(async () => await telegramBot.TrySendMessageToAdministrators("Das System wurde neu gestartet."));
-                telegramBot.MessageReceived += HandleTelegramBotMessage;
-            }
+            SetupTwitterClient();
+            SetupTelegramBot();
 
             var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>(), ApiController);
 
@@ -87,6 +72,34 @@ namespace HA4IoT.Controller.Main
             ioBoardsInterruptMonitor.StartPollingAsync();
         }
 
+        private void SetupTelegramBot()
+        {
+            TelegramBot telegramBot;
+            if (!TelegramBotFactory.TryCreateFromDefaultConfigurationFile(out telegramBot))
+            {
+                return;
+            }
+
+            Log.ErrorLogged += (s, e) =>
+            {
+                Task.Run(async () => await telegramBot.TrySendMessageToAdministratorsAsync("Ein Fehler wurde gelogged."));
+            };
+
+            Task.Run(async () => await telegramBot.TrySendMessageToAdministratorsAsync("Das System wurde neu gestartet."));
+            telegramBot.MessageReceived += HandleTelegramBotMessage;
+
+            RegisterService(telegramBot);
+        }
+
+        private void SetupTwitterClient()
+        {
+            TwitterClient twitterClient;
+            if (TwitterClientFactory.TryCreateFromDefaultConfigurationFile(out twitterClient))
+            {
+                RegisterService(twitterClient);
+            }
+        }
+
         private async void HandleTelegramBotMessage(object sender, TelegramBotMessageReceivedEventArgs e)
         {
             if (Regex.IsMatch(e.Message.Text, "Hello", RegexOptions.IgnoreCase))
@@ -108,7 +121,7 @@ namespace HA4IoT.Controller.Main
                 await
                     e.TelegramBot.TrySendMessageAsync(e.Message.CreateResponse("Ich habe das Licht für dich ausgeschaltet!"));
             }
-            else if (Regex.IsMatch(e.Message.Text, @"Fenster.*geschlossen", RegexOptions.IgnoreCase))
+            else if (Regex.IsMatch(e.Message.Text, "Fenster.*geschlossen", RegexOptions.IgnoreCase))
             {
                 var allWindows = GetActuators<IWindow>();
                 var openWindows = allWindows.Where(w => w.Casements.Any(c => c.GetState() != CasementState.Closed)).ToList();
