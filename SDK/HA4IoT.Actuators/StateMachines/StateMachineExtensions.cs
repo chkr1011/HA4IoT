@@ -44,21 +44,6 @@ namespace HA4IoT.Actuators
             return stateMachine.GetSupportsState(DefaultStateIDs.On);
         }
 
-        public static IHomeAutomationAction GetSetNextStateAction(this IStateMachine stateStateMachine)
-        {
-            if (stateStateMachine == null) throw new ArgumentNullException(nameof(stateStateMachine));
-
-            return new HomeAutomationAction(stateStateMachine.SetNextState);
-        }
-
-        public static IHomeAutomationAction GetSetStateAction(this IStateMachine stateStateMachine, StateMachineStateId stateId)
-        {
-            if (stateStateMachine == null) throw new ArgumentNullException(nameof(stateStateMachine));
-            if (stateId == null) throw new ArgumentNullException(nameof(stateId));
-
-            return new HomeAutomationAction(() => stateStateMachine.SetActiveState(stateId));
-        }
-
         public static StateMachineState AddOffState(this StateMachine stateMachine)
         {
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
@@ -78,7 +63,7 @@ namespace HA4IoT.Actuators
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
             if (id == null) throw new ArgumentNullException(nameof(id));
 
-            var state = new StateMachineState(id, stateMachine);
+            var state = new StateMachineState(id);
             stateMachine.AddState(state);
             return state;
         }
@@ -119,6 +104,14 @@ namespace HA4IoT.Actuators
             return true;
         }
 
+        public static IHomeAutomationAction GetSetActiveStateAction(this IStateMachine stateStateMachine, StateMachineStateId stateId)
+        {
+            if (stateStateMachine == null) throw new ArgumentNullException(nameof(stateStateMachine));
+            if (stateId == null) throw new ArgumentNullException(nameof(stateId));
+
+            return new HomeAutomationAction(() => stateStateMachine.SetActiveState(stateId));
+        }
+
         public static IHomeAutomationAction GetTurnOnAction(this IStateMachine stateMachine)
         {
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
@@ -133,11 +126,11 @@ namespace HA4IoT.Actuators
             return new HomeAutomationAction(() => stateMachine.SetActiveState(DefaultStateIDs.Off));
         }
 
-        public static IHomeAutomationAction GetApplyNextStateAction(this IStateMachine stateMachine)
+        public static IHomeAutomationAction GetSetNextStateAction(this IStateMachine stateStateMachine)
         {
-            if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
+            if (stateStateMachine == null) throw new ArgumentNullException(nameof(stateStateMachine));
 
-            return new HomeAutomationAction(stateMachine.SetNextState);
+            return new HomeAutomationAction(stateStateMachine.SetNextState);
         }
     }
 }

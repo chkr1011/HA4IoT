@@ -11,8 +11,8 @@ namespace HA4IoT.Actuators
         {
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
 
-            AddState(new StateMachineState(DefaultStateIDs.Off, this).WithAction(() => endpoint.TurnOff()));
-            AddState(new StateMachineState(DefaultStateIDs.On, this).WithAction(() => endpoint.TurnOn()));
+            AddState(new StateMachineState(DefaultStateIDs.Off).WithAction(() => endpoint.TurnOff()));
+            AddState(new StateMachineState(DefaultStateIDs.On).WithAction(() => endpoint.TurnOn()));
 
             SetActiveState(DefaultStateIDs.Off, new ForceUpdateStateParameter());
         }

@@ -163,13 +163,13 @@ namespace HA4IoT.Controller.Main.Rooms
             var fanRelay3 = _hsrel8[HSREL8Pin.Relay2];
 
             fan.AddOffState()
-                .WithLowPort(fanRelay1)
-                .WithLowPort(fanRelay2)
-                .WithLowPort(fanRelay3);
+                .WithLowOutput(fanRelay1)
+                .WithLowOutput(fanRelay2)
+                .WithLowOutput(fanRelay3);
 
-            fan.AddState(new StateMachineStateId("1")).WithHighPort(fanRelay1).WithLowPort(fanRelay2).WithHighPort(fanRelay3);
-            fan.AddState(new StateMachineStateId("2")).WithHighPort(fanRelay1).WithHighPort(fanRelay2).WithLowPort(fanRelay3);
-            fan.AddState(new StateMachineStateId("3")).WithHighPort(fanRelay1).WithHighPort(fanRelay2).WithHighPort(fanRelay3);
+            fan.AddState(new StateMachineStateId("1")).WithHighOutput(fanRelay1).WithLowOutput(fanRelay2).WithHighOutput(fanRelay3);
+            fan.AddState(new StateMachineStateId("2")).WithHighOutput(fanRelay1).WithHighOutput(fanRelay2).WithLowOutput(fanRelay3);
+            fan.AddState(new StateMachineStateId("3")).WithHighOutput(fanRelay1).WithHighOutput(fanRelay2).WithHighOutput(fanRelay3);
             fan.TryTurnOff();
 
             fan.ConnectMoveNextAndToggleOffWith(room.GetButton(Bedroom.ButtonWindowLower));

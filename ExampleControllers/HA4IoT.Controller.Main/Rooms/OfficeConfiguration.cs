@@ -1,4 +1,5 @@
 ﻿using HA4IoT.Actuators;
+using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
@@ -124,20 +125,31 @@ namespace HA4IoT.Controller.Main.Rooms
             light.AddOnState()
                 .WithActuator(lightsDeskOnly, DefaultStateIDs.On)
                 .WithActuator(lightsCouchOnly, DefaultStateIDs.On)
-                .WithActuator(lightsOther, DefaultStateIDs.On).
-                ConnectApplyStateWith(room.GetButton(Office.ButtonUpperLeft));
+                .WithActuator(lightsOther, DefaultStateIDs.On);
 
-            light.AddState(new StateMachineStateId("DeskOnly"))
+            var deskOnlyStateId = new StateMachineStateId("DeskOnly");
+            light.AddState(deskOnlyStateId)
                 .WithActuator(lightsDeskOnly, DefaultStateIDs.On)
                 .WithActuator(lightsCouchOnly, DefaultStateIDs.Off)
-                .WithActuator(lightsOther, DefaultStateIDs.Off)
-                .ConnectApplyStateWith(room.GetButton(Office.ButtonLowerLeft));
+                .WithActuator(lightsOther, DefaultStateIDs.Off);
 
-            light.AddState(new StateMachineStateId("CouchOnly"))
+            var couchOnlyStateId = new StateMachineStateId("CouchOnly");
+            light.AddState(couchOnlyStateId)
                 .WithActuator(lightsDeskOnly, DefaultStateIDs.Off)
                 .WithActuator(lightsCouchOnly, DefaultStateIDs.On)
-                .WithActuator(lightsOther, DefaultStateIDs.Off)
-                .ConnectApplyStateWith(room.GetButton(Office.ButtonLowerRight));
+                .WithActuator(lightsOther, DefaultStateIDs.Off);
+
+            room.GetButton(Office.ButtonLowerRight)
+                .GetPressedShortlyTrigger()
+                .OnTriggered(light.GetSetActiveStateAction(couchOnlyStateId));
+
+            room.GetButton(Office.ButtonLowerLeft)
+                .GetPressedShortlyTrigger()
+                .OnTriggered(light.GetSetActiveStateAction(deskOnlyStateId));
+
+            room.GetButton(Office.ButtonUpperLeft)
+                .GetPressedShortlyTrigger()
+                .OnTriggered(light.GetSetActiveStateAction(DefaultStateIDs.On));
         }
     }
 }

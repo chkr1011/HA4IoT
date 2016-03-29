@@ -4,7 +4,6 @@ using System.Linq;
 using HA4IoT.Actuators.Parameters;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Actuators
 {
@@ -13,15 +12,12 @@ namespace HA4IoT.Actuators
         private readonly List<Action> _actions = new List<Action>(); 
         private readonly List<Tuple<IStateMachine, StateMachineStateId>> _actuators = new List<Tuple<IStateMachine, StateMachineStateId>>();
         private readonly List<Tuple<IBinaryOutput, BinaryState>> _outputs = new List<Tuple<IBinaryOutput, BinaryState>>();
-        private readonly IStateMachine _stateMachine;
 
-        public StateMachineState(StateMachineStateId id, IStateMachine stateMachine)
+        public StateMachineState(StateMachineStateId id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
-            if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
 
             Id = id;
-            _stateMachine = stateMachine;
         }
 
         public StateMachineStateId Id { get; }
@@ -34,7 +30,7 @@ namespace HA4IoT.Actuators
             return this;
         }
 
-        public StateMachineState WithPort(IBinaryOutput output, BinaryState state)
+        public StateMachineState WithOutput(IBinaryOutput output, BinaryState state)
         {
             if (output == null) throw new ArgumentNullException(nameof(output));
 
@@ -42,14 +38,18 @@ namespace HA4IoT.Actuators
             return this;
         }
 
-        public StateMachineState WithLowPort(IBinaryOutput output)
+        public StateMachineState WithLowOutput(IBinaryOutput output)
         {
-            return WithPort(output, BinaryState.Low);
+            if (output == null) throw new ArgumentNullException(nameof(output));
+
+            return WithOutput(output, BinaryState.Low);
         }
 
-        public StateMachineState WithHighPort(IBinaryOutput output)
+        public StateMachineState WithHighOutput(IBinaryOutput output)
         {
-            return WithPort(output, BinaryState.High);
+            if (output == null) throw new ArgumentNullException(nameof(output));
+
+            return WithOutput(output, BinaryState.High);
         }
 
         public StateMachineState WithActuator(IStateMachine actuator, StateMachineStateId state)
@@ -60,15 +60,7 @@ namespace HA4IoT.Actuators
             return this;
         }
 
-        public StateMachineState ConnectApplyStateWith(IButton button)
-        {
-            if (button == null) throw new ArgumentNullException(nameof(button));
-
-            button.GetPressedShortlyTrigger().Attach(() => _stateMachine.SetActiveState(Id));
-            return this;
-        }
-
-        public void Activate(params IHardwareParameter[] parameters)
+        public virtual void Activate(params IHardwareParameter[] parameters)
         {
             foreach (var port in _outputs)
             {
@@ -99,7 +91,7 @@ namespace HA4IoT.Actuators
             }
         }
 
-        public void Deactivate(params IHardwareParameter[] parameters)
+        public virtual void Deactivate(params IHardwareParameter[] parameters)
         {
         }
     }

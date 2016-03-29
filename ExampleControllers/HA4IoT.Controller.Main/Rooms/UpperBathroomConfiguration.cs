@@ -85,9 +85,9 @@ namespace HA4IoT.Controller.Main.Rooms
             var fanPort0 = _hsrel5.GetOutput(4);
             var fanPort1 = _hsrel5.GetOutput(5);
 
-            stateMachine.AddOffState().WithPort(fanPort0, BinaryState.Low).WithPort(fanPort1, BinaryState.Low);
-            stateMachine.AddState(new StateMachineStateId("1")).WithPort(fanPort0, BinaryState.High).WithPort(fanPort1, BinaryState.Low);
-            stateMachine.AddState(new StateMachineStateId("2")).WithPort(fanPort0, BinaryState.High).WithPort(fanPort1, BinaryState.High);
+            stateMachine.AddOffState().WithOutput(fanPort0, BinaryState.Low).WithOutput(fanPort1, BinaryState.Low);
+            stateMachine.AddState(new StateMachineStateId("1")).WithOutput(fanPort0, BinaryState.High).WithOutput(fanPort1, BinaryState.Low);
+            stateMachine.AddState(new StateMachineStateId("2")).WithOutput(fanPort0, BinaryState.High).WithOutput(fanPort1, BinaryState.High);
             stateMachine.TryTurnOff();
         }
     }

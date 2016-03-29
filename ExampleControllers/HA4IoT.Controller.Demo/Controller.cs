@@ -123,10 +123,10 @@ namespace HA4IoT.Controller.Demo
             var gear1 = relayBoard.GetOutput(2);
             var gear2 = relayBoard.GetOutput(1);
 
-            stateMachine.AddOffState().WithLowPort(gear1).WithLowPort(gear2);
+            stateMachine.AddOffState().WithLowOutput(gear1).WithLowOutput(gear2);
 
-            stateMachine.AddState(new StateMachineStateId("1")).WithHighPort(gear1).WithLowPort(gear2);
-            stateMachine.AddState(new StateMachineStateId("2")).WithLowPort(gear1).WithHighPort(gear2);
+            stateMachine.AddState(new StateMachineStateId("1")).WithHighOutput(gear1).WithLowOutput(gear2);
+            stateMachine.AddState(new StateMachineStateId("2")).WithLowOutput(gear1).WithHighOutput(gear2);
         }
 
         private void SetupLEDStripRemote(I2CHardwareBridge i2CHardwareBridge, VirtualButtonGroup group)

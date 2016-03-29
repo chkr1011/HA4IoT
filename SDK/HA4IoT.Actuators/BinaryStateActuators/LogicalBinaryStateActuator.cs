@@ -20,8 +20,8 @@ namespace HA4IoT.Actuators
 
             _timer = timer;
 
-            AddState(new StateMachineState(DefaultStateIDs.Off, this).WithAction(() => SetState(DefaultStateIDs.Off)));
-            AddState(new StateMachineState(DefaultStateIDs.On, this).WithAction(() => SetState(DefaultStateIDs.On)));
+            AddState(new StateMachineState(DefaultStateIDs.Off).WithAction(() => SetActiveState(DefaultStateIDs.Off)));
+            AddState(new StateMachineState(DefaultStateIDs.On).WithAction(() => SetActiveState(DefaultStateIDs.On)));
         }
 
         public IList<IStateMachine> Actuators { get; } = new List<IStateMachine>();
@@ -34,7 +34,7 @@ namespace HA4IoT.Actuators
             return this;
         }
 
-        private void SetState(StateMachineStateId stateId, params IHardwareParameter[] parameters)
+        private void SetActiveState(StateMachineStateId stateId, params IHardwareParameter[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 

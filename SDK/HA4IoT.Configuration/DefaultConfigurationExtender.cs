@@ -203,12 +203,12 @@ namespace HA4IoT.Configuration
                 
                 foreach (var lowPortElement in stateElement.Element("LowPorts").Elements())
                 {
-                    state.WithPort(Parser.ParseBinaryOutput(lowPortElement), BinaryState.Low);
+                    state.WithOutput(Parser.ParseBinaryOutput(lowPortElement), BinaryState.Low);
                 }
 
                 foreach (var highPortElement in stateElement.Element("LowPorts").Elements())
                 {
-                    state.WithPort(Parser.ParseBinaryOutput(highPortElement), BinaryState.High);
+                    state.WithOutput(Parser.ParseBinaryOutput(highPortElement), BinaryState.High);
                 }
 
                 foreach (var actuatorElement in stateElement.Element("Actuators").Elements())
