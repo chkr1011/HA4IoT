@@ -3,7 +3,11 @@ using Windows.Data.Json;
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Core.Settings;
+using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Triggers;
+using HA4IoT.Core.Settings;
 
 namespace HA4IoT.Tests.Mockups
 {
@@ -12,14 +16,19 @@ namespace HA4IoT.Tests.Mockups
         private readonly Trigger _pressedLongTrigger = new Trigger();
         private readonly Trigger _pressedShortlyTrigger = new Trigger();
 
+        public event EventHandler<ButtonStateChangedEventArgs> StateChanged;
+
         public TestButton()
         {
-            Settings = new ActuatorSettings(ActuatorIdFactory.EmptyId);
+            Settings = new SettingsContainer(string.Empty);
+            GeneralSettingsWrapper = new ActuatorSettingsWrapper(Settings);
+            SpecialSettingsWrapper = new ButtonSettingsWrapper(Settings);
         }
 
-        public event EventHandler<ButtonStateChangedEventArgs> StateChanged;
         public ActuatorId Id { get; }
-        public IActuatorSettings Settings { get; }
+        public ISettingsContainer Settings { get; }
+        public IActuatorSettingsWrapper GeneralSettingsWrapper { get; }
+        public ButtonSettingsWrapper SpecialSettingsWrapper { get; }
         public ButtonState State { get; } = ButtonState.Released;
 
         public JsonObject ExportConfigurationToJsonObject()
@@ -47,13 +56,8 @@ namespace HA4IoT.Tests.Mockups
             return new JsonObject();
         }
 
-        public void LoadSettings()
+        public void ExposeToApi(IApiController apiController)
         {
-        }
-
-        public void ExposeToApi()
-        {
-            
         }
 
         public void PressShort()

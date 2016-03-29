@@ -1,20 +1,19 @@
 ﻿using System;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public abstract class SingleValueSensorBase<TSettings> : ActuatorBase<TSettings>, ISingleValueSensor where TSettings : SingleValueSensorSettings
+    public abstract class SingleValueSensorBase : ActuatorBase, ISingleValueSensor
     {
         private DateTime? _valueLastChanged;
         private float _value;
 
-        protected SingleValueSensorBase(ActuatorId id, IApiController apiController)
-            : base(id, apiController)
+        protected SingleValueSensorBase(ActuatorId id)
+            : base(id)
         {
         }
 
@@ -37,7 +36,7 @@ namespace HA4IoT.Actuators
         protected void SetValueInternal(float newValue)
         {
             float oldValue = _value;
-            if (Math.Abs(oldValue - newValue) < Settings.MinDelta.Value)
+            if (Math.Abs(oldValue - newValue) < Settings.GetFloat(SingleValueSensorSettings.MinDelta))
             {
                 return;
             }
@@ -48,7 +47,7 @@ namespace HA4IoT.Actuators
             Log.Info($"{Id}:{oldValue}->{newValue}");
             ValueChanged?.Invoke(this, new SingleValueSensorValueChangedEventArgs(oldValue, _value));
 
-            ApiController.NotifyStateChanged(this);
+            NotifyStateChanged();
         }
     }
 }

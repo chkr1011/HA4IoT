@@ -11,7 +11,7 @@ using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 using DayOfWeek = System.DayOfWeek;
 
-namespace HA4IoT.Telemetry.Statistics
+namespace HA4IoT.Telemetry.History
 {
     public class ActuatorHistory : IStatusProvider
     {

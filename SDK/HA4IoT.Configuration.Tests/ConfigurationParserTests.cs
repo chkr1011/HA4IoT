@@ -2,6 +2,7 @@
 using FluentAssertions;
 using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services.WeatherService;

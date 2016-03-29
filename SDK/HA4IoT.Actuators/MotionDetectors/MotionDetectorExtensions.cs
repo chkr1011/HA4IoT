@@ -1,7 +1,7 @@
 ﻿using System;
-using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Configuration;
+using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Actuators
 {
@@ -15,8 +15,7 @@ namespace HA4IoT.Actuators
             var motionDetector = new MotionDetector(
                 ActuatorIdFactory.Create(room, id), 
                 new PortBasedMotionDetectorEndpoint(input), 
-                room.Controller.Timer, 
-                room.Controller.ApiController);
+                room.Controller.Timer);
 
             room.AddActuator(motionDetector);
             return room;

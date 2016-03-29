@@ -1,5 +1,6 @@
 ﻿using System;
 using FluentAssertions;
+using HA4IoT.Actuators;
 using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
@@ -15,49 +16,49 @@ namespace HA4IoT.Automations.Tests
         public void Automation_Toggle()
         {
             var testButton = new TestButton();
-            var testOutput = new TestBinaryStateOutputActuator();
+            var testOutput = new TestStateMachine();
 
             CreateAutomation()
                 .WithTrigger(testButton.GetPressedShortlyTrigger())
-                .WithActionIfConditionsFulfilled(testOutput.GetToggleStateAction());
+                .WithActionIfConditionsFulfilled(testOutput.GetSetNextStateAction());
 
-            testOutput.GetState().ShouldBeEquivalentTo(BinaryActuatorState.Off);
+            testOutput.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.Off);
             testButton.PressShort();
-            testOutput.GetState().ShouldBeEquivalentTo(BinaryActuatorState.On);
+            testOutput.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.On);
             testButton.PressShort();
-            testOutput.GetState().ShouldBeEquivalentTo(BinaryActuatorState.Off);
+            testOutput.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.Off);
             testButton.PressShort();
-            testOutput.GetState().ShouldBeEquivalentTo(BinaryActuatorState.On);
+            testOutput.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.On);
         }
 
         [TestMethod]
         public void Automation_WithCondition()
         {
             var testController = new TestController();
-            var automation = new Automation(AutomationIdFactory.EmptyId, testController.ApiController);
+            var automation = new Automation(AutomationIdFactory.EmptyId);
 
             var testButton = new TestButton();
-            var testOutput = new TestBinaryStateOutputActuator();
+            var testOutput = new TestStateMachine();
 
             automation
                 .WithTrigger(testButton.GetPressedShortlyTrigger())
                 .WithCondition(ConditionRelation.And, new TimeRangeCondition(testController.Timer).WithStart(TimeSpan.FromHours(1)).WithEnd(TimeSpan.FromHours(2)))
-                .WithActionIfConditionsFulfilled(testOutput.GetToggleStateAction());
+                .WithActionIfConditionsFulfilled(testOutput.GetSetNextStateAction());
             
-            testOutput.GetState().ShouldBeEquivalentTo(BinaryActuatorState.Off);
+            testOutput.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.Off);
             testController.SetTime(TimeSpan.FromHours(0));
             testButton.PressShort();
-            testOutput.GetState().ShouldBeEquivalentTo(BinaryActuatorState.Off);
+            testOutput.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.Off);
 
             testController.SetTime(TimeSpan.FromHours(1.5));
             testButton.PressShort();
-            testOutput.GetState().ShouldBeEquivalentTo(BinaryActuatorState.On);
+            testOutput.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.On);
         }
 
         private Automation CreateAutomation()
         {
             var testController = new TestController();
-            return new Automation(AutomationIdFactory.EmptyId, testController.ApiController);
+            return new Automation(AutomationIdFactory.EmptyId);
         }
     }
 }

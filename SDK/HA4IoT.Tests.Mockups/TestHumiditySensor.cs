@@ -1,4 +1,5 @@
 ﻿using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Tests.Mockups
 {

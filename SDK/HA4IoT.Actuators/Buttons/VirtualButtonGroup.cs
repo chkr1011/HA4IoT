@@ -7,14 +7,13 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public class VirtualButtonGroup : ActuatorBase<ActuatorSettings>
+    public class VirtualButtonGroup : ActuatorBase
     {
         private readonly Dictionary<ActuatorId, VirtualButton> _buttons = new Dictionary<ActuatorId, VirtualButton>();
 
-        public VirtualButtonGroup(ActuatorId id, IApiController apiController)
-            : base(id, apiController)
+        public VirtualButtonGroup(ActuatorId id)
+            : base(id)
         {
-            Settings = new ActuatorSettings(id);
         }
 
         public VirtualButtonGroup WithButton(ActuatorId id, Action<VirtualButton> initializer)
@@ -26,7 +25,7 @@ namespace HA4IoT.Actuators
                 throw new InvalidOperationException("Button with id " + id + " already part of the button group.");
             }
 
-            var virtualButton = new VirtualButton(id, ApiController);
+            var virtualButton = new VirtualButton(id);
             initializer(virtualButton);
 
             _buttons.Add(id, virtualButton);

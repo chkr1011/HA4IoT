@@ -5,12 +5,13 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Triggers;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public class MotionDetector : ActuatorBase<ActuatorSettings>, IMotionDetector
+    public class MotionDetector : ActuatorBase, IMotionDetector
     {
         private readonly Trigger _motionDetectedTrigger = new Trigger();
         private readonly Trigger _detectionCompletedTrigger = new Trigger();
@@ -18,25 +19,24 @@ namespace HA4IoT.Actuators
         private TimedAction _autoEnableAction;
         private MotionDetectorState _state = MotionDetectorState.Idle;
 
-        public MotionDetector(ActuatorId id, IMotionDetectorEndpoint endpoint, IHomeAutomationTimer timer, IApiController apiController)
-            : base(id, apiController)
+        public MotionDetector(ActuatorId id, IMotionDetectorEndpoint endpoint, IHomeAutomationTimer timer)
+            : base(id)
         {
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
 
             endpoint.MotionDetected += (s, e) => UpdateState(MotionDetectorState.MotionDetected);
             endpoint.DetectionCompleted += (s, e) => UpdateState(MotionDetectorState.Idle);
 
-            base.Settings = new ActuatorSettings(id);
-
-            Settings.IsEnabled.ValueChanged += (s, e) =>
+            Settings.ValueChanged += (s, e) =>
             {
-                HandleIsEnabledStateChanged(timer);
+                if (e.SettingName == "IsEnabled")
+                {
+                    HandleIsEnabledStateChanged(timer);
+                }
             };
         }
 
         public event EventHandler<MotionDetectorStateChangedEventArgs> StateChanged;
-
-        public new IActuatorSettings Settings => base.Settings;
 
         public MotionDetectorState GetState()
         {
@@ -58,7 +58,6 @@ namespace HA4IoT.Actuators
             var status = base.ExportStatusToJsonObject();
 
             status.SetNamedValue("state", _state.ToJsonValue());
-            status.SetNamedValue("IsEnabled", Settings.IsEnabled.ToJsonValue());
 
             return status;
         }
@@ -86,7 +85,7 @@ namespace HA4IoT.Actuators
             MotionDetectorState oldState = _state;
             _state = newState;
 
-            if (!Settings.IsEnabled.Value)
+            if (!this.GetIsEnabled())
             {
                 return;
             }
@@ -103,15 +102,15 @@ namespace HA4IoT.Actuators
             }
 
             StateChanged?.Invoke(this, new MotionDetectorStateChangedEventArgs(oldState, newState));
-            ApiController.NotifyStateChanged(this);
+            NotifyStateChanged();
         }
 
         private void HandleIsEnabledStateChanged(IHomeAutomationTimer timer)
         {
-            if (!Settings.IsEnabled.Value)
+            if (!this.GetIsEnabled())
             {
                 Log.Info(Id + ": Disabled for 1 hour");
-                _autoEnableAction = timer.In(TimeSpan.FromHours(1)).Do(() => Settings.IsEnabled.Value = true);
+                _autoEnableAction = timer.In(TimeSpan.FromHours(1)).Do(this.Enable);
             }
             else
             {

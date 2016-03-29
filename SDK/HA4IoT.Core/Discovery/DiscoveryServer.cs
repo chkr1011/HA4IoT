@@ -39,7 +39,11 @@ namespace HA4IoT.Core.Discovery
 
         private void SendResponse(DatagramSocket sender, DatagramSocketMessageReceivedEventArgs args)
         {
-            var response = new DiscoveryResponse(_controller.Settings.Name.Value, _controller.Settings.Description.Value);
+            // TODO: Add wrapper.
+            var response = new DiscoveryResponse(
+                _controller.Settings.GetString("Name"),
+                _controller.Settings.GetString("Description"));
+
             SendResponseAsync(args.RemoteAddress, response).Wait();
         }
 

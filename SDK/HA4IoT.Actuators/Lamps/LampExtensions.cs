@@ -1,6 +1,6 @@
 ﻿using System;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Configuration;
+using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Actuators
@@ -12,7 +12,7 @@ namespace HA4IoT.Actuators
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (output == null) throw new ArgumentNullException(nameof(output));
 
-            var lamp = new Lamp(ActuatorIdFactory.Create(room, id), new PortBasedBinaryStateEndpoint(output), room.Controller.ApiController);
+            var lamp = new Lamp(ActuatorIdFactory.Create(room, id), new PortBasedBinaryStateEndpoint(output));
             room.AddActuator(lamp);
 
             return room;

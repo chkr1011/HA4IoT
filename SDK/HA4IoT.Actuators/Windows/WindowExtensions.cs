@@ -1,5 +1,5 @@
 ﻿using System;
-using HA4IoT.Contracts.Configuration;
+using HA4IoT.Contracts.Areas;
 
 namespace HA4IoT.Actuators
 {
@@ -10,7 +10,7 @@ namespace HA4IoT.Actuators
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
 
-            var window = new Window(ActuatorIdFactory.Create(room, id), room.Controller.ApiController);
+            var window = new Window(ActuatorIdFactory.Create(room, id));
             initializer(window);
 
             room.AddActuator(window);

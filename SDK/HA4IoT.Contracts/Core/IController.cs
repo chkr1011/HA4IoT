@@ -1,5 +1,6 @@
 ﻿using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
+using HA4IoT.Contracts.Core.Settings;
 
 namespace HA4IoT.Contracts.Core
 {
@@ -7,6 +8,6 @@ namespace HA4IoT.Contracts.Core
     {
         IApiController ApiController { get; }
         IHomeAutomationTimer Timer { get; }    
-        IControllerSettings Settings { get; }  
+        ISettingsContainer Settings { get; }  
     }
 }

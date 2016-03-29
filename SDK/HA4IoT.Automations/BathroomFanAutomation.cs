@@ -1,11 +1,13 @@
 ﻿using System;
+using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Automations
 {
-    public class BathroomFanAutomation : AutomationBase<AutomationSettings>
+    public class BathroomFanAutomation : AutomationBase
     {
         private readonly IHomeAutomationTimer _timer;
         private IStateMachine _actuator;
@@ -53,15 +55,20 @@ namespace HA4IoT.Automations
         {
             _timeout = _timer.In(_slowDuration).Do(() =>
             {
-                _actuator.SetState("2");
-                _timeout = _timer.In(_fastDuration).Do(() => _actuator.TurnOff());
+                _actuator.SetActiveState(new StateMachineStateId("2"));
+                _timeout = _timer.In(_fastDuration).Do(() => _actuator.TryTurnOff());
             });
         }
 
         private void TurnOn(object sender, EventArgs e)
         {
+            if (!this.GetIsEnabled())
+            {
+                
+            }
+
             _timeout?.Cancel();
-            _actuator?.SetState("1");
+            _actuator?.SetActiveState(new StateMachineStateId("1"));
         }
     }
 }

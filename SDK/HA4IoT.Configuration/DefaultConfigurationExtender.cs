@@ -76,10 +76,9 @@ namespace HA4IoT.Configuration
         {
             IBinaryOutput output = Parser.ParseBinaryOutput(element.GetMandatorySingleChildElementOrFromContainer("Output"));
 
-            return new CustomBinaryStateOutputActuator(
+            return new CustomBinaryStateActuator(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
-                new PortBasedBinaryStateEndpoint(output),
-                Controller.ApiController);
+                new PortBasedBinaryStateEndpoint(output));
         }
 
         private IActuator ParseButton(XElement element)
@@ -89,7 +88,6 @@ namespace HA4IoT.Configuration
             return new Button(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
                 new PortBasedButtonEndpoint(input), 
-                Controller.ApiController,
                 Controller.Timer);
         }
 
@@ -99,8 +97,7 @@ namespace HA4IoT.Configuration
 
             return new Socket(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
-                new PortBasedBinaryStateEndpoint(output),
-                Controller.ApiController);
+                new PortBasedBinaryStateEndpoint(output));
         }
 
         private IActuator ParseLamp(XElement element)
@@ -109,8 +106,7 @@ namespace HA4IoT.Configuration
 
             return new Lamp(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
-                new PortBasedBinaryStateEndpoint(output),
-                Controller.ApiController);
+                new PortBasedBinaryStateEndpoint(output));
         }
 
         private IActuator ParseRollerShutter(XElement element)
@@ -121,7 +117,6 @@ namespace HA4IoT.Configuration
             return new RollerShutter(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
                 new PortBasedRollerShutterEndpoint(powerOutput, directionOutput), 
-                Controller.ApiController,
                 Controller.Timer);
         }
 
@@ -134,15 +129,13 @@ namespace HA4IoT.Configuration
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
                 upInput,
                 downInput,
-                Controller.ApiController,
                 Controller.Timer);
         }
 
         private IActuator ParseWindow(XElement element)
         {
             var window = new Window(
-                new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
-                Controller.ApiController);
+                new ActuatorId(element.GetMandatoryStringFromAttribute("id")));
 
             var leftCasementElement = element.Element("LeftCasement");
             if (leftCasementElement != null)
@@ -185,8 +178,7 @@ namespace HA4IoT.Configuration
 
             return new HumiditySensor(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
-                sensor,
-                Controller.ApiController);
+                sensor);
         }
 
         private IActuator ParseTemperatureSensor(XElement element)
@@ -195,20 +187,19 @@ namespace HA4IoT.Configuration
 
             return new TemperatureSensor(
                 new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
-                sensor,
-                Controller.ApiController);
+                sensor);
         }
 
         private IActuator ParseStateMachine(XElement element)
         {
             var id = new ActuatorId(element.GetMandatoryStringFromAttribute("id"));
 
-            var stateMachine = new StateMachine(id, Controller.ApiController);
+            var stateMachine = new StateMachine(id);
 
             foreach (var stateElement in element.Element("States").Elements("State"))
             {
                 var stateId = stateElement.GetMandatoryStringFromAttribute("id");
-                var state = stateMachine.AddState(stateId);
+                var state = stateMachine.AddState(new StateMachineStateId(stateId));
                 
                 foreach (var lowPortElement in stateElement.Element("LowPorts").Elements())
                 {
@@ -222,11 +213,11 @@ namespace HA4IoT.Configuration
 
                 foreach (var actuatorElement in stateElement.Element("Actuators").Elements())
                 {
-                    var targetState = actuatorElement.GetMandatoryEnumFromAttribute<BinaryActuatorState>("targetState");
+                    var targetState = actuatorElement.GetMandatoryStringFromAttribute("targetState");
                     var actuatorId = new ActuatorId(actuatorElement.GetMandatoryStringFromAttribute("id"));
-                    var actuator = Controller.GetActuator<IBinaryStateOutputActuator>(actuatorId);
+                    var actuator = Controller.GetActuator<IStateMachine>(actuatorId);
 
-                    state.WithActuator(actuator, targetState);
+                    state.WithActuator(actuator, new StateMachineStateId(targetState));
                 }
             }
             

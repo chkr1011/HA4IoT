@@ -2,16 +2,18 @@
 using System.Diagnostics;
 using Windows.Data.Json;
 using HA4IoT.Actuators.Actions;
+using HA4IoT.Actuators.Parameters;
 using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public class RollerShutter : ActuatorBase<RollerShutterSettings>, IRollerShutter
+    public class RollerShutter : ActuatorBase, IRollerShutter
     {
         private readonly object _syncRoot = new object();
         private readonly Stopwatch _movingDuration = new Stopwatch();
@@ -22,6 +24,9 @@ namespace HA4IoT.Actuators
         private readonly IHomeAutomationAction _turnOffAction;
         private readonly IHomeAutomationAction _startMoveDownAction;
 
+        private readonly RollerShutterSettingsWrapper _settings;
+
+        // TODO: Migrate to StateMachineStateId
         private RollerShutterState _state = RollerShutterState.Stopped;
 
         private TimedAction _autoOffTimer;
@@ -30,9 +35,8 @@ namespace HA4IoT.Actuators
         public RollerShutter(
             ActuatorId id, 
             IRollerShutterEndpoint endpoint,
-            IApiController apiController,
             IHomeAutomationTimer timer)
-            : base(id, apiController)
+            : base(id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
@@ -40,8 +44,7 @@ namespace HA4IoT.Actuators
             _endpoint = endpoint;
             _timer = timer;
             timer.Tick += (s, e) => UpdatePosition(e);
-
-            base.Settings = new RollerShutterSettings(id);
+            _settings = new RollerShutterSettingsWrapper(Settings);
 
             _startMoveUpAction = new HomeAutomationAction(() => SetState(RollerShutterState.MovingUp));
             _turnOffAction = new HomeAutomationAction(() => SetState(RollerShutterState.Stopped));
@@ -52,9 +55,7 @@ namespace HA4IoT.Actuators
 
         public event EventHandler<RollerShutterStateChangedEventArgs> StateChanged; 
 
-        public new IRollerShutterSettings Settings => base.Settings;
-
-        public bool IsClosed => _position == Settings.MaxPosition.Value;
+        public bool IsClosed => _position == _settings.MaxPosition;
 
         public RollerShutterState GetState()
         {
@@ -97,7 +98,7 @@ namespace HA4IoT.Actuators
             }
 
             StateChanged?.Invoke(this, new RollerShutterStateChangedEventArgs(oldState, _state));
-            ApiController.NotifyStateChanged(this);
+            NotifyStateChanged();
         }
 
         public void TurnOff(params IHardwareParameter[] parameters)
@@ -124,9 +125,11 @@ namespace HA4IoT.Actuators
         {
             var status = base.ExportStatusToJsonObject();
 
-            status.SetNamedValue("state", _state.ToJsonValue());
-            status.SetNamedValue("position", _position.ToJsonValue());
-            status.SetNamedValue("positionMax", Settings.MaxPosition.Value.ToJsonValue());
+            status.SetNamedString("state", _state.ToString());
+            status.SetNamedNumber("position", _position);
+
+            //TODO: Update name in app.
+            status.SetNamedValue("positionMax", _settings.MaxPosition.ToJsonValue());
 
             return status;
         }
@@ -147,7 +150,7 @@ namespace HA4IoT.Actuators
             _movingDuration.Restart();
 
             _autoOffTimer?.Cancel();
-            _autoOffTimer = _timer.In(Settings.AutoOffTimeout.Value).Do(() => SetState(RollerShutterState.Stopped));
+            _autoOffTimer = _timer.In(_settings.AutoOffTimeout).Do(() => SetState(RollerShutterState.Stopped));
         }
 
         private void UpdatePosition(TimerTickEventArgs timerTickEventArgs)
@@ -166,9 +169,9 @@ namespace HA4IoT.Actuators
                 _position = 0;
             }
 
-            if (_position > Settings.MaxPosition.Value)
+            if (_position > _settings.MaxPosition)
             {
-                _position = Settings.MaxPosition.Value;
+                _position = _settings.MaxPosition;
             }
         }
     }

@@ -6,6 +6,7 @@ using HA4IoT.Automations;
 using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Triggers;
 using HA4IoT.Core;
 using HA4IoT.ExternalServices.OpenWeatherMap;
@@ -91,7 +92,7 @@ namespace HA4IoT.Controller.Demo
                 .WithStateMachine(ExampleRoom.CeilingFan, (sm, r) => SetupCeilingFan(sm))
                 .WithWindow(ExampleRoom.Window, w => w.WithCenterCasement(hspe16[HSPE16Pin.GPIO0]));
 
-            area.GetButton(ExampleRoom.Button1).GetPressedShortlyTrigger().OnTriggered(area.GetLamp(ExampleRoom.Lamp5).GetToggleStateAction());
+            area.GetButton(ExampleRoom.Button1).GetPressedShortlyTrigger().OnTriggered(area.GetLamp(ExampleRoom.Lamp5).GetSetNextStateAction());
             area.GetButton(ExampleRoom.Button1).ConnectToggleActionWith(area.GetLamp(ExampleRoom.Lamp6), ButtonPressedDuration.Long);
 
             area.GetStateMachine(ExampleRoom.CeilingFan).ConnectMoveNextAndToggleOffWith(area.GetButton(ExampleRoom.Button2));
@@ -100,8 +101,8 @@ namespace HA4IoT.Controller.Demo
 
             area.SetupTurnOnAndOffAutomation()
                 .WithTrigger(area.GetMotionDetector(ExampleRoom.MotionDetector))
-                .WithTarget(area.BinaryStateOutput(ExampleRoom.BathroomFan))
-                .WithTarget(area.BinaryStateOutput(ExampleRoom.Lamp2))
+                .WithTarget(area.GetStateMachine(ExampleRoom.BathroomFan))
+                .WithTarget(area.GetLamp(ExampleRoom.Lamp2))
                 .WithOnDuration(TimeSpan.FromSeconds(10));
         }
 
@@ -124,8 +125,8 @@ namespace HA4IoT.Controller.Demo
 
             stateMachine.AddOffState().WithLowPort(gear1).WithLowPort(gear2);
 
-            stateMachine.AddState("1").WithHighPort(gear1).WithLowPort(gear2);
-            stateMachine.AddState("2").WithLowPort(gear1).WithHighPort(gear2);
+            stateMachine.AddState(new StateMachineStateId("1")).WithHighPort(gear1).WithLowPort(gear2);
+            stateMachine.AddState(new StateMachineStateId("2")).WithLowPort(gear1).WithHighPort(gear2);
         }
 
         private void SetupLEDStripRemote(I2CHardwareBridge i2CHardwareBridge, VirtualButtonGroup group)

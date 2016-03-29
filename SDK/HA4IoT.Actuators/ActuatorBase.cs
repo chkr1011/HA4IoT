@@ -3,27 +3,31 @@ using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Core.Settings;
+using HA4IoT.Core.Settings;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public abstract class ActuatorBase<TSettings> : IActuator, IStatusProvider where TSettings : IActuatorSettings
+    public abstract class ActuatorBase : IActuator, IStatusProvider
     {
-        protected ActuatorBase(ActuatorId id, IApiController apiController)
+        private IApiController _apiController;
+
+        protected ActuatorBase(ActuatorId id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
-            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
 
             Id = id;
-            ApiController = apiController;
+
+            Settings = new SettingsContainer(StoragePath.WithFilename("Actuators", id.Value, "Settings.json"));
+            GeneralSettingsWrapper = new ActuatorSettingsWrapper(Settings);
         }
 
         public ActuatorId Id { get; }
 
-        protected IApiController ApiController { get; }
+        public ISettingsContainer Settings { get; }
 
-        public TSettings Settings { get; protected set; }
+        public IActuatorSettingsWrapper GeneralSettingsWrapper { get; }
 
         public virtual JsonObject ExportStatusToJsonObject()
         {
@@ -43,9 +47,21 @@ namespace HA4IoT.Actuators
             return result;
         }
 
-        public void LoadSettings()
+        public void ExposeToApi(IApiController apiController)
         {
-            Settings?.Load();
+            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
+
+            new ActuatorSettingsApiDispatcher(this, apiController).ExposeToApi();
+
+            apiController.RouteCommand($"actuator/{Id}/status", HandleApiCommand);
+            apiController.RouteRequest($"actuator/{Id}/status", HandleApiRequest);
+
+            _apiController = apiController;
+        }
+
+        protected void NotifyStateChanged()
+        {
+            _apiController?.NotifyStateChanged(this);
         }
 
         protected virtual void HandleApiCommand(IApiContext apiContext)
@@ -55,14 +71,6 @@ namespace HA4IoT.Actuators
         protected virtual void HandleApiRequest(IApiContext apiContext)
         {
             apiContext.Response = ExportStatusToJsonObject();
-        }
-
-        public void ExposeToApi()
-        {
-            new ActuatorSettingsApiDispatcher(Settings, ApiController).ExposeToApi();
-            
-            ApiController.RouteCommand($"actuator/{Id}/status", HandleApiCommand);
-            ApiController.RouteRequest($"actuator/{Id}/status", HandleApiRequest);
         }
     }
 }

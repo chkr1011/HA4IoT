@@ -10,13 +10,16 @@ using HA4IoT.Api.AzureCloud;
 using HA4IoT.Api.LocalHttpServer;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
-using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Core.Discovery;
+using HA4IoT.Core.Settings;
 using HA4IoT.Core.Timer;
 using HA4IoT.Hardware.Pi2;
 using HA4IoT.Networking;
@@ -38,7 +41,7 @@ namespace HA4IoT.Core
 
         public IApiController ApiController { get; } = new ApiController("api"); 
         public IHomeAutomationTimer Timer { get; protected set; }
-        public IControllerSettings Settings { get; private set; }
+        public ISettingsContainer Settings { get; private set; }
 
         public void RunAsync(IBackgroundTaskInstance taskInstance)
         {
@@ -265,10 +268,8 @@ namespace HA4IoT.Core
 
         private void LoadControllerSettings()
         {
-            var settings = new ControllerSettings(StoragePath.WithFilename("Settings.json"));
-            settings.Load();
-
-            Settings = settings;
+            Settings = new SettingsContainer(StoragePath.WithFilename("Settings.json"));
+            Settings.Load();
         }
 
         private void TryInitialize()
@@ -287,17 +288,17 @@ namespace HA4IoT.Core
         {
             foreach (var area in _areas.GetAll())
             {
-                area.LoadSettings();
+                area.Settings.Load();
             }
 
             foreach (var actuator in _actuators.GetAll())
             {
-                actuator.LoadSettings();
+                actuator.Settings.Load();
             }
 
             foreach (var automation in _automations.GetAll())
             {
-                automation.LoadSettings();
+                automation.Settings.Load();
             }
         }
 
@@ -312,7 +313,7 @@ namespace HA4IoT.Core
 
             foreach (var actuator in _actuators.GetAll())
             {
-                actuator.ExposeToApi();
+                actuator.ExposeToApi(ApiController);
             }
         }
 

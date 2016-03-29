@@ -113,7 +113,6 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TestBinaryStateOutputActuator.cs" />
     <Compile Include="TestButton.cs" />
     <Compile Include="TestController.cs" />
     <Compile Include="TestHttpRequestController.cs" />
@@ -125,6 +124,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestRollerShutter.cs" />
     <Compile Include="TestSensor.cs" />
+    <Compile Include="TestStateMachine.cs" />
     <Compile Include="TestTemperatureSensor.cs" />
     <Compile Include="TestDaylightService.cs" />
     <Compile Include="TestWeatherStation.cs" />

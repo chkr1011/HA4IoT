@@ -1,8 +1,7 @@
 ﻿using System;
 using HA4IoT.Actuators;
 using HA4IoT.Automations;
-using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Configuration;
+using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
@@ -61,20 +60,20 @@ namespace HA4IoT.Controller.Main.Rooms
 
             bathroom.SetupTurnOnAndOffAutomation()
                 .WithTrigger(bathroom.GetMotionDetector(LowerBathroom.MotionDetector))
-                .WithTarget(bathroom.BinaryStateOutput(LowerBathroom.CombinedLights));
+                .WithTarget(bathroom.GetStateMachine(LowerBathroom.CombinedLights));
         }
 
         private void StartBathode(IArea bathroom)
         {
-            bathroom.GetMotionDetector().Settings.IsEnabled.Value = false;
+            bathroom.GetMotionDetector().Disable();
 
-            bathroom.GetLamp(LowerBathroom.LightCeilingDoor).TurnOn();
-            bathroom.GetLamp(LowerBathroom.LightCeilingMiddle).TurnOff();
-            bathroom.GetLamp(LowerBathroom.LightCeilingWindow).TurnOff();
-            bathroom.GetLamp(LowerBathroom.LampMirror).TurnOff();
+            bathroom.GetLamp(LowerBathroom.LightCeilingDoor).TryTurnOn();
+            bathroom.GetLamp(LowerBathroom.LightCeilingMiddle).TryTurnOff();
+            bathroom.GetLamp(LowerBathroom.LightCeilingWindow).TryTurnOff();
+            bathroom.GetLamp(LowerBathroom.LampMirror).TryTurnOff();
 
             _bathmodeResetTimer?.Cancel();
-            _bathmodeResetTimer = bathroom.Controller.Timer.In(TimeSpan.FromHours(1)).Do(() => bathroom.GetMotionDetector().Settings.IsEnabled.Value = true);
+            _bathmodeResetTimer = bathroom.Controller.Timer.In(TimeSpan.FromHours(1)).Do(() => bathroom.GetMotionDetector().Enable());
         }
     }
 }

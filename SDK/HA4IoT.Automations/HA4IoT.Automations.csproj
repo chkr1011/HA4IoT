@@ -107,13 +107,14 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutomationSettingsWrapper.cs" />
+    <Compile Include="AutomationExtensions.cs" />
     <Compile Include="RollerShutterAutomationExtensions.cs" />
     <Compile Include="BathroomFanAutomation.cs" />
     <Compile Include="ConditionalOnAutomation.cs" />
     <Compile Include="ConditionalOnAutomationExtensions.cs" />
-    <Compile Include="AutomationSettings.cs" />
     <Compile Include="RollerShutterAutomation.cs" />
-    <Compile Include="RollerShutterAutomationSettings.cs" />
+    <Compile Include="RollerShutterAutomationSettingsWrapper.cs" />
     <Compile Include="TurnOnAndOffAutomation.cs" />
     <Compile Include="TurnOnAndOffAutomationExtensions.cs" />
     <Compile Include="Automation.cs" />
@@ -121,7 +122,7 @@
     <Compile Include="AutomationIdFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AutomationSettingsApiDispatcher.cs" />
-    <Compile Include="TurnOnAndOffAutomationSettings.cs" />
+    <Compile Include="TurnOnAndOffAutomationSettingsWrapper.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.Automations.rd.xml" />
   </ItemGroup>
   <ItemGroup>

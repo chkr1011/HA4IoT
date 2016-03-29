@@ -1,6 +1,7 @@
 ﻿using System;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Telemetry
 {
@@ -13,13 +14,6 @@ namespace HA4IoT.Telemetry
             foreach (var actuator in controller.GetActuators<IActuator>())
             {
                 OnActuatorConnecting(actuator);
-
-                var binaryStateOutput = actuator as IBinaryStateOutputActuator;
-                if (binaryStateOutput != null)
-                {
-                    HandleBinaryStateOutputActuator(binaryStateOutput);
-                    continue;
-                }
 
                 var stateMachineOutput = actuator as IStateMachine;
                 if (stateMachineOutput != null)
@@ -68,11 +62,7 @@ namespace HA4IoT.Telemetry
         {
         }
 
-        protected virtual void OnBinaryStateActuatorStateChanged(IBinaryStateOutputActuator actuator, BinaryActuatorState newState)
-        {
-        }
-
-        protected virtual void OnStateMachineStateChanged(IStateMachine stateMachine, string newState)
+        protected virtual void OnStateMachineStateChanged(IStateMachine stateMachine, StateMachineStateId newState)
         {
         }
 
@@ -80,21 +70,11 @@ namespace HA4IoT.Telemetry
         {
         }
 
-        private void HandleBinaryStateOutputActuator(IBinaryStateOutputActuator binaryStateOutputActuator)
-        {
-            OnBinaryStateActuatorStateChanged(binaryStateOutputActuator, binaryStateOutputActuator.GetState());
-            
-            binaryStateOutputActuator.StateChanged += (s, e) =>
-            {
-                OnBinaryStateActuatorStateChanged(binaryStateOutputActuator, e.NewValue);
-            };
-        }
-
         private void HandleStateMachineOutputActuator(IStateMachine stateMachine)
         {
-            OnStateMachineStateChanged(stateMachine, stateMachine.GetState());
+            OnStateMachineStateChanged(stateMachine, stateMachine.GetActiveState());
 
-            stateMachine.StateChanged += (s, e) =>
+            stateMachine.ActiveStateChanged += (s, e) =>
             {
                 OnStateMachineStateChanged(stateMachine, e.NewValue);
             };

@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HA4IoT.Actuators.Parameters;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Actuators
 {
-    public class StateMachineState
+    public class StateMachineState : IStateMachineState
     {
-        private readonly List<Tuple<IBinaryStateOutputActuator, BinaryActuatorState>> _actuators = new List<Tuple<IBinaryStateOutputActuator, BinaryActuatorState>>();
+        private readonly List<Action> _actions = new List<Action>(); 
+        private readonly List<Tuple<IStateMachine, StateMachineStateId>> _actuators = new List<Tuple<IStateMachine, StateMachineStateId>>();
         private readonly List<Tuple<IBinaryOutput, BinaryState>> _outputs = new List<Tuple<IBinaryOutput, BinaryState>>();
-        private readonly StateMachine _stateMachine;
+        private readonly IStateMachine _stateMachine;
 
-        public StateMachineState(string id, StateMachine stateMachine)
+        public StateMachineState(StateMachineStateId id, IStateMachine stateMachine)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
@@ -21,7 +24,15 @@ namespace HA4IoT.Actuators
             _stateMachine = stateMachine;
         }
 
-        public string Id { get; }
+        public StateMachineStateId Id { get; }
+
+        public StateMachineState WithAction(Action action)
+        {
+            if (action == null) throw new ArgumentNullException(nameof(action));
+
+            _actions.Add(action);
+            return this;
+        }
 
         public StateMachineState WithPort(IBinaryOutput output, BinaryState state)
         {
@@ -41,11 +52,11 @@ namespace HA4IoT.Actuators
             return WithPort(output, BinaryState.High);
         }
 
-        public StateMachineState WithActuator(IBinaryStateOutputActuator actuator, BinaryActuatorState state)
+        public StateMachineState WithActuator(IStateMachine actuator, StateMachineStateId state)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
-            _actuators.Add(new Tuple<IBinaryStateOutputActuator, BinaryActuatorState>(actuator, state));
+            _actuators.Add(new Tuple<IStateMachine, StateMachineStateId>(actuator, state));
             return this;
         }
 
@@ -53,11 +64,11 @@ namespace HA4IoT.Actuators
         {
             if (button == null) throw new ArgumentNullException(nameof(button));
 
-            button.GetPressedShortlyTrigger().Attach(() => _stateMachine.SetState(Id));
+            button.GetPressedShortlyTrigger().Attach(() => _stateMachine.SetActiveState(Id));
             return this;
         }
 
-        internal void Apply(params IHardwareParameter[] parameters)
+        public void Activate(params IHardwareParameter[] parameters)
         {
             foreach (var port in _outputs)
             {
@@ -66,7 +77,7 @@ namespace HA4IoT.Actuators
 
             foreach (var actuator in _actuators)
             {
-                actuator.Item1.SetState(actuator.Item2, new IsPartOfPartialUpdateParameter());
+                actuator.Item1.SetActiveState(actuator.Item2, new IsPartOfPartialUpdateParameter());
             }
 
             if (!parameters.Any(p => p is IsPartOfPartialUpdateParameter))
@@ -78,9 +89,18 @@ namespace HA4IoT.Actuators
 
                 foreach (var actuator in _actuators)
                 {
-                    actuator.Item1.SetState(actuator.Item2);
+                    actuator.Item1.SetActiveState(actuator.Item2);
                 }
             }
+
+            foreach (var action in _actions)
+            {
+                action();
+            }
+        }
+
+        public void Deactivate(params IHardwareParameter[] parameters)
+        {
         }
     }
 }

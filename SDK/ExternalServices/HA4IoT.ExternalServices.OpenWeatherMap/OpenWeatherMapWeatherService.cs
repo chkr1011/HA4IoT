@@ -8,6 +8,7 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.WeatherService;
 using HA4IoT.Networking;
@@ -33,13 +34,13 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             if (timer == null) throw new ArgumentNullException(nameof(timer));
             if (apiController == null) throw new ArgumentNullException(nameof(apiController));
 
-            _temperature = new WeatherStationTemperatureSensor(new ActuatorId("WeatherStation.Temperature"), apiController);
+            _temperature = new WeatherStationTemperatureSensor(new ActuatorId("WeatherStation.Temperature"));
             TemperatureSensor = _temperature;
 
-            _humidity = new WeatherStationHumiditySensor(new ActuatorId("WeatherStation.Humidity"), apiController);
+            _humidity = new WeatherStationHumiditySensor(new ActuatorId("WeatherStation.Humidity"));
             HumiditySensor = _humidity;
 
-            _situation = new WeatherStationSituationSensor(new ActuatorId("WeatherStation.Situation"), apiController);
+            _situation = new WeatherStationSituationSensor(new ActuatorId("WeatherStation.Situation"));
             SituationSensor = _situation;
 
             _timer = timer;

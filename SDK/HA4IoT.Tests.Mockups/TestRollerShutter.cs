@@ -3,6 +3,10 @@ using Windows.Data.Json;
 using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Core.Settings;
+using HA4IoT.Contracts.Hardware;
+using HA4IoT.Core.Settings;
 
 namespace HA4IoT.Tests.Mockups
 {
@@ -15,12 +19,15 @@ namespace HA4IoT.Tests.Mockups
             if (id == null) throw new ArgumentNullException(nameof(id));
 
             Id = id;
-            Settings = new RollerShutterSettings(id);
+
+            Settings = new SettingsContainer(string.Empty);
+            GeneralSettingsWrapper = new RollerShutterSettingsWrapper(Settings);
         }
 
         public event EventHandler<RollerShutterStateChangedEventArgs> StateChanged;
         public ActuatorId Id { get; }
-        public IRollerShutterSettings Settings { get; }
+        public ISettingsContainer Settings { get; }
+        public IActuatorSettingsWrapper GeneralSettingsWrapper { get; }
         public bool IsClosed { get; set; }
 
         public JsonObject ExportConfigurationToJsonObject()
@@ -33,11 +40,7 @@ namespace HA4IoT.Tests.Mockups
             throw new NotSupportedException();
         }
 
-        public void LoadSettings()
-        {
-        }
-
-        public void ExposeToApi()
+        public void ExposeToApi(IApiController apiController)
         {
         }
 

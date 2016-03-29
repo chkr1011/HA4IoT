@@ -96,7 +96,6 @@ namespace HA4IoT.Automations.Tests
                 _controller.Timer,
                 _daylightService,
                 _weatherStation,
-                _controller.ApiController,
                 _controller);
 
             _automation.WithRollerShutters(_rollerShutter);

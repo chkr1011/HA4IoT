@@ -1,4 +1,5 @@
 ﻿using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Actuators.Connectors
 {
@@ -8,9 +9,9 @@ namespace HA4IoT.Actuators.Connectors
         {
             button.GetPressedShortlyTrigger().Attach(() => stateMachineActuator.SetNextState());
 
-            if (stateMachineActuator.HasOffState)
+            if (stateMachineActuator.GetSupportsOffState())
             {
-                button.GetPressedLongTrigger().Attach(() => stateMachineActuator.TurnOff());
+                button.GetPressedLongTrigger().Attach(() => stateMachineActuator.SetActiveState(DefaultStateIDs.Off));
             }
 
             return stateMachineActuator;

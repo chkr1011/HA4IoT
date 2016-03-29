@@ -1,16 +1,15 @@
 ﻿using System;
 using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.ExternalServices.OpenWeatherMap
 {
-    public class WeatherStationHumiditySensor : SingleValueSensorBase<SingleValueSensorSettings>, IHumiditySensor
+    public class WeatherStationHumiditySensor : SingleValueSensorBase, IHumiditySensor
     {
-        public WeatherStationHumiditySensor(ActuatorId id, IApiController apiController) 
-            : base(id, apiController)
+        public WeatherStationHumiditySensor(ActuatorId id) 
+            : base(id)
         {
-            Settings = new SingleValueSensorSettings(id, 2.5F);
         }
 
         public void SetValue(double value)

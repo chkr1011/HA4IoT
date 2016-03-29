@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
@@ -12,7 +11,7 @@ using HA4IoT.Contracts.Services.WeatherService;
 
 namespace HA4IoT.Automations
 {
-    public class RollerShutterAutomation : AutomationBase<RollerShutterAutomationSettings>
+    public class RollerShutterAutomation : AutomationBase
     {
         private readonly List<ActuatorId> _rollerShutters = new List<ActuatorId>();
 
@@ -30,7 +29,6 @@ namespace HA4IoT.Automations
             IHomeAutomationTimer timer,
             IDaylightService daylightService,
             IWeatherService weatherService,
-            IApiController apiController,
             IActuatorController actuatorController)
             : base(id)
         {
@@ -44,8 +42,10 @@ namespace HA4IoT.Automations
             _weatherService = weatherService;
             _actuatorController = actuatorController;
 
-            Settings = new RollerShutterAutomationSettings(id, apiController);           
+            SpecialSettingsWrapper = new RollerShutterAutomationSettingsWrapper(Settings);           
         }
+
+        public RollerShutterAutomationSettingsWrapper SpecialSettingsWrapper { get; }
 
         public RollerShutterAutomation WithRollerShutters(params IRollerShutter[] rollerShutters)
         {
@@ -62,7 +62,7 @@ namespace HA4IoT.Automations
 
         public void PerformPendingActions()
         {
-            if (!Settings.IsEnabled.Value)
+            if (!this.GetIsEnabled())
             {
                 return;
             }
@@ -71,7 +71,7 @@ namespace HA4IoT.Automations
             {
                 _maxOutsideTemperatureApplied = true;
 
-                Log.Info(GetTracePrefix() + $"Closing because outside temperature reaches {Settings.AutoCloseIfTooHotTemperaure.Value}°C.");
+                Log.Info(GetTracePrefix() + $"Closing because outside temperature reaches {SpecialSettingsWrapper.AutoCloseIfTooHotTemperaure}°C.");
                 StartMove(RollerShutterState.MovingDown);
 
                 return;
@@ -91,7 +91,7 @@ namespace HA4IoT.Automations
 
                 if (TooColdIsAffected())
                 {
-                    Log.Info(GetTracePrefix() + $"Cancelling opening because outside temperature is lower than {Settings.SkipIfFrozenTemperature.Value}°C.");
+                    Log.Info(GetTracePrefix() + $"Cancelling opening because outside temperature is lower than {SpecialSettingsWrapper.SkipIfFrozenTemperature}°C.");
                 }
                 else
                 {
@@ -109,7 +109,7 @@ namespace HA4IoT.Automations
             {
                 if (TooColdIsAffected())
                 {
-                    Log.Info(GetTracePrefix() + $"Cancelling closing because outside temperature is lower than {Settings.SkipIfFrozenTemperature.Value}°C.");
+                    Log.Info(GetTracePrefix() + $"Cancelling closing because outside temperature is lower than {SpecialSettingsWrapper.SkipIfFrozenTemperature}°C.");
                 }
                 else
                 {
@@ -125,8 +125,8 @@ namespace HA4IoT.Automations
 
         private bool DoNotOpenDueToTimeIsAffected()
         {
-            if (Settings.SkipBeforeTimestampIsEnabled.Value && 
-                Settings.SkipBeforeTimestamp.Value > _timer.CurrentTime)
+            if (SpecialSettingsWrapper.SkipBeforeTimestampIsEnabled &&
+                SpecialSettingsWrapper.SkipBeforeTimestamp > _timer.CurrentTime)
             {
                 return true;
             }
@@ -136,8 +136,8 @@ namespace HA4IoT.Automations
 
         private bool TooHotIsAffected()
         {
-            if (Settings.AutoCloseIfTooHotIsEnabled.Value && 
-                _weatherService.TemperatureSensor.GetValue() > Settings.AutoCloseIfTooHotTemperaure.Value)
+            if (SpecialSettingsWrapper.AutoCloseIfTooHotIsEnabled && 
+                _weatherService.TemperatureSensor.GetValue() > SpecialSettingsWrapper.AutoCloseIfTooHotTemperaure)
             {
                 return true;
             }
@@ -147,8 +147,8 @@ namespace HA4IoT.Automations
 
         private bool TooColdIsAffected()
         {
-            if (Settings.SkipIfFrozenIsEnabled.Value &&
-                _weatherService.TemperatureSensor.GetValue() < Settings.SkipIfFrozenTemperature.Value)
+            if (SpecialSettingsWrapper.SkipIfFrozenIsEnabled &&
+                _weatherService.TemperatureSensor.GetValue() < SpecialSettingsWrapper.SkipIfFrozenTemperature)
             {
                 return true;
             }
@@ -159,8 +159,8 @@ namespace HA4IoT.Automations
         private IsDayCondition GetIsDayCondition()
         {
             var condition = new IsDayCondition(_daylightService, _timer);
-            condition.WithStartAdjustment(Settings.OpenOnSunriseOffset.Value);
-            condition.WithEndAdjustment(Settings.CloseOnSunsetOffset.Value);
+            condition.WithStartAdjustment(SpecialSettingsWrapper.OpenOnSunriseOffset);
+            condition.WithEndAdjustment(SpecialSettingsWrapper.CloseOnSunsetOffset);
 
             return condition;
         }

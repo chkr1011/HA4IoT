@@ -3,7 +3,7 @@ using HA4IoT.Actuators;
 using HA4IoT.Actuators.Animations;
 using HA4IoT.Automations;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Configuration;
+using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Core;
@@ -93,7 +93,7 @@ namespace HA4IoT.Controller.Main.Rooms
             floor.SetupTurnOnAndOffAutomation()
                 .WithTrigger(floor.GetMotionDetector(Floor.StairwayMotionDetector))
                 .WithTrigger(floor.GetButton(Floor.ButtonStairway).GetPressedShortlyTrigger())
-                .WithTarget(floor.BinaryStateOutput(Floor.CombinedStairwayLamp))
+                .WithTarget(floor.GetStateMachine(Floor.CombinedStairwayLamp))
                 .WithEnabledAtNight(controller.GetService<IDaylightService>())
                 .WithOnDuration(TimeSpan.FromSeconds(30));
 
@@ -107,7 +107,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTrigger(floor.GetButton(Floor.ButtonLowerFloorUpper).GetPressedShortlyTrigger())
                 .WithTrigger(floor.GetButton(Floor.ButtonLowerFloorAtBathroom).GetPressedShortlyTrigger())
                 .WithTrigger(floor.GetButton(Floor.ButtonLowerFloorAtKitchen).GetPressedShortlyTrigger())
-                .WithTarget(floor.BinaryStateOutput(Floor.CombinedLamps))
+                .WithTarget(floor.GetStateMachine(Floor.CombinedLamps))
                 .WithEnabledAtNight(controller.GetService<IDaylightService>())
                 .WithTurnOffIfButtonPressedWhileAlreadyOn()
                 .WithOnDuration(TimeSpan.FromSeconds(20));
@@ -133,32 +133,32 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTrigger(floor.GetMotionDetector(Floor.StairsLowerMotionDetector), new AnimateParameter())
                 .WithTrigger(floor.GetMotionDetector(Floor.StairsUpperMotionDetector))
                 //.WithTrigger(floor.Button(Floor.ButtonStairsUpper))
-                .WithTarget(floor.BinaryStateOutput(Floor.LampStairsCeiling))
+                .WithTarget(floor.GetStateMachine(Floor.LampStairsCeiling))
                 .WithOnDuration(TimeSpan.FromSeconds(10));
 
             var lamp = floor.GetLamp(Floor.LampStairsCeiling);
 
             floor.GetButton(Floor.ButtonStairsUpper).GetPressedShortlyTrigger().Triggered += (s, e) =>
             {
-                if (lamp.GetState() == BinaryActuatorState.On)
+                if (lamp.GetActiveState() == DefaultStateIDs.On)
                 {
-                    lamp.TurnOff(new AnimateParameter().WithReversedOrder());
+                    lamp.SetActiveState(DefaultStateIDs.Off, new AnimateParameter().WithReversedOrder());
                 }
                 else
                 {
-                    lamp.TurnOn(new AnimateParameter());
+                    lamp.SetActiveState(DefaultStateIDs.On, new AnimateParameter());
                 }
             };
 
             floor.GetButton(Floor.ButtonStairsLowerUpper).GetPressedShortlyTrigger().Triggered += (s, e) =>
             {
-                if (lamp.GetState() == BinaryActuatorState.On)
+                if (lamp.GetActiveState() == DefaultStateIDs.On)
                 {
-                    lamp.TurnOff(new AnimateParameter());
+                    lamp.SetActiveState(DefaultStateIDs.Off, new AnimateParameter());
                 }
                 else
                 {
-                    lamp.TurnOn(new AnimateParameter().WithReversedOrder());
+                    lamp.SetActiveState(DefaultStateIDs.On, new AnimateParameter().WithReversedOrder());
                 }
             };
         }

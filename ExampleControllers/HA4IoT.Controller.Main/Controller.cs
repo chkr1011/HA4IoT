@@ -6,6 +6,7 @@ using HA4IoT.Configuration;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Sensors;
 using HA4IoT.Controller.Main.Rooms;
 using HA4IoT.Core;
 using HA4IoT.ExternalServices.OpenWeatherMap;
@@ -109,14 +110,14 @@ namespace HA4IoT.Controller.Main
             else if (Regex.IsMatch(e.Message.Text, "Licht.*Büro.*an", RegexOptions.IgnoreCase))
             {
                 var light = GetActuator<IStateMachine>(new ActuatorId("Office.CombinedCeilingLights"));
-                light.SetState("On");
+                light.SetActiveState(DefaultStateIDs.On);
 
                 await e.TelegramBot.TrySendMessageAsync(e.Message.CreateResponse("Ich habe das Licht für dich eingeschaltet!"));
             }
             else if (Regex.IsMatch(e.Message.Text, "Licht.*Büro.*aus", RegexOptions.IgnoreCase))
             {
                 var light = GetActuator<IStateMachine>(new ActuatorId("Office.CombinedCeilingLights"));
-                light.TurnOff();
+                light.SetActiveState(DefaultStateIDs.Off);
 
                 await
                     e.TelegramBot.TrySendMessageAsync(e.Message.CreateResponse("Ich habe das Licht für dich ausgeschaltet!"));

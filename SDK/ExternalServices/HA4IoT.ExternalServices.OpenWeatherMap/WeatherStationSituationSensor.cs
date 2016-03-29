@@ -1,22 +1,17 @@
 ﻿using System;
 using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Services.WeatherService;
 
 namespace HA4IoT.ExternalServices.OpenWeatherMap
 {
-    public class WeatherStationSituationSensor : ActuatorBase<ActuatorSettings>, IWeatherSituationSensor
+    public class WeatherStationSituationSensor : ActuatorBase, IWeatherSituationSensor
     {
         private WeatherSituation _value = WeatherSituation.Unknown;
 
-        public WeatherStationSituationSensor(ActuatorId id, IApiController apiController) 
-            : base(id, apiController)
+        public WeatherStationSituationSensor(ActuatorId id) 
+            : base(id)
         {
-            if (id == null) throw new ArgumentNullException(nameof(id));
-            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
-
-            Settings = new ActuatorSettings(id);
         }
 
         public event EventHandler<WeatherSituationSensorValueChangedEventArgs> SituationChanged;
@@ -36,7 +31,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             _value = weatherSituation;
 
             SituationChanged?.Invoke(this, new WeatherSituationSensorValueChangedEventArgs(_value, weatherSituation));
-            ApiController.NotifyStateChanged(this);
+            NotifyStateChanged();
         }
     }
 }

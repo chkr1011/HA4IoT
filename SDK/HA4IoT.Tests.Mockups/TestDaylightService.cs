@@ -13,6 +13,5 @@ namespace HA4IoT.Tests.Mockups
 
         public TimeSpan Sunrise { get; set; }
         public TimeSpan Sunset { get; set; }
-        public bool IsDay { get; }
     }
 }

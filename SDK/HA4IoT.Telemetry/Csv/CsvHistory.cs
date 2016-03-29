@@ -7,8 +7,9 @@ using Windows.Storage;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Networking;
+using HA4IoT.Contracts.Sensors;
 using HA4IoT.Networking;
-using HA4IoT.Telemetry.Statistics;
+using HA4IoT.Telemetry.History;
 
 namespace HA4IoT.Telemetry.Csv
 {
@@ -46,19 +47,14 @@ namespace HA4IoT.Telemetry.Csv
             _actuatorHistory[actuator] = new ActuatorHistory(actuator, _apiRequestController, _logger);
         }
 
-        protected override void OnBinaryStateActuatorStateChanged(IBinaryStateOutputActuator actuator, BinaryActuatorState newState)
-        {
-            QueueEntry(actuator, newState.ToString());
-        }
-
         protected override void OnSensorValueChanged(ISingleValueSensorActuator actuator, float newValue)
         {
             QueueEntry(actuator, newValue.ToString(CultureInfo.InvariantCulture));
         }
 
-        protected override void OnStateMachineStateChanged(IStateMachine stateMachine, string newState)
+        protected override void OnStateMachineStateChanged(IStateMachine stateMachine, StateMachineStateId newState)
         {
-            QueueEntry(stateMachine, newState);
+            QueueEntry(stateMachine, newState.Value);
         }
 
         private void QueueEntry(IActuator actuator, string newState)

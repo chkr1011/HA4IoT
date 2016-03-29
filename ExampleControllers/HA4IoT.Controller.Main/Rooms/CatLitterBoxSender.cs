@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Sensors;
 using HA4IoT.Core.Timer;
 using HA4IoT.ExternalServices.Twitter;
 

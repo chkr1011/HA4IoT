@@ -101,15 +101,15 @@ namespace HA4IoT.Actuators.Tests
         public void Associate_TriggerWithActuatorAction()
         {
             var testButton = new TestButton();
-            var testOutput = new TestBinaryStateOutputActuator();
+            var testOutput = new TestStateMachine();
 
-            testButton.GetPressedShortlyTrigger().OnTriggered(testOutput.GetToggleStateAction());
+            testButton.GetPressedShortlyTrigger().OnTriggered(testOutput.GetSetNextStateAction());
 
-            testOutput.GetState().ShouldBeEquivalentTo(BinaryActuatorState.Off);
+            testOutput.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.Off);
             testButton.PressShort();
-            testOutput.GetState().ShouldBeEquivalentTo(BinaryActuatorState.On);
+            testOutput.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.On);
             testButton.PressShort();
-            testOutput.GetState().ShouldBeEquivalentTo(BinaryActuatorState.Off);
+            testOutput.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.Off);
         }
     }
 }

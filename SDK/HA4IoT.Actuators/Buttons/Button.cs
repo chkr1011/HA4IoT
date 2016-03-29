@@ -6,26 +6,28 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Triggers;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public class Button : ActuatorBase<ButtonSettings>, IButton
+    public class Button : ActuatorBase, IButton
     {
         private readonly Stopwatch _stopwatch = new Stopwatch();
         private readonly Trigger _pressedShortlyTrigger = new Trigger();
         private readonly Trigger _pressedLongTrigger = new Trigger();
+        private readonly ButtonSettingsWrapper _settings;
 
         private ButtonState _state = ButtonState.Released;
 
-        public Button(ActuatorId id, IButtonEndpoint endpoint, IApiController apiController, IHomeAutomationTimer timer)
-            : base(id, apiController)
+        public Button(ActuatorId id, IButtonEndpoint endpoint, IHomeAutomationTimer timer)
+            : base(id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
 
-            Settings = new ButtonSettings(id);
+            _settings = new ButtonSettingsWrapper(Settings);
 
             timer.Tick += CheckForTimeout;
             endpoint.Pressed += (s, e) => HandleInputStateChanged(ButtonState.Pressed);
@@ -49,6 +51,14 @@ namespace HA4IoT.Actuators
             return _pressedLongTrigger;
         }
 
+        public override JsonObject ExportStatusToJsonObject()
+        {
+            var status = base.ExportStatusToJsonObject();
+            status.SetNamedValue("state", _state.ToJsonValue());
+
+            return status;
+        }
+
         protected override void HandleApiCommand(IApiContext apiContext)
         {
             string action = apiContext.Request.GetNamedString("duration", string.Empty);
@@ -62,26 +72,18 @@ namespace HA4IoT.Actuators
             }
         }
 
-        public override JsonObject ExportStatusToJsonObject()
-        {
-            var status = base.ExportStatusToJsonObject();
-            status.SetNamedValue("state", _state.ToJsonValue());
-
-            return status;
-        }
-
         private void HandleInputStateChanged(ButtonState state)
         {
             var oldState = _state;
             _state = state;
 
-            if (!Settings.IsEnabled.Value)
+            if (!this.GetIsEnabled())
             {
                 return;
             }
 
             StateChanged?.Invoke(this, new ButtonStateChangedEventArgs(oldState, state));
-            ApiController.NotifyStateChanged(this);
+            NotifyStateChanged();
 
             InvokeTriggers();
         }
@@ -107,7 +109,7 @@ namespace HA4IoT.Actuators
                 }
 
                 _stopwatch.Stop();
-                if (_stopwatch.Elapsed >= Settings.PressedLongDuration.Value)
+                if (_stopwatch.Elapsed >= _settings.PressedLongDuration)
                 {
                     OnPressedLong();
                 }
@@ -125,7 +127,7 @@ namespace HA4IoT.Actuators
                 return;
             }
 
-            if (_stopwatch.Elapsed > Settings.PressedLongDuration.Value)
+            if (_stopwatch.Elapsed > _settings.PressedLongDuration)
             {
                 _stopwatch.Stop();
                 OnPressedLong();

@@ -1,6 +1,6 @@
 ﻿using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Configuration;
+using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
@@ -91,10 +91,10 @@ namespace HA4IoT.Controller.Main.Rooms
             
             office.GetButton(Office.ButtonUpperLeft).GetPressedLongTrigger().Attach(() =>
             {
-                office.GetStateMachine(Office.CombinedCeilingLights).TurnOff();
-                office.Socket(Office.SocketRearLeftEdge).TurnOff();
-                office.Socket(Office.SocketRearLeft).TurnOff();
-                office.Socket(Office.SocketFrontLeft).TurnOff();
+                office.GetStateMachine(Office.CombinedCeilingLights).TryTurnOff();
+                office.Socket(Office.SocketRearLeftEdge).TryTurnOff();
+                office.Socket(Office.SocketRearLeft).TryTurnOff();
+                office.Socket(Office.SocketFrontLeft).TryTurnOff();
             });
         }
 
@@ -117,26 +117,26 @@ namespace HA4IoT.Controller.Main.Rooms
             light.WithTurnOffIfStateIsAppliedTwice();
 
             light.AddOffState()
-                .WithActuator(lightsDeskOnly, BinaryActuatorState.Off)
-                .WithActuator(lightsCouchOnly, BinaryActuatorState.Off)
-                .WithActuator(lightsOther, BinaryActuatorState.Off);
+                .WithActuator(lightsDeskOnly, DefaultStateIDs.Off)
+                .WithActuator(lightsCouchOnly, DefaultStateIDs.Off)
+                .WithActuator(lightsOther, DefaultStateIDs.Off);
 
             light.AddOnState()
-                .WithActuator(lightsDeskOnly, BinaryActuatorState.On)
-                .WithActuator(lightsCouchOnly, BinaryActuatorState.On)
-                .WithActuator(lightsOther, BinaryActuatorState.On).
+                .WithActuator(lightsDeskOnly, DefaultStateIDs.On)
+                .WithActuator(lightsCouchOnly, DefaultStateIDs.On)
+                .WithActuator(lightsOther, DefaultStateIDs.On).
                 ConnectApplyStateWith(room.GetButton(Office.ButtonUpperLeft));
 
-            light.AddState("DeskOnly")
-                .WithActuator(lightsDeskOnly, BinaryActuatorState.On)
-                .WithActuator(lightsCouchOnly, BinaryActuatorState.Off)
-                .WithActuator(lightsOther, BinaryActuatorState.Off)
+            light.AddState(new StateMachineStateId("DeskOnly"))
+                .WithActuator(lightsDeskOnly, DefaultStateIDs.On)
+                .WithActuator(lightsCouchOnly, DefaultStateIDs.Off)
+                .WithActuator(lightsOther, DefaultStateIDs.Off)
                 .ConnectApplyStateWith(room.GetButton(Office.ButtonLowerLeft));
 
-            light.AddState("CouchOnly")
-                .WithActuator(lightsDeskOnly, BinaryActuatorState.Off)
-                .WithActuator(lightsCouchOnly, BinaryActuatorState.On)
-                .WithActuator(lightsOther, BinaryActuatorState.Off)
+            light.AddState(new StateMachineStateId("CouchOnly"))
+                .WithActuator(lightsDeskOnly, DefaultStateIDs.Off)
+                .WithActuator(lightsCouchOnly, DefaultStateIDs.On)
+                .WithActuator(lightsOther, DefaultStateIDs.Off)
                 .ConnectApplyStateWith(room.GetButton(Office.ButtonLowerRight));
         }
     }

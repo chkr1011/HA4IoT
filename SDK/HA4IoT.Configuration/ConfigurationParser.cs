@@ -4,6 +4,7 @@ using System.IO;
 using System.Xml.Linq;
 using Windows.Storage;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;

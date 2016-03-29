@@ -3,7 +3,11 @@ using Windows.Data.Json;
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Core.Settings;
+using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Triggers;
+using HA4IoT.Core.Settings;
 
 namespace HA4IoT.Tests.Mockups
 {
@@ -16,11 +20,13 @@ namespace HA4IoT.Tests.Mockups
 
         public TestMotionDetector()
         {
-            Settings = new ActuatorSettings(ActuatorIdFactory.EmptyId);
+            Settings = new SettingsContainer(string.Empty);
+            GeneralSettingsWrapper = new ActuatorSettingsWrapper(Settings);
         }
 
         public ActuatorId Id { get; set; }
-        public IActuatorSettings Settings { get; }
+        public ISettingsContainer Settings { get; }
+        public IActuatorSettingsWrapper GeneralSettingsWrapper { get; }
         public MotionDetectorState State { get; private set; } = MotionDetectorState.Idle;
 
         public JsonObject ExportConfigurationToJsonObject()
@@ -48,13 +54,8 @@ namespace HA4IoT.Tests.Mockups
             return new JsonObject();
         }
 
-        public void LoadSettings()
+        public void ExposeToApi(IApiController apiController)
         {
-        }
-
-        public void ExposeToApi()
-        {
-            
         }
 
         public void SetState(MotionDetectorState newState)

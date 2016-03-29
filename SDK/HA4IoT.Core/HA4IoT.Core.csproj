@@ -116,13 +116,11 @@
   <ItemGroup>
     <Compile Include="AreaSettingsApiDispatcher.cs" />
     <Compile Include="AreaIdFactory.cs" />
-    <Compile Include="AreaSettings.cs" />
     <Compile Include="AutomationCollection.cs" />
     <Compile Include="ActuatorCollection.cs" />
     <Compile Include="ControllerApiDispatcher.cs" />
     <Compile Include="ControllerBase.cs" />
     <Compile Include="ControllerExtensions.cs" />
-    <Compile Include="ControllerSettings.cs" />
     <Compile Include="Discovery\DiscoveryServer.cs" />
     <Compile Include="GenericControllerCollection.cs" />
     <Compile Include="DeviceCollection.cs" />
@@ -130,7 +128,6 @@
     <Compile Include="Area.cs" />
     <Compile Include="AreaCollection.cs" />
     <Compile Include="Settings\SettingsContainerApiDispatcher.cs" />
-    <Compile Include="Settings\Setting.cs" />
     <Compile Include="Settings\SettingsContainer.cs" />
     <Compile Include="Timer\Timeout.cs" />
     <Compile Include="Timer\HomeAutomationTimer.cs" />

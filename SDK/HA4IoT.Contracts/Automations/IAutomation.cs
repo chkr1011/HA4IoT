@@ -1,4 +1,5 @@
 ﻿using Windows.Data.Json;
+using HA4IoT.Contracts.Core.Settings;
 
 namespace HA4IoT.Contracts.Automations
 {
@@ -6,10 +7,12 @@ namespace HA4IoT.Contracts.Automations
     {
         AutomationId Id { get; }
 
+        ISettingsContainer Settings { get; }
+
+        IAutomationSettingsWrapper GeneralSettingsWrapper { get; }
+
         JsonObject ExportConfigurationAsJsonValue();
 
         JsonObject ExportStatusToJsonObject();
-
-        void LoadSettings();
     }
 }

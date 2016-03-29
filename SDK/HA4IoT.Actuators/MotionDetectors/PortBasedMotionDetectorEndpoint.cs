@@ -1,6 +1,7 @@
 ﻿using System;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Actuators
 {

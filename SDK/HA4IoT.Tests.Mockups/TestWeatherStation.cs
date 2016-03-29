@@ -4,6 +4,7 @@ using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services.WeatherService;
 
 namespace HA4IoT.Tests.Mockups

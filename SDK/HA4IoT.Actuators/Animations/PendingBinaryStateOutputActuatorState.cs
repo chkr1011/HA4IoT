@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Actuators.Animations
 {
     public class PendingBinaryStateOutputActuatorState
     {
-        public IBinaryStateOutputActuator Actuator { get; private set; }
+        public IStateMachine Actuator { get; private set; }
 
-        public BinaryActuatorState State { get; private set; }
+        public StateMachineStateId State { get; private set; }
 
         public IList<IHardwareParameter> Parameters { get; } = new List<IHardwareParameter>();
 
-        public PendingBinaryStateOutputActuatorState WithActuator(IBinaryStateOutputActuator actuator)
+        public PendingBinaryStateOutputActuatorState WithActuator(IStateMachine actuator)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
@@ -21,7 +22,7 @@ namespace HA4IoT.Actuators.Animations
             return this;
         }
 
-        public PendingBinaryStateOutputActuatorState WithState(BinaryActuatorState state)
+        public PendingBinaryStateOutputActuatorState WithState(StateMachineStateId state)
         {
             State = state;
             return this;
@@ -37,7 +38,7 @@ namespace HA4IoT.Actuators.Animations
 
         public void Apply()
         {
-            Actuator.SetState(State, Parameters.ToArray());
+            Actuator.SetActiveState(State, Parameters.ToArray());
         }
     }
 }

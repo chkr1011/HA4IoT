@@ -3,22 +3,21 @@ using System.Linq;
 using Windows.Data.Json;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Triggers;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public class Window : ActuatorBase<ActuatorSettings>, IWindow
+    public class Window : ActuatorBase, IWindow
     {
         private readonly Trigger _openedTrigger = new Trigger();
         private readonly Trigger _closedTrigger = new Trigger();
 
-        public Window(ActuatorId id, IApiController apiController) 
-            : base(id, apiController)
+        public Window(ActuatorId id) 
+            : base(id)
         {
-            Settings = new ActuatorSettings(id);
         }
 
         public IList<ICasement> Casements { get; } = new List<ICasement>();
@@ -102,7 +101,7 @@ namespace HA4IoT.Actuators
                 _closedTrigger.Execute();
             }
 
-            ApiController.NotifyStateChanged(this);
+            NotifyStateChanged();
         }
     }
 }

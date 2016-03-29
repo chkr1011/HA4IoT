@@ -1,6 +1,8 @@
 ﻿using System;
 using HA4IoT.Actuators;
 using HA4IoT.Automations;
+using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core;
@@ -84,9 +86,9 @@ namespace HA4IoT.Controller.Main.Rooms
             var fanPort1 = _hsrel5.GetOutput(5);
 
             stateMachine.AddOffState().WithPort(fanPort0, BinaryState.Low).WithPort(fanPort1, BinaryState.Low);
-            stateMachine.AddState("1").WithPort(fanPort0, BinaryState.High).WithPort(fanPort1, BinaryState.Low);
-            stateMachine.AddState("2").WithPort(fanPort0, BinaryState.High).WithPort(fanPort1, BinaryState.High);
-            stateMachine.TurnOff();
+            stateMachine.AddState(new StateMachineStateId("1")).WithPort(fanPort0, BinaryState.High).WithPort(fanPort1, BinaryState.Low);
+            stateMachine.AddState(new StateMachineStateId("2")).WithPort(fanPort0, BinaryState.High).WithPort(fanPort1, BinaryState.High);
+            stateMachine.TryTurnOff();
         }
     }
 }

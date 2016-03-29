@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Configuration;
+using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Actuators
@@ -31,8 +31,7 @@ namespace HA4IoT.Actuators
 
             var rollerShutter = new RollerShutter(
                 ActuatorIdFactory.Create(area, id), 
-                new PortBasedRollerShutterEndpoint(powerOutput, directionOutput), 
-                area.Controller.ApiController,
+                new PortBasedRollerShutterEndpoint(powerOutput, directionOutput),
                 area.Controller.Timer);
 
             area.AddActuator(rollerShutter);

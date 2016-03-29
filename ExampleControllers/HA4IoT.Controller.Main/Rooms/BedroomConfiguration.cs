@@ -3,10 +3,9 @@ using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Automations;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Configuration;
+using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Contracts.Services.WeatherService;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
@@ -125,9 +124,9 @@ namespace HA4IoT.Controller.Main.Rooms
 
             bedroom.GetButton(Bedroom.ButtonDoor).GetPressedLongTrigger().Attach(() =>
             {
-                bedroom.GetLamp(Bedroom.LampBedLeft).TurnOff();
-                bedroom.GetLamp(Bedroom.LampBedRight).TurnOff();
-                bedroom.GetLamp(Bedroom.CombinedCeilingLights).TurnOff();
+                bedroom.GetLamp(Bedroom.LampBedLeft).TryTurnOff();
+                bedroom.GetLamp(Bedroom.LampBedRight).TryTurnOff();
+                bedroom.GetLamp(Bedroom.CombinedCeilingLights).TryTurnOff();
             });
 
             bedroom.SetupRollerShutterAutomation()
@@ -138,7 +137,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             bedroom.SetupTurnOnAndOffAutomation()
                 .WithTrigger(bedroom.GetMotionDetector(Bedroom.MotionDetector))
-                .WithTarget(bedroom.BinaryStateOutput(Bedroom.LightCeiling))
+                .WithTarget(bedroom.GetStateMachine(Bedroom.LightCeiling))
                 .WithOnDuration(TimeSpan.FromSeconds(15))
                 .WithTurnOnIfAllRollerShuttersClosed(bedroom.GetRollerShutter(Bedroom.RollerShutterLeft), bedroom.GetRollerShutter(Bedroom.RollerShutterRight))
                 .WithEnabledAtNight(_controller.GetService<IDaylightService>())
@@ -146,15 +145,15 @@ namespace HA4IoT.Controller.Main.Rooms
             
             bedroom.WithStateMachine(Bedroom.Fan, SetupFan);
             
-            bedroom.GetButton(Bedroom.ButtonBedLeftInner).WithPressedShortlyAction(() => bedroom.GetLamp(Bedroom.LampBedLeft).ToggleState());
-            bedroom.GetButton(Bedroom.ButtonBedLeftInner).WithPressedLongAction(() => bedroom.BinaryStateOutput(Bedroom.CombinedCeilingLights).ToggleState());
+            bedroom.GetButton(Bedroom.ButtonBedLeftInner).WithPressedShortlyAction(() => bedroom.GetLamp(Bedroom.LampBedLeft).SetNextState());
+            bedroom.GetButton(Bedroom.ButtonBedLeftInner).WithPressedLongAction(() => bedroom.GetStateMachine(Bedroom.CombinedCeilingLights).SetNextState());
             bedroom.GetButton(Bedroom.ButtonBedLeftOuter).WithPressedShortlyAction(() => bedroom.GetStateMachine(Bedroom.Fan).SetNextState());
-            bedroom.GetButton(Bedroom.ButtonBedLeftOuter).WithPressedLongAction(() => bedroom.GetStateMachine(Bedroom.Fan).TurnOff());
+            bedroom.GetButton(Bedroom.ButtonBedLeftOuter).WithPressedLongAction(() => bedroom.GetStateMachine(Bedroom.Fan).TryTurnOff());
 
-            bedroom.GetButton(Bedroom.ButtonBedRightInner).WithPressedShortlyAction(() => bedroom.GetLamp(Bedroom.LampBedRight).ToggleState());
-            bedroom.GetButton(Bedroom.ButtonBedRightInner).WithPressedLongAction(() => bedroom.BinaryStateOutput(Bedroom.CombinedCeilingLights).ToggleState());
+            bedroom.GetButton(Bedroom.ButtonBedRightInner).WithPressedShortlyAction(() => bedroom.GetLamp(Bedroom.LampBedRight).SetNextState());
+            bedroom.GetButton(Bedroom.ButtonBedRightInner).WithPressedLongAction(() => bedroom.GetStateMachine(Bedroom.CombinedCeilingLights).SetNextState());
             bedroom.GetButton(Bedroom.ButtonBedRightOuter).WithPressedShortlyAction(() => bedroom.GetStateMachine(Bedroom.Fan).SetNextState());
-            bedroom.GetButton(Bedroom.ButtonBedRightOuter).WithPressedLongAction(() => bedroom.GetStateMachine(Bedroom.Fan).TurnOff());
+            bedroom.GetButton(Bedroom.ButtonBedRightOuter).WithPressedLongAction(() => bedroom.GetStateMachine(Bedroom.Fan).TryTurnOff());
         }
 
         private void SetupFan(StateMachine fan, IArea room)
@@ -168,10 +167,10 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithLowPort(fanRelay2)
                 .WithLowPort(fanRelay3);
 
-            fan.AddState("1").WithHighPort(fanRelay1).WithLowPort(fanRelay2).WithHighPort(fanRelay3);
-            fan.AddState("2").WithHighPort(fanRelay1).WithHighPort(fanRelay2).WithLowPort(fanRelay3);
-            fan.AddState("3").WithHighPort(fanRelay1).WithHighPort(fanRelay2).WithHighPort(fanRelay3);
-            fan.TurnOff();
+            fan.AddState(new StateMachineStateId("1")).WithHighPort(fanRelay1).WithLowPort(fanRelay2).WithHighPort(fanRelay3);
+            fan.AddState(new StateMachineStateId("2")).WithHighPort(fanRelay1).WithHighPort(fanRelay2).WithLowPort(fanRelay3);
+            fan.AddState(new StateMachineStateId("3")).WithHighPort(fanRelay1).WithHighPort(fanRelay2).WithHighPort(fanRelay3);
+            fan.TryTurnOff();
 
             fan.ConnectMoveNextAndToggleOffWith(room.GetButton(Bedroom.ButtonWindowLower));
         }

@@ -2,143 +2,131 @@
 using System.Collections.Generic;
 using System.Linq;
 using Windows.Data.Json;
-using HA4IoT.Actuators.Actions;
-using HA4IoT.Contracts.Actions;
+using HA4IoT.Actuators.Parameters;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public class StateMachine : ActuatorBase<ActuatorSettings>, IStateMachine
+    public class StateMachine : ActuatorBase, IStateMachine
     {
-        private readonly IHomeAutomationAction _turnOffAction;
-        private readonly IHomeAutomationAction _setNextStateAction;
+        private readonly Dictionary<StateMachineStateId, StateMachineStateId> _stateAlias = new Dictionary<StateMachineStateId, StateMachineStateId>(); 
+        private readonly List<IStateMachineState> _states = new List<IStateMachineState>(); 
 
-        private int _index;
+        private IStateMachineState _activeState;
         private bool _turnOffIfStateIsAppliedTwice;
 
-        public StateMachine(ActuatorId id, IApiController apiController)
-            : base(id, apiController)
+        public StateMachine(ActuatorId id)
+            : base(id)
         {
-            Settings = new ActuatorSettings(id);
-
-            _turnOffAction = new HomeAutomationAction(() => TurnOff());
-            _setNextStateAction = new HomeAutomationAction(() => SetNextState());
         }
 
-        public List<StateMachineState> States { get; } = new List<StateMachineState>();
+        public event EventHandler<StateMachineStateChangedEventArgs> ActiveStateChanged;
 
-        public bool HasOffState
+        public bool GetSupportsState(StateMachineStateId stateId)
         {
-            get { return States.Any(s => s.Id.Equals(BinaryActuatorState.Off.ToString(), StringComparison.OrdinalIgnoreCase)); }
-        }
+            if (stateId == null) throw new ArgumentNullException(nameof(stateId));
 
-        public event EventHandler<StateMachineStateChangedEventArgs> StateChanged;
-
-        public StateMachineState AddOffState()
-        {
-            return AddState(BinaryActuatorState.Off.ToString());
-        }
-
-        public StateMachineState AddOnState()
-        {
-            return AddState(BinaryActuatorState.On.ToString());
-        }
-
-        public StateMachineState AddState(string id)
-        {
-            if (id == null) throw new ArgumentNullException(nameof(id));
-
-            var state = new StateMachineState(id, this);
-            States.Add(state);
-            return state;
-        }
-
-        public void SetState(string id, params IHardwareParameter[] parameters)
-        {
-            if (id == null) throw new ArgumentNullException(nameof(id));
-
-            string oldState = GetState();
-
-            for (int i = 0; i < States.Count; i++)
+            if (_states.Any(s => s.Id.Equals(stateId)))
             {
-                var state = States[i];
+                return true;
+            }
 
-                if (state.Id.Equals(id, StringComparison.OrdinalIgnoreCase))
+            if (!_stateAlias.TryGetValue(stateId, out stateId))
+            {
+                return false;
+            }
+
+            return _states.Any(s => s.Id.Equals(stateId));
+        }
+
+        public void AddState(IStateMachineState state)
+        {
+            if (state == null) throw new ArgumentNullException(nameof(state));
+
+            if (GetSupportsState(state.Id))
+            {
+                throw new InvalidOperationException($"State '{state.Id}' already added.");
+            }
+
+            _states.Add(state);
+        }
+
+        public void SetActiveState(StateMachineStateId id, params IHardwareParameter[] parameters)
+        {
+            if (id == null) throw new ArgumentNullException(nameof(id));
+
+            ThrowIfNoStatesAvailable();
+
+            IStateMachineState oldState = _activeState;
+            IStateMachineState newState = GetState(id);
+
+            if (newState.Id.Equals(_activeState?.Id))
+            {
+                if (_turnOffIfStateIsAppliedTwice && GetSupportsState(DefaultStateIDs.Off) && !GetActiveState().Equals(DefaultStateIDs.Off))
                 {
-                    bool stateIsAlreadyActive = i == _index;
-                    if (stateIsAlreadyActive && _turnOffIfStateIsAppliedTwice)
-                    {
-                        if (state.Id == BinaryActuatorState.Off.ToString())
-                        {
-                            // The state is already "Off".
-                            return;
-                        }
+                    SetActiveState(DefaultStateIDs.Off, parameters);
+                    return;
+                }
 
-                        TurnOff();
-                        return;
-                    }
-
-                    _index = i;
-                    state.Apply(parameters);
-
-                    OnStateChanged(oldState, state.Id);
+                if (!parameters.Any(p => p is ForceUpdateStateParameter))
+                {
                     return;
                 }
             }
 
-            throw new NotSupportedException("StateMachineActuator '" + Id + "' does not support state '" + id + "'.");
+            oldState?.Deactivate(parameters);
+            newState.Activate(parameters);
+
+            _activeState = newState;
+            OnActiveStateChanged(oldState);
         }
 
-        public void SetNextState(params IHardwareParameter[] parameters)
+        public StateMachineStateId GetNextState(StateMachineStateId stateId)
         {
-            string oldState = GetState();
+            if (stateId == null) throw new ArgumentNullException(nameof(stateId));
 
-            _index += 1;
-            if (_index >= States.Count)
+            ThrowIfStateNotSupported(stateId);
+
+            IStateMachineState startState = GetState(stateId);
+
+            int indexOfStartState = _states.IndexOf(startState);
+            if (indexOfStartState == _states.Count - 1)
             {
-                _index = 0;
+                return _states.First().Id;
             }
 
-            string newState = States[_index].Id;
-
-            States[_index].Apply(parameters);
-
-            OnStateChanged(oldState, newState);
+            return _states[indexOfStartState + 1].Id;
         }
 
-        public void SetInitialState()
+        private void ThrowIfStateNotSupported(StateMachineStateId stateId)
         {
-            TurnOff(new ForceUpdateStateParameter());
+            if (!GetSupportsState(stateId))
+            {
+                throw new NotSupportedException($"State '{stateId}' is not supported.");
+            }
         }
 
-        public string GetState()
-        {
-            return States[_index].Id;
-        }
-
-        public IHomeAutomationAction GetTurnOffAction()
-        {
-            return _turnOffAction;
-        }
-
-        public IHomeAutomationAction GetSetNextStateAction()
-        {
-            return _setNextStateAction;
-        }
-
-        public IHomeAutomationAction GetSetStateAction(string id)
+        public virtual void SetInitialState(StateMachineStateId id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
-            
-            return new HomeAutomationAction(() => SetState(id));
+
+            SetActiveState(id, new ForceUpdateStateParameter());
         }
 
-        public void TurnOff(params IHardwareParameter[] parameters)
+        public void SetStateIdAlias(StateMachineStateId stateId, StateMachineStateId alias)
         {
-            SetState(BinaryActuatorState.Off.ToString(), parameters);
+            _stateAlias[stateId] = alias;
+        }
+
+        public StateMachineStateId GetActiveState()
+        {
+            ThrowIfNoStatesAvailable();
+
+            return _activeState?.Id;
         }
 
         public StateMachine WithTurnOffIfStateIsAppliedTwice()
@@ -151,9 +139,9 @@ namespace HA4IoT.Actuators
         {
             var status = base.ExportStatusToJsonObject();
 
-            if (States.Any())
+            if (_activeState != null)
             {
-                status.SetNamedValue("state", States[_index].Id.ToJsonValue());
+                status.SetNamedString("state", _activeState.Id.Value);
             }
 
             return status;
@@ -164,9 +152,9 @@ namespace HA4IoT.Actuators
             JsonObject configuration = base.ExportConfigurationToJsonObject();
 
             JsonArray stateMachineStates = new JsonArray();
-            foreach (var state in States)
+            foreach (var state in _states)
             {
-                stateMachineStates.Add(JsonValue.CreateStringValue(state.Id));
+                stateMachineStates.Add(JsonValue.CreateStringValue(state.Id.Value));
             }
 
             configuration.SetNamedValue("states", stateMachineStates);
@@ -181,16 +169,47 @@ namespace HA4IoT.Actuators
                 return;
             }
 
-            string stateId = apiContext.Request.GetNamedString("state", string.Empty);
-            SetState(stateId);
+            var stateId = new StateMachineStateId(apiContext.Request.GetNamedString("state", string.Empty));
+            if (!GetSupportsState(stateId))
+            {
+                apiContext.ResultCode = ApiResultCode.InvalidBody;
+                apiContext.Response.SetNamedString("Message", "State ID not supported.");
+            }
+
+            SetActiveState(stateId);
         }
 
-        private void OnStateChanged(string oldState, string newState)
+        private void ThrowIfNoStatesAvailable()
         {
-            StateChanged?.Invoke(this, new StateMachineStateChangedEventArgs(oldState, newState));
-            ApiController.NotifyStateChanged(this);
+            if (!_states.Any())
+            {
+                throw new InvalidOperationException("The State Machine does not support any state.");
+            }
+        }
 
-            Log.Info(Id + ": " + oldState + "->" + newState);
+        private IStateMachineState GetState(StateMachineStateId id)
+        {
+            IStateMachineState state = _states.FirstOrDefault(s => s.Id.Equals(id));
+
+            if (state == null && _stateAlias.TryGetValue(id, out id))
+            {
+                state = _states.FirstOrDefault(s => s.Id.Equals(id));
+            }
+
+            if (state == null)
+            {
+                throw new InvalidOperationException("State machine state is unknown.");
+            }
+
+            return state;
+        }
+
+        private void OnActiveStateChanged(IStateMachineState oldState)
+        {
+            Log.Info(Id + ": " + oldState?.Id + "->" + _activeState.Id);
+
+            ActiveStateChanged?.Invoke(this, new StateMachineStateChangedEventArgs(oldState?.Id, _activeState.Id));
+            NotifyStateChanged();
         }
     }
 }

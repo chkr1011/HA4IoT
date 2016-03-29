@@ -1,8 +1,10 @@
 ﻿using System;
 using Windows.Data.Json;
-using HA4IoT.Actuators;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Tests.Mockups
 {
@@ -15,14 +17,14 @@ namespace HA4IoT.Tests.Mockups
             if (id == null) throw new ArgumentNullException(nameof(id));
 
             Id = Id;
-            Settings = new ActuatorSettings(id);
         }
 
         public event EventHandler<SingleValueSensorValueChangedEventArgs> ValueChanged;
         
         public ActuatorId Id { get; }
 
-        public IActuatorSettings Settings { get; }
+        public ISettingsContainer Settings { get; }
+        public IActuatorSettingsWrapper GeneralSettingsWrapper { get; }
 
         public float GetValue()
         {
@@ -47,11 +49,7 @@ namespace HA4IoT.Tests.Mockups
             throw new NotImplementedException();
         }
 
-        public void LoadSettings()
-        {
-        }
-
-        public void ExposeToApi()
+        public void ExposeToApi(IApiController apiController)
         {
         }
     }

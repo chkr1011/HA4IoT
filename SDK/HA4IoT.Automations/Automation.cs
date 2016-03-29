@@ -2,22 +2,19 @@
 using System.Collections.Generic;
 using HA4IoT.Conditions;
 using HA4IoT.Contracts.Actions;
-using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Automations
 {
-    public class Automation : AutomationBase<AutomationSettings>
+    public class Automation : AutomationBase
     {
         private readonly ConditionsValidator _conditionsValidator;
 
-        public Automation(AutomationId id, IApiController apiController)
+        public Automation(AutomationId id)
             : base(id)
         {
             _conditionsValidator = new ConditionsValidator(Conditions);
-
-            Settings = new AutomationSettings(id, apiController);
         }
 
         public IList<RelatedCondition> Conditions { get; } = new List<RelatedCondition>();

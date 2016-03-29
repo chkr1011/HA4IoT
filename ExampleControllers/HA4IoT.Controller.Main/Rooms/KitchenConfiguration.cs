@@ -82,7 +82,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             kitchen.SetupTurnOnAndOffAutomation()
                 .WithTrigger(kitchen.GetMotionDetector(Kitchen.MotionDetector))
-                .WithTarget(kitchen.BinaryStateOutput(Kitchen.CombinedAutomaticLights))
+                .WithTarget(kitchen.GetStateMachine(Kitchen.CombinedAutomaticLights))
                 .WithEnabledAtNight(controller.GetService<IDaylightService>());
         }
     }

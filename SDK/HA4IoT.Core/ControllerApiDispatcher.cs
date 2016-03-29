@@ -1,6 +1,7 @@
 ﻿using System;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Services.WeatherService;

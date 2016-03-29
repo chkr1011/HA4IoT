@@ -8,6 +8,7 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Telemetry.History
 {
