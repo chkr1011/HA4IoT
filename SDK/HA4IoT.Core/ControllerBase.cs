@@ -315,6 +315,11 @@ namespace HA4IoT.Core
             {
                 actuator.ExposeToApi(ApiController);
             }
+
+            foreach (var automation in _automations.GetAll())
+            {
+                automation.ExposeToApi(ApiController);
+            }
         }
 
         private void AttachActuatorHistory()

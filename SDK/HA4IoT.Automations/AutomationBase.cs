@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.Data.Json;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Core.Settings;
@@ -40,6 +41,13 @@ namespace HA4IoT.Automations
         public virtual JsonObject ExportStatusToJsonObject()
         {
             return new JsonObject();
+        }
+
+        public void ExposeToApi(IApiController apiController)
+        {
+            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
+
+            new AutomationSettingsApiDispatcher(this, apiController).ExposeToApi();
         }
     }
 }
