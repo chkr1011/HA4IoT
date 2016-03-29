@@ -43,18 +43,6 @@ namespace HA4IoT.Actuators
             return _states.Any(s => s.Id.Equals(stateId));
         }
 
-        public void AddState(IStateMachineState state)
-        {
-            if (state == null) throw new ArgumentNullException(nameof(state));
-
-            if (GetSupportsState(state.Id))
-            {
-                throw new InvalidOperationException($"State '{state.Id}' already added.");
-            }
-
-            _states.Add(state);
-        }
-
         public void SetActiveState(StateMachineStateId id, params IHardwareParameter[] parameters)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
@@ -85,38 +73,6 @@ namespace HA4IoT.Actuators
             OnActiveStateChanged(oldState);
         }
 
-        public StateMachineStateId GetNextState(StateMachineStateId stateId)
-        {
-            if (stateId == null) throw new ArgumentNullException(nameof(stateId));
-
-            ThrowIfStateNotSupported(stateId);
-
-            IStateMachineState startState = GetState(stateId);
-
-            int indexOfStartState = _states.IndexOf(startState);
-            if (indexOfStartState == _states.Count - 1)
-            {
-                return _states.First().Id;
-            }
-
-            return _states[indexOfStartState + 1].Id;
-        }
-
-        private void ThrowIfStateNotSupported(StateMachineStateId stateId)
-        {
-            if (!GetSupportsState(stateId))
-            {
-                throw new NotSupportedException($"State '{stateId}' is not supported.");
-            }
-        }
-
-        public virtual void SetInitialState(StateMachineStateId id)
-        {
-            if (id == null) throw new ArgumentNullException(nameof(id));
-
-            SetActiveState(id, new ForceUpdateStateParameter());
-        }
-
         public void SetStateIdAlias(StateMachineStateId stateId, StateMachineStateId alias)
         {
             _stateAlias[stateId] = alias;
@@ -127,12 +83,6 @@ namespace HA4IoT.Actuators
             ThrowIfNoStatesAvailable();
 
             return _activeState?.Id;
-        }
-
-        public StateMachine WithTurnOffIfStateIsAppliedTwice()
-        {
-            _turnOffIfStateIsAppliedTwice = true;
-            return this;
         }
 
         public override JsonObject ExportStatusToJsonObject()
@@ -162,6 +112,48 @@ namespace HA4IoT.Actuators
             return configuration;
         }
 
+        public StateMachineStateId GetNextState(StateMachineStateId stateId)
+        {
+            if (stateId == null) throw new ArgumentNullException(nameof(stateId));
+
+            ThrowIfStateNotSupported(stateId);
+
+            IStateMachineState startState = GetState(stateId);
+
+            int indexOfStartState = _states.IndexOf(startState);
+            if (indexOfStartState == _states.Count - 1)
+            {
+                return _states.First().Id;
+            }
+
+            return _states[indexOfStartState + 1].Id;
+        }
+
+        public StateMachine WithTurnOffIfStateIsAppliedTwice()
+        {
+            _turnOffIfStateIsAppliedTwice = true;
+            return this;
+        }
+
+        public virtual void SetInitialState(StateMachineStateId id)
+        {
+            if (id == null) throw new ArgumentNullException(nameof(id));
+
+            SetActiveState(id, new ForceUpdateStateParameter());
+        }
+
+        public void AddState(IStateMachineState state)
+        {
+            if (state == null) throw new ArgumentNullException(nameof(state));
+
+            if (GetSupportsState(state.Id))
+            {
+                throw new InvalidOperationException($"State '{state.Id}' already added.");
+            }
+
+            _states.Add(state);
+        }
+
         protected override void HandleApiCommand(IApiContext apiContext)
         {
             if (!apiContext.Request.ContainsKey("state"))
@@ -177,14 +169,6 @@ namespace HA4IoT.Actuators
             }
 
             SetActiveState(stateId);
-        }
-
-        private void ThrowIfNoStatesAvailable()
-        {
-            if (!_states.Any())
-            {
-                throw new InvalidOperationException("The State Machine does not support any state.");
-            }
         }
 
         private IStateMachineState GetState(StateMachineStateId id)
@@ -210,6 +194,22 @@ namespace HA4IoT.Actuators
 
             ActiveStateChanged?.Invoke(this, new StateMachineStateChangedEventArgs(oldState?.Id, _activeState.Id));
             NotifyStateChanged();
+        }
+
+        private void ThrowIfNoStatesAvailable()
+        {
+            if (!_states.Any())
+            {
+                throw new InvalidOperationException("The State Machine does not support any state.");
+            }
+        }
+
+        private void ThrowIfStateNotSupported(StateMachineStateId stateId)
+        {
+            if (!GetSupportsState(stateId))
+            {
+                throw new NotSupportedException($"State '{stateId}' is not supported.");
+            }
         }
     }
 }

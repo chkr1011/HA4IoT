@@ -308,7 +308,7 @@ namespace HA4IoT.Core
 
             foreach (var area in _areas.GetAll())
             {
-                area.ExposeToApi();
+                area.ExposeToApi(ApiController);
             }
 
             foreach (var actuator in _actuators.GetAll())

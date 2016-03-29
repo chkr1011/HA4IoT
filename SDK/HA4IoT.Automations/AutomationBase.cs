@@ -32,7 +32,7 @@ namespace HA4IoT.Automations
 
             if (Settings != null)
             {
-                result.SetNamedValue("Settings", Settings.ExportToJsonObject());
+                result.SetNamedValue("Settings", Settings.Export());
             }
 
             return result;

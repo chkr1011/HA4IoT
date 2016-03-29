@@ -81,7 +81,7 @@ namespace HA4IoT.Core
 
         public JsonObject ExportConfigurationToJsonObject()
         {
-            return Settings.ExportToJsonObject();
+            return Settings.Export();
         }
 
         public void ExposeToApi(IApiController apiController)

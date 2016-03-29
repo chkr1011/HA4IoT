@@ -7,7 +7,7 @@ namespace HA4IoT.Contracts.Core.Settings
     {
         event EventHandler<SettingValueChangedEventArgs> ValueChanged;
 
-        JsonObject ExportToJsonObject();
+        JsonObject Export();
 
         void Import(JsonObject requestBody);
         

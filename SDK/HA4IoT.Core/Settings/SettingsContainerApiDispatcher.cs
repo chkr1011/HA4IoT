@@ -30,7 +30,7 @@ namespace HA4IoT.Core.Settings
 
         private void HandleApiRequest(IApiContext apiContext)
         {
-            apiContext.Response = _settingsContainer.ExportToJsonObject();
+            apiContext.Response = _settingsContainer.Export();
         }
 
         private void HandleApiCommand(IApiContext apiContext)

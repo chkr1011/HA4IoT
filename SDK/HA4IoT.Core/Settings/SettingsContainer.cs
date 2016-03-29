@@ -39,7 +39,7 @@ namespace HA4IoT.Core.Settings
             catch (Exception exception)
             {
                 Log.Warning(exception, $"Error while loading settings from '{_filename}' ({fileContent}).");
-                File.Delete(_filename);
+                //TODO: File.Delete(_filename);
             }
         }
 
@@ -106,7 +106,7 @@ namespace HA4IoT.Core.Settings
             _settingsJson.SetNamedObject(name, value);
         }
 
-        public JsonObject ExportToJsonObject()
+        public JsonObject Export()
         {
             return _settingsJson;
         }
@@ -123,6 +123,13 @@ namespace HA4IoT.Core.Settings
                 if (_settingsJson.ContainsKey(key))
                 {
                     existingValue = _settingsJson.GetNamedValue(key);
+
+                    if (value.ValueType != existingValue.ValueType)
+                    {
+                        Log.Warning($"Settings import skipped setting '{key}' due to different type.");
+                        continue;
+                    }
+
                     if (existingValue.Equals(value))
                     {
                         continue;
@@ -142,7 +149,7 @@ namespace HA4IoT.Core.Settings
                 Directory.CreateDirectory(directory);
             }
 
-            File.WriteAllText(_filename, _settingsJson.Stringify(), Encoding.UTF8);
+            //TODO: File.WriteAllText(_filename, _settingsJson.Stringify(), Encoding.UTF8);
             Log.Verbose($"Saved settings at '{_filename}'.");
         }
     }

@@ -66,5 +66,21 @@ namespace HA4IoT.Configuration.Tests
             settings.GetInteger("B").ShouldBeEquivalentTo(2);
             settings.GetBoolean("C").ShouldBeEquivalentTo(false);
         }
+
+        [TestMethod]
+        public void ExportShouldMatchSettings()
+        {
+            var settings = new SettingsContainer(string.Empty);
+            settings.SetValue("A", "A");
+            settings.SetValue("B", 1);
+            settings.SetValue("C", true);
+
+            var exportComparison = new JsonObject();
+            exportComparison.SetNamedString("A", "A");
+            exportComparison.SetNamedNumber("B", 1);
+            exportComparison.SetNamedBoolean("C", true);
+
+            settings.Export().Stringify().ShouldBeEquivalentTo(exportComparison.Stringify());
+        }
     }
 }
