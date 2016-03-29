@@ -75,7 +75,7 @@ namespace HA4IoT.Actuators
 
         public void SetStateIdAlias(StateMachineStateId stateId, StateMachineStateId alias)
         {
-            _stateAlias[stateId] = alias;
+            _stateAlias[alias] = stateId;
         }
 
         public StateMachineStateId GetActiveState()

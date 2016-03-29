@@ -5,7 +5,6 @@ using System.Text;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Networking;
 
 namespace HA4IoT.Core.Settings
 {
@@ -76,34 +75,34 @@ namespace HA4IoT.Core.Settings
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
 
-            _settingsJson.SetNamedString(name, value);
+            UpdateValue(name, JsonValue.CreateStringValue(value));
         }
 
         public void SetValue(string name, float value)
         {
-            _settingsJson.SetNamedNumber(name, value);
+            UpdateValue(name, JsonValue.CreateNumberValue(value));
         }
 
         public void SetValue(string name, bool value)
         {
-            _settingsJson.SetNamedBoolean(name, value);
+            UpdateValue(name, JsonValue.CreateBooleanValue(value));
         }
 
         public void SetValue(string name, TimeSpan value)
         {
-            _settingsJson.SetNamedString(name, value.ToString("c"));
+            UpdateValue(name, JsonValue.CreateStringValue(value.ToString("c")));
         }
 
         public void SetValue(string name, int value)
         {
-            _settingsJson.SetNamedNumber(name, value);
+            UpdateValue(name, JsonValue.CreateNumberValue(value));
         }
 
         public void SetValue(string name, JsonObject value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
 
-            _settingsJson.SetNamedObject(name, value);
+            UpdateValue(name, value);
         }
 
         public JsonObject Export()
@@ -118,26 +117,7 @@ namespace HA4IoT.Core.Settings
             foreach (var key in source.Keys)
             {
                 IJsonValue value = source.GetNamedValue(key);
-                IJsonValue existingValue = JsonValue.CreateNullValue();
-
-                if (_settingsJson.ContainsKey(key))
-                {
-                    existingValue = _settingsJson.GetNamedValue(key);
-
-                    if (value.ValueType != existingValue.ValueType)
-                    {
-                        Log.Warning($"Settings import skipped setting '{key}' due to different type.");
-                        continue;
-                    }
-
-                    if (existingValue.Equals(value))
-                    {
-                        continue;
-                    }
-                }
-
-                _settingsJson.SetNamedValue(key, value);
-                ValueChanged?.Invoke(this, new SettingValueChangedEventArgs(key, existingValue, value));
+                UpdateValue(key, value);
             }
         }
 
@@ -151,6 +131,30 @@ namespace HA4IoT.Core.Settings
 
             //TODO: File.WriteAllText(_filename, _settingsJson.Stringify(), Encoding.UTF8);
             Log.Verbose($"Saved settings at '{_filename}'.");
+        }
+
+        private void UpdateValue(string name, IJsonValue value)
+        {
+            IJsonValue existingValue = JsonValue.CreateNullValue();
+
+            if (_settingsJson.ContainsKey(name))
+            {
+                existingValue = _settingsJson.GetNamedValue(name);
+
+                if (value.ValueType != existingValue.ValueType)
+                {
+                    Log.Warning($"Skipped update of setting '{name}' due to different value types.");
+                    return;
+                }
+
+                if (existingValue.Stringify().Equals(value.Stringify()))
+                {
+                    return;
+                }
+            }
+
+            _settingsJson.SetNamedValue(name, value);
+            ValueChanged?.Invoke(this, new SettingValueChangedEventArgs(name, existingValue, value));
         }
     }
 }

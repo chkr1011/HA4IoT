@@ -36,9 +36,14 @@ namespace HA4IoT.Configuration.Tests
             settings.ValueChanged += (s, e) => firedCount++;
 
             settings.SetValue("A", "A");
+            firedCount.ShouldBeEquivalentTo(1);
+
             settings.SetValue("A", "B");
 
-            firedCount.ShouldBeEquivalentTo(1);
+            firedCount.ShouldBeEquivalentTo(2);
+
+            settings.SetValue("A", "B");
+            firedCount.ShouldBeEquivalentTo(2);
         }
 
         [TestMethod]
@@ -53,18 +58,20 @@ namespace HA4IoT.Configuration.Tests
             settings.SetValue("B", 1);
             settings.SetValue("C", true);
 
+            firedCount.ShouldBeEquivalentTo(3);
+
             var importSource = new JsonObject();
             importSource.SetNamedString("A", "x");
             importSource.SetNamedNumber("B", 2);
-            importSource.SetNamedBoolean("C", false);
+            importSource.SetNamedBoolean("C", true);
             
             settings.Import(importSource);
 
-            firedCount.ShouldBeEquivalentTo(3);
+            firedCount.ShouldBeEquivalentTo(5);
 
             settings.GetString("A").ShouldBeEquivalentTo("x");
             settings.GetInteger("B").ShouldBeEquivalentTo(2);
-            settings.GetBoolean("C").ShouldBeEquivalentTo(false);
+            settings.GetBoolean("C").ShouldBeEquivalentTo(true);
         }
 
         [TestMethod]
