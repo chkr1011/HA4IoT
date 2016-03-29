@@ -3,6 +3,7 @@ using HA4IoT.Contracts.Core;
 using System;
 using System.Collections.Generic;
 using Windows.Data.Json;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core.Settings;
@@ -83,9 +84,11 @@ namespace HA4IoT.Core
             return Settings.ExportToJsonObject();
         }
 
-        public void ExposeToApi()
+        public void ExposeToApi(IApiController apiController)
         {
-            new AreaSettingsApiDispatcher(this, Controller.ApiController).ExposeToApi();
+            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
+
+            new AreaSettingsApiDispatcher(this, apiController).ExposeToApi();
         }
     }
 }
