@@ -1,12 +1,12 @@
 ﻿using System;
 using Windows.Data.Json;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 using HttpMethod = HA4IoT.Contracts.Networking.HttpMethod;
 
-namespace HA4IoT.Api.LocalHttpServer
+namespace HA4IoT.Api.LocalRestServer
 {
     public class LocalHttpServerApiDispatcherEndpoint : IApiDispatcherEndpoint
     {
@@ -19,7 +19,7 @@ namespace HA4IoT.Api.LocalHttpServer
 
         public event EventHandler<ApiRequestReceivedEventArgs> RequestReceived;
 
-        public void NotifyStateChanged(IActuator actuator)
+        public void NotifyStateChanged(IComponent component)
         {
             // Let the NEXT client create a new state which is cached for all.
         }

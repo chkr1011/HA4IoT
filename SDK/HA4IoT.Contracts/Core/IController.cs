@@ -4,7 +4,7 @@ using HA4IoT.Contracts.Core.Settings;
 
 namespace HA4IoT.Contracts.Core
 {
-    public interface IController : IDeviceController, IActuatorController, IAreaController, IAutomationController, IServiceController
+    public interface IController : IDeviceController, IComponentController, IAreaController, IAutomationController, IServiceController
     {
         IApiController ApiController { get; }
         IHomeAutomationTimer Timer { get; }    

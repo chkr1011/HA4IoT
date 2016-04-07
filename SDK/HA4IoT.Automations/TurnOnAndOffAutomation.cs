@@ -82,8 +82,8 @@ namespace HA4IoT.Automations
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
-            _turnOnActions.Add(() => actuator.SetActiveState(DefaultStateIDs.On));
-            _turnOffActions.Add(() => actuator.SetActiveState(DefaultStateIDs.Off));
+            _turnOnActions.Add(() => actuator.SetActiveState(DefaultStateId.On));
+            _turnOffActions.Add(() => actuator.SetActiveState(DefaultStateId.Off));
             
             return this;
         }
@@ -127,8 +127,8 @@ namespace HA4IoT.Automations
         {
             if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
 
-            Func<TimeSpan> start = () => daylightService.Sunrise.Add(TimeSpan.FromHours(1));
-            Func<TimeSpan> end = () => daylightService.Sunset.Subtract(TimeSpan.FromHours(1));
+            Func<TimeSpan> start = () => daylightService.GetSunrise().Add(TimeSpan.FromHours(1));
+            Func<TimeSpan> end = () => daylightService.GetSunset().Subtract(TimeSpan.FromHours(1));
 
             _enablingConditionsValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_timer).WithStart(start).WithEnd(end));
             return this;
@@ -138,8 +138,8 @@ namespace HA4IoT.Automations
         {
             if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
 
-            Func<TimeSpan> start = () => daylightService.Sunset.Subtract(TimeSpan.FromHours(1));
-            Func<TimeSpan> end = () => daylightService.Sunrise.Add(TimeSpan.FromHours(1));
+            Func<TimeSpan> start = () => daylightService.GetSunset().Subtract(TimeSpan.FromHours(1));
+            Func<TimeSpan> end = () => daylightService.GetSunset().Add(TimeSpan.FromHours(1));
 
             _enablingConditionsValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_timer).WithStart(start).WithEnd(end));
             return this;
@@ -150,7 +150,7 @@ namespace HA4IoT.Automations
             if (actuators == null) throw new ArgumentNullException(nameof(actuators));
 
             _disablingConditionsValidator.WithCondition(ConditionRelation.Or,
-                new Condition().WithExpression(() => actuators.Any(a => a.GetActiveState() == DefaultStateIDs.On)));
+                new Condition().WithExpression(() => actuators.Any(a => a.GetActiveState() == DefaultStateId.On)));
 
             return this;
         }

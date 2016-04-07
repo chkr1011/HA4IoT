@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using HA4IoT.Api;
 using HA4IoT.Api.AzureCloud;
-using HA4IoT.Api.LocalHttpServer;
-using HA4IoT.Contracts.Actuators;
+using HA4IoT.Api.LocalRestServer;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Contracts.Hardware;
@@ -31,7 +31,7 @@ namespace HA4IoT.Core
     {
         private readonly DeviceCollection _devices = new DeviceCollection();
         private readonly AreaCollection _areas = new AreaCollection();
-        private readonly ActuatorCollection _actuators = new ActuatorCollection();
+        private readonly ComponentCollection _components = new ComponentCollection();
         private readonly AutomationCollection _automations = new AutomationCollection();
         private readonly List<IService> _services = new List<IService>(); 
 
@@ -71,29 +71,31 @@ namespace HA4IoT.Core
             return _areas.GetAll();
         }
 
-        public void AddActuator(IActuator actuator)
+        public void AddComponent(IComponent component)
         {
-            _actuators.AddOrUpdate(actuator.Id, actuator);
+            if (component == null) throw new ArgumentNullException(nameof(component));
+
+            _components.AddUnique(component.Id, component);
         }
 
-        public TActuator GetActuator<TActuator>(ActuatorId id) where TActuator : IActuator
+        public TComponent GetComponent<TComponent>() where TComponent : IComponent
         {
-            return _actuators.Get<TActuator>(id);
+            return _components.Get<TComponent>();
         }
 
-        public TActuator GetActuator<TActuator>() where TActuator : IActuator
+        public IList<TComponent> GetComponents<TComponent>() where TComponent : IComponent
         {
-            return _actuators.Get<TActuator>();
+            return _components.GetAll<TComponent>();
         }
 
-        public IList<TActuator> GetActuators<TActuator>() where TActuator : IActuator
+        public IList<IComponent> GetComponents()
         {
-            return _actuators.GetAll<TActuator>();
+            return _components.GetAll();
         }
 
-        public IList<IActuator> GetActuators()
+        public TComponent GetComponent<TComponent>(ComponentId id) where TComponent : IComponent
         {
-            return _actuators.GetAll();
+            return _components.Get<TComponent>(id);
         }
 
         public void AddDevice(IDevice device)
@@ -163,6 +165,11 @@ namespace HA4IoT.Core
             }
 
             return service;
+        }
+
+        public IList<IService> GetServices()
+        {
+            return _services;
         }
 
         public bool TryGetService<TService>(out TService service) where TService : IService
@@ -291,9 +298,9 @@ namespace HA4IoT.Core
                 area.Settings.Load();
             }
 
-            foreach (var actuator in _actuators.GetAll())
+            foreach (var component in _components.GetAll())
             {
-                actuator.Settings.Load();
+                component.Settings.Load();
             }
 
             foreach (var automation in _automations.GetAll())
@@ -311,9 +318,9 @@ namespace HA4IoT.Core
                 area.ExposeToApi(ApiController);
             }
 
-            foreach (var actuator in _actuators.GetAll())
+            foreach (var component in _components.GetAll())
             {
-                actuator.ExposeToApi(ApiController);
+                component.ExposeToApi(ApiController);
             }
 
             foreach (var automation in _automations.GetAll())
@@ -324,9 +331,9 @@ namespace HA4IoT.Core
 
         private void AttachActuatorHistory()
         {
-            foreach (IActuator actuator in GetActuators())
+            foreach (var component in GetComponents())
             {
-                var sensorActuator = actuator as ISingleValueSensorActuator;
+                var sensorActuator = component as Contracts.Sensors.INumericValueSensor;
                 if (sensorActuator != null)
                 {
                     var history = new SensorActuatorHistory(sensorActuator);

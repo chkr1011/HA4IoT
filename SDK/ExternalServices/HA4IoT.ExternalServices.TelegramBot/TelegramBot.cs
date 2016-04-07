@@ -14,7 +14,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
 {
     public class TelegramBot : IService
     {
-        public const string BaseUri = "https://api.telegram.org/bot";
+        private const string BaseUri = "https://api.telegram.org/bot";
 
         private int _latestUpdateId;
         
@@ -172,6 +172,11 @@ namespace HA4IoT.ExternalServices.TelegramBot
         {
             var buffer = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             return buffer.AddSeconds(unixTimeStamp).ToLocalTime();
+        }
+
+        public JsonObject ExportStatusToJsonObject()
+        {
+            return new JsonObject();
         }
     }
 }

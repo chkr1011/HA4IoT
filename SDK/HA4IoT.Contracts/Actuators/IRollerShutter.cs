@@ -1,15 +1,7 @@
-﻿using System;
-
-namespace HA4IoT.Contracts.Actuators
+﻿namespace HA4IoT.Contracts.Actuators
 {
-    public interface IRollerShutter : IActuator
+    public interface IRollerShutter : IStateMachine
     {
-        event EventHandler<RollerShutterStateChangedEventArgs> StateChanged;
-
         bool IsClosed { get; }
-
-        RollerShutterState GetState();
-
-        void SetState(RollerShutterState state);
     }
 }

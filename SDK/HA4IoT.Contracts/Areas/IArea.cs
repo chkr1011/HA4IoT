@@ -6,7 +6,7 @@ using HA4IoT.Contracts.Core.Settings;
 
 namespace HA4IoT.Contracts.Areas
 {
-    public interface IArea : IAutomationController, IActuatorController
+    public interface IArea : IAutomationController, IComponentController
     {
         AreaId Id { get; }
 

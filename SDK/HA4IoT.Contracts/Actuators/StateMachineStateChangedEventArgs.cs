@@ -1,8 +1,8 @@
 ﻿namespace HA4IoT.Contracts.Actuators
 {
-    public class StateMachineStateChangedEventArgs : ValueChangedEventArgs<StateMachineStateId>
+    public class StateMachineStateChangedEventArgs : ValueChangedEventArgs<StateId>
     {
-        public StateMachineStateChangedEventArgs(StateMachineStateId oldState, StateMachineStateId newState) 
+        public StateMachineStateChangedEventArgs(StateId oldState, StateId newState) 
             : base(oldState, newState)
         {
         }

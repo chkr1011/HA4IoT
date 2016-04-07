@@ -5,10 +5,12 @@ using System.Xml.Linq;
 using Windows.Storage;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Core;
 
@@ -71,9 +73,9 @@ namespace HA4IoT.Configuration
             return GetConfigurationExtender(element).ParseBinaryOutput(element).WithInvertedState(element.GetBoolFromAttribute("invertState", false));
         }
 
-        public ISingleValueSensor ParseSingleValueSensor(XElement element)
+        public INumericValueSensorEndpoint ParseNumericValueSensor(XElement element)
         {
-            return GetConfigurationExtender(element).ParseSingleValueSensor(element);
+            return GetConfigurationExtender(element).ParseNumericValueSensor(element);
         }
 
         private XDocument LoadConfiguration()
@@ -145,16 +147,16 @@ namespace HA4IoT.Configuration
         {
             var area = new Area(new AreaId(roomElement.GetMandatoryStringFromAttribute("id")), _controller);
 
-            foreach (var actuatorElement in roomElement.Element("Actuators").Elements())
+            foreach (var componentElement in roomElement.Element("Components").Elements())
             {
                 try
                 {
-                    IActuator actuator = GetConfigurationExtender(actuatorElement).ParseActuator(actuatorElement);
-                    area.AddActuator(actuator);
+                    IComponent component = GetConfigurationExtender(componentElement).ParseComponent(componentElement);
+                    area.AddComponent(component);
                 }
                 catch (Exception exception)
                 {
-                    Log.Warning(exception, "Unable to parse actuator node '{0}'.", actuatorElement.Name);
+                    Log.Warning(exception, "Unable to parse component node '{0}'.", componentElement.Name);
                 }
             }
 

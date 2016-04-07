@@ -3,7 +3,6 @@ using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.Data.Json;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
@@ -16,9 +15,9 @@ namespace HA4IoT.Telemetry.History
     {
         private readonly object _syncRoot = new object();
         private readonly string _filename;
-        private readonly ISingleValueSensorActuator _sensor;
+        private readonly Contracts.Sensors.INumericValueSensor _sensor;
 
-        public SensorActuatorHistory(ISingleValueSensorActuator sensor)
+        public SensorActuatorHistory(INumericValueSensor sensor)
         {
             if (sensor == null) throw new ArgumentNullException(nameof(sensor));
 
@@ -27,7 +26,7 @@ namespace HA4IoT.Telemetry.History
             _filename = StoragePath.WithFilename("Actuators", sensor.Id.Value, "History.csv");
             StoragePath.EnsureDirectoryExists(_filename);
 
-            sensor.ValueChanged += CreateDataPointAsync;
+            sensor.CurrentNumericValueChanged += CreateDataPointAsync;
         }
 
         public void Reset()
@@ -85,7 +84,7 @@ namespace HA4IoT.Telemetry.History
             }
         }
 
-        private async void CreateDataPointAsync(object sender, SingleValueSensorValueChangedEventArgs e)
+        private async void CreateDataPointAsync(object sender, NumericSensorValueChangedEventArgs e)
         {
             await Task.Run(() => AppendDataPoint(e.NewValue));
         }

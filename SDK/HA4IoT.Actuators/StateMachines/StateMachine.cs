@@ -5,28 +5,27 @@ using Windows.Data.Json;
 using HA4IoT.Actuators.Parameters;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Networking;
 
-namespace HA4IoT.Actuators
+namespace HA4IoT.Actuators.StateMachines
 {
     public class StateMachine : ActuatorBase, IStateMachine
     {
-        private readonly Dictionary<StateMachineStateId, StateMachineStateId> _stateAlias = new Dictionary<StateMachineStateId, StateMachineStateId>(); 
+        private readonly Dictionary<StateId, StateId> _stateAlias = new Dictionary<StateId, StateId>(); 
         private readonly List<IStateMachineState> _states = new List<IStateMachineState>(); 
 
         private IStateMachineState _activeState;
         private bool _turnOffIfStateIsAppliedTwice;
 
-        public StateMachine(ActuatorId id)
+        public StateMachine(ComponentId id)
             : base(id)
         {
         }
-
-        public event EventHandler<StateMachineStateChangedEventArgs> ActiveStateChanged;
-
-        public bool GetSupportsState(StateMachineStateId stateId)
+        
+        public bool GetSupportsState(StateId stateId)
         {
             if (stateId == null) throw new ArgumentNullException(nameof(stateId));
 
@@ -43,7 +42,7 @@ namespace HA4IoT.Actuators
             return _states.Any(s => s.Id.Equals(stateId));
         }
 
-        public void SetActiveState(StateMachineStateId id, params IHardwareParameter[] parameters)
+        public void SetActiveState(StateId id, params IHardwareParameter[] parameters)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
@@ -54,9 +53,9 @@ namespace HA4IoT.Actuators
 
             if (newState.Id.Equals(_activeState?.Id))
             {
-                if (_turnOffIfStateIsAppliedTwice && GetSupportsState(DefaultStateIDs.Off) && !GetActiveState().Equals(DefaultStateIDs.Off))
+                if (_turnOffIfStateIsAppliedTwice && GetSupportsState(DefaultStateId.Off) && !GetActiveState().Equals(DefaultStateId.Off))
                 {
-                    SetActiveState(DefaultStateIDs.Off, parameters);
+                    SetActiveState(DefaultStateId.Off, parameters);
                     return;
                 }
 
@@ -70,15 +69,15 @@ namespace HA4IoT.Actuators
             newState.Activate(parameters);
 
             _activeState = newState;
-            OnActiveStateChanged(oldState);
+            OnActiveStateChanged(oldState, newState);
         }
 
-        public void SetStateIdAlias(StateMachineStateId stateId, StateMachineStateId alias)
+        public void SetStateIdAlias(StateId stateId, StateId alias)
         {
             _stateAlias[alias] = stateId;
         }
 
-        public StateMachineStateId GetActiveState()
+        public override StateId GetActiveState()
         {
             ThrowIfNoStatesAvailable();
 
@@ -112,7 +111,7 @@ namespace HA4IoT.Actuators
             return configuration;
         }
 
-        public StateMachineStateId GetNextState(StateMachineStateId stateId)
+        public StateId GetNextState(StateId stateId)
         {
             if (stateId == null) throw new ArgumentNullException(nameof(stateId));
 
@@ -135,7 +134,7 @@ namespace HA4IoT.Actuators
             return this;
         }
 
-        public virtual void SetInitialState(StateMachineStateId id)
+        public virtual void SetInitialState(StateId id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
@@ -161,7 +160,7 @@ namespace HA4IoT.Actuators
                 return;
             }
 
-            var stateId = new StateMachineStateId(apiContext.Request.GetNamedString("state", string.Empty));
+            var stateId = new StateId(apiContext.Request.GetNamedString("state", string.Empty));
             if (!GetSupportsState(stateId))
             {
                 apiContext.ResultCode = ApiResultCode.InvalidBody;
@@ -171,7 +170,7 @@ namespace HA4IoT.Actuators
             SetActiveState(stateId);
         }
 
-        private IStateMachineState GetState(StateMachineStateId id)
+        private IStateMachineState GetState(StateId id)
         {
             IStateMachineState state = _states.FirstOrDefault(s => s.Id.Equals(id));
 
@@ -188,12 +187,10 @@ namespace HA4IoT.Actuators
             return state;
         }
 
-        private void OnActiveStateChanged(IStateMachineState oldState)
+        protected virtual void OnActiveStateChanged(IStateMachineState oldState, IStateMachineState newState)
         {
-            Log.Info(Id + ": " + oldState?.Id + "->" + _activeState.Id);
-
-            ActiveStateChanged?.Invoke(this, new StateMachineStateChangedEventArgs(oldState?.Id, _activeState.Id));
-            NotifyStateChanged();
+            Log.Info(Id + ": " + oldState?.Id + "->" + newState.Id);
+            OnActiveStateChanged(oldState?.Id);
         }
 
         private void ThrowIfNoStatesAvailable()
@@ -204,7 +201,7 @@ namespace HA4IoT.Actuators
             }
         }
 
-        private void ThrowIfStateNotSupported(StateMachineStateId stateId)
+        private void ThrowIfStateNotSupported(StateId stateId)
         {
             if (!GetSupportsState(stateId))
             {

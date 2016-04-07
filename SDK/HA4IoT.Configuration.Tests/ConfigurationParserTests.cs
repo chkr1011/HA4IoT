@@ -1,13 +1,19 @@
 ﻿using System;
 using FluentAssertions;
-using HA4IoT.Actuators;
-using HA4IoT.Contracts.Actuators;
+using HA4IoT.Actuators.Lamps;
+using HA4IoT.Actuators.RollerShutters;
+using HA4IoT.Actuators.Sockets;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services.WeatherService;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
+using HA4IoT.Sensors.Buttons;
+using HA4IoT.Sensors.HumiditySensors;
+using HA4IoT.Sensors.TemperatureSensors;
+using HA4IoT.Sensors.Windows;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -57,7 +63,7 @@ namespace HA4IoT.Configuration.Tests
             var controller = GetController();
 
             // TODO: Check parameters (expose properties).
-            controller.GetArea(new AreaId("Bedroom")).GetActuator<Socket>(new ActuatorId("Bedroom.SocketWindowLeft"));
+            controller.GetArea(new AreaId("Bedroom")).GetComponent<Socket>(new ComponentId("Bedroom.SocketWindowLeft"));
         }
 
         [TestMethod]
@@ -66,7 +72,7 @@ namespace HA4IoT.Configuration.Tests
             var controller = GetController();
 
             // TODO: Check parameters (expose properties).
-            controller.GetArea(new AreaId("Bedroom")).GetActuator<Lamp>(new ActuatorId("Bedroom.LightCeiling"));
+            controller.GetArea(new AreaId("Bedroom")).GetComponent<Lamp>(new ComponentId("Bedroom.LightCeiling"));
         }
 
         [TestMethod]
@@ -75,7 +81,7 @@ namespace HA4IoT.Configuration.Tests
             var controller = GetController();
 
             // TODO: Check parameters (expose properties).
-            controller.GetArea(new AreaId("Bedroom")).GetActuator<Button>(new ActuatorId("Bedroom.ButtonDoor"));
+            controller.GetArea(new AreaId("Bedroom")).GetComponent<Button>(new ComponentId("Bedroom.ButtonDoor"));
         }
 
         [TestMethod]
@@ -84,16 +90,7 @@ namespace HA4IoT.Configuration.Tests
             var controller = GetController();
 
             // TODO: Check parameters (expose properties).
-            controller.GetArea(new AreaId("Bedroom")).GetActuator<RollerShutter>(new ActuatorId("Bedroom.RollerShutterLeft"));
-        }
-
-        [TestMethod]
-        public void Parse_RollerShutterButtons()
-        {
-            var controller = GetController();
-
-            // TODO: Check parameters (expose properties).
-            controller.GetArea(new AreaId("Bedroom")).GetActuator<RollerShutterButtons>(new ActuatorId("Bedroom.RollerShutterButtonsUpper"));
+            controller.GetArea(new AreaId("Bedroom")).GetComponent<RollerShutter>(new ComponentId("Bedroom.RollerShutterLeft"));
         }
 
         [TestMethod]
@@ -102,7 +99,7 @@ namespace HA4IoT.Configuration.Tests
             var controller = GetController();
 
             // TODO: Check parameters (expose properties).
-            controller.GetArea(new AreaId("Bedroom")).GetActuator<Window>(new ActuatorId("Bedroom.WindowLeft"));
+            controller.GetArea(new AreaId("Bedroom")).GetComponent<Window>(new ComponentId("Bedroom.WindowLeft"));
         }
 
         [TestMethod]
@@ -111,7 +108,7 @@ namespace HA4IoT.Configuration.Tests
             var controller = GetController();
 
             // TODO: Check parameters (expose properties).
-            controller.GetArea(new AreaId("Bedroom")).GetActuator<TemperatureSensor>(new ActuatorId("Bedroom.TemperatureSensor"));
+            controller.GetArea(new AreaId("Bedroom")).GetComponent<TemperatureSensor>(new ComponentId("Bedroom.TemperatureSensor"));
         }
 
         [TestMethod]
@@ -120,7 +117,7 @@ namespace HA4IoT.Configuration.Tests
             var controller = GetController();
 
             // TODO: Check parameters (expose properties).
-            controller.GetArea(new AreaId("Bedroom")).GetActuator<HumiditySensor>(new ActuatorId("Bedroom.HumiditySensor"));
+            controller.GetArea(new AreaId("Bedroom")).GetComponent<HumiditySensor>(new ComponentId("Bedroom.HumiditySensor"));
         }
         private IController GetController()
         {

@@ -8,6 +8,7 @@ using Windows.Security.Cryptography.Core;
 using Windows.Storage.Streams;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Api
@@ -29,13 +30,13 @@ namespace HA4IoT.Api
             RouteRequest("requests", HandleRequestApiDescription);
         }
 
-        public void NotifyStateChanged(IActuator actuator)
+        public void NotifyStateChanged(IComponent component)
         {
-            if (actuator == null) throw new ArgumentNullException(nameof(actuator));
+            if (component == null) throw new ArgumentNullException(nameof(component));
  
             foreach (var endpoint in _endpoints)
             {
-                endpoint.NotifyStateChanged(actuator);
+                endpoint.NotifyStateChanged(component);
             }
             // TODO: Use information for optimized state generation, pushing to Azure, writing Csv etc.
         }

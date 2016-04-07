@@ -13,33 +13,41 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void Should_TurnOn_IfMotionDetected()
         {
-            var automation = new TurnOnAndOffAutomation(AutomationIdFactory.EmptyId, new TestHomeAutomationTimer());
-            var motionDetector = new TestMotionDetector();
-            var output = new TestStateMachine();
-            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.Off);
+            var timer = new TestHomeAutomationTimer();
+            var motionDetectorFactory = new TestMotionDetectorFactory(timer);
+            var stateMachineFactory = new TestStateMachineFactory();
+
+            var automation = new TurnOnAndOffAutomation(AutomationIdFactory.EmptyId, timer);
+            var motionDetector = motionDetectorFactory.CreateTestMotionDetector();
+            var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
+            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.Off);
 
             automation.WithTrigger(motionDetector);
             automation.WithTarget(output);
 
-            motionDetector.WalkIntoMotionDetector();
+            motionDetector.TriggerMotionDetection();
 
-            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.On);
+            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.On);
         }
 
         [TestMethod]
         public void Should_TurnOn_IfButtonPressedShort()
         {
+            var timer = new TestHomeAutomationTimer();
+            var buttonFactory = new TestButtonFactory(timer);
+            var stateMachineFactory = new TestStateMachineFactory();
+
             var automation = new TurnOnAndOffAutomation(AutomationIdFactory.EmptyId, new TestHomeAutomationTimer());
-            var button = new TestButton();
-            var output = new TestStateMachine();
-            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.Off);
+            var button = buttonFactory.CreateTestButton();
+            var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
+            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.Off);
 
             automation.WithTrigger(button.GetPressedShortlyTrigger());
             automation.WithTarget(output);
 
-            button.PressShort();
+            button.PressShortly();
 
-            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.On);
+            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.On);
         }
 
         [TestMethod]
@@ -48,18 +56,21 @@ namespace HA4IoT.Actuators.Tests
             var timer = new TestHomeAutomationTimer();
             timer.SetTime(TimeSpan.Parse("18:00:00"));
 
+            var motionDetectorFactory = new TestMotionDetectorFactory(timer);
+            var stateMachineFactory = new TestStateMachineFactory();
+
             var automation = new TurnOnAndOffAutomation(AutomationIdFactory.EmptyId, timer);
-            var motionDetector = new TestMotionDetector();
-            var output = new TestStateMachine();
-            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.Off);
+            var motionDetector = motionDetectorFactory.CreateTestMotionDetector();
+            var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
+            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.Off);
 
             automation.WithTurnOnWithinTimeRange(() => TimeSpan.Parse("10:00:00"), () => TimeSpan.Parse("15:00:00"));
             automation.WithTrigger(motionDetector);
             automation.WithTarget(output);
 
-            motionDetector.WalkIntoMotionDetector();
+            motionDetector.TriggerMotionDetection();
 
-            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.Off);
+            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.Off);
         }
 
         [TestMethod]
@@ -68,18 +79,21 @@ namespace HA4IoT.Actuators.Tests
             var timer = new TestHomeAutomationTimer();
             timer.SetTime(TimeSpan.Parse("18:00:00"));
 
+            var buttonFactory = new TestButtonFactory(timer);
+            var stateMachineFactory = new TestStateMachineFactory();
+
             var automation = new TurnOnAndOffAutomation(AutomationIdFactory.EmptyId, timer);
-            var button = new TestButton();
-            var output = new TestStateMachine();
-            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.Off);
+            var button = buttonFactory.CreateTestButton();
+            var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
+            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.Off);
 
             automation.WithTurnOnWithinTimeRange(() => TimeSpan.Parse("10:00:00"), () => TimeSpan.Parse("15:00:00"));
             automation.WithTrigger(button.GetPressedShortlyTrigger());
             automation.WithTarget(output);
 
-            button.PressShort();
+            button.PressShortly();
 
-            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.On);
+            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.On);
         }
 
         [TestMethod]
@@ -88,11 +102,14 @@ namespace HA4IoT.Actuators.Tests
             var timer = new TestHomeAutomationTimer();
             timer.SetTime(TimeSpan.Parse("14:00:00"));
 
-            var automation = new TurnOnAndOffAutomation(AutomationIdFactory.EmptyId, timer);
-            var motionDetector = new TestMotionDetector();
+            var motionDetectorFactory = new TestMotionDetectorFactory(timer);
+            var stateMachineFactory = new TestStateMachineFactory();
 
-            var output = new TestStateMachine();
-            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.Off);
+            var automation = new TurnOnAndOffAutomation(AutomationIdFactory.EmptyId, timer);
+            var motionDetector = motionDetectorFactory.CreateTestMotionDetector();
+
+            var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
+            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.Off);
 
             automation.WithTrigger(motionDetector);
             automation.WithTarget(output);
@@ -100,14 +117,15 @@ namespace HA4IoT.Actuators.Tests
 
             IStateMachine[] otherActuators =
             {
-                new TestStateMachine(), new TestStateMachine(DefaultStateIDs.On)
+                stateMachineFactory.CreateTestStateMachineWithOnOffStates(),
+                stateMachineFactory.CreateTestStateMachineWithOnOffStates(DefaultStateId.On)
             };
 
             automation.WithSkipIfAnyActuatorIsAlreadyOn(otherActuators);
 
-            motionDetector.WalkIntoMotionDetector();
+            motionDetector.TriggerMotionDetection();
 
-            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.Off);
+            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.Off);
         }
 
         [TestMethod]
@@ -116,25 +134,29 @@ namespace HA4IoT.Actuators.Tests
             var timer = new TestHomeAutomationTimer();
             timer.SetTime(TimeSpan.Parse("14:00:00"));
 
-            var automation = new TurnOnAndOffAutomation(AutomationIdFactory.EmptyId, timer);
-            var motionDetector = new TestMotionDetector();
+            var motionDetectorFactory = new TestMotionDetectorFactory(timer);
+            var stateMachineFactory = new TestStateMachineFactory();
 
-            var output = new TestStateMachine();
-            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.Off);
+            var automation = new TurnOnAndOffAutomation(AutomationIdFactory.EmptyId, timer);
+            var motionDetector = motionDetectorFactory.CreateTestMotionDetector();
+
+            var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
+            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.Off);
 
             automation.WithTrigger(motionDetector);
             automation.WithTarget(output);
 
             IStateMachine[] otherActuators =
             {
-                new TestStateMachine(), new TestStateMachine()
+                stateMachineFactory.CreateTestStateMachineWithOnOffStates(),
+                stateMachineFactory.CreateTestStateMachineWithOnOffStates()
             };
 
             automation.WithSkipIfAnyActuatorIsAlreadyOn(otherActuators);
 
-            motionDetector.WalkIntoMotionDetector();
+            motionDetector.TriggerMotionDetection();
 
-            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.On);
+            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.On);
         }
 
         [TestMethod]
@@ -143,31 +165,35 @@ namespace HA4IoT.Actuators.Tests
             var timer = new TestHomeAutomationTimer();
             timer.SetTime(TimeSpan.Parse("14:00:00"));
 
+            var buttonFactory = new TestButtonFactory(timer);
+            var stateMachineFactory = new TestStateMachineFactory();
+            
             var automation = new TurnOnAndOffAutomation(AutomationIdFactory.EmptyId, timer);
-            var button = new TestButton();
+            var button = buttonFactory.CreateTestButton();
 
-            var output = new TestStateMachine();
-            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.Off);
+            var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
+            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.Off);
 
             automation.WithTrigger(button.GetPressedShortlyTrigger());
             automation.WithTarget(output);
 
             IStateMachine[] otherActuators =
             {
-                new TestStateMachine(), new TestStateMachine() 
+                stateMachineFactory.CreateTestStateMachineWithOnOffStates(),
+                stateMachineFactory.CreateTestStateMachineWithOnOffStates()
             };
 
             automation.WithSkipIfAnyActuatorIsAlreadyOn(otherActuators);
 
-            button.PressShort();
-            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.On);
+            button.PressShortly();
+            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.On);
 
-            button.PressShort();
-            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.On);
+            button.PressShortly();
+            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.On);
 
             automation.WithTurnOffIfButtonPressedWhileAlreadyOn();
-            button.PressShort();
-            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateIDs.Off);
+            button.PressShortly();
+            output.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.Off);
         }
     }
 }

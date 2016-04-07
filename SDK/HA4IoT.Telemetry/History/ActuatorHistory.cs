@@ -5,7 +5,6 @@ using System.Linq;
 using Windows.Data.Json;
 using Windows.Storage;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
@@ -13,7 +12,7 @@ using DayOfWeek = System.DayOfWeek;
 
 namespace HA4IoT.Telemetry.History
 {
-    public class ActuatorHistory : IStatusProvider
+    public class ActuatorHistory
     {
         private readonly IActuator _actuator;
         private readonly ILogger _logger;

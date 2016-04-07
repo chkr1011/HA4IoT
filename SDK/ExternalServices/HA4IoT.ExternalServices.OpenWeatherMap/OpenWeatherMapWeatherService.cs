@@ -4,11 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Web.Http;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.WeatherService;
 using HA4IoT.Networking;
@@ -21,10 +19,12 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
 
         private readonly IHomeAutomationTimer _timer;
 
-        private readonly WeatherStationTemperatureSensor _temperature;
-        private readonly WeatherStationHumiditySensor _humidity;
-        private readonly WeatherStationSituationSensor _situation;
+        private float _temperature;
+        private float _humidity;
+        private WeatherSituation _situation;
 
+        private TimeSpan _sunrise;
+        private TimeSpan _sunset;
         private string _previousResponse;
         private DateTime? _lastFetched;
         private DateTime? _lastFetchedDifferentResponse;
@@ -33,16 +33,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
             if (apiController == null) throw new ArgumentNullException(nameof(apiController));
-
-            _temperature = new WeatherStationTemperatureSensor(new ActuatorId("WeatherStation.Temperature"));
-            TemperatureSensor = _temperature;
-
-            _humidity = new WeatherStationHumiditySensor(new ActuatorId("WeatherStation.Humidity"));
-            HumiditySensor = _humidity;
-
-            _situation = new WeatherStationSituationSensor(new ActuatorId("WeatherStation.Situation"));
-            SituationSensor = _situation;
-
+            
             _timer = timer;
     
             LoadPersistedValues();
@@ -56,12 +47,30 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             new OpenWeatherMapWeatherStationApiDispatcher(this, apiController).ExposeToApi();
         }
 
-        public IWeatherSituationSensor SituationSensor { get; }
-        public ITemperatureSensor TemperatureSensor { get; }
-        public IHumiditySensor HumiditySensor { get; }
+        public float GetTemperature()
+        {
+            return _temperature;
+        }
 
-        public TimeSpan Sunrise { get; private set; }
-        public TimeSpan Sunset { get; private set; }
+        public float GetHumidity()
+        {
+            return _humidity;
+        }
+
+        public WeatherSituation GetSituation()
+        {
+            return _situation;
+        }
+
+        public TimeSpan GetSunrise()
+        {
+            return _sunrise;
+        }
+
+        public TimeSpan GetSunset()
+        {
+            return _sunset;
+        }
 
         public JsonObject ExportStatusToJsonObject()
         {
@@ -70,27 +79,32 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             var configurationParser = new OpenWeatherMapConfigurationParser();
             result.SetNamedString("uri", configurationParser.GetUri().ToString());
 
-            result.SetNamedValue("situation", SituationSensor.GetSituation().ToJsonValue());
-            result.SetNamedNumber("temperature", TemperatureSensor.GetValue());
-            result.SetNamedNumber("humidity", HumiditySensor.GetValue());
+            result.SetNamedValue("situation", _situation.ToJsonValue());
+            result.SetNamedNumber("temperature", _temperature);
+            result.SetNamedNumber("humidity", _humidity);
 
             result.SetNamedDateTime("lastFetched", _lastFetched);
             result.SetNamedDateTime("lastFetchedDifferentResponse", _lastFetchedDifferentResponse);
 
-            result.SetNamedTimeSpan("sunrise", Sunrise);
-            result.SetNamedTimeSpan("sunset", Sunset);
+            result.SetNamedTimeSpan("sunrise", _sunrise);
+            result.SetNamedTimeSpan("sunset", _sunset);
 
             return result;
         }
 
+        private void PersistWeatherData(string weatherData)
+        {
+            File.WriteAllText(_cacheFilename, weatherData);
+        }
+
         public void SetStatus(WeatherSituation situation, float temperature, float humidity, TimeSpan sunrise, TimeSpan sunset)
         {
-            _situation.SetValue(situation);
-            _temperature.SetValue(temperature);
-            _humidity.SetValue(humidity);
+            _situation = situation;
+            _temperature = temperature;
+            _humidity = humidity;
 
-            Sunrise = sunrise;
-            Sunset = sunset;
+            _sunrise = sunrise;
+            _sunset = sunset;
         }
 
         private async Task FetchWeahterData()
@@ -124,24 +138,6 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             }
         }
 
-        private void PersistWeatherData(string weatherData)
-        {
-            File.WriteAllText(_cacheFilename, weatherData);
-        }
-
-        private void ParseWeatherData(string weatherData)
-        {
-            var parser = new OpenWeatherMapResponseParser();
-            parser.Parse(weatherData);
-
-            _situation.SetValue(parser.Situation);
-            _temperature.SetValue(parser.Temperature);
-            _humidity.SetValue(parser.Humidity);
-
-            Sunrise = parser.Sunrise;
-            Sunset = parser.Sunset;
-        }
-
         private async Task<string> FetchWeatherData()
         {
             Uri uri = new OpenWeatherMapConfigurationParser().GetUri();
@@ -151,6 +147,19 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             {
                 return await result.Content.ReadAsStringAsync();
             }
+        }
+
+        private void ParseWeatherData(string weatherData)
+        {
+            var parser = new OpenWeatherMapResponseParser();
+            parser.Parse(weatherData);
+
+            _situation = parser.Situation;
+            _temperature = parser.Temperature;
+            _humidity = parser.Humidity;
+
+            _sunrise = parser.Sunrise;
+            _sunset = parser.Sunset;
         }
 
         private void LoadPersistedValues()

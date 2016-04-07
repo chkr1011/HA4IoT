@@ -1,7 +1,13 @@
-﻿namespace HA4IoT.Contracts.Sensors
+﻿using System;
+using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
+
+namespace HA4IoT.Contracts.Sensors
 {
-    public interface ISensor
+    public interface ISensor : IComponent
     {
-        SensorId Id { get; }
+        event EventHandler<SensorValueChangedEventArgs> CurrentValueChanged;
+
+        ISensorValue GetCurrentValue();
     }
 }

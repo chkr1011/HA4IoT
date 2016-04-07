@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Windows.Data.Json;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using Windows.Storage.Streams;
@@ -119,6 +120,11 @@ namespace HA4IoT.ExternalServices.Twitter
             string signature = CryptographicBuffer.EncodeToBase64String(signatureBuffer);
 
             return signature;
+        }
+
+        public JsonObject ExportStatusToJsonObject()
+        {
+            return new JsonObject();
         }
     }
 }

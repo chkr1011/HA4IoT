@@ -1,8 +1,9 @@
 ﻿using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
 
 namespace HA4IoT.Core
 {
-    public class ActuatorCollection : GenericControllerCollection<ActuatorId, IActuator>
+    public class ComponentCollection : GenericControllerCollection<ComponentId, IComponent>
     {
     }
 }

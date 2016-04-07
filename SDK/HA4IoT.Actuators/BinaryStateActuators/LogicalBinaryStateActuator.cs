@@ -3,25 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using HA4IoT.Actuators.Animations;
 using HA4IoT.Actuators.Parameters;
+using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 
-namespace HA4IoT.Actuators
+namespace HA4IoT.Actuators.BinaryStateActuators
 {
     public class LogicalBinaryStateActuator : StateMachine
     {
         private readonly IHomeAutomationTimer _timer;
 
-        public LogicalBinaryStateActuator(ActuatorId id, IHomeAutomationTimer timer) 
+        public LogicalBinaryStateActuator(ComponentId id, IHomeAutomationTimer timer) 
             : base(id)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
 
             _timer = timer;
 
-            AddState(new StateMachineState(DefaultStateIDs.Off).WithAction(() => SetActiveState(DefaultStateIDs.Off)));
-            AddState(new StateMachineState(DefaultStateIDs.On).WithAction(() => SetActiveState(DefaultStateIDs.On)));
+            AddState(new StateMachineState(DefaultStateId.Off).WithAction(() => SetActiveState(DefaultStateId.Off)));
+            AddState(new StateMachineState(DefaultStateId.On).WithAction(() => SetActiveState(DefaultStateId.On)));
         }
 
         public IList<IStateMachine> Actuators { get; } = new List<IStateMachine>();
@@ -34,7 +36,7 @@ namespace HA4IoT.Actuators
             return this;
         }
 
-        private void SetActiveState(StateMachineStateId stateId, params IHardwareParameter[] parameters)
+        private void SetActiveState(StateId stateId, params IHardwareParameter[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
@@ -79,7 +81,7 @@ namespace HA4IoT.Actuators
         ////    return DefaultStateIDs.Off;
         ////}
 
-        private void Animate(AnimateParameter animateParameter, StateMachineStateId newState)
+        private void Animate(AnimateParameter animateParameter, StateId newState)
         {
             var directionAnimation = new DirectionAnimation(_timer);
             directionAnimation.WithActuator(this);

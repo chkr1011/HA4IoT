@@ -1,7 +1,8 @@
 ﻿using System;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Components;
 
-namespace HA4IoT.Actuators
+namespace HA4IoT.Actuators.BinaryStateActuators
 {
     public static class LogicalBinaryStateActuatorExtensions
     {
@@ -9,8 +10,8 @@ namespace HA4IoT.Actuators
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 
-            var actuator = new LogicalBinaryStateActuator(ActuatorIdFactory.Create(room, id), room.Controller.Timer);
-            room.AddActuator(actuator);
+            var actuator = new LogicalBinaryStateActuator(ComponentIdFactory.Create(room, id), room.Controller.Timer);
+            room.AddComponent(actuator);
             return actuator;
         }
     }

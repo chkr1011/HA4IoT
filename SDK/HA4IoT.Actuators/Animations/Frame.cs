@@ -18,7 +18,7 @@ namespace HA4IoT.Actuators.Animations
             return this;
         }
 
-        public Frame WithTargetState(IStateMachine actuator, StateMachineStateId state)
+        public Frame WithTargetState(IStateMachine actuator, StateId state)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 

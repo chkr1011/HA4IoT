@@ -1,25 +1,12 @@
-﻿using Windows.Data.Json;
-using HA4IoT.Contracts.Api;
-using HA4IoT.Contracts.Core.Settings;
+﻿using System;
+using HA4IoT.Contracts.Components;
 
 namespace HA4IoT.Contracts.Actuators
 {
-    public interface IActuator
+    public interface IActuator : IComponent
     {
-        ActuatorId Id { get; }
+        event EventHandler<StateChangedEventArgs> ActiveStateChanged;
 
-        ISettingsContainer Settings { get; }
-
-        IActuatorSettingsWrapper GeneralSettingsWrapper { get; }
-
-        ////void SetActiveState(StateMachineStateId id, params IHardwareParameter[] parameters);
-
-        ////StateMachineStateId GetActiveState(StateMachineStateId id);
-
-        JsonObject ExportConfigurationToJsonObject();
-
-        JsonObject ExportStatusToJsonObject();
-
-        void ExposeToApi(IApiController apiController);
+        StateId GetActiveState();
     }
 }

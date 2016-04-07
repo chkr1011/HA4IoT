@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Windows.Storage;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.Sensors;
@@ -42,17 +43,17 @@ namespace HA4IoT.Telemetry.Csv
             httpRequestController.HandleGet("history").Using(HandleApiGet);
         }
 
-        protected override void OnActuatorConnecting(IActuator actuator)
+        protected override void OnComponentConnecting(IComponent component)
         {
-            _actuatorHistory[actuator] = new ActuatorHistory(actuator, _apiRequestController, _logger);
+            //_actuatorHistory[component] = new ActuatorHistory(component, _apiRequestController, _logger);
         }
 
-        protected override void OnSensorValueChanged(ISingleValueSensorActuator actuator, float newValue)
+        protected override void OnSensorValueChanged(INumericValueSensor actuator, float newValue)
         {
-            QueueEntry(actuator, newValue.ToString(CultureInfo.InvariantCulture));
+            //QueueEntry(actuator, newValue.ToString(CultureInfo.InvariantCulture));
         }
 
-        protected override void OnStateMachineStateChanged(IStateMachine stateMachine, StateMachineStateId newState)
+        protected override void OnStateMachineStateChanged(IStateMachine stateMachine, StateId newState)
         {
             QueueEntry(stateMachine, newState.Value);
         }

@@ -1,73 +1,30 @@
 ﻿using System;
-using Windows.Data.Json;
-using HA4IoT.Actuators;
-using HA4IoT.Actuators.Triggers;
-using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Api;
-using HA4IoT.Contracts.Core.Settings;
-using HA4IoT.Contracts.Sensors;
-using HA4IoT.Contracts.Triggers;
-using HA4IoT.Core.Settings;
+using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Core;
+using HA4IoT.Sensors.Buttons;
 
 namespace HA4IoT.Tests.Mockups
 {
-    public class TestButton : IButton
+    public class TestButton : Button
     {
-        private readonly Trigger _pressedLongTrigger = new Trigger();
-        private readonly Trigger _pressedShortlyTrigger = new Trigger();
-
-        public event EventHandler<ButtonStateChangedEventArgs> StateChanged;
-
-        public TestButton()
+        public TestButton(ComponentId id, TestButtonEndpoint endpoint, IHomeAutomationTimer timer) 
+            : base(id, endpoint, timer)
         {
-            Settings = new SettingsContainer(string.Empty);
-            GeneralSettingsWrapper = new ActuatorSettingsWrapper(Settings);
-            SpecialSettingsWrapper = new ButtonSettingsWrapper(Settings);
+            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
+
+            Endpoint = endpoint;
         }
 
-        public ActuatorId Id { get; }
-        public ISettingsContainer Settings { get; }
-        public IActuatorSettingsWrapper GeneralSettingsWrapper { get; }
-        public ButtonSettingsWrapper SpecialSettingsWrapper { get; }
-        public ButtonState State { get; } = ButtonState.Released;
+        public TestButtonEndpoint Endpoint { get; }
 
-        public JsonObject ExportConfigurationToJsonObject()
+        public void PressShortly()
         {
-            return new JsonObject();
-        }
-
-        public ButtonState GetState()
-        {
-            return State;
-        }
-
-        public ITrigger GetPressedShortlyTrigger()
-        {
-            return _pressedShortlyTrigger;
-        }
-
-        public ITrigger GetPressedLongTrigger()
-        {
-            return _pressedLongTrigger;
-        }
-
-        public JsonObject ExportStatusToJsonObject()
-        {
-            return new JsonObject();
-        }
-
-        public void ExposeToApi(IApiController apiController)
-        {
-        }
-
-        public void PressShort()
-        {
-            _pressedShortlyTrigger.Execute();
+            OnPressedShortlyShort();
         }
 
         public void PressLong()
         {
-            _pressedLongTrigger.Execute();
+            OnPressedLong();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using Windows.Data.Json;
 using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Tests.Mockups
@@ -13,5 +14,20 @@ namespace HA4IoT.Tests.Mockups
 
         public TimeSpan Sunrise { get; set; }
         public TimeSpan Sunset { get; set; }
+
+        public JsonObject ExportStatusToJsonObject()
+        {
+            return new JsonObject();
+        }
+
+        public TimeSpan GetSunrise()
+        {
+            return Sunrise;
+        }
+
+        public TimeSpan GetSunset()
+        {
+            return Sunset;
+        }
     }
 }

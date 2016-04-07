@@ -1,38 +1,43 @@
 ﻿using System;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Actuators.Connectors
 {
     public static class RollerShutterWithRollerShutterButtonsConnector
     {
-        public static IRollerShutter ConnectWith(this IRollerShutter rollerShutter, IRollerShutterButtons buttons)
+        public static IRollerShutter ConnectWith(
+            this IRollerShutter rollerShutter, 
+            IButton upButton,
+            IButton downButton)
         {
             if (rollerShutter == null) throw new ArgumentNullException(nameof(rollerShutter));
-            if (buttons == null) throw new ArgumentNullException(nameof(buttons));
+            if (upButton == null) throw new ArgumentNullException(nameof(upButton));
+            if (downButton == null) throw new ArgumentNullException(nameof(downButton));
 
-            buttons.Up.GetPressedShortlyTrigger().Attach(() => HandleBlindButtonPressedEvent(rollerShutter, RollerShutterButtonDirection.Up));
-            buttons.Down.GetPressedShortlyTrigger().Attach(() => HandleBlindButtonPressedEvent(rollerShutter, RollerShutterButtonDirection.Down));
+            upButton.GetPressedShortlyTrigger().Attach(() => HandleBlindButtonPressedEvent(rollerShutter, RollerShutterStateId.MovingUp));
+            downButton.GetPressedShortlyTrigger().Attach(() => HandleBlindButtonPressedEvent(rollerShutter, RollerShutterStateId.MovingDown));
 
             return rollerShutter;
         }
 
-        private static void HandleBlindButtonPressedEvent(IRollerShutter rollerShutter, RollerShutterButtonDirection direction)
+        private static void HandleBlindButtonPressedEvent(IRollerShutter rollerShutter, StateId direction)
         {
-            if (direction == RollerShutterButtonDirection.Up && rollerShutter.GetState() == RollerShutterState.MovingUp)
+            if (direction == RollerShutterStateId.MovingUp && rollerShutter.GetActiveState() == RollerShutterStateId.MovingUp)
             {
-                rollerShutter.SetState(RollerShutterState.Stopped);
+                rollerShutter.SetActiveState(RollerShutterStateId.Off);
             }
-            else if (direction == RollerShutterButtonDirection.Down && rollerShutter.GetState() == RollerShutterState.MovingDown)
+            else if (direction == RollerShutterStateId.MovingDown && rollerShutter.GetActiveState() == RollerShutterStateId.MovingDown)
             {
-                rollerShutter.SetState(RollerShutterState.Stopped);
+                rollerShutter.SetActiveState(RollerShutterStateId.Off);
             }
-            else if (direction == RollerShutterButtonDirection.Down)
+            else if (direction == RollerShutterStateId.MovingDown)
             {
-                rollerShutter.SetState(RollerShutterState.MovingDown);
+                rollerShutter.SetActiveState(RollerShutterStateId.MovingDown);
             }
-            else if (direction == RollerShutterButtonDirection.Up)
+            else if (direction == RollerShutterStateId.MovingUp)
             {
-                rollerShutter.SetState(RollerShutterState.MovingUp);
+                rollerShutter.SetActiveState(RollerShutterStateId.MovingUp);
             }
             else
             {

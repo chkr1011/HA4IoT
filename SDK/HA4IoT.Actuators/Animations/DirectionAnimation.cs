@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using HA4IoT.Actuators.BinaryStateActuators;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
@@ -11,7 +12,7 @@ namespace HA4IoT.Actuators.Animations
     {
         private LogicalBinaryStateActuator _actuator;
         private bool _isForward = true;
-        private StateMachineStateId _targetState;
+        private StateId _targetState;
         private TimeSpan _duration = TimeSpan.FromMilliseconds(250);
         
         public DirectionAnimation(IHomeAutomationTimer timer) : base(timer)
@@ -36,7 +37,7 @@ namespace HA4IoT.Actuators.Animations
             return this;
         }
 
-        public DirectionAnimation WithTargetState(StateMachineStateId state)
+        public DirectionAnimation WithTargetState(StateId state)
         {
             _targetState = state;
             return this;
@@ -44,13 +45,13 @@ namespace HA4IoT.Actuators.Animations
 
         public DirectionAnimation WithTargetOnState()
         {
-            _targetState = DefaultStateIDs.On;
+            _targetState = DefaultStateId.On;
             return this;
         }
 
         public DirectionAnimation WithTargetOffState()
         {
-            _targetState = DefaultStateIDs.Off;
+            _targetState = DefaultStateId.Off;
             return this;
         }
 

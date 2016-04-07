@@ -1,12 +1,13 @@
 ﻿using System;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
 
 namespace HA4IoT.Telemetry
 {
     public class ActuatorHistoryEntry
     {
-        public ActuatorHistoryEntry(DateTime timestamp, ActuatorId actuatorId, string newState)
+        public ActuatorHistoryEntry(DateTime timestamp, ComponentId actuatorId, string newState)
         {
             Timestamp = timestamp;
             ActuatorId = actuatorId;
@@ -16,7 +17,7 @@ namespace HA4IoT.Telemetry
 
         public DateTime Timestamp { get; }
 
-        public ActuatorId ActuatorId { get; }
+        public ComponentId ActuatorId { get; }
 
         public string NewState { get; }
 

@@ -18,6 +18,7 @@ using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.Hardware.Pi2;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
+using HA4IoT.Contracts.Components;
 
 namespace HA4IoT.Controller.Main
 {
@@ -51,16 +52,16 @@ namespace HA4IoT.Controller.Main
 
             RemoteSocketController remoteSwitchController = SetupRemoteSwitchController();
 
-            new BedroomConfiguration(this, ccToolsBoardController).Setup();
-            new OfficeConfiguration().Setup(this, ccToolsBoardController, remoteSwitchController);
-            new UpperBathroomConfiguration(this, ccToolsBoardController).Setup();
-            new ReadingRoomConfiguration().Setup(this, ccToolsBoardController);
-            new ChildrensRoomRoomConfiguration().Setup(this, ccToolsBoardController);
-            new KitchenConfiguration().Setup(this, ccToolsBoardController);
-            new FloorConfiguration().Setup(this, ccToolsBoardController);
-            new LowerBathroomConfiguration().Setup(this);
-            new StoreroomConfiguration().Setup(this, ccToolsBoardController);
-            new LivingRoomConfiguration().Setup(this, ccToolsBoardController);
+            new BedroomConfiguration(this, ccToolsBoardController, remoteSwitchController).Setup();
+            new OfficeConfiguration(this, ccToolsBoardController, remoteSwitchController).Setup();
+            new UpperBathroomConfiguration(this, ccToolsBoardController, remoteSwitchController).Setup();
+            new ReadingRoomConfiguration(this, ccToolsBoardController, remoteSwitchController).Setup();
+            new ChildrensRoomRoomConfiguration(this, ccToolsBoardController, remoteSwitchController).Setup();
+            new KitchenConfiguration(this, ccToolsBoardController, remoteSwitchController).Setup();
+            new FloorConfiguration(this, ccToolsBoardController, remoteSwitchController).Setup();
+            new LowerBathroomConfiguration(this, ccToolsBoardController, remoteSwitchController).Setup();
+            new StoreroomConfiguration(this, ccToolsBoardController, remoteSwitchController).Setup();
+            new LivingRoomConfiguration(this, ccToolsBoardController, remoteSwitchController).Setup();
 
             ////var localCsvFileWriter = new CsvHistory(Logger, ApiController);
             ////localCsvFileWriter.ConnectActuators(this);
@@ -109,23 +110,23 @@ namespace HA4IoT.Controller.Main
             }
             else if (Regex.IsMatch(e.Message.Text, "Licht.*Büro.*an", RegexOptions.IgnoreCase))
             {
-                var light = GetActuator<IStateMachine>(new ActuatorId("Office.CombinedCeilingLights"));
-                light.SetActiveState(DefaultStateIDs.On);
+                var light = GetComponent<IStateMachine>(new ComponentId("Office.CombinedCeilingLights"));
+                light.SetActiveState(DefaultStateId.On);
 
                 await e.TelegramBot.TrySendMessageAsync(e.Message.CreateResponse("Ich habe das Licht für dich eingeschaltet!"));
             }
             else if (Regex.IsMatch(e.Message.Text, "Licht.*Büro.*aus", RegexOptions.IgnoreCase))
             {
-                var light = GetActuator<IStateMachine>(new ActuatorId("Office.CombinedCeilingLights"));
-                light.SetActiveState(DefaultStateIDs.Off);
+                var light = GetComponent<IStateMachine>(new ComponentId("Office.CombinedCeilingLights"));
+                light.SetActiveState(DefaultStateId.Off);
 
                 await
                     e.TelegramBot.TrySendMessageAsync(e.Message.CreateResponse("Ich habe das Licht für dich ausgeschaltet!"));
             }
             else if (Regex.IsMatch(e.Message.Text, "Fenster.*geschlossen", RegexOptions.IgnoreCase))
             {
-                var allWindows = GetActuators<IWindow>();
-                var openWindows = allWindows.Where(w => w.Casements.Any(c => c.GetState() != CasementState.Closed)).ToList();
+                var allWindows = GetComponents<IWindow>();
+                var openWindows = allWindows.Where(w => w.Casements.Any(c => c.GetState() != CasementStateId.Closed)).ToList();
 
                 string response;
                 if (!openWindows.Any())

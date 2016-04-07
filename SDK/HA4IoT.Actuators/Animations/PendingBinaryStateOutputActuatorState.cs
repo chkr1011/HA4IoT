@@ -10,7 +10,7 @@ namespace HA4IoT.Actuators.Animations
     {
         public IStateMachine Actuator { get; private set; }
 
-        public StateMachineStateId State { get; private set; }
+        public StateId State { get; private set; }
 
         public IList<IHardwareParameter> Parameters { get; } = new List<IHardwareParameter>();
 
@@ -22,7 +22,7 @@ namespace HA4IoT.Actuators.Animations
             return this;
         }
 
-        public PendingBinaryStateOutputActuatorState WithState(StateMachineStateId state)
+        public PendingBinaryStateOutputActuatorState WithState(StateId state)
         {
             State = state;
             return this;

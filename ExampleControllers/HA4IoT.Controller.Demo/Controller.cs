@@ -1,10 +1,13 @@
 ﻿using System;
-using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
+using HA4IoT.Actuators.Lamps;
+using HA4IoT.Actuators.Sockets;
+using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Automations;
 using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Triggers;
@@ -17,6 +20,11 @@ using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.Hardware.Pi2;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
+using HA4IoT.Sensors.Buttons;
+using HA4IoT.Sensors.HumiditySensors;
+using HA4IoT.Sensors.MotionDetectors;
+using HA4IoT.Sensors.TemperatureSensors;
+using HA4IoT.Sensors.Windows;
 
 namespace HA4IoT.Controller.Demo
 {
@@ -88,7 +96,6 @@ namespace HA4IoT.Controller.Demo
                 .WithButton(ExampleRoom.Button1, hspe16[HSPE16Pin.GPIO1])
                 .WithButton(ExampleRoom.Button2, hspe16[HSPE16Pin.GPIO2])
 
-                .WithVirtualButtonGroup(ExampleRoom.LedStripRemote, g => SetupLEDStripRemote(i2CHardwareBridge, g))
                 .WithStateMachine(ExampleRoom.CeilingFan, (sm, r) => SetupCeilingFan(sm))
                 .WithWindow(ExampleRoom.Window, w => w.WithCenterCasement(hspe16[HSPE16Pin.GPIO0]));
 
@@ -104,6 +111,8 @@ namespace HA4IoT.Controller.Demo
                 .WithTarget(area.GetStateMachine(ExampleRoom.BathroomFan))
                 .WithTarget(area.GetLamp(ExampleRoom.Lamp2))
                 .WithOnDuration(TimeSpan.FromSeconds(10));
+
+            SetupLEDStripRemote(i2CHardwareBridge, area);
         }
 
         private void SetupHumidityDependingLamp(IHumiditySensor sensor, ILamp lamp)
@@ -125,23 +134,23 @@ namespace HA4IoT.Controller.Demo
 
             stateMachine.AddOffState().WithLowOutput(gear1).WithLowOutput(gear2);
 
-            stateMachine.AddState(new StateMachineStateId("1")).WithHighOutput(gear1).WithLowOutput(gear2);
-            stateMachine.AddState(new StateMachineStateId("2")).WithLowOutput(gear1).WithHighOutput(gear2);
+            stateMachine.AddState(new StateId("1")).WithHighOutput(gear1).WithLowOutput(gear2);
+            stateMachine.AddState(new StateId("2")).WithLowOutput(gear1).WithHighOutput(gear2);
         }
 
-        private void SetupLEDStripRemote(I2CHardwareBridge i2CHardwareBridge, VirtualButtonGroup group)
+        private void SetupLEDStripRemote(I2CHardwareBridge i2CHardwareBridge, IArea area)
         {
             const int SenderPin = 4;
 
             var ledStripRemote = new LEDStripRemote(i2CHardwareBridge, SenderPin);
 
-            group.WithButton(new ActuatorId("on"), b => b.WithPressedShortlyAction(() => ledStripRemote.TurnOn()))
-                .WithButton(new ActuatorId("off"), b => b.WithPressedShortlyAction(() => ledStripRemote.TurnOff()))
-                .WithButton(new ActuatorId("white"), b => b.WithPressedShortlyAction(() => ledStripRemote.TurnWhite()))
+            area.WithVirtualButton(ExampleRoom.ButtonStripOn, b => b.WithPressedShortlyAction(() => ledStripRemote.TurnOn()))
+                .WithVirtualButton(ExampleRoom.ButtonStripOff, b => b.WithPressedShortlyAction(() => ledStripRemote.TurnOff()))
+                .WithVirtualButton(ExampleRoom.ButtonStripWhite, b => b.WithPressedShortlyAction(() => ledStripRemote.TurnWhite()))
 
-                .WithButton(new ActuatorId("red1"), b => b.WithPressedShortlyAction(() => ledStripRemote.TurnRed1()))
-                .WithButton(new ActuatorId("green1"), b => b.WithPressedShortlyAction(() => ledStripRemote.TurnGreen1()))
-                .WithButton(new ActuatorId("blue1"), b => b.WithPressedShortlyAction(() => ledStripRemote.TurnBlue1()));
+                .WithVirtualButton(ExampleRoom.ButtonStripRed, b => b.WithPressedShortlyAction(() => ledStripRemote.TurnRed1()))
+                .WithVirtualButton(ExampleRoom.ButtonStripGreen, b => b.WithPressedShortlyAction(() => ledStripRemote.TurnGreen1()))
+                .WithVirtualButton(ExampleRoom.ButtonStripBlue, b => b.WithPressedShortlyAction(() => ledStripRemote.TurnBlue1()));
         }
     }
 }

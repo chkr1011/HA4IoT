@@ -1,5 +1,5 @@
 ﻿using System;
-using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
 
 namespace HA4IoT.Contracts.Api
 {
@@ -11,6 +11,6 @@ namespace HA4IoT.Contracts.Api
 
         void RouteCommand(string uri, Action<IApiContext> handler);
 
-        void NotifyStateChanged(IActuator actuator);
+        void NotifyStateChanged(IComponent component);
     }
 }

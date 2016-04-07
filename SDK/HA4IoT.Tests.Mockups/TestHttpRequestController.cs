@@ -1,7 +1,6 @@
 ﻿using System;
-using Windows.Data.Json;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 
@@ -32,7 +31,7 @@ namespace HA4IoT.Tests.Mockups
         {
         }
 
-        public void NotifyStateChanged(IActuator actuator)
+        public void NotifyStateChanged(IComponent component)
         {
         }
 

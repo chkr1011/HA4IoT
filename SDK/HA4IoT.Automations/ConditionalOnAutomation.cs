@@ -1,5 +1,5 @@
 ﻿using System;
-using HA4IoT.Actuators;
+using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
@@ -26,7 +26,7 @@ namespace HA4IoT.Automations
         {
             if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
 
-            var nightCondition = new TimeRangeCondition(_timer).WithStart(() => daylightService.Sunset).WithEnd(() => daylightService.Sunrise);
+            var nightCondition = new TimeRangeCondition(_timer).WithStart(daylightService.GetSunset).WithEnd(daylightService.GetSunrise);
             WithCondition(ConditionRelation.And, nightCondition);
 
             return this;

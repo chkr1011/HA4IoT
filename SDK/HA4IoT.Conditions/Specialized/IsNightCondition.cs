@@ -10,8 +10,8 @@ namespace HA4IoT.Conditions.Specialized
         {
             if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
 
-            WithStart(() => daylightService.Sunset);
-            WithEnd(() => daylightService.Sunrise);
+            WithStart(daylightService.GetSunset);
+            WithEnd(daylightService.GetSunrise);
         }
     }
 }

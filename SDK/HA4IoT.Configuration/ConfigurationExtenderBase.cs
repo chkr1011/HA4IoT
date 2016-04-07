@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Xml.Linq;
-using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Configuration
@@ -41,14 +42,14 @@ namespace HA4IoT.Configuration
             throw new NotSupportedException("Configuratio extender '" + Namespace + "' does not support any binary inputs.");
         }
 
-        public virtual ISingleValueSensor ParseSingleValueSensor(XElement element)
+        public virtual INumericValueSensorEndpoint ParseNumericValueSensor(XElement element)
         {
             throw new NotSupportedException("Configuratio extender '" + Namespace + "' does not support any single value sensors.");
         }
 
-        public virtual IActuator ParseActuator(XElement element)
+        public virtual IComponent ParseComponent(XElement element)
         {
-            throw new NotSupportedException("Configuratio extender '" + Namespace + "' does not support any actuators.");
+            throw new NotSupportedException("Configuratio extender '" + Namespace + "' does not support any components.");
         }
 
         public virtual void OnConfigurationParsed()

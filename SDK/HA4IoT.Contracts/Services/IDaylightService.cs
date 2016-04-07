@@ -4,8 +4,8 @@ namespace HA4IoT.Contracts.Services
 {
     public interface IDaylightService : IService
     {
-        TimeSpan Sunrise { get; }
+        TimeSpan GetSunrise();
 
-        TimeSpan Sunset { get; }
+        TimeSpan GetSunset();
     }
 }

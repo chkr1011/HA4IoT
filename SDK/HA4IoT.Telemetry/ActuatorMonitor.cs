@@ -1,5 +1,6 @@
 ﻿using System;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Sensors;
 
@@ -7,26 +8,26 @@ namespace HA4IoT.Telemetry
 {
     public abstract class ActuatorMonitor
     { 
-        public void ConnectActuators(IController controller)
+        public void Connect(IController controller)
         {
             if (controller == null) throw new ArgumentNullException(nameof(controller));
 
-            foreach (var actuator in controller.GetActuators<IActuator>())
+            foreach (var component in controller.GetComponents<IComponent>())
             {
-                OnActuatorConnecting(actuator);
+                OnComponentConnecting(component);
 
-                var stateMachineOutput = actuator as IStateMachine;
+                var stateMachineOutput = component as IStateMachine;
                 if (stateMachineOutput != null)
                 {
                     HandleStateMachineOutputActuator(stateMachineOutput);
                     continue;
                 }
 
-                var sensor = actuator as ISingleValueSensorActuator;
+                var sensor = component as INumericValueSensor;
                 if (sensor != null)
                 {
-                    OnSensorValueChanged(sensor, sensor.GetValue());
-                    sensor.ValueChanged += (s, e) =>
+                    OnSensorValueChanged(sensor, sensor.GetCurrentNumericValue());
+                    sensor.CurrentNumericValueChanged += (s, e) =>
                     {
                         OnSensorValueChanged(sensor, e.NewValue);
                     };
@@ -34,14 +35,14 @@ namespace HA4IoT.Telemetry
                     continue;
                 }
 
-                var motionDetector = actuator as IMotionDetector;
+                var motionDetector = component as IMotionDetector;
                 if (motionDetector != null)
                 {
                     motionDetector.GetMotionDetectedTrigger().Attach(() => OnMotionDetected(motionDetector));
                     continue;
                 }
 
-                var button = actuator as IButton;
+                var button = component as IButton;
                 if (button != null)
                 {
                     button.GetPressedShortlyTrigger().Attach(() => OnButtonPressed(button, ButtonPressedDuration.Short));
@@ -50,7 +51,7 @@ namespace HA4IoT.Telemetry
             }
         }
 
-        protected virtual void OnActuatorConnecting(IActuator actuator)
+        protected virtual void OnComponentConnecting(IComponent component)
         {
         }
 
@@ -62,11 +63,11 @@ namespace HA4IoT.Telemetry
         {
         }
 
-        protected virtual void OnStateMachineStateChanged(IStateMachine stateMachine, StateMachineStateId newState)
+        protected virtual void OnStateMachineStateChanged(IStateMachine stateMachine, StateId newState)
         {
         }
 
-        protected virtual void OnSensorValueChanged(ISingleValueSensorActuator sensor, float newValue)
+        protected virtual void OnSensorValueChanged(INumericValueSensor sensor, float newValue)
         {
         }
 
@@ -76,7 +77,7 @@ namespace HA4IoT.Telemetry
 
             stateMachine.ActiveStateChanged += (s, e) =>
             {
-                OnStateMachineStateChanged(stateMachine, e.NewValue);
+                OnStateMachineStateChanged(stateMachine, e.NewState);
             };
         }
     }

@@ -2,18 +2,20 @@
 using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Core.Settings;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Core.Settings;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public abstract class ActuatorBase : IActuator, IStatusProvider
+    public abstract class ActuatorBase : IActuator
     {
         private IApiController _apiController;
 
-        protected ActuatorBase(ActuatorId id)
+        protected ActuatorBase(ComponentId id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
@@ -23,7 +25,9 @@ namespace HA4IoT.Actuators
             GeneralSettingsWrapper = new ActuatorSettingsWrapper(Settings);
         }
 
-        public ActuatorId Id { get; }
+        public event EventHandler<StateChangedEventArgs> ActiveStateChanged;
+
+        public ComponentId Id { get; }
 
         public ISettingsContainer Settings { get; }
 
@@ -31,18 +35,20 @@ namespace HA4IoT.Actuators
 
         public virtual JsonObject ExportStatusToJsonObject()
         {
-            return Settings.Export();
+            var result = new JsonObject();
+            result.SetNamedObject("settings", Settings.Export());
+            result.SetNamedString("state", GetActiveState().Value);
+
+            return result;
         }
 
+        public abstract StateId GetActiveState();
+        
         public virtual JsonObject ExportConfigurationToJsonObject()
         {
             var result = new JsonObject();
-            result.SetNamedValue("Type", GetType().FullName.ToJsonValue());
-
-            if (Settings != null)
-            {
-                result.SetNamedValue("Settings", Settings.Export());
-            }
+            result.SetNamedValue("type", GetType().FullName.ToJsonValue());
+            result.SetNamedValue("settings", Settings.Export());
 
             return result;
         }
@@ -59,11 +65,6 @@ namespace HA4IoT.Actuators
             _apiController = apiController;
         }
 
-        protected void NotifyStateChanged()
-        {
-            _apiController?.NotifyStateChanged(this);
-        }
-
         protected virtual void HandleApiCommand(IApiContext apiContext)
         {
         }
@@ -71,6 +72,15 @@ namespace HA4IoT.Actuators
         protected virtual void HandleApiRequest(IApiContext apiContext)
         {
             apiContext.Response = ExportStatusToJsonObject();
+        }
+
+        protected void OnActiveStateChanged(StateId oldState)
+        {
+            StateId newState = GetActiveState();
+            Log.Info($"Actuator '{Id}' updated state from '{oldState}' to '{newState}'");
+
+            _apiController?.NotifyStateChanged(this);
+            ActiveStateChanged?.Invoke(this, new StateChangedEventArgs(oldState, newState));
         }
     }
 }

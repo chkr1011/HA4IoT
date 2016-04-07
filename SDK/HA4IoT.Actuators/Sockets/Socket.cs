@@ -1,10 +1,12 @@
-﻿using HA4IoT.Contracts.Actuators;
+﻿using HA4IoT.Actuators.BinaryStateActuators;
+using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
 
-namespace HA4IoT.Actuators
+namespace HA4IoT.Actuators.Sockets
 {
     public class Socket : BinaryStateActuator, ISocket
     {
-        public Socket(ActuatorId id, IBinaryStateEndpoint endpoint)
+        public Socket(ComponentId id, IBinaryStateEndpoint endpoint)
             : base(id, endpoint)
         {
         }

@@ -1,9 +1,10 @@
 ﻿using System;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 
-namespace HA4IoT.Actuators
+namespace HA4IoT.Actuators.Sockets
 {
     public static class SocketExtensions
     {
@@ -12,8 +13,8 @@ namespace HA4IoT.Actuators
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (output == null) throw new ArgumentNullException(nameof(output));
 
-            var socket = new Socket(ActuatorIdFactory.Create(room, id), new PortBasedBinaryStateEndpoint(output));
-            room.AddActuator(socket);
+            var socket = new Socket(ComponentIdFactory.Create(room, id), new PortBasedBinaryStateEndpoint(output));
+            room.AddComponent(socket);
 
             return room;
         }
@@ -22,7 +23,7 @@ namespace HA4IoT.Actuators
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 
-            return room.GetActuator<ISocket>(ActuatorIdFactory.Create(room, id));
+            return room.GetComponent<ISocket>(ComponentIdFactory.Create(room, id));
         }
     }
 }

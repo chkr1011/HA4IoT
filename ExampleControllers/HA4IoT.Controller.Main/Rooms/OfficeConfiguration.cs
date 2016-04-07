@@ -1,17 +1,26 @@
-﻿using HA4IoT.Actuators;
+﻿using HA4IoT.Actuators.BinaryStateActuators;
+using HA4IoT.Actuators.Lamps;
+using HA4IoT.Actuators.Sockets;
+using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.Hardware.RemoteSwitch;
+using HA4IoT.Sensors.Buttons;
+using HA4IoT.Sensors.HumiditySensors;
+using HA4IoT.Sensors.MotionDetectors;
+using HA4IoT.Sensors.TemperatureSensors;
+using HA4IoT.Sensors.Windows;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
-    internal class OfficeConfiguration
+    internal class OfficeConfiguration : RoomConfiguration
     {
         public enum Office
         {
@@ -51,18 +60,23 @@ namespace HA4IoT.Controller.Main.Rooms
             WindowRight
         }
 
-        public void Setup(Controller controller, CCToolsBoardController ccToolsController, RemoteSocketController remoteSwitchController)
+        public OfficeConfiguration(IController controller, CCToolsBoardController ccToolsBoardController, RemoteSocketController remoteSocketController) 
+            : base(controller, ccToolsBoardController, remoteSocketController)
         {
-            var hsrel8 = ccToolsController.CreateHSREL8(Device.OfficeHSREL8, new I2CSlaveAddress(20));
-            var hspe8 = ccToolsController.CreateHSPE8OutputOnly(Device.UpperFloorAndOfficeHSPE8, new I2CSlaveAddress(37));
-            var input4 = controller.Device<HSPE16InputOnly>(Device.Input4);
-            var input5 = controller.Device<HSPE16InputOnly>(Device.Input5);
+        }
+
+        public override void Setup()
+        {
+            var hsrel8 = CCToolsBoardController.CreateHSREL8(Device.OfficeHSREL8, new I2CSlaveAddress(20));
+            var hspe8 = CCToolsBoardController.CreateHSPE8OutputOnly(Device.UpperFloorAndOfficeHSPE8, new I2CSlaveAddress(37));
+            var input4 = Controller.Device<HSPE16InputOnly>(Device.Input4);
+            var input5 = Controller.Device<HSPE16InputOnly>(Device.Input5);
 
             const int SensorPin = 2;
 
-            var i2cHardwareBridge = controller.GetDevice<I2CHardwareBridge>();
+            var i2cHardwareBridge = Controller.GetDevice<I2CHardwareBridge>();
 
-            var office = controller.CreateArea(Room.Office)
+            var room = Controller.CreateArea(Room.Office)
                 .WithMotionDetector(Office.MotionDetector, input4.GetInput(13))
                 .WithTemperatureSensor(Office.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(Office.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
@@ -87,15 +101,15 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithButton(Office.ButtonUpperRight, input4.GetInput(15))
                 .WithWindow(Office.WindowLeft, w => w.WithLeftCasement(input4.GetInput(11)).WithRightCasement(input4.GetInput(12), input4.GetInput(10)))
                 .WithWindow(Office.WindowRight, w => w.WithLeftCasement(input4.GetInput(8)).WithRightCasement(input4.GetInput(9), input5.GetInput(8)))
-                .WithSocket(Office.RemoteSocketDesk, remoteSwitchController.GetOutput(0))
+                .WithSocket(Office.RemoteSocketDesk, RemoteSocketController.GetOutput(0))
                 .WithStateMachine(Office.CombinedCeilingLights, SetupLight);
             
-            office.GetButton(Office.ButtonUpperLeft).GetPressedLongTrigger().Attach(() =>
+            room.GetButton(Office.ButtonUpperLeft).GetPressedLongTrigger().Attach(() =>
             {
-                office.GetStateMachine(Office.CombinedCeilingLights).TryTurnOff();
-                office.Socket(Office.SocketRearLeftEdge).TryTurnOff();
-                office.Socket(Office.SocketRearLeft).TryTurnOff();
-                office.Socket(Office.SocketFrontLeft).TryTurnOff();
+                room.GetStateMachine(Office.CombinedCeilingLights).TryTurnOff();
+                room.Socket(Office.SocketRearLeftEdge).TryTurnOff();
+                room.Socket(Office.SocketRearLeft).TryTurnOff();
+                room.Socket(Office.SocketFrontLeft).TryTurnOff();
             });
         }
 
@@ -118,26 +132,26 @@ namespace HA4IoT.Controller.Main.Rooms
             light.WithTurnOffIfStateIsAppliedTwice();
 
             light.AddOffState()
-                .WithActuator(lightsDeskOnly, DefaultStateIDs.Off)
-                .WithActuator(lightsCouchOnly, DefaultStateIDs.Off)
-                .WithActuator(lightsOther, DefaultStateIDs.Off);
+                .WithActuator(lightsDeskOnly, DefaultStateId.Off)
+                .WithActuator(lightsCouchOnly, DefaultStateId.Off)
+                .WithActuator(lightsOther, DefaultStateId.Off);
 
             light.AddOnState()
-                .WithActuator(lightsDeskOnly, DefaultStateIDs.On)
-                .WithActuator(lightsCouchOnly, DefaultStateIDs.On)
-                .WithActuator(lightsOther, DefaultStateIDs.On);
+                .WithActuator(lightsDeskOnly, DefaultStateId.On)
+                .WithActuator(lightsCouchOnly, DefaultStateId.On)
+                .WithActuator(lightsOther, DefaultStateId.On);
 
-            var deskOnlyStateId = new StateMachineStateId("DeskOnly");
+            var deskOnlyStateId = new StateId("DeskOnly");
             light.AddState(deskOnlyStateId)
-                .WithActuator(lightsDeskOnly, DefaultStateIDs.On)
-                .WithActuator(lightsCouchOnly, DefaultStateIDs.Off)
-                .WithActuator(lightsOther, DefaultStateIDs.Off);
+                .WithActuator(lightsDeskOnly, DefaultStateId.On)
+                .WithActuator(lightsCouchOnly, DefaultStateId.Off)
+                .WithActuator(lightsOther, DefaultStateId.Off);
 
-            var couchOnlyStateId = new StateMachineStateId("CouchOnly");
+            var couchOnlyStateId = new StateId("CouchOnly");
             light.AddState(couchOnlyStateId)
-                .WithActuator(lightsDeskOnly, DefaultStateIDs.Off)
-                .WithActuator(lightsCouchOnly, DefaultStateIDs.On)
-                .WithActuator(lightsOther, DefaultStateIDs.Off);
+                .WithActuator(lightsDeskOnly, DefaultStateId.Off)
+                .WithActuator(lightsCouchOnly, DefaultStateId.On)
+                .WithActuator(lightsOther, DefaultStateId.Off);
 
             room.GetButton(Office.ButtonLowerRight)
                 .GetPressedShortlyTrigger()
@@ -149,7 +163,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             room.GetButton(Office.ButtonUpperLeft)
                 .GetPressedShortlyTrigger()
-                .OnTriggered(light.GetSetActiveStateAction(DefaultStateIDs.On));
+                .OnTriggered(light.GetSetActiveStateAction(DefaultStateId.On));
         }
     }
 }

@@ -5,22 +5,22 @@ using HA4IoT.Actuators.Parameters;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 
-namespace HA4IoT.Actuators
+namespace HA4IoT.Actuators.StateMachines
 {
     public class StateMachineState : IStateMachineState
     {
         private readonly List<Action> _actions = new List<Action>(); 
-        private readonly List<Tuple<IStateMachine, StateMachineStateId>> _actuators = new List<Tuple<IStateMachine, StateMachineStateId>>();
+        private readonly List<Tuple<IStateMachine, StateId>> _actuators = new List<Tuple<IStateMachine, StateId>>();
         private readonly List<Tuple<IBinaryOutput, BinaryState>> _outputs = new List<Tuple<IBinaryOutput, BinaryState>>();
 
-        public StateMachineState(StateMachineStateId id)
+        public StateMachineState(StateId id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
             Id = id;
         }
 
-        public StateMachineStateId Id { get; }
+        public StateId Id { get; }
 
         public StateMachineState WithAction(Action action)
         {
@@ -52,11 +52,11 @@ namespace HA4IoT.Actuators
             return WithOutput(output, BinaryState.High);
         }
 
-        public StateMachineState WithActuator(IStateMachine actuator, StateMachineStateId state)
+        public StateMachineState WithActuator(IStateMachine actuator, StateId state)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
-            _actuators.Add(new Tuple<IStateMachine, StateMachineStateId>(actuator, state));
+            _actuators.Add(new Tuple<IStateMachine, StateId>(actuator, state));
             return this;
         }
 

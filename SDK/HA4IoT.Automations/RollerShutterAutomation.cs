@@ -4,6 +4,7 @@ using System.Linq;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
@@ -13,12 +14,12 @@ namespace HA4IoT.Automations
 {
     public class RollerShutterAutomation : AutomationBase
     {
-        private readonly List<ActuatorId> _rollerShutters = new List<ActuatorId>();
+        private readonly List<ComponentId> _rollerShutters = new List<ComponentId>();
 
         private readonly IHomeAutomationTimer _timer;
         private readonly IDaylightService _daylightService;
         private readonly IWeatherService _weatherService;
-        private readonly IActuatorController _actuatorController;
+        private readonly IComponentController _componentController;
 
         private bool _maxOutsideTemperatureApplied;
         private bool _autoOpenIsApplied;
@@ -29,18 +30,18 @@ namespace HA4IoT.Automations
             IHomeAutomationTimer timer,
             IDaylightService daylightService,
             IWeatherService weatherService,
-            IActuatorController actuatorController)
+            IComponentController componentController)
             : base(id)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
             if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
             if (weatherService == null) throw new ArgumentNullException(nameof(weatherService));
-            if (actuatorController == null) throw new ArgumentNullException(nameof(actuatorController));
+            if (componentController == null) throw new ArgumentNullException(nameof(componentController));
 
             _timer = timer;
             _daylightService = daylightService;
             _weatherService = weatherService;
-            _actuatorController = actuatorController;
+            _componentController = componentController;
 
             SpecialSettingsWrapper = new RollerShutterAutomationSettingsWrapper(Settings);           
         }
@@ -72,7 +73,7 @@ namespace HA4IoT.Automations
                 _maxOutsideTemperatureApplied = true;
 
                 Log.Info(GetTracePrefix() + $"Closing because outside temperature reaches {SpecialSettingsWrapper.AutoCloseIfTooHotTemperaure}°C.");
-                StartMove(RollerShutterState.MovingDown);
+                SetActiveStates(RollerShutterStateId.MovingDown);
 
                 return;
             }
@@ -95,7 +96,7 @@ namespace HA4IoT.Automations
                 }
                 else
                 {
-                    StartMove(RollerShutterState.MovingUp);
+                    SetActiveStates(RollerShutterStateId.MovingUp);
                 }
                 
                 _autoOpenIsApplied = true;
@@ -113,7 +114,7 @@ namespace HA4IoT.Automations
                 }
                 else
                 {
-                    StartMove(RollerShutterState.MovingDown);
+                    SetActiveStates(RollerShutterStateId.MovingDown);
                 }
 
                 _autoCloseIsApplied = true;
@@ -137,7 +138,7 @@ namespace HA4IoT.Automations
         private bool TooHotIsAffected()
         {
             if (SpecialSettingsWrapper.AutoCloseIfTooHotIsEnabled && 
-                _weatherService.TemperatureSensor.GetValue() > SpecialSettingsWrapper.AutoCloseIfTooHotTemperaure)
+                _weatherService.GetTemperature() > SpecialSettingsWrapper.AutoCloseIfTooHotTemperaure)
             {
                 return true;
             }
@@ -148,7 +149,7 @@ namespace HA4IoT.Automations
         private bool TooColdIsAffected()
         {
             if (SpecialSettingsWrapper.SkipIfFrozenIsEnabled &&
-                _weatherService.TemperatureSensor.GetValue() < SpecialSettingsWrapper.SkipIfFrozenTemperature)
+                _weatherService.GetTemperature() < SpecialSettingsWrapper.SkipIfFrozenTemperature)
             {
                 return true;
             }
@@ -165,11 +166,11 @@ namespace HA4IoT.Automations
             return condition;
         }
 
-        private void StartMove(RollerShutterState state)
+        private void SetActiveStates(StateId state)
         {
             foreach (var rollerShutter in _rollerShutters)
             {
-                _actuatorController.GetActuator<IRollerShutter>(rollerShutter).SetState(state);
+                _componentController.GetComponent<IRollerShutter>(rollerShutter).SetActiveState(state);
             }
         }
 

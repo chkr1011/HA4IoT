@@ -4,6 +4,7 @@ using HA4IoT.Configuration;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Hardware.I2CHardwareBridge
 {
@@ -27,7 +28,7 @@ namespace HA4IoT.Hardware.I2CHardwareBridge
             }
         }
 
-        public override ISingleValueSensor ParseSingleValueSensor(XElement element)
+        public override INumericValueSensorEndpoint ParseNumericValueSensor(XElement element)
         {
             if (element == null) throw new ArgumentNullException(nameof(element));
 
@@ -40,7 +41,7 @@ namespace HA4IoT.Hardware.I2CHardwareBridge
             }
         }
 
-        private ISingleValueSensor ParseHumiditySensor(XElement element)
+        private INumericValueSensorEndpoint ParseHumiditySensor(XElement element)
         {
             var i2cHardwareBridge =
                 Controller.GetDevice<I2CHardwareBridge>(
@@ -49,7 +50,7 @@ namespace HA4IoT.Hardware.I2CHardwareBridge
             return i2cHardwareBridge.DHT22Accessor.GetHumiditySensor((byte)element.GetMandatoryIntFromAttribute("sensorId"));
         }
 
-        private ISingleValueSensor ParseTemperatureSensor(XElement element)
+        private INumericValueSensorEndpoint ParseTemperatureSensor(XElement element)
         {
             var i2cHardwareBridge =
                 Controller.GetDevice<I2CHardwareBridge>(

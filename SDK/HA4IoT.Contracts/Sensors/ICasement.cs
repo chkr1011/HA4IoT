@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts.Actuators;
 
 namespace HA4IoT.Contracts.Sensors
 {
@@ -6,8 +7,8 @@ namespace HA4IoT.Contracts.Sensors
     {
         string Id { get; }
 
-        event EventHandler<CasementStateChangedEventArgs> StateChanged;
+        event EventHandler<StateChangedEventArgs> StateChanged;
 
-        CasementState GetState();
+        StateId GetState();
     }
 }

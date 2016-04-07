@@ -1,7 +1,7 @@
 ﻿using System;
 using HA4IoT.Contracts.Core.Settings;
 
-namespace HA4IoT.Actuators
+namespace HA4IoT.Actuators.RollerShutters
 {
     public class RollerShutterSettingsWrapper : ActuatorSettingsWrapper
     {
