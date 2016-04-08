@@ -114,7 +114,6 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AreaSettingsApiDispatcher.cs" />
     <Compile Include="AreaIdFactory.cs" />
     <Compile Include="AutomationCollection.cs" />
     <Compile Include="ActuatorCollection.cs" />

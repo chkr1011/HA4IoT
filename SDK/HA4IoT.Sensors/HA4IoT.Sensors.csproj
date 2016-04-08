@@ -114,7 +114,6 @@
     <Compile Include="Buttons\PortBasedButtonEndpoint.cs" />
     <Compile Include="HumiditySensors\HumiditySensor.cs" />
     <Compile Include="HumiditySensors\HumiditySensorExtensions.cs" />
-    <Compile Include="IStateValueSensorBase.cs" />
     <Compile Include="MotionDetectors\MotionDetector.cs" />
     <Compile Include="MotionDetectors\MotionDetectorExtensions.cs" />
     <Compile Include="MotionDetectors\PortBasedMotionDetectorEndpoint.cs" />

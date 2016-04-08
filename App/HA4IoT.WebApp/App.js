@@ -52,8 +52,8 @@ function setupController() {
 
               $http.get("/api/configuration").success(function (data) {
 
-                  $.each(data.Areas, function (areaId, area) {
-                      if (area.Settings.AppSettings.Hide) {
+                  $.each(data.areas, function (areaId, area) {
+                      if (area.settings.AppSettings.Hide) {
                           return true;
                       }
 
@@ -65,26 +65,26 @@ function setupController() {
                           automations: [],
                           onStateCount: 0 };
                       
-                      $.each(area.Actuators, function (actuatorId, actuator) {
-                          actuator.id = actuatorId;
-                          configureActuator(area, actuator);
+                      $.each(area.components, function (componentId, component) {
+                          component.id = componentId;
+                          configureActuator(area, component);
                           
-                          if (actuator.hide) {
+                          if (component.hide) {
                               return true;
                           }
 
-                          if (actuator.Type === "HA4IoT.Actuators.TemperatureSensor" ||
-                              actuator.Type === "HA4IoT.Actuators.HumiditySensor") {
-                              c.sensors.push(actuator);
-                          } else if (actuator.Type === "HA4IoT.Actuators.RollerShutter") {
-                              c.rollerShutters.push(actuator);
-                          } else if (actuator.Type === "HA4IoT.Actuators.MotionDetector") {
-                              c.motionDetectors.push(actuator);
-                          } else if (actuator.Type === "HA4IoT.Actuators.Window") {
-                              c.windows.push(actuator);
+                          if (component.type === "TemperatureSensor" ||
+                              component.type === "HumiditySensor") {
+                              c.sensors.push(component);
+                          } else if (component.type === "RollerShutter") {
+                              c.rollerShutters.push(component);
+                          } else if (component.type === "MotionDetector") {
+                              c.motionDetectors.push(component);
+                          } else if (component.type === "Window") {
+                              c.windows.push(component);
                           }
 
-                          areaControl.actuators.push(actuator);
+                          areaControl.actuators.push(component);
                       });
 
                       c.rooms.push(areaControl);
@@ -144,13 +144,13 @@ function setupController() {
                   c.previousHash = data.Meta.Hash;
                   console.log("Updating UI due to state changes");
 
-                  $.each(data.Actuators, function (id, state) {
+                  $.each(data.components, function (id, state) {
                       c.updateStatus(id, state);
                   });
 
                   updateOnStateCounters(c.rooms);
 
-                  c.weatherStation = data.WeatherStation;
+                  c.weatherStation = data.services.OpenWeatherMapWeatherService;
 
                   $scope.$apply(function () { $scope.msgs = data; });
               }).fail(function (jqXHR, textStatus, errorThrown) {
@@ -227,31 +227,31 @@ function configureActuator(room, actuator) {
 
     actuator.state = {};
 
-    switch (actuator.Type) {
-        case "HA4IoT.Actuators.Lamp":
+    switch (actuator.type) {
+        case "Lamp":
             {
                 actuator.template = "Views/ToggleTemplate.html";
                 break;
             }
-        case "HA4IoT.Actuators.Socket":
+        case "Socket":
             {
                 actuator.template = "Views/ToggleTemplate.html";
                 break;
             }
 
-        case "HA4IoT.Actuators.RollerShutter":
+        case "RollerShutter":
             {
                 actuator.template = "Views/RollerShutterTemplate.html";
                 break;
             }
 
-        case "HA4IoT.Actuators.Window":
+        case "Window":
             {
                 actuator.template = "Views/WindowTemplate.html";
                 break;
             }
 
-        case "HA4IoT.Actuators.StateMachine":
+        case "StateMachine":
             {
                 actuator.template = "Views/StateMachineTemplate.html";
                 
@@ -267,13 +267,13 @@ function configureActuator(room, actuator) {
                 break;
             }
 
-        case "HA4IoT.Actuators.TemperatureSensor":
+        case "TemperatureSensor":
             {
                 actuator.template = "Views/TemperatureSensorTemplate.html";
                 break;
             }
 
-        case "HA4IoT.Actuators.HumiditySensor":
+        case "HumiditySensor":
             {
                 actuator.template = "Views/HumiditySensorTemplate.html";
                 actuator.dangerValue = getConfigurationValue(actuator, "DangerValue", 70);
@@ -281,19 +281,19 @@ function configureActuator(room, actuator) {
                 break;
             }
 
-        case "HA4IoT.Actuators.MotionDetector":
+        case "MotionDetector":
             {
                 actuator.template = "Views/MotionDetectorTemplate.html";
                 break;
             }
 
-        case "HA4IoT.Actuators.VirtualButton":
+        case "Button":
             {
                 actuator.template = "Views/VirtualButtonTemplate.html";
                 break;
             }
 
-        case "HA4IoT.Actuators.VirtualButtonGroup":
+        case "VirtualButtonGroup":
             {
                 actuator.template = "Views/VirtualButtonGroupTemplate.html";
                 
@@ -320,15 +320,15 @@ function configureActuator(room, actuator) {
 }
 
 function getConfigurationValue(component, name, defaultValue) {
-    if (component.Settings.AppSettings === undefined) {
+    if (component.settings.AppSettings === undefined) {
         return defaultValue;
     }
 
-    if (component.Settings.AppSettings[name] === undefined) {
+    if (component.settings.AppSettings[name] === undefined) {
         return defaultValue;
     }
 
-    return component.Settings.AppSettings[name];
+    return component.settings.AppSettings[name];
 }
 
 function updateOnStateCounters(areas) {
@@ -350,7 +350,7 @@ function updateOnStateCounters(areas) {
 
 function invokeActuator(id, request, successCallback) {
     // This hack is required for Safari because only one Ajax request at the same time is allowed.
-    var url = "/api/actuator/" + id + "/status?body=" + JSON.stringify(request);
+    var url = "/api/component/" + id + "/status?body=" + JSON.stringify(request);
 
     $.ajax({
         method: "POST",
@@ -368,7 +368,7 @@ function invokeActuator(id, request, successCallback) {
 
 function updateActuatorSettings(id, request, successCallback) {
     // This hack is required for Safari because only one Ajax request at the same time is allowed.
-    var url = "/api/actuator/" + id + "/settings?body=" + JSON.stringify(request);
+    var url = "/api/component/" + id + "/settings?body=" + JSON.stringify(request);
 
     $.ajax({
         method: "POST",

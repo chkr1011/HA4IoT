@@ -1,5 +1,4 @@
 ﻿using System;
-using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Hardware.PortExpanderDrivers;
 
@@ -7,8 +6,8 @@ namespace HA4IoT.Hardware.CCTools
 {
     public class HSREL5 : CCToolsBoardBase, IBinaryOutputController
     {
-        public HSREL5(DeviceId id, I2CSlaveAddress i2CAddress, II2CBus bus, IApiController apiController)
-            : base(id, new PCF8574Driver(i2CAddress, bus), apiController)
+        public HSREL5(DeviceId id, I2CSlaveAddress i2CAddress, II2CBus bus)
+            : base(id, new PCF8574Driver(i2CAddress, bus))
         {
             // Ensure that all relays are off by default. The first 5 ports are hardware inverted! The other ports are not inverted but the
             // connected relays are inverted.

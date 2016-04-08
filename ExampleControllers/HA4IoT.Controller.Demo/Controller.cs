@@ -45,7 +45,7 @@ namespace HA4IoT.Controller.Demo
             var pi2PortController = new Pi2PortController();
             
             // Setup the controller which creates ports for IO boards from CCTools (or based on PCF8574/MAX7311/PCA9555D).
-            var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>(), ApiController);
+            var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>());
 
             SetupRoom(ccToolsBoardController);
 

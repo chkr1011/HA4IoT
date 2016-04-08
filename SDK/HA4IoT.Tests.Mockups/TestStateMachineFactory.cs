@@ -15,22 +15,22 @@ namespace HA4IoT.Tests.Mockups
         {
             var stateMachine = new TestStateMachine(ComponentIdFactory.EmptyId);
             stateMachine.AddState(new StateMachineState(id));
-            stateMachine.SetActiveState(id);
+            stateMachine.SetState(id);
 
             return stateMachine;
         }
 
         public TestStateMachine CreateTestStateMachineWithOnOffStates()
         {
-            return CreateTestStateMachineWithOnOffStates(DefaultStateId.Off);
+            return CreateTestStateMachineWithOnOffStates(BinaryStateId.Off);
         }
 
         public TestStateMachine CreateTestStateMachineWithOnOffStates(StateId activeState)
         {
             var stateMachine = new TestStateMachine(ComponentIdFactory.EmptyId);
-            stateMachine.AddState(new StateMachineState(DefaultStateId.Off));
-            stateMachine.AddState(new StateMachineState(DefaultStateId.On));
-            stateMachine.SetActiveState(activeState);
+            stateMachine.AddState(new StateMachineState(BinaryStateId.Off));
+            stateMachine.AddState(new StateMachineState(BinaryStateId.On));
+            stateMachine.SetState(activeState);
 
             return stateMachine;
         }

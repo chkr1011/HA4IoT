@@ -132,38 +132,38 @@ namespace HA4IoT.Controller.Main.Rooms
             light.WithTurnOffIfStateIsAppliedTwice();
 
             light.AddOffState()
-                .WithActuator(lightsDeskOnly, DefaultStateId.Off)
-                .WithActuator(lightsCouchOnly, DefaultStateId.Off)
-                .WithActuator(lightsOther, DefaultStateId.Off);
+                .WithActuator(lightsDeskOnly, BinaryStateId.Off)
+                .WithActuator(lightsCouchOnly, BinaryStateId.Off)
+                .WithActuator(lightsOther, BinaryStateId.Off);
 
             light.AddOnState()
-                .WithActuator(lightsDeskOnly, DefaultStateId.On)
-                .WithActuator(lightsCouchOnly, DefaultStateId.On)
-                .WithActuator(lightsOther, DefaultStateId.On);
+                .WithActuator(lightsDeskOnly, BinaryStateId.On)
+                .WithActuator(lightsCouchOnly, BinaryStateId.On)
+                .WithActuator(lightsOther, BinaryStateId.On);
 
             var deskOnlyStateId = new StateId("DeskOnly");
             light.AddState(deskOnlyStateId)
-                .WithActuator(lightsDeskOnly, DefaultStateId.On)
-                .WithActuator(lightsCouchOnly, DefaultStateId.Off)
-                .WithActuator(lightsOther, DefaultStateId.Off);
+                .WithActuator(lightsDeskOnly, BinaryStateId.On)
+                .WithActuator(lightsCouchOnly, BinaryStateId.Off)
+                .WithActuator(lightsOther, BinaryStateId.Off);
 
             var couchOnlyStateId = new StateId("CouchOnly");
             light.AddState(couchOnlyStateId)
-                .WithActuator(lightsDeskOnly, DefaultStateId.Off)
-                .WithActuator(lightsCouchOnly, DefaultStateId.On)
-                .WithActuator(lightsOther, DefaultStateId.Off);
+                .WithActuator(lightsDeskOnly, BinaryStateId.Off)
+                .WithActuator(lightsCouchOnly, BinaryStateId.On)
+                .WithActuator(lightsOther, BinaryStateId.Off);
 
             room.GetButton(Office.ButtonLowerRight)
                 .GetPressedShortlyTrigger()
-                .OnTriggered(light.GetSetActiveStateAction(couchOnlyStateId));
+                .OnTriggered(light.GetSetStateAction(couchOnlyStateId));
 
             room.GetButton(Office.ButtonLowerLeft)
                 .GetPressedShortlyTrigger()
-                .OnTriggered(light.GetSetActiveStateAction(deskOnlyStateId));
+                .OnTriggered(light.GetSetStateAction(deskOnlyStateId));
 
             room.GetButton(Office.ButtonUpperLeft)
                 .GetPressedShortlyTrigger()
-                .OnTriggered(light.GetSetActiveStateAction(DefaultStateId.On));
+                .OnTriggered(light.GetSetStateAction(BinaryStateId.On));
         }
     }
 }

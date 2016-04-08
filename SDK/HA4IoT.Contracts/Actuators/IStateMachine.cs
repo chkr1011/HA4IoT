@@ -1,15 +1,13 @@
-﻿using HA4IoT.Contracts.Hardware;
+﻿using HA4IoT.Contracts.Components;
 
 namespace HA4IoT.Contracts.Actuators
 {
     public interface IStateMachine : IActuator
     {
-        bool GetSupportsState(StateId id);
+        bool GetSupportsState(IComponentState id);
 
-        void SetActiveState(StateId id, params IHardwareParameter[] parameters);
+        IComponentState GetNextState(IComponentState id);
 
-        StateId GetNextState(StateId id);
-
-        void SetStateIdAlias(StateId id, StateId alias);
+        void SetStateIdAlias(IComponentState id, IComponentState alias);
     }
 }

@@ -1,11 +1,11 @@
 ﻿<div>
     <div>
-        <span style="text-align: center;" class="sensorValue">{{(actuator.state.value | number:1) + '%' }}</span>
+        <span style="text-align: center;" class="sensorValue">{{(actuator.state.state | number:1) + '%' }}</span>
     </div>
     <div>
         <span class="label"
               style="margin-left: 10px"
-              ng-class="{'label-danger':actuator.state.value>=actuator.dangerValue,'label-warning':actuator.state.value>=actuator.warningValue,'label-success':actuator.state.value<actuator.warningValue}">
+              ng-class="{'label-danger':actuator.state.state>=actuator.dangerValue,'label-warning':actuator.state.state>=actuator.warningValue,'label-success':actuator.state.state<actuator.warningValue}">
             {{ haCtrl.getUILocalization('UI.Mold') }}
         </span>
     </div>

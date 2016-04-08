@@ -73,7 +73,7 @@ namespace HA4IoT.Automations
                 _maxOutsideTemperatureApplied = true;
 
                 Log.Info(GetTracePrefix() + $"Closing because outside temperature reaches {SpecialSettingsWrapper.AutoCloseIfTooHotTemperaure}°C.");
-                SetActiveStates(RollerShutterStateId.MovingDown);
+                SetStates(RollerShutterStateId.MovingDown);
 
                 return;
             }
@@ -96,7 +96,7 @@ namespace HA4IoT.Automations
                 }
                 else
                 {
-                    SetActiveStates(RollerShutterStateId.MovingUp);
+                    SetStates(RollerShutterStateId.MovingUp);
                 }
                 
                 _autoOpenIsApplied = true;
@@ -114,7 +114,7 @@ namespace HA4IoT.Automations
                 }
                 else
                 {
-                    SetActiveStates(RollerShutterStateId.MovingDown);
+                    SetStates(RollerShutterStateId.MovingDown);
                 }
 
                 _autoCloseIsApplied = true;
@@ -166,11 +166,11 @@ namespace HA4IoT.Automations
             return condition;
         }
 
-        private void SetActiveStates(StateId state)
+        private void SetStates(StateId state)
         {
             foreach (var rollerShutter in _rollerShutters)
             {
-                _componentController.GetComponent<IRollerShutter>(rollerShutter).SetActiveState(state);
+                _componentController.GetComponent<IRollerShutter>(rollerShutter).SetState(state);
             }
         }
 

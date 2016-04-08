@@ -48,7 +48,7 @@ namespace HA4IoT.Controller.Main
         {
             if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
 
-            motionDetector.ActiveStateChanged += RestartTimer;
+            motionDetector.StateChanged += RestartTimer;
             return this;
         }
 

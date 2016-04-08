@@ -23,9 +23,9 @@ namespace HA4IoT.Automations.Tests
             automation.WithTrigger(testButton.GetPressedShortlyTrigger());
             automation.WithActuator(testOutput);
             
-            testOutput.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.Off);
+            testOutput.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
             testButton.PressShortly();
-            testOutput.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.On);
+            testOutput.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using HA4IoT.Actuators.Parameters;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Components;
@@ -13,10 +12,10 @@ namespace HA4IoT.Actuators.BinaryStateActuators
         {
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
 
-            AddState(new StateMachineState(DefaultStateId.Off).WithAction(() => endpoint.TurnOff()));
-            AddState(new StateMachineState(DefaultStateId.On).WithAction(() => endpoint.TurnOn()));
+            AddState(new StateMachineState(BinaryStateId.Off).WithAction(() => endpoint.TurnOff()));
+            AddState(new StateMachineState(BinaryStateId.On).WithAction(() => endpoint.TurnOn()));
 
-            SetActiveState(DefaultStateId.Off, new ForceUpdateStateParameter());
+            SetInitialState(BinaryStateId.Off);
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using Windows.Data.Json;
 using Windows.Storage;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
@@ -133,9 +134,9 @@ namespace HA4IoT.Telemetry.History
             return firstDayOfWeek.Day;
         }
 
-        private Dictionary<string, TimeSpan> GetStateDurations(List<ActuatorHistoryEntry> historyEntries)
+        private Dictionary<IComponentState, TimeSpan> GetStateDurations(List<ActuatorHistoryEntry> historyEntries)
         {
-            var durations = new Dictionary<string, TimeSpan>();
+            var durations = new Dictionary<IComponentState, TimeSpan>();
             ActuatorHistoryEntry previousEntry = null;
 
             foreach (var historyEntry in historyEntries.OrderBy(e => e.Timestamp))

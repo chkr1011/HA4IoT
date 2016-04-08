@@ -313,19 +313,28 @@ namespace HA4IoT.Core
         {
             new ControllerApiDispatcher(this).ExposeToApi();
 
+            foreach (var device in GetDevices())
+            {
+                ApiController.RouteRequest($"device/{device.Id}", device.HandleApiRequest);
+                ApiController.RouteCommand($"device/{device.Id}", device.HandleApiCommand);
+            }
+
             foreach (var area in _areas.GetAll())
             {
-                area.ExposeToApi(ApiController);
+                new SettingsContainerApiDispatcher(area.Settings, $"area/{area.Id}", ApiController).ExposeToApi();
             }
 
             foreach (var component in _components.GetAll())
             {
-                component.ExposeToApi(ApiController);
+                new SettingsContainerApiDispatcher(component.Settings, $"component/{component.Id}", ApiController).ExposeToApi();
+                ApiController.RouteCommand($"component/{component.Id}/status", component.HandleApiCommand);
+                ApiController.RouteRequest($"component/{component.Id}/status", component.HandleApiRequest);
+                component.StateChanged += (s, e) => ApiController.NotifyStateChanged(component);
             }
 
             foreach (var automation in _automations.GetAll())
             {
-                automation.ExposeToApi(ApiController);
+                new SettingsContainerApiDispatcher(automation.Settings, $"automation/{automation.Id}", ApiController).ExposeToApi();
             }
         }
 
@@ -333,7 +342,7 @@ namespace HA4IoT.Core
         {
             foreach (var component in GetComponents())
             {
-                var sensorActuator = component as Contracts.Sensors.INumericValueSensor;
+                var sensorActuator = component as INumericValueSensor;
                 if (sensorActuator != null)
                 {
                     var history = new SensorActuatorHistory(sensorActuator);

@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Contracts.Sensors
 {
-    public interface IButton : IStateValueSensor
+    public interface IButton : ISensor
     {
         ITrigger GetPressedShortlyTrigger();
         ITrigger GetPressedLongTrigger();

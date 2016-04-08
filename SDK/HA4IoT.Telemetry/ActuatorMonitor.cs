@@ -63,7 +63,7 @@ namespace HA4IoT.Telemetry
         {
         }
 
-        protected virtual void OnStateMachineStateChanged(IStateMachine stateMachine, StateId newState)
+        protected virtual void OnStateMachineStateChanged(IStateMachine stateMachine, IComponentState newState)
         {
         }
 
@@ -73,9 +73,9 @@ namespace HA4IoT.Telemetry
 
         private void HandleStateMachineOutputActuator(IStateMachine stateMachine)
         {
-            OnStateMachineStateChanged(stateMachine, stateMachine.GetActiveState());
+            OnStateMachineStateChanged(stateMachine, stateMachine.GetState());
 
-            stateMachine.ActiveStateChanged += (s, e) =>
+            stateMachine.StateChanged += (s, e) =>
             {
                 OnStateMachineStateChanged(stateMachine, e.NewState);
             };

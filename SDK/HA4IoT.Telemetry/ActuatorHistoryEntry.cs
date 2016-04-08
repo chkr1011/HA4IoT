@@ -1,14 +1,15 @@
 ﻿using System;
-using HA4IoT.Contracts;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Components;
 
 namespace HA4IoT.Telemetry
 {
     public class ActuatorHistoryEntry
     {
-        public ActuatorHistoryEntry(DateTime timestamp, ComponentId actuatorId, string newState)
+        public ActuatorHistoryEntry(DateTime timestamp, ComponentId actuatorId, IComponentState newState)
         {
+            if (actuatorId == null) throw new ArgumentNullException(nameof(actuatorId));
+            if (newState == null) throw new ArgumentNullException(nameof(newState));
+
             Timestamp = timestamp;
             ActuatorId = actuatorId;
 
@@ -19,7 +20,7 @@ namespace HA4IoT.Telemetry
 
         public ComponentId ActuatorId { get; }
 
-        public string NewState { get; }
+        public IComponentState NewState { get; }
 
         public string ToCsv()
         {

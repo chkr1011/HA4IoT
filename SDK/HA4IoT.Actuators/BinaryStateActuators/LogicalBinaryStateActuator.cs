@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using HA4IoT.Actuators.Animations;
-using HA4IoT.Actuators.Parameters;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Components;
@@ -22,8 +21,10 @@ namespace HA4IoT.Actuators.BinaryStateActuators
 
             _timer = timer;
 
-            AddState(new StateMachineState(DefaultStateId.Off).WithAction(() => SetActiveState(DefaultStateId.Off)));
-            AddState(new StateMachineState(DefaultStateId.On).WithAction(() => SetActiveState(DefaultStateId.On)));
+            AddState(new StateMachineState(BinaryStateId.Off).WithAction(() => ApplyState(BinaryStateId.Off)));
+            AddState(new StateMachineState(BinaryStateId.On).WithAction(() => ApplyState(BinaryStateId.On)));
+
+            SetInitialState(BinaryStateId.Off);
         }
 
         public IList<IStateMachine> Actuators { get; } = new List<IStateMachine>();
@@ -36,7 +37,7 @@ namespace HA4IoT.Actuators.BinaryStateActuators
             return this;
         }
 
-        private void SetActiveState(StateId stateId, params IHardwareParameter[] parameters)
+        private void ApplyState(StateId stateId, params IHardwareParameter[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
@@ -50,7 +51,7 @@ namespace HA4IoT.Actuators.BinaryStateActuators
             // Set the state of the actuators without a commit to ensure that the state is applied at once without a delay.
             foreach (var actuator in Actuators)
             {
-                actuator.SetActiveState(stateId, new IsPartOfPartialUpdateParameter());
+                actuator.SetState(stateId, HardwareParameter.IsPartOfPartialUpdate);
             }
 
             bool commit = !parameters.Any(p => p is IsPartOfPartialUpdateParameter);
@@ -62,7 +63,7 @@ namespace HA4IoT.Actuators.BinaryStateActuators
 
             foreach (var actuator in Actuators)
             {
-                actuator.SetActiveState(stateId);
+                actuator.SetState(stateId);
             }
         }
 

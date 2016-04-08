@@ -20,32 +20,32 @@ namespace HA4IoT.Actuators.Tests
             
             endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(0);
             endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(1);
-            socket.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.Off);
+            socket.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
 
             socket.TryTurnOn();
             endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(1);
             endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(1);
-            socket.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.On);
+            socket.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
 
             socket.TryTurnOn();
             endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(1);
             endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(1);
-            socket.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.On);
+            socket.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
 
             socket.TryTurnOff();
             endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(1);
             endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(2);
-            socket.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.Off);
+            socket.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
 
             socket.TryTurnOff();
             endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(1);
             endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(2);
-            socket.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.Off);
+            socket.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
 
             socket.TryTurnOn();
             endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(2);
             endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(2);
-            socket.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.On);
+            socket.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
         }
 
         [TestMethod]
@@ -56,17 +56,17 @@ namespace HA4IoT.Actuators.Tests
 
             endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(0);
             endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(1);
-            lamp.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.Off);
+            lamp.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
 
             lamp.SetNextState();
             endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(1);
             endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(1);
-            lamp.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.On);
+            lamp.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
 
             lamp.SetNextState();
             endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(1);
             endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(2);
-            lamp.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.Off);
+            lamp.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
         }
 
         [TestMethod]
@@ -74,16 +74,16 @@ namespace HA4IoT.Actuators.Tests
         {
             var endpoint = new TestBinaryStateEndpoint();
             var lamp = new Lamp(ComponentIdFactory.EmptyId, endpoint);
-            lamp.SetStateIdAlias(DefaultStateId.On, DefaultStateId.Level1);
+            lamp.SetStateIdAlias(BinaryStateId.On, LevelStateId.Level1);
 
             endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(0);
             endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(1);
-            lamp.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.Off);
+            lamp.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
 
-            lamp.SetActiveState(DefaultStateId.Level1);
+            lamp.SetState(LevelStateId.Level1);
             endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(1);
             endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(1);
-            lamp.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.On);
+            lamp.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
         }
     }
 }

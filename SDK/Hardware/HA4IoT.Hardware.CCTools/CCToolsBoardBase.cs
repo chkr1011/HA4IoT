@@ -15,28 +15,22 @@ namespace HA4IoT.Hardware.CCTools
 
         private readonly Dictionary<int, IOBoardPort> _openPorts = new Dictionary<int, IOBoardPort>();
 
-        private readonly IApiController _apiController;
         private readonly IPortExpanderDriver _portExpanderDriver;
         
         private readonly byte[] _committedState;
         private readonly byte[] _state;
         private byte[] _peekedState;
 
-        protected CCToolsBoardBase(DeviceId id, IPortExpanderDriver portExpanderDriver, IApiController apiController)
+        protected CCToolsBoardBase(DeviceId id, IPortExpanderDriver portExpanderDriver)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (portExpanderDriver == null) throw new ArgumentNullException(nameof(portExpanderDriver));
-            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
 
             Id = id;
             _portExpanderDriver = portExpanderDriver;
 
             _committedState = new byte[portExpanderDriver.StateSize];
             _state = new byte[portExpanderDriver.StateSize];
-
-            _apiController = apiController;
-
-            ExposeToApi();
         }
 
         public event EventHandler<IOBoardStateChangedEventArgs> StateChanged;
@@ -148,22 +142,7 @@ namespace HA4IoT.Hardware.CCTools
             }
         }
 
-        private void ExposeToApi()
-        {
-            _apiController.RouteRequest($"device/{Id}", HandleApiGet);
-            _apiController.RouteCommand($"device/{Id}", HandleApiPost);
-        }
-
-        private void HandleApiGet(IApiContext apiContext)
-        {
-            var result = new JsonObject();
-            result.SetNamedValue("state", GetState().ToJsonValue());
-            result.SetNamedValue("committed-state", GetCommittedState().ToJsonValue());
-
-            apiContext.Response = result;
-        }
-
-        private void HandleApiPost(IApiContext apiContext)
+        public void HandleApiCommand(IApiContext apiContext)
         {
             JsonArray state = apiContext.Request.GetNamedArray("state", null);
             if (state != null)
@@ -177,6 +156,15 @@ namespace HA4IoT.Hardware.CCTools
             {
                 CommitChanges();
             }
+        }
+
+        public void HandleApiRequest(IApiContext apiContext)
+        {
+            var result = new JsonObject();
+            result.SetNamedValue("state", GetState().ToJsonValue());
+            result.SetNamedValue("committed-state", GetCommittedState().ToJsonValue());
+
+            apiContext.Response = result;
         }
 
         internal BinaryState GetPortState(int pinNumber)

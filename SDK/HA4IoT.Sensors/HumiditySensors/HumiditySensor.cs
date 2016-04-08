@@ -12,6 +12,9 @@ namespace HA4IoT.Sensors.HumiditySensors
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
 
             Settings.SetValue(SingleValueSensorSettings.MinDelta, 0.15F);
+
+            SetState(new NumericSensorValue(0));
+
             endpoint.ValueChanged += (s, e) =>
             {
                 float oldValue = GetCurrentNumericValue();
@@ -21,7 +24,7 @@ namespace HA4IoT.Sensors.HumiditySensors
                     return;
                 }
 
-                SetCurrentValue(new NumericSensorValue(e.NewValue));
+                SetState(new NumericSensorValue(e.NewValue));
                 CurrentNumericValueChanged?.Invoke(this, new NumericSensorValueChangedEventArgs(oldValue, e.NewValue));
             };
         }
@@ -30,7 +33,7 @@ namespace HA4IoT.Sensors.HumiditySensors
 
         public float GetCurrentNumericValue()
         {
-            return ((NumericSensorValue) GetCurrentValue()).Value;
+            return ((NumericSensorValue) GetState()).Value;
         }
 
         private bool GetDifferenceIsLargeEnough(float value)

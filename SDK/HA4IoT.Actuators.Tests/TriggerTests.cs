@@ -111,11 +111,11 @@ namespace HA4IoT.Actuators.Tests
 
             testButton.GetPressedShortlyTrigger().OnTriggered(testOutput.GetSetNextStateAction());
 
-            testOutput.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.Off);
+            testOutput.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
             testButton.PressShortly();
-            testOutput.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.On);
+            testOutput.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
             testButton.PressShortly();
-            testOutput.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.Off);
+            testOutput.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
         }
     }
 }

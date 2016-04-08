@@ -53,12 +53,12 @@ namespace HA4IoT.Telemetry.Csv
             //QueueEntry(actuator, newValue.ToString(CultureInfo.InvariantCulture));
         }
 
-        protected override void OnStateMachineStateChanged(IStateMachine stateMachine, StateId newState)
+        protected override void OnStateMachineStateChanged(IStateMachine stateMachine, IComponentState newState)
         {
-            QueueEntry(stateMachine, newState.Value);
+            QueueEntry(stateMachine, newState);
         }
 
-        private void QueueEntry(IActuator actuator, string newState)
+        private void QueueEntry(IActuator actuator, IComponentState newState)
         {
             var entry = new ActuatorHistoryEntry(DateTime.Now, actuator.Id, newState);
             _actuatorHistory[actuator].AddEntry(entry);

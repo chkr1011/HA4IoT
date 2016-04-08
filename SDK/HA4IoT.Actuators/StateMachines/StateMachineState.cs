@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HA4IoT.Actuators.Parameters;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Actuators.StateMachines
@@ -13,14 +13,14 @@ namespace HA4IoT.Actuators.StateMachines
         private readonly List<Tuple<IStateMachine, StateId>> _actuators = new List<Tuple<IStateMachine, StateId>>();
         private readonly List<Tuple<IBinaryOutput, BinaryState>> _outputs = new List<Tuple<IBinaryOutput, BinaryState>>();
 
-        public StateMachineState(StateId id)
+        public StateMachineState(IComponentState id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
             Id = id;
         }
 
-        public StateId Id { get; }
+        public IComponentState Id { get; }
 
         public StateMachineState WithAction(Action action)
         {
@@ -60,7 +60,7 @@ namespace HA4IoT.Actuators.StateMachines
             return this;
         }
 
-        public virtual void Activate(params IHardwareParameter[] parameters)
+        public void Activate(params IHardwareParameter[] parameters)
         {
             foreach (var port in _outputs)
             {
@@ -69,7 +69,7 @@ namespace HA4IoT.Actuators.StateMachines
 
             foreach (var actuator in _actuators)
             {
-                actuator.Item1.SetActiveState(actuator.Item2, new IsPartOfPartialUpdateParameter());
+                actuator.Item1.SetState(actuator.Item2, HardwareParameter.IsPartOfPartialUpdate);
             }
 
             if (!parameters.Any(p => p is IsPartOfPartialUpdateParameter))
@@ -81,7 +81,7 @@ namespace HA4IoT.Actuators.StateMachines
 
                 foreach (var actuator in _actuators)
                 {
-                    actuator.Item1.SetActiveState(actuator.Item2);
+                    actuator.Item1.SetState(actuator.Item2);
                 }
             }
 
@@ -91,7 +91,7 @@ namespace HA4IoT.Actuators.StateMachines
             }
         }
 
-        public virtual void Deactivate(params IHardwareParameter[] parameters)
+        public void Deactivate(params IHardwareParameter[] parameters)
         {
         }
     }

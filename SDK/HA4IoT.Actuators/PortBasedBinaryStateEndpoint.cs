@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using HA4IoT.Actuators.Parameters;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 

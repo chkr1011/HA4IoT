@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.Devices.Enumeration;
 using Windows.Devices.I2c;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
 
@@ -39,6 +40,14 @@ namespace HA4IoT.Hardware
         }
 
         public DeviceId Id { get; }
+
+        public void HandleApiCommand(IApiContext apiContext)
+        {    
+        }
+
+        public void HandleApiRequest(IApiContext apiContext)
+        {
+        }
 
         public void Execute(I2CSlaveAddress address, Action<II2CDevice> action, bool useCache = true)
         {

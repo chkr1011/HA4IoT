@@ -56,7 +56,7 @@ namespace HA4IoT.Automations
         {
             _timeout = _timer.In(_slowDuration).Do(() =>
             {
-                _actuator.SetActiveState(new StateId("2"));
+                _actuator.SetState(new StateId("2"));
                 _timeout = _timer.In(_fastDuration).Do(() => _actuator.TryTurnOff());
             });
         }
@@ -69,7 +69,7 @@ namespace HA4IoT.Automations
             }
 
             _timeout?.Cancel();
-            _actuator?.SetActiveState(new StateId("1"));
+            _actuator?.SetState(new StateId("1"));
         }
     }
 }

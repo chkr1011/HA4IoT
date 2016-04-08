@@ -10,13 +10,14 @@ using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Core.Settings;
 using HA4IoT.Networking;
+using ComponentStateChangedEventArgs = HA4IoT.Contracts.Components.ComponentStateChangedEventArgs;
 
 namespace HA4IoT.Sensors
 {
     public abstract class SensorBase : ISensor
     {
-        private ISensorValue _currentValue = new NumericSensorValue(0);
-        private DateTime? _valueLastChanged;
+        private IComponentState _state = new UnknownComponentState();
+        private DateTime? _stateLastChanged;
 
         protected SensorBase(ComponentId id)
         {
@@ -24,11 +25,11 @@ namespace HA4IoT.Sensors
 
             Id = id;
 
-            Settings = new SettingsContainer(StoragePath.WithFilename("Sensors", id.Value, "Settings.json"));
+            Settings = new SettingsContainer(StoragePath.WithFilename("Components", id.Value, "Settings.json"));
             GeneralSettingsWrapper = new ActuatorSettingsWrapper(Settings);
         }
 
-        public event EventHandler<SensorValueChangedEventArgs> CurrentValueChanged;
+        public event EventHandler<ComponentStateChangedEventArgs> StateChanged;
 
         public ComponentId Id { get; }
 
@@ -36,74 +37,59 @@ namespace HA4IoT.Sensors
 
         public IActuatorSettingsWrapper GeneralSettingsWrapper { get; }
 
-        protected IApiController ApiController { get; set; }
-
         public virtual JsonObject ExportStatusToJsonObject()
         {
             var result = new JsonObject();
             result.SetNamedObject("settings", Settings.Export());
-            result.SetNamedValue("value", GetCurrentValue().ToJsonValue());
-            result.SetNamedValue("valueLastChanged", _valueLastChanged.ToJsonValue());
+            result.SetNamedValue("state", GetState().ToJsonValue());
+            result.SetNamedValue("stateLastChanged", _stateLastChanged.ToJsonValue());
 
             return result;
         }
-        
-        public ISensorValue GetCurrentValue()
+
+        public IComponentState GetState()
         {
-            return _currentValue;
+            return _state;
         }
 
         public virtual JsonObject ExportConfigurationToJsonObject()
         {
             var result = new JsonObject();
-            result.SetNamedValue("type", GetType().FullName.ToJsonValue());
+            result.SetNamedString("type", GetType().Name);
             result.SetNamedValue("settings", Settings.Export());
 
             return result;
         }
 
-        public void ExposeToApi(IApiController apiController)
+        protected void SetState(IComponentState newState)
         {
-            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
-
-            new ActuatorSettingsApiDispatcher(this, apiController).ExposeToApi();
-
-            apiController.RouteCommand($"sensor/{Id}/status", HandleApiCommand);
-            apiController.RouteRequest($"sensor/{Id}/status", HandleApiRequest);
-            
-            ApiController = apiController;
-        }
-
-        protected void SetCurrentValue(ISensorValue newValue)
-        {
-            if (newValue == null) throw new ArgumentNullException(nameof(newValue));
-
-            if (newValue.Equals(_currentValue))
+            if (newState.Equals(_state))
             {
                 return;
             }
            
-            var oldValue = _currentValue;
-            _currentValue = newValue;
-            _valueLastChanged = DateTime.Now;
-            OnCurrentValueChanged(oldValue, newValue);
+            var oldValue = _state;
+            _state = newState;
+
+            OnCurrentValueChanged(oldValue, newState);
         }
 
-        protected virtual void HandleApiCommand(IApiContext apiContext)
+        public virtual void HandleApiCommand(IApiContext apiContext)
         {
         }
 
-        protected virtual void HandleApiRequest(IApiContext apiContext)
+        public virtual void HandleApiRequest(IApiContext apiContext)
         {
             apiContext.Response = ExportStatusToJsonObject();
         }
 
-        protected void OnCurrentValueChanged(ISensorValue oldValue, ISensorValue newValue)
+        protected void OnCurrentValueChanged(IComponentState oldState, IComponentState newState)
         {
-            Log.Info($"Sensor '{Id}' updated value from '{oldValue}' to '{newValue}'");
+            Log.Info($"Sensor '{Id}' updated value from '{oldState}' to '{newState}'");
 
-            ApiController?.NotifyStateChanged(this);
-            CurrentValueChanged?.Invoke(this, new SensorValueChangedEventArgs(oldValue, newValue));
+            _stateLastChanged = DateTime.Now;
+
+            StateChanged?.Invoke(this, new ComponentStateChangedEventArgs(oldState, newState));
         }
     }
 }

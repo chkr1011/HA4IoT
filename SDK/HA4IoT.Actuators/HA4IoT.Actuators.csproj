@@ -117,7 +117,6 @@
     <Compile Include="Actions\HomeAutomationAction.cs" />
     <Compile Include="Actions\HomeAutomationActionExtensions.cs" />
     <Compile Include="ComponentExtensions.cs" />
-    <Compile Include="ActuatorSettingsApiDispatcher.cs" />
     <Compile Include="ActuatorSettings.cs" />
     <Compile Include="BinaryStateActuators\CustomBinaryStateActuator.cs" />
     <Compile Include="BinaryStateActuators\LogicalBinaryStateActuatorExtensions.cs" />
@@ -136,8 +135,6 @@
     <Compile Include="Triggers\IntervalTrigger.cs" />
     <Compile Include="Triggers\Trigger.cs" />
     <Compile Include="Triggers\TriggerExtensions.cs" />
-    <Compile Include="Parameters\IsPartOfLogicalUpdateParameter.cs" />
-    <Compile Include="Parameters\ForceUpdateStateParameter.cs" />
     <Compile Include="RollerShutters\RollerShutterExtensions.cs" />
     <Compile Include="ActuatorBase.cs" />
     <Compile Include="Connectors\RollerShutterWithRollerShutterButtonsConnector.cs" />

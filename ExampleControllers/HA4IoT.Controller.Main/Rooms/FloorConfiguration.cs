@@ -154,25 +154,25 @@ namespace HA4IoT.Controller.Main.Rooms
 
             floor.GetButton(Floor.ButtonStairsUpper).GetPressedShortlyTrigger().Triggered += (s, e) =>
             {
-                if (lamp.GetActiveState() == DefaultStateId.On)
+                if (lamp.GetState() == BinaryStateId.On)
                 {
-                    lamp.SetActiveState(DefaultStateId.Off, new AnimateParameter().WithReversedOrder());
+                    lamp.SetState(BinaryStateId.Off, new AnimateParameter().WithReversedOrder());
                 }
                 else
                 {
-                    lamp.SetActiveState(DefaultStateId.On, new AnimateParameter());
+                    lamp.SetState(BinaryStateId.On, new AnimateParameter());
                 }
             };
 
             floor.GetButton(Floor.ButtonStairsLowerUpper).GetPressedShortlyTrigger().Triggered += (s, e) =>
             {
-                if (lamp.GetActiveState() == DefaultStateId.On)
+                if (lamp.GetState() == BinaryStateId.On)
                 {
-                    lamp.SetActiveState(DefaultStateId.Off, new AnimateParameter());
+                    lamp.SetState(BinaryStateId.Off, new AnimateParameter());
                 }
                 else
                 {
-                    lamp.SetActiveState(DefaultStateId.On, new AnimateParameter().WithReversedOrder());
+                    lamp.SetState(BinaryStateId.On, new AnimateParameter().WithReversedOrder());
                 }
             };
         }

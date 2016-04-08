@@ -11,7 +11,7 @@ using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Sensors.MotionDetectors
 {
-    public class MotionDetector : StateValueSensorBase, IMotionDetector
+    public class MotionDetector : SensorBase, IMotionDetector
     {
         private readonly Trigger _motionDetectedTrigger = new Trigger();
         private readonly Trigger _detectionCompletedTrigger = new Trigger();
@@ -22,6 +22,8 @@ namespace HA4IoT.Sensors.MotionDetectors
             : base(id)
         {
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
+
+            SetState(MotionDetectorStateId.Idle);
 
             endpoint.MotionDetected += (s, e) => UpdateState(MotionDetectorStateId.MotionDetected);
             endpoint.DetectionCompleted += (s, e) => UpdateState(MotionDetectorStateId.Idle);
@@ -45,7 +47,7 @@ namespace HA4IoT.Sensors.MotionDetectors
             return _detectionCompletedTrigger;
         }
 
-        protected override void HandleApiCommand(IApiContext apiContext)
+        public override void HandleApiCommand(IApiContext apiContext)
         {
             base.HandleApiCommand(apiContext);
             
@@ -82,7 +84,7 @@ namespace HA4IoT.Sensors.MotionDetectors
                 return;
             }
 
-            SetActiveState(newState);
+            SetState(newState);
 
             if (newState == MotionDetectorStateId.MotionDetected)
             {

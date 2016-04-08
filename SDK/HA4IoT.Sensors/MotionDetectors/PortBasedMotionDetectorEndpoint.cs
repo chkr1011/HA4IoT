@@ -21,7 +21,7 @@ namespace HA4IoT.Sensors.MotionDetectors
         {
             // The relay at the motion detector is awlays held to high.
             // The signal is set to false if motion is detected.
-            if (eventArgs.NewValue == BinaryState.Low)
+            if (eventArgs.NewState == BinaryState.Low)
             {
                 MotionDetected?.Invoke(this, EventArgs.Empty);
             }

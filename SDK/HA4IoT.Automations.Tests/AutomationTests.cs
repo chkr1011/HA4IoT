@@ -26,13 +26,13 @@ namespace HA4IoT.Automations.Tests
                 .WithTrigger(testButton.GetPressedShortlyTrigger())
                 .WithActionIfConditionsFulfilled(testOutput.GetSetNextStateAction());
 
-            testOutput.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.Off);
+            testOutput.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
             testButton.PressShortly();
-            testOutput.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.On);
+            testOutput.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
             testButton.PressShortly();
-            testOutput.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.Off);
+            testOutput.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
             testButton.PressShortly();
-            testOutput.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.On);
+            testOutput.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
         }
 
         [TestMethod]
@@ -52,14 +52,14 @@ namespace HA4IoT.Automations.Tests
                 .WithCondition(ConditionRelation.And, new TimeRangeCondition(testController.Timer).WithStart(TimeSpan.FromHours(1)).WithEnd(TimeSpan.FromHours(2)))
                 .WithActionIfConditionsFulfilled(testOutput.GetSetNextStateAction());
             
-            testOutput.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.Off);
+            testOutput.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
             testController.SetTime(TimeSpan.FromHours(0));
             testButton.PressShortly();
-            testOutput.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.Off);
+            testOutput.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
 
             testController.SetTime(TimeSpan.FromHours(1.5));
             testButton.PressShortly();
-            testOutput.GetActiveState().ShouldBeEquivalentTo(DefaultStateId.On);
+            testOutput.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
         }
 
         private Automation CreateAutomation()

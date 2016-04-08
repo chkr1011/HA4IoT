@@ -85,12 +85,5 @@ namespace HA4IoT.Core
         {
             return Settings.Export();
         }
-
-        public void ExposeToApi(IApiController apiController)
-        {
-            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
-
-            new AreaSettingsApiDispatcher(this, apiController).ExposeToApi();
-        }
     }
 }

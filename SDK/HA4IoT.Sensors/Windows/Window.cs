@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Windows.Data.Json;
-using HA4IoT.Actuators;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Components;
@@ -12,12 +11,10 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.Sensors.Windows
 {
-    public class Window : ActuatorBase, IWindow
+    public class Window : SensorBase, IWindow
     {
         private readonly Trigger _openedTrigger = new Trigger();
         private readonly Trigger _closedTrigger = new Trigger();
-
-        private StateId _state = CasementStateId.Closed;
 
         public Window(ComponentId id) 
             : base(id)
@@ -34,11 +31,6 @@ namespace HA4IoT.Sensors.Windows
         public ITrigger GetClosedTrigger()
         {
             return _closedTrigger;
-        }
-
-        public override StateId GetActiveState()
-        {
-            return _state;
         }
 
         public Window WithCasement(Casement casement)
@@ -101,10 +93,10 @@ namespace HA4IoT.Sensors.Windows
 
         private void OnCasementStateChanged()
         {
-            var oldState = _state;
-            _state = GetActiveStateInternal();
+            var oldState = GetState();
+            var newState = GetStateInternal();
 
-            if (oldState.Equals(_state))
+            if (oldState.Equals(newState))
             {
                 return;
             }
@@ -114,10 +106,10 @@ namespace HA4IoT.Sensors.Windows
                 return;
             }
 
-            OnActiveStateChanged(oldState);
+            SetState(newState);
         }
 
-        private StateId GetActiveStateInternal()
+        private StateId GetStateInternal()
         {
             if (Casements.Any(c => c.GetState() == CasementStateId.Open))
             {

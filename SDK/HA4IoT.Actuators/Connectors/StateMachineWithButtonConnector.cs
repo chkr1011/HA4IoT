@@ -12,7 +12,7 @@ namespace HA4IoT.Actuators.Connectors
 
             if (stateMachineActuator.GetSupportsOffState())
             {
-                button.GetPressedLongTrigger().Attach(() => stateMachineActuator.SetActiveState(DefaultStateId.Off));
+                button.GetPressedLongTrigger().Attach(() => stateMachineActuator.SetState(BinaryStateId.Off));
             }
 
             return stateMachineActuator;

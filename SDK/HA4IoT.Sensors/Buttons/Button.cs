@@ -12,7 +12,7 @@ using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Sensors.Buttons
 {
-    public class Button : StateValueSensorBase, IButton
+    public class Button : SensorBase, IButton
     {
         private readonly Stopwatch _stopwatch = new Stopwatch();
         private readonly Trigger _pressedShortlyTrigger = new Trigger();
@@ -27,11 +27,11 @@ namespace HA4IoT.Sensors.Buttons
 
             _settings = new ButtonSettingsWrapper(Settings);
 
+            SetState(ButtonStateId.Released);
+
             timer.Tick += CheckForTimeout;
             endpoint.Pressed += (s, e) => HandleInputStateChanged(ButtonStateId.Pressed);
             endpoint.Released += (s, e) => HandleInputStateChanged(ButtonStateId.Released);
-
-            SetActiveState(ButtonStateId.Released);
         }
         
         public ITrigger GetPressedShortlyTrigger()
@@ -44,7 +44,7 @@ namespace HA4IoT.Sensors.Buttons
             return _pressedLongTrigger;
         }
 
-        protected override void HandleApiCommand(IApiContext apiContext)
+        public override void HandleApiCommand(IApiContext apiContext)
         {
             string action = apiContext.Request.GetNamedString("duration", string.Empty);
             if (action.Equals(ButtonPressedDuration.Long.ToString(), StringComparison.OrdinalIgnoreCase))
@@ -64,13 +64,13 @@ namespace HA4IoT.Sensors.Buttons
                 return;
             }
 
-            SetActiveState(state);
+            SetState(state);
             InvokeTriggers();
         }
 
         private void InvokeTriggers()
         {
-            if (GetActiveState() == ButtonStateId.Pressed)
+            if (GetState() == ButtonStateId.Pressed)
             {
                 if (!_pressedLongTrigger.IsAnyAttached)
                 {
@@ -81,7 +81,7 @@ namespace HA4IoT.Sensors.Buttons
                     _stopwatch.Restart();
                 }
             }
-            else if (GetActiveState() == ButtonStateId.Released)
+            else if (GetState() == ButtonStateId.Released)
             {
                 if (!_stopwatch.IsRunning)
                 {

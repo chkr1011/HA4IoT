@@ -45,13 +45,13 @@ namespace HA4IoT.Actuators.Animations
 
         public DirectionAnimation WithTargetOnState()
         {
-            _targetState = DefaultStateId.On;
+            _targetState = BinaryStateId.On;
             return this;
         }
 
         public DirectionAnimation WithTargetOffState()
         {
-            _targetState = DefaultStateId.Off;
+            _targetState = BinaryStateId.Off;
             return this;
         }
 

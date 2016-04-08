@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 
@@ -57,6 +58,14 @@ namespace HA4IoT.Hardware.RemoteSwitch
             }
 
             return this;
+        }
+
+        public void HandleApiCommand(IApiContext apiContext)
+        {
+        }
+
+        public void HandleApiRequest(IApiContext apiContext)
+        {
         }
 
         private void RefreshStates()

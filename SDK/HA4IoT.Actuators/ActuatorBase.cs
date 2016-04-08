@@ -5,6 +5,7 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Core.Settings;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Core.Settings;
 using HA4IoT.Networking;
@@ -13,7 +14,7 @@ namespace HA4IoT.Actuators
 {
     public abstract class ActuatorBase : IActuator
     {
-        private IApiController _apiController;
+        private DateTime? _stateLastChanged;
 
         protected ActuatorBase(ComponentId id)
         {
@@ -21,11 +22,11 @@ namespace HA4IoT.Actuators
 
             Id = id;
 
-            Settings = new SettingsContainer(StoragePath.WithFilename("Actuators", id.Value, "Settings.json"));
+            Settings = new SettingsContainer(StoragePath.WithFilename("Components", id.Value, "Settings.json"));
             GeneralSettingsWrapper = new ActuatorSettingsWrapper(Settings);
         }
 
-        public event EventHandler<StateChangedEventArgs> ActiveStateChanged;
+        public event EventHandler<ComponentStateChangedEventArgs> StateChanged;
 
         public ComponentId Id { get; }
 
@@ -37,50 +38,41 @@ namespace HA4IoT.Actuators
         {
             var result = new JsonObject();
             result.SetNamedObject("settings", Settings.Export());
-            result.SetNamedString("state", GetActiveState().Value);
+            result.SetNamedValue("state", GetState().ToJsonValue());
 
             return result;
         }
 
-        public abstract StateId GetActiveState();
+        public abstract IComponentState GetState();
+
+        public abstract void SetState(IComponentState state, params IHardwareParameter[] parameters);
         
         public virtual JsonObject ExportConfigurationToJsonObject()
         {
             var result = new JsonObject();
-            result.SetNamedValue("type", GetType().FullName.ToJsonValue());
-            result.SetNamedValue("settings", Settings.Export());
+            result.SetNamedString("type", GetType().Name);
+            result.SetNamedObject("settings", Settings.Export());
+            result.SetNamedValue("state", GetState().ToJsonValue());
+            result.SetNamedDateTime("stateLastChanged", _stateLastChanged);
 
             return result;
         }
 
-        public void ExposeToApi(IApiController apiController)
-        {
-            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
-
-            new ActuatorSettingsApiDispatcher(this, apiController).ExposeToApi();
-
-            apiController.RouteCommand($"actuator/{Id}/status", HandleApiCommand);
-            apiController.RouteRequest($"actuator/{Id}/status", HandleApiRequest);
-
-            _apiController = apiController;
-        }
-
-        protected virtual void HandleApiCommand(IApiContext apiContext)
+        public virtual void HandleApiCommand(IApiContext apiContext)
         {
         }
 
-        protected virtual void HandleApiRequest(IApiContext apiContext)
+        public virtual void HandleApiRequest(IApiContext apiContext)
         {
             apiContext.Response = ExportStatusToJsonObject();
         }
 
-        protected void OnActiveStateChanged(StateId oldState)
+        protected void OnActiveStateChanged(IComponentState oldState, IComponentState newState)
         {
-            StateId newState = GetActiveState();
-            Log.Info($"Actuator '{Id}' updated state from '{oldState}' to '{newState}'");
+            _stateLastChanged = DateTime.Now;
 
-            _apiController?.NotifyStateChanged(this);
-            ActiveStateChanged?.Invoke(this, new StateChangedEventArgs(oldState, newState));
+            Log.Info($"Actuator '{Id}' updated state from '{oldState}' to '{newState}'");
+            StateChanged?.Invoke(this, new ComponentStateChangedEventArgs(oldState, newState));
         }
     }
 }

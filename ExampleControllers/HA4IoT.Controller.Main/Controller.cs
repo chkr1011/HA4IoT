@@ -37,7 +37,7 @@ namespace HA4IoT.Controller.Main
             SetupTwitterClient();
             SetupTelegramBot();
 
-            var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>(), ApiController);
+            var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>());
 
             var configurationParser = new ConfigurationParser(this);
             configurationParser.RegisterConfigurationExtender(new CCToolsConfigurationExtender(configurationParser, this));
@@ -111,14 +111,14 @@ namespace HA4IoT.Controller.Main
             else if (Regex.IsMatch(e.Message.Text, "Licht.*Büro.*an", RegexOptions.IgnoreCase))
             {
                 var light = GetComponent<IStateMachine>(new ComponentId("Office.CombinedCeilingLights"));
-                light.SetActiveState(DefaultStateId.On);
+                light.SetState(BinaryStateId.On);
 
                 await e.TelegramBot.TrySendMessageAsync(e.Message.CreateResponse("Ich habe das Licht für dich eingeschaltet!"));
             }
             else if (Regex.IsMatch(e.Message.Text, "Licht.*Büro.*aus", RegexOptions.IgnoreCase))
             {
                 var light = GetComponent<IStateMachine>(new ComponentId("Office.CombinedCeilingLights"));
-                light.SetActiveState(DefaultStateId.Off);
+                light.SetState(BinaryStateId.Off);
 
                 await
                     e.TelegramBot.TrySendMessageAsync(e.Message.CreateResponse("Ich habe das Licht für dich ausgeschaltet!"));

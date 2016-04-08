@@ -121,7 +121,6 @@
     <Compile Include="AutomationBase.cs" />
     <Compile Include="AutomationIdFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AutomationSettingsApiDispatcher.cs" />
     <Compile Include="TurnOnAndOffAutomationSettingsWrapper.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.Automations.rd.xml" />
   </ItemGroup>

@@ -18,11 +18,11 @@ namespace HA4IoT.Sensors.Buttons
 
         private void DispatchState(object sender, BinaryStateChangedEventArgs e)
         {
-            if (e.NewValue == BinaryState.High)
+            if (e.NewState == BinaryState.High)
             {
                 Pressed?.Invoke(this, EventArgs.Empty);
             }
-            else if (e.NewValue == BinaryState.Low)
+            else if (e.NewState == BinaryState.Low)
             {
                 Released?.Invoke(this, EventArgs.Empty);
             }

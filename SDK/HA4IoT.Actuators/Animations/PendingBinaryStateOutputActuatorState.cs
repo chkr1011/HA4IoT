@@ -38,7 +38,7 @@ namespace HA4IoT.Actuators.Animations
 
         public void Apply()
         {
-            Actuator.SetActiveState(State, Parameters.ToArray());
+            Actuator.SetState(State, Parameters.ToArray());
         }
     }
 }

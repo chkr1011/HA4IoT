@@ -82,8 +82,8 @@ namespace HA4IoT.Automations
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
-            _turnOnActions.Add(() => actuator.SetActiveState(DefaultStateId.On));
-            _turnOffActions.Add(() => actuator.SetActiveState(DefaultStateId.Off));
+            _turnOnActions.Add(() => actuator.SetState(BinaryStateId.On));
+            _turnOffActions.Add(() => actuator.SetState(BinaryStateId.Off));
             
             return this;
         }
@@ -150,7 +150,7 @@ namespace HA4IoT.Automations
             if (actuators == null) throw new ArgumentNullException(nameof(actuators));
 
             _disablingConditionsValidator.WithCondition(ConditionRelation.Or,
-                new Condition().WithExpression(() => actuators.Any(a => a.GetActiveState() == DefaultStateId.On)));
+                new Condition().WithExpression(() => actuators.Any(a => a.GetState() == BinaryStateId.On)));
 
             return this;
         }
