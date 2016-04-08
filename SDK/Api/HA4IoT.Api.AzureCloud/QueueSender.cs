@@ -45,7 +45,7 @@ namespace HA4IoT.Api.AzureCloud
                     }
                     else
                     {
-                        Log.Warning("Failed to send Azure queue message (Error code: {0}).", result.StatusCode);
+                        Log.Warning($"Failed to send Azure queue message (Error code: {result.StatusCode}).");
                     }
                 }
             }

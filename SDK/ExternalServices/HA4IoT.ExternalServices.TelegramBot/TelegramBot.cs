@@ -66,7 +66,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
                     throw new InvalidOperationException($"Sending Telegram message failed (StatusCode={response.StatusCode}).");
                 }
 
-                Log.Info("Sent Telegram message '{0}' to chat {1}.", message.Text, message.ChatId);
+                Log.Info($"Sent Telegram message '{message.Text}' to chat {message.ChatId}.");
             }
         }
 

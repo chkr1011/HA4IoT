@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
 using Windows.Storage;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Configuration;
@@ -83,7 +82,7 @@ namespace HA4IoT.Configuration
             string filename = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Configuration.xml");
             if (!File.Exists(filename))
             {
-                Log.Info("Skipped loading XML configuration because file '{0}' does not exist.", filename);
+                Log.Info($"Skipped loading XML configuration because file '{filename}' does not exist.");
                 return null;
             }
 
@@ -105,7 +104,7 @@ namespace HA4IoT.Configuration
                 }
                 catch (Exception exception)
                 {
-                    Log.Warning(exception, "Unable to parse service node '{0}'.", serviceElement.Name);
+                    Log.Warning(exception, $"Unable to parse service node '{serviceElement.Name}'.");
                 }
             }
         }
@@ -122,7 +121,7 @@ namespace HA4IoT.Configuration
                 }
                 catch (Exception exception)
                 {
-                    Log.Warning(exception, "Unable to parse device node '{0}'.", deviceElement.Name);
+                    Log.Warning(exception, $"Unable to parse device node '{deviceElement.Name}'.");
                 }
             }
         }
@@ -138,7 +137,7 @@ namespace HA4IoT.Configuration
                 }
                 catch (Exception exception)
                 {
-                    Log.Warning(exception, "Unable to parse area node '{0}'.", areaElement.Name);
+                    Log.Warning(exception, $"Unable to parse area node '{areaElement.Name}'.");
                 }
             }
         }
@@ -156,7 +155,7 @@ namespace HA4IoT.Configuration
                 }
                 catch (Exception exception)
                 {
-                    Log.Warning(exception, "Unable to parse component node '{0}'.", componentElement.Name);
+                    Log.Warning(exception, $"Unable to parse component node '{componentElement.Name}'.");
                 }
             }
 

@@ -43,34 +43,34 @@ namespace HA4IoT.Logger
             apiController.RouteRequest("trace", HandleApiGet);
         }
 
-        public void Verbose(string message, params object[] parameters)
+        public void Verbose(string message)
         {
-            Publish(LogEntrySeverity.Verbose, message, parameters);
+            Publish(LogEntrySeverity.Verbose, message);
         }
 
-        public void Info(string message, params object[] parameters)
+        public void Info(string message)
         {
-            Publish(LogEntrySeverity.Info, message, parameters);
+            Publish(LogEntrySeverity.Info, message);
         }
 
-        public void Warning(string message, params object[] parameters)
+        public void Warning(string message)
         {
-            Publish(LogEntrySeverity.Warning, message, parameters);
+            Publish(LogEntrySeverity.Warning, message);
         }
 
-        public void Warning(Exception exception, string message, params object[] parameters)
+        public void Warning(Exception exception, string message)
         {
-            Publish(LogEntrySeverity.Warning, string.Format(message, parameters) + Environment.NewLine + exception);
+            Publish(LogEntrySeverity.Warning, message + Environment.NewLine + exception);
         }
 
-        public void Error(string message, params object[] parameters)
+        public void Error(string message)
         {
-            Publish(LogEntrySeverity.Error, message, parameters);
+            Publish(LogEntrySeverity.Error, message);
         }
 
-        public void Error(Exception exception, string message, params object[] parameters)
+        public void Error(Exception exception, string message)
         {
-            Publish(LogEntrySeverity.Error, string.Format(message, parameters) + Environment.NewLine + exception);
+            Publish(LogEntrySeverity.Error, message + Environment.NewLine + exception);
         }
 
         private void Publish(LogEntrySeverity type, string message, params object[] parameters)

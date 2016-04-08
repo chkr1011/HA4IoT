@@ -98,7 +98,7 @@ namespace HA4IoT.Hardware.CCTools
             stopwatch.Stop();
             if (stopwatch.ElapsedMilliseconds > 25)
             {
-                Log.Warning("Fetching inputs took {0}ms.", stopwatch.ElapsedMilliseconds);
+                Log.Warning($"Fetching inputs took {stopwatch.ElapsedMilliseconds}ms.");
             }
 
             foreach (var portExpanderController in inputDevices)
