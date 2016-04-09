@@ -13,13 +13,11 @@ namespace HA4IoT.Hardware.RemoteSwitch
         private readonly Dictionary<int, RemoteSocketOutputPort> _ports = new Dictionary<int, RemoteSocketOutputPort>();
         private readonly LPD433MHzSignalSender _sender;
 
-        public RemoteSocketController(DeviceId id, LPD433MHzSignalSender sender, IHomeAutomationTimer timer)
+        public RemoteSocketController(LPD433MHzSignalSender sender, IHomeAutomationTimer timer)
         {
-            if (id == null) throw new ArgumentNullException(nameof(id));
             if (sender == null) throw new ArgumentNullException(nameof(sender));
             if (timer == null) throw new ArgumentNullException(nameof(timer));
 
-            Id = id;
             _sender = sender;
 
             // Ensure that the state of the remote switch is restored if the original remote is used
@@ -27,7 +25,7 @@ namespace HA4IoT.Hardware.RemoteSwitch
             timer.Every(TimeSpan.FromSeconds(5)).Do(RefreshStates);
         }
 
-        public DeviceId Id { get; }
+        public DeviceId Id { get; } = new DeviceId("RemoteSocketController");
 
         public IBinaryOutput GetOutput(int number)
         {

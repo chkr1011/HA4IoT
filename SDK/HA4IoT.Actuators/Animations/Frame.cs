@@ -7,7 +7,7 @@ namespace HA4IoT.Actuators.Animations
 {
     public class Frame
     {
-        private readonly List<PendingBinaryStateOutputActuatorState> _states = new List<PendingBinaryStateOutputActuatorState>();
+        private readonly List<PendingActuatorState> _states = new List<PendingActuatorState>();
 
         public TimeSpan StartTime { get; private set; }
 
@@ -23,7 +23,7 @@ namespace HA4IoT.Actuators.Animations
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
-            _states.Add(new PendingBinaryStateOutputActuatorState().WithActuator(actuator).WithState(state));
+            _states.Add(new PendingActuatorState().WithActuator(actuator).WithState(state));
             return this;
         }
 

@@ -70,8 +70,8 @@ namespace HA4IoT.Controller.Main.Rooms
             WindowRight
         }
 
-        public BedroomConfiguration(Controller controller, CCToolsBoardController ccToolsController, RemoteSocketController remoteSocketController)
-            : base(controller, ccToolsController, remoteSocketController)
+        public BedroomConfiguration(Controller controller)
+            : base(controller)
         {
         }
 

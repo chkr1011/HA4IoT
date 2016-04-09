@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HA4IoT.Configuration;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
@@ -24,24 +23,25 @@ namespace HA4IoT.Controller.Main
 {
     internal class Controller : ControllerBase
     {
+        private const int LedGpio = 22;
+
         protected override void Initialize()
         {
-            InitializeHealthMonitor(22);
-
-            var pi2PortController = new Pi2PortController();
+            InitializeHealthMonitor(LedGpio);
 
             AddDevice(new BuiltInI2CBus());
-            AddDevice(new I2CHardwareBridge(new DeviceId("HB"), new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer));
+
+            var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>());
+
+            AddDevice(new Pi2PortController());
+            AddDevice(ccToolsBoardController);
+            AddDevice(new I2CHardwareBridge(new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer));
+            AddDevice(SetupRemoteSwitchController());
+
             RegisterService(new OpenWeatherMapWeatherService(Timer, ApiController));
 
             SetupTwitterClient();
             SetupTelegramBot();
-
-            var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>());
-
-            var configurationParser = new ConfigurationParser(this);
-            configurationParser.RegisterConfigurationExtender(new CCToolsConfigurationExtender(configurationParser, this));
-            configurationParser.ParseConfiguration();
 
             ccToolsBoardController.CreateHSPE16InputOnly(Device.Input0, new I2CSlaveAddress(42));
             ccToolsBoardController.CreateHSPE16InputOnly(Device.Input1, new I2CSlaveAddress(43));
@@ -50,18 +50,16 @@ namespace HA4IoT.Controller.Main
             ccToolsBoardController.CreateHSPE16InputOnly(Device.Input4, new I2CSlaveAddress(46));
             ccToolsBoardController.CreateHSPE16InputOnly(Device.Input5, new I2CSlaveAddress(44));
 
-            RemoteSocketController remoteSwitchController = SetupRemoteSwitchController();
-
-            new BedroomConfiguration(this, ccToolsBoardController, remoteSwitchController).Setup();
-            new OfficeConfiguration(this, ccToolsBoardController, remoteSwitchController).Setup();
-            new UpperBathroomConfiguration(this, ccToolsBoardController, remoteSwitchController).Setup();
-            new ReadingRoomConfiguration(this, ccToolsBoardController, remoteSwitchController).Setup();
-            new ChildrensRoomRoomConfiguration(this, ccToolsBoardController, remoteSwitchController).Setup();
-            new KitchenConfiguration(this, ccToolsBoardController, remoteSwitchController).Setup();
-            new FloorConfiguration(this, ccToolsBoardController, remoteSwitchController).Setup();
-            new LowerBathroomConfiguration(this, ccToolsBoardController, remoteSwitchController).Setup();
-            new StoreroomConfiguration(this, ccToolsBoardController, remoteSwitchController).Setup();
-            new LivingRoomConfiguration(this, ccToolsBoardController, remoteSwitchController).Setup();
+            new BedroomConfiguration(this).Setup();
+            new OfficeConfiguration(this).Setup();
+            new UpperBathroomConfiguration(this).Setup();
+            new ReadingRoomConfiguration(this).Setup();
+            new ChildrensRoomRoomConfiguration(this).Setup();
+            new KitchenConfiguration(this).Setup();
+            new FloorConfiguration(this).Setup();
+            new LowerBathroomConfiguration(this).Setup();
+            new StoreroomConfiguration(this).Setup();
+            new LivingRoomConfiguration(this).Setup();
 
             ////var localCsvFileWriter = new CsvHistory(Logger, ApiController);
             ////localCsvFileWriter.ConnectActuators(this);
@@ -69,7 +67,7 @@ namespace HA4IoT.Controller.Main
 
             InitializeAzureCloudApiEndpoint();
 
-            var ioBoardsInterruptMonitor = new InterruptMonitor(pi2PortController.GetInput(4));
+            var ioBoardsInterruptMonitor = new InterruptMonitor(GetDevice<Pi2PortController>().GetInput(4));
             ioBoardsInterruptMonitor.InterruptDetected += (s, e) => ccToolsBoardController.PollInputBoardStates();
             ioBoardsInterruptMonitor.StartPollingAsync();
         }
@@ -155,7 +153,7 @@ namespace HA4IoT.Controller.Main
             var brennenstuhl = new BrennenstuhlCodeSequenceProvider();
             var ldp433MHzSender = new LPD433MHzSignalSender(i2cHardwareBridge, LDP433MhzSenderPin, ApiController);
 
-            var remoteSwitchController = new RemoteSocketController(new DeviceId("RemoteSocketController"), ldp433MHzSender, Timer)
+            var remoteSwitchController = new RemoteSocketController(ldp433MHzSender, Timer)
                 .WithRemoteSocket(0, brennenstuhl.GetSequencePair(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A));
 
             return remoteSwitchController;

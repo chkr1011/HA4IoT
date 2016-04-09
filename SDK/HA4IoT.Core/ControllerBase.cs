@@ -249,6 +249,7 @@ namespace HA4IoT.Core
                 HomeAutomationTimer timer = InitializeTimer();
 
                 TryInitialize();
+
                 LoadNonControllerSettings();
 
                 _httpServer.Start(80);

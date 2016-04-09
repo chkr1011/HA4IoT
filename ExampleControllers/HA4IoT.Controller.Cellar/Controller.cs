@@ -53,6 +53,7 @@ namespace HA4IoT.Controller.Cellar
             var pi2PortController = new Pi2PortController();
 
             AddDevice(new BuiltInI2CBus());
+
             RegisterService(new OpenWeatherMapWeatherService(Timer, ApiController));
 
             var ccToolsFactory = new CCToolsBoardController(this, GetDevice<II2CBus>());

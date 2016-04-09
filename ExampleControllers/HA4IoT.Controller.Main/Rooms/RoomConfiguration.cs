@@ -7,22 +7,19 @@ namespace HA4IoT.Controller.Main.Rooms
 {
     internal abstract class RoomConfiguration
     {
-        public RoomConfiguration(
-            IController controller, 
-            CCToolsBoardController ccToolsBoardController,
-            RemoteSocketController remoteSocketController)
+        protected RoomConfiguration(
+            IController controller)
         {
             if (controller == null) throw new ArgumentNullException(nameof(controller));
-            if (ccToolsBoardController == null) throw new ArgumentNullException(nameof(ccToolsBoardController));
 
             Controller = controller;
-            CCToolsBoardController = ccToolsBoardController;
-            RemoteSocketController = remoteSocketController;
+            CCToolsBoardController = controller.GetDevice<CCToolsBoardController>();
+            RemoteSocketController = controller.GetDevice<RemoteSocketController>();
         }
 
         public IController Controller { get; }
         public CCToolsBoardController CCToolsBoardController { get; }
-        public RemoteSocketController RemoteSocketController { get; set; }
+        public RemoteSocketController RemoteSocketController { get; }
 
         public abstract void Setup();
     }

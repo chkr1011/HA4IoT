@@ -62,7 +62,6 @@ namespace HA4IoT.Hardware.I2CHardwareBridge
         private IDevice ParseI2CHardwareBridge(XElement element)
         {
             return new I2CHardwareBridge(
-                new DeviceId(element.GetMandatoryStringFromAttribute("id")),
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
                 Controller.GetDevice<II2CBus>(new DeviceId(element.GetStringFromAttribute("i2cBus", "II2CBus.default"))),
                 Controller.Timer);

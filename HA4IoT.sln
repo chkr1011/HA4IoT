@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExampleControllers", "ExampleControllers", "{CD5D2CCD-44D0-46E5-BE14-3B377048E0A2}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Controllers", "Controllers", "{CD5D2CCD-44D0-46E5-BE14-3B377048E0A2}"
 	ProjectSection(SolutionItems) = preProject
 		ExampleControllers\Setup.ps1 = ExampleControllers\Setup.ps1
 	EndProjectSection
@@ -108,6 +108,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Components.Tests", "SDK\HA4IoT.Components.Tests\HA4IoT.Components.Tests.csproj", "{6A0180B5-1152-4610-96ED-8ED106A47599}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.ManagementApp", "App\HA4IoT.ManagementApp\HA4IoT.ManagementApp.csproj", "{F931A02F-DCAD-4301-8DAD-B7D722A9C410}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Default", "ExampleControllers\HA4IoT.Controller.Default\HA4IoT.Controller.Default.csproj", "{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -842,6 +844,26 @@ Global
 		{F931A02F-DCAD-4301-8DAD-B7D722A9C410}.Release|x64.Build.0 = Release|Any CPU
 		{F931A02F-DCAD-4301-8DAD-B7D722A9C410}.Release|x86.ActiveCfg = Release|Any CPU
 		{F931A02F-DCAD-4301-8DAD-B7D722A9C410}.Release|x86.Build.0 = Release|Any CPU
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Debug|ARM.ActiveCfg = Debug|ARM
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Debug|ARM.Build.0 = Debug|ARM
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Debug|ARM.Deploy.0 = Debug|ARM
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Debug|x64.ActiveCfg = Debug|x64
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Debug|x64.Build.0 = Debug|x64
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Debug|x64.Deploy.0 = Debug|x64
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Debug|x86.ActiveCfg = Debug|x86
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Debug|x86.Build.0 = Debug|x86
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Debug|x86.Deploy.0 = Debug|x86
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Release|Any CPU.ActiveCfg = Release|x86
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Release|ARM.ActiveCfg = Release|ARM
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Release|ARM.Build.0 = Release|ARM
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Release|ARM.Deploy.0 = Release|ARM
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Release|x64.ActiveCfg = Release|x64
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Release|x64.Build.0 = Release|x64
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Release|x64.Deploy.0 = Release|x64
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Release|x86.ActiveCfg = Release|x86
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Release|x86.Build.0 = Release|x86
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -893,5 +915,6 @@ Global
 		{60F9E539-3FF5-40DE-B0C4-BE99CAE57736} = {982ABB4E-A5DC-4C78-87A3-30BF49DD5764}
 		{6A0180B5-1152-4610-96ED-8ED106A47599} = {982ABB4E-A5DC-4C78-87A3-30BF49DD5764}
 		{F931A02F-DCAD-4301-8DAD-B7D722A9C410} = {20B098BA-1C68-4602-8BBA-902E7E3CA0B4}
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4} = {CD5D2CCD-44D0-46E5-BE14-3B377048E0A2}
 	EndGlobalSection
 EndGlobal

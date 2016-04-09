@@ -12,8 +12,8 @@ namespace HA4IoT.Actuators.BinaryStateActuators
         {
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
 
-            AddState(new StateMachineState(BinaryStateId.Off).WithAction(() => endpoint.TurnOff()));
-            AddState(new StateMachineState(BinaryStateId.On).WithAction(() => endpoint.TurnOn()));
+            AddState(new StateMachineState(BinaryStateId.Off).WithAction(endpoint.TurnOff));
+            AddState(new StateMachineState(BinaryStateId.On).WithAction(endpoint.TurnOn));
 
             SetInitialState(BinaryStateId.Off);
         }

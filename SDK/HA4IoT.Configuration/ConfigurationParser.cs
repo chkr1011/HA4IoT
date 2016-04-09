@@ -27,8 +27,6 @@ namespace HA4IoT.Configuration
             if (controller == null) throw new ArgumentNullException(nameof(controller));
 
             _controller = controller;
-
-            RegisterConfigurationExtender(new DefaultConfigurationExtender(this, controller));
         }
 
         public void RegisterConfigurationExtender(IConfigurationExtender configurationExtender)

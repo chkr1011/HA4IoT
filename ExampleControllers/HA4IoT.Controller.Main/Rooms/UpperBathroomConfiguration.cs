@@ -3,7 +3,6 @@ using HA4IoT.Actuators.BinaryStateActuators;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Automations;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
@@ -12,7 +11,6 @@ using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
-using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Sensors.TemperatureSensors;
@@ -37,8 +35,8 @@ namespace HA4IoT.Controller.Main.Rooms
             CombinedCeilingLights
         }
 
-        public UpperBathroomConfiguration(IController controller, CCToolsBoardController ccToolsBoardController, RemoteSocketController remoteSocketController) 
-            : base(controller, ccToolsBoardController, remoteSocketController)
+        public UpperBathroomConfiguration(IController controller) 
+            : base(controller)
         {
         }
 

@@ -36,39 +36,38 @@ namespace HA4IoT.Controller.Demo
         
         protected override void Initialize()
         {
-            // Setup the health monitor which tracks the average tick time and let an LED blink if everything is healthy.
             InitializeHealthMonitor(LedGpio);
 
-            // Setup the wrapper for I2C bus access.
-            AddDevice(new BuiltInI2CBus());
-
-            // Setup the controller which provides ports from the GPIOs of the Pi2.
-            var pi2PortController = new Pi2PortController();
-            
-            // Setup the controller which creates ports for IO boards from CCTools (or based on PCF8574/MAX7311/PCA9555D).
+            var piPortController = new Pi2PortController();
             var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>());
 
-            SetupRoom(ccToolsBoardController);
+            AddDevice(new BuiltInI2CBus());
+            AddDevice(piPortController);
+            AddDevice(ccToolsBoardController);
+            
+            SetupRoom();
 
             Timer.Tick += (s, e) =>
             {
-                pi2PortController.PollOpenInputPorts();
+                piPortController.PollOpenInputPorts();
                 ccToolsBoardController.PollInputBoardStates();
             };
         }
 
-        private void SetupRoom(CCToolsBoardController ccToolsBoardController)
+        private void SetupRoom()
         {
+            var ccToolsBoardController = GetDevice<CCToolsBoardController>();
+
             var hspe16 = ccToolsBoardController.CreateHSPE16InputOnly(InstalledDevice.HSPE16, new I2CSlaveAddress(41));
             var hsrel8 = ccToolsBoardController.CreateHSREL8(InstalledDevice.HSRel8, new I2CSlaveAddress(40));
             var hsrel5 = ccToolsBoardController.CreateHSREL5(InstalledDevice.HSRel5, new I2CSlaveAddress(56));
 
             // Setup the remote switch 433Mhz sender which is attached to the I2C bus (Arduino Nano).
-            var i2CHardwareBridge = new I2CHardwareBridge(new DeviceId("HB"), new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer);
+            var i2CHardwareBridge = new I2CHardwareBridge(new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer);
             var remoteSwitchSender = new LPD433MHzSignalSender(i2CHardwareBridge, I2CHardwareBridge433MHzSenderPin, ApiController);
 
             var intertechno = new IntertechnoCodeSequenceProvider();
-            var remoteSwitchController = new RemoteSocketController(new DeviceId("RemoteSocketController"), remoteSwitchSender, Timer)
+            var remoteSwitchController = new RemoteSocketController(remoteSwitchSender, Timer)
                 .WithRemoteSocket(0, intertechno.GetSequencePair(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1))
                 .WithRemoteSocket(1, intertechno.GetSequencePair(IntertechnoSystemCode.B, IntertechnoUnitCode.Unit1));
 

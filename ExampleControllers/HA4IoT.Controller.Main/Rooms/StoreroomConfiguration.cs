@@ -9,7 +9,6 @@ using HA4IoT.Contracts.Services;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
-using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Sensors.MotionDetectors;
 
 namespace HA4IoT.Controller.Main.Rooms
@@ -28,8 +27,8 @@ namespace HA4IoT.Controller.Main.Rooms
             CirculatingPump
         }
 
-        public StoreroomConfiguration(IController controller, CCToolsBoardController ccToolsBoardController, RemoteSocketController remoteSocketController) 
-            : base(controller, ccToolsBoardController, remoteSocketController)
+        public StoreroomConfiguration(IController controller) 
+            : base(controller)
         {
         }
 

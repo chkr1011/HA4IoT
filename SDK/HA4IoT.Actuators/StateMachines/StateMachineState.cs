@@ -9,9 +9,9 @@ namespace HA4IoT.Actuators.StateMachines
 {
     public class StateMachineState : IStateMachineState
     {
-        private readonly List<Action> _actions = new List<Action>(); 
-        private readonly List<Tuple<IStateMachine, StatefulComponentState>> _actuators = new List<Tuple<IStateMachine, StatefulComponentState>>();
-        private readonly List<Tuple<IBinaryOutput, BinaryState>> _outputs = new List<Tuple<IBinaryOutput, BinaryState>>();
+        private readonly List<Action<IHardwareParameter[]>> _actions = new List<Action<IHardwareParameter[]>>(); 
+        private readonly List<PendingActuatorState> _pendingActuatorStates = new List<PendingActuatorState>();
+        private readonly List<Tuple<IBinaryOutput, BinaryState>> _pendingBinaryOutputStates = new List<Tuple<IBinaryOutput, BinaryState>>();
 
         public StateMachineState(IComponentState id)
         {
@@ -22,7 +22,7 @@ namespace HA4IoT.Actuators.StateMachines
 
         public IComponentState Id { get; }
 
-        public StateMachineState WithAction(Action action)
+        public StateMachineState WithAction(Action<IHardwareParameter[]> action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
 
@@ -34,7 +34,7 @@ namespace HA4IoT.Actuators.StateMachines
         {
             if (output == null) throw new ArgumentNullException(nameof(output));
 
-            _outputs.Add(new Tuple<IBinaryOutput, BinaryState>(output, state));
+            _pendingBinaryOutputStates.Add(new Tuple<IBinaryOutput, BinaryState>(output, state));
             return this;
         }
 
@@ -52,42 +52,37 @@ namespace HA4IoT.Actuators.StateMachines
             return WithOutput(output, BinaryState.High);
         }
 
-        public StateMachineState WithActuator(IStateMachine actuator, StatefulComponentState state)
+        public StateMachineState WithActuator(IActuator actuator, StatefulComponentState state)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
-            _actuators.Add(new Tuple<IStateMachine, StatefulComponentState>(actuator, state));
+            _pendingActuatorStates.Add(new PendingActuatorState().WithActuator(actuator).WithState(state));
             return this;
         }
 
         public void Activate(params IHardwareParameter[] parameters)
         {
-            foreach (var port in _outputs)
+            foreach (var port in _pendingBinaryOutputStates)
             {
                 port.Item1.Write(port.Item2, false);
             }
-
-            foreach (var actuator in _actuators)
-            {
-                actuator.Item1.SetState(actuator.Item2, HardwareParameter.IsPartOfPartialUpdate);
-            }
-
+            
             if (!parameters.Any(p => p is IsPartOfPartialUpdateParameter))
             {
-                foreach (var port in _outputs)
+                foreach (var port in _pendingBinaryOutputStates)
                 {
                     port.Item1.Write(port.Item2);
                 }
 
-                foreach (var actuator in _actuators)
+                foreach (var pendingActuatorState in _pendingActuatorStates)
                 {
-                    actuator.Item1.SetState(actuator.Item2);
+                    pendingActuatorState.Apply();
                 }
             }
 
             foreach (var action in _actions)
             {
-                action();
+                action(parameters);
             }
         }
 

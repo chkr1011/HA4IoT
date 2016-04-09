@@ -23,7 +23,7 @@ namespace HA4IoT.Hardware.RemoteSwitch
         {
             if (commit == false)
             {
-                throw new NotSupportedException();
+                return;
             }
 
             lock (_syncRoot)

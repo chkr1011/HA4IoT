@@ -66,6 +66,11 @@ namespace HA4IoT.Actuators.StateMachines
             oldState?.Deactivate(parameters);
             newState.Activate(parameters);
 
+            if (parameters.Any(p => p is IsPartOfPartialUpdateParameter))
+            {
+                return;
+            }
+
             _activeState = newState;
             OnActiveStateChanged(oldState, newState);
         }

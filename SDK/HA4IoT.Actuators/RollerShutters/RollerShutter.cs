@@ -46,9 +46,9 @@ namespace HA4IoT.Actuators.RollerShutters
 
             endpoint.Stop(HardwareParameter.ForceUpdateState);
 
-            AddState(new StateMachineState(RollerShutterStateId.Off).WithAction(() => endpoint.Stop()));
-            AddState(new StateMachineState(RollerShutterStateId.MovingUp).WithAction(() => endpoint.StartMoveUp()));
-            AddState(new StateMachineState(RollerShutterStateId.MovingDown).WithAction(() => endpoint.StartMoveDown()));
+            AddState(new StateMachineState(RollerShutterStateId.Off).WithAction(endpoint.Stop));
+            AddState(new StateMachineState(RollerShutterStateId.MovingUp).WithAction(endpoint.StartMoveUp));
+            AddState(new StateMachineState(RollerShutterStateId.MovingDown).WithAction(endpoint.StartMoveDown));
 
             SetInitialState(RollerShutterStateId.Off);
         }

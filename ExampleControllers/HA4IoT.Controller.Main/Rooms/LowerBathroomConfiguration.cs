@@ -41,8 +41,8 @@ namespace HA4IoT.Controller.Main.Rooms
             Window
         }
 
-        public LowerBathroomConfiguration(IController controller, CCToolsBoardController ccToolsBoardController, RemoteSocketController remoteSocketController)
-            : base(controller, ccToolsBoardController, remoteSocketController)
+        public LowerBathroomConfiguration(IController controller)
+            : base(controller)
         {
         }
 

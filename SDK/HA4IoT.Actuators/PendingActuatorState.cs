@@ -5,17 +5,17 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 
-namespace HA4IoT.Actuators.Animations
+namespace HA4IoT.Actuators
 {
-    public class PendingBinaryStateOutputActuatorState
+    public class PendingActuatorState
     {
-        public IStateMachine Actuator { get; private set; }
+        public IActuator Actuator { get; private set; }
 
-        public StatefulComponentState State { get; private set; }
+        public IComponentState State { get; private set; }
 
         public IList<IHardwareParameter> Parameters { get; } = new List<IHardwareParameter>();
 
-        public PendingBinaryStateOutputActuatorState WithActuator(IStateMachine actuator)
+        public PendingActuatorState WithActuator(IActuator actuator)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
@@ -23,13 +23,13 @@ namespace HA4IoT.Actuators.Animations
             return this;
         }
 
-        public PendingBinaryStateOutputActuatorState WithState(StatefulComponentState state)
+        public PendingActuatorState WithState(IComponentState state)
         {
             State = state;
             return this;
         }
 
-        public PendingBinaryStateOutputActuatorState WithParameter(IHardwareParameter parameter)
+        public PendingActuatorState WithParameter(IHardwareParameter parameter)
         {
             if (parameter == null) throw new ArgumentNullException(nameof(parameter));
 

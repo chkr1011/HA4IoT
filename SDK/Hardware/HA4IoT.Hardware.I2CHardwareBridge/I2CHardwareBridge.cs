@@ -10,20 +10,19 @@ namespace HA4IoT.Hardware.I2CHardwareBridge
         private readonly I2CSlaveAddress _address;
         private readonly II2CBus _i2CBus;
 
-        public I2CHardwareBridge(DeviceId id, I2CSlaveAddress address, II2CBus i2cBus, IHomeAutomationTimer timer)
+        public I2CHardwareBridge(I2CSlaveAddress address, II2CBus i2cBus, IHomeAutomationTimer timer)
         {
-            if (id == null) throw new ArgumentNullException(nameof(id));
             if (i2cBus == null) throw new ArgumentNullException(nameof(i2cBus));
             if (timer == null) throw new ArgumentNullException(nameof(timer));
 
-            Id = id;
             _address = address;
             _i2CBus = i2cBus;
 
             DHT22Accessor = new DHT22Accessor(this, timer);
         }
 
-        public DeviceId Id { get; }
+        public DeviceId Id { get; } = new DeviceId("I2CHardwareBridge");
+
         public DHT22Accessor DHT22Accessor { get; }
 
         public void HandleApiCommand(IApiContext apiContext)

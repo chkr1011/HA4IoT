@@ -12,7 +12,6 @@ using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
-using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.MotionDetectors;
@@ -61,8 +60,8 @@ namespace HA4IoT.Controller.Main.Rooms
             WindowRight
         }
 
-        public OfficeConfiguration(IController controller, CCToolsBoardController ccToolsBoardController, RemoteSocketController remoteSocketController) 
-            : base(controller, ccToolsBoardController, remoteSocketController)
+        public OfficeConfiguration(IController controller) 
+            : base(controller)
         {
         }
 

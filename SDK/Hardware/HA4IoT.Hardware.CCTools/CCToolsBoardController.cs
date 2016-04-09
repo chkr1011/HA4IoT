@@ -7,7 +7,7 @@ using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Hardware.CCTools
 {
-    public class CCToolsBoardController
+    public class CCToolsBoardController : IDevice
     {
         private readonly II2CBus _i2CBus;
         private readonly IController _controller;
@@ -20,6 +20,8 @@ namespace HA4IoT.Hardware.CCTools
             _controller = controller;
             _i2CBus = i2cBus;
         }
+
+        public DeviceId Id { get; } = new DeviceId("CCToolsBoardController");
 
         public HSPE16InputOnly CreateHSPE16InputOnly(Enum id, I2CSlaveAddress address)
         {
@@ -108,6 +110,14 @@ namespace HA4IoT.Hardware.CCTools
                     portExpanderController.FetchState();
                 }
             }
+        }
+
+        public void HandleApiCommand(IApiContext apiContext)
+        {
+        }
+
+        public void HandleApiRequest(IApiContext apiContext)
+        {
         }
     }
 }
