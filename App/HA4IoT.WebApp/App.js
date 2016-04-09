@@ -180,12 +180,12 @@ function setupController() {
           }
 
           $scope.toggleIsEnabled = function (actuator) {
-              var newState = !actuator.state.IsEnabled;
+              var newState = !actuator.settings.IsEnabled;
 
               updateActuatorSettings(actuator.id, {
                   IsEnabled: newState
               }, function () {
-                  actuator.state.IsEnabled = newState;
+                  actuator.settings.IsEnabled = newState;
               });
           };
 

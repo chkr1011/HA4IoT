@@ -34,6 +34,8 @@ namespace HA4IoT.Core.Settings
             {
                 fileContent = File.ReadAllText(_filename, Encoding.UTF8);
                 _settingsJson = JsonObject.Parse(fileContent);
+
+                MigrateOldSettings();
             }
             catch (Exception exception)
             {
@@ -131,6 +133,16 @@ namespace HA4IoT.Core.Settings
 
             //TODO: File.WriteAllText(_filename, _settingsJson.Stringify(), Encoding.UTF8);
             Log.Verbose($"Saved settings at '{_filename}'.");
+        }
+
+        private void MigrateOldSettings()
+        {
+            if (_settingsJson.ContainsKey("AppSettings"))
+            {
+                _settingsJson["appSettings"] = _settingsJson["AppSettings"];
+                _settingsJson.Remove("AppSettings");
+                Save();
+            }
         }
 
         private void UpdateValue(string name, IJsonValue value)
