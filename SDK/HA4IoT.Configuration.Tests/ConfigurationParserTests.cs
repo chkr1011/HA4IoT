@@ -124,6 +124,7 @@ namespace HA4IoT.Configuration.Tests
             var controller = new TestController();
 
             var parser = new ConfigurationParser(controller);
+            parser.RegisterConfigurationExtender(new DefaultConfigurationExtender(parser, controller));
             parser.RegisterConfigurationExtender(new TestConfigurationExtender(parser, controller));
             parser.RegisterConfigurationExtender(new CCToolsConfigurationExtender(parser, controller));
             parser.RegisterConfigurationExtender(new I2CHardwareBridgeConfigurationExtender(parser, controller));

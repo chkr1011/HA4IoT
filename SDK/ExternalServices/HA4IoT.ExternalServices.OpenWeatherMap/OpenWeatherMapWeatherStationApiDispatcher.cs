@@ -6,6 +6,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
 {
     public class OpenWeatherMapWeatherStationApiDispatcher
     {
+        // TODO: Consider add API handling methods to service interface.
         private readonly OpenWeatherMapWeatherService _weatherStation;
         private readonly IApiController _apiController;
 
