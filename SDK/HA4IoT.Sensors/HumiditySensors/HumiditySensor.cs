@@ -17,19 +17,14 @@ namespace HA4IoT.Sensors.HumiditySensors
 
             endpoint.ValueChanged += (s, e) =>
             {
-                float oldValue = GetCurrentNumericValue();
-
                 if (!GetDifferenceIsLargeEnough(e.NewValue))
                 {
                     return;
                 }
 
                 SetState(new NumericSensorValue(e.NewValue));
-                CurrentNumericValueChanged?.Invoke(this, new NumericSensorValueChangedEventArgs(oldValue, e.NewValue));
             };
         }
-
-        public event EventHandler<NumericSensorValueChangedEventArgs> CurrentNumericValueChanged;
 
         public float GetCurrentNumericValue()
         {

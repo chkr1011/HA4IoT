@@ -27,9 +27,9 @@ namespace HA4IoT.Telemetry
                 if (sensor != null)
                 {
                     OnSensorValueChanged(sensor, sensor.GetCurrentNumericValue());
-                    sensor.CurrentNumericValueChanged += (s, e) =>
+                    sensor.StateChanged += (s, e) =>
                     {
-                        OnSensorValueChanged(sensor, e.NewValue);
+                        OnSensorValueChanged(sensor, sensor.GetCurrentNumericValue());
                     };
 
                     continue;

@@ -158,8 +158,6 @@
     <Compile Include="Actuators\IRollerShutter.cs" />
     <Compile Include="Sensors\INumericValueSensor.cs" />
     <Compile Include="Sensors\ITemperatureSensor.cs" />
-    <Compile Include="Sensors\NumericSensorValueChangedEventArgs.cs" />
-    <Compile Include="Sensors\ComponentStateChangedEventArgs.cs" />
     <Compile Include="Sensors\SwitchStateID.cs" />
     <Compile Include="Automations\IAutomation.cs" />
     <Compile Include="Automations\IAutomationController.cs" />

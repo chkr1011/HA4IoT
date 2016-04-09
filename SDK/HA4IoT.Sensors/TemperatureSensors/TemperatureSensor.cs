@@ -17,8 +17,6 @@ namespace HA4IoT.Sensors.TemperatureSensors
 
             endpoint.ValueChanged += (s, e) =>
             {
-                float oldValue = GetCurrentNumericValue();
-
                 // TODO: Create base class.
                 if (!GetDifferenceIsLargeEnough(e.NewValue))
                 {
@@ -26,11 +24,8 @@ namespace HA4IoT.Sensors.TemperatureSensors
                 }
 
                 SetState(new NumericSensorValue(e.NewValue));
-                CurrentNumericValueChanged?.Invoke(this, new NumericSensorValueChangedEventArgs(oldValue, e.NewValue));
             };
         }
-
-        public event EventHandler<NumericSensorValueChangedEventArgs> CurrentNumericValueChanged;
 
         public float GetCurrentNumericValue()
         {

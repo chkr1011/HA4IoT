@@ -11,7 +11,7 @@ namespace HA4IoT.Sensors.Triggers
         public SensorValueReachedTrigger(INumericValueSensor sensor)
         {
             if (sensor == null) throw new ArgumentNullException(nameof(sensor));
-            sensor.CurrentNumericValueChanged += CheckValue;
+            sensor.StateChanged += (s, e) => CheckValue(sensor);
         }
 
         public float Target { get; set; }
@@ -30,9 +30,11 @@ namespace HA4IoT.Sensors.Triggers
             return this;
         }
 
-        private void CheckValue(object sender, NumericSensorValueChangedEventArgs e)
+        private void CheckValue(INumericValueSensor sensor)
         {
-            if (e.NewValue >= Target)
+            var newValue = sensor.GetCurrentNumericValue();
+
+            if (newValue >= Target)
             {
                 if (_invoked)
                 {
@@ -45,7 +47,7 @@ namespace HA4IoT.Sensors.Triggers
                 return;
             }
 
-            if (e.NewValue < Target - Delta)
+            if (newValue < Target - Delta)
             {
                 _invoked = false;
             }
