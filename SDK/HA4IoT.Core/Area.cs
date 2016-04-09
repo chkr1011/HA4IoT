@@ -23,11 +23,14 @@ namespace HA4IoT.Core
             Controller = controller;
 
             Settings = new SettingsContainer(StoragePath.WithFilename("Areas", id.Value, "Settings.json"));
+            GeneralSettingsWrapper = new AreaSettingsWrapper(Settings);
         }
 
         public AreaId Id { get; }
 
         public ISettingsContainer Settings { get; }
+
+        public IAreaSettingsWrapper GeneralSettingsWrapper { get; }
 
         public IController Controller { get; }
 

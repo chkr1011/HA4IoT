@@ -46,11 +46,11 @@ namespace HA4IoT.Core
         private void HandleApiGet(IApiContext apiContext)
         {
             var status = new JsonObject();
-            status.SetNamedValue("TimerMin", _minTimerDuration.ToJsonValue());
-            status.SetNamedValue("TimerMax", _maxTimerDuration.ToJsonValue());
-            status.SetNamedValue("TimerAverage", _averageTimerDuration.ToJsonValue());
-            status.SetNamedValue("UpTime", (_timer.CurrentDateTime - _startedDate).ToJsonValue());
-            status.SetNamedValue("SystemTime", _timer.CurrentDateTime.ToJsonValue());
+            status.SetNamedNumber("timerMin", _minTimerDuration);
+            status.SetNamedValue("timerMax", _maxTimerDuration.ToJsonValue());
+            status.SetNamedValue("timerAverage", _averageTimerDuration.ToJsonValue());
+            status.SetNamedValue("upTime", (_timer.CurrentDateTime - _startedDate).ToJsonValue());
+            status.SetNamedValue("systemTime", _timer.CurrentDateTime.ToJsonValue());
 
             apiContext.Response = status;
         }

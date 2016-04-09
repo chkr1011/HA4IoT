@@ -11,6 +11,9 @@ namespace HA4IoT.Networking
     public static class JsonObjectExtensions
     {
         private static readonly IJsonValue NullValue = JsonValue.CreateNullValue();
+        private static readonly IJsonValue EmptyStringValue = JsonValue.CreateStringValue(string.Empty);
+        private static readonly IJsonValue TrueValue = JsonValue.CreateBooleanValue(true);
+        private static readonly IJsonValue FalseValue = JsonValue.CreateBooleanValue(false);
 
         public static JsonObject ToIndexedJsonObject<TKey, TValue>(this Dictionary<TKey, TValue> entries)
         {
@@ -66,6 +69,11 @@ namespace HA4IoT.Networking
             var stringValue = source as string;
             if (stringValue != null)
             {
+                if (string.IsNullOrEmpty(stringValue))
+                {
+                    return EmptyStringValue;
+                }
+
                 return JsonValue.CreateStringValue(stringValue);
             }
 
@@ -83,7 +91,7 @@ namespace HA4IoT.Networking
             var boolValue = source as bool?;
             if (boolValue.HasValue)
             {
-                return JsonValue.CreateBooleanValue(boolValue.Value);
+                return boolValue.Value ? TrueValue : FalseValue;
             }
 
             var dateTimeValue = source as DateTime?;
@@ -259,7 +267,11 @@ namespace HA4IoT.Networking
 
             if (value == null)
             {
-                jsonObject.SetNamedValue(name, JsonValue.CreateNullValue());
+                jsonObject.SetNamedValue(name, NullValue);
+            }
+            else if (value == string.Empty)
+            {
+                jsonObject.SetNamedValue(name, EmptyStringValue);
             }
             else
             {
@@ -267,12 +279,19 @@ namespace HA4IoT.Networking
             }
         }
 
-        public static void SetNamedNumber(this JsonObject jsonObject, string name, double value)
+        public static void SetNamedNumber(this JsonObject jsonObject, string name, double? value)
         {
             if (jsonObject == null) throw new ArgumentNullException(nameof(jsonObject));
             if (name == null) throw new ArgumentNullException(nameof(name));
 
-            jsonObject.SetNamedValue(name, JsonValue.CreateNumberValue(value));
+            if (!value.HasValue)
+            {
+                jsonObject.SetNamedValue(name, NullValue);
+            }
+            else
+            {
+                jsonObject.SetNamedValue(name, JsonValue.CreateNumberValue(value.Value));
+            }
         }
 
         public static void SetNamedBoolean(this JsonObject jsonObject, string name, bool value)
@@ -280,7 +299,7 @@ namespace HA4IoT.Networking
             if (jsonObject == null) throw new ArgumentNullException(nameof(jsonObject));
             if (name == null) throw new ArgumentNullException(nameof(name));
 
-            jsonObject.SetNamedValue(name, JsonValue.CreateBooleanValue(value));
+            jsonObject.SetNamedValue(name, value ? TrueValue : FalseValue);
         }
 
         public static void SetNamedNullValue(this JsonObject jsonObject, string name)
@@ -288,7 +307,7 @@ namespace HA4IoT.Networking
             if (jsonObject == null) throw new ArgumentNullException(nameof(jsonObject));
             if (name == null) throw new ArgumentNullException(nameof(name));
 
-            jsonObject.SetNamedValue(name, JsonValue.CreateNullValue());
+            jsonObject.SetNamedValue(name, NullValue);
         }
 
         public static void SetNamedObject(this JsonObject jsonObject, string name, JsonObject value)
@@ -298,7 +317,7 @@ namespace HA4IoT.Networking
 
             if (value == null)
             {
-                jsonObject.SetNamedValue(name, JsonValue.CreateNullValue());
+                jsonObject.SetNamedValue(name, NullValue);
             }
             else
             {

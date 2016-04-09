@@ -34,11 +34,11 @@ namespace HA4IoT.Controller.Main.Rooms
 
         public override void Setup()
         {
-            var hsrel8LowerHeatingValves = CCToolsBoardController.CreateHSREL8(Device.LowerHeatingValvesHSREL8, new I2CSlaveAddress(16));
-            var hsrel5UpperHeatingValves = CCToolsBoardController.CreateHSREL5(Device.UpperHeatingValvesHSREL5, new I2CSlaveAddress(56));
+            var hsrel8LowerHeatingValves = CCToolsBoardController.CreateHSREL8(InstalledDevice.LowerHeatingValvesHSREL8, new I2CSlaveAddress(16));
+            var hsrel5UpperHeatingValves = CCToolsBoardController.CreateHSREL5(InstalledDevice.UpperHeatingValvesHSREL5, new I2CSlaveAddress(56));
 
-            var hsrel5Stairway = Controller.Device<HSREL5>(Device.StairwayHSREL5);
-            var input3 = Controller.Device<HSPE16InputOnly>(Device.Input3);
+            var hsrel5Stairway = Controller.Device<HSREL5>(InstalledDevice.StairwayHSREL5);
+            var input3 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input3);
 
             var storeroom = Controller.CreateArea(Room.Storeroom)
                 .WithMotionDetector(Storeroom.MotionDetector, input3.GetInput(12))

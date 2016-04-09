@@ -57,11 +57,11 @@ namespace HA4IoT.Controller.Main.Rooms
 
         public override void Setup()
         {
-            var hsrel8 = CCToolsBoardController.CreateHSREL8(Device.LivingRoomHSREL8, new I2CSlaveAddress(18));
-            var hsrel5 = CCToolsBoardController.CreateHSREL5(Device.LivingRoomHSREL5, new I2CSlaveAddress(57));
+            var hsrel8 = CCToolsBoardController.CreateHSREL8(InstalledDevice.LivingRoomHSREL8, new I2CSlaveAddress(18));
+            var hsrel5 = CCToolsBoardController.CreateHSREL5(InstalledDevice.LivingRoomHSREL5, new I2CSlaveAddress(57));
             
-            var input0 = Controller.Device<HSPE16InputOnly>(Device.Input0);
-            var input1 = Controller.Device<HSPE16InputOnly>(Device.Input1);
+            var input0 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input0);
+            var input1 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input1);
 
             var i2cHardwareBridge = Controller.GetDevice<I2CHardwareBridge>();
 

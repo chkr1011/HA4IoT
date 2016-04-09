@@ -45,8 +45,8 @@ namespace HA4IoT.Controller.Main.Rooms
 
         public override void Setup()
         {
-            var hsrel5 = CCToolsBoardController.CreateHSREL5(Device.ReadingRoomHSREL5, new I2CSlaveAddress(62));
-            var input2 = Controller.Device<HSPE16InputOnly>(Device.Input2);
+            var hsrel5 = CCToolsBoardController.CreateHSREL5(InstalledDevice.ReadingRoomHSREL5, new I2CSlaveAddress(62));
+            var input2 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input2);
 
             var i2cHardwareBridge = Controller.GetDevice<I2CHardwareBridge>();
 

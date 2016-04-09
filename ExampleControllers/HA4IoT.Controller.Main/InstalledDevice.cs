@@ -1,9 +1,7 @@
 ﻿namespace HA4IoT.Controller.Main
 {
-    internal enum Device
+    internal enum InstalledDevice
     {
-        WeatherStation,
-
         Input0,
         Input1,
         Input2,

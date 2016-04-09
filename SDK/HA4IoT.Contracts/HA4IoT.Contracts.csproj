@@ -109,6 +109,7 @@
   <ItemGroup>
     <Compile Include="Actions\IActuatorAction.cs" />
     <Compile Include="Actuators\BinaryStateId.cs" />
+    <Compile Include="Areas\IAreaSettingsWrapper.cs" />
     <Compile Include="Components\ComponentId.cs" />
     <Compile Include="Actuators\StateChangedEventArgs.cs" />
     <Compile Include="Actuators\IActuatorSettingsWrapper.cs" />

@@ -65,13 +65,13 @@ namespace HA4IoT.Controller.Main.Rooms
 
         public override void Setup()
         {
-            var hsrel5Stairway = CCToolsBoardController.CreateHSREL5(Device.StairwayHSREL5, new I2CSlaveAddress(60));
-            var hspe8UpperFloor = Controller.Device<HSPE8OutputOnly>(Device.UpperFloorAndOfficeHSPE8);
-            var hspe16FloorAndLowerBathroom = CCToolsBoardController.CreateHSPE16OutputOnly(Device.LowerFloorAndLowerBathroomHSPE16, new I2CSlaveAddress(17));
+            var hsrel5Stairway = CCToolsBoardController.CreateHSREL5(InstalledDevice.StairwayHSREL5, new I2CSlaveAddress(60));
+            var hspe8UpperFloor = Controller.Device<HSPE8OutputOnly>(InstalledDevice.UpperFloorAndOfficeHSPE8);
+            var hspe16FloorAndLowerBathroom = CCToolsBoardController.CreateHSPE16OutputOnly(InstalledDevice.LowerFloorAndLowerBathroomHSPE16, new I2CSlaveAddress(17));
 
-            var input1 = Controller.Device<HSPE16InputOnly>(Device.Input1);
-            var input2 = Controller.Device<HSPE16InputOnly>(Device.Input2);
-            var input4 = Controller.Device<HSPE16InputOnly>(Device.Input4);
+            var input1 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input1);
+            var input2 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input2);
+            var input4 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input4);
 
             var i2cHardwareBridge = Controller.GetDevice<I2CHardwareBridge>();
 

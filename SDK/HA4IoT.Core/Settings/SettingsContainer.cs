@@ -10,7 +10,7 @@ namespace HA4IoT.Core.Settings
 {
     public class SettingsContainer : ISettingsContainer
     {
-        private JsonObject _settingsJson = new JsonObject();
+        private readonly JsonObject _settingsJson = new JsonObject();
         private readonly string _filename;
 
         public SettingsContainer(string filename)
@@ -33,7 +33,12 @@ namespace HA4IoT.Core.Settings
             try
             {
                 fileContent = File.ReadAllText(_filename, Encoding.UTF8);
-                _settingsJson = JsonObject.Parse(fileContent);
+                var persistedSettings = JsonObject.Parse(fileContent);
+
+                foreach (var settingName in persistedSettings.Keys)
+                {
+                    _settingsJson.SetNamedValue(settingName, persistedSettings[settingName]);
+                }
 
                 MigrateOldSettings();
             }
@@ -131,7 +136,7 @@ namespace HA4IoT.Core.Settings
                 Directory.CreateDirectory(directory);
             }
 
-            //TODO: File.WriteAllText(_filename, _settingsJson.Stringify(), Encoding.UTF8);
+            File.WriteAllText(_filename, _settingsJson.Stringify(), Encoding.UTF8);
             Log.Verbose($"Saved settings at '{_filename}'.");
         }
 

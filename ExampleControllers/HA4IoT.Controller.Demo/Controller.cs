@@ -38,12 +38,18 @@ namespace HA4IoT.Controller.Demo
         {
             InitializeHealthMonitor(LedGpio);
 
-            var piPortController = new Pi2PortController();
-            var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>());
-
             AddDevice(new BuiltInI2CBus());
+
+            var piPortController = new Pi2PortController();
             AddDevice(piPortController);
+
+            var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>());
             AddDevice(ccToolsBoardController);
+
+            // Setup the remote switch 433Mhz sender which is attached to the I2C bus (Arduino Nano).
+            AddDevice(new I2CHardwareBridge(new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer));
+
+            RegisterService(new OpenWeatherMapWeatherService(Timer, ApiController));
             
             SetupRoom();
 
@@ -52,6 +58,22 @@ namespace HA4IoT.Controller.Demo
                 piPortController.PollOpenInputPorts();
                 ccToolsBoardController.PollInputBoardStates();
             };
+
+            SetupDemo();
+        }
+
+        private void SetupDemo()
+        {
+            TwitterClient twitterClient;
+            if (TwitterClientFactory.TryCreateFromDefaultConfigurationFile(out twitterClient))
+            {
+                RegisterService(new TwitterClient());
+
+                var motionDetector = GetComponent<IMotionDetector>();
+
+                int id = 0;
+                motionDetector.GetMotionDetectedTrigger().OnTriggered(twitterClient.GetTweetAction($"Someone is here {++id} (... @chkratky"));
+            }
         }
 
         private void SetupRoom()
@@ -62,16 +84,13 @@ namespace HA4IoT.Controller.Demo
             var hsrel8 = ccToolsBoardController.CreateHSREL8(InstalledDevice.HSRel8, new I2CSlaveAddress(40));
             var hsrel5 = ccToolsBoardController.CreateHSREL5(InstalledDevice.HSRel5, new I2CSlaveAddress(56));
 
-            // Setup the remote switch 433Mhz sender which is attached to the I2C bus (Arduino Nano).
-            var i2CHardwareBridge = new I2CHardwareBridge(new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer);
+            var i2CHardwareBridge = GetDevice<I2CHardwareBridge>();
             var remoteSwitchSender = new LPD433MHzSignalSender(i2CHardwareBridge, I2CHardwareBridge433MHzSenderPin, ApiController);
 
             var intertechno = new IntertechnoCodeSequenceProvider();
             var remoteSwitchController = new RemoteSocketController(remoteSwitchSender, Timer)
                 .WithRemoteSocket(0, intertechno.GetSequencePair(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1))
                 .WithRemoteSocket(1, intertechno.GetSequencePair(IntertechnoSystemCode.B, IntertechnoUnitCode.Unit1));
-
-            RegisterService(new OpenWeatherMapWeatherService(Timer, ApiController));
 
             const int SensorPin = 5;
 
@@ -81,7 +100,7 @@ namespace HA4IoT.Controller.Demo
                 .WithMotionDetector(ExampleRoom.MotionDetector, hspe16[HSPE16Pin.GPIO8])
 
                 .WithLamp(ExampleRoom.Lamp1, remoteSwitchController.GetOutput(0))
-                .WithLamp(ExampleRoom.Lamp2, remoteSwitchController.GetOutput(0))
+                .WithLamp(ExampleRoom.Lamp2, remoteSwitchController.GetOutput(1))
 
                 .WithSocket(ExampleRoom.Socket1, hsrel5[HSREL5Pin.Relay0])
                 .WithSocket(ExampleRoom.Socket2, hsrel5[HSREL5Pin.Relay4])

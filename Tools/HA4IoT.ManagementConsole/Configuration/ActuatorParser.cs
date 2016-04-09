@@ -113,7 +113,7 @@ namespace HA4IoT.ManagementConsole.Configuration
         {
             yield return BoolSettingVM.CreateFrom(_appSettings, "DisplayVertical", false, "Display vertical");
 
-            foreach (var state in _root.GetNamedArray("states"))
+            foreach (var state in _root.GetNamedArray("supportedStates"))
             {
                 string key = $"Caption.{state}";
                 yield return new StringSettingVM(key, _appSettings.GetNamedString(key, key), $"Caption for '{state}'");

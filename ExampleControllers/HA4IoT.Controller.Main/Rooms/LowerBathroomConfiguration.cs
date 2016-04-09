@@ -48,8 +48,8 @@ namespace HA4IoT.Controller.Main.Rooms
 
         public override void Setup()
         {
-            var hspe16_FloorAndLowerBathroom = Controller.Device<HSPE16OutputOnly>(Device.LowerFloorAndLowerBathroomHSPE16);
-            var input3 = Controller.Device<HSPE16InputOnly>(Device.Input3);
+            var hspe16_FloorAndLowerBathroom = Controller.Device<HSPE16OutputOnly>(InstalledDevice.LowerFloorAndLowerBathroomHSPE16);
+            var input3 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input3);
             var i2cHardwareBridge = Controller.GetDevice<I2CHardwareBridge>();
 
             const int SensorPin = 3;

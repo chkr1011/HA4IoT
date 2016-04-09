@@ -256,14 +256,14 @@ function configureActuator(room, actuator) {
                 actuator.template = "Views/StateMachineTemplate.html";
                 
                 var extendedStates = [];
-                $.each(actuator.states, function (i, state) {
+                $.each(actuator.supportedStates, function (i, state) {
                     var key = "Caption." + state;
                     var stateCaption = getConfigurationValue(actuator, key, key);
 
                     extendedStates.push({ value: state, caption: stateCaption });
                 });
 
-                actuator.states = extendedStates;
+                actuator.supportedStates = extendedStates;
                 break;
             }
 

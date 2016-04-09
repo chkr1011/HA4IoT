@@ -92,18 +92,6 @@ namespace HA4IoT.Actuators.StateMachines
             return _activeState?.Id;
         }
 
-        public override JsonObject ExportStatusToJsonObject()
-        {
-            var status = base.ExportStatusToJsonObject();
-
-            if (_activeState != null)
-            {
-                status.SetNamedValue("state", _activeState.Id.ToJsonValue());
-            }
-
-            return status;
-        }
-
         public override JsonObject ExportConfigurationToJsonObject()
         {
             JsonObject configuration = base.ExportConfigurationToJsonObject();
@@ -114,7 +102,7 @@ namespace HA4IoT.Actuators.StateMachines
                 stateMachineStates.Add(state.Id.ToJsonValue());
             }
 
-            configuration.SetNamedValue("states", stateMachineStates);
+            configuration.SetNamedValue("supportedStates", stateMachineStates);
 
             return configuration;
         }

@@ -54,10 +54,10 @@ namespace HA4IoT.Controller.Main.Rooms
 
         public override void Setup()
         {
-            var hsrel8 = CCToolsBoardController.CreateHSREL8(Device.OfficeHSREL8, new I2CSlaveAddress(20));
-            var hspe8 = CCToolsBoardController.CreateHSPE8OutputOnly(Device.UpperFloorAndOfficeHSPE8, new I2CSlaveAddress(37));
-            var input4 = Controller.Device<HSPE16InputOnly>(Device.Input4);
-            var input5 = Controller.Device<HSPE16InputOnly>(Device.Input5);
+            var hsrel8 = CCToolsBoardController.CreateHSREL8(InstalledDevice.OfficeHSREL8, new I2CSlaveAddress(20));
+            var hspe8 = CCToolsBoardController.CreateHSPE8OutputOnly(InstalledDevice.UpperFloorAndOfficeHSPE8, new I2CSlaveAddress(37));
+            var input4 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input4);
+            var input5 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input5);
 
             const int SensorPin = 2;
 

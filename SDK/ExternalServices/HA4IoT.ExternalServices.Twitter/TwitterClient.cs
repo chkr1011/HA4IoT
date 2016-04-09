@@ -37,8 +37,7 @@ namespace HA4IoT.ExternalServices.Twitter
 
                 var request = new HttpRequestMessage(HttpMethod.Post, url);
                 request.Headers.Add("Authorization", oAuthToken);
-                request.Version = new Version(1, 1);
-
+         
                 var response = await httpClient.SendAsync(request);
 
                 if (response.StatusCode != HttpStatusCode.OK)

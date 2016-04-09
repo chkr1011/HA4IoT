@@ -42,8 +42,8 @@ namespace HA4IoT.Controller.Main.Rooms
 
         public override void Setup()
         {
-            var hsrel5 = CCToolsBoardController.CreateHSREL5(Device.UpperBathroomHSREL5, new I2CSlaveAddress(61));
-            var input5 = Controller.Device<HSPE16InputOnly>(Device.Input5);
+            var hsrel5 = CCToolsBoardController.CreateHSREL5(InstalledDevice.UpperBathroomHSREL5, new I2CSlaveAddress(61));
+            var input5 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input5);
 
             const int SensorPin = 4;
 

@@ -43,12 +43,12 @@ namespace HA4IoT.Controller.Main
             SetupTwitterClient();
             SetupTelegramBot();
 
-            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input0, new I2CSlaveAddress(42));
-            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input1, new I2CSlaveAddress(43));
-            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input2, new I2CSlaveAddress(47));
-            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input3, new I2CSlaveAddress(45));
-            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input4, new I2CSlaveAddress(46));
-            ccToolsBoardController.CreateHSPE16InputOnly(Device.Input5, new I2CSlaveAddress(44));
+            ccToolsBoardController.CreateHSPE16InputOnly(InstalledDevice.Input0, new I2CSlaveAddress(42));
+            ccToolsBoardController.CreateHSPE16InputOnly(InstalledDevice.Input1, new I2CSlaveAddress(43));
+            ccToolsBoardController.CreateHSPE16InputOnly(InstalledDevice.Input2, new I2CSlaveAddress(47));
+            ccToolsBoardController.CreateHSPE16InputOnly(InstalledDevice.Input3, new I2CSlaveAddress(45));
+            ccToolsBoardController.CreateHSPE16InputOnly(InstalledDevice.Input4, new I2CSlaveAddress(46));
+            ccToolsBoardController.CreateHSPE16InputOnly(InstalledDevice.Input5, new I2CSlaveAddress(44));
 
             new BedroomConfiguration(this).Setup();
             new OfficeConfiguration(this).Setup();

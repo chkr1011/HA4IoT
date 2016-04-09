@@ -114,7 +114,7 @@
     <Content Include="Configuration.js" />
     <Content Include="favicon.ico" />
     <Content Include="App.js" />
-    <Content Include="index.html" />
+    <Content Include="Index.html" />
     <Content Include="Style.css" />
     <Content Include="touch-icon-iphone-retina.png" />
     <Content Include="Views\BottomBarTemplate.html" />
