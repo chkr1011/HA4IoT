@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.Data.Json;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
@@ -23,7 +24,7 @@ namespace HA4IoT.Actuators
             Id = id;
 
             Settings = new SettingsContainer(StoragePath.WithFilename("Components", id.Value, "Settings.json"));
-            GeneralSettingsWrapper = new ActuatorSettingsWrapper(Settings);
+            GeneralSettingsWrapper = new ComponentSettingsWrapper(Settings);
         }
 
         public event EventHandler<ComponentStateChangedEventArgs> StateChanged;

@@ -53,7 +53,7 @@ function setupController() {
               $http.get("/api/configuration").success(function (data) {
 
                   $.each(data.areas, function (areaId, area) {
-                      if (area.settings.AppSettings.Hide) {
+                      if (area.settings.appSettings.Hide) {
                           return true;
                       }
 
@@ -320,15 +320,15 @@ function configureActuator(room, actuator) {
 }
 
 function getConfigurationValue(component, name, defaultValue) {
-    if (component.settings.AppSettings === undefined) {
+    if (component.settings.appSettings === undefined) {
         return defaultValue;
     }
 
-    if (component.settings.AppSettings[name] === undefined) {
+    if (component.settings.appSettings[name] === undefined) {
         return defaultValue;
     }
 
-    return component.settings.AppSettings[name];
+    return component.settings.appSettings[name];
 }
 
 function updateOnStateCounters(areas) {

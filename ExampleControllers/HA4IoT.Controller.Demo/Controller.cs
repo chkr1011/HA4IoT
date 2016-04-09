@@ -8,6 +8,7 @@ using HA4IoT.Automations;
 using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Triggers;
@@ -134,8 +135,8 @@ namespace HA4IoT.Controller.Demo
 
             stateMachine.AddOffState().WithLowOutput(gear1).WithLowOutput(gear2);
 
-            stateMachine.AddState(new StateId("1")).WithHighOutput(gear1).WithLowOutput(gear2);
-            stateMachine.AddState(new StateId("2")).WithLowOutput(gear1).WithHighOutput(gear2);
+            stateMachine.AddState(new StatefulComponentState("1")).WithHighOutput(gear1).WithLowOutput(gear2);
+            stateMachine.AddState(new StatefulComponentState("2")).WithLowOutput(gear1).WithHighOutput(gear2);
         }
 
         private void SetupLEDStripRemote(I2CHardwareBridge i2CHardwareBridge, IArea area)

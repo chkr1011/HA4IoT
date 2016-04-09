@@ -59,7 +59,7 @@ namespace HA4IoT.Actuators.StateMachines
             return stateMachine.AddState(BinaryStateId.On);
         }
 
-        public static StateMachineState AddState(this StateMachine stateMachine, StateId id)
+        public static StateMachineState AddState(this StateMachine stateMachine, StatefulComponentState id)
         {
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
             if (id == null) throw new ArgumentNullException(nameof(id));
@@ -105,7 +105,7 @@ namespace HA4IoT.Actuators.StateMachines
             return true;
         }
 
-        public static IHomeAutomationAction GetSetStateAction(this IStateMachine stateStateMachine, StateId stateId)
+        public static IHomeAutomationAction GetSetStateAction(this IStateMachine stateStateMachine, StatefulComponentState stateId)
         {
             if (stateStateMachine == null) throw new ArgumentNullException(nameof(stateStateMachine));
             if (stateId == null) throw new ArgumentNullException(nameof(stateId));

@@ -30,8 +30,8 @@ namespace HA4IoT.ManagementConsole.Configuration
             _type = _source.Value["Type"].Value<string>();
 
             _root = (JObject)_source.Value;
-            _settings = (JObject)_source.Value["Settings"];
-            _appSettings = _settings.GetNamedObject("AppSettings", new JObject());
+            _settings = (JObject)_source.Value["settings"];
+            _appSettings = _settings.GetNamedObject("appSettings", new JObject());
 
             var item = new ActuatorItemVM(_source.Name, _type);
             item.SortValue = (int)_appSettings.GetNamedNumber("SortValue", 0);
@@ -43,38 +43,38 @@ namespace HA4IoT.ManagementConsole.Configuration
 
             switch (_type)
             {
-                case "HA4IoT.Actuators.RollerShutter":
+                case "RollerShutter":
                     {
                         item.Settings.AddRange(GenerateRollerShutterSettings());
                         break;
                     }
 
-                case "HA4IoT.Actuators.StateMachine":
+                case "StateMachine":
                     {
                         item.Settings.AddRange(GenerateStateMachineSettings());
                         item.Settings.AddRange(GenerateOnStateCounterSettings());
                         break;
                     }
 
-                case "HA4IoT.Actuators.Lamp":
+                case "Lamp":
                     {
                         item.Settings.AddRange(GenerateOnStateCounterSettings());
                         break;
                     }
 
-                case "HA4IoT.Actuators.Socket":
+                case "Socket":
                     {
                         item.Settings.AddRange(GenerateOnStateCounterSettings());
                         break;
                     }
 
-                case "HA4IoT.Actuators.HumiditySensor":
+                case "HumiditySensor":
                     {
                         item.Settings.AddRange(GenerateHumiditySensorSettings());
                         break;
                     }
 
-                case "HA4IoT.Actuators.VirtualButtonGroup":
+                case "VirtualButtonGroup":
                     {
                         item.Settings.AddRange(GenerateVirtualButtonGroupSettings());
                         break;

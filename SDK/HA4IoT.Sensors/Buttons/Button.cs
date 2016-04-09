@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
-using HA4IoT.Actuators;
 using HA4IoT.Actuators.Triggers;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
@@ -57,7 +57,7 @@ namespace HA4IoT.Sensors.Buttons
             }
         }
 
-        private void HandleInputStateChanged(StateId state)
+        private void HandleInputStateChanged(StatefulComponentState state)
         {
             if (!this.GetIsEnabled())
             {

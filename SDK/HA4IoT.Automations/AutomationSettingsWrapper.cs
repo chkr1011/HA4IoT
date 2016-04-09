@@ -16,7 +16,7 @@ namespace HA4IoT.Automations
             Settings = settings;
 
             IsEnabled = true;
-            Settings.SetValue("AppSettings", new JsonObject());
+            Settings.SetValue("appSettings", new JsonObject());
         }
 
         public ISettingsContainer Settings { get; }

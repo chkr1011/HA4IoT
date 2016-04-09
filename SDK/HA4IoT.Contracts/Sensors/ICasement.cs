@@ -1,5 +1,7 @@
 ﻿using System;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Contracts.Sensors
 {
@@ -9,6 +11,10 @@ namespace HA4IoT.Contracts.Sensors
 
         event EventHandler<StateChangedEventArgs> StateChanged;
 
-        StateId GetState();
+        StatefulComponentState GetState();
+
+        ITrigger GetOpenedTrigger();
+
+        ITrigger GetClosedTrigger();
     }
 }

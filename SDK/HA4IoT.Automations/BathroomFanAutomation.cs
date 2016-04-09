@@ -1,8 +1,8 @@
 ﻿using System;
-using HA4IoT.Actuators;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Sensors;
 
@@ -56,7 +56,7 @@ namespace HA4IoT.Automations
         {
             _timeout = _timer.In(_slowDuration).Do(() =>
             {
-                _actuator.SetState(new StateId("2"));
+                _actuator.SetState(new StatefulComponentState("2"));
                 _timeout = _timer.In(_fastDuration).Do(() => _actuator.TryTurnOff());
             });
         }
@@ -69,7 +69,7 @@ namespace HA4IoT.Automations
             }
 
             _timeout?.Cancel();
-            _actuator?.SetState(new StateId("1"));
+            _actuator?.SetState(new StatefulComponentState("1"));
         }
     }
 }

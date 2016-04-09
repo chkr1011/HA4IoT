@@ -166,7 +166,7 @@ namespace HA4IoT.Automations
             return condition;
         }
 
-        private void SetStates(StateId state)
+        private void SetStates(StatefulComponentState state)
         {
             foreach (var rollerShutter in _rollerShutters)
             {

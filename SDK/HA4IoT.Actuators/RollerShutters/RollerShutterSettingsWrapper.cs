@@ -1,9 +1,10 @@
 ﻿using System;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Core.Settings;
 
 namespace HA4IoT.Actuators.RollerShutters
 {
-    public class RollerShutterSettingsWrapper : ActuatorSettingsWrapper
+    public class RollerShutterSettingsWrapper : ComponentSettingsWrapper
     {
         private const string MaxPositionName = "MaxPosition";
         private const string AutoOffTimeoutName = "AutoOffTimeout";

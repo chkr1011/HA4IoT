@@ -116,8 +116,7 @@
   <ItemGroup>
     <Compile Include="Actions\HomeAutomationAction.cs" />
     <Compile Include="Actions\HomeAutomationActionExtensions.cs" />
-    <Compile Include="ComponentExtensions.cs" />
-    <Compile Include="ActuatorSettings.cs" />
+    <Compile Include="ActuatorBase.cs" />
     <Compile Include="BinaryStateActuators\CustomBinaryStateActuator.cs" />
     <Compile Include="BinaryStateActuators\LogicalBinaryStateActuatorExtensions.cs" />
     <Compile Include="Connectors\BinaryStateActuatorWithButtonConnector.cs" />
@@ -136,7 +135,6 @@
     <Compile Include="Triggers\Trigger.cs" />
     <Compile Include="Triggers\TriggerExtensions.cs" />
     <Compile Include="RollerShutters\RollerShutterExtensions.cs" />
-    <Compile Include="ActuatorBase.cs" />
     <Compile Include="Connectors\RollerShutterWithRollerShutterButtonsConnector.cs" />
     <Compile Include="RollerShutters\RollerShutter.cs" />
     <Compile Include="BinaryStateActuators\LogicalBinaryStateActuator.cs" />
@@ -150,6 +148,10 @@
     <Content Include="Properties\HA4IoT.Actuators.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\HA4IoT.Components\HA4IoT.Components.csproj">
+      <Project>{60F9E539-3FF5-40DE-B0C4-BE99CAE57736}</Project>
+      <Name>HA4IoT.Components</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{551337e7-d1ef-4145-92b4-f7086f7665a6}</Project>
       <Name>HA4IoT.Contracts</Name>

@@ -3,20 +3,20 @@ using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core.Settings;
 
-namespace HA4IoT.Actuators
+namespace HA4IoT.Components
 {
-    public class ActuatorSettingsWrapper : IActuatorSettingsWrapper
+    public class ComponentSettingsWrapper : IActuatorSettingsWrapper
     {
         public const string IsEnabledName = "IsEnabled";
 
-        public ActuatorSettingsWrapper(ISettingsContainer settings)
+        public ComponentSettingsWrapper(ISettingsContainer settings)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
 
             Settings = settings;
 
             IsEnabled = true;
-            Settings.SetValue("AppSettings", new JsonObject());
+            Settings.SetValue("appSettings", new JsonObject());
         }
 
         public ISettingsContainer Settings { get; }

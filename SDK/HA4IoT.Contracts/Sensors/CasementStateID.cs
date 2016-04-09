@@ -1,11 +1,12 @@
 ﻿using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
 
 namespace HA4IoT.Contracts.Sensors
 {
     public static class CasementStateId
     {
-        public static readonly StateId Closed = new StateId("Closed");
-        public static readonly StateId Open = new StateId("Open");
-        public static readonly StateId Tilt = new StateId("Tilt");
+        public static readonly StatefulComponentState Closed = new StatefulComponentState("Closed");
+        public static readonly StatefulComponentState Open = new StatefulComponentState("Open");
+        public static readonly StatefulComponentState Tilt = new StatefulComponentState("Tilt");
     }
 }

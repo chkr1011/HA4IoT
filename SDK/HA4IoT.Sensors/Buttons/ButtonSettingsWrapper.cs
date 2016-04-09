@@ -1,10 +1,10 @@
 ﻿using System;
-using HA4IoT.Actuators;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Core.Settings;
 
 namespace HA4IoT.Sensors.Buttons
 {
-    public class ButtonSettingsWrapper : ActuatorSettingsWrapper
+    public class ButtonSettingsWrapper : ComponentSettingsWrapper
     {
         private const string PressedLongDurationName = "PressedLongDuration";
 

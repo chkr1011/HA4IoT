@@ -2,7 +2,6 @@
 using System.Linq;
 using Windows.Data.Json;
 using HA4IoT.Actuators.Triggers;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Sensors;
@@ -109,7 +108,7 @@ namespace HA4IoT.Sensors.Windows
             SetState(newState);
         }
 
-        private StateId GetStateInternal()
+        private StatefulComponentState GetStateInternal()
         {
             if (Casements.Any(c => c.GetState() == CasementStateId.Open))
             {

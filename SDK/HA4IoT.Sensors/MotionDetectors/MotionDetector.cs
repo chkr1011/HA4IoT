@@ -1,6 +1,6 @@
 ﻿using System;
-using HA4IoT.Actuators;
 using HA4IoT.Actuators.Triggers;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
@@ -77,7 +77,7 @@ namespace HA4IoT.Sensors.MotionDetectors
             _detectionCompletedTrigger.Execute();
         }
 
-        private void UpdateState(StateId newState)
+        private void UpdateState(StatefulComponentState newState)
         {
             if (!this.GetIsEnabled())
             {

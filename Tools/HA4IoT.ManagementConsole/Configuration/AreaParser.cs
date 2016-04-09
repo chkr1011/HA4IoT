@@ -22,7 +22,7 @@ namespace HA4IoT.ManagementConsole.Configuration
         public AreaItemVM Parse()
         {
             var settings = (JObject)_source.Value["Settings"];
-            _appSettings = settings.GetNamedObject("AppSettings", null);
+            _appSettings = settings.GetNamedObject("appSettings", null);
 
             var areaItem = new AreaItemVM(_source.Name);
             areaItem.SortValue = (int)_appSettings.GetNamedNumber("SortValue", 0);

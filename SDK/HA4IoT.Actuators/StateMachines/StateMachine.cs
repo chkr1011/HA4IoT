@@ -137,7 +137,7 @@ namespace HA4IoT.Actuators.StateMachines
             return this;
         }
 
-        public void SetInitialState(StateId id)
+        public void SetInitialState(StatefulComponentState id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
@@ -163,7 +163,7 @@ namespace HA4IoT.Actuators.StateMachines
                 return;
             }
 
-            var stateId = new StateId(apiContext.Request.GetNamedString("state", string.Empty));
+            var stateId = new StatefulComponentState(apiContext.Request.GetNamedString("state", string.Empty));
             if (!GetSupportsState(stateId))
             {
                 apiContext.ResultCode = ApiResultCode.InvalidBody;

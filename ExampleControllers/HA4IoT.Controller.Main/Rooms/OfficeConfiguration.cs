@@ -5,6 +5,7 @@ using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core;
@@ -141,13 +142,13 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithActuator(lightsCouchOnly, BinaryStateId.On)
                 .WithActuator(lightsOther, BinaryStateId.On);
 
-            var deskOnlyStateId = new StateId("DeskOnly");
+            var deskOnlyStateId = new StatefulComponentState("DeskOnly");
             light.AddState(deskOnlyStateId)
                 .WithActuator(lightsDeskOnly, BinaryStateId.On)
                 .WithActuator(lightsCouchOnly, BinaryStateId.Off)
                 .WithActuator(lightsOther, BinaryStateId.Off);
 
-            var couchOnlyStateId = new StateId("CouchOnly");
+            var couchOnlyStateId = new StatefulComponentState("CouchOnly");
             light.AddState(couchOnlyStateId)
                 .WithActuator(lightsDeskOnly, BinaryStateId.Off)
                 .WithActuator(lightsCouchOnly, BinaryStateId.On)

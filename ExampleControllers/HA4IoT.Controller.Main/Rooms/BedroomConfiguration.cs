@@ -8,6 +8,7 @@ using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Automations;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Core;
@@ -170,9 +171,9 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithLowOutput(fanRelay2)
                 .WithLowOutput(fanRelay3);
 
-            fan.AddState(new StateId("1")).WithHighOutput(fanRelay1).WithLowOutput(fanRelay2).WithHighOutput(fanRelay3);
-            fan.AddState(new StateId("2")).WithHighOutput(fanRelay1).WithHighOutput(fanRelay2).WithLowOutput(fanRelay3);
-            fan.AddState(new StateId("3")).WithHighOutput(fanRelay1).WithHighOutput(fanRelay2).WithHighOutput(fanRelay3);
+            fan.AddState(new StatefulComponentState("1")).WithHighOutput(fanRelay1).WithLowOutput(fanRelay2).WithHighOutput(fanRelay3);
+            fan.AddState(new StatefulComponentState("2")).WithHighOutput(fanRelay1).WithHighOutput(fanRelay2).WithLowOutput(fanRelay3);
+            fan.AddState(new StatefulComponentState("3")).WithHighOutput(fanRelay1).WithHighOutput(fanRelay2).WithHighOutput(fanRelay3);
             fan.TryTurnOff();
 
             fan.ConnectMoveNextAndToggleOffWith(room.GetButton(Bedroom.ButtonWindowLower));

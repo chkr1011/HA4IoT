@@ -37,7 +37,7 @@ namespace HA4IoT.Actuators.BinaryStateActuators
             return this;
         }
 
-        private void ApplyState(StateId stateId, params IHardwareParameter[] parameters)
+        private void ApplyState(StatefulComponentState stateId, params IHardwareParameter[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
@@ -82,7 +82,7 @@ namespace HA4IoT.Actuators.BinaryStateActuators
         ////    return DefaultStateIDs.Off;
         ////}
 
-        private void Animate(AnimateParameter animateParameter, StateId newState)
+        private void Animate(AnimateParameter animateParameter, StatefulComponentState newState)
         {
             var directionAnimation = new DirectionAnimation(_timer);
             directionAnimation.WithActuator(this);

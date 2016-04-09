@@ -1,15 +1,14 @@
 ﻿using System;
 using Windows.Data.Json;
-using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 
-namespace HA4IoT.Contracts.Actuators
+namespace HA4IoT.Contracts.Components
 {
-    public class StateId : IdBase, IEquatable<StateId>, IComponentState
+    public class StatefulComponentState : IdBase, IEquatable<StatefulComponentState>, IComponentState
     {
         private readonly IJsonValue _jsonValue;
 
-        public StateId(string value) 
+        public StatefulComponentState(string value) 
             : base(value)
         {
             if (string.IsNullOrEmpty(value)) throw new ArgumentException("State ID is invalid.");
@@ -17,7 +16,7 @@ namespace HA4IoT.Contracts.Actuators
             _jsonValue = JsonValue.CreateStringValue(value);
         }
 
-        public bool Equals(StateId other)
+        public bool Equals(StatefulComponentState other)
         {
             if (other == null)
             {
@@ -34,7 +33,7 @@ namespace HA4IoT.Contracts.Actuators
 
         public bool Equals(IComponentState otherState)
         {
-            var other = otherState as StateId;
+            var other = otherState as StatefulComponentState;
             if (other == null)
             {
                 return false;

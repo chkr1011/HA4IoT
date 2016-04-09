@@ -1,17 +1,18 @@
 ﻿using System;
+using HA4IoT.Contracts.Components;
 
 namespace HA4IoT.Contracts.Actuators
 {
     public class StateChangedEventArgs : EventArgs
     {
-        public StateChangedEventArgs(StateId oldState, StateId newState)
+        public StateChangedEventArgs(StatefulComponentState oldState, StatefulComponentState newState)
         {
             OldState = oldState;
             NewState = newState;
         }
 
-        public StateId OldState { get; }
+        public StatefulComponentState OldState { get; }
 
-        public StateId NewState { get; }
+        public StatefulComponentState NewState { get; }
     }
 }

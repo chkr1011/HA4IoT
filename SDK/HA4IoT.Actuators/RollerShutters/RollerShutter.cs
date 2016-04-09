@@ -75,8 +75,7 @@ namespace HA4IoT.Actuators.RollerShutters
             var status = base.ExportStatusToJsonObject();
 
             status.SetNamedNumber("position", _position);
-            status.SetNamedNumber("positionMax", _settings.MaxPosition);
-
+            
             return status;
         }
 
@@ -96,7 +95,7 @@ namespace HA4IoT.Actuators.RollerShutters
 
         public override void HandleApiCommand(IApiContext apiContext)
         {
-            var state = new StateId(apiContext.Request.GetNamedString("state"));
+            var state = new StatefulComponentState(apiContext.Request.GetNamedString("state"));
             SetState(state);
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Triggers;
@@ -20,7 +21,7 @@ namespace HA4IoT.Sensors.Windows
         private readonly Trigger _openedTrigger = new Trigger();
         private readonly Trigger _closedTrigger = new Trigger();
 
-        private StateId _state = CasementStateId.Closed;
+        private StatefulComponentState _state = CasementStateId.Closed;
 
         public Casement(string id, IBinaryInput fullOpenReedSwitch, IBinaryInput tiltReedSwitch = null)
         {
@@ -45,12 +46,12 @@ namespace HA4IoT.Sensors.Windows
 
         public event EventHandler<StateChangedEventArgs> StateChanged;
 
-        public StateId GetState()
+        public StatefulComponentState GetState()
         {
             return _state;
         }
 
-        private ITrigger GetOpenedTrigger()
+        public ITrigger GetOpenedTrigger()
         {
             return _openedTrigger;
         }
@@ -86,7 +87,7 @@ namespace HA4IoT.Sensors.Windows
             OnStateChanged(oldState, _state);
         }
 
-        private void OnStateChanged(StateId oldState, StateId newState)
+        private void OnStateChanged(StatefulComponentState oldState, StatefulComponentState newState)
         {
             StateChanged?.Invoke(this, new StateChangedEventArgs(oldState, newState));
         }

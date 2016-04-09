@@ -140,7 +140,7 @@
     <Compile Include="Sensors\ISensor.cs" />
     <Compile Include="Components\IComponentState.cs" />
     <Compile Include="Sensors\IWindow.cs" />
-    <Compile Include="Actuators\StateId.cs" />
+    <Compile Include="Components\StatefulComponentState.cs" />
     <Compile Include="Api\ApiCallType.cs" />
     <Compile Include="Api\ApiRequestReceivedEventArgs.cs" />
     <Compile Include="Api\ApiResultCode.cs" />

@@ -11,7 +11,7 @@ namespace HA4IoT.Tests.Mockups
             return new TestStateMachine(ComponentIdFactory.EmptyId);
         }
 
-        public TestStateMachine CreateTestStateMachineWithActiveState(StateId id)
+        public TestStateMachine CreateTestStateMachineWithActiveState(StatefulComponentState id)
         {
             var stateMachine = new TestStateMachine(ComponentIdFactory.EmptyId);
             stateMachine.AddState(new StateMachineState(id));
@@ -25,7 +25,7 @@ namespace HA4IoT.Tests.Mockups
             return CreateTestStateMachineWithOnOffStates(BinaryStateId.Off);
         }
 
-        public TestStateMachine CreateTestStateMachineWithOnOffStates(StateId activeState)
+        public TestStateMachine CreateTestStateMachineWithOnOffStates(StatefulComponentState activeState)
         {
             var stateMachine = new TestStateMachine(ComponentIdFactory.EmptyId);
             stateMachine.AddState(new StateMachineState(BinaryStateId.Off));

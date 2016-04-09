@@ -29,6 +29,11 @@ namespace HA4IoT.Contracts.Sensors
                 return false;
             }
 
+            if (ReferenceEquals(other, this))
+            {
+                return true;
+            }
+
             return other.Value.Equals(Value);
         }
 

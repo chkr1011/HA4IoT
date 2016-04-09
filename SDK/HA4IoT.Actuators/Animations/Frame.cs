@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
 
 namespace HA4IoT.Actuators.Animations
 {
@@ -18,7 +19,7 @@ namespace HA4IoT.Actuators.Animations
             return this;
         }
 
-        public Frame WithTargetState(IStateMachine actuator, StateId state)
+        public Frame WithTargetState(IStateMachine actuator, StatefulComponentState state)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 

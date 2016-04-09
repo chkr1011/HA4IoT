@@ -1,8 +1,7 @@
 ﻿using System;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Components;
 
-namespace HA4IoT.Actuators
+namespace HA4IoT.Components
 {
     public static class ComponentExtensions
     {
