@@ -27,7 +27,7 @@ namespace HA4IoT.ManagementConsole.Configuration
 
         public ActuatorItemVM Parse()
         {
-            _type = _source.Value["Type"].Value<string>();
+            _type = _source.Value["type"].Value<string>();
 
             _root = (JObject)_source.Value;
             _settings = (JObject)_source.Value["settings"];
@@ -101,7 +101,7 @@ namespace HA4IoT.ManagementConsole.Configuration
         private IEnumerable<SettingItemVM> GenerateGeneralSettings()
         {
             yield return new StringSettingVM("Id", _source.Name, "ID") { IsReadOnly = true };
-            yield return new StringSettingVM("Type", _type, "Type") { IsReadOnly = true };
+            yield return new StringSettingVM("type", _type, "Type") { IsReadOnly = true };
             yield return BoolSettingVM.CreateFrom(_settings, "IsEnabled", true, "Enabled").WithIsNoAppSetting();
             yield return BoolSettingVM.CreateFrom(_appSettings, "Hide", false, "Hidden");
             yield return StringSettingVM.CreateFrom(_appSettings, "Image", "DefaultActuator", "Image");

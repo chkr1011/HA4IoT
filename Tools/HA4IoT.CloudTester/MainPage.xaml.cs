@@ -113,7 +113,7 @@ namespace HA4IoT.CloudTester
             
             var body = new JsonObject();
             body.SetNamedValue("CallType", JsonValue.CreateStringValue("Command"));
-            body.SetNamedValue("Uri", JsonValue.CreateStringValue("/api/component/Office.LightCeilingFrontLeft/status"));
+            body.SetNamedValue("Uri", JsonValue.CreateStringValue("/api/component/Office.CombinedCeilingLights/status"));
 
             var content = new JsonObject();
             content.SetNamedValue("action", JsonValue.CreateStringValue("nextState"));

@@ -24,7 +24,7 @@ namespace HA4IoT.Contracts.Core.Settings
         float GetFloat(string name);
 
         string GetString(string name);
-
+        
         void SetValue(string name, float value);
 
         void SetValue(string name, bool value);
