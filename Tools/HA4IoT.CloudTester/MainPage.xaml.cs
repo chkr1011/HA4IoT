@@ -113,12 +113,11 @@ namespace HA4IoT.CloudTester
             
             var body = new JsonObject();
             body.SetNamedValue("CallType", JsonValue.CreateStringValue("Command"));
-            body.SetNamedValue("Uri", JsonValue.CreateStringValue("/api/actuator/Office.LightCeilingFrontLeft/status"));
+            body.SetNamedValue("Uri", JsonValue.CreateStringValue("/api/component/Office.LightCeilingFrontLeft/status"));
 
             var content = new JsonObject();
-            content.SetNamedValue("state", JsonValue.CreateStringValue("Toggle"));
-            //body.SetNamedValue("Message", JsonValue.CreateStringValue("Hello World"));
-
+            content.SetNamedValue("action", JsonValue.CreateStringValue("nextState"));
+            
             body.SetNamedValue("Content", content);
 
             Task.Run(async () => await queueSender.SendAsync(systemProperties, body));

@@ -158,19 +158,28 @@ namespace HA4IoT.Actuators.StateMachines
 
         public override void HandleApiCommand(IApiContext apiContext)
         {
-            if (!apiContext.Request.ContainsKey("state"))
+            if (apiContext.Request.ContainsKey("action"))
             {
+                string action = apiContext.Request.GetNamedString("action", "nextState");
+                if (action == "nextState")
+                {
+                    SetState(GetNextState(GetState()));
+                }
+
                 return;
             }
 
-            var stateId = new StatefulComponentState(apiContext.Request.GetNamedString("state", string.Empty));
-            if (!GetSupportsState(stateId))
+            if (apiContext.Request.ContainsKey("state"))
             {
-                apiContext.ResultCode = ApiResultCode.InvalidBody;
-                apiContext.Response.SetNamedString("Message", "State ID not supported.");
-            }
+                var stateId = new StatefulComponentState(apiContext.Request.GetNamedString("state", string.Empty));
+                if (!GetSupportsState(stateId))
+                {
+                    apiContext.ResultCode = ApiResultCode.InvalidBody;
+                    apiContext.Response.SetNamedString("Message", "State ID not supported.");
+                }
 
-            SetState(stateId);
+                SetState(stateId);
+            }
         }
 
         private IStateMachineState GetState(IComponentState id)

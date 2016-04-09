@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.Data.Json;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
