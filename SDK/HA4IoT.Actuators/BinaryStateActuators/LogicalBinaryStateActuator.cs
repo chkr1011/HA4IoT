@@ -14,7 +14,6 @@ namespace HA4IoT.Actuators.BinaryStateActuators
 {
     public class LogicalBinaryStateActuator : ActuatorBase
     {
-        private readonly JsonArray _supportedStatesJson = new JsonArray();
         private readonly IHomeAutomationTimer _timer;
 
         public LogicalBinaryStateActuator(ComponentId id, IHomeAutomationTimer timer) 
@@ -23,9 +22,6 @@ namespace HA4IoT.Actuators.BinaryStateActuators
             if (timer == null) throw new ArgumentNullException(nameof(timer));
 
             _timer = timer;
-
-            _supportedStatesJson.Add(BinaryStateId.Off.ToJsonValue());
-            _supportedStatesJson.Add(BinaryStateId.On.ToJsonValue());
         }
 
         public IList<IStateMachine> Actuators { get; } = new List<IStateMachine>();
@@ -114,15 +110,11 @@ namespace HA4IoT.Actuators.BinaryStateActuators
             return this;
         }
 
-        public override JsonObject ExportConfigurationToJsonObject()
+        protected override IList<IComponentState> GetSupportedStates()
         {
-            JsonObject configuration = base.ExportConfigurationToJsonObject();
-            
-            configuration.SetNamedArray(ComponentConfigurationKey.SupportedStates, _supportedStatesJson);
-
-            return configuration;
+            return new List<IComponentState> {BinaryStateId.Off, BinaryStateId.On};
         }
-        
+
         private void Animate(AnimateParameter animateParameter, IComponentState newState)
         {
             var directionAnimation = new DirectionAnimation(_timer);

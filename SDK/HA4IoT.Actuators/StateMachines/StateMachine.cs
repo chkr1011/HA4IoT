@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
@@ -92,21 +91,6 @@ namespace HA4IoT.Actuators.StateMachines
             return _activeState?.Id;
         }
 
-        public override JsonObject ExportConfigurationToJsonObject()
-        {
-            JsonObject configuration = base.ExportConfigurationToJsonObject();
-
-            var stateMachineStates = new JsonArray();
-            foreach (var state in _states)
-            {
-                stateMachineStates.Add(state.Id.ToJsonValue());
-            }
-
-            configuration.SetNamedValue(ComponentConfigurationKey.SupportedStates, stateMachineStates);
-
-            return configuration;
-        }
-
         public IComponentState GetNextState(IComponentState stateId)
         {
             if (stateId == null) throw new ArgumentNullException(nameof(stateId));
@@ -173,6 +157,11 @@ namespace HA4IoT.Actuators.StateMachines
 
                 SetState(stateId);
             }
+        }
+
+        protected override IList<IComponentState> GetSupportedStates()
+        {
+            return _states.Select(s => s.Id).ToList();
         }
 
         private IStateMachineState GetState(IComponentState id)

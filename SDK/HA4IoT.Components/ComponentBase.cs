@@ -41,7 +41,6 @@ namespace HA4IoT.Components
             var configuration = new JsonObject();
             configuration.SetNamedString(ComponentConfigurationKey.Type, GetType().Name);
             configuration.SetNamedObject(ComponentConfigurationKey.Settings, Settings.Export());
-
             return configuration;
         }
 
@@ -51,7 +50,6 @@ namespace HA4IoT.Components
             status.SetNamedObject(ComponentConfigurationKey.Settings, Settings.Export());
             status.SetNamedValue(ActuatorStatusKey.State, GetState().ToJsonValue());
             status.SetNamedDateTime(ActuatorStatusKey.StateLastChanged, _stateLastChanged);
-
             return status;
         }
 

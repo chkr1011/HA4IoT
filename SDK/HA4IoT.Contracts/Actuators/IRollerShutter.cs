@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Contracts.Actuators
 {
-    public interface IRollerShutter : IStateMachine
+    public interface IRollerShutter : IActuator
     {
         bool IsClosed { get; }
 

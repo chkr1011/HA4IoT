@@ -102,6 +102,7 @@
     <Compile Include="AutomaticTurnOnAndOffAutomationTests.cs" />
     <Compile Include="ConditionsValidatorTests.cs" />
     <Compile Include="LogicalBinaryStateActuatorTests.cs" />
+    <Compile Include="RollerShutterTests.cs" />
     <Compile Include="TimeRangeConditionTests.cs" />
     <Compile Include="FulfilledTestCondition.cs" />
     <Compile Include="NotFulfilledTestCondition.cs" />
