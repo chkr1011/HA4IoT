@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Components;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
@@ -57,6 +57,11 @@ namespace HA4IoT.Sensors.Buttons
             }
         }
 
+        protected override IList<IComponentState> GetSupportedStates()
+        {
+            return new List<IComponentState> {ButtonStateId.Released, ButtonStateId.Pressed};
+        }
+
         private void HandleInputStateChanged(StatefulComponentState state)
         {
             if (!this.GetIsEnabled())
@@ -70,7 +75,7 @@ namespace HA4IoT.Sensors.Buttons
 
         private void InvokeTriggers()
         {
-            if (GetState() == ButtonStateId.Pressed)
+            if (GetState().Equals(ButtonStateId.Pressed))
             {
                 if (!_pressedLongTrigger.IsAnyAttached)
                 {
@@ -81,7 +86,7 @@ namespace HA4IoT.Sensors.Buttons
                     _stopwatch.Restart();
                 }
             }
-            else if (GetState() == ButtonStateId.Released)
+            else if (GetState().Equals(ButtonStateId.Released))
             {
                 if (!_stopwatch.IsRunning)
                 {

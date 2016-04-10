@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Sensors;
 
@@ -30,6 +31,11 @@ namespace HA4IoT.Sensors.TemperatureSensors
         public float GetCurrentNumericValue()
         {
             return ((NumericSensorValue) GetState()).Value;
+        }
+
+        protected override IList<IComponentState> GetSupportedStates()
+        {
+            return null;
         }
 
         private bool GetDifferenceIsLargeEnough(float value)

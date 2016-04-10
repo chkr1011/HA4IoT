@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Components;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
@@ -45,6 +45,11 @@ namespace HA4IoT.Sensors.MotionDetectors
         public ITrigger GetDetectionCompletedTrigger()
         {
             return _detectionCompletedTrigger;
+        }
+
+        protected override IList<IComponentState> GetSupportedStates()
+        {
+            return new List<IComponentState> {MotionDetectorStateId.Idle, MotionDetectorStateId.MotionDetected};
         }
 
         public override void HandleApiCommand(IApiContext apiContext)

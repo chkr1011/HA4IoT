@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using Windows.Data.Json;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
@@ -36,11 +36,26 @@ namespace HA4IoT.Components
 
         public abstract IComponentState GetState();
 
+        protected abstract IList<IComponentState> GetSupportedStates();
+
         public virtual JsonObject ExportConfigurationToJsonObject()
         {
             var configuration = new JsonObject();
             configuration.SetNamedString(ComponentConfigurationKey.Type, GetType().Name);
             configuration.SetNamedObject(ComponentConfigurationKey.Settings, Settings.Export());
+
+            var supportedStates = GetSupportedStates();
+            if (supportedStates != null)
+            {
+                var supportedStatesJson = new JsonArray();
+                foreach (var supportedState in supportedStates)
+                {
+                    supportedStatesJson.Add(supportedState.ToJsonValue());
+                }
+
+                configuration.SetNamedArray(ComponentConfigurationKey.SupportedStates, supportedStatesJson);
+            }
+            
             return configuration;
         }
 

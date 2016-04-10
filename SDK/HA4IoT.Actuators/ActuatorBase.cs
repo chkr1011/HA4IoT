@@ -16,21 +16,5 @@ namespace HA4IoT.Actuators
         }
 
         public abstract void SetState(IComponentState state, params IHardwareParameter[] parameters);
-
-        protected abstract IList<IComponentState> GetSupportedStates();
-
-        public override JsonObject ExportConfigurationToJsonObject()
-        {
-            var configuration = base.ExportConfigurationToJsonObject();
-
-            var supportedStatesJson = new JsonArray();
-            foreach (var supportedState in GetSupportedStates())
-            {
-                supportedStatesJson.Add(supportedState.ToJsonValue());
-            }
-
-            configuration.SetNamedArray(ComponentConfigurationKey.SupportedStates, supportedStatesJson);
-            return configuration;
-        }
     }
 }
