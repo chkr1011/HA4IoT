@@ -1,6 +1,5 @@
 ﻿using System;
 using HA4IoT.Contracts.Areas;
-using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 
 namespace HA4IoT.Core
@@ -13,6 +12,11 @@ namespace HA4IoT.Core
             controller.AddArea(area);
 
             return area;
+        }
+
+        public static IArea GetArea(this IController controller, Enum id)
+        {
+            return controller.GetArea(AreaIdFactory.CreateIdFrom(id));
         }
     }
 }

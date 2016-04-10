@@ -47,12 +47,12 @@ namespace HA4IoT.ExternalServices.Twitter
             }
         }
 
-        public IHomeAutomationAction GetTweetAction(string message)
+        public IAction GetTweetAction(string message)
         {
             return new TweetAction(message, this);
         }
 
-        public IHomeAutomationAction GetTweetAction(Func<string> messageProvider)
+        public IAction GetTweetAction(Func<string> messageProvider)
         {
             return new TweetAction(messageProvider, this);
         }

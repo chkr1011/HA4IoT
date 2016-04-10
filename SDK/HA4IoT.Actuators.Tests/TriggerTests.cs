@@ -109,7 +109,7 @@ namespace HA4IoT.Actuators.Tests
             var testButton = buttonFactory.CreateTestButton();
             var testOutput = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
 
-            testButton.GetPressedShortlyTrigger().OnTriggered(testOutput.GetSetNextStateAction());
+            testButton.GetPressedShortlyTrigger().Attach(testOutput.GetSetNextStateAction());
 
             testOutput.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
             testButton.PressShortly();

@@ -10,6 +10,7 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Networking;
+using Action = HA4IoT.Actuators.Actions.Action;
 
 namespace HA4IoT.Actuators.RollerShutters
 {
@@ -18,9 +19,9 @@ namespace HA4IoT.Actuators.RollerShutters
         private readonly Stopwatch _movingDuration = new Stopwatch();
         private readonly IHomeAutomationTimer _timer;
 
-        private readonly IHomeAutomationAction _startMoveUpAction;
-        private readonly IHomeAutomationAction _turnOffAction;
-        private readonly IHomeAutomationAction _startMoveDownAction;
+        private readonly IAction _startMoveUpAction;
+        private readonly IAction _turnOffAction;
+        private readonly IAction _startMoveDownAction;
 
         private readonly RollerShutterSettingsWrapper _settings;
         
@@ -40,9 +41,9 @@ namespace HA4IoT.Actuators.RollerShutters
             timer.Tick += (s, e) => UpdatePosition(e);
             _settings = new RollerShutterSettingsWrapper(Settings);
 
-            _startMoveUpAction = new HomeAutomationAction(() => SetState(RollerShutterStateId.MovingUp));
-            _turnOffAction = new HomeAutomationAction(() => SetState(RollerShutterStateId.Off));
-            _startMoveDownAction = new HomeAutomationAction(() => SetState(RollerShutterStateId.MovingDown));
+            _startMoveUpAction = new Action(() => SetState(RollerShutterStateId.MovingUp));
+            _turnOffAction = new Action(() => SetState(RollerShutterStateId.Off));
+            _startMoveDownAction = new Action(() => SetState(RollerShutterStateId.MovingDown));
 
             endpoint.Stop(HardwareParameter.ForceUpdateState);
 
@@ -55,17 +56,17 @@ namespace HA4IoT.Actuators.RollerShutters
 
         public bool IsClosed => _position == _settings.MaxPosition;
         
-        public IHomeAutomationAction GetTurnOffAction()
+        public IAction GetTurnOffAction()
         {
             return _turnOffAction;
         }
 
-        public IHomeAutomationAction GetStartMoveUpAction()
+        public IAction GetStartMoveUpAction()
         {
             return _startMoveUpAction;
         }
 
-        public IHomeAutomationAction GetStartMoveDownAction()
+        public IAction GetStartMoveDownAction()
         {
             return _startMoveDownAction;
         }

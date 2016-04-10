@@ -22,5 +22,19 @@ namespace HA4IoT.Actuators
 
             return controller.GetComponent<IActuator>(id);
         }
+
+        public static bool GetIsOn(this IActuator actuator)
+        {
+            if (actuator == null) throw new ArgumentNullException(nameof(actuator));
+
+            return actuator.GetState().Equals(BinaryStateId.On);
+        }
+
+        public static bool GetIsOff(this IActuator actuator)
+        {
+            if (actuator == null) throw new ArgumentNullException(nameof(actuator));
+
+            return actuator.GetState().Equals(BinaryStateId.On);
+        }
     }
 }

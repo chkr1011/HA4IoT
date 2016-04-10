@@ -1,6 +1,6 @@
 ﻿namespace HA4IoT.Contracts.Actions
 {
-    public interface IHomeAutomationAction
+    public interface IAction
     {
         void Execute();
     }

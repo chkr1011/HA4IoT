@@ -1,9 +1,9 @@
 ﻿using System;
-using HA4IoT.Actuators.Actions;
 using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
+using Action = HA4IoT.Actuators.Actions.Action;
 
 namespace HA4IoT.Actuators.StateMachines
 {
@@ -105,33 +105,33 @@ namespace HA4IoT.Actuators.StateMachines
             return true;
         }
 
-        public static IHomeAutomationAction GetSetStateAction(this IStateMachine stateStateMachine, StatefulComponentState stateId)
+        public static IAction GetSetStateAction(this IStateMachine stateStateMachine, StatefulComponentState stateId)
         {
             if (stateStateMachine == null) throw new ArgumentNullException(nameof(stateStateMachine));
             if (stateId == null) throw new ArgumentNullException(nameof(stateId));
 
-            return new HomeAutomationAction(() => stateStateMachine.SetState(stateId));
+            return new Action(() => stateStateMachine.SetState(stateId));
         }
 
-        public static IHomeAutomationAction GetTurnOnAction(this IStateMachine stateMachine)
+        public static IAction GetTurnOnAction(this IStateMachine stateMachine)
         {
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
 
-            return new HomeAutomationAction(() => stateMachine.SetState(BinaryStateId.On));
+            return new Action(() => stateMachine.SetState(BinaryStateId.On));
         }
 
-        public static IHomeAutomationAction GetTurnOffAction(this IStateMachine stateMachine)
+        public static IAction GetTurnOffAction(this IStateMachine stateMachine)
         {
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
 
-            return new HomeAutomationAction(() => stateMachine.SetState(BinaryStateId.Off));
+            return new Action(() => stateMachine.SetState(BinaryStateId.Off));
         }
 
-        public static IHomeAutomationAction GetSetNextStateAction(this IStateMachine stateStateMachine)
+        public static IAction GetSetNextStateAction(this IStateMachine stateStateMachine)
         {
             if (stateStateMachine == null) throw new ArgumentNullException(nameof(stateStateMachine));
 
-            return new HomeAutomationAction(stateStateMachine.SetNextState);
+            return new Action(stateStateMachine.SetNextState);
         }
     }
 }

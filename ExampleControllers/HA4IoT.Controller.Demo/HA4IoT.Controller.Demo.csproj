@@ -140,6 +140,10 @@
       <Project>{60F9E539-3FF5-40DE-B0C4-BE99CAE57736}</Project>
       <Name>HA4IoT.Components</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Conditions\HA4IoT.Conditions.csproj">
+      <Project>{3822E69D-FD79-4797-98E2-7C05973B6522}</Project>
+      <Name>HA4IoT.Conditions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{551337E7-D1EF-4145-92B4-F7086F7665A6}</Project>
       <Name>HA4IoT.Contracts</Name>

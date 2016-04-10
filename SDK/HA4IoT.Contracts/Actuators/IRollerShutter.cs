@@ -6,10 +6,10 @@ namespace HA4IoT.Contracts.Actuators
     {
         bool IsClosed { get; }
 
-        IHomeAutomationAction GetTurnOffAction();
+        IAction GetTurnOffAction();
 
-        IHomeAutomationAction GetStartMoveUpAction();
+        IAction GetStartMoveUpAction();
 
-        IHomeAutomationAction GetStartMoveDownAction();
+        IAction GetStartMoveDownAction();
     }
 }

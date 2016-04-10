@@ -1,13 +1,17 @@
 ﻿using System;
+using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Automations;
+using HA4IoT.Conditions;
+using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Sensors;
@@ -64,16 +68,45 @@ namespace HA4IoT.Controller.Demo
 
         private void SetupDemo()
         {
+            // Get the area from the controller.
+            IArea area = this.GetArea(Room.ExampleRoom);
+
+            // Get the single motion detector from the controller.
+            var motionDetector = GetComponent<IMotionDetector>();
+            ITrigger motionDetectedTrigger = motionDetector.GetMotionDetectedTrigger();
+
+            // Get the single temperature and humidity sensor from the controller.
+            ITemperatureSensor temperatureSensor = GetComponent<ITemperatureSensor>();
+            IHumiditySensor humiditySensor = GetComponent<IHumiditySensor>();
+
+            // Get the button with the specified ID from the area (not globally).
+            IButton button = area.GetButton(ExampleRoom.Button1);
+            ITrigger buttonTrigger = button.GetPressedShortlyTrigger();
+
+            // Get a test lamp from the area (not globally).
+            ILamp lamp2 = area.GetLamp(ExampleRoom.Lamp2);
+            ILamp lamp3 = area.GetLamp(ExampleRoom.Lamp3);
+            
+            // Integrate the twitter client if the configuration file is available.
             TwitterClient twitterClient;
             if (TwitterClientFactory.TryCreateFromDefaultConfigurationFile(out twitterClient))
             {
                 RegisterService(new TwitterClient());
+                
+                IAction tweetAction = twitterClient.GetTweetAction($"Someone is here ({DateTime.Now})... @chkratky");
 
-                var motionDetector = GetComponent<IMotionDetector>();
-
-                int id = 0;
-                motionDetector.GetMotionDetectedTrigger().OnTriggered(twitterClient.GetTweetAction($"Someone is here {++id} (... @chkratky"));
+                motionDetectedTrigger.Attach(tweetAction);
+                buttonTrigger.Attach(tweetAction);
             }
+
+            // An automation is "Fulfilled" per default.
+            var automation = new Automation(new AutomationId("DemoAutomation"))
+                .WithTrigger(motionDetectedTrigger)
+                .WithActionIfConditionsFulfilled(lamp3.GetTurnOnAction())
+                .WithCondition(ConditionRelation.And, new ComponentIsInStateCondition(lamp2, BinaryStateId.Off))
+                .WithCondition(ConditionRelation.And, new NumericValueSensorHasValueGreaterThanCondition(humiditySensor, 80));
+
+            AddAutomation(automation);
         }
 
         private void SetupRoom()
@@ -118,7 +151,7 @@ namespace HA4IoT.Controller.Demo
                 .WithStateMachine(ExampleRoom.CeilingFan, (sm, r) => SetupCeilingFan(sm))
                 .WithWindow(ExampleRoom.Window, w => w.WithCenterCasement(hspe16[HSPE16Pin.GPIO0]));
 
-            area.GetButton(ExampleRoom.Button1).GetPressedShortlyTrigger().OnTriggered(area.GetLamp(ExampleRoom.Lamp5).GetSetNextStateAction());
+            area.GetButton(ExampleRoom.Button1).GetPressedShortlyTrigger().Attach(area.GetLamp(ExampleRoom.Lamp5).GetSetNextStateAction());
             area.GetButton(ExampleRoom.Button1).ConnectToggleActionWith(area.GetLamp(ExampleRoom.Lamp6), ButtonPressedDuration.Long);
 
             area.GetStateMachine(ExampleRoom.CeilingFan).ConnectMoveNextAndToggleOffWith(area.GetButton(ExampleRoom.Button2));
@@ -137,12 +170,12 @@ namespace HA4IoT.Controller.Demo
         private void SetupHumidityDependingLamp(IHumiditySensor sensor, ILamp lamp)
         {
             ITrigger trigger = sensor.GetHumidityReachedTrigger(80);
-            IHomeAutomationAction action = lamp.GetTurnOnAction();
+            IAction action = lamp.GetTurnOnAction();
 
-            trigger.OnTriggered(action);
+            trigger.Attach(action);
             
             var twitterClient = new TwitterClient();
-            trigger.OnTriggered(twitterClient.GetTweetAction("Hello World"));
+            trigger.Attach(twitterClient.GetTweetAction("Hello World"));
         }
 
         private void SetupCeilingFan(StateMachine stateMachine)

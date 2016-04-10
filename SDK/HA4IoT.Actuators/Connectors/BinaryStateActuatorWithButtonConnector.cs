@@ -32,11 +32,11 @@ namespace HA4IoT.Actuators.Connectors
         {
             if (pressedDuration == ButtonPressedDuration.Short)
             {
-                button.GetPressedShortlyTrigger().OnTriggered(actuator.GetSetNextStateAction());
+                button.GetPressedShortlyTrigger().Attach(actuator.GetSetNextStateAction());
             }
             else if (pressedDuration == ButtonPressedDuration.Long)
             {
-                button.GetPressedLongTrigger().OnTriggered(actuator.GetSetNextStateAction());
+                button.GetPressedLongTrigger().Attach(actuator.GetSetNextStateAction());
             }
             else
             {

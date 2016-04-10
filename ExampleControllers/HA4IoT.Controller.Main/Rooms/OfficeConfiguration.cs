@@ -154,15 +154,15 @@ namespace HA4IoT.Controller.Main.Rooms
 
             room.GetButton(Office.ButtonLowerRight)
                 .GetPressedShortlyTrigger()
-                .OnTriggered(light.GetSetStateAction(couchOnlyStateId));
+                .Attach(light.GetSetStateAction(couchOnlyStateId));
 
             room.GetButton(Office.ButtonLowerLeft)
                 .GetPressedShortlyTrigger()
-                .OnTriggered(light.GetSetStateAction(deskOnlyStateId));
+                .Attach(light.GetSetStateAction(deskOnlyStateId));
 
             room.GetButton(Office.ButtonUpperLeft)
                 .GetPressedShortlyTrigger()
-                .OnTriggered(light.GetSetStateAction(BinaryStateId.On));
+                .Attach(light.GetSetStateAction(BinaryStateId.On));
         }
     }
 }

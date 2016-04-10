@@ -107,7 +107,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\IActuatorAction.cs" />
+    <Compile Include="Actions\IAction.cs" />
     <Compile Include="Components\ComponentStatusKey.cs" />
     <Compile Include="Components\ComponentConfigurationKey.cs" />
     <Compile Include="Actuators\BinaryStateId.cs" />
