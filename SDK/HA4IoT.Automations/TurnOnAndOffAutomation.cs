@@ -78,7 +78,7 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public TurnOnAndOffAutomation WithTarget(IStateMachine actuator)
+        public TurnOnAndOffAutomation WithTarget(IActuator actuator)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 

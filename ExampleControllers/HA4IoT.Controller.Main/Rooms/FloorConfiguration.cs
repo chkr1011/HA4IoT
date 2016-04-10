@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Actuators;
 using HA4IoT.Actuators.Animations;
 using HA4IoT.Actuators.BinaryStateActuators;
 using HA4IoT.Actuators.Lamps;
@@ -106,7 +107,7 @@ namespace HA4IoT.Controller.Main.Rooms
             room.SetupTurnOnAndOffAutomation()
                 .WithTrigger(room.GetMotionDetector(Floor.StairwayMotionDetector))
                 .WithTrigger(room.GetButton(Floor.ButtonStairway).GetPressedShortlyTrigger())
-                .WithTarget(room.GetStateMachine(Floor.CombinedStairwayLamp))
+                .WithTarget(room.GetActuator(Floor.CombinedStairwayLamp))
                 .WithEnabledAtNight(Controller.GetService<IDaylightService>())
                 .WithOnDuration(TimeSpan.FromSeconds(30));
 
@@ -120,7 +121,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTrigger(room.GetButton(Floor.ButtonLowerFloorUpper).GetPressedShortlyTrigger())
                 .WithTrigger(room.GetButton(Floor.ButtonLowerFloorAtBathroom).GetPressedShortlyTrigger())
                 .WithTrigger(room.GetButton(Floor.ButtonLowerFloorAtKitchen).GetPressedShortlyTrigger())
-                .WithTarget(room.GetStateMachine(Floor.CombinedLamps))
+                .WithTarget(room.GetActuator(Floor.CombinedLamps))
                 .WithEnabledAtNight(Controller.GetService<IDaylightService>())
                 .WithTurnOffIfButtonPressedWhileAlreadyOn()
                 .WithOnDuration(TimeSpan.FromSeconds(20));

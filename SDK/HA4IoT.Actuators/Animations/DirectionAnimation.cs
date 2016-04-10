@@ -11,7 +11,7 @@ namespace HA4IoT.Actuators.Animations
     {
         private LogicalBinaryStateActuator _actuator;
         private bool _isForward = true;
-        private StatefulComponentState _targetState;
+        private IComponentState _targetState;
         private TimeSpan _duration = TimeSpan.FromMilliseconds(250);
         
         public DirectionAnimation(IHomeAutomationTimer timer) : base(timer)
@@ -36,7 +36,7 @@ namespace HA4IoT.Actuators.Animations
             return this;
         }
 
-        public DirectionAnimation WithTargetState(StatefulComponentState state)
+        public DirectionAnimation WithTargetState(IComponentState state)
         {
             _targetState = state;
             return this;

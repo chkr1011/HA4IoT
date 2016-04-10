@@ -16,30 +16,29 @@ namespace HA4IoT.Contracts.Components
             _jsonValue = JsonValue.CreateStringValue(value);
         }
 
-        public bool Equals(StatefulComponentState other)
+        public bool Equals(StatefulComponentState otherState)
         {
-            if (other == null)
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(other, this))
+            if (ReferenceEquals(otherState, this))
             {
                 return true;
             }
 
-            return Value.Equals(other.Value);
+            if (otherState == null)
+            {
+                return false;
+            }
+            
+            return Value.Equals(otherState.Value);
         }
 
         public bool Equals(IComponentState otherState)
         {
-            var other = otherState as StatefulComponentState;
-            if (other == null)
+            if (ReferenceEquals(otherState, this))
             {
-                return false;
+                return true;
             }
 
-            return other.Value.Equals(Value);
+            return Equals(otherState as StatefulComponentState);
         }
 
         public IJsonValue ToJsonValue()

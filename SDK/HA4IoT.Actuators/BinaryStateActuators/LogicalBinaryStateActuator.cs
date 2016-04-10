@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Windows.Data.Json;
 using HA4IoT.Actuators.Animations;
-using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Sensors;
+using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators.BinaryStateActuators
 {
-    public class LogicalBinaryStateActuator : StateMachine
+    public class LogicalBinaryStateActuator : ActuatorBase
     {
+        private readonly JsonArray _supportedStatesJson = new JsonArray();
         private readonly IHomeAutomationTimer _timer;
 
         public LogicalBinaryStateActuator(ComponentId id, IHomeAutomationTimer timer) 
@@ -21,10 +24,8 @@ namespace HA4IoT.Actuators.BinaryStateActuators
 
             _timer = timer;
 
-            AddState(new StateMachineState(BinaryStateId.Off).WithAction(p => ApplyState(BinaryStateId.Off, p)));
-            AddState(new StateMachineState(BinaryStateId.On).WithAction(p => ApplyState(BinaryStateId.On, p)));
-
-            SetInitialState(BinaryStateId.Off);
+            _supportedStatesJson.Add(BinaryStateId.Off.ToJsonValue());
+            _supportedStatesJson.Add(BinaryStateId.On.ToJsonValue());
         }
 
         public IList<IStateMachine> Actuators { get; } = new List<IStateMachine>();
@@ -37,52 +38,92 @@ namespace HA4IoT.Actuators.BinaryStateActuators
             return this;
         }
 
-        private void ApplyState(StatefulComponentState stateId, params IHardwareParameter[] parameters)
+        public override IComponentState GetState()
+        {
+            if (Actuators.Any(a => a.GetState().Equals(BinaryStateId.On)))
+            {
+                return BinaryStateId.On;
+            }
+
+            return BinaryStateId.Off;
+        }
+
+        public override void SetState(IComponentState state, params IHardwareParameter[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
             var animationParameter = parameters.SingleOrDefault(p => p is AnimateParameter) as AnimateParameter;
             if (animationParameter != null)
             {
-                Animate(animationParameter, stateId);
-                return;
-            }
-
-            // Set the state of the actuators without a commit to ensure that the state is applied at once without a delay.
-            foreach (var actuator in Actuators)
-            {
-                actuator.SetState(stateId, HardwareParameter.IsPartOfPartialUpdate);
-            }
-
-            bool commit = !parameters.Any(p => p is IsPartOfPartialUpdateParameter);
-            bool forceUpdate = parameters.Any(p => p is ForceUpdateStateParameter);
-            if (!commit && !forceUpdate)
-            {
+                Animate(animationParameter, state);
                 return;
             }
 
             foreach (var actuator in Actuators)
             {
-                actuator.SetState(stateId);
+                actuator.SetState(state, parameters);
+            }
+
+            ////foreach (var actuator in Actuators)
+            ////{
+            ////    actuator.SetState(state, HardwareParameter.IsPartOfPartialUpdate);
+            ////}
+
+            ////bool commit = !parameters.Any(p => p is IsPartOfPartialUpdateParameter);
+            ////bool forceUpdate = parameters.Any(p => p is ForceUpdateStateParameter);
+            ////if (!commit && !forceUpdate)
+            ////{
+            ////    return;
+            ////}
+
+            ////foreach (var actuator in Actuators)
+            ////{
+            ////    actuator.SetState(state, parameters);
+            ////}
+        }
+
+        public void ToggleState(params IHardwareParameter[] parameters)
+        {
+            if (GetState().Equals(BinaryStateId.Off))
+            {
+                SetState(BinaryStateId.On, parameters);
+            }
+            else
+            {
+                SetState(BinaryStateId.Off, parameters);
             }
         }
 
-        ////protected override BinaryActuatorState GetStateInternal()
-        ////{
-        ////    if (!Actuators.Any())
-        ////    {
-        ////        return BinaryActuatorState.Off;
-        ////    }
+        public LogicalBinaryStateActuator ConnectToggleActionWith(IButton button, ButtonPressedDuration pressedDuration = ButtonPressedDuration.Short)
+        {
+            if (button == null) throw new ArgumentNullException(nameof(button));
 
-        ////    if (Actuators.Any(a => a.GetState() == DefaultStateIDs.On))
-        ////    {
-        ////        return DefaultStateIDs.On;
-        ////    }
+            if (pressedDuration == ButtonPressedDuration.Short)
+            {
+                button.GetPressedShortlyTrigger().Attach(() => ToggleState());
+            }
+            else if (pressedDuration == ButtonPressedDuration.Long)
+            {
+                button.GetPressedLongTrigger().Attach(() => ToggleState());
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
 
-        ////    return DefaultStateIDs.Off;
-        ////}
+            return this;
+        }
 
-        private void Animate(AnimateParameter animateParameter, StatefulComponentState newState)
+        public override JsonObject ExportConfigurationToJsonObject()
+        {
+            JsonObject configuration = base.ExportConfigurationToJsonObject();
+            
+            configuration.SetNamedArray(ComponentConfigurationKey.SupportedStates, _supportedStatesJson);
+
+            return configuration;
+        }
+        
+        private void Animate(AnimateParameter animateParameter, IComponentState newState)
         {
             var directionAnimation = new DirectionAnimation(_timer);
             directionAnimation.WithActuator(this);

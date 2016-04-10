@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Actuators;
 using HA4IoT.Actuators.BinaryStateActuators;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.StateMachines;
@@ -10,7 +11,6 @@ using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
-using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.MotionDetectors;
@@ -74,7 +74,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             room.SetupTurnOnAndOffAutomation()
                 .WithTrigger(room.GetMotionDetector(LowerBathroom.MotionDetector))
-                .WithTarget(room.GetStateMachine(LowerBathroom.CombinedLights));
+                .WithTarget(room.GetActuator(LowerBathroom.CombinedLights));
         }
 
         private void StartBathode(IArea bathroom)

@@ -117,6 +117,7 @@
     <Compile Include="Actions\HomeAutomationAction.cs" />
     <Compile Include="Actions\HomeAutomationActionExtensions.cs" />
     <Compile Include="ActuatorBase.cs" />
+    <Compile Include="ActuatorExtensions.cs" />
     <Compile Include="BinaryStateActuators\CustomBinaryStateActuator.cs" />
     <Compile Include="BinaryStateActuators\LogicalBinaryStateActuatorExtensions.cs" />
     <Compile Include="Connectors\BinaryStateActuatorWithButtonConnector.cs" />

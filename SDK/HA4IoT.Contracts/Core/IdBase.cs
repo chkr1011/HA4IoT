@@ -27,6 +27,22 @@ namespace HA4IoT.Contracts.Core
             return JsonValue.CreateStringValue(_value);
         }
 
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            var other = obj as IdBase;
+            if (other == null)
+            {
+                return false;
+            }
+
+            return other.Value.Equals(Value);
+        }
+
         public override int GetHashCode()
         {
             return _value.GetHashCode();

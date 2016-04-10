@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.Data.Json;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
@@ -33,26 +34,25 @@ namespace HA4IoT.Components
 
         public IActuatorSettingsWrapper GeneralSettingsWrapper { get; }
 
-        public virtual JsonObject ExportStatusToJsonObject()
-        {
-            var result = new JsonObject();
-            result.SetNamedObject("settings", Settings.Export());
-            result.SetNamedValue("state", GetState().ToJsonValue());
-
-            return result;
-        }
-
         public abstract IComponentState GetState();
 
         public virtual JsonObject ExportConfigurationToJsonObject()
         {
-            var result = new JsonObject();
-            result.SetNamedString("type", GetType().Name);
-            result.SetNamedObject("settings", Settings.Export());
-            result.SetNamedValue("state", GetState().ToJsonValue());
-            result.SetNamedDateTime("stateLastChanged", _stateLastChanged);
+            var configuration = new JsonObject();
+            configuration.SetNamedString(ComponentConfigurationKey.Type, GetType().Name);
+            configuration.SetNamedObject(ComponentConfigurationKey.Settings, Settings.Export());
 
-            return result;
+            return configuration;
+        }
+
+        public virtual JsonObject ExportStatusToJsonObject()
+        {
+            var status = new JsonObject();
+            status.SetNamedObject(ComponentConfigurationKey.Settings, Settings.Export());
+            status.SetNamedValue(ActuatorStatusKey.State, GetState().ToJsonValue());
+            status.SetNamedDateTime(ActuatorStatusKey.StateLastChanged, _stateLastChanged);
+
+            return status;
         }
 
         public virtual void HandleApiCommand(IApiContext apiContext)

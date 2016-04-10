@@ -102,7 +102,7 @@ namespace HA4IoT.Actuators.StateMachines
                 stateMachineStates.Add(state.Id.ToJsonValue());
             }
 
-            configuration.SetNamedValue("supportedStates", stateMachineStates);
+            configuration.SetNamedValue(ComponentConfigurationKey.SupportedStates, stateMachineStates);
 
             return configuration;
         }
