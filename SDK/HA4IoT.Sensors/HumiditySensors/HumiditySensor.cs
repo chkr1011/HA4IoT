@@ -34,7 +34,7 @@ namespace HA4IoT.Sensors.HumiditySensors
 
         protected override IList<IComponentState> GetSupportedStates()
         {
-            return null;
+            return new List<IComponentState>();
         }
 
         private bool GetDifferenceIsLargeEnough(float value)

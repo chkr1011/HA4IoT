@@ -35,7 +35,7 @@ namespace HA4IoT.Sensors.TemperatureSensors
 
         protected override IList<IComponentState> GetSupportedStates()
         {
-            return null;
+            return new List<IComponentState>();
         }
 
         private bool GetDifferenceIsLargeEnough(float value)
