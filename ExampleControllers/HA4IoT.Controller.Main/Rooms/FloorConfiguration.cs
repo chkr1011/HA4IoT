@@ -144,9 +144,9 @@ namespace HA4IoT.Controller.Main.Rooms
             floor.WithLamp(Floor.LampStairsCeiling, output);
 
             floor.SetupTurnOnAndOffAutomation()
-                .WithTrigger(floor.GetMotionDetector(Floor.StairsLowerMotionDetector), new AnimateParameter())
+                .WithTrigger(floor.GetMotionDetector(Floor.StairsLowerMotionDetector))
                 .WithTrigger(floor.GetMotionDetector(Floor.StairsUpperMotionDetector))
-                //.WithTrigger(floor.Button(Floor.ButtonStairsUpper))
+                //.WithTrigger(floor.GetButton(Floor.ButtonStairsUpper).GetPressedShortlyTrigger())
                 .WithTarget(floor.GetStateMachine(Floor.LampStairsCeiling))
                 .WithOnDuration(TimeSpan.FromSeconds(10));
 
@@ -154,7 +154,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             floor.GetButton(Floor.ButtonStairsUpper).GetPressedShortlyTrigger().Triggered += (s, e) =>
             {
-                if (lamp.GetState() == BinaryStateId.On)
+                if (lamp.GetState().Equals(BinaryStateId.On))
                 {
                     lamp.SetState(BinaryStateId.Off, new AnimateParameter().WithReversedOrder());
                 }
@@ -166,7 +166,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             floor.GetButton(Floor.ButtonStairsLowerUpper).GetPressedShortlyTrigger().Triggered += (s, e) =>
             {
-                if (lamp.GetState() == BinaryStateId.On)
+                if (lamp.GetState().Equals(BinaryStateId.On))
                 {
                     lamp.SetState(BinaryStateId.Off, new AnimateParameter());
                 }

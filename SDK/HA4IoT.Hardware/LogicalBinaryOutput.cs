@@ -15,6 +15,7 @@ namespace HA4IoT.Hardware
         {
             state = CoerceState(state);
 
+            // TODO: Implement animations here.
             foreach (var output in _outputs)
             {
                 output.Write(state, false);

@@ -8,7 +8,6 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Core.Settings;
-using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Triggers;
@@ -36,27 +35,27 @@ namespace HA4IoT.Automations
         public TurnOnAndOffAutomation(AutomationId id, IHomeAutomationTimer timer)
             : base(id)
         {
-            _timer = timer;
+            if (timer == null) throw new ArgumentNullException(nameof(timer));
 
+            _timer = timer;
             _wrappedSettings = new TurnOnAndOffAutomationSettingsWrapper(Settings);
         }
 
-        public TurnOnAndOffAutomation WithTrigger(IMotionDetector motionDetector, params IHardwareParameter[] parameters)
+        public TurnOnAndOffAutomation WithTrigger(IMotionDetector motionDetector)
         {
             if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
-            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
             motionDetector.GetMotionDetectedTrigger().Attach(Trigger);
             motionDetector.GetDetectionCompletedTrigger().Attach(StartTimeout);
+
             motionDetector.Settings.ValueChanged += CancelTimeoutIfMotionDetectorDeactivated;
             
             return this;
         }
 
-        public TurnOnAndOffAutomation WithTrigger(ITrigger trigger, params IHardwareParameter[] parameters)
+        public TurnOnAndOffAutomation WithTrigger(ITrigger trigger)
         {
             if (trigger == null) throw new ArgumentNullException(nameof(trigger));
-            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
             trigger.Triggered += HandleButtonPressed;
             return this;

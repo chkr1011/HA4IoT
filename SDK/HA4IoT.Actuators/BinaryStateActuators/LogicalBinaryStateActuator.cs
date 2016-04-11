@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Windows.Data.Json;
-using HA4IoT.Actuators.Animations;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Sensors;
-using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators.BinaryStateActuators
 {
     public class LogicalBinaryStateActuator : ActuatorBase
     {
         private readonly IHomeAutomationTimer _timer;
+
+        private IComponentState _state = new UnknownComponentState();
 
         public LogicalBinaryStateActuator(ComponentId id, IHomeAutomationTimer timer) 
             : base(id)
@@ -30,30 +29,40 @@ namespace HA4IoT.Actuators.BinaryStateActuators
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
+            actuator.StateChanged += (s, e) =>
+            {
+                var oldState = _state;
+                _state = GetStateInternal();
+
+                if (oldState.Equals(_state))
+                {
+                    return;
+                }
+
+                OnActiveStateChanged(oldState, _state);
+            };
+
             Actuators.Add(actuator);
+            _state = GetStateInternal();
+
             return this;
         }
 
         public override IComponentState GetState()
         {
-            if (Actuators.Any(a => a.GetState().Equals(BinaryStateId.On)))
-            {
-                return BinaryStateId.On;
-            }
-
-            return BinaryStateId.Off;
+            return _state;
         }
 
         public override void SetState(IComponentState state, params IHardwareParameter[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
-            var animationParameter = parameters.SingleOrDefault(p => p is AnimateParameter) as AnimateParameter;
-            if (animationParameter != null)
-            {
-                Animate(animationParameter, state);
-                return;
-            }
+            ////var animationParameter = parameters.SingleOrDefault(p => p is AnimateParameter) as AnimateParameter;
+            ////if (animationParameter != null)
+            ////{
+            ////    Animate(animationParameter, state);
+            ////    return;
+            ////}
 
             foreach (var actuator in Actuators)
             {
@@ -115,18 +124,28 @@ namespace HA4IoT.Actuators.BinaryStateActuators
             return new List<IComponentState> {BinaryStateId.Off, BinaryStateId.On};
         }
 
-        private void Animate(AnimateParameter animateParameter, IComponentState newState)
+        private IComponentState GetStateInternal()
         {
-            var directionAnimation = new DirectionAnimation(_timer);
-            directionAnimation.WithActuator(this);
-            directionAnimation.WithTargetState(newState);
-
-            if (animateParameter.Reverse)
+            if (Actuators.Any(a => a.GetState().Equals(BinaryStateId.On)))
             {
-                directionAnimation.WithReversed();
+                return BinaryStateId.On;
             }
 
-            directionAnimation.Start();
+            return BinaryStateId.Off;
         }
+
+        ////private void Animate(AnimateParameter animateParameter, IComponentState newState)
+        ////{
+        ////    var directionAnimation = new DirectionAnimation(_timer);
+        ////    directionAnimation.WithActuator(this);
+        ////    directionAnimation.WithTargetState(newState);
+
+        ////    if (animateParameter.Reverse)
+        ////    {
+        ////        directionAnimation.WithReversed();
+        ////    }
+
+        ////    directionAnimation.Start();
+        ////}
     }
 }
