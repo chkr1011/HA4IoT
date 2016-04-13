@@ -4,28 +4,28 @@ using System.IO;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Sensors;
 
-namespace HA4IoT.Telemetry.History
+namespace HA4IoT.Telemetry
 {
-    public class SensorActuatorHistory
+    public class ComponentStateHistoryTracker
     {
         private readonly object _syncRoot = new object();
         private readonly string _filename;
-        private readonly INumericValueSensor _sensor;
+        private readonly IComponent _component;
 
-        public SensorActuatorHistory(INumericValueSensor sensor)
+        public ComponentStateHistoryTracker(IComponent component)
         {
-            if (sensor == null) throw new ArgumentNullException(nameof(sensor));
+            if (component == null) throw new ArgumentNullException(nameof(component));
 
-            _sensor = sensor;
+            _component = component;
 
-            _filename = StoragePath.WithFilename("Actuators", sensor.Id.Value, "History.csv");
+            _filename = StoragePath.WithFilename("Components", component.Id.Value, "History.csv");
             StoragePath.EnsureDirectoryExists(_filename);
 
-            sensor.StateChanged += (s, e) => CreateDataPointAsync(sensor);
+            component.StateChanged += CreateDataPointAsync;
         }
 
         public void Reset()
@@ -45,8 +45,13 @@ namespace HA4IoT.Telemetry.History
         {
             if (apiController == null) throw new ArgumentNullException(nameof(apiController));
 
-            apiController.RouteRequest($"actuators/{_sensor.Id}/history", HandleApiRequest);
-            apiController.RouteCommand($"actuators/{_sensor.Id}/history", HandleApiCommand);
+            apiController.RouteRequest($"component/{_component.Id}/history", HandleApiRequest);
+            apiController.RouteCommand($"component/{_component.Id}/history", HandleApiCommand);
+        }
+
+        private void CreateDataPointAsync(object sender, ComponentStateChangedEventArgs e)
+        {
+            Task.Run(() => AppendDataPoint(e));
         }
 
         private void HandleApiCommand(IApiContext apiContext)
@@ -83,31 +88,21 @@ namespace HA4IoT.Telemetry.History
             }
         }
 
-        private async void CreateDataPointAsync(INumericValueSensor sensor)
+        private void AppendDataPoint(ComponentStateChangedEventArgs eventArgs)
         {
-            await Task.Run(() => AppendDataPoint(sensor.GetCurrentNumericValue()));
-        }
-
-        private void AppendDataPoint(float value)
-        {
-            var dataPoint = new SensorDataPoint(DateTime.Now, value);
+            string line = DateTime.Now.ToString("O") + "," + eventArgs.NewState.ToString() + Environment.NewLine;
 
             lock (_syncRoot)
             {
                 try
                 {
-                    File.AppendAllText(_filename, ConvertDataPointToCsvRow(dataPoint) + Environment.NewLine);
+                    File.AppendAllText(_filename, line);
                 }
                 catch (Exception exception)
                 {
-                    Log.Error(exception, "Error while adding data point.");
+                    Log.Error(exception, $"Error while adding data point for component {_component.Id}.");
                 }
             }
-        }
-
-        private string ConvertDataPointToCsvRow(SensorDataPoint dataPoint)
-        {
-            return dataPoint.Timestamp.ToString("O") + "," + dataPoint.Value.ToString(NumberFormatInfo.InvariantInfo);
         }
     }
 }

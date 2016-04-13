@@ -137,7 +137,7 @@ namespace HA4IoT.Automations
         {
             if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
 
-            Func<TimeSpan> start = () => daylightService.GetSunset().Subtract(TimeSpan.FromHours(1));
+            Func<TimeSpan> start = () => daylightService.GetSunrise().Subtract(TimeSpan.FromHours(1));
             Func<TimeSpan> end = () => daylightService.GetSunset().Add(TimeSpan.FromHours(1));
 
             _enablingConditionsValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_timer).WithStart(start).WithEnd(end));
@@ -149,7 +149,7 @@ namespace HA4IoT.Automations
             if (actuators == null) throw new ArgumentNullException(nameof(actuators));
 
             _disablingConditionsValidator.WithCondition(ConditionRelation.Or,
-                new Condition().WithExpression(() => actuators.Any(a => a.GetState() == BinaryStateId.On)));
+                new Condition().WithExpression(() => actuators.Any(a => a.GetState().Equals(BinaryStateId.On))));
 
             return this;
         }

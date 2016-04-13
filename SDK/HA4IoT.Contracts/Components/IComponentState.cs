@@ -7,5 +7,7 @@ namespace HA4IoT.Contracts.Components
         IJsonValue ToJsonValue();
 
         bool Equals(IComponentState otherState);
+
+        string ToString();
     }
 }

@@ -23,7 +23,7 @@ using HA4IoT.Core.Settings;
 using HA4IoT.Core.Timer;
 using HA4IoT.Hardware.Pi2;
 using HA4IoT.Networking;
-using HA4IoT.Telemetry.History;
+using HA4IoT.Telemetry;
 
 namespace HA4IoT.Core
 {
@@ -255,7 +255,7 @@ namespace HA4IoT.Core
                 _httpServer.Start(80);
                 ExposeToApi();
 
-                AttachActuatorHistory();
+                AttachComponentHistoryTracking();
 
                 stopwatch.Stop();
                 Log.Info("Startup completed after " + stopwatch.Elapsed);
@@ -343,14 +343,14 @@ namespace HA4IoT.Core
             }
         }
 
-        private void AttachActuatorHistory()
+        private void AttachComponentHistoryTracking()
         {
             foreach (var component in GetComponents())
             {
                 var sensorActuator = component as INumericValueSensor;
                 if (sensorActuator != null)
                 {
-                    var history = new SensorActuatorHistory(sensorActuator);
+                    var history = new ComponentStateHistoryTracker(sensorActuator);
                     history.ExposeToApi(ApiController);
                 }
             }
