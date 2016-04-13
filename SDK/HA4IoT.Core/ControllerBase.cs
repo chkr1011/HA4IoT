@@ -16,7 +16,6 @@ using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Core.Discovery;
 using HA4IoT.Core.Settings;
@@ -347,12 +346,8 @@ namespace HA4IoT.Core
         {
             foreach (var component in GetComponents())
             {
-                var sensorActuator = component as INumericValueSensor;
-                if (sensorActuator != null)
-                {
-                    var history = new ComponentStateHistoryTracker(sensorActuator);
-                    history.ExposeToApi(ApiController);
-                }
+                var history = new ComponentStateHistoryTracker(component);
+                history.ExposeToApi(ApiController);
             }
         }
     }

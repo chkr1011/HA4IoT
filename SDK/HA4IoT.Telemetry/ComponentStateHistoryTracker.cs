@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.Data.Json;
@@ -7,11 +6,13 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Networking;
 
 namespace HA4IoT.Telemetry
 {
     public class ComponentStateHistoryTracker
     {
+        private static readonly char[] CsvSeparator = {','};
         private readonly object _syncRoot = new object();
         private readonly string _filename;
         private readonly IComponent _component;
@@ -61,31 +62,41 @@ namespace HA4IoT.Telemetry
 
         private void HandleApiRequest(IApiContext apiContext)
         {
+            var dataPoints = new JsonArray();
+            long fileSize = 0;
+
             lock (_syncRoot)
             {
-                var dataPoints = new JsonArray();
-
-                if (File.Exists(_filename))
+                var fileInfo = new FileInfo(_filename);
+                if (fileInfo.Exists)
                 {
-                    using (var fileStream = File.OpenRead(_filename))
+                    fileSize = fileInfo.Length;
+                    
+                    using (var fileStream = fileInfo.OpenRead())
                     using (var streamReader = new StreamReader(fileStream))
                     {
                         while (!streamReader.EndOfStream)
                         {
                             string line = streamReader.ReadLine();
-                            string[] columns = line.Split(new [] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-                            var dataPoint = new JsonObject();
-                            dataPoint.SetNamedValue("Timestamp", JsonValue.CreateStringValue(columns[0]));
-                            dataPoint.SetNamedValue("Value", JsonValue.CreateNumberValue(float.Parse(columns[1], NumberFormatInfo.InvariantInfo)));
-
-                            dataPoints.Add(dataPoint);
+                            dataPoints.Add(ConvertCsvLineToJsonObject(line));
                         }
                     }
                 }
-                
-                apiContext.Response.SetNamedValue("History", dataPoints); 
             }
+
+            apiContext.Response.SetNamedValue("history", dataPoints);
+            apiContext.Response.SetNamedNumber("fileSize", fileSize);
+        }
+
+        private JsonObject ConvertCsvLineToJsonObject(string line)
+        {
+            string[] columns = line.Split(CsvSeparator, StringSplitOptions.RemoveEmptyEntries);
+
+            var dataPoint = new JsonObject();
+            dataPoint.SetNamedString("timestamp", columns[0]);
+            dataPoint.SetNamedString("state", columns[1]);
+
+            return dataPoint;
         }
 
         private void AppendDataPoint(ComponentStateChangedEventArgs eventArgs)
