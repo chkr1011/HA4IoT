@@ -114,12 +114,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActuatorMonitor.cs" />
-    <Compile Include="ActuatorHistoryEntry.cs" />
-    <Compile Include="Csv\CsvHistory.cs" />
-    <Compile Include="History\SensorDataPoint.cs" />
-    <Compile Include="History\SensorActuatorHistory.cs" />
+    <Compile Include="ComponentStateHistoryTracker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="History\ActuatorHistory.cs" />
     <Content Include="Properties\HA4IoT.Telemetry.rd.xml" />
   </ItemGroup>
   <ItemGroup>

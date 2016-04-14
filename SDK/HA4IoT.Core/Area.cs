@@ -1,16 +1,18 @@
-﻿using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Configuration;
-using HA4IoT.Contracts.Core;
+﻿using HA4IoT.Contracts.Core;
 using System;
 using System.Collections.Generic;
 using Windows.Data.Json;
+using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
+using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Core.Settings;
+using HA4IoT.Core.Settings;
 
 namespace HA4IoT.Core
 {
     public class Area : IArea
     {
-        private readonly ActuatorCollection _actuators = new ActuatorCollection();
+        private readonly ComponentCollection _components = new ComponentCollection();
         private readonly AutomationCollection _automations = new AutomationCollection();
 
         public Area(AreaId id, IController controller)
@@ -20,39 +22,44 @@ namespace HA4IoT.Core
             Id = id;
             Controller = controller;
 
-            Settings = new AreaSettings(id);
+            Settings = new SettingsContainer(StoragePath.WithFilename("Areas", id.Value, "Settings.json"));
+            GeneralSettingsWrapper = new AreaSettingsWrapper(Settings);
         }
 
         public AreaId Id { get; }
 
-        public IAreaSettings Settings { get; }
+        public ISettingsContainer Settings { get; }
+
+        public IAreaSettingsWrapper GeneralSettingsWrapper { get; }
 
         public IController Controller { get; }
 
-        public void AddActuator(IActuator actuator)
+        public void AddComponent(IComponent component)
         {
-            _actuators.AddUnique(actuator.Id, actuator);
-            Controller.AddActuator(actuator);
+            if (component == null) throw new ArgumentNullException(nameof(component));
+
+            _components.AddUnique(component.Id, component);
+            Controller.AddComponent(component);
         }
 
-        public TActuator GetActuator<TActuator>() where TActuator : IActuator
+        public TComponent GetComponent<TComponent>() where TComponent : IComponent
         {
-            return _actuators.Get<TActuator>();
+            return _components.Get<TComponent>();
         }
 
-        public IList<TActuator> GetActuators<TActuator>() where TActuator : IActuator
+        public IList<TComponent> GetComponents<TComponent>() where TComponent : IComponent
         {
-            return _actuators.GetAll<TActuator>();
+            return _components.GetAll<TComponent>();
         }
 
-        public IList<IActuator> GetActuators()
+        public IList<IComponent> GetComponents()
         {
-            return _actuators.GetAll();
+            return _components.GetAll();
         }
 
-        public TActuator GetActuator<TActuator>(ActuatorId id) where TActuator : IActuator
+        public TComponent GetComponent<TComponent>(ComponentId id) where TComponent : IComponent
         {
-            return _actuators.Get<TActuator>(id);
+            return _components.Get<TComponent>(id);
         }
 
         public void AddAutomation(IAutomation automation)
@@ -76,19 +83,9 @@ namespace HA4IoT.Core
             return _automations.GetAll();
         }
 
-        public void LoadSettings()
-        {
-            Settings?.Load();
-        }
-
         public JsonObject ExportConfigurationToJsonObject()
         {
-            return Settings.ExportToJsonObject();
-        }
-
-        public void ExposeToApi()
-        {
-            new AreaSettingsApiDispatcher(Settings, Controller.ApiController).ExposeToApi();
+            return Settings.Export();
         }
     }
 }

@@ -113,8 +113,11 @@
     <Compile Include="ConditionsValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RelatedCondition.cs" />
+    <Compile Include="Specialized\ComponentIsInStateCondition.cs" />
     <Compile Include="Specialized\IsDayCondition.cs" />
     <Compile Include="Specialized\IsNightCondition.cs" />
+    <Compile Include="Specialized\NumericValueSensorHasValueLowerThanCondition.cs" />
+    <Compile Include="Specialized\NumericValueSensorHasValueGreaterThanCondition.cs" />
     <Compile Include="Specialized\TimeRangeCondition.cs" />
     <Compile Include="TimeRangeChecker.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.Conditions.rd.xml" />

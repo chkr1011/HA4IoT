@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using HA4IoT.Contracts;
+using HA4IoT.Actuators.BinaryStateActuators;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Core.Timer;
 
 namespace HA4IoT.Actuators.Animations
 {
     public class DirectionAnimation : Animation
     {
-        private LogicalBinaryStateOutputActuator _actuator;
+        private LogicalBinaryStateActuator _actuator;
         private bool _isForward = true;
-        private BinaryActuatorState _targetState;
+        private IComponentState _targetState;
         private TimeSpan _duration = TimeSpan.FromMilliseconds(250);
         
         public DirectionAnimation(IHomeAutomationTimer timer) : base(timer)
@@ -36,7 +36,7 @@ namespace HA4IoT.Actuators.Animations
             return this;
         }
 
-        public DirectionAnimation WithTargetState(BinaryActuatorState state)
+        public DirectionAnimation WithTargetState(IComponentState state)
         {
             _targetState = state;
             return this;
@@ -44,17 +44,17 @@ namespace HA4IoT.Actuators.Animations
 
         public DirectionAnimation WithTargetOnState()
         {
-            _targetState = BinaryActuatorState.On;
+            _targetState = BinaryStateId.On;
             return this;
         }
 
         public DirectionAnimation WithTargetOffState()
         {
-            _targetState = BinaryActuatorState.Off;
+            _targetState = BinaryStateId.Off;
             return this;
         }
 
-        public DirectionAnimation WithActuator(LogicalBinaryStateOutputActuator actuator)
+        public DirectionAnimation WithActuator(LogicalBinaryStateActuator actuator)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
@@ -71,7 +71,7 @@ namespace HA4IoT.Actuators.Animations
 
             Frames.Clear();
             
-            var orderedActuators = new List<IBinaryStateOutputActuator>(_actuator.Actuators);
+            var orderedActuators = new List<IStateMachine>(_actuator.Actuators);
             if (!_isForward)
             {
                 orderedActuators.Reverse();

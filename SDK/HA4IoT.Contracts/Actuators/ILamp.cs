@@ -1,6 +1,6 @@
 ﻿namespace HA4IoT.Contracts.Actuators
 {
-    public interface ILamp : IBinaryStateOutputActuator
+    public interface ILamp : IStateMachine
     {
     }
 }

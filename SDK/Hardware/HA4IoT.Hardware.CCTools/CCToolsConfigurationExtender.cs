@@ -103,8 +103,7 @@ namespace HA4IoT.Hardware.CCTools
             return new HSREL5(
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")), 
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
-                Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()),
-                Controller.ApiController);
+                Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()));
         }
 
         private HSREL8 ParseHSRel8(XElement element)
@@ -112,8 +111,7 @@ namespace HA4IoT.Hardware.CCTools
             return new HSREL8(
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")),
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
-                Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()),
-                Controller.ApiController);
+                Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()));
         }
 
         private HSPE16OutputOnly ParseHSPE16OutputOnly(XElement element)
@@ -121,8 +119,7 @@ namespace HA4IoT.Hardware.CCTools
             return new HSPE16OutputOnly(
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")),
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
-                Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()),
-                Controller.ApiController);
+                Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()));
         }
 
         private HSPE16InputOnly ParseHSPE16InputOnly(XElement element)
@@ -130,8 +127,7 @@ namespace HA4IoT.Hardware.CCTools
             return new HSPE16InputOnly(
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")),
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
-                Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()),
-                Controller.ApiController);
+                Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()));
         }
 
         private HSPE8OutputOnly ParseHSPE8OutputOnly(XElement element)
@@ -139,8 +135,7 @@ namespace HA4IoT.Hardware.CCTools
             return new HSPE8OutputOnly(
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")),
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
-                Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()),
-                Controller.ApiController);
+                Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()));
         }
 
         private HSPE8InputOnly ParseHSPE8InputOnly(XElement element)
@@ -148,8 +143,7 @@ namespace HA4IoT.Hardware.CCTools
             return new HSPE8InputOnly(
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")),
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
-                Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()),
-                Controller.ApiController);
+                Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()));
         }
 
         private HSRT16 ParseHSRT16(XElement element)
@@ -157,8 +151,7 @@ namespace HA4IoT.Hardware.CCTools
             return new HSRT16(
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")),
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
-                Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()),
-                Controller.ApiController);
+                Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()));
         }
     }
 }

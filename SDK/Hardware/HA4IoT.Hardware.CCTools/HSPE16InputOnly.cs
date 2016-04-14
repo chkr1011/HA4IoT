@@ -6,8 +6,8 @@ namespace HA4IoT.Hardware.CCTools
 {
     public class HSPE16InputOnly : CCToolsInputBoardBase, IBinaryInputController
     {
-        public HSPE16InputOnly(DeviceId id, I2CSlaveAddress address, II2CBus i2cBus, IApiController apiController)
-            : base(id, new MAX7311Driver(address, i2cBus), apiController)
+        public HSPE16InputOnly(DeviceId id, I2CSlaveAddress address, II2CBus i2cBus)
+            : base(id, new MAX7311Driver(address, i2cBus))
         {
             byte[] setupAsInputs = { 0x06, 0xFF, 0xFF };
             i2cBus.Execute(address, b => b.Write(setupAsInputs));

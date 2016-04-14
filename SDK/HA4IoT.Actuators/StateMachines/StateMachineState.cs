@@ -2,85 +2,92 @@
 using System.Collections.Generic;
 using System.Linq;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 
-namespace HA4IoT.Actuators
+namespace HA4IoT.Actuators.StateMachines
 {
-    public class StateMachineState
+    public class StateMachineState : IStateMachineState
     {
-        private readonly List<Tuple<IBinaryStateOutputActuator, BinaryActuatorState>> _actuators = new List<Tuple<IBinaryStateOutputActuator, BinaryActuatorState>>();
-        private readonly List<Tuple<IBinaryOutput, BinaryState>> _outputs = new List<Tuple<IBinaryOutput, BinaryState>>();
-        private readonly StateMachine _stateMachine;
+        private readonly List<Action<IHardwareParameter[]>> _actions = new List<Action<IHardwareParameter[]>>(); 
+        private readonly List<PendingActuatorState> _pendingActuatorStates = new List<PendingActuatorState>();
+        private readonly List<Tuple<IBinaryOutput, BinaryState>> _pendingBinaryOutputStates = new List<Tuple<IBinaryOutput, BinaryState>>();
 
-        public StateMachineState(string id, StateMachine stateMachine)
+        public StateMachineState(IComponentState id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
-            if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
 
             Id = id;
-            _stateMachine = stateMachine;
         }
 
-        public string Id { get; }
+        public IComponentState Id { get; }
 
-        public StateMachineState WithPort(IBinaryOutput output, BinaryState state)
+        public StateMachineState WithAction(Action<IHardwareParameter[]> action)
+        {
+            if (action == null) throw new ArgumentNullException(nameof(action));
+
+            _actions.Add(action);
+            return this;
+        }
+
+        public StateMachineState WithOutput(IBinaryOutput output, BinaryState state)
         {
             if (output == null) throw new ArgumentNullException(nameof(output));
 
-            _outputs.Add(new Tuple<IBinaryOutput, BinaryState>(output, state));
+            _pendingBinaryOutputStates.Add(new Tuple<IBinaryOutput, BinaryState>(output, state));
             return this;
         }
 
-        public StateMachineState WithLowPort(IBinaryOutput output)
+        public StateMachineState WithLowOutput(IBinaryOutput output)
         {
-            return WithPort(output, BinaryState.Low);
+            if (output == null) throw new ArgumentNullException(nameof(output));
+
+            return WithOutput(output, BinaryState.Low);
         }
 
-        public StateMachineState WithHighPort(IBinaryOutput output)
+        public StateMachineState WithHighOutput(IBinaryOutput output)
         {
-            return WithPort(output, BinaryState.High);
+            if (output == null) throw new ArgumentNullException(nameof(output));
+
+            return WithOutput(output, BinaryState.High);
         }
 
-        public StateMachineState WithActuator(IBinaryStateOutputActuator actuator, BinaryActuatorState state)
+        public StateMachineState WithActuator(IActuator actuator, StatefulComponentState state)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
-            _actuators.Add(new Tuple<IBinaryStateOutputActuator, BinaryActuatorState>(actuator, state));
+            _pendingActuatorStates.Add(new PendingActuatorState().WithActuator(actuator).WithState(state));
             return this;
         }
 
-        public StateMachineState ConnectApplyStateWith(IButton button)
+        public void Activate(params IHardwareParameter[] parameters)
         {
-            if (button == null) throw new ArgumentNullException(nameof(button));
-
-            button.GetPressedShortlyTrigger().Attach(() => _stateMachine.SetState(Id));
-            return this;
-        }
-
-        internal void Apply(params IHardwareParameter[] parameters)
-        {
-            foreach (var port in _outputs)
+            foreach (var port in _pendingBinaryOutputStates)
             {
                 port.Item1.Write(port.Item2, false);
             }
-
-            foreach (var actuator in _actuators)
-            {
-                actuator.Item1.SetState(actuator.Item2, new IsPartOfPartialUpdateParameter());
-            }
-
+            
             if (!parameters.Any(p => p is IsPartOfPartialUpdateParameter))
             {
-                foreach (var port in _outputs)
+                foreach (var port in _pendingBinaryOutputStates)
                 {
                     port.Item1.Write(port.Item2);
                 }
 
-                foreach (var actuator in _actuators)
+                foreach (var pendingActuatorState in _pendingActuatorStates)
                 {
-                    actuator.Item1.SetState(actuator.Item2);
+                    pendingActuatorState.Apply();
                 }
             }
+
+            foreach (var action in _actions)
+            {
+                action(parameters);
+            }
+        }
+
+        public void Deactivate(params IHardwareParameter[] parameters)
+        {
         }
     }
 }

@@ -114,15 +114,13 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AreaSettingsApiDispatcher.cs" />
     <Compile Include="AreaIdFactory.cs" />
-    <Compile Include="AreaSettings.cs" />
     <Compile Include="AutomationCollection.cs" />
     <Compile Include="ActuatorCollection.cs" />
+    <Compile Include="AreaSettingsWrapper.cs" />
     <Compile Include="ControllerApiDispatcher.cs" />
     <Compile Include="ControllerBase.cs" />
     <Compile Include="ControllerExtensions.cs" />
-    <Compile Include="ControllerSettings.cs" />
     <Compile Include="Discovery\DiscoveryServer.cs" />
     <Compile Include="GenericControllerCollection.cs" />
     <Compile Include="DeviceCollection.cs" />
@@ -130,7 +128,6 @@
     <Compile Include="Area.cs" />
     <Compile Include="AreaCollection.cs" />
     <Compile Include="Settings\SettingsContainerApiDispatcher.cs" />
-    <Compile Include="Settings\Setting.cs" />
     <Compile Include="Settings\SettingsContainer.cs" />
     <Compile Include="Timer\Timeout.cs" />
     <Compile Include="Timer\HomeAutomationTimer.cs" />
@@ -142,9 +139,9 @@
       <Project>{B03D2D62-A682-44AD-9BB8-E88B53973AFA}</Project>
       <Name>HA4IoT.Api.AzureCloud</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Api\HA4IoT.Api.LocalHttpServer\HA4IoT.Api.LocalHttpServer.csproj">
+    <ProjectReference Include="..\Api\HA4IoT.Api.LocalHttpServer\HA4IoT.Api.LocalRestServer.csproj">
       <Project>{88CB819A-3CD6-4AC3-B767-1E5360F5124D}</Project>
-      <Name>HA4IoT.Api.LocalHttpServer</Name>
+      <Name>HA4IoT.Api.LocalRestServer</Name>
     </ProjectReference>
     <ProjectReference Include="..\Api\HA4IoT.Api\HA4IoT.Api.csproj">
       <Project>{ED4B4304-0E5D-459D-857D-622F790C1A32}</Project>

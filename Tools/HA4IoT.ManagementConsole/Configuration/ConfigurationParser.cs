@@ -12,7 +12,7 @@ namespace HA4IoT.ManagementConsole.Configuration
             if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
             var areas = new List<AreaItemVM>();
-            foreach (JProperty area in ((JObject)configuration["Areas"]).Properties())
+            foreach (JProperty area in ((JObject)configuration["areas"]).Properties())
             {
                 areas.Add(new AreaParser(area).Parse());
             }

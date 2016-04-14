@@ -1,5 +1,4 @@
 ﻿using System;
-using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Hardware.PortExpanderDrivers;
 
@@ -7,8 +6,8 @@ namespace HA4IoT.Hardware.CCTools
 {
     public class HSREL8 : CCToolsBoardBase, IBinaryOutputController
     {
-        public HSREL8(DeviceId id, I2CSlaveAddress i2CAddress, II2CBus i2CBus, IApiController apiController)
-            : base(id, new MAX7311Driver(i2CAddress, i2CBus), apiController)
+        public HSREL8(DeviceId id, I2CSlaveAddress i2CAddress, II2CBus i2CBus)
+            : base(id, new MAX7311Driver(i2CAddress, i2CBus))
         {
             SetState(new byte[] { 0x00, 255 });
             CommitChanges(true);

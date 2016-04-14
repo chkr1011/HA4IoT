@@ -1,18 +1,18 @@
 ﻿using System.Collections.Generic;
-using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
 
 namespace HA4IoT.Contracts.Core
 {
-    public interface IActuatorController
+    public interface IComponentController
     {
-        void AddActuator(IActuator actuator);
+        void AddComponent(IComponent component);
 
-        TActuator GetActuator<TActuator>(ActuatorId id) where TActuator : IActuator;
+        TComponent GetComponent<TComponent>(ComponentId id) where TComponent : IComponent;
 
-        TActuator GetActuator<TActuator>() where TActuator : IActuator;
+        TComponent GetComponent<TComponent>() where TComponent : IComponent;
 
-        IList<TActuator> GetActuators<TActuator>() where TActuator : IActuator;
+        IList<TComponent> GetComponents<TComponent>() where TComponent : IComponent;
 
-        IList<IActuator> GetActuators();
+        IList<IComponent> GetComponents();
     }
 }

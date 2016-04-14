@@ -1,12 +1,14 @@
 ﻿using System;
+using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Actuators.Connectors
 {
     public static class BinaryStateActuatorWithButtonConnector
     {
-        public static IBinaryStateOutputActuator ConnectToggleActionWith(this IBinaryStateOutputActuator actuator, IButton button, ButtonPressedDuration pressedDuration = ButtonPressedDuration.Short)
+        public static IStateMachine ConnectToggleActionWith(this IStateMachine actuator, IButton button, ButtonPressedDuration pressedDuration = ButtonPressedDuration.Short)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
             if (button == null) throw new ArgumentNullException(nameof(button));
@@ -16,7 +18,7 @@ namespace HA4IoT.Actuators.Connectors
             return actuator;
         }
 
-        public static IButton ConnectToggleActionWith(this IButton button, IBinaryStateOutputActuator actuator, ButtonPressedDuration pressedDuration = ButtonPressedDuration.Short)
+        public static IButton ConnectToggleActionWith(this IButton button, IStateMachine actuator, ButtonPressedDuration pressedDuration = ButtonPressedDuration.Short)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
             if (button == null) throw new ArgumentNullException(nameof(button));
@@ -26,15 +28,15 @@ namespace HA4IoT.Actuators.Connectors
             return button;
         }
 
-        private static void ConnectToggleAction(IButton button, IBinaryStateOutputActuator actuator, ButtonPressedDuration pressedDuration)
+        private static void ConnectToggleAction(IButton button, IStateMachine actuator, ButtonPressedDuration pressedDuration)
         {
             if (pressedDuration == ButtonPressedDuration.Short)
             {
-                button.GetPressedShortlyTrigger().OnTriggered(actuator.GetToggleStateAction());
+                button.GetPressedShortlyTrigger().Attach(actuator.GetSetNextStateAction());
             }
             else if (pressedDuration == ButtonPressedDuration.Long)
             {
-                button.GetPressedLongTrigger().OnTriggered(actuator.GetToggleStateAction());
+                button.GetPressedLongTrigger().Attach(actuator.GetSetNextStateAction());
             }
             else
             {

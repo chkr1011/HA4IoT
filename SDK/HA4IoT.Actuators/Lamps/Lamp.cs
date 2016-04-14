@@ -1,15 +1,14 @@
-﻿using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Api;
-using HA4IoT.Contracts.Logging;
+﻿using HA4IoT.Actuators.BinaryStateActuators;
+using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
 
-namespace HA4IoT.Actuators
+namespace HA4IoT.Actuators.Lamps
 {
-    public class Lamp : BinaryStateOutputActuator<ActuatorSettings>, ILamp
+    public class Lamp : BinaryStateActuator, ILamp
     {
-        public Lamp(ActuatorId id, IBinaryStateEndpoint endpoint, IApiController apiController)
-            : base(id, endpoint, apiController)
+        public Lamp(ComponentId id, IBinaryStateEndpoint endpoint)
+            : base(id, endpoint)
         {
-            Settings = new ActuatorSettings(id);
         }
     }
 }

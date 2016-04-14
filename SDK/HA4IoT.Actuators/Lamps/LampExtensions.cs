@@ -1,9 +1,10 @@
 ﻿using System;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Configuration;
+using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 
-namespace HA4IoT.Actuators
+namespace HA4IoT.Actuators.Lamps
 {
     public static class LampExtensions
     {
@@ -12,8 +13,8 @@ namespace HA4IoT.Actuators
             if (room == null) throw new ArgumentNullException(nameof(room));
             if (output == null) throw new ArgumentNullException(nameof(output));
 
-            var lamp = new Lamp(ActuatorIdFactory.Create(room, id), new PortBasedBinaryStateEndpoint(output), room.Controller.ApiController);
-            room.AddActuator(lamp);
+            var lamp = new Lamp(ComponentIdFactory.Create(room, id), new PortBasedBinaryStateEndpoint(output));
+            room.AddComponent(lamp);
 
             return room;
         }
@@ -22,7 +23,7 @@ namespace HA4IoT.Actuators
         {
             if (room == null) throw new ArgumentNullException(nameof(room));
 
-            return room.GetActuator<ILamp>(ActuatorIdFactory.Create(room, id));
+            return room.GetComponent<ILamp>(ComponentIdFactory.Create(room, id));
         }
     }
 }

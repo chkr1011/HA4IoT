@@ -1,53 +1,48 @@
 ﻿using System;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Telemetry
 {
     public abstract class ActuatorMonitor
     { 
-        public void ConnectActuators(IController controller)
+        public void Connect(IController controller)
         {
             if (controller == null) throw new ArgumentNullException(nameof(controller));
 
-            foreach (var actuator in controller.GetActuators<IActuator>())
+            foreach (var component in controller.GetComponents<IComponent>())
             {
-                OnActuatorConnecting(actuator);
+                OnComponentConnecting(component);
 
-                var binaryStateOutput = actuator as IBinaryStateOutputActuator;
-                if (binaryStateOutput != null)
-                {
-                    HandleBinaryStateOutputActuator(binaryStateOutput);
-                    continue;
-                }
-
-                var stateMachineOutput = actuator as IStateMachine;
+                var stateMachineOutput = component as IStateMachine;
                 if (stateMachineOutput != null)
                 {
                     HandleStateMachineOutputActuator(stateMachineOutput);
                     continue;
                 }
 
-                var sensor = actuator as ISingleValueSensorActuator;
+                var sensor = component as INumericValueSensor;
                 if (sensor != null)
                 {
-                    OnSensorValueChanged(sensor, sensor.GetValue());
-                    sensor.ValueChanged += (s, e) =>
+                    OnSensorValueChanged(sensor, sensor.GetCurrentNumericValue());
+                    sensor.StateChanged += (s, e) =>
                     {
-                        OnSensorValueChanged(sensor, e.NewValue);
+                        OnSensorValueChanged(sensor, sensor.GetCurrentNumericValue());
                     };
 
                     continue;
                 }
 
-                var motionDetector = actuator as IMotionDetector;
+                var motionDetector = component as IMotionDetector;
                 if (motionDetector != null)
                 {
                     motionDetector.GetMotionDetectedTrigger().Attach(() => OnMotionDetected(motionDetector));
                     continue;
                 }
 
-                var button = actuator as IButton;
+                var button = component as IButton;
                 if (button != null)
                 {
                     button.GetPressedShortlyTrigger().Attach(() => OnButtonPressed(button, ButtonPressedDuration.Short));
@@ -56,7 +51,7 @@ namespace HA4IoT.Telemetry
             }
         }
 
-        protected virtual void OnActuatorConnecting(IActuator actuator)
+        protected virtual void OnComponentConnecting(IComponent component)
         {
         }
 
@@ -68,26 +63,12 @@ namespace HA4IoT.Telemetry
         {
         }
 
-        protected virtual void OnBinaryStateActuatorStateChanged(IBinaryStateOutputActuator actuator, BinaryActuatorState newState)
+        protected virtual void OnStateMachineStateChanged(IStateMachine stateMachine, IComponentState newState)
         {
         }
 
-        protected virtual void OnStateMachineStateChanged(IStateMachine stateMachine, string newState)
+        protected virtual void OnSensorValueChanged(INumericValueSensor sensor, float newValue)
         {
-        }
-
-        protected virtual void OnSensorValueChanged(ISingleValueSensorActuator sensor, float newValue)
-        {
-        }
-
-        private void HandleBinaryStateOutputActuator(IBinaryStateOutputActuator binaryStateOutputActuator)
-        {
-            OnBinaryStateActuatorStateChanged(binaryStateOutputActuator, binaryStateOutputActuator.GetState());
-            
-            binaryStateOutputActuator.StateChanged += (s, e) =>
-            {
-                OnBinaryStateActuatorStateChanged(binaryStateOutputActuator, e.NewValue);
-            };
         }
 
         private void HandleStateMachineOutputActuator(IStateMachine stateMachine)
@@ -96,7 +77,7 @@ namespace HA4IoT.Telemetry
 
             stateMachine.StateChanged += (s, e) =>
             {
-                OnStateMachineStateChanged(stateMachine, e.NewValue);
+                OnStateMachineStateChanged(stateMachine, e.NewState);
             };
         }
     }

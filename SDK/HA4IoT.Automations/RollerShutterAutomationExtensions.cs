@@ -1,5 +1,5 @@
 ﻿using System;
-using HA4IoT.Contracts.Configuration;
+using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.WeatherService;
 
@@ -16,7 +16,6 @@ namespace HA4IoT.Automations
                 area.Controller.Timer,
                 area.Controller.GetService<IDaylightService>(),
                 area.Controller.GetService<IWeatherService>(),
-                area.Controller.ApiController,
                 area.Controller);
 
             automation.Activate();
@@ -30,8 +29,8 @@ namespace HA4IoT.Automations
         {
             if (automation == null) throw new ArgumentNullException(nameof(automation));
 
-            automation.Settings.SkipBeforeTimestampIsEnabled.Value = true;
-            automation.Settings.SkipBeforeTimestamp.Value = minTime;
+            automation.SpecialSettingsWrapper.SkipBeforeTimestampIsEnabled = true;
+            automation.SpecialSettingsWrapper.SkipBeforeTimestamp = minTime;
 
             return automation;
         }
@@ -40,8 +39,8 @@ namespace HA4IoT.Automations
         {
             if (automation == null) throw new ArgumentNullException(nameof(automation));
 
-            automation.Settings.SkipIfFrozenIsEnabled.Value = true;
-            automation.Settings.SkipIfFrozenTemperature.Value = minOutsideTemperature;
+            automation.SpecialSettingsWrapper.SkipIfFrozenIsEnabled = true;
+            automation.SpecialSettingsWrapper.SkipIfFrozenTemperature = minOutsideTemperature;
 
             return automation;
         }
@@ -50,8 +49,8 @@ namespace HA4IoT.Automations
         {
             if (automation == null) throw new ArgumentNullException(nameof(automation));
 
-            automation.Settings.AutoCloseIfTooHotIsEnabled.Value = true;
-            automation.Settings.AutoCloseIfTooHotTemperaure.Value = maxOutsideTemperature;
+            automation.SpecialSettingsWrapper.AutoCloseIfTooHotIsEnabled = true;
+            automation.SpecialSettingsWrapper.AutoCloseIfTooHotTemperaure = maxOutsideTemperature;
 
             return automation;
         }

@@ -1,22 +1,13 @@
-﻿using System;
-using HA4IoT.Contracts.Actions;
+﻿using HA4IoT.Contracts.Components;
 
 namespace HA4IoT.Contracts.Actuators
 {
-    public interface IStateMachine : IActuator, IActuatorWithOffState
+    public interface IStateMachine : IActuator
     {
-        event EventHandler<StateMachineStateChangedEventArgs> StateChanged;
+        bool GetSupportsState(IComponentState id);
 
-        bool HasOffState { get; }
+        IComponentState GetNextState(IComponentState id);
 
-        void SetState(string id, params IHardwareParameter[] parameters);
-
-        void SetNextState(params IHardwareParameter[] parameters);
-
-        string GetState();
-
-        IHomeAutomationAction GetSetNextStateAction();
-
-        IHomeAutomationAction GetSetStateAction(string state);
+        void SetStateIdAlias(IComponentState id, IComponentState alias);
     }
 }

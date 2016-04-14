@@ -124,6 +124,10 @@
       <Project>{808ABECF-D9C2-4AB2-95D8-EAF228B44576}</Project>
       <Name>HA4IoT.Actuators</Name>
     </ProjectReference>
+    <ProjectReference Include="..\HA4IoT.Components\HA4IoT.Components.csproj">
+      <Project>{60F9E539-3FF5-40DE-B0C4-BE99CAE57736}</Project>
+      <Name>HA4IoT.Components</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{551337E7-D1EF-4145-92B4-F7086F7665A6}</Project>
       <Name>HA4IoT.Contracts</Name>
@@ -139,6 +143,10 @@
     <ProjectReference Include="..\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
       <Name>HA4IoT.Networking</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HA4IoT.Sensors\HA4IoT.Sensors.csproj">
+      <Project>{8892E736-CDD0-48EB-AD9E-A1C8AA230FD7}</Project>
+      <Name>HA4IoT.Sensors</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

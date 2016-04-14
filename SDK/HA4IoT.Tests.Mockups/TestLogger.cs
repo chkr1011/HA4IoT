@@ -7,39 +7,39 @@ namespace HA4IoT.Tests.Mockups
 {
     public class TestLogger : ILogger
     {
-        public void Publish(LogEntrySeverity type, string message, params object[] parameters)
+        public void Publish(LogEntrySeverity type, string message)
         {
-            Debug.WriteLine(type + ": " + string.Format(message, parameters));
+            Debug.WriteLine(type + ": " + message);
         }
 
-        public void Info(string message, params object[] parameters)
+        public void Info(string message)
         {
-            Publish(LogEntrySeverity.Info, message, parameters);
+            Publish(LogEntrySeverity.Info, message);
         }
 
-        public void Warning(string message, params object[] parameters)
+        public void Warning(string message)
         {
-            Publish(LogEntrySeverity.Warning, message, parameters);
+            Publish(LogEntrySeverity.Warning, message);
         }
 
-        public void Warning(Exception exception, string message, params object[] parameters)
+        public void Warning(Exception exception, string message)
         {
-            Publish(LogEntrySeverity.Warning, message + "\r\n" + exception.Message, parameters);
+            Publish(LogEntrySeverity.Warning, message + "\r\n" + exception.Message);
         }
 
-        public void Error(string message, params object[] parameters)
+        public void Error(string message)
         {
-            Publish(LogEntrySeverity.Error, message, parameters);
+            Publish(LogEntrySeverity.Error, message);
         }
 
-        public void Error(Exception exception, string message, params object[] parameters)
+        public void Error(Exception exception, string message)
         {
-            Publish(LogEntrySeverity.Error, message + "\r\n" + exception.Message, parameters);
+            Publish(LogEntrySeverity.Error, message + "\r\n" + exception.Message);
         }
 
-        public void Verbose(string message, params object[] parameters)
+        public void Verbose(string message)
         {
-            Publish(LogEntrySeverity.Verbose, message, parameters);
+            Publish(LogEntrySeverity.Verbose, message);
         }
     }
 }

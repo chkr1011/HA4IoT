@@ -1,14 +1,14 @@
-﻿using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Api;
+﻿using HA4IoT.Actuators.BinaryStateActuators;
+using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
 
-namespace HA4IoT.Actuators
+namespace HA4IoT.Actuators.Sockets
 {
-    public class Socket : BinaryStateOutputActuator<ActuatorSettings>, ISocket
+    public class Socket : BinaryStateActuator, ISocket
     {
-        public Socket(ActuatorId id, IBinaryStateEndpoint endpoint, IApiController apiController)
-            : base(id, endpoint, apiController)
+        public Socket(ComponentId id, IBinaryStateEndpoint endpoint)
+            : base(id, endpoint)
         {
-            Settings = new ActuatorSettings(id);
         }
     }
 }

@@ -1,38 +1,40 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Windows.Data.Json;
-using HA4IoT.Actuators.Actions;
 using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Networking;
+using Action = HA4IoT.Actuators.Actions.Action;
 
-namespace HA4IoT.Actuators
+namespace HA4IoT.Actuators.RollerShutters
 {
-    public class RollerShutter : ActuatorBase<RollerShutterSettings>, IRollerShutter
+    public class RollerShutter : ActuatorBase, IRollerShutter
     {
-        private readonly object _syncRoot = new object();
         private readonly Stopwatch _movingDuration = new Stopwatch();
-        private readonly IHomeAutomationTimer _timer;
         private readonly IRollerShutterEndpoint _endpoint;
+        private readonly IHomeAutomationTimer _timer;
 
-        private readonly IHomeAutomationAction _startMoveUpAction;
-        private readonly IHomeAutomationAction _turnOffAction;
-        private readonly IHomeAutomationAction _startMoveDownAction;
+        private readonly IAction _startMoveUpAction;
+        private readonly IAction _turnOffAction;
+        private readonly IAction _startMoveDownAction;
 
-        private RollerShutterState _state = RollerShutterState.Stopped;
+        private readonly RollerShutterSettingsWrapper _settings;
+
+        private IComponentState _state = RollerShutterStateId.Off;
 
         private TimedAction _autoOffTimer;
         private int _position;
 
         public RollerShutter(
-            ActuatorId id, 
+            ComponentId id, 
             IRollerShutterEndpoint endpoint,
-            IApiController apiController,
             IHomeAutomationTimer timer)
-            : base(id, apiController)
+            : base(id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
@@ -40,82 +42,28 @@ namespace HA4IoT.Actuators
             _endpoint = endpoint;
             _timer = timer;
             timer.Tick += (s, e) => UpdatePosition(e);
+            _settings = new RollerShutterSettingsWrapper(Settings);
 
-            base.Settings = new RollerShutterSettings(id);
+            _startMoveUpAction = new Action(() => SetState(RollerShutterStateId.MovingUp));
+            _turnOffAction = new Action(() => SetState(RollerShutterStateId.Off));
+            _startMoveDownAction = new Action(() => SetState(RollerShutterStateId.MovingDown));
 
-            _startMoveUpAction = new HomeAutomationAction(() => SetState(RollerShutterState.MovingUp));
-            _turnOffAction = new HomeAutomationAction(() => SetState(RollerShutterState.Stopped));
-            _startMoveDownAction = new HomeAutomationAction(() => SetState(RollerShutterState.MovingDown));
-
-            _endpoint.Stop(new ForceUpdateStateParameter());
+            endpoint.Stop(HardwareParameter.ForceUpdateState);
         }
 
-        public event EventHandler<RollerShutterStateChangedEventArgs> StateChanged; 
-
-        public new IRollerShutterSettings Settings => base.Settings;
-
-        public bool IsClosed => _position == Settings.MaxPosition.Value;
-
-        public RollerShutterState GetState()
-        {
-            lock (_syncRoot)
-            {
-                return _state;
-            }
-        }
-
-        public void SetState(RollerShutterState state)
-        {
-            RollerShutterState oldState;
-            lock (_syncRoot)
-            {
-                if (state == _state)
-                {
-                    return;
-                }
-
-                if (state == RollerShutterState.Stopped)
-                {
-                    _endpoint.Stop();
-                    Log.Info($"{Id}: Stopped (Duration: {_movingDuration.ElapsedMilliseconds} ms)");
-                }
-                else if (state == RollerShutterState.MovingUp)
-                {
-                    _endpoint.StartMoveUp();
-                    RestartTracking();
-                }
-                else if (state == RollerShutterState.MovingDown)
-                {
-                    _endpoint.StartMoveDown();
-                    RestartTracking();
-                }
-
-                oldState = _state;
-                _state = state;
-                
-                Log.Info($"{Id}:{oldState}->{state}");
-            }
-
-            StateChanged?.Invoke(this, new RollerShutterStateChangedEventArgs(oldState, _state));
-            ApiController.NotifyStateChanged(this);
-        }
-
-        public void TurnOff(params IHardwareParameter[] parameters)
-        {
-            SetState(RollerShutterState.Stopped);
-        }
-
-        public IHomeAutomationAction GetTurnOffAction()
+        public bool IsClosed => _position == _settings.MaxPosition;
+        
+        public IAction GetTurnOffAction()
         {
             return _turnOffAction;
         }
 
-        public IHomeAutomationAction GetStartMoveUpAction()
+        public IAction GetStartMoveUpAction()
         {
             return _startMoveUpAction;
         }
 
-        public IHomeAutomationAction GetStartMoveDownAction()
+        public IAction GetStartMoveDownAction()
         {
             return _startMoveDownAction;
         }
@@ -124,22 +72,60 @@ namespace HA4IoT.Actuators
         {
             var status = base.ExportStatusToJsonObject();
 
-            status.SetNamedValue("state", _state.ToJsonValue());
-            status.SetNamedValue("position", _position.ToJsonValue());
-            status.SetNamedValue("positionMax", Settings.MaxPosition.Value.ToJsonValue());
-
+            status.SetNamedNumber("position", _position);
+            
             return status;
         }
 
-        protected override void HandleApiCommand(IApiContext apiContext)
+        public override IComponentState GetState()
         {
-            if (!apiContext.Request.ContainsKey("state"))
+            return _state;
+        }
+
+        public override void SetState(IComponentState state, params IHardwareParameter[] parameters)
+        {
+            if (state == null) throw new ArgumentNullException(nameof(state));
+
+            if (state.Equals(_state))
             {
                 return;
             }
 
-            var state = (RollerShutterState)Enum.Parse(typeof(RollerShutterState), apiContext.Request.GetNamedString("state"), true);
+            if (state.Equals(RollerShutterStateId.Off))
+            {
+                _endpoint.Stop(parameters);
+            }
+            else if (state.Equals(RollerShutterStateId.MovingUp))
+            {
+                _endpoint.StartMoveUp(parameters);
+                RestartTracking();
+            }
+            else if (state.Equals(RollerShutterStateId.MovingDown))
+            {
+                _endpoint.StartMoveDown(parameters);
+                RestartTracking();
+            }
+
+            var oldState = _state;
+            _state = state;
+
+            OnActiveStateChanged(oldState, _state);
+        }
+
+        public override void HandleApiCommand(IApiContext apiContext)
+        {
+            var state = new StatefulComponentState(apiContext.Request.GetNamedString("state"));
             SetState(state);
+        }
+
+        protected override IList<IComponentState> GetSupportedStates()
+        {
+            return new List<IComponentState>
+            {
+                RollerShutterStateId.Off,
+                RollerShutterStateId.MovingUp,
+                RollerShutterStateId.MovingDown
+            };
         }
 
         private void RestartTracking()
@@ -147,16 +133,18 @@ namespace HA4IoT.Actuators
             _movingDuration.Restart();
 
             _autoOffTimer?.Cancel();
-            _autoOffTimer = _timer.In(Settings.AutoOffTimeout.Value).Do(() => SetState(RollerShutterState.Stopped));
+            _autoOffTimer = _timer.In(_settings.AutoOffTimeout).Do(() => SetState(RollerShutterStateId.Off));
         }
 
         private void UpdatePosition(TimerTickEventArgs timerTickEventArgs)
         {
-            if (_state == RollerShutterState.MovingUp)
+            var activeState = GetState();
+
+            if (activeState.Equals(RollerShutterStateId.MovingUp))
             {
                 _position -= (int)timerTickEventArgs.ElapsedTime.TotalMilliseconds;
             }
-            else if (_state == RollerShutterState.MovingDown)
+            else if (activeState.Equals(RollerShutterStateId.MovingDown))
             {
                 _position += (int)timerTickEventArgs.ElapsedTime.TotalMilliseconds;
             }
@@ -166,9 +154,9 @@ namespace HA4IoT.Actuators
                 _position = 0;
             }
 
-            if (_position > Settings.MaxPosition.Value)
+            if (_position > _settings.MaxPosition)
             {
-                _position = Settings.MaxPosition.Value;
+                _position = _settings.MaxPosition;
             }
         }
     }

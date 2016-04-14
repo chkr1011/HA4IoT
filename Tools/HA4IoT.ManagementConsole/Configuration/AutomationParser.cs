@@ -26,9 +26,9 @@ namespace HA4IoT.ManagementConsole.Configuration
 
         public AutomationItemVM Parse()
         {
-            _type = _source.Value["Type"].Value<string>();
-            _settings = (JObject)_source.Value["Settings"];
-            _appSettings = _settings.GetNamedObject("AppSettings", new JObject());
+            _type = _source.Value["type"].Value<string>();
+            _settings = (JObject)_source.Value["settings"];
+            _appSettings = _settings.GetNamedObject("appSettings", new JObject());
 
             var item = new AutomationItemVM(_source.Name, _type);
             item.SortValue = (int)_appSettings.GetNamedNumber("SortValue", 0);
@@ -40,7 +40,7 @@ namespace HA4IoT.ManagementConsole.Configuration
 
             switch (_type)
             {
-                case "HA4IoT.Automations.RollerShutterAutomation":
+                case "RollerShutterAutomation":
                     {
                         item.Settings.AddRange(GenerateRollerShutterAutoamtionSettings());
                         break;
@@ -73,7 +73,7 @@ namespace HA4IoT.ManagementConsole.Configuration
         private IEnumerable<SettingItemVM> GenerateGeneralSettings()
         {
             yield return new StringSettingVM("Id", _source.Name, "ID").WithIsReadOnly();
-            yield return new StringSettingVM("Type", _type, "Type").WithIsReadOnly();
+            yield return new StringSettingVM("type", _type, "Type").WithIsReadOnly();
             yield return BoolSettingVM.CreateFrom(_settings, "IsEnabled", true, "Enabled").WithIsNoAppSetting();
             yield return StringSettingVM.CreateFrom(_appSettings, "Caption", _source.Name, "Caption");
         }

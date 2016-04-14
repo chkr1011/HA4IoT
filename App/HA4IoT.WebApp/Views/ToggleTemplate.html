@@ -1,20 +1,5 @@
 ﻿<div class="btn-group">
 
-    <!--<button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <span class="caret"></span>
-        <span class="sr-only">Toggle Dropdown</span>
-    </button>
-
-    <ul class="dropdown-menu pull-right">
-        <li><a href="#">Turn on in...</a></li>
-        <li><a href="#">Turn off in...</a></li>
-        <li role="separator" class="divider"></li>
-        <li><a href="#">Rename</a></li>
-        <li><a href="#">Change icon</a></li>
-        <li><a href="#">Move up</a></li>
-        <li><a href="#">Move down</a></li>
-    </ul>-->
-
     <button class="btn btn-default" style="min-width: 60px;" ng-class="{'btn-danger': actuator.state.state=='On'}" ng-click="toggleState(actuator)">
         <span ng-if="actuator.state.state=='On'">{{ haCtrl.getUILocalization('UI.On') }}</span>
         <span ng-if="actuator.state.state=='Off'">{{ haCtrl.getUILocalization('UI.Off') }}</span>

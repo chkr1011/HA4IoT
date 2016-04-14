@@ -4,19 +4,19 @@ using HA4IoT.Contracts.Core.Settings;
 
 namespace HA4IoT.Core.Settings
 {
-    public class SettingsContainerApiDispatcher<TSettings> where TSettings : ISettingsContainer
+    public class SettingsContainerApiDispatcher
     {
-        private readonly TSettings _settingsContainer;
+        private readonly ISettingsContainer _settingsContainer;
         private readonly IApiController _apiController;
         private readonly string _relativeUri;
 
-        public SettingsContainerApiDispatcher(TSettings settingsContainerContainer, string relativeUri, IApiController apiController)
+        public SettingsContainerApiDispatcher(ISettingsContainer settingsContainer, string relativeUri, IApiController apiController)
         {
-            if (settingsContainerContainer == null) throw new ArgumentNullException(nameof(settingsContainerContainer));
+            if (settingsContainer == null) throw new ArgumentNullException(nameof(settingsContainer));
             if (relativeUri == null) throw new ArgumentNullException(nameof(relativeUri));
             if (apiController == null) throw new ArgumentNullException(nameof(apiController));
 
-            _settingsContainer = settingsContainerContainer;
+            _settingsContainer = settingsContainer;
             _apiController = apiController;
 
             _relativeUri = relativeUri;
@@ -30,12 +30,13 @@ namespace HA4IoT.Core.Settings
 
         private void HandleApiRequest(IApiContext apiContext)
         {
-            apiContext.Response = _settingsContainer.ExportToJsonObject();
+            apiContext.Response = _settingsContainer.Export();
         }
 
         private void HandleApiCommand(IApiContext apiContext)
         {
-            _settingsContainer.ImportFromJsonObject(apiContext.Request);
+            _settingsContainer.Import(apiContext.Request);
+            _settingsContainer.Save();
         }
     }
 }

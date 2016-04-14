@@ -24,7 +24,7 @@ namespace HA4IoT.ManagementConsole.Configuration.ViewModels
         {
             var configuration = new JObject();
             var appSettings = new JObject();
-            configuration["AppSettings"] = appSettings;
+            configuration["appSettings"] = appSettings;
 
             appSettings["SortValue"] = new JValue(SortValue);
             foreach (var setting in Settings)

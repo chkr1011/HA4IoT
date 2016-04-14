@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Version 1.9.46
+# Version 1.10.34
 
 CACHE:
 
@@ -11,7 +11,7 @@ Localization.js
 
 UILocalizations.json
 
-Scripts/jquery-2.1.4.min.js
+Scripts/jquery-2.2.2.min.js
 Scripts/bootstrap.min.js
 Scripts/angular.min.js
 
@@ -23,6 +23,16 @@ fonts/glyphicons-halflings-regular.svg
 fonts/glyphicons-halflings-regular.eot
 fonts/glyphicons-halflings-regular.woff
 fonts/glyphicons-halflings-regular.woff2
+
+Views/MotionDetectorTemplate.html
+Views/TemperatureSensorTemplate.html
+Views/HumiditySensorTemplate.html
+Views/WindowTemplate.html
+Views/ToggleTemplate.html
+Views/RollerShutterTemplate.html
+Views/RoomsOverviewTemplate.html
+Views/BottomBarTemplate.html
+Views/StateMachineTemplate.html
 
 Images/Wifi.png
 Images/Cat.png

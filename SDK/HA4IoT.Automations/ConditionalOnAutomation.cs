@@ -1,9 +1,9 @@
 ﻿using System;
+using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Services;
@@ -14,8 +14,8 @@ namespace HA4IoT.Automations
     {
         private readonly IHomeAutomationTimer _timer;
 
-        public ConditionalOnAutomation(AutomationId id, IHomeAutomationTimer timer, IApiController apiController) 
-            : base(id, apiController)
+        public ConditionalOnAutomation(AutomationId id, IHomeAutomationTimer timer) 
+            : base(id)
         {
             _timer = timer;
 
@@ -26,7 +26,7 @@ namespace HA4IoT.Automations
         {
             if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
 
-            var nightCondition = new TimeRangeCondition(_timer).WithStart(() => daylightService.Sunset).WithEnd(() => daylightService.Sunrise);
+            var nightCondition = new TimeRangeCondition(_timer).WithStart(daylightService.GetSunset).WithEnd(daylightService.GetSunrise);
             WithCondition(ConditionRelation.And, nightCondition);
 
             return this;
@@ -39,7 +39,7 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public ConditionalOnAutomation WithActuator(IBinaryStateOutputActuator actuator)
+        public ConditionalOnAutomation WithActuator(IStateMachine actuator)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 

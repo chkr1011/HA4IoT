@@ -1,9 +1,8 @@
 ﻿using System;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Api;
-using HA4IoT.Contracts.Configuration;
+using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Services.WeatherService;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Core
@@ -28,16 +27,24 @@ namespace HA4IoT.Core
         private void HandleApiGetStatus(IApiContext apiContext)
         {
             var result = new JsonObject();
-            result.SetNamedString("Type", "HA4IoT.Status");
-            result.SetNamedNumber("Version", 1D);
+            result.SetNamedString("type", "HA4IoT.Status");
+            result.SetNamedNumber("version", 1D);
 
-            var actuators = new JsonObject();
-            foreach (var actuator in _controller.GetActuators())
+            var services = new JsonObject();
+            foreach (var service in _controller.GetServices())
             {
-                actuators.SetNamedValue(actuator.Id.Value, actuator.ExportStatusToJsonObject());
+                services.SetNamedObject(service.GetType().Name, service.ExportStatusToJsonObject());
             }
 
-            result.SetNamedValue("Actuators", actuators);
+            result.SetNamedValue("services", services);
+
+            var components = new JsonObject();
+            foreach (var component in _controller.GetComponents())
+            {
+                components.SetNamedValue(component.Id.Value, component.ExportStatusToJsonObject());
+            }
+
+            result.SetNamedValue("components", components);
 
             var automations = new JsonObject();
             foreach (var automation in _controller.GetAutomations())
@@ -45,13 +52,7 @@ namespace HA4IoT.Core
                 automations.SetNamedValue(automation.Id.Value, automation.ExportStatusToJsonObject());
             }
              
-            result.SetNamedValue("Automations", automations);
-
-            var weatherStation = _controller.GetService<IWeatherService>();
-            if (weatherStation != null)
-            {
-                result.SetNamedValue("WeatherStation", weatherStation.ExportStatusToJsonObject());
-            }
+            result.SetNamedValue("automations", automations);
 
             apiContext.Response = result;
         }
@@ -59,8 +60,8 @@ namespace HA4IoT.Core
         private void HandleApiGetConfiguration(IApiContext apiContext)
         {
             var configuration = new JsonObject();
-            configuration.SetNamedValue("Type", JsonValue.CreateStringValue("HA4IoT.Configuration"));
-            configuration.SetNamedValue("Version", JsonValue.CreateNumberValue(1));
+            configuration.SetNamedString("type", "HA4IoT.Configuration");
+            configuration.SetNamedNumber("version", 1D);
 
             var areas = new JsonObject();
             foreach (var area in _controller.GetAreas())
@@ -68,7 +69,7 @@ namespace HA4IoT.Core
                 areas.SetNamedValue(area.Id.Value, ExportAreaConfigurationToJsonValue(area));
             }
 
-            configuration.SetNamedValue("Areas", areas);
+            configuration.SetNamedValue("areas", areas);
 
             apiContext.Response = configuration;
         }
@@ -76,15 +77,15 @@ namespace HA4IoT.Core
         private IJsonValue ExportAreaConfigurationToJsonValue(IArea area)
         {
             var configuration = new JsonObject();
-            configuration.SetNamedValue("Settings", area.ExportConfigurationToJsonObject());
+            configuration.SetNamedValue("settings", area.ExportConfigurationToJsonObject());
 
-            var actuators = new JsonObject();
-            foreach (var actuator in area.GetActuators())
+            var components = new JsonObject();
+            foreach (var component in area.GetComponents())
             {
-                actuators.SetNamedValue(actuator.Id.Value, actuator.ExportConfigurationToJsonObject());
+                components.SetNamedValue(component.Id.Value, component.ExportConfigurationToJsonObject());
             }
 
-            configuration.SetNamedValue("Actuators", actuators);
+            configuration.SetNamedValue("components", components);
 
             var automations = new JsonObject();
             foreach (var automation in area.GetAutomations())
@@ -92,7 +93,7 @@ namespace HA4IoT.Core
                 automations.SetNamedValue(automation.Id.Value, automation.ExportConfigurationAsJsonValue());
             }
 
-            configuration.SetNamedValue("Automations", automations);
+            configuration.SetNamedValue("automations", automations);
 
             return configuration;
         }

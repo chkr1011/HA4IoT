@@ -2,27 +2,24 @@
 using System.Collections.Generic;
 using HA4IoT.Conditions;
 using HA4IoT.Contracts.Actions;
-using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Automations
 {
-    public class Automation : AutomationBase<AutomationSettings>
+    public class Automation : AutomationBase
     {
         private readonly ConditionsValidator _conditionsValidator;
 
-        public Automation(AutomationId id, IApiController apiController)
+        public Automation(AutomationId id)
             : base(id)
         {
             _conditionsValidator = new ConditionsValidator(Conditions);
-
-            Settings = new AutomationSettings(id, apiController);
         }
 
         public IList<RelatedCondition> Conditions { get; } = new List<RelatedCondition>();
-        public IList<IHomeAutomationAction> ActionsIfFulfilled { get; } = new List<IHomeAutomationAction>();
-        public IList<IHomeAutomationAction> ActionsIfNotFulfilled { get; } = new List<IHomeAutomationAction>();
+        public IList<IAction> ActionsIfFulfilled { get; } = new List<IAction>();
+        public IList<IAction> ActionsIfNotFulfilled { get; } = new List<IAction>();
 
         public Automation WithTrigger(ITrigger trigger)
         {
@@ -40,7 +37,7 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public Automation WithActionIfConditionsFulfilled(IHomeAutomationAction action)
+        public Automation WithActionIfConditionsFulfilled(IAction action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
 
@@ -48,7 +45,7 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public Automation WithActionIfConditionsNotFulfilled(IHomeAutomationAction action)
+        public Automation WithActionIfConditionsNotFulfilled(IAction action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
 

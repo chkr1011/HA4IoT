@@ -1,15 +1,22 @@
-﻿using HA4IoT.Actuators;
-using HA4IoT.Actuators.Connectors;
+﻿using HA4IoT.Actuators.Connectors;
+using HA4IoT.Actuators.Lamps;
+using HA4IoT.Actuators.RollerShutters;
+using HA4IoT.Actuators.Sockets;
 using HA4IoT.Automations;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
+using HA4IoT.Sensors.Buttons;
+using HA4IoT.Sensors.HumiditySensors;
+using HA4IoT.Sensors.TemperatureSensors;
+using HA4IoT.Sensors.Windows;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
-    internal class ChildrensRoomRoomConfiguration
+    internal class ChildrensRoomRoomConfiguration : RoomConfiguration
     {
         private enum ChildrensRoom
         {
@@ -19,7 +26,8 @@ namespace HA4IoT.Controller.Main.Rooms
             LightCeilingMiddle,
 
             RollerShutter,
-            RollerShutterButtons,
+            RollerShutterButtonUp,
+            RollerShutterButtonDown,
 
             Button,
 
@@ -30,16 +38,21 @@ namespace HA4IoT.Controller.Main.Rooms
             Window
         }
 
-        public void Setup(Controller controller, CCToolsBoardController ccToolsController)
+        public ChildrensRoomRoomConfiguration(IController controller) 
+            : base(controller)
         {
-            var hsrel5 = ccToolsController.CreateHSREL5(Device.ChildrensRoomHSREL5, new I2CSlaveAddress(63));
-            var input0 = controller.Device<HSPE16InputOnly>(Device.Input0);
+        }
 
-            var i2cHardwareBridge = controller.GetDevice<I2CHardwareBridge>();
+        public override void Setup()
+        {
+            var hsrel5 = CCToolsBoardController.CreateHSREL5(InstalledDevice.ChildrensRoomHSREL5, new I2CSlaveAddress(63));
+            var input0 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input0);
+
+            var i2cHardwareBridge = Controller.GetDevice<I2CHardwareBridge>();
 
             const int SensorPin = 7;
 
-            var childrensRoom = controller.CreateArea(Room.ChildrensRoom)
+            var room = Controller.CreateArea(Room.ChildrensRoom)
                 .WithTemperatureSensor(ChildrensRoom.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(ChildrensRoom.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
                 .WithLamp(ChildrensRoom.LightCeilingMiddle, hsrel5[HSREL5Pin.GPIO1].WithInvertedState())
@@ -49,13 +62,13 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithSocket(ChildrensRoom.SocketWallRight, hsrel5[HSREL5Pin.Relay2])
                 .WithButton(ChildrensRoom.Button, input0.GetInput(0))
                 .WithWindow(ChildrensRoom.Window, w => w.WithCenterCasement(input0.GetInput(5), input0.GetInput(4)))
-                .WithRollerShutterButtons(ChildrensRoom.RollerShutterButtons, input0.GetInput(1), input0.GetInput(2));
+                .WithRollerShutterButtons(ChildrensRoom.RollerShutterButtonUp, input0.GetInput(1), ChildrensRoom.RollerShutterButtonDown, input0.GetInput(2));
 
-            childrensRoom.GetLamp(ChildrensRoom.LightCeilingMiddle).ConnectToggleActionWith(childrensRoom.GetButton(ChildrensRoom.Button));
+            room.GetLamp(ChildrensRoom.LightCeilingMiddle).ConnectToggleActionWith(room.GetButton(ChildrensRoom.Button));
 
-            childrensRoom.SetupRollerShutterAutomation().WithRollerShutters(childrensRoom.GetRollerShutter(ChildrensRoom.RollerShutter));
-            childrensRoom.GetRollerShutter(ChildrensRoom.RollerShutter)
-                .ConnectWith(childrensRoom.GetRollerShutterButtons(ChildrensRoom.RollerShutterButtons));
+            room.SetupRollerShutterAutomation().WithRollerShutters(room.GetRollerShutter(ChildrensRoom.RollerShutter));
+            room.GetRollerShutter(ChildrensRoom.RollerShutter)
+                .ConnectWith(room.GetButton(ChildrensRoom.RollerShutterButtonUp), room.GetButton(ChildrensRoom.RollerShutterButtonDown));
         }
     }
 }

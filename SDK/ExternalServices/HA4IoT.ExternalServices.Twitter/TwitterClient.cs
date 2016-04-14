@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Windows.Data.Json;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using Windows.Storage.Streams;
@@ -36,8 +37,7 @@ namespace HA4IoT.ExternalServices.Twitter
 
                 var request = new HttpRequestMessage(HttpMethod.Post, url);
                 request.Headers.Add("Authorization", oAuthToken);
-                request.Version = new Version(1, 1);
-
+         
                 var response = await httpClient.SendAsync(request);
 
                 if (response.StatusCode != HttpStatusCode.OK)
@@ -47,12 +47,12 @@ namespace HA4IoT.ExternalServices.Twitter
             }
         }
 
-        public IHomeAutomationAction GetTweetAction(string message)
+        public IAction GetTweetAction(string message)
         {
             return new TweetAction(message, this);
         }
 
-        public IHomeAutomationAction GetTweetAction(Func<string> messageProvider)
+        public IAction GetTweetAction(Func<string> messageProvider)
         {
             return new TweetAction(messageProvider, this);
         }
@@ -119,6 +119,11 @@ namespace HA4IoT.ExternalServices.Twitter
             string signature = CryptographicBuffer.EncodeToBase64String(signatureBuffer);
 
             return signature;
+        }
+
+        public JsonObject ExportStatusToJsonObject()
+        {
+            return new JsonObject();
         }
     }
 }

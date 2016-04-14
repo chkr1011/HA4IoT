@@ -43,7 +43,7 @@ namespace HA4IoT.Api.AzureCloud
                     }
                     else
                     {
-                        Log.Warning("Failed to send Azure EventHub event (Error code: {0}).", result.StatusCode);
+                        Log.Warning($"Failed to send Azure EventHub event (Error code: {result.StatusCode}).");
                     }
                 }
             }

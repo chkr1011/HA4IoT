@@ -12,17 +12,20 @@ namespace HA4IoT.Automations.Tests
         public void Empty_ConditionalOnAutomation()
         {
             var testController = new TestController();
-            var automation = new ConditionalOnAutomation(AutomationIdFactory.EmptyId, testController.Timer, testController.ApiController);
+            var automation = new ConditionalOnAutomation(AutomationIdFactory.EmptyId, testController.Timer);
 
-            var testButton = new TestButton();
-            var testOutput = new TestBinaryStateOutputActuator();
+            var testButtonFactory = new TestButtonFactory(testController.Timer);
+            var testStateMachineFactory = new TestStateMachineFactory();
+
+            var testButton = testButtonFactory.CreateTestButton();
+            var testOutput = testStateMachineFactory.CreateTestStateMachineWithOnOffStates();
 
             automation.WithTrigger(testButton.GetPressedShortlyTrigger());
             automation.WithActuator(testOutput);
             
-            testOutput.GetState().ShouldBeEquivalentTo(BinaryActuatorState.Off);
-            testButton.PressShort();
-            testOutput.GetState().ShouldBeEquivalentTo(BinaryActuatorState.On);
+            testOutput.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
+            testButton.PressShortly();
+            testOutput.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
         }
     }
 }

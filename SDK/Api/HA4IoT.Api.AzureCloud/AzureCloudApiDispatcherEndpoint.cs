@@ -3,8 +3,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.Data.Json;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Networking;
 
@@ -47,7 +47,7 @@ namespace HA4IoT.Api.AzureCloud
             return false;
         }
 
-        public void NotifyStateChanged(IActuator actuator)
+        public void NotifyStateChanged(IComponent component)
         {
             if (_eventHubSender == null)
             {
@@ -55,9 +55,9 @@ namespace HA4IoT.Api.AzureCloud
             }
 
             JsonObject eventData = new JsonObject();
-            eventData.SetNamedValue("Type", "StateChanged".ToJsonValue());
-            eventData.SetNamedValue("ActuatorId", actuator.Id.ToJsonValue());
-            eventData.SetNamedValue("State", actuator.ExportStatusToJsonObject());
+            eventData.SetNamedValue("type", "StateChanged".ToJsonValue());
+            eventData.SetNamedValue("componentId", component.Id.ToJsonValue());
+            eventData.SetNamedValue("state", component.ExportStatusToJsonObject());
 
             Task.Run(async () => await _eventHubSender?.SendAsync(eventData));
         }

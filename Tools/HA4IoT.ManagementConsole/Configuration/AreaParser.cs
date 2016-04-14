@@ -21,8 +21,8 @@ namespace HA4IoT.ManagementConsole.Configuration
 
         public AreaItemVM Parse()
         {
-            var settings = (JObject)_source.Value["Settings"];
-            _appSettings = settings.GetNamedObject("AppSettings", null);
+            var settings = (JObject)_source.Value["settings"];
+            _appSettings = settings.GetNamedObject("appSettings", null);
 
             var areaItem = new AreaItemVM(_source.Name);
             areaItem.SortValue = (int)_appSettings.GetNamedNumber("SortValue", 0);
@@ -37,7 +37,7 @@ namespace HA4IoT.ManagementConsole.Configuration
 
         private List<ActuatorItemVM> ParseActuators()
         {
-            var actuatorProperties = ((JObject) _source.Value["Actuators"]).Properties();
+            var actuatorProperties = ((JObject) _source.Value["components"]).Properties();
 
             var actuators = new List<ActuatorItemVM>();
             foreach (var actuatorProperty in actuatorProperties)
@@ -52,7 +52,7 @@ namespace HA4IoT.ManagementConsole.Configuration
 
         private List<AutomationItemVM> ParseAutomations()
         {
-            var automationProperties = ((JObject)_source.Value["Automations"]).Properties();
+            var automationProperties = ((JObject)_source.Value["automations"]).Properties();
 
             var automations = new List<AutomationItemVM>();
             foreach (JProperty automationProperty in automationProperties)

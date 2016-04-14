@@ -4,7 +4,7 @@ using HA4IoT.Contracts.Actions;
 
 namespace HA4IoT.ExternalServices.Twitter
 {
-    public class TweetAction : IHomeAutomationAction
+    public class TweetAction : IAction
     {
         private readonly Func<string> _messageProvider;
         private readonly TwitterClient _twitterClient;

@@ -7,20 +7,20 @@ namespace HA4IoT.Actuators.Actions
 {
     public static class HomeAutomationActionExtensions
     {
-        public static IHomeAutomationAction OnTrigger(this IHomeAutomationAction actuatorAction, ITrigger trigger)
+        public static IAction OnTrigger(this IAction actuatorAction, ITrigger trigger)
         {
             if (actuatorAction == null) throw new ArgumentNullException(nameof(actuatorAction));
             if (trigger == null) throw new ArgumentNullException(nameof(trigger));
 
-            trigger.OnTriggered(actuatorAction);
+            trigger.Attach(actuatorAction);
             return actuatorAction;
         }
 
-        public static IHomeAutomationAction ToHomeAutomationAction(Action callback)
+        public static IAction ToHomeAutomationAction(System.Action callback)
         {
             if (callback == null) throw new ArgumentNullException(nameof(callback));
 
-            return new HomeAutomationAction(callback);
+            return new Action(callback);
         }
     }
 }

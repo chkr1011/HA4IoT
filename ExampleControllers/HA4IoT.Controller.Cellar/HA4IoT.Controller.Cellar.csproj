@@ -129,6 +129,10 @@
       <Project>{1CA64C98-210A-4015-95C6-67D591115F7B}</Project>
       <Name>HA4IoT.Automations</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Components\HA4IoT.Components.csproj">
+      <Project>{60f9e539-3ff5-40de-b0c4-be99cae57736}</Project>
+      <Name>HA4IoT.Components</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{551337E7-D1EF-4145-92B4-F7086F7665A6}</Project>
       <Name>HA4IoT.Contracts</Name>
@@ -148,6 +152,10 @@
     <ProjectReference Include="..\..\SDK\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
       <Name>HA4IoT.Networking</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Sensors\HA4IoT.Sensors.csproj">
+      <Project>{8892E736-CDD0-48EB-AD9E-A1C8AA230FD7}</Project>
+      <Name>HA4IoT.Sensors</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.CCTools\HA4IoT.Hardware.CCTools.csproj">
       <Project>{B0A7EF01-9382-422C-81AF-C90DC5A7AFFD}</Project>

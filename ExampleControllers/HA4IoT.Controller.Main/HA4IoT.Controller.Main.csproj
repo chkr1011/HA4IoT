@@ -102,9 +102,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controller.cs" />
-    <Compile Include="Device.cs" />
+    <Compile Include="InstalledDevice.cs" />
     <Compile Include="Rooms\BedroomConfiguration.cs" />
-    <Compile Include="Rooms\CatLitterBoxSender.cs" />
+    <Compile Include="CatLitterBoxSender.cs" />
     <Compile Include="Rooms\FloorConfiguration.cs" />
     <Compile Include="Rooms\KitchenConfiguration.cs" />
     <Compile Include="Rooms\LivingRoomConfiguration.cs" />
@@ -113,6 +113,7 @@
     <Compile Include="Rooms\ChildrensRoomConfiguration.cs" />
     <Compile Include="Rooms\ReadingRoomConfiguration.cs" />
     <Compile Include="Rooms\Room.cs" />
+    <Compile Include="Rooms\RoomConfiguration.cs" />
     <Compile Include="Rooms\StoreroomConfiguration.cs" />
     <Compile Include="Rooms\UpperBathroomConfiguration.cs" />
     <Compile Include="StartupTask.cs" />
@@ -138,6 +139,10 @@
       <Project>{6788E4A8-580E-4C2E-9754-95229F24F217}</Project>
       <Name>HA4IoT.ExternalServices.OpenWeatherMap</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\SDK\ExternalServices\HA4IoT.ExternalServices.TelegramBot\HA4IoT.ExternalServices.TelegramBot.csproj">
+      <Project>{0F244152-1BF5-46E4-93DD-E769B38CE9DB}</Project>
+      <Name>HA4IoT.ExternalServices.TelegramBot</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SDK\ExternalServices\HA4IoT.ExternalServices.Twitter\HA4IoT.ExternalServices.Twitter.csproj">
       <Project>{4BF90039-3B6A-450B-B942-09FAF600BD64}</Project>
       <Name>HA4IoT.ExternalServices.Twitter</Name>
@@ -145,6 +150,10 @@
     <ProjectReference Include="..\..\SDK\HA4IoT.Automations\HA4IoT.Automations.csproj">
       <Project>{1CA64C98-210A-4015-95C6-67D591115F7B}</Project>
       <Name>HA4IoT.Automations</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Components\HA4IoT.Components.csproj">
+      <Project>{60F9E539-3FF5-40DE-B0C4-BE99CAE57736}</Project>
+      <Name>HA4IoT.Components</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Configuration\HA4IoT.Configuration.csproj">
       <Project>{F9D92EA6-3763-47F5-9EFD-6D83804C95E6}</Project>
@@ -169,6 +178,10 @@
     <ProjectReference Include="..\..\SDK\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
       <Name>HA4IoT.Networking</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Sensors\HA4IoT.Sensors.csproj">
+      <Project>{8892E736-CDD0-48EB-AD9E-A1C8AA230FD7}</Project>
+      <Name>HA4IoT.Sensors</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Telemetry\HA4IoT.Telemetry.csproj">
       <Project>{97F3345C-33B6-4779-9212-5FFBCEEF3F96}</Project>

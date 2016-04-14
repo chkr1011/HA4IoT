@@ -30,7 +30,7 @@
 
   <Areas>
     <Area id="Bedroom">
-      <Actuators>
+      <Components>
         <TemperatureSensor id="Bedroom.TemperatureSensor">
           <I2CHardwareBridge:TemperatureSensor i2cHardwareBridgeDeviceId="I2CHardwareBridge" sensorId="6" />
         </TemperatureSensor>
@@ -209,7 +209,7 @@
           </States>
         </StateMachine>
         
-      </Actuators>
+      </Components>
 
       <Automations>
         

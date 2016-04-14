@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 
-namespace HA4IoT.Actuators
+namespace HA4IoT.Actuators.RollerShutters
 {
     public class PortBasedRollerShutterEndpoint : IRollerShutterEndpoint
     {

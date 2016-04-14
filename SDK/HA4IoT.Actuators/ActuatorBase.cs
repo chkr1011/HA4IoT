@@ -1,68 +1,20 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using Windows.Data.Json;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Api;
-using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Actuators
 {
-    public abstract class ActuatorBase<TSettings> : IActuator, IStatusProvider where TSettings : IActuatorSettings
+    public abstract class ActuatorBase : ComponentBase, IActuator
     {
-        protected ActuatorBase(ActuatorId id, IApiController apiController)
-        {
-            if (id == null) throw new ArgumentNullException(nameof(id));
-            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
-
-            Id = id;
-            ApiController = apiController;
-        }
-
-        public ActuatorId Id { get; }
-
-        protected IApiController ApiController { get; }
-
-        public TSettings Settings { get; protected set; }
-
-        public virtual JsonObject ExportStatusToJsonObject()
-        {
-            return Settings.ExportToJsonObject();
-        }
-
-        public virtual JsonObject ExportConfigurationToJsonObject()
-        {
-            var result = new JsonObject();
-            result.SetNamedValue("Type", GetType().FullName.ToJsonValue());
-
-            if (Settings != null)
-            {
-                result.SetNamedValue("Settings", Settings.ExportToJsonObject());
-            }
-
-            return result;
-        }
-
-        public void LoadSettings()
-        {
-            Settings?.Load();
-        }
-
-        protected virtual void HandleApiCommand(IApiContext apiContext)
+        protected ActuatorBase(ComponentId id) 
+            : base(id)
         {
         }
 
-        protected virtual void HandleApiRequest(IApiContext apiContext)
-        {
-            apiContext.Response = ExportStatusToJsonObject();
-        }
-
-        public void ExposeToApi()
-        {
-            new ActuatorSettingsApiDispatcher(Settings, ApiController).ExposeToApi();
-            
-            ApiController.RouteCommand($"actuator/{Id}/status", HandleApiCommand);
-            ApiController.RouteRequest($"actuator/{Id}/status", HandleApiRequest);
-        }
+        public abstract void SetState(IComponentState state, params IHardwareParameter[] parameters);
     }
 }

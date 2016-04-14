@@ -16,34 +16,34 @@ namespace HA4IoT.CloudTester
             _target = target;
         }
 
-        public void Verbose(string message, params object[] parameters)
+        public void Verbose(string message)
         {
-            AppendText("VERBOSE: " + message, parameters);
+            AppendText("VERBOSE: " + message);
         }
 
-        public void Info(string message, params object[] parameters)
+        public void Info(string message)
         {
-            AppendText("INFORMATION: " + message, parameters);
+            AppendText("INFORMATION: " + message);
         }
 
-        public void Warning(string message, params object[] parameters)
+        public void Warning(string message)
         {
-            AppendText("WARNING: " + message, parameters);
+            AppendText("WARNING: " + message);
         }
 
-        public void Warning(Exception exception, string message, params object[] parameters)
+        public void Warning(Exception exception, string message)
         {
-            AppendText("WARNING: " + message + Environment.NewLine + exception, parameters);
+            AppendText("WARNING: " + message + Environment.NewLine + exception);
         }
 
-        public void Error(string message, params object[] parameters)
+        public void Error(string message)
         {
-            AppendText("ERROR: " + message, parameters);
+            AppendText("ERROR: " + message);
         }
 
-        public void Error(Exception exception, string message, params object[] parameters)
+        public void Error(Exception exception, string message)
         {
-            AppendText("ERROR: " + message + Environment.NewLine + exception, parameters);
+            AppendText("ERROR: " + message + Environment.NewLine + exception);
         }
 
         private void AppendText(string format, params object[] parameters)

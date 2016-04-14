@@ -1,5 +1,5 @@
 ﻿using System;
-using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
 
 namespace HA4IoT.Contracts.Api
 {
@@ -7,6 +7,6 @@ namespace HA4IoT.Contracts.Api
     {
         event EventHandler<ApiRequestReceivedEventArgs> RequestReceived;
 
-        void NotifyStateChanged(IActuator actuator);
+        void NotifyStateChanged(IComponent component);
     }
 }
