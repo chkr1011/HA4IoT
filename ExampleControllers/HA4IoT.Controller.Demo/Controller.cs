@@ -1,5 +1,5 @@
 ﻿using System;
-using HA4IoT.Actuators;
+using System.Threading.Tasks;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.Sockets;
@@ -18,6 +18,7 @@ using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Triggers;
 using HA4IoT.Core;
 using HA4IoT.ExternalServices.OpenWeatherMap;
+using HA4IoT.ExternalServices.TelegramBot;
 using HA4IoT.ExternalServices.Twitter;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
@@ -72,7 +73,7 @@ namespace HA4IoT.Controller.Demo
             IArea area = this.GetArea(Room.ExampleRoom);
 
             // Get the single motion detector from the controller.
-            var motionDetector = GetComponent<IMotionDetector>();
+            IMotionDetector motionDetector = GetComponent<IMotionDetector>();
             ITrigger motionDetectedTrigger = motionDetector.GetMotionDetectedTrigger();
 
             // Get the single temperature and humidity sensor from the controller.
@@ -107,6 +108,53 @@ namespace HA4IoT.Controller.Demo
                 .WithCondition(ConditionRelation.And, new NumericValueSensorHasValueGreaterThanCondition(humiditySensor, 80));
 
             AddAutomation(automation);
+
+            TelegramBot telegramBot;
+            if (!TelegramBotFactory.TryCreateFromDefaultConfigurationFile(out telegramBot))
+            {
+                RegisterService(telegramBot);
+
+                Task.Run(async () => await telegramBot.TrySendMessageToAdministratorsAsync("Das Demo-System wurde neu gestartet."));
+                telegramBot.MessageReceived += HandleTelegramBotMessage;
+            }
+        }
+
+        private async void HandleTelegramBotMessage(object sender, TelegramBotMessageReceivedEventArgs e)
+        {
+            if (e.Message.GetIsPatternMatch("Hi"))
+            {
+                await e.SendResponse("Was geht?");
+            }
+            else if (e.Message.GetIsPatternMatch("auf.*Toilette"))
+            {
+                var motionDetector = GetComponent<IMotionDetector>(new ComponentId("ExampleRoom.MotionDetector"));
+                if (motionDetector.GetState().Equals(MotionDetectorStateId.MotionDetected))
+                {
+                    await e.SendResponse("Die Toilette ist gerade besetzt.");
+                }
+                else
+                {
+                    await e.SendResponse("Die Toilette ist frei!");
+                }
+            }
+            else if (e.Message.GetIsPatternMatch("Licht.*an"))
+            {
+                var light = GetComponent<IActuator>(new ComponentId("ExampleRoom.Lamp1"));
+                light.SetState(BinaryStateId.On);
+
+                await e.SendResponse("Ich habe das Licht eingeschaltet.");
+            }
+            else if (e.Message.GetIsPatternMatch("Licht.*aus"))
+            {
+                var light = GetComponent<IActuator>(new ComponentId("ExampleRoom.Lamp1"));
+                light.SetState(BinaryStateId.Off);
+
+                await e.SendResponse("Ich habe das Licht ausgeschaltet.");
+            }
+            else
+            {
+                await e.SendResponse("Was willst du von mir?");
+            }
         }
 
         private void SetupRoom()

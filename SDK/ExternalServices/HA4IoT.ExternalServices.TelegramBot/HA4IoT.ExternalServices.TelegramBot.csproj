@@ -112,6 +112,7 @@
     <Compile Include="OutboundMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TelegramBot.cs" />
+    <Compile Include="TelegramBotExtensions.cs" />
     <Compile Include="TelegramBotFactory.cs" />
     <Compile Include="TelegramBotMessageReceivedEventArgs.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.ExternalServices.TelegramBot.rd.xml" />
