@@ -29,8 +29,8 @@ function Deploy
 }
 
 function SelectIP
-{
-	Write-Host "Select IP of target:";
+{   
+	Write-Host "Select IP of controller:";
 	Write-Host "0 - 192.168.1.15";
 	Write-Host "1 - 192.168.1.16";
     Write-Host "2 - minwinpc";
@@ -61,10 +61,10 @@ function Confirm()
 
 	if ($key -eq "y")
 	{
-		return 1;
+		return $true;
 	}
 
-	return 0;
+	return $false;
 }
 
 function IncreaseVersion
@@ -79,9 +79,31 @@ function IncreaseVersion
 	#Set-Content - $versionFile
 }
 
+function GetIsStaging
+{
+	Write-Host "Select slot:";
+	Write-Host "0 - Live";
+	Write-Host "1 - Staging";
+	
+	$choice = Read-Host
+	
+	if ($choice -eq 0)
+	{
+		return $false;
+	}
+
+	return $true;
+}
+
 ## Start...
 Set-Location $PSScriptRoot
+
+Write-Host "----------------------------------";
+Write-Host "--- HA4IoT App deployment tool ---";
+Write-Host "----------------------------------";
+
 $ip = SelectIP
+$isStaging = GetIsStaging
 
 $repeat = 1
 while($repeat)
@@ -97,8 +119,14 @@ while($repeat)
 	Write-Host "Found package: $package";
 	
 	$clearRemoteDirectory = Confirm("Clear remote directory (y/n)?")
+	
 	$sourceDir = ".\HA4IoT.WebApp"
 	$remoteDir = "$package\LocalState\App"
+
+	if ($isStaging)
+	{
+		$remoteDir = "$remoteDir\STAGING";
+	}
 
 	#IncreaseVersion -Package "$remoteDir"
 
