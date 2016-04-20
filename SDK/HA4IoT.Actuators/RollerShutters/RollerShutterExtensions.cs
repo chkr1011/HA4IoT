@@ -20,7 +20,7 @@ namespace HA4IoT.Actuators.RollerShutters
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
 
-            return area.GetComponent<RollerShutter>(ComponentIdFactory.Create(area, id));
+            return area.GetComponent<RollerShutter>(ComponentIdFactory.Create(area.Id, id));
         }
 
         public static IArea WithRollerShutter(this IArea area, Enum id, IBinaryOutput powerOutput, IBinaryOutput directionOutput)
@@ -31,7 +31,7 @@ namespace HA4IoT.Actuators.RollerShutters
             if (directionOutput == null) throw new ArgumentNullException(nameof(directionOutput));
 
             var rollerShutter = new RollerShutter(
-                ComponentIdFactory.Create(area, id), 
+                ComponentIdFactory.Create(area.Id, id), 
                 new PortBasedRollerShutterEndpoint(powerOutput, directionOutput),
                 area.Controller.Timer);
 

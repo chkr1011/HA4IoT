@@ -75,7 +75,7 @@ namespace HA4IoT.Sensors.Windows
             return status;
         }
 
-        protected override IList<IComponentState> GetSupportedStates()
+        public override IList<IComponentState> GetSupportedStates()
         {
             return new List<IComponentState> {CasementStateId.Closed, CasementStateId.Tilt, CasementStateId.Open};
         }

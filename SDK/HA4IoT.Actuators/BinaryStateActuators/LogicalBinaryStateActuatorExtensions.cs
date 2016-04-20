@@ -6,12 +6,12 @@ namespace HA4IoT.Actuators.BinaryStateActuators
 {
     public static class LogicalBinaryStateActuatorExtensions
     {
-        public static LogicalBinaryStateActuator CombineActuators(this IArea room, Enum id)
+        public static LogicalBinaryStateActuator CombineActuators(this IArea area, Enum id)
         {
-            if (room == null) throw new ArgumentNullException(nameof(room));
+            if (area == null) throw new ArgumentNullException(nameof(area));
 
-            var actuator = new LogicalBinaryStateActuator(ComponentIdFactory.Create(room, id), room.Controller.Timer);
-            room.AddComponent(actuator);
+            var actuator = new LogicalBinaryStateActuator(ComponentIdFactory.Create(area.Id, id), area.Controller.Timer);
+            area.AddComponent(actuator);
             return actuator;
         }
     }

@@ -8,11 +8,11 @@ namespace HA4IoT.Actuators
 {
     public static class ActuatorExtensions
     {
-        public static IActuator GetActuator(this IArea room, Enum id)
+        public static IActuator GetActuator(this IArea area, Enum id)
         {
-            if (room == null) throw new ArgumentNullException(nameof(room));
+            if (area == null) throw new ArgumentNullException(nameof(area));
 
-            return room.GetComponent<IActuator>(ComponentIdFactory.Create(room, id));
+            return area.GetComponent<IActuator>(ComponentIdFactory.Create(area.Id, id));
         }
 
         public static IActuator GetActuator(this IComponentController controller, ComponentId id)

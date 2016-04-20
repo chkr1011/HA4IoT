@@ -31,11 +31,11 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
             foreach (var chatId in Administrators)
             {
-                await TrySendMessageAsync(new OutboundMessage(chatId, text));
+                await TrySendMessageAsync(new TelegramOutboundMessage(chatId, text));
             }
         }
 
-        public async Task<bool> TrySendMessageAsync(OutboundMessage message)
+        public async Task<bool> TrySendMessageAsync(TelegramOutboundMessage message)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
@@ -51,7 +51,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
             }
         }
 
-        public async Task SendMessageAsync(OutboundMessage message)
+        public async Task SendMessageAsync(TelegramOutboundMessage message)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
@@ -135,7 +135,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
         private async Task ProcessMessage(JsonObject message)
         {
-            InboundMessage inboundMessage = ConvertJsonMessageToInboundMessage(message);
+            TelegramInboundMessage inboundMessage = ConvertJsonMessageToInboundMessage(message);
 
             if (!ChatWhitelist.Contains(inboundMessage.ChatId))
             {
@@ -147,7 +147,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
             }
         }
 
-        private InboundMessage ConvertJsonMessageToInboundMessage(JsonObject message)
+        private TelegramInboundMessage ConvertJsonMessageToInboundMessage(JsonObject message)
         {
             string text = message.GetNamedString("text");
             DateTime timestamp = UnixTimeStampToDateTime(message.GetNamedNumber("date"));
@@ -155,10 +155,10 @@ namespace HA4IoT.ExternalServices.TelegramBot
             JsonObject chat = message.GetNamedObject("chat");
             int chatId = (int)chat.GetNamedNumber("id");
 
-            return new InboundMessage(timestamp, chatId, text);
+            return new TelegramInboundMessage(timestamp, chatId, text);
         }
 
-        private StringContent ConvertOutboundMessageToJsonMessage(OutboundMessage message)
+        private StringContent ConvertOutboundMessageToJsonMessage(TelegramOutboundMessage message)
         {
             var json = new JsonObject();
             json.SetNamedNumber("chat_id", message.ChatId);

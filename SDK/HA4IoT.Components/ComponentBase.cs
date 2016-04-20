@@ -36,7 +36,7 @@ namespace HA4IoT.Components
 
         public abstract IComponentState GetState();
 
-        protected abstract IList<IComponentState> GetSupportedStates();
+        public abstract IList<IComponentState> GetSupportedStates();
 
         public virtual JsonObject ExportConfigurationToJsonObject()
         {

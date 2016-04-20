@@ -159,7 +159,7 @@ namespace HA4IoT.Actuators.StateMachines
             }
         }
 
-        protected override IList<IComponentState> GetSupportedStates()
+        public override IList<IComponentState> GetSupportedStates()
         {
             return _states.Select(s => s.Id).ToList();
         }

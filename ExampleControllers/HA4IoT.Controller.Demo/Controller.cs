@@ -121,40 +121,42 @@ namespace HA4IoT.Controller.Demo
 
         private async void HandleTelegramBotMessage(object sender, TelegramBotMessageReceivedEventArgs e)
         {
-            if (e.Message.GetIsPatternMatch("Hi"))
-            {
-                await e.SendResponse("Was geht?");
-            }
-            else if (e.Message.GetIsPatternMatch("auf.*Toilette"))
-            {
-                var motionDetector = GetComponent<IMotionDetector>(new ComponentId("ExampleRoom.MotionDetector"));
-                if (motionDetector.GetState().Equals(MotionDetectorStateId.MotionDetected))
-                {
-                    await e.SendResponse("Die Toilette ist gerade besetzt.");
-                }
-                else
-                {
-                    await e.SendResponse("Die Toilette ist frei!");
-                }
-            }
-            else if (e.Message.GetIsPatternMatch("Licht.*an"))
-            {
-                var light = GetComponent<IActuator>(new ComponentId("ExampleRoom.Lamp1"));
-                light.SetState(BinaryStateId.On);
+            await Task.FromResult(0);
 
-                await e.SendResponse("Ich habe das Licht eingeschaltet.");
-            }
-            else if (e.Message.GetIsPatternMatch("Licht.*aus"))
-            {
-                var light = GetComponent<IActuator>(new ComponentId("ExampleRoom.Lamp1"));
-                light.SetState(BinaryStateId.Off);
+            ////if (e.Message.GetIsPatternMatch("Hi"))
+            ////{
+            ////    await e.SendResponse("Was geht?");
+            ////}
+            ////else if (e.Message.GetIsPatternMatch("auf.*Toilette"))
+            ////{
+            ////    var motionDetector = GetComponent<IMotionDetector>(new ComponentId("ExampleRoom.MotionDetector"));
+            ////    if (motionDetector.GetState().Equals(MotionDetectorStateId.MotionDetected))
+            ////    {
+            ////        await e.SendResponse("Die Toilette ist gerade besetzt.");
+            ////    }
+            ////    else
+            ////    {
+            ////        await e.SendResponse("Die Toilette ist frei!");
+            ////    }
+            ////}
+            ////else if (e.Message.GetIsPatternMatch("Licht.*an"))
+            ////{
+            ////    var light = GetComponent<IActuator>(new ComponentId("ExampleRoom.Lamp1"));
+            ////    light.SetState(BinaryStateId.On);
 
-                await e.SendResponse("Ich habe das Licht ausgeschaltet.");
-            }
-            else
-            {
-                await e.SendResponse("Was willst du von mir?");
-            }
+            ////    await e.SendResponse("Ich habe das Licht eingeschaltet.");
+            ////}
+            ////else if (e.Message.GetIsPatternMatch("Licht.*aus"))
+            ////{
+            ////    var light = GetComponent<IActuator>(new ComponentId("ExampleRoom.Lamp1"));
+            ////    light.SetState(BinaryStateId.Off);
+
+            ////    await e.SendResponse("Ich habe das Licht ausgeschaltet.");
+            ////}
+            ////else
+            ////{
+            ////    await e.SendResponse("Was willst du von mir?");
+            ////}
         }
 
         private void SetupRoom()

@@ -47,7 +47,7 @@ namespace HA4IoT.Sensors.MotionDetectors
             return _detectionCompletedTrigger;
         }
 
-        protected override IList<IComponentState> GetSupportedStates()
+        public override IList<IComponentState> GetSupportedStates()
         {
             return new List<IComponentState> {MotionDetectorStateId.Idle, MotionDetectorStateId.MotionDetected};
         }

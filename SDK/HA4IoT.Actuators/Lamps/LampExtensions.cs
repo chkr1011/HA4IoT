@@ -8,22 +8,22 @@ namespace HA4IoT.Actuators.Lamps
 {
     public static class LampExtensions
     {
-        public static IArea WithLamp(this IArea room, Enum id, IBinaryOutput output)
+        public static IArea WithLamp(this IArea area, Enum id, IBinaryOutput output)
         {
-            if (room == null) throw new ArgumentNullException(nameof(room));
+            if (area == null) throw new ArgumentNullException(nameof(area));
             if (output == null) throw new ArgumentNullException(nameof(output));
 
-            var lamp = new Lamp(ComponentIdFactory.Create(room, id), new PortBasedBinaryStateEndpoint(output));
-            room.AddComponent(lamp);
+            var lamp = new Lamp(ComponentIdFactory.Create(area.Id, id), new PortBasedBinaryStateEndpoint(output));
+            area.AddComponent(lamp);
 
-            return room;
+            return area;
         }
 
-        public static ILamp GetLamp(this IArea room, Enum id)
+        public static ILamp GetLamp(this IArea area, Enum id)
         {
-            if (room == null) throw new ArgumentNullException(nameof(room));
+            if (area == null) throw new ArgumentNullException(nameof(area));
 
-            return room.GetComponent<ILamp>(ComponentIdFactory.Create(room, id));
+            return area.GetComponent<ILamp>(ComponentIdFactory.Create(area.Id, id));
         }
     }
 }

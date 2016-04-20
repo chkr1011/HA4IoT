@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
@@ -18,6 +20,9 @@ using HA4IoT.Hardware.Pi2;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.PersonalAgent;
+using HA4IoT.Contracts.Services.WeatherService;
+using HA4IoT.PersonalAgent;
 
 namespace HA4IoT.Controller.Main
 {
@@ -37,7 +42,8 @@ namespace HA4IoT.Controller.Main
             AddDevice(ccToolsBoardController);
             AddDevice(new I2CHardwareBridge(new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer));
             AddDevice(SetupRemoteSwitchController());
-
+    
+            RegisterService(new SynonymService(ApiController));
             RegisterService(new OpenWeatherMapWeatherService(Timer, ApiController));
 
             SetupTwitterClient();
@@ -80,12 +86,21 @@ namespace HA4IoT.Controller.Main
                 return;
             }
 
-            Log.ErrorLogged += (s, e) =>
+            Log.WarningLogged += (s, e) =>
             {
-                Task.Run(async () => await telegramBot.TrySendMessageToAdministratorsAsync("Ein Fehler wurde gelogged."));
+                Task.Run(
+                    async () =>
+                        await telegramBot.TrySendMessageToAdministratorsAsync($"{Emoji.WarningSign} {e.Message}\r\n{e.Exception}"));
             };
 
-            Task.Run(async () => await telegramBot.TrySendMessageToAdministratorsAsync("Das System wurde neu gestartet."));
+            Log.ErrorLogged += (s, e) =>
+            {
+                Task.Run(
+                    async () =>
+                        await telegramBot.TrySendMessageToAdministratorsAsync($"{Emoji.HeavyExclamationMark} {e.Message}\r\n{e.Exception}"));
+            };
+
+            Task.Run(async () => await telegramBot.TrySendMessageToAdministratorsAsync($"{Emoji.Bell} Das System ist gestartet."));
             telegramBot.MessageReceived += HandleTelegramBotMessage;
 
             RegisterService(telegramBot);
@@ -102,26 +117,84 @@ namespace HA4IoT.Controller.Main
 
         private async void HandleTelegramBotMessage(object sender, TelegramBotMessageReceivedEventArgs e)
         {
-            if (Regex.IsMatch(e.Message.Text, "Hello", RegexOptions.IgnoreCase))
-            {
-                await e.TelegramBot.TrySendMessageAsync(e.Message.CreateResponse("World!"));
-            }
-            else if (Regex.IsMatch(e.Message.Text, "Licht.*Büro.*an", RegexOptions.IgnoreCase))
-            {
-                var light = GetComponent<IStateMachine>(new ComponentId("Office.CombinedCeilingLights"));
-                light.SetState(BinaryStateId.On);
+            var messageContextFactory = new MessageContextFactory(GetService<SynonymService>());
+            MessageContext messageContext = messageContextFactory.Create(e.Message);
 
-                await e.TelegramBot.TrySendMessageAsync(e.Message.CreateResponse("Ich habe das Licht für dich eingeschaltet!"));
-            }
-            else if (Regex.IsMatch(e.Message.Text, "Licht.*Büro.*aus", RegexOptions.IgnoreCase))
+            if (messageContext.GetPatternMatch("Hi").Success)
             {
-                var light = GetComponent<IStateMachine>(new ComponentId("Office.CombinedCeilingLights"));
-                light.SetState(BinaryStateId.Off);
-
-                await
-                    e.TelegramBot.TrySendMessageAsync(e.Message.CreateResponse("Ich habe das Licht für dich ausgeschaltet!"));
+                await e.SendResponse($"{Emoji.VictoryHand} Hi, was kann ich für Dich tun?");
+                return;
             }
-            else if (Regex.IsMatch(e.Message.Text, "Fenster.*geschlossen", RegexOptions.IgnoreCase))
+
+            if (messageContext.GetPatternMatch("Danke").Success)
+            {
+                await e.SendResponse($"{Emoji.Wink} Gerne.");
+                return;
+            }
+
+            if (messageContext.GetPatternMatch("Wetter").Success)
+            {
+                var weatherService = GetService<IWeatherService>();
+
+                var response = new StringBuilder();
+                response.AppendLine($"{Emoji.BarChart} Das Wetter ist aktuell:");
+                response.AppendLine($"Temperatur: {weatherService.GetTemperature()}°C");
+                response.AppendLine($"Luftfeuchtigkeit: {weatherService.GetHumidity()}%");
+                response.AppendLine($"Situation: {weatherService.GetSituation()}");
+                
+                await e.SendResponse(response.ToString());
+
+                return;
+            }
+
+            if (messageContext.IdentifiedComponentIds.Count > 1)
+            {
+                await e.SendResponse("Bitte nicht mehrere Komponenten auf einmal.");
+                return;
+            }
+
+            if (messageContext.IdentifiedComponentIds.Count == 1)
+            {
+                var component = GetComponent<IComponent>(messageContext.IdentifiedComponentIds.First());
+
+                IActuator actuator = component as IActuator;
+                if (actuator != null)
+                {
+                    if (messageContext.IdentifiedComponentStates.Count == 0)
+                    {
+                        await e.SendResponse($"{Emoji.Confused} Was soll ich damit machen?");
+                        return;
+                    }
+                    else if (messageContext.IdentifiedComponentStates.Count > 1)
+                    {
+                        await e.SendResponse($"{Emoji.Confused} Das was du willst ist nicht eindeutig.");
+                        return;
+                    }
+                    else
+                    {
+                        if (!actuator.GetSupportsState(messageContext.IdentifiedComponentStates.First()))
+                        {
+                            await e.SendResponse($"{Emoji.Confused} Das wird nicht funktionieren.");
+                            return;
+                        }
+                        else
+                        {
+                            actuator.SetState(messageContext.IdentifiedComponentStates.First());
+                            await e.SendResponse($"{Emoji.WhiteCheckMark} Habe ich erledigt.");
+                            return;
+                        }
+                    }
+                }
+
+                ISensor sensor = component as ISensor;
+                if (sensor != null)
+                {
+                    await e.SendResponse($"Der sensor hat momentan den folgenden Zustand: {sensor.GetState()}");
+                    return;
+                }
+            }
+
+            if (messageContext.GetPatternMatch("Fenster.*geschlossen").Success)
             {
                 var allWindows = GetComponents<IWindow>();
                 var openWindows = allWindows.Where(w => w.Casements.Any(c => c.GetState() != CasementStateId.Closed)).ToList();
@@ -138,11 +211,10 @@ namespace HA4IoT.Controller.Main
                 }
 
                 await e.TelegramBot.TrySendMessageAsync(e.Message.CreateResponse(response));
+                return;
             }
-            else
-            {
-                await e.TelegramBot.TrySendMessageAsync(e.Message.CreateResponse("Das habe ich nicht verstanden."));
-            }
+            
+            await e.TelegramBot.TrySendMessageAsync(e.Message.CreateResponse($"{Emoji.Confused} Das habe ich nicht verstanden. Bitte stelle Deine Anfrage präziser."));
         }
 
         private RemoteSocketController SetupRemoteSwitchController()

@@ -8,15 +8,15 @@ namespace HA4IoT.Sensors.Buttons
 {
     public static class ButtonExtensions
     {
-        public static IArea WithVirtualButton(this IArea room, Enum id, Action<IButton> initializer = null)
+        public static IArea WithVirtualButton(this IArea area, Enum id, Action<IButton> initializer = null)
         {
-            if (room == null) throw new ArgumentNullException(nameof(room));
+            if (area == null) throw new ArgumentNullException(nameof(area));
             
-            var virtualButton = new Button(ComponentIdFactory.Create(room, id), new EmptyButtonEndpoint(), room.Controller.Timer);
+            var virtualButton = new Button(ComponentIdFactory.Create(area.Id, id), new EmptyButtonEndpoint(), area.Controller.Timer);
             initializer?.Invoke(virtualButton);
 
-            room.AddComponent(virtualButton);
-            return room;
+            area.AddComponent(virtualButton);
+            return area;
         }
 
         public static IArea WithButton(this IArea area, Enum id, IBinaryInput input, Action<IButton> initializer = null)
@@ -25,7 +25,7 @@ namespace HA4IoT.Sensors.Buttons
             if (input == null) throw new ArgumentNullException(nameof(input));
 
             var button = new Button(
-                ComponentIdFactory.Create(area, id), 
+                ComponentIdFactory.Create(area.Id, id), 
                 new PortBasedButtonEndpoint(input),
                 area.Controller.Timer);
 
@@ -47,14 +47,14 @@ namespace HA4IoT.Sensors.Buttons
             if (downInput == null) throw new ArgumentNullException(nameof(downInput));
 
             var upButton = new Button(
-                ComponentIdFactory.Create(area, upId),
+                ComponentIdFactory.Create(area.Id, upId),
                 new PortBasedButtonEndpoint(upInput), 
                 area.Controller.Timer);
 
             area.AddComponent(upButton);
 
             var downButton = new Button(
-                ComponentIdFactory.Create(area, downId),
+                ComponentIdFactory.Create(area.Id, downId),
                 new PortBasedButtonEndpoint(downInput), 
                 area.Controller.Timer);
 
@@ -81,11 +81,11 @@ namespace HA4IoT.Sensors.Buttons
             return button;
         }
 
-        public static IButton GetButton(this IArea room, Enum id)
+        public static IButton GetButton(this IArea area, Enum id)
         {
-            if (room == null) throw new ArgumentNullException(nameof(room));
+            if (area == null) throw new ArgumentNullException(nameof(area));
 
-            return room.GetComponent<IButton>(ComponentIdFactory.Create(room, id));
+            return area.GetComponent<IButton>(ComponentIdFactory.Create(area.Id, id));
         }
     }
 }

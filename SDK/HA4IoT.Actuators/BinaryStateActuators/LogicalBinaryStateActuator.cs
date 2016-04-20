@@ -119,7 +119,7 @@ namespace HA4IoT.Actuators.BinaryStateActuators
             return this;
         }
 
-        protected override IList<IComponentState> GetSupportedStates()
+        public override IList<IComponentState> GetSupportedStates()
         {
             return new List<IComponentState> {BinaryStateId.Off, BinaryStateId.On};
         }

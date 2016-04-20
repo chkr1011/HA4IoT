@@ -118,7 +118,7 @@ namespace HA4IoT.Actuators.RollerShutters
             SetState(state);
         }
 
-        protected override IList<IComponentState> GetSupportedStates()
+        public override IList<IComponentState> GetSupportedStates()
         {
             return new List<IComponentState>
             {

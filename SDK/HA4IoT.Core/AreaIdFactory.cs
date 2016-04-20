@@ -1,14 +1,13 @@
 ﻿using System;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 
 namespace HA4IoT.Core
 {
-    public class AreaIdFactory
+    public static class AreaIdFactory
     {
-        public static AreaId CreateIdFrom(Enum value)
+        public static AreaId Create(Enum id)
         {
-            return new AreaId(value.ToString());
+            return new AreaId(id.ToString());
         }
     }
 }

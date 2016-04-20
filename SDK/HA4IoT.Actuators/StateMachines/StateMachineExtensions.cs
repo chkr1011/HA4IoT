@@ -9,26 +9,26 @@ namespace HA4IoT.Actuators.StateMachines
 {
     public static class StateMachineExtensions
     {
-        public static IArea WithStateMachine(this IArea room, Enum id, Action<StateMachine, IArea> initializer)
+        public static IArea WithStateMachine(this IArea area, Enum id, Action<StateMachine, IArea> initializer)
         {
-            if (room == null) throw new ArgumentNullException(nameof(room));
+            if (area == null) throw new ArgumentNullException(nameof(area));
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
 
             var stateMachine = new StateMachine(
-                ComponentIdFactory.Create(room, id));
+                ComponentIdFactory.Create(area.Id, id));
 
-            initializer(stateMachine, room);
+            initializer(stateMachine, area);
             stateMachine.SetInitialState(BinaryStateId.Off);
 
-            room.AddComponent(stateMachine);
-            return room;
+            area.AddComponent(stateMachine);
+            return area;
         }
 
-        public static IStateMachine GetStateMachine(this IArea room, Enum id)
+        public static IStateMachine GetStateMachine(this IArea area, Enum id)
         {
-            if (room == null) throw new ArgumentNullException(nameof(room));
+            if (area == null) throw new ArgumentNullException(nameof(area));
 
-            return room.GetComponent<IStateMachine>(ComponentIdFactory.Create(room, id));
+            return area.GetComponent<IStateMachine>(ComponentIdFactory.Create(area.Id, id));
         }
 
         public static bool GetSupportsOffState(this IStateMachine stateMachine)

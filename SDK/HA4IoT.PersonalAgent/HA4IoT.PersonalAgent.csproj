@@ -4,15 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{0F244152-1BF5-46E4-93DD-E769B38CE9DB}</ProjectGuid>
+    <ProjectGuid>{A22FDA3A-B331-4399-863B-5F1B8D24BFE9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HA4IoT.ExternalServices.TelegramBot</RootNamespace>
-    <AssemblyName>HA4IoT.ExternalServices.TelegramBot</AssemblyName>
+    <RootNamespace>HA4IoT.PersonalAgent</RootNamespace>
+    <AssemblyName>HA4IoT.PersonalAgent</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -107,24 +107,20 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TelegramInboundMessage.cs" />
-    <Compile Include="MessageBase.cs" />
-    <Compile Include="TelegramOutboundMessage.cs" />
+    <Compile Include="MessageContext.cs" />
+    <Compile Include="MessageContextFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TelegramBot.cs" />
-    <Compile Include="TelegramBotExtensions.cs" />
-    <Compile Include="TelegramBotFactory.cs" />
-    <Compile Include="TelegramBotMessageReceivedEventArgs.cs" />
-    <EmbeddedResource Include="Properties\HA4IoT.ExternalServices.TelegramBot.rd.xml" />
+    <Compile Include="SynonymService.cs" />
+    <EmbeddedResource Include="Properties\HA4IoT.PersonalAgent.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
+    <ProjectReference Include="..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{E1EDAC4B-83B9-46F4-9F6A-3BAE97D79F29}</Project>
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\HA4IoT.Networking\HA4IoT.Networking.csproj">
-      <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
-      <Name>HA4IoT.Networking</Name>
+    <ProjectReference Include="..\HA4IoT.Core\HA4IoT.Core.csproj">
+      <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
+      <Name>HA4IoT.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

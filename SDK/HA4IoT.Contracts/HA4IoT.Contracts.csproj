@@ -125,6 +125,11 @@
     <Compile Include="Hardware\ForceUpdateStateParameter.cs" />
     <Compile Include="Hardware\HardwareParameter.cs" />
     <Compile Include="Hardware\IsPartOfLogicalUpdateParameter.cs" />
+    <Compile Include="Logging\MessageWithExceptionLoggedEventArgs.cs" />
+    <Compile Include="Logging\MessageLoggedEventArgs.cs" />
+    <Compile Include="PersonalAgent\Emoji.cs" />
+    <Compile Include="PersonalAgent\IInboundMessage.cs" />
+    <Compile Include="PersonalAgent\IOutboundMessage.cs" />
     <Compile Include="Sensors\ButtonPressedDuration.cs" />
     <Compile Include="Sensors\CasementStateID.cs" />
     <Compile Include="Actuators\LevelStateId.cs" />

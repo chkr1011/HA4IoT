@@ -6,23 +6,23 @@ namespace HA4IoT.Sensors.Windows
 {
     public static class WindowExtensions
     {
-        public static IArea WithWindow(this IArea room, Enum id, Action<Window> initializer)
+        public static IArea WithWindow(this IArea area, Enum id, Action<Window> initializer)
         {
-            if (room == null) throw new ArgumentNullException(nameof(room));
+            if (area == null) throw new ArgumentNullException(nameof(area));
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
 
-            var window = new Window(ComponentIdFactory.Create(room, id));
+            var window = new Window(ComponentIdFactory.Create(area.Id, id));
             initializer(window);
 
-            room.AddComponent(window);
-            return room;
+            area.AddComponent(window);
+            return area;
         }
 
-        public static Window Window(this IArea room, Enum id)
+        public static Window Window(this IArea area, Enum id)
         {
-            if (room == null) throw new ArgumentNullException(nameof(room));
+            if (area == null) throw new ArgumentNullException(nameof(area));
 
-            return room.GetComponent<Window>(ComponentIdFactory.Create(room, id));
+            return area.GetComponent<Window>(ComponentIdFactory.Create(area.Id, id));
         }
     }
 }

@@ -179,6 +179,10 @@
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
       <Name>HA4IoT.Networking</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT.PersonalAgent\HA4IoT.PersonalAgent.csproj">
+      <Project>{A22FDA3A-B331-4399-863B-5F1B8D24BFE9}</Project>
+      <Name>HA4IoT.PersonalAgent</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Sensors\HA4IoT.Sensors.csproj">
       <Project>{8892E736-CDD0-48EB-AD9E-A1C8AA230FD7}</Project>
       <Name>HA4IoT.Sensors</Name>

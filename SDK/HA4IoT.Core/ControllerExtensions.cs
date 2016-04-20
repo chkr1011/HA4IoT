@@ -8,7 +8,9 @@ namespace HA4IoT.Core
     {
         public static IArea CreateArea(this IController controller, Enum id)
         {
-            var area = new Area(AreaIdFactory.CreateIdFrom(id), controller);
+            if (controller == null) throw new ArgumentNullException(nameof(controller));
+
+            var area = new Area(AreaIdFactory.Create(id), controller);
             controller.AddArea(area);
 
             return area;
@@ -16,7 +18,9 @@ namespace HA4IoT.Core
 
         public static IArea GetArea(this IController controller, Enum id)
         {
-            return controller.GetArea(AreaIdFactory.CreateIdFrom(id));
+            if (controller == null) throw new ArgumentNullException(nameof(controller));
+
+            return controller.GetArea(AreaIdFactory.Create(id));
         }
     }
 }

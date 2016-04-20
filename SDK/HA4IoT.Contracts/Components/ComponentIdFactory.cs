@@ -7,9 +7,11 @@ namespace HA4IoT.Contracts.Components
     {
         public static readonly ComponentId EmptyId = new ComponentId("?");
 
-        public static ComponentId Create(IArea room, Enum id)
+        public static ComponentId Create(AreaId areaId, Enum id)
         {
-            return new ComponentId(room.Id + "." + id);
+            if (areaId == null) throw new ArgumentNullException(nameof(areaId));
+
+            return new ComponentId(areaId + "." + id);
         }
     }
 }

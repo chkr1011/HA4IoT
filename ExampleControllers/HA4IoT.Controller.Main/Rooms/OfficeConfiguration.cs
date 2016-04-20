@@ -10,6 +10,7 @@ using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
+using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.MotionDetectors;
@@ -58,7 +59,7 @@ namespace HA4IoT.Controller.Main.Rooms
             var hspe8 = CCToolsBoardController.CreateHSPE8OutputOnly(InstalledDevice.UpperFloorAndOfficeHSPE8, new I2CSlaveAddress(37));
             var input4 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input4);
             var input5 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input5);
-
+            
             const int SensorPin = 2;
 
             var i2cHardwareBridge = Controller.GetDevice<I2CHardwareBridge>();
@@ -163,6 +164,13 @@ namespace HA4IoT.Controller.Main.Rooms
             room.GetButton(Office.ButtonUpperLeft)
                 .GetPressedShortlyTrigger()
                 .Attach(light.GetSetStateAction(BinaryStateId.On));
+
+            var synonymService = Controller.GetService<SynonymService>();
+            synonymService.AddSynonymForComponent(Room.Office, Office.CombinedCeilingLights, "Licht");
+            synonymService.AddSynonymForComponent(Room.Office, Office.SocketRearLeftEdge, "Rotlicht", "Pufflicht", "Rot");
+
+            synonymService.AddSynonymForComponentState(deskOnlyStateId, "Schreibtisch");
+            synonymService.AddSynonymForComponentState(couchOnlyStateId, "Couch");
         }
     }
 }

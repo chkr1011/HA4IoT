@@ -8,22 +8,22 @@ namespace HA4IoT.Actuators.Sockets
 {
     public static class SocketExtensions
     {
-        public static IArea WithSocket(this IArea room, Enum id, IBinaryOutput output)
+        public static IArea WithSocket(this IArea area, Enum id, IBinaryOutput output)
         {
-            if (room == null) throw new ArgumentNullException(nameof(room));
+            if (area == null) throw new ArgumentNullException(nameof(area));
             if (output == null) throw new ArgumentNullException(nameof(output));
 
-            var socket = new Socket(ComponentIdFactory.Create(room, id), new PortBasedBinaryStateEndpoint(output));
-            room.AddComponent(socket);
+            var socket = new Socket(ComponentIdFactory.Create(area.Id, id), new PortBasedBinaryStateEndpoint(output));
+            area.AddComponent(socket);
 
-            return room;
+            return area;
         }
 
-        public static ISocket Socket(this IArea room, Enum id)
+        public static ISocket Socket(this IArea area, Enum id)
         {
-            if (room == null) throw new ArgumentNullException(nameof(room));
+            if (area == null) throw new ArgumentNullException(nameof(area));
 
-            return room.GetComponent<ISocket>(ComponentIdFactory.Create(room, id));
+            return area.GetComponent<ISocket>(ComponentIdFactory.Create(area.Id, id));
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
@@ -17,6 +18,8 @@ namespace HA4IoT.Contracts.Components
         IActuatorSettingsWrapper GeneralSettingsWrapper { get; }
 
         IComponentState GetState();
+
+        IList<IComponentState> GetSupportedStates();
 
         void HandleApiCommand(IApiContext apiContext);
 

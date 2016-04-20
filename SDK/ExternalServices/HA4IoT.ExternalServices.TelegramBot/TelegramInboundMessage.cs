@@ -1,0 +1,21 @@
+﻿using System;
+using HA4IoT.Contracts.PersonalAgent;
+
+namespace HA4IoT.ExternalServices.TelegramBot
+{
+    public class TelegramInboundMessage : MessageBase, IInboundMessage
+    {
+        public TelegramInboundMessage(DateTime timestamp, int chatId, string text)
+            : base(chatId, text)
+        {
+            Timestamp = timestamp;
+        }
+
+        public DateTime Timestamp { get; }
+
+        public TelegramOutboundMessage CreateResponse(string text)
+        {
+            return new TelegramOutboundMessage(ChatId, text);
+        }
+    }
+}

@@ -33,7 +33,7 @@ namespace HA4IoT.Sensors.TemperatureSensors
             return ((NumericSensorValue) GetState()).Value;
         }
 
-        protected override IList<IComponentState> GetSupportedStates()
+        public override IList<IComponentState> GetSupportedStates()
         {
             return new List<IComponentState>();
         }
