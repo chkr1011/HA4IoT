@@ -18,6 +18,10 @@ namespace HA4IoT.PersonalAgent
         public SynonymServiceStorage()
         {
             var rootPath = StoragePath.WithFilename("Services", "SynonymService");
+            if (!Directory.Exists(rootPath))
+            {
+                Directory.CreateDirectory(rootPath);
+            }
 
             _areaSynonymsFilename = Path.Combine(rootPath, "Areas.json");
             _componentSynonymsFilename = Path.Combine(rootPath, "Components.json");
@@ -68,7 +72,7 @@ namespace HA4IoT.PersonalAgent
         {
             if (synonyms == null) throw new ArgumentNullException(nameof(synonyms));
             
-            File.WriteAllText(_componentSynonymsFilename, ConvertComponentStateSynonymsToJsonArray(synonyms).Stringify());
+            File.WriteAllText(_componentStateSynonymsFilename, ConvertComponentStateSynonymsToJsonArray(synonyms).Stringify());
         }
 
         public JsonArray ConvertComponentStateSynonymsToJsonArray(Dictionary<IComponentState, HashSet<string>> synonyms)
@@ -92,6 +96,11 @@ namespace HA4IoT.PersonalAgent
         {
             if (target == null) throw new ArgumentNullException(nameof(target));
 
+            if (!File.Exists(_areaSynonymsFilename))
+            {
+                return;
+            }
+
             string fileContent = File.ReadAllText(_areaSynonymsFilename);
             JsonObject _source = JsonObject.Parse(fileContent);
 
@@ -108,7 +117,12 @@ namespace HA4IoT.PersonalAgent
         {
             if (target == null) throw new ArgumentNullException(nameof(target));
 
-            string fileContent = File.ReadAllText(_areaSynonymsFilename);
+            if (!File.Exists(_componentSynonymsFilename))
+            {
+                return;
+            }
+
+            string fileContent = File.ReadAllText(_componentSynonymsFilename);
             JsonObject _source = JsonObject.Parse(fileContent);
 
             foreach (var key in _source.Keys)

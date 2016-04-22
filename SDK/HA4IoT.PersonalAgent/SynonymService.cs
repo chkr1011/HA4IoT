@@ -21,8 +21,6 @@ namespace HA4IoT.PersonalAgent
         public SynonymService()
         {
             _storage = new SynonymServiceStorage();
-
-            RegisterDefaultComponentStateSynonyms();
         }
 
         public void LoadPersistedSynonyms()
@@ -115,7 +113,7 @@ namespace HA4IoT.PersonalAgent
                 _storage.ConvertComponentStateSynonymsToJsonArray(_componentStateSynonyms));
         }
 
-        private void RegisterDefaultComponentStateSynonyms()
+        public void RegisterDefaultComponentStateSynonyms()
         {
             AddSynonymsForComponentState(BinaryStateId.Off, "aus", "ausschalten", "ab", "abschalten", "stop", "stoppe", "halt", "anhalten", "off");
             AddSynonymsForComponentState(BinaryStateId.On, "an", "anschalten", "ein", "einschalten", "on");

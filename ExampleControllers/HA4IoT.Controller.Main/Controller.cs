@@ -39,6 +39,7 @@ namespace HA4IoT.Controller.Main
             try
             {
                 synonymService.LoadPersistedSynonyms();
+                synonymService.RegisterDefaultComponentStateSynonyms();
             }
             catch (Exception exception)
             {
