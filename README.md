@@ -1,4 +1,4 @@
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/MC_SplashScreen.png?raw=true" width="100%">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/develop/Documentation/Screens/1.12.0/SplashScreen.png?raw=true" width="100%">
 <img style="margin:25px" src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/Overview_4to3.png?raw=true" width="100%">
 
 HA4IoT (Home Automation for IoT) is the first SDK for Home Automation using Windows 10 IoT Core and a Raspberry Pi 2. It is a private real life award-winning project which covers many Home Automation purposes.
@@ -55,6 +55,9 @@ hackster.io (https://www.hackster.io/blog/win-10-winners)
 * Disable automatic light if another light is already active
 * Disable every actuator temporary
 * The project provides a powerful condition framework which allows creating of complex autoamtions using C#
+
+## Personal Agent
+Register a free bot for the messenger "Telegram" and let the bot control the home. Just tell him what he should do. The bot also supports giving status information like Weather, Window states, Sensor values etc. The bot will also send errors and warnings from the log.
 
 ## Quick start
 The software solution contains the project ``HA4IoT.Controller.Demo`` which can be used to start playing around with the SDK. The other projects ``HA4IoT.Controller.Main`` and ``HA4IoT.Controller.Main`` containing a full "real life" configuration which can be used as an example but will not work without the required hardware.
