@@ -166,11 +166,13 @@ namespace HA4IoT.Controller.Main.Rooms
                 .Attach(light.GetSetStateAction(BinaryStateId.On));
 
             var synonymService = Controller.GetService<SynonymService>();
-            synonymService.AddSynonymForComponent(Room.Office, Office.CombinedCeilingLights, "Licht");
-            synonymService.AddSynonymForComponent(Room.Office, Office.SocketRearLeftEdge, "Rotlicht", "Pufflicht", "Rot");
+            synonymService.AddSynonymsForArea(Room.Office, "Büro", "Arbeitszimmer");
 
-            synonymService.AddSynonymForComponentState(deskOnlyStateId, "Schreibtisch");
-            synonymService.AddSynonymForComponentState(couchOnlyStateId, "Couch");
+            synonymService.AddSynonymsForComponent(Room.Office, Office.CombinedCeilingLights, "Licht");
+            synonymService.AddSynonymsForComponent(Room.Office, Office.SocketRearLeftEdge, "Rotlicht", "Pufflicht", "Rot");
+
+            synonymService.AddSynonymsForComponentState(deskOnlyStateId, "Schreibtisch");
+            synonymService.AddSynonymsForComponentState(couchOnlyStateId, "Couch");            
         }
     }
 }

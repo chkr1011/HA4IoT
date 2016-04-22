@@ -1,10 +1,9 @@
 ﻿using System;
-using Windows.Data.Json;
 using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Tests.Mockups
 {
-    public class TestDaylightService : IDaylightService
+    public class TestDaylightService : ServiceBase, IDaylightService
     {
         public TestDaylightService()
         {
@@ -14,11 +13,6 @@ namespace HA4IoT.Tests.Mockups
 
         public TimeSpan Sunrise { get; set; }
         public TimeSpan Sunset { get; set; }
-
-        public JsonObject ExportStatusToJsonObject()
-        {
-            return new JsonObject();
-        }
 
         public TimeSpan GetSunrise()
         {

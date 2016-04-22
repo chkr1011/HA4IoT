@@ -13,7 +13,7 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.ExternalServices.OpenWeatherMap
 {
-    public class OpenWeatherMapWeatherService : IWeatherService, IDaylightService
+    public class OpenWeatherMapWeatherService : ServiceBase, IWeatherService, IDaylightService
     {
         private readonly string _cacheFilename = StoragePath.WithFilename("OpenWeatherMapCache.json");
 
@@ -72,14 +72,11 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             return _sunset;
         }
 
-        public JsonObject ExportStatusToJsonObject()
+        public override JsonObject ExportStatusToJsonObject()
         {
             var result = new JsonObject();
 
-            var configurationParser = new OpenWeatherMapConfigurationParser();
-            result.SetNamedString("uri", configurationParser.GetUri().ToString());
-
-            result.SetNamedValue("situation", _situation.ToJsonValue());
+            result.SetNamedString("situation", _situation.ToString());
             result.SetNamedNumber("temperature", _temperature);
             result.SetNamedNumber("humidity", _humidity);
 
@@ -91,10 +88,13 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
 
             return result;
         }
-
-        private void PersistWeatherData(string weatherData)
+        
+        public override void HandleApiRequest(IApiContext apiContext)
         {
-            File.WriteAllText(_cacheFilename, weatherData);
+            var configurationParser = new OpenWeatherMapConfigurationParser();
+
+            apiContext.Response = ExportStatusToJsonObject();
+            apiContext.Response.SetNamedString("Uri", configurationParser.GetUri().ToString());
         }
 
         public void SetStatus(WeatherSituation situation, float temperature, float humidity, TimeSpan sunrise, TimeSpan sunset)
@@ -105,6 +105,11 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
 
             _sunrise = sunrise;
             _sunset = sunset;
+        }
+
+        private void PersistWeatherData(string weatherData)
+        {
+            File.WriteAllText(_cacheFilename, weatherData);
         }
 
         private async Task FetchWeahterData()

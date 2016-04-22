@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using Windows.Storage.Streams;
@@ -13,7 +12,7 @@ using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.ExternalServices.Twitter
 {
-    public class TwitterClient : IService
+    public class TwitterClient : ServiceBase
     {
         private string _nonce;
         private string _timestamp;
@@ -57,20 +56,6 @@ namespace HA4IoT.ExternalServices.Twitter
             return new TweetAction(messageProvider, this);
         }
 
-        private string GetAuthorizationToken(string signature)
-        {
-            var values = new List<string>();
-            values.Add($"oauth_consumer_key=\"{Uri.EscapeDataString(ConsumerKey)}\"");
-            values.Add($"oauth_nonce=\"{_nonce}\"");
-            values.Add($"oauth_signature=\"{Uri.EscapeDataString(signature)}\"");
-            values.Add("oauth_signature_method=\"HMAC-SHA1\"");
-            values.Add($"oauth_timestamp=\"{_timestamp}\"");
-            values.Add($"oauth_token=\"{Uri.EscapeDataString(AccessToken)}\"");
-            values.Add("oauth_version=\"1.0\"");
-
-            return "OAuth " + string.Join(", ", values);
-        }
-
         private string GetSignatureForRequest(string message)
         {
             var parameters = new List<string>();
@@ -92,6 +77,20 @@ namespace HA4IoT.ExternalServices.Twitter
                 parametersString);
 
             return GenerateSignature(signingContent);
+        }
+
+        private string GetAuthorizationToken(string signature)
+        {
+            var values = new List<string>();
+            values.Add($"oauth_consumer_key=\"{Uri.EscapeDataString(ConsumerKey)}\"");
+            values.Add($"oauth_nonce=\"{_nonce}\"");
+            values.Add($"oauth_signature=\"{Uri.EscapeDataString(signature)}\"");
+            values.Add("oauth_signature_method=\"HMAC-SHA1\"");
+            values.Add($"oauth_timestamp=\"{_timestamp}\"");
+            values.Add($"oauth_token=\"{Uri.EscapeDataString(AccessToken)}\"");
+            values.Add("oauth_version=\"1.0\"");
+
+            return "OAuth " + string.Join(", ", values);
         }
 
         private string GetNonce()
@@ -119,11 +118,6 @@ namespace HA4IoT.ExternalServices.Twitter
             string signature = CryptographicBuffer.EncodeToBase64String(signatureBuffer);
 
             return signature;
-        }
-
-        public JsonObject ExportStatusToJsonObject()
-        {
-            return new JsonObject();
         }
     }
 }

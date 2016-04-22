@@ -205,6 +205,7 @@
     <Compile Include="Networking\IImportFromJsonValue.cs" />
     <Compile Include="Services\IDaylightService.cs" />
     <Compile Include="Services\IService.cs" />
+    <Compile Include="Services\ServiceBase.cs" />
     <Compile Include="Triggers\ITrigger.cs" />
     <Compile Include="Triggers\TriggeredEventArgs.cs" />
     <Compile Include="Services\WeatherService\IWeatherService.cs" />

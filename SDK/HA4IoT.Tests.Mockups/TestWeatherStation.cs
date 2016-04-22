@@ -1,13 +1,13 @@
 ﻿using System;
-using Windows.Data.Json;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.WeatherService;
 
 namespace HA4IoT.Tests.Mockups
 {
-    public class TestWeatherStation : IWeatherService
+    public class TestWeatherStation : ServiceBase, IWeatherService
     {
         private readonly IHomeAutomationTimer _timer;
 
@@ -30,11 +30,6 @@ namespace HA4IoT.Tests.Mockups
         }
 
         public DeviceId Id { get; }
-
-        public JsonObject ExportStatusToJsonObject()
-        {
-            throw new NotSupportedException();
-        }
 
         public TimeSpan Sunrise { get; set; }
         public TimeSpan Sunset { get; set; }

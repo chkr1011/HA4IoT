@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.PersonalAgent;
 
@@ -15,6 +16,8 @@ namespace HA4IoT.PersonalAgent
             OriginalMessage = originalMessage;
 
             Words = new HashSet<string>();
+
+            IdentifiedAreaIds = new HashSet<AreaId>();
             IdentifiedComponentIds = new HashSet<ComponentId>();
             IdentifiedComponentStates = new HashSet<IComponentState>();
         }
@@ -26,6 +29,8 @@ namespace HA4IoT.PersonalAgent
         public HashSet<ComponentId> IdentifiedComponentIds { get; } 
 
         public HashSet<IComponentState> IdentifiedComponentStates { get; }
+
+        public HashSet<AreaId> IdentifiedAreaIds { get; }
 
         public Match GetPatternMatch(string pattern)
         {

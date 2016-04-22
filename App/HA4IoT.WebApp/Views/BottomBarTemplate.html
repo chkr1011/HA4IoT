@@ -1,7 +1,7 @@
 ﻿<div class="row panel panel-default" ng-class="{'panel-primary': haCtrl.activePanel=='bottomBar'}" id="bottomBar">
     <div class="panel-heading pointer" ng-click="haCtrl.setActivePanel('bottomBar')">
         <h1 class="panel-title">
-            <span class="glyphicon glyphicon-signal" 
+            <span class="glyphicon glyphicon-signal"
                   aria-hidden="true"
                   ng-class="{'text-danger': haCtrl.errorMessage!=null, 'text-success': haCtrl.errorMessage==null}"></span>
         </h1>
@@ -9,9 +9,7 @@
     <table class="table table-striped" ng-show="haCtrl.activePanel=='bottomBar'">
         <tbody>
             <tr>
-                <td>
-                    <h4>HA4IoT</h4>
-                </td>
+                <td><h4>HA4IoT</h4></td>
                 <td class="rightTextAligned" style="font-family: monospace; vertical-align: middle;">
                     (c) Christian Kratky
                 </td>
@@ -33,12 +31,13 @@
             </tr>
 
             <tr>
-                <td>
-                    App version
-                </td>
-                <td class="rightTextAligned">
-                    {{haCtrl.version}}
-                </td>
+                <td>App version</td>
+                <td class="rightTextAligned">{{haCtrl.version}}</td>
+            </tr>
+
+            <tr>
+                <td>STAGING-Version</td>
+                <td class="rightTextAligned"><a href="STAGING/Index.html" target="_blank">open</a></td>
             </tr>
         </tbody>
     </table>

@@ -92,6 +92,11 @@ namespace HA4IoT.Core
             return _components.GetAll();
         }
 
+        public bool GetContainsComponent(ComponentId componentId)
+        {
+            return _components.Contains(componentId);
+        }
+
         public TComponent GetComponent<TComponent>(ComponentId id) where TComponent : IComponent
         {
             return _components.Get<TComponent>(id);
@@ -316,6 +321,12 @@ namespace HA4IoT.Core
         private void ExposeToApi()
         {
             new ControllerApiDispatcher(this).ExposeToApi();
+
+            foreach (var service in GetServices())
+            {
+                ApiController.RouteRequest($"service/{service.GetType().Name}", service.HandleApiRequest);
+                ApiController.RouteCommand($"service/{service.GetType().Name}", service.HandleApiCommand);
+            }
 
             foreach (var device in GetDevices())
             {

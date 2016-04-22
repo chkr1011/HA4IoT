@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.PersonalAgent;
@@ -27,10 +27,12 @@ namespace HA4IoT.PersonalAgent
             _currentContext = new MessageContext(message);
 
             IdentifyWords();
+
+            IdentifyAreas();
             IdentifyComponents();
             IdentifyComponentStates();
 
-            Log.Verbose($"Original message = {_currentContext.OriginalMessage.Text}; Identified components = {_currentContext.IdentifiedComponentIds.Count}; Identified component states = {_currentContext.IdentifiedComponentStates.Count}");
+            Log.Verbose($"Original message = {_currentContext.OriginalMessage.Text}; Identified areas = {_currentContext.IdentifiedAreaIds.Count}; Identified components = {_currentContext.IdentifiedComponentIds.Count}; Identified component states = {_currentContext.IdentifiedComponentStates.Count}");
 
             return _currentContext;
         }
@@ -44,11 +46,22 @@ namespace HA4IoT.PersonalAgent
             }
         }
 
+        private void IdentifyAreas()
+        {
+            foreach (string word in _currentContext.Words)
+            {
+                foreach (AreaId areaId in _synonymService.GetAreaIdsBySynonym(word))
+                {
+                    _currentContext.IdentifiedAreaIds.Add(areaId);
+                }
+            }
+        }
+
         private void IdentifyComponents()
         {
             foreach (string word in _currentContext.Words)
             {
-                foreach (ComponentId componentId in _synonymService.GetComponentsBySynonym(word))
+                foreach (ComponentId componentId in _synonymService.GetComponentIdsBySynonym(word))
                 {
                     _currentContext.IdentifiedComponentIds.Add(componentId);
                 }

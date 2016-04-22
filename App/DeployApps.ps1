@@ -37,7 +37,7 @@ function SelectIP
     Write-Host "----------------";
 	Write-Host "c - <custom>";
 	
-	$choice = Read-Host
+	$choice = [Console]::ReadKey($true).KeyChar;
 
 	switch($choice)
 	{
@@ -85,7 +85,7 @@ function GetIsStaging
 	Write-Host "0 - Live";
 	Write-Host "1 - Staging";
 	
-	$choice = Read-Host
+	$choice = [Console]::ReadKey($true).KeyChar;
 	
 	if ($choice -eq 0)
 	{

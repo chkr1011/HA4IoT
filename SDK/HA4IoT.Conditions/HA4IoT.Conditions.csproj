@@ -107,7 +107,9 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActionExtensions.cs" />
     <Compile Include="Condition.cs" />
+    <Compile Include="ConditionalAction.cs" />
     <Compile Include="ConditionRelation.cs" />
     <Compile Include="ConditionState.cs" />
     <Compile Include="ConditionsValidator.cs" />

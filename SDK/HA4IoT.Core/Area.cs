@@ -57,6 +57,13 @@ namespace HA4IoT.Core
             return _components.GetAll();
         }
 
+        public bool GetContainsComponent(ComponentId componentId)
+        {
+            if (componentId == null) throw new ArgumentNullException(nameof(componentId));
+
+            return _components.Contains(componentId);
+        }
+
         public TComponent GetComponent<TComponent>(ComponentId id) where TComponent : IComponent
         {
             return _components.Get<TComponent>(id);

@@ -115,7 +115,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actions\HomeAutomationAction.cs" />
-    <Compile Include="Actions\HomeAutomationActionExtensions.cs" />
+    <Compile Include="Actions\ActionExtensions.cs" />
     <Compile Include="ActuatorBase.cs" />
     <Compile Include="ActuatorExtensions.cs" />
     <Compile Include="BinaryStateActuators\CustomBinaryStateActuator.cs" />

@@ -14,5 +14,7 @@ namespace HA4IoT.Contracts.Core
         IList<TComponent> GetComponents<TComponent>() where TComponent : IComponent;
 
         IList<IComponent> GetComponents();
+
+        bool GetContainsComponent(ComponentId componentId);
     }
 }

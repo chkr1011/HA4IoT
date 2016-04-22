@@ -1,84 +1,96 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Core;
+using HA4IoT.Networking;
 
 namespace HA4IoT.PersonalAgent
 {
-    public class SynonymService : IService
+    public class SynonymService : ServiceBase
     {
-        private readonly IApiController _apiController;
-        private readonly Dictionary<IComponentState, HashSet<string>> _componentStateSynonyms = new Dictionary<IComponentState, HashSet<string>>(); 
+        private readonly Dictionary<AreaId, HashSet<string>> _areaSynonyms = new Dictionary<AreaId, HashSet<string>>();
         private readonly Dictionary<ComponentId, HashSet<string>> _componentSynonyms = new Dictionary<ComponentId, HashSet<string>>();
+        private readonly Dictionary<IComponentState, HashSet<string>> _componentStateSynonyms = new Dictionary<IComponentState, HashSet<string>>();
+        private readonly SynonymServiceStorage _storage;
 
-        public SynonymService(IApiController apiController)
+        public SynonymService()
         {
-            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
-
-            _apiController = apiController;
+            _storage = new SynonymServiceStorage();
 
             RegisterDefaultComponentStateSynonyms();
         }
 
-        public void AddSynonymForComponent(Enum areaId, Enum componentId, params string[] synonyms)
+        public void LoadPersistedSynonyms()
+        {
+            _storage.LoadAreaSynonymsTo(_areaSynonyms);
+            _storage.LoadComponentSynonymsTo(_componentSynonyms);
+            //_storage.Load
+        }
+
+        public void AddSynonymsForComponent(Enum areaId, Enum componentId, params string[] synonyms)
         {
             if (synonyms == null) throw new ArgumentNullException(nameof(synonyms));
             
-            AddSynonymForComponent(AreaIdFactory.Create(areaId), componentId, synonyms);
+            AddSynonymsForComponent(AreaIdFactory.Create(areaId), componentId, synonyms);
         }
 
-        public void AddSynonymForComponent(AreaId areaId, Enum componentId, params string[] synonyms)
+        public void AddSynonymsForComponent(AreaId areaId, Enum componentId, params string[] synonyms)
         {
             if (componentId == null) throw new ArgumentNullException(nameof(componentId));
             if (synonyms == null) throw new ArgumentNullException(nameof(synonyms));
 
-            ComponentId id = ComponentIdFactory.Create(areaId, componentId);
-            AddSynonymForComponent(id, synonyms);
+            AddSynonymsForComponent(ComponentIdFactory.Create(areaId, componentId), synonyms);
         }
 
-        public void AddSynonymForComponent(ComponentId componentId, params string[] synonyms)
+        public void AddSynonymsForComponent(ComponentId componentId, params string[] synonyms)
         {
             if (componentId == null) throw new ArgumentNullException(nameof(componentId));
             if (synonyms == null) throw new ArgumentNullException(nameof(synonyms));
 
-            HashSet<string> existingSynonyms;
-            if (!_componentSynonyms.TryGetValue(componentId, out existingSynonyms))
-            {
-                existingSynonyms = new HashSet<string>();
-                _componentSynonyms.Add(componentId, existingSynonyms);
-            }
-
-            foreach (string synonym in synonyms)
-            {
-                existingSynonyms.Add(synonym);
-            }
+            AddSynonyms(_componentSynonyms, componentId, synonyms);
+            _storage.PersistComponentSynonyms(_componentSynonyms);
         }
 
-        public void AddSynonymForComponentState(IComponentState componentState, params string[] synonyms)
+        public void AddSynonymsForComponentState(IComponentState componentState, params string[] synonyms)
         {
             if (componentState == null) throw new ArgumentNullException(nameof(componentState));
             if (synonyms == null) throw new ArgumentNullException(nameof(synonyms));
 
-            HashSet<string> existingSynonyms;
-            if (!_componentStateSynonyms.TryGetValue(componentState, out existingSynonyms))
-            {
-                existingSynonyms = new HashSet<string>();
-                _componentStateSynonyms.Add(componentState, existingSynonyms);
-            }
-
-            foreach (string synonym in synonyms)
-            {
-                existingSynonyms.Add(synonym);
-            }
+            AddSynonyms(_componentStateSynonyms, componentState, synonyms);
+            _storage.PersistComponentStateSynonyms(_componentStateSynonyms);
         }
 
-        public IList<ComponentId> GetComponentsBySynonym(string synonym)
+        public void AddSynonymsForArea(Enum areaId, params string[] synonyms)
+        {
+            if (areaId == null) throw new ArgumentNullException(nameof(areaId));
+            if (synonyms == null) throw new ArgumentNullException(nameof(synonyms));
+
+            AddSynonyms(_areaSynonyms, AreaIdFactory.Create(areaId), synonyms);
+            _storage.PersistAreaSynonyms(_areaSynonyms);
+        }
+
+        public void AddSynonymsForArea(AreaId areaId, params string[] synonyms)
+        {
+            if (areaId == null) throw new ArgumentNullException(nameof(areaId));
+            if (synonyms == null) throw new ArgumentNullException(nameof(synonyms));
+
+            AddSynonyms(_areaSynonyms, areaId, synonyms);
+            _storage.PersistAreaSynonyms(_areaSynonyms);
+        }
+
+        public IList<AreaId> GetAreaIdsBySynonym(string synonym)
+        {
+            if (synonym == null) throw new ArgumentNullException(nameof(synonym));
+
+            return _areaSynonyms.Where(i => i.Value.Any(s => s.Equals(synonym, StringComparison.CurrentCultureIgnoreCase))).Select(i => i.Key).ToList();
+        }
+
+        public IList<ComponentId> GetComponentIdsBySynonym(string synonym)
         {
             if (synonym == null) throw new ArgumentNullException(nameof(synonym));
 
@@ -92,19 +104,39 @@ namespace HA4IoT.PersonalAgent
             return _componentStateSynonyms.Where(i => i.Value.Any(s => s.Equals(synonym, StringComparison.CurrentCultureIgnoreCase))).Select(i => i.Key).ToList();
         }
 
-        private void RegisterDefaultComponentStateSynonyms()
+        public override void HandleApiRequest(IApiContext apiContext)
         {
-            AddSynonymForComponentState(BinaryStateId.Off, "aus", "ab", "stop", "stoppe", "halt", "off");
-            AddSynonymForComponentState(BinaryStateId.On, "an", "ein", "go", "on");
+            apiContext.Response.SetNamedObject("AreaSynonyms", _storage.ConvertAreaSynonymsToJsonObject(_areaSynonyms));
 
-            AddSynonymForComponentState(RollerShutterStateId.MovingUp, "rauf", "hoch", "up");
+            apiContext.Response.SetNamedObject("ComponentSynonyms",
+                _storage.ConvertComponentSynonymsToJsonObject(_componentSynonyms));
 
-            AddSynonymForComponentState(RollerShutterStateId.MovingDown, "runter", "herunter", "down");            
+            apiContext.Response.SetNamedArray("ComponentStateSynonyms",
+                _storage.ConvertComponentStateSynonymsToJsonArray(_componentStateSynonyms));
         }
 
-        public JsonObject ExportStatusToJsonObject()
+        private void RegisterDefaultComponentStateSynonyms()
         {
-            return new JsonObject();
+            AddSynonymsForComponentState(BinaryStateId.Off, "aus", "ausschalten", "ab", "abschalten", "stop", "stoppe", "halt", "anhalten", "off");
+            AddSynonymsForComponentState(BinaryStateId.On, "an", "anschalten", "ein", "einschalten", "on");
+
+            AddSynonymsForComponentState(RollerShutterStateId.MovingUp, "rauf", "herauf", "hoch", "oben", "öffne", "öffnen", "up");
+            AddSynonymsForComponentState(RollerShutterStateId.MovingDown, "runter", "herunter", "unten", "schließe", "schließen", "down");            
+        }
+
+        private void AddSynonyms<TValue>(IDictionary<TValue, HashSet<string>> target, TValue value, params string[] synonyms)
+        {
+            HashSet<string> existingSynonyms;
+            if (!target.TryGetValue(value, out existingSynonyms))
+            {
+                existingSynonyms = new HashSet<string>();
+                target.Add(value, existingSynonyms);
+            }
+
+            foreach (string synonym in synonyms)
+            {
+                existingSynonyms.Add(synonym);
+            }
         }
     }
 }
