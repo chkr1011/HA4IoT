@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.PersonalAgent;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Networking;
 using HttpClient = System.Net.Http.HttpClient;
@@ -24,6 +25,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
         public HashSet<int> Administrators { get; } = new HashSet<int>();
         public HashSet<int> ChatWhitelist { get; } = new HashSet<int>();
+        public bool AllowAllClients { get; set; }
 
         public async Task TrySendMessageToAdministratorsAsync(string text)
         {
@@ -137,9 +139,13 @@ namespace HA4IoT.ExternalServices.TelegramBot
         {
             TelegramInboundMessage inboundMessage = ConvertJsonMessageToInboundMessage(message);
 
-            if (!ChatWhitelist.Contains(inboundMessage.ChatId))
+            if (!AllowAllClients && !ChatWhitelist.Contains(inboundMessage.ChatId))
             {
                 await TrySendMessageAsync(inboundMessage.CreateResponse("Not authorized!"));
+
+                await
+                    TrySendMessageToAdministratorsAsync(
+                        $"{Emoji.WarningSign} A none whitelisted client ({inboundMessage.ChatId}) has sent a message: '{inboundMessage.Text}'");
             }
             else
             {

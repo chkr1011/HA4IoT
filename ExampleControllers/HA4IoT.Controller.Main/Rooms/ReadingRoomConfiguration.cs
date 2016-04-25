@@ -9,6 +9,7 @@ using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
+using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.TemperatureSensors;
@@ -69,6 +70,8 @@ namespace HA4IoT.Controller.Main.Rooms
             room.SetupRollerShutterAutomation().WithRollerShutters(room.GetRollerShutter(ReadingRoom.RollerShutter));
             room.GetRollerShutter(ReadingRoom.RollerShutter)
                 .ConnectWith(room.GetButton(ReadingRoom.RollerShutterButtonUp), room.GetButton(ReadingRoom.RollerShutterButtonDown));
+
+            Controller.GetService<SynonymService>().AddSynonymsForArea(Room.ReadingRoom, "Lesezimmer", "Gästezimmer", "ReadingRoom");
         }
     }
 }

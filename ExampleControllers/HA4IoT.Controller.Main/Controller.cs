@@ -34,24 +34,22 @@ namespace HA4IoT.Controller.Main
             AddDevice(ccToolsBoardController);
             AddDevice(new I2CHardwareBridge(new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer));
             AddDevice(SetupRemoteSwitchController());
+            
+            RegisterService(new SynonymService());
+            RegisterService(new OpenWeatherMapWeatherService(Timer, ApiController));
 
-            var synonymService = new SynonymService();
+            SetupTelegramBot();
+            SetupTwitterClient();
+
             try
             {
-                synonymService.LoadPersistedSynonyms();
-                synonymService.RegisterDefaultComponentStateSynonyms();
+                GetService<SynonymService>().LoadPersistedSynonyms();
             }
             catch (Exception exception)
             {
                 Log.Error(exception, "Error while loading persisted synonyms.");
             }
-
-            RegisterService(synonymService);
-            RegisterService(new OpenWeatherMapWeatherService(Timer, ApiController));
-
-            SetupTwitterClient();
-            SetupTelegramBot();
-
+            
             ccToolsBoardController.CreateHSPE16InputOnly(InstalledDevice.Input0, new I2CSlaveAddress(42));
             ccToolsBoardController.CreateHSPE16InputOnly(InstalledDevice.Input1, new I2CSlaveAddress(43));
             ccToolsBoardController.CreateHSPE16InputOnly(InstalledDevice.Input2, new I2CSlaveAddress(47));
@@ -69,6 +67,8 @@ namespace HA4IoT.Controller.Main
             new LowerBathroomConfiguration(this).Setup();
             new StoreroomConfiguration(this).Setup();
             new LivingRoomConfiguration(this).Setup();
+
+            GetService<SynonymService>().RegisterDefaultComponentStateSynonyms(this);
 
             InitializeAzureCloudApiEndpoint();
 
@@ -100,26 +100,26 @@ namespace HA4IoT.Controller.Main
             };
 
             Task.Run(async () => await telegramBot.TrySendMessageToAdministratorsAsync($"{Emoji.Bell} Das System ist gestartet."));
-            telegramBot.MessageReceived += HandleTelegramBotMessage;
+            telegramBot.MessageReceived += async (s, e) =>
+            {
+                var messageProcessor = new PersonalAgentMessageProcessor(this);
+                messageProcessor.ProcessMessage(e.Message);
 
+                await e.SendResponse(messageProcessor.Answer);
+            };
+            
             RegisterService(telegramBot);
         }
 
         private void SetupTwitterClient()
         {
             TwitterClient twitterClient;
-            if (TwitterClientFactory.TryCreateFromDefaultConfigurationFile(out twitterClient))
+            if (!TwitterClientFactory.TryCreateFromDefaultConfigurationFile(out twitterClient))
             {
-                RegisterService(twitterClient);
+                return;
             }
-        }
 
-        private async void HandleTelegramBotMessage(object sender, TelegramBotMessageReceivedEventArgs e)
-        {
-            var messageProcessor = new PersonalAgentMessageProcessor(this);
-            messageProcessor.ProcessMessage(e.Message);
-
-            await e.SendResponse(messageProcessor.Answer);
+            RegisterService(twitterClient);
         }
 
         private RemoteSocketController SetupRemoteSwitchController()

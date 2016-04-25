@@ -11,6 +11,7 @@ using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
+using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Sensors.TemperatureSensors;
@@ -76,6 +77,8 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithSlowDuration(TimeSpan.FromMinutes(8))
                 .WithFastDuration(TimeSpan.FromMinutes(12))
                 .WithActuator(room.GetStateMachine(UpperBathroom.Fan));
+
+            Controller.GetService<SynonymService>().AddSynonymsForArea(Room.UpperBathroom, "BadOben", "UpperBathroom");
         }
 
         private void SetupFan(StateMachine stateMachine, IArea room, HSREL5 hsrel5)

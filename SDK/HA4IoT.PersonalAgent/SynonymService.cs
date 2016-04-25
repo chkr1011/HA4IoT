@@ -5,6 +5,8 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Core;
 using HA4IoT.Networking;
@@ -113,13 +115,30 @@ namespace HA4IoT.PersonalAgent
                 _storage.ConvertComponentStateSynonymsToJsonArray(_componentStateSynonyms));
         }
 
-        public void RegisterDefaultComponentStateSynonyms()
+        public void RegisterDefaultComponentStateSynonyms(IController controller)
         {
+            if (controller == null) throw new ArgumentNullException(nameof(controller));
+
             AddSynonymsForComponentState(BinaryStateId.Off, "aus", "ausschalten", "ab", "abschalten", "stop", "stoppe", "halt", "anhalten", "off");
             AddSynonymsForComponentState(BinaryStateId.On, "an", "anschalten", "ein", "einschalten", "on");
 
             AddSynonymsForComponentState(RollerShutterStateId.MovingUp, "rauf", "herauf", "hoch", "oben", "öffne", "öffnen", "up");
-            AddSynonymsForComponentState(RollerShutterStateId.MovingDown, "runter", "herunter", "unten", "schließe", "schließen", "down");            
+            AddSynonymsForComponentState(RollerShutterStateId.MovingDown, "runter", "herunter", "unten", "schließe", "schließen", "down");
+
+            foreach (var temperatureSensor in controller.GetComponents<ITemperatureSensor>())
+            {
+                AddSynonymsForComponent(temperatureSensor.Id, "Temperatur", "warm", "kalt", "temperature");
+            }
+
+            foreach (var humiditySensor in controller.GetComponents<IHumiditySensor>())
+            {
+                AddSynonymsForComponent(humiditySensor.Id, "feucht", "Feuchtigkeit", "trocken", "humidity");
+            }
+
+            foreach (var rollerShutter in controller.GetComponents<IRollerShutter>())
+            {
+                AddSynonymsForComponent(rollerShutter.Id, "Rollo", "Rollade", "trocken");
+            }
         }
 
         private void AddSynonyms<TValue>(IDictionary<TValue, HashSet<string>> target, TValue value, params string[] synonyms)

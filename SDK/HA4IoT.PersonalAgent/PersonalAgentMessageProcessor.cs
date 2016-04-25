@@ -40,12 +40,53 @@ namespace HA4IoT.PersonalAgent
             try
             {
                 Answer = ProcessMessage();
+
+                if (_messageContext.GetContainsWord("debug"))
+                {
+                    Answer += Environment.NewLine + Environment.NewLine + GenerateDebugOutput();
+                }
             }
             catch (Exception exception)
             {
                 Answer = $"{Emoji.Scream} Mist! Da ist etwas total schief gelaufen! Bitte stelle mir nie wieder solche Fragen!";
                 Log.Error(exception, $"Error while processing message '{message.Text}'.");              
             }
+        }
+
+        private string GenerateDebugOutput()
+        {
+            var debugOutput = new StringBuilder();
+
+            debugOutput.AppendLine("<b>DEBUG:</b>");
+
+            debugOutput.AppendLine("<b>[Original message]</b>");
+            debugOutput.AppendLine(_messageContext.OriginalMessage.Text);
+
+            int counter = 1;
+            debugOutput.AppendLine("<b>[Identified areas]</b>");
+            foreach (var areaId in _messageContext.IdentifiedAreaIds)
+            {
+                debugOutput.AppendLine($"{counter} - {areaId}");
+                counter++;
+            }
+
+            counter = 1;
+            debugOutput.AppendLine("<b>[Identified components]</b>");
+            foreach (var componentId in _messageContext.IdentifiedComponentIds)
+            {
+                debugOutput.AppendLine($"{counter} - {componentId}");
+                counter++;
+            }
+
+            counter = 1;
+            debugOutput.AppendLine("<b>[Identified component states]</b>");
+            foreach (var componentState in _messageContext.IdentifiedComponentStates)
+            {
+                debugOutput.AppendLine($"{counter} - {componentState}");
+                counter ++;
+            }
+
+            return debugOutput.ToString();
         }
 
         private string ProcessMessage()
@@ -57,7 +98,7 @@ namespace HA4IoT.PersonalAgent
 
             if (_messageContext.GetPatternMatch("Danke").Success)
             {
-                return $"{Emoji.Wink} Gerne.";                
+                return $"{Emoji.Wink} Habe ich doch gerne gemacht.";                
             }
 
             if (_messageContext.GetPatternMatch("Wetter").Success)
@@ -74,6 +115,11 @@ namespace HA4IoT.PersonalAgent
 
             if (!_filteredComponentIds.Any())
             {
+                if (_messageContext.IdentifiedComponentIds.Count > 0)
+                {
+                    return $"{Emoji.Confused} Mit so vielen Anfragen kann ich nicht umgehen. Bitte nenne mir nur eine eindeutige Komponente.";
+                }
+
                 return $"{Emoji.Confused} Du musst mir schon einen Sensor oder Aktor nennen.";
             }
             

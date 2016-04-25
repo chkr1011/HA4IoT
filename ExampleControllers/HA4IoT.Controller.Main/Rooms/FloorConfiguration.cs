@@ -15,6 +15,7 @@ using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
+using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.MotionDetectors;
@@ -130,6 +131,8 @@ namespace HA4IoT.Controller.Main.Rooms
             SetupStairsLamps(room, Controller.GetService<IDaylightService>(), hspe16FloorAndLowerBathroom);
             
             room.SetupRollerShutterAutomation().WithRollerShutters(room.GetRollerShutter(Floor.StairwayRollerShutter));
+
+            Controller.GetService<SynonymService>().AddSynonymsForArea(Room.Floor, "Flur", "Floor");
         }
 
         private void SetupStairsCeilingLamps(IArea floor, HSPE8OutputOnly hspe8UpperFloor)

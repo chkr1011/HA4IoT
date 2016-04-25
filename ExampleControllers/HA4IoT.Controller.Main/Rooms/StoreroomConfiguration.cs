@@ -9,6 +9,7 @@ using HA4IoT.Contracts.Services;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
+using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors.MotionDetectors;
 
 namespace HA4IoT.Controller.Main.Rooms
@@ -70,6 +71,8 @@ namespace HA4IoT.Controller.Main.Rooms
             _catLitterBoxTwitterSender =
                 new CatLitterBoxTwitterSender(Controller.Timer).WithTrigger(
                     storeroom.GetMotionDetector(Storeroom.MotionDetectorCatLitterBox));
+
+            Controller.GetService<SynonymService>().AddSynonymsForArea(Room.Storeroom, "Abstellkammer", "Storeroom");
         }
     }
 }

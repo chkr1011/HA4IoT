@@ -11,6 +11,7 @@ using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
+using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.MotionDetectors;
@@ -75,6 +76,8 @@ namespace HA4IoT.Controller.Main.Rooms
             room.SetupTurnOnAndOffAutomation()
                 .WithTrigger(room.GetMotionDetector(LowerBathroom.MotionDetector))
                 .WithTarget(room.GetActuator(LowerBathroom.CombinedLights));
+
+            Controller.GetService<SynonymService>().AddSynonymsForArea(Room.LowerBathroom, "BadUnten", "LowerBathroom");
         }
 
         private void StartBathode(IArea bathroom)

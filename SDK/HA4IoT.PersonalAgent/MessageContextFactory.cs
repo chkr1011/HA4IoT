@@ -1,7 +1,6 @@
 ﻿using System;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.PersonalAgent;
 
 namespace HA4IoT.PersonalAgent
@@ -32,14 +31,17 @@ namespace HA4IoT.PersonalAgent
             IdentifyComponents();
             IdentifyComponentStates();
 
-            Log.Verbose($"Original message = {_currentContext.OriginalMessage.Text}; Identified areas = {_currentContext.IdentifiedAreaIds.Count}; Identified components = {_currentContext.IdentifiedComponentIds.Count}; Identified component states = {_currentContext.IdentifiedComponentStates.Count}");
-
             return _currentContext;
         }
 
         private void IdentifyWords()
         {
-            string[] words = _currentContext.OriginalMessage.Text.Split(WordSeparator, StringSplitOptions.RemoveEmptyEntries);
+            string phrase = _currentContext.OriginalMessage.Text;
+            phrase = phrase.Replace("?", string.Empty);
+            phrase = phrase.Replace("!", string.Empty);
+            phrase = phrase.Replace(".", string.Empty);
+            
+            string[] words = phrase.Split(WordSeparator, StringSplitOptions.RemoveEmptyEntries);
             foreach (var word in words)
             {
                 _currentContext.Words.Add(word);

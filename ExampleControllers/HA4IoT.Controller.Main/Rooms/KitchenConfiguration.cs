@@ -12,6 +12,7 @@ using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
+using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.MotionDetectors;
@@ -101,6 +102,8 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTrigger(room.GetMotionDetector(Kitchen.MotionDetector))
                 .WithTarget(room.GetActuator(Kitchen.CombinedAutomaticLights))
                 .WithEnabledAtNight(Controller.GetService<IDaylightService>());
+
+            Controller.GetService<SynonymService>().AddSynonymsForArea(Room.Kitchen, "Küche", "Kitchen");
         }
     }
 }

@@ -140,7 +140,7 @@ namespace HA4IoT.Controller.Demo
             ////    }
             ////}
             ////else if (e.Message.GetIsPatternMatch("Licht.*an"))
-            ////{
+            ////
             ////    var light = GetComponent<IActuator>(new ComponentId("ExampleRoom.Lamp1"));
             ////    light.SetState(BinaryStateId.On);
 

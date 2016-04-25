@@ -6,7 +6,6 @@ using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Automations;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
@@ -15,7 +14,7 @@ using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
-using HA4IoT.Hardware.RemoteSwitch;
+using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.MotionDetectors;
@@ -158,6 +157,8 @@ namespace HA4IoT.Controller.Main.Rooms
             room.GetButton(Bedroom.ButtonBedRightInner).WithPressedLongAction(() => room.GetStateMachine(Bedroom.CombinedCeilingLights).SetNextState());
             room.GetButton(Bedroom.ButtonBedRightOuter).WithPressedShortlyAction(() => room.GetStateMachine(Bedroom.Fan).SetNextState());
             room.GetButton(Bedroom.ButtonBedRightOuter).WithPressedLongAction(() => room.GetStateMachine(Bedroom.Fan).TryTurnOff());
+
+            Controller.GetService<SynonymService>().AddSynonymsForArea(Room.Bedroom, "Schlafzimmer", "Bedroom");
         }
 
         private void SetupFan(StateMachine fan, IArea room, HSREL8 hsrel8)

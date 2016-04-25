@@ -42,6 +42,11 @@ namespace HA4IoT.ExternalServices.TelegramBot
                     telegramBot.ChatWhitelist.Add((int)chatWhitelistItem.GetNumber());
                 }
 
+                if (json.GetNamedBoolean("AllowAllClients", false))
+                {
+                    telegramBot.AllowAllClients = true;
+                }
+
                 telegramBot.StartWaitForMessages();
 
                 return true;
