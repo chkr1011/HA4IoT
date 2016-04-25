@@ -41,15 +41,8 @@ namespace HA4IoT.Controller.Main
             SetupTelegramBot();
             SetupTwitterClient();
 
-            try
-            {
-                GetService<SynonymService>().LoadPersistedSynonyms();
-            }
-            catch (Exception exception)
-            {
-                Log.Error(exception, "Error while loading persisted synonyms.");
-            }
-            
+            GetService<SynonymService>().TryLoadPersistedSynonyms();
+
             ccToolsBoardController.CreateHSPE16InputOnly(InstalledDevice.Input0, new I2CSlaveAddress(42));
             ccToolsBoardController.CreateHSPE16InputOnly(InstalledDevice.Input1, new I2CSlaveAddress(43));
             ccToolsBoardController.CreateHSPE16InputOnly(InstalledDevice.Input2, new I2CSlaveAddress(47));

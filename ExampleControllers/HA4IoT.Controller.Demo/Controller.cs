@@ -14,6 +14,8 @@ using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.PersonalAgent;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Triggers;
 using HA4IoT.Core;
@@ -26,6 +28,7 @@ using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.Hardware.Pi2;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
+using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.MotionDetectors;
@@ -54,9 +57,13 @@ namespace HA4IoT.Controller.Demo
             // Setup the remote switch 433Mhz sender which is attached to the I2C bus (Arduino Nano).
             AddDevice(new I2CHardwareBridge(new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer));
 
+            RegisterService(new SynonymService());
             RegisterService(new OpenWeatherMapWeatherService(Timer, ApiController));
             
             SetupRoom();
+
+            GetService<SynonymService>().TryLoadPersistedSynonyms();
+            GetService<SynonymService>().RegisterDefaultComponentStateSynonyms(this);
 
             Timer.Tick += (s, e) =>
             {
@@ -107,56 +114,43 @@ namespace HA4IoT.Controller.Demo
                 .WithCondition(ConditionRelation.And, new ComponentIsInStateCondition(lamp2, BinaryStateId.Off))
                 .WithCondition(ConditionRelation.And, new NumericValueSensorHasValueGreaterThanCondition(humiditySensor, 80));
 
-            AddAutomation(automation);
+            //AddAutomation(automation);
 
+            SetupTelegramBot();
+        }
+
+        private void SetupTelegramBot()
+        {
             TelegramBot telegramBot;
             if (!TelegramBotFactory.TryCreateFromDefaultConfigurationFile(out telegramBot))
             {
-                RegisterService(telegramBot);
-
-                Task.Run(async () => await telegramBot.TrySendMessageToAdministratorsAsync("Das Demo-System wurde neu gestartet."));
-                telegramBot.MessageReceived += HandleTelegramBotMessage;
+                return;
             }
-        }
 
-        private async void HandleTelegramBotMessage(object sender, TelegramBotMessageReceivedEventArgs e)
-        {
-            await Task.FromResult(0);
+            Log.WarningLogged += (s, e) =>
+            {
+                Task.Run(
+                    async () =>
+                        await telegramBot.TrySendMessageToAdministratorsAsync($"{Emoji.WarningSign} {e.Message}\r\n{e.Exception}"));
+            };
 
-            ////if (e.Message.GetIsPatternMatch("Hi"))
-            ////{
-            ////    await e.SendResponse("Was geht?");
-            ////}
-            ////else if (e.Message.GetIsPatternMatch("auf.*Toilette"))
-            ////{
-            ////    var motionDetector = GetComponent<IMotionDetector>(new ComponentId("ExampleRoom.MotionDetector"));
-            ////    if (motionDetector.GetState().Equals(MotionDetectorStateId.MotionDetected))
-            ////    {
-            ////        await e.SendResponse("Die Toilette ist gerade besetzt.");
-            ////    }
-            ////    else
-            ////    {
-            ////        await e.SendResponse("Die Toilette ist frei!");
-            ////    }
-            ////}
-            ////else if (e.Message.GetIsPatternMatch("Licht.*an"))
-            ////
-            ////    var light = GetComponent<IActuator>(new ComponentId("ExampleRoom.Lamp1"));
-            ////    light.SetState(BinaryStateId.On);
+            Log.ErrorLogged += (s, e) =>
+            {
+                Task.Run(
+                    async () =>
+                        await telegramBot.TrySendMessageToAdministratorsAsync($"{Emoji.HeavyExclamationMark} {e.Message}\r\n{e.Exception}"));
+            };
 
-            ////    await e.SendResponse("Ich habe das Licht eingeschaltet.");
-            ////}
-            ////else if (e.Message.GetIsPatternMatch("Licht.*aus"))
-            ////{
-            ////    var light = GetComponent<IActuator>(new ComponentId("ExampleRoom.Lamp1"));
-            ////    light.SetState(BinaryStateId.Off);
+            Task.Run(async () => await telegramBot.TrySendMessageToAdministratorsAsync($"{Emoji.Bell} Das System ist gestartet."));
+            telegramBot.MessageReceived += async (s, e) =>
+            {
+                var messageProcessor = new PersonalAgentMessageProcessor(this);
+                messageProcessor.ProcessMessage(e.Message);
 
-            ////    await e.SendResponse("Ich habe das Licht ausgeschaltet.");
-            ////}
-            ////else
-            ////{
-            ////    await e.SendResponse("Was willst du von mir?");
-            ////}
+                await e.SendResponse(messageProcessor.Answer);
+            };
+
+            RegisterService(telegramBot);
         }
 
         private void SetupRoom()
@@ -171,9 +165,13 @@ namespace HA4IoT.Controller.Demo
             var remoteSwitchSender = new LPD433MHzSignalSender(i2CHardwareBridge, I2CHardwareBridge433MHzSenderPin, ApiController);
 
             var intertechno = new IntertechnoCodeSequenceProvider();
+            var brennenstuhl = new BrennenstuhlCodeSequenceProvider();
+
             var remoteSwitchController = new RemoteSocketController(remoteSwitchSender, Timer)
                 .WithRemoteSocket(0, intertechno.GetSequencePair(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1))
-                .WithRemoteSocket(1, intertechno.GetSequencePair(IntertechnoSystemCode.B, IntertechnoUnitCode.Unit1));
+                .WithRemoteSocket(1, intertechno.GetSequencePair(IntertechnoSystemCode.B, IntertechnoUnitCode.Unit1))
+                .WithRemoteSocket(2, brennenstuhl.GetSequencePair(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.B))
+                .WithRemoteSocket(3, brennenstuhl.GetSequencePair(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.C));
 
             const int SensorPin = 5;
 

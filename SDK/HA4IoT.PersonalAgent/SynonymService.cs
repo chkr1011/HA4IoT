@@ -6,6 +6,7 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Core;
@@ -30,6 +31,20 @@ namespace HA4IoT.PersonalAgent
             _storage.LoadAreaSynonymsTo(_areaSynonyms);
             _storage.LoadComponentSynonymsTo(_componentSynonyms);
             //_storage.Load
+        }
+
+        public bool TryLoadPersistedSynonyms()
+        {
+            try
+            {
+                LoadPersistedSynonyms();
+                return true;
+            }
+            catch (Exception exception)
+            {
+                Log.Error(exception, "Error while loading persisted synonyms.");
+                return false;
+            }
         }
 
         public void AddSynonymsForComponent(Enum areaId, Enum componentId, params string[] synonyms)
