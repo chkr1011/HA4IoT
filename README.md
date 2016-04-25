@@ -98,11 +98,11 @@ Every actuator can be controlled using the web app which is hosted at the Raspbe
 
 The configuration of each actuator and automation can be updated using the Management Console. This application is a WPF application which runs at the local computer. It sends a discovery signal through the local area network and shows all available HA4IoT controller instances.   
 
- <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/MC_HomeScreen.png?raw=true" width="100%">
- <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/MC_ControllerSelection.png?raw=true" width="100%">
- <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/MC_ActuatorConfiguration.png?raw=true" width="100%">
- <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/MC_AutomationConfiguration.png?raw=true" width="100%">
- <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/MC_TraceViewer.png?raw=true" width="100%">
+ <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/MC_Home.png?raw=true" width="100%">
+ <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/MC_Controller.png?raw=true" width="100%">
+ <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/MC_Component.png?raw=true" width="100%">
+ <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/MC_Automation.png?raw=true" width="100%">
+ <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/MC_Log.png?raw=true" width="100%">
  
 # Contributors
 If you are interested in supporting this project in any way feel free to contact me.
