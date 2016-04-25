@@ -63,7 +63,7 @@ The SDK is designed to be extensible. This means that it is supported to impleme
 ## Personal Agent
 Register a free bot for the messenger "Telegram" and let the bot control the home. Just tell him what he should do. The bot also supports giving status information like Weather information (Temperature, Humidity etc.), Window states (Open, Closed), Sensor values (Temperature, Humidity) etc. The bot will also send errors and warnings from the log to administrative users (which are defined in the configuration file). Every user who want's to interact with the bot must be added to a whitelist to ensure a high level of privacy.
 
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/develop/Documentation/Screens/1.12.0/PA_RollerShutterAndTemperaturen.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/develop/Documentation/Screens/1.12.0/PA_RollerShutterAndTemperature.PNG?raw=true" width="256">
 <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/develop/Documentation/Screens/1.12.0/PA_WeatherAndWindowsAndLight.PNG?raw=true" width="256">
 <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/develop/Documentation/Screens/1.12.0/PA_Debug.PNG?raw=true" width="256">
 
