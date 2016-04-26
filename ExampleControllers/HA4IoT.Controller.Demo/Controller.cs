@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;
+using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Actuators.Triggers;
@@ -108,15 +109,17 @@ namespace HA4IoT.Controller.Demo
             }
 
             // An automation is "Fulfilled" per default.
-            var automation = new Automation(new AutomationId("DemoAutomation"))
-                .WithTrigger(motionDetectedTrigger)
-                .WithActionIfConditionsFulfilled(lamp3.GetTurnOnAction())
-                .WithCondition(ConditionRelation.And, new ComponentIsInStateCondition(lamp2, BinaryStateId.Off))
-                .WithCondition(ConditionRelation.And, new NumericValueSensorHasValueGreaterThanCondition(humiditySensor, 80));
+            ////var automation = new Automation(new AutomationId("DemoAutomation"))
+            ////    .WithTrigger(motionDetectedTrigger)
+            ////    .WithActionIfConditionsFulfilled(lamp3.GetTurnOnAction())
+            ////    .WithCondition(ConditionRelation.And, new ComponentIsInStateCondition(lamp2, BinaryStateId.Off))
+            ////    .WithCondition(ConditionRelation.And, new NumericValueSensorHasValueGreaterThanCondition(humiditySensor, 80));
 
             //AddAutomation(automation);
 
             SetupTelegramBot();
+
+            new PersonalAgentToApiDispatcher(this).ExposeToApi(ApiController);
         }
 
         private void SetupTelegramBot()
@@ -142,13 +145,8 @@ namespace HA4IoT.Controller.Demo
             };
 
             Task.Run(async () => await telegramBot.TrySendMessageToAdministratorsAsync($"{Emoji.Bell} Das System ist gestartet."));
-            telegramBot.MessageReceived += async (s, e) =>
-            {
-                var messageProcessor = new PersonalAgentMessageProcessor(this);
-                messageProcessor.ProcessMessage(e.Message);
 
-                await e.SendResponse(messageProcessor.Answer);
-            };
+            new PersonalAgentToTelegramBotDispatcher(this).ExposeToTelegramBot(telegramBot);
 
             RegisterService(telegramBot);
         }
@@ -190,9 +188,11 @@ namespace HA4IoT.Controller.Demo
                 .WithLamp(ExampleRoom.Lamp4, hsrel8[HSREL8Pin.Relay1])
                 .WithLamp(ExampleRoom.Lamp5, hsrel8[HSREL8Pin.Relay2])
                 .WithLamp(ExampleRoom.Lamp6, hsrel8[HSREL8Pin.Relay3])
-                .WithLamp(ExampleRoom.Lamp7, hsrel8[HSREL8Pin.Relay4])
-                .WithLamp(ExampleRoom.Lamp8, hsrel8[HSREL8Pin.Relay5])
+                .WithLamp(ExampleRoom.Lamp7, remoteSwitchController.GetOutput(2))
+                .WithLamp(ExampleRoom.Lamp8, remoteSwitchController.GetOutput(3))
 
+                .WithRollerShutter(ExampleRoom.RollerShutter, hsrel8[HSREL8Pin.Relay4], hsrel8[HSREL8Pin.Relay5])
+                
                 .WithButton(ExampleRoom.Button1, hspe16[HSPE16Pin.GPIO1])
                 .WithButton(ExampleRoom.Button2, hspe16[HSPE16Pin.GPIO2])
 
@@ -209,10 +209,25 @@ namespace HA4IoT.Controller.Demo
             area.SetupTurnOnAndOffAutomation()
                 .WithTrigger(area.GetMotionDetector(ExampleRoom.MotionDetector))
                 .WithTarget(area.GetStateMachine(ExampleRoom.BathroomFan))
-                .WithTarget(area.GetLamp(ExampleRoom.Lamp2))
+                //.WithTarget(area.GetLamp(ExampleRoom.Lamp2))
                 .WithOnDuration(TimeSpan.FromSeconds(10));
 
             SetupLEDStripRemote(i2CHardwareBridge, area);
+
+            RegisterSynonyms();
+        }
+
+        private void RegisterSynonyms()
+        {
+            var synonymService = GetService<SynonymService>();
+
+            synonymService.AddSynonymsForArea(Room.ExampleRoom, "Beispielraum", "Beispiel", "Raum");
+
+            synonymService.AddSynonymsForComponent(Room.ExampleRoom, ExampleRoom.Lamp8, "Lavalampe", "80er");
+            synonymService.AddSynonymsForComponent(Room.ExampleRoom, ExampleRoom.Lamp1, "Rotlicht", "Stimmungslicht");
+            synonymService.AddSynonymsForComponent(Room.ExampleRoom, ExampleRoom.Lamp2, "Gelblicht");
+
+            synonymService.RegisterDefaultComponentStateSynonyms(this);
         }
 
         private void SetupHumidityDependingLamp(IHumiditySensor sensor, ILamp lamp)

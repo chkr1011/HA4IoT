@@ -93,14 +93,8 @@ namespace HA4IoT.Controller.Main
             };
 
             Task.Run(async () => await telegramBot.TrySendMessageToAdministratorsAsync($"{Emoji.Bell} Das System ist gestartet."));
-            telegramBot.MessageReceived += async (s, e) =>
-            {
-                var messageProcessor = new PersonalAgentMessageProcessor(this);
-                messageProcessor.ProcessMessage(e.Message);
+            new PersonalAgentToTelegramBotDispatcher(this).ExposeToTelegramBot(telegramBot);
 
-                await e.SendResponse(messageProcessor.Answer);
-            };
-            
             RegisterService(telegramBot);
         }
 

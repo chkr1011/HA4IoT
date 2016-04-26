@@ -74,7 +74,6 @@ It is possible to connect the entire controller with the Azure Cloud. This featu
 The software solution contains the project ``HA4IoT.Controller.Demo`` which can be used to start playing around with the SDK. The other projects ``HA4IoT.Controller.Main`` and ``HA4IoT.Controller.Main`` containing a full "real life" configuration which can be used as an example but will not work without the required hardware.
 
 # Documentation
-
 **At this time, the latest documentation with examples can be found here:** [https://www.hackster.io/cyborg-titanium-14/ck-homeautomation](https://www.hackster.io/cyborg-titanium-14/ck-homeautomation)
 
 A detailed documentation at GitHub is in progress.
@@ -95,14 +94,13 @@ Every actuator can be controlled using the web app which is hosted at the Raspbe
 <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/WA_Info.PNG?raw=true" width="256">
 
 # Management Console
-
 The configuration of each actuator and automation can be updated using the Management Console. This application is a WPF application which runs at the local computer. It sends a discovery signal through the local area network and shows all available HA4IoT controller instances.   
 
- <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/develop/Documentation/Screens/1.12.0/MC_Home.png?raw=true" width="100%">
- <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/develop/Documentation/Screens/1.12.0/MC_Controller.png?raw=true" width="100%">
- <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/develop/Documentation/Screens/1.12.0/MC_Component.png?raw=true" width="100%">
- <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/develop/Documentation/Screens/1.12.0/MC_Automation.png?raw=true" width="100%">
- <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/develop/Documentation/Screens/1.12.0/MC_Log.png?raw=true" width="100%">
- 
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/develop/Documentation/Screens/1.12.0/MC_Home.png?raw=true" width="100%">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/develop/Documentation/Screens/1.12.0/MC_Controller.png?raw=true" width="100%">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/develop/Documentation/Screens/1.12.0/MC_Component.png?raw=true" width="100%">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/develop/Documentation/Screens/1.12.0/MC_Automation.png?raw=true" width="100%">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/develop/Documentation/Screens/1.12.0/MC_Log.png?raw=true" width="100%">
+
 # Contributors
 If you are interested in supporting this project in any way feel free to contact me.
