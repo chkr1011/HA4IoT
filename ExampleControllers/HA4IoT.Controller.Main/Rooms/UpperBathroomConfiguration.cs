@@ -1,21 +1,25 @@
 ﻿using System;
-using HA4IoT.Actuators;
+using HA4IoT.Actuators.BinaryStateActuators;
+using HA4IoT.Actuators.Lamps;
+using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Automations;
-using HA4IoT.Contracts.Configuration;
+using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
+using HA4IoT.PersonalAgent;
+using HA4IoT.Sensors.HumiditySensors;
+using HA4IoT.Sensors.MotionDetectors;
+using HA4IoT.Sensors.TemperatureSensors;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
-    internal class UpperBathroomConfiguration
+    internal class UpperBathroomConfiguration : RoomConfiguration
     {
-        private readonly Controller _controller;
-        private readonly HSREL5 _hsrel5;
-        private readonly IBinaryInputController _input5;
-
         private enum UpperBathroom
         {
             TemperatureSensor,
@@ -32,61 +36,60 @@ namespace HA4IoT.Controller.Main.Rooms
             CombinedCeilingLights
         }
 
-        public UpperBathroomConfiguration(Controller controller, CCToolsBoardController ccToolsController)
+        public UpperBathroomConfiguration(IController controller) 
+            : base(controller)
         {
-            if (controller == null) throw new ArgumentNullException(nameof(controller));
-            if (ccToolsController == null) throw new ArgumentNullException(nameof(ccToolsController));
-
-            _controller = controller;
-
-            _hsrel5 = ccToolsController.CreateHSREL5(Device.UpperBathroomHSREL5, new I2CSlaveAddress(61));
-            _input5 = controller.Device<HSPE16InputOnly>(Device.Input5);
         }
 
-        public void Setup()
+        public override void Setup()
         {
+            var hsrel5 = CCToolsBoardController.CreateHSREL5(InstalledDevice.UpperBathroomHSREL5, new I2CSlaveAddress(61));
+            var input5 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input5);
+
             const int SensorPin = 4;
 
-            var i2cHardwareBridge = _controller.Device<I2CHardwareBridge>();
+            var i2cHardwareBridge = Controller.GetDevice<I2CHardwareBridge>();
 
-            var bathroom = _controller.CreateArea(Room.UpperBathroom)
+            var room = Controller.CreateArea(Room.UpperBathroom)
                 .WithTemperatureSensor(UpperBathroom.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(UpperBathroom.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
-                .WithMotionDetector(UpperBathroom.MotionDetector, _input5.GetInput(15))
-                .WithLamp(UpperBathroom.LightCeilingDoor, _hsrel5.GetOutput(0))
-                .WithLamp(UpperBathroom.LightCeilingEdge, _hsrel5.GetOutput(1))
-                .WithLamp(UpperBathroom.LightCeilingMirrorCabinet, _hsrel5.GetOutput(2))
-                .WithLamp(UpperBathroom.LampMirrorCabinet, _hsrel5.GetOutput(3))
-                .WithStateMachine(UpperBathroom.Fan, SetupFan);
+                .WithMotionDetector(UpperBathroom.MotionDetector, input5.GetInput(15))
+                .WithLamp(UpperBathroom.LightCeilingDoor, hsrel5.GetOutput(0))
+                .WithLamp(UpperBathroom.LightCeilingEdge, hsrel5.GetOutput(1))
+                .WithLamp(UpperBathroom.LightCeilingMirrorCabinet, hsrel5.GetOutput(2))
+                .WithLamp(UpperBathroom.LampMirrorCabinet, hsrel5.GetOutput(3))
+                .WithStateMachine(UpperBathroom.Fan, (s, r) => SetupFan(s, r, hsrel5));
 
             var combinedLights =
-                bathroom.CombineActuators(UpperBathroom.CombinedCeilingLights)
-                    .WithActuator(bathroom.Lamp(UpperBathroom.LightCeilingDoor))
-                    .WithActuator(bathroom.Lamp(UpperBathroom.LightCeilingEdge))
-                    .WithActuator(bathroom.Lamp(UpperBathroom.LightCeilingMirrorCabinet))
-                    .WithActuator(bathroom.Lamp(UpperBathroom.LampMirrorCabinet));
+                room.CombineActuators(UpperBathroom.CombinedCeilingLights)
+                    .WithActuator(room.GetLamp(UpperBathroom.LightCeilingDoor))
+                    .WithActuator(room.GetLamp(UpperBathroom.LightCeilingEdge))
+                    .WithActuator(room.GetLamp(UpperBathroom.LightCeilingMirrorCabinet))
+                    .WithActuator(room.GetLamp(UpperBathroom.LampMirrorCabinet));
 
-            bathroom.SetupTurnOnAndOffAutomation()
-                .WithTrigger(bathroom.MotionDetector(UpperBathroom.MotionDetector))
+            room.SetupTurnOnAndOffAutomation()
+                .WithTrigger(room.GetMotionDetector(UpperBathroom.MotionDetector))
                 .WithTarget(combinedLights)
                 .WithOnDuration(TimeSpan.FromMinutes(8));
             
-            new BathroomFanAutomation(AutomationIdFactory.CreateIdFrom<BathroomFanAutomation>(bathroom), _controller.Timer)
-                .WithTrigger(bathroom.MotionDetector(UpperBathroom.MotionDetector))
+            new BathroomFanAutomation(AutomationIdFactory.CreateIdFrom<BathroomFanAutomation>(room), Controller.Timer)
+                .WithTrigger(room.GetMotionDetector(UpperBathroom.MotionDetector))
                 .WithSlowDuration(TimeSpan.FromMinutes(8))
                 .WithFastDuration(TimeSpan.FromMinutes(12))
-                .WithActuator(bathroom.StateMachine(UpperBathroom.Fan));
+                .WithActuator(room.GetStateMachine(UpperBathroom.Fan));
+
+            Controller.GetService<SynonymService>().AddSynonymsForArea(Room.UpperBathroom, "BadOben", "UpperBathroom");
         }
 
-        private void SetupFan(StateMachine stateMachine, IArea room)
+        private void SetupFan(StateMachine stateMachine, IArea room, HSREL5 hsrel5)
         {
-            var fanPort0 = _hsrel5.GetOutput(4);
-            var fanPort1 = _hsrel5.GetOutput(5);
+            var fanPort0 = hsrel5.GetOutput(4);
+            var fanPort1 = hsrel5.GetOutput(5);
 
-            stateMachine.AddOffState().WithPort(fanPort0, BinaryState.Low).WithPort(fanPort1, BinaryState.Low);
-            stateMachine.AddState("1").WithPort(fanPort0, BinaryState.High).WithPort(fanPort1, BinaryState.Low);
-            stateMachine.AddState("2").WithPort(fanPort0, BinaryState.High).WithPort(fanPort1, BinaryState.High);
-            stateMachine.TurnOff();
+            stateMachine.AddOffState().WithOutput(fanPort0, BinaryState.Low).WithOutput(fanPort1, BinaryState.Low);
+            stateMachine.AddState(new StatefulComponentState("1")).WithOutput(fanPort0, BinaryState.High).WithOutput(fanPort1, BinaryState.Low);
+            stateMachine.AddState(new StatefulComponentState("2")).WithOutput(fanPort0, BinaryState.High).WithOutput(fanPort1, BinaryState.High);
+            stateMachine.TryTurnOff();
         }
     }
 }

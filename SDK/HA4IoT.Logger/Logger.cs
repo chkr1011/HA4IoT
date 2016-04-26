@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Networking;
 using Windows.Networking.Sockets;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Logger
@@ -29,64 +29,68 @@ namespace HA4IoT.Logger
 
         public Logger()
         {
-            Task.Factory.StartNew(SendQueuedItems, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            Task.Factory.StartNew(
+                SendQueuedItems, 
+                CancellationToken.None, 
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default);
         }
 
-        public void ExposeToApi(IHttpRequestController httpApiController)
+        public void ExposeToApi(IApiController apiController)
         {
-            if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
+            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
 
-            httpApiController.HandleGet("trace").Using(HandleApiGet);
+            apiController.RouteRequest("trace", HandleApiGet);
         }
 
-        public void Info(string message, params object[] parameters)
+        public void Verbose(string message)
         {
-            Publish(LogEntrySeverity.Info, message, parameters);
+            Publish(LogEntrySeverity.Verbose, message);
         }
 
-        public void Warning(string message, params object[] parameters)
+        public void Info(string message)
         {
-            Publish(LogEntrySeverity.Warning, message, parameters);
+            Publish(LogEntrySeverity.Info, message);
         }
 
-        public void Warning(Exception exception, string message, params object[] parameters)
+        public void Warning(string message)
         {
-            Publish(LogEntrySeverity.Warning, string.Format(message, parameters) + Environment.NewLine + exception);
+            Publish(LogEntrySeverity.Warning, message);
         }
 
-        public void Error(string message, params object[] parameters)
+        public void Warning(Exception exception, string message)
         {
-            Publish(LogEntrySeverity.Error, message, parameters);
+            Publish(LogEntrySeverity.Warning, message + Environment.NewLine + exception);
         }
 
-        public void Error(Exception exception, string message, params object[] parameters)
+        public void Error(string message)
         {
-            Publish(LogEntrySeverity.Error, string.Format(message, parameters) + Environment.NewLine + exception);
+            Publish(LogEntrySeverity.Error, message);
         }
 
-        public void Verbose(string message, params object[] parameters)
+        public void Error(Exception exception, string message)
         {
-            Publish(LogEntrySeverity.Verbose, message, parameters);
+            Publish(LogEntrySeverity.Error, message + Environment.NewLine + exception);
         }
 
-        private void Publish(LogEntrySeverity type, string text, params object[] parameters)
+        private void Publish(LogEntrySeverity type, string message, params object[] parameters)
         {
             if (parameters != null && parameters.Any())
             {
                 try
                 {
-                    text = string.Format(text, parameters);
+                    message = string.Format(message, parameters);
                 }
                 catch (FormatException)
                 {
-                    text = text + " (" + string.Join(",", parameters) + ")";
+                    message = message + " (" + string.Join(",", parameters) + ")";
                 }
             }
 
-            PrintNotification(type, text);
+            PrintNotification(type, message);
 
             // TODO: Refactor to use IHomeAutomationTimer.CurrentDateTime;
-            var logEntry = new LogEntry(_currentId, DateTime.Now, Environment.CurrentManagedThreadId, type, text);
+            var logEntry = new LogEntry(_currentId, DateTime.Now, Environment.CurrentManagedThreadId, type, string.Empty, message);
             lock (_syncRoot)
             {
                 _items.Add(logEntry);
@@ -104,11 +108,11 @@ namespace HA4IoT.Logger
             }
         }
 
-        private void HandleApiGet(HttpContext httpContext)
+        private void HandleApiGet(IApiContext apiContext)
         {
             lock (_syncRoot)
             {
-                httpContext.Response.Body = new JsonBody(CreatePackage(_history));
+                apiContext.Response = CreatePackage(_history);
             }
         }
 
@@ -116,36 +120,39 @@ namespace HA4IoT.Logger
         {
             using (DatagramSocket socket = new DatagramSocket())
             {
+                socket.Control.DontFragment = true;
                 await socket.ConnectAsync(new HostName("255.255.255.255"), "19227");
 
-                Stream outputStream = socket.OutputStream.AsStreamForWrite();
-                while (true)
+                using (Stream outputStream = socket.OutputStream.AsStreamForWrite())
                 {
-                    List<LogEntry> pendingItems = GetPendingItems();
-                    try
+                    while (true)
                     {
-                        foreach (var traceItem in pendingItems)
+                        List<LogEntry> pendingItems = GetPendingItems();
+                        try
                         {
-                            var collection = new[] {traceItem};
-                            JsonObject package = CreatePackage(collection);
+                            foreach (var traceItem in pendingItems)
+                            {
+                                var collection = new[] {traceItem};
+                                JsonObject package = CreatePackage(collection);
 
-                            string data = package.Stringify();
-                            byte[] buffer = Encoding.UTF8.GetBytes(data);
+                                string data = package.Stringify();
+                                byte[] buffer = Encoding.UTF8.GetBytes(data);
 
-                            outputStream.Write(buffer, 0, buffer.Length);
-                            outputStream.Flush();
+                                outputStream.Write(buffer, 0, buffer.Length);
+                                outputStream.Flush();
+                            }
                         }
-                    }
-                    catch (Exception exception)
-                    {
-                        Debug.WriteLine("ERROR: Could not send trace items. " + exception);
-                    }
-                    finally
-                    {
-                        pendingItems.Clear();
-                    }
+                        catch (Exception exception)
+                        {
+                            Debug.WriteLine("ERROR: Could not send trace items. " + exception);
+                        }
+                        finally
+                        {
+                            pendingItems.Clear();
+                        }
 
-                    await Task.Delay(50);
+                        await Task.Delay(50);
+                    }
                 }
             }
         }

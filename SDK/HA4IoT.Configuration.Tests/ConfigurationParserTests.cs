@@ -1,13 +1,19 @@
 ﻿using System;
 using FluentAssertions;
-using HA4IoT.Actuators;
-using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Configuration;
+using HA4IoT.Actuators.Lamps;
+using HA4IoT.Actuators.RollerShutters;
+using HA4IoT.Actuators.Sockets;
+using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.WeatherStation;
+using HA4IoT.Contracts.Services.WeatherService;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
+using HA4IoT.Sensors.Buttons;
+using HA4IoT.Sensors.HumiditySensors;
+using HA4IoT.Sensors.TemperatureSensors;
+using HA4IoT.Sensors.Windows;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -19,7 +25,7 @@ namespace HA4IoT.Configuration.Tests
         [TestMethod]
         public void Parse_I2CBusDevice()
         {
-            GetController().Devices<II2CBus>().Count.ShouldBeEquivalentTo(1);
+            GetController().GetDevices<II2CBus>().Count.ShouldBeEquivalentTo(1);
         }
 
         [TestMethod]
@@ -27,8 +33,8 @@ namespace HA4IoT.Configuration.Tests
         {
             var controller = GetController();
 
-            controller.Devices<HSREL5>().Count.ShouldBeEquivalentTo(1);
-            controller.Devices<HSREL8>().Count.ShouldBeEquivalentTo(1);
+            controller.GetDevices<HSREL5>().Count.ShouldBeEquivalentTo(1);
+            controller.GetDevices<HSREL8>().Count.ShouldBeEquivalentTo(1);
         }
 
         [TestMethod]
@@ -36,7 +42,7 @@ namespace HA4IoT.Configuration.Tests
         {
             var controller = GetController();
 
-            controller.Areas().Count.ShouldBeEquivalentTo(1);
+            controller.GetAreas().Count.ShouldBeEquivalentTo(1);
         }
 
         [TestMethod]
@@ -44,8 +50,8 @@ namespace HA4IoT.Configuration.Tests
         {
             var controller = GetController();
 
-            var weatherStation = controller.Device<IWeatherStation>(new DeviceId("WeatherStation"));
-            if (weatherStation == null)
+            IWeatherService weatherStation;
+            if (!controller.TryGetService(out weatherStation))
             {
                 throw new InvalidOperationException();
             }
@@ -57,7 +63,7 @@ namespace HA4IoT.Configuration.Tests
             var controller = GetController();
 
             // TODO: Check parameters (expose properties).
-            controller.Area(new AreaId("Bedroom")).Actuator<Socket>(new ActuatorId("Bedroom.SocketWindowLeft"));
+            controller.GetArea(new AreaId("Bedroom")).GetComponent<Socket>(new ComponentId("Bedroom.SocketWindowLeft"));
         }
 
         [TestMethod]
@@ -66,7 +72,7 @@ namespace HA4IoT.Configuration.Tests
             var controller = GetController();
 
             // TODO: Check parameters (expose properties).
-            controller.Area(new AreaId("Bedroom")).Actuator<Lamp>(new ActuatorId("Bedroom.LightCeiling"));
+            controller.GetArea(new AreaId("Bedroom")).GetComponent<Lamp>(new ComponentId("Bedroom.LightCeiling"));
         }
 
         [TestMethod]
@@ -75,7 +81,7 @@ namespace HA4IoT.Configuration.Tests
             var controller = GetController();
 
             // TODO: Check parameters (expose properties).
-            controller.Area(new AreaId("Bedroom")).Actuator<Button>(new ActuatorId("Bedroom.ButtonDoor"));
+            controller.GetArea(new AreaId("Bedroom")).GetComponent<Button>(new ComponentId("Bedroom.ButtonDoor"));
         }
 
         [TestMethod]
@@ -84,16 +90,7 @@ namespace HA4IoT.Configuration.Tests
             var controller = GetController();
 
             // TODO: Check parameters (expose properties).
-            controller.Area(new AreaId("Bedroom")).Actuator<RollerShutter>(new ActuatorId("Bedroom.RollerShutterLeft"));
-        }
-
-        [TestMethod]
-        public void Parse_RollerShutterButtons()
-        {
-            var controller = GetController();
-
-            // TODO: Check parameters (expose properties).
-            controller.Area(new AreaId("Bedroom")).Actuator<RollerShutterButtons>(new ActuatorId("Bedroom.RollerShutterButtonsUpper"));
+            controller.GetArea(new AreaId("Bedroom")).GetComponent<RollerShutter>(new ComponentId("Bedroom.RollerShutterLeft"));
         }
 
         [TestMethod]
@@ -102,7 +99,7 @@ namespace HA4IoT.Configuration.Tests
             var controller = GetController();
 
             // TODO: Check parameters (expose properties).
-            controller.Area(new AreaId("Bedroom")).Actuator<Window>(new ActuatorId("Bedroom.WindowLeft"));
+            controller.GetArea(new AreaId("Bedroom")).GetComponent<Window>(new ComponentId("Bedroom.WindowLeft"));
         }
 
         [TestMethod]
@@ -111,7 +108,7 @@ namespace HA4IoT.Configuration.Tests
             var controller = GetController();
 
             // TODO: Check parameters (expose properties).
-            controller.Area(new AreaId("Bedroom")).Actuator<TemperatureSensor>(new ActuatorId("Bedroom.TemperatureSensor"));
+            controller.GetArea(new AreaId("Bedroom")).GetComponent<TemperatureSensor>(new ComponentId("Bedroom.TemperatureSensor"));
         }
 
         [TestMethod]
@@ -120,13 +117,14 @@ namespace HA4IoT.Configuration.Tests
             var controller = GetController();
 
             // TODO: Check parameters (expose properties).
-            controller.Area(new AreaId("Bedroom")).Actuator<HumiditySensor>(new ActuatorId("Bedroom.HumiditySensor"));
+            controller.GetArea(new AreaId("Bedroom")).GetComponent<HumiditySensor>(new ComponentId("Bedroom.HumiditySensor"));
         }
         private IController GetController()
         {
             var controller = new TestController();
 
             var parser = new ConfigurationParser(controller);
+            parser.RegisterConfigurationExtender(new DefaultConfigurationExtender(parser, controller));
             parser.RegisterConfigurationExtender(new TestConfigurationExtender(parser, controller));
             parser.RegisterConfigurationExtender(new CCToolsConfigurationExtender(parser, controller));
             parser.RegisterConfigurationExtender(new I2CHardwareBridgeConfigurationExtender(parser, controller));

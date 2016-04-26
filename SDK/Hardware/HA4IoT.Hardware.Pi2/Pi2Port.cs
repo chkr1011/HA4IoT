@@ -35,8 +35,10 @@ namespace HA4IoT.Hardware.Pi2
                 BinaryState currentState = CoerceState(Pin.Read() == GpioPinValue.High ? BinaryState.High : BinaryState.Low);
                 if (currentState != _previousState)
                 {
+                    var oldState = _previousState;
+
                     _previousState = currentState;
-                    StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(currentState));
+                    StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(oldState, currentState));
                 }
 
                 return currentState;
@@ -55,8 +57,10 @@ namespace HA4IoT.Hardware.Pi2
                 }
 
                 Pin.Write(state == BinaryState.High ? GpioPinValue.High : GpioPinValue.Low);
+
+                var oldState = _previousState;
                 _previousState = state;
-                StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(state));
+                StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(_previousState, state));
             }
         }
 

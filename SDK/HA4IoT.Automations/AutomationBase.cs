@@ -1,31 +1,37 @@
 ﻿using System;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Automations;
+using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Core.Settings;
+using HA4IoT.Core.Settings;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Automations
 {
-    public abstract class AutomationBase<TSettings> : IAutomation where TSettings : AutomationSettings
+    public abstract class AutomationBase : IAutomation
     {
         protected AutomationBase(AutomationId id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
             Id = id;
+            Settings = new SettingsContainer(StoragePath.WithFilename("Automations", id.Value, "Settings.json"));
+            GeneralSettingsWrapper = new AutomationSettingsWrapper(Settings);
         }
 
         public AutomationId Id { get; }
 
-        public TSettings Settings { get; protected set; }
+        public ISettingsContainer Settings { get; }
+        public IAutomationSettingsWrapper GeneralSettingsWrapper { get; }
 
         public virtual JsonObject ExportConfigurationAsJsonValue()
         {
             var result = new JsonObject();
-            result.SetNamedValue("Type", GetType().FullName.ToJsonValue());
+            result.SetNamedString("type", GetType().Name);
 
             if (Settings != null)
             {
-                result.SetNamedValue("Settings", Settings.ExportToJsonObject());
+                result.SetNamedValue("settings", Settings.Export());
             }
 
             return result;
@@ -34,11 +40,6 @@ namespace HA4IoT.Automations
         public virtual JsonObject ExportStatusToJsonObject()
         {
             return new JsonObject();
-        }
-
-        public virtual void LoadSettings()
-        {
-            Settings?.Load();
         }
     }
 }

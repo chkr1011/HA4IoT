@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{551337E7-D1EF-4145-92B4-F7086F7665A6}</ProjectGuid>
+    <ProjectGuid>{E1EDAC4B-83B9-46F4-9F6A-3BAE97D79F29}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>HA4IoT.Contracts</RootNamespace>
@@ -107,53 +107,91 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actuators\ActuatorId.cs" />
-    <Compile Include="Actuators\IActuatorSettings.cs" />
-    <Compile Include="Actuators\IRollerShutterSettings.cs" />
+    <Compile Include="Actions\IAction.cs" />
+    <Compile Include="Components\ComponentStatusKey.cs" />
+    <Compile Include="Components\ComponentConfigurationKey.cs" />
+    <Compile Include="Actuators\BinaryStateId.cs" />
+    <Compile Include="Areas\IAreaSettingsWrapper.cs" />
+    <Compile Include="Components\ComponentId.cs" />
+    <Compile Include="Actuators\StateChangedEventArgs.cs" />
+    <Compile Include="Actuators\IActuatorSettingsWrapper.cs" />
+    <Compile Include="Actuators\RollerShutterStateId.cs" />
+    <Compile Include="Automations\IAutomationSettingsWrapper.cs" />
+    <Compile Include="Components\ComponentIdFactory.cs" />
+    <Compile Include="Components\ComponentStateChangedEventArgs.cs" />
+    <Compile Include="Components\IComponent.cs" />
+    <Compile Include="Components\UnknownComponentState.cs" />
+    <Compile Include="Core\Settings\SettingValueChangedEventArgs.cs" />
+    <Compile Include="Hardware\ForceUpdateStateParameter.cs" />
+    <Compile Include="Hardware\HardwareParameter.cs" />
+    <Compile Include="Hardware\IsPartOfLogicalUpdateParameter.cs" />
+    <Compile Include="Logging\MessageWithExceptionLoggedEventArgs.cs" />
+    <Compile Include="Logging\MessageLoggedEventArgs.cs" />
+    <Compile Include="PersonalAgent\Emoji.cs" />
+    <Compile Include="PersonalAgent\IInboundMessage.cs" />
+    <Compile Include="PersonalAgent\IOutboundMessage.cs" />
+    <Compile Include="Sensors\ButtonPressedDuration.cs" />
+    <Compile Include="Sensors\CasementStateID.cs" />
+    <Compile Include="Actuators\LevelStateId.cs" />
+    <Compile Include="Sensors\NumericValueSensorEndpointValueChangedEventArgs.cs" />
+    <Compile Include="Sensors\NumericSensorValue.cs" />
+    <Compile Include="Sensors\IButtonEndpoint.cs" />
+    <Compile Include="Sensors\ICasement.cs" />
+    <Compile Include="Sensors\INumericValueSensorEndpoint.cs" />
+    <Compile Include="Sensors\IMotionDetectorEndpoint.cs" />
+    <Compile Include="Actuators\IRollerShutterEndpoint.cs" />
+    <Compile Include="Actuators\ISocket.cs" />
+    <Compile Include="Actuators\ILamp.cs" />
+    <Compile Include="Actuators\IBinaryStateEndpoint.cs" />
+    <Compile Include="Actuators\IStateMachineState.cs" />
+    <Compile Include="Actuators\IStateMachineStateEndpoint.cs" />
+    <Compile Include="Sensors\ISensor.cs" />
+    <Compile Include="Components\IComponentState.cs" />
+    <Compile Include="Sensors\IWindow.cs" />
+    <Compile Include="Components\StatefulComponentState.cs" />
+    <Compile Include="Api\ApiCallType.cs" />
+    <Compile Include="Api\ApiRequestReceivedEventArgs.cs" />
+    <Compile Include="Api\ApiResultCode.cs" />
+    <Compile Include="Api\IApiContext.cs" />
+    <Compile Include="Api\IApiController.cs" />
+    <Compile Include="Api\IApiDispatcherEndpoint.cs" />
     <Compile Include="Automations\AutomationId.cs" />
-    <Compile Include="Actuators\BinaryActuatorState.cs" />
-    <Compile Include="Actuators\BinaryActuatorStateChangedEventArgs.cs" />
-    <Compile Include="Actuators\ButtonState.cs" />
+    <Compile Include="Sensors\ButtonStateID.cs" />
     <Compile Include="Actuators\IStateMachine.cs" />
-    <Compile Include="Actuators\SwitchStateChangedEventArgs.cs" />
     <Compile Include="Actuators\IActuator.cs" />
-    <Compile Include="Actuators\IActuatorWithOffState.cs" />
-    <Compile Include="Actuators\IBinaryStateOutputActuator.cs" />
-    <Compile Include="Actuators\IBinaryStateOutputActuatorExtensions.cs" />
-    <Compile Include="Actuators\IButton.cs" />
-    <Compile Include="Actuators\IHumiditySensor.cs" />
-    <Compile Include="Actuators\IMotionDetector.cs" />
-    <Compile Include="Actuators\IParameter.cs" />
+    <Compile Include="Sensors\IButton.cs" />
+    <Compile Include="Sensors\IHumiditySensor.cs" />
+    <Compile Include="Sensors\IMotionDetector.cs" />
+    <Compile Include="Hardware\IHardwareParameter.cs" />
     <Compile Include="Actuators\IRollerShutter.cs" />
-    <Compile Include="Actuators\ISingleValueSensorActuator.cs" />
-    <Compile Include="Actuators\ITemperatureSensor.cs" />
-    <Compile Include="Actuators\SwitchState.cs" />
+    <Compile Include="Sensors\INumericValueSensor.cs" />
+    <Compile Include="Sensors\ITemperatureSensor.cs" />
+    <Compile Include="Sensors\SwitchStateID.cs" />
     <Compile Include="Automations\IAutomation.cs" />
     <Compile Include="Automations\IAutomationController.cs" />
-    <Compile Include="Automations\IAutomationSettings.cs" />
     <Compile Include="Configuration\ConfigurationInvalidException.cs" />
-    <Compile Include="Actuators\IActuatorController.cs" />
+    <Compile Include="Core\IActuatorController.cs" />
     <Compile Include="Core\Discovery\DiscoveryResponse.cs" />
     <Compile Include="Core\IAreaController.cs" />
-    <Compile Include="Core\IAreaSettings.cs" />
     <Compile Include="Core\IController.cs" />
-    <Compile Include="Configuration\IArea.cs" />
-    <Compile Include="Actuators\AreaId.cs" />
+    <Compile Include="Areas\IArea.cs" />
+    <Compile Include="Areas\AreaId.cs" />
     <Compile Include="Configuration\HandleConfigurationNodeResult.cs" />
     <Compile Include="Configuration\IConfigurationExtender.cs" />
-    <Compile Include="Core\IControllerSettings.cs" />
     <Compile Include="Core\IdBase.cs" />
     <Compile Include="Core\IDeviceController.cs" />
     <Compile Include="Core\IHomeAutomationTimer.cs" />
-    <Compile Include="Core\Settings\ISetting.cs" />
+    <Compile Include="Core\IServiceController.cs" />
     <Compile Include="Core\Settings\ISettingsContainer.cs" />
+    <Compile Include="Core\StoragePath.cs" />
     <Compile Include="Core\TimedAction.cs" />
     <Compile Include="Core\TimerTickEventArgs.cs" />
     <Compile Include="Hardware\DeviceIdExtensions.cs" />
     <Compile Include="Hardware\II2CDevice.cs" />
     <Compile Include="Hardware\IDevice.cs" />
     <Compile Include="Hardware\DeviceId.cs" />
-    <Compile Include="Actuators\ISwitch.cs" />
+    <Compile Include="Sensors\ISwitch.cs" />
+    <Compile Include="Logging\Log.cs" />
     <Compile Include="Networking\HttpContext.cs" />
     <Compile Include="Networking\HttpHeaderCollection.cs" />
     <Compile Include="Networking\HttpMethod.cs" />
@@ -165,16 +203,13 @@
     <Compile Include="Networking\IHttpRequestController.cs" />
     <Compile Include="Networking\IHttpRequestDispatcherAction.cs" />
     <Compile Include="Networking\IImportFromJsonValue.cs" />
+    <Compile Include="Services\IDaylightService.cs" />
+    <Compile Include="Services\IService.cs" />
+    <Compile Include="Services\ServiceBase.cs" />
     <Compile Include="Triggers\ITrigger.cs" />
     <Compile Include="Triggers\TriggeredEventArgs.cs" />
-    <Compile Include="WeatherStation\IWeatherStation.cs" />
-    <Compile Include="Actuators\MotionDetectorState.cs" />
-    <Compile Include="Actuators\RollerShutterState.cs" />
-    <Compile Include="Actuators\RollerShutterStateChangedEventArgs.cs" />
-    <Compile Include="Actuators\StateMachineStateChangedEventArgs.cs" />
-    <Compile Include="Actuators\ValueChangedEventArgs.cs" />
-    <Compile Include="Actuators\ButtonStateChangedEventArgs.cs" />
-    <Compile Include="Core\IStatusProvider.cs" />
+    <Compile Include="Services\WeatherService\IWeatherService.cs" />
+    <Compile Include="Sensors\MotionDetectorStateID.cs" />
     <Compile Include="Daylight.cs" />
     <Compile Include="Hardware\BinaryState.cs" />
     <Compile Include="Hardware\BinaryStateChangedEventArgs.cs" />
@@ -185,15 +220,9 @@
     <Compile Include="Hardware\IBinaryOutputController.cs" />
     <Compile Include="Hardware\II2CBus.cs" />
     <Compile Include="Hardware\IPortExpanderDriver.cs" />
-    <Compile Include="Hardware\ISingleValueSensor.cs" />
-    <Compile Include="Hardware\SingleValueSensorValueChangedEventArgs.cs" />
     <Compile Include="Logging\ILogger.cs" />
-    <Compile Include="Actuators\MotionDetectorStateChangedEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Actuators\RollerShutterButtonDirection.cs" />
-    <Compile Include="WeatherStation\IWeatherSituationSensor.cs" />
-    <Compile Include="WeatherStation\WeatherSituation.cs" />
-    <Compile Include="WeatherStation\WeatherSituationSensorValueChangedEventArgs.cs" />
+    <Compile Include="Services\WeatherService\WeatherSituation.cs" />
     <Content Include="Properties\HA4IoT.Contracts.rd.xml" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

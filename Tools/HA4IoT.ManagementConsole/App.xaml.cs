@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows;
-using HA4IoT.ManagementConsole.Chrome.ViewModel;
-using HA4IoT.ManagementConsole.Chrome.Views;
+using HA4IoT.ManagementConsole.MainWindow.ViewModel;
 
 namespace HA4IoT.ManagementConsole
 {
@@ -16,7 +15,7 @@ namespace HA4IoT.ManagementConsole
             try
             {
                 var viewModel = new MainWindowVM();
-                var mainWindow = new MainWindow();
+                var mainWindow = new MainWindow.Views.MainWindow();
                 mainWindow.DataContext = viewModel;
 
                 mainWindow.Show();

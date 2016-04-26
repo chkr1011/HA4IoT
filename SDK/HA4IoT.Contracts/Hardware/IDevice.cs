@@ -1,9 +1,13 @@
-﻿namespace HA4IoT.Contracts.Hardware
+﻿using HA4IoT.Contracts.Api;
+
+namespace HA4IoT.Contracts.Hardware
 {
     public interface IDevice
     {
         DeviceId Id { get; }
 
-        //JsonObject HandleApiRequest(HttpMethod method, JsonObject request);
+        void HandleApiCommand(IApiContext apiContext);
+
+        void HandleApiRequest(IApiContext apiContext);
     }
 }

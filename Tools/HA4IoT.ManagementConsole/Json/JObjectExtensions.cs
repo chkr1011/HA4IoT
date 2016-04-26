@@ -40,9 +40,19 @@ namespace HA4IoT.ManagementConsole.Json
             return jObject.GetNamedValue<string>(name);
         }
 
+        public static void SetNamedString(this JObject jObject, string name, string value)
+        {
+            jObject[name] = new JValue(value);
+        }
+
         public static bool GetNamedBoolean(this JObject jObject, string name, bool defaultValue)
         {
             return jObject.GetNamedValue(name, defaultValue);
+        }
+
+        public static void SetNamedBoolean(this JObject jObject, string name, bool value)
+        {
+            jObject[name] = new JValue(value);
         }
 
         public static bool GetNamedBoolean(this JObject jObject, string name)
@@ -58,6 +68,11 @@ namespace HA4IoT.ManagementConsole.Json
         public static decimal GetNamedNumber(this JObject jObject, string name)
         {
             return jObject.GetNamedValue<decimal>(name);
+        }
+
+        public static void SetNamedNumber(this JObject jObject, string name, decimal value)
+        {
+            jObject[name] = new JValue(value);
         }
 
         public static JObject GetNamedObject(this JObject jObject, string name, JObject defaultValue)

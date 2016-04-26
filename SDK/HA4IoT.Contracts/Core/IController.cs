@@ -1,15 +1,13 @@
-﻿using HA4IoT.Contracts.Actuators;
+﻿using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
-using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
+using HA4IoT.Contracts.Core.Settings;
 
 namespace HA4IoT.Contracts.Core
 {
-    public interface IController : IDeviceController, IActuatorController, IAreaController, IAutomationController
+    public interface IController : IDeviceController, IComponentController, IAreaController, IAutomationController, IServiceController
     {
-        ILogger Logger { get; }
-        IHttpRequestController HttpApiController { get; }
+        IApiController ApiController { get; }
         IHomeAutomationTimer Timer { get; }    
-        IControllerSettings Settings { get; }  
+        ISettingsContainer Settings { get; }  
     }
 }

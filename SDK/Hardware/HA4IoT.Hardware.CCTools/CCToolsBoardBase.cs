@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Windows.Data.Json;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Hardware.CCTools
@@ -15,31 +15,22 @@ namespace HA4IoT.Hardware.CCTools
 
         private readonly Dictionary<int, IOBoardPort> _openPorts = new Dictionary<int, IOBoardPort>();
 
-        private readonly IHttpRequestController _httpApi;
-        private readonly ILogger _logger;
         private readonly IPortExpanderDriver _portExpanderDriver;
         
         private readonly byte[] _committedState;
         private readonly byte[] _state;
         private byte[] _peekedState;
 
-        protected CCToolsBoardBase(DeviceId id, IPortExpanderDriver portExpanderDriver, IHttpRequestController httpApi, ILogger logger)
+        protected CCToolsBoardBase(DeviceId id, IPortExpanderDriver portExpanderDriver)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (portExpanderDriver == null) throw new ArgumentNullException(nameof(portExpanderDriver));
-            if (httpApi == null) throw new ArgumentNullException(nameof(httpApi));
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
 
             Id = id;
             _portExpanderDriver = portExpanderDriver;
 
             _committedState = new byte[portExpanderDriver.StateSize];
             _state = new byte[portExpanderDriver.StateSize];
-            
-            _httpApi = httpApi;
-            _logger = logger;
-
-            ExposeToApi();
         }
 
         public event EventHandler<IOBoardStateChangedEventArgs> StateChanged;
@@ -96,7 +87,7 @@ namespace HA4IoT.Hardware.CCTools
                 _portExpanderDriver.Write(_state);
                 Array.Copy(_state, _committedState, _state.Length);
 
-                _logger.Verbose(Id + ": Committed state");
+                Log.Verbose(Id + ": Committed state");
             }
         }
 
@@ -110,7 +101,7 @@ namespace HA4IoT.Hardware.CCTools
             {
                 if (_peekedState != null)
                 {
-                    _logger.Warning("Peeking state while previous peeked state is not processed at " + Id + "'.");
+                    Log.Warning("Peeking state while previous peeked state is not processed at " + Id + "'.");
                 }
 
                 _peekedState = _portExpanderDriver.Read();
@@ -143,7 +134,7 @@ namespace HA4IoT.Hardware.CCTools
                 Array.Copy(newState, _state, _state.Length);
                 Array.Copy(newState, _committedState, _committedState.Length);
 
-                _logger.Verbose("'" + Id + "' fetched different state (" +
+                Log.Verbose("'" + Id + "' fetched different state (" +
                                              ByteExtensions.ToString(oldState) + "->" +
                                              ByteExtensions.ToString(newState) + ").");
 
@@ -151,64 +142,29 @@ namespace HA4IoT.Hardware.CCTools
             }
         }
 
-        private void ExposeToApi()
+        public void HandleApiCommand(IApiContext apiContext)
         {
-            _httpApi.HandleGet($"device/{Id}").Using(HandleApiGet);
-            _httpApi.HandlePost($"device/{Id}").Using(HandleApiPost);
-            _httpApi.HandlePatch($"device/{Id}").Using(HandleApiPatch);
-        }
-
-        private void HandleApiGet(HttpContext httpContext)
-        {
-            var result = new JsonObject();
-            result.SetNamedValue("state", GetState().ToJsonValue());
-            result.SetNamedValue("committed-state", GetCommittedState().ToJsonValue());
-
-            httpContext.Response.Body = new JsonBody(result);
-        }
-
-        private void HandleApiPost(HttpContext httpContext)
-        {
-            JsonObject requestData;
-            if (!JsonObject.TryParse(httpContext.Request.Body, out requestData))
-            {
-                httpContext.Response.StatusCode = HttpStatusCode.BadRequest;
-                return;
-            }
-
-            JsonArray state = requestData.GetNamedArray("state", null);
+            JsonArray state = apiContext.Request.GetNamedArray("state", null);
             if (state != null)
             {
                 byte[] buffer = JsonValueToByteArray(state);
                 SetState(buffer);
             }
 
-            var commit = requestData.GetNamedBoolean("commit", true);
+            var commit = apiContext.Request.GetNamedBoolean("commit", true);
             if (commit)
             {
                 CommitChanges();
             }
         }
 
-        private void HandleApiPatch(HttpContext httpContext)
+        public void HandleApiRequest(IApiContext apiContext)
         {
-            JsonObject requestData;
-            if (!JsonObject.TryParse(httpContext.Request.Body, out requestData))
-            {
-                httpContext.Response.StatusCode = HttpStatusCode.BadRequest;
-                return;
-            }
+            var result = new JsonObject();
+            result.SetNamedValue("state", GetState().ToJsonValue());
+            result.SetNamedValue("committed-state", GetCommittedState().ToJsonValue());
 
-            int port = (int)requestData.GetNamedNumber("port", 0);
-            bool state = requestData.GetNamedBoolean("state", false);
-            bool commit = requestData.GetNamedBoolean("commit", true);
-
-            SetPortState(port, state ? BinaryState.High : BinaryState.Low);
-
-            if (commit)
-            {
-                CommitChanges();
-            }
+            apiContext.Response = result;
         }
 
         internal BinaryState GetPortState(int pinNumber)

@@ -1,24 +1,26 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
+using System.Text;
 using Windows.Data.Json;
+using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Networking;
 
 namespace HA4IoT.Core.Settings
 {
-    public abstract class SettingsContainer
+    public class SettingsContainer : ISettingsContainer
     {
-        private readonly ILogger _logger;
+        private readonly JsonObject _settingsJson = new JsonObject();
         private readonly string _filename;
 
-        protected SettingsContainer(string filename, ILogger logger)
+        public SettingsContainer(string filename)
         {
             if (filename == null) throw new ArgumentNullException(nameof(filename));
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
 
-            _logger = logger;
             _filename = filename;
         }
+
+        public event EventHandler<SettingValueChangedEventArgs> ValueChanged;
 
         public void Load()
         {
@@ -27,16 +29,102 @@ namespace HA4IoT.Core.Settings
                 return;
             }
 
+            string fileContent = string.Empty;
             try
             {
-                string fileContent = File.ReadAllText(_filename);
-                JsonObject jsonObject = JsonObject.Parse(fileContent);
+                fileContent = File.ReadAllText(_filename, Encoding.UTF8);
+                var persistedSettings = JsonObject.Parse(fileContent);
 
-                ImportFromJsonObject(jsonObject);
+                foreach (var settingName in persistedSettings.Keys)
+                {
+                    _settingsJson.SetNamedValue(settingName, persistedSettings[settingName]);
+                }
+
+                MigrateOldSettings();
             }
             catch (Exception exception)
             {
-                _logger.Warning(exception, "Error while loading settings from '{0}'.", _filename);
+                Log.Warning(exception, $"Error while loading settings from '{_filename}' ({fileContent}).");
+                //TODO: File.Delete(_filename);
+            }
+        }
+
+        public string GetString(string name)
+        {
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
+            return _settingsJson.GetNamedString(name);
+        }
+
+        public float GetFloat(string name)
+        {
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
+            return (float)_settingsJson.GetNamedNumber(name);
+        }
+
+        public bool GetBoolean(string name)
+        {
+            return _settingsJson.GetNamedBoolean(name);
+        }
+
+        public TimeSpan GetTimeSpan(string name)
+        {
+            return TimeSpan.Parse(_settingsJson.GetNamedString(name), DateTimeFormatInfo.InvariantInfo);
+        }
+
+        public int GetInteger(string name)
+        {
+            return (int)_settingsJson.GetNamedNumber(name);
+        }
+
+        public void SetValue(string name, string value)
+        {
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
+            UpdateValue(name, JsonValue.CreateStringValue(value));
+        }
+
+        public void SetValue(string name, float value)
+        {
+            UpdateValue(name, JsonValue.CreateNumberValue(value));
+        }
+
+        public void SetValue(string name, bool value)
+        {
+            UpdateValue(name, JsonValue.CreateBooleanValue(value));
+        }
+
+        public void SetValue(string name, TimeSpan value)
+        {
+            UpdateValue(name, JsonValue.CreateStringValue(value.ToString("c")));
+        }
+
+        public void SetValue(string name, int value)
+        {
+            UpdateValue(name, JsonValue.CreateNumberValue(value));
+        }
+
+        public void SetValue(string name, JsonObject value)
+        {
+            if (value == null) throw new ArgumentNullException(nameof(value));
+
+            UpdateValue(name, value);
+        }
+
+        public JsonObject Export()
+        {
+            return _settingsJson;
+        }
+
+        public void Import(JsonObject source)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+
+            foreach (var key in source.Keys)
+            {
+                IJsonValue value = source.GetNamedValue(key);
+                UpdateValue(key, value);
             }
         }
 
@@ -48,28 +136,42 @@ namespace HA4IoT.Core.Settings
                 Directory.CreateDirectory(directory);
             }
 
-            File.WriteAllText(_filename, ExportToJsonObject().Stringify());
-            _logger.Verbose("Saved settings at '{0}'.", _filename);
+            File.WriteAllText(_filename, _settingsJson.Stringify(), Encoding.UTF8);
+            Log.Verbose($"Saved settings at '{_filename}'.");
         }
 
-        public JsonObject ExportToJsonObject()
+        private void MigrateOldSettings()
         {
-            return this.ToJsonObject();
+            if (_settingsJson.ContainsKey("AppSettings"))
+            {
+                _settingsJson["appSettings"] = _settingsJson["AppSettings"];
+                _settingsJson.Remove("AppSettings");
+                Save();
+            }
         }
 
-        public void ImportFromJsonObject(JsonObject value)
+        private void UpdateValue(string name, IJsonValue value)
         {
-            if (value == null) throw new ArgumentNullException(nameof(value));
+            IJsonValue existingValue = JsonValue.CreateNullValue();
 
-            value.DeserializeTo(this);
-            Save();
-        }
+            if (_settingsJson.ContainsKey(name))
+            {
+                existingValue = _settingsJson.GetNamedValue(name);
 
-        public void ImportFromJsonObjectWithoutSaving(JsonObject value)
-        {
-            if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value.ValueType != existingValue.ValueType)
+                {
+                    Log.Warning($"Skipped update of setting '{name}' due to different value types.");
+                    return;
+                }
 
-            value.DeserializeTo(this);
+                if (existingValue.Stringify().Equals(value.Stringify()))
+                {
+                    return;
+                }
+            }
+
+            _settingsJson.SetNamedValue(name, value);
+            ValueChanged?.Invoke(this, new SettingValueChangedEventArgs(name, existingValue, value));
         }
     }
 }

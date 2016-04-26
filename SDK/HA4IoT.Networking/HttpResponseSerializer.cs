@@ -14,7 +14,32 @@ namespace HA4IoT.Networking
         public byte[] SerializeResponse(HttpContext context)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
-            
+
+            var body = GetBody(context);
+            context.Response.Headers[HttpHeaderNames.ContentLength] = body.Length.ToString();
+
+            byte[] prefix = GeneratePrefix(context.Response);
+
+            using (var buffer = new MemoryStream(prefix.Length + body.Length))
+            {
+                buffer.Write(prefix, 0, prefix.Length);
+
+                if (body.Length > 0)
+                {
+                    buffer.Write(body, 0, body.Length);
+                }
+
+                return buffer.ToArray();
+            }
+        }
+
+        private byte[] GetBody(HttpContext context)
+        {
+            if (context.Response.StatusCode == HttpStatusCode.NotModified)
+            {
+                return new byte[0];
+            }
+
             byte[] content = new byte[0];
             if (context.Response.Body != null)
             {
@@ -28,17 +53,7 @@ namespace HA4IoT.Networking
                 }
             }
 
-            context.Response.Headers[HttpHeaderNames.ContentLength] = content.Length.ToString();
-
-            byte[] prefix = GeneratePrefix(context.Response);
-
-            using (var buffer = new MemoryStream())
-            {
-                buffer.Write(prefix, 0, prefix.Length);
-                buffer.Write(content, 0, content.Length);
-
-                return buffer.ToArray();
-            }
+            return content;
         }
 
         private byte[] GeneratePrefix(HttpResponse response)

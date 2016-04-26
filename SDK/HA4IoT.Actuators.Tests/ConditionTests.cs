@@ -1,5 +1,9 @@
 ﻿using FluentAssertions;
+using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Conditions;
+using HA4IoT.Conditions.Specialized;
+using HA4IoT.Contracts.Actuators;
+using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace HA4IoT.Actuators.Tests
@@ -117,6 +121,20 @@ namespace HA4IoT.Actuators.Tests
         {
             var condition = new FulfilledTestCondition().WithRelatedCondition(ConditionRelation.And, new FulfilledTestCondition()).WithRelatedCondition(ConditionRelation.And, new NotFulfilledTestCondition());
             condition.Validate().ShouldBeEquivalentTo(ConditionState.NotFulfilled);
+        }
+
+        [TestMethod]
+        public void ComponentHasStateCondition()
+        {
+            var stateMachineFactory = new TestStateMachineFactory();
+            var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
+
+            var condition = new ComponentIsInStateCondition(output, BinaryStateId.Off);
+            condition.GetIsFulfilled().ShouldBeEquivalentTo(true);
+
+            output.SetNextState();
+
+            condition.GetIsFulfilled().ShouldBeEquivalentTo(false);
         }
     }
 }

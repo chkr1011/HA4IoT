@@ -14,51 +14,51 @@ namespace HA4IoT.ManagementConsole.Configuration
 
             switch (System.Convert.ToString(value))
             {
-                case "HA4IoT.Actuators.Lamp":
+                case "Lamp":
                     {
                         imageName = "ImageLamp";
                         break;
                     }
 
-                case "HA4IoT.Actuators.Socket":
+                case "Socket":
                     {
                         imageName = "ImageSocket";
                         break;
                     }
 
-                case "HA4IoT.Actuators.TemperatureSensor":
+                case "TemperatureSensor":
                     {
                         imageName = "ImageTemperature";
                         break;
                     }
 
-                case "HA4IoT.Actuators.HumiditySensor":
+                case "HumiditySensor":
                     {
                         imageName = "ImageHumidity";
                         break;
                     }
 
-                case "HA4IoT.Actuators.MotionDetector":
+                case "MotionDetector":
                     {
                         imageName = "ImageWalk";
                         break;
                     }
 
-                case "HA4IoT.Actuators.Window":
+                case "Window":
                     {
                         imageName = "ImageWindow";
                         break;
                     }
 
-                case "HA4IoT.Actuators.RollerShutter":
+                case "RollerShutter":
                     {
                         imageName = "ImageRollerShutter";
                         break;
                     }
 
-                case "HA4IoT.Actuators.RollerShutterButtons":
-                case "HA4IoT.Actuators.VirtualButton":
-                case "HA4IoT.Actuators.Button":
+                case "RollerShutterButtons":
+                case "VirtualButton":
+                case "Button":
                     {
                         imageName = "ImageButton";
                         break;

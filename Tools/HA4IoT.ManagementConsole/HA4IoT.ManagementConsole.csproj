@@ -41,6 +41,26 @@
   <PropertyGroup>
     <ApplicationIcon>Gear.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -62,6 +82,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="WeatherStation\Model\WeatherStationTabVM.cs" />
+    <Compile Include="WeatherStation\Views\WeatherStationTabView.xaml.cs">
+      <DependentUpon>WeatherStationTabView.xaml</DependentUpon>
+    </Compile>
     <Page Include="Configuration\Views\ConfigurationTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -82,12 +106,12 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Chrome\Views\MainWindow.xaml">
+    <Page Include="MainWindow\Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="Chrome\ViewModel\MainWindowVM.cs" />
-    <Compile Include="Chrome\ViewModel\UnhandledExceptionPresenter.cs" />
+    <Compile Include="MainWindow\ViewModel\MainWindowVM.cs" />
+    <Compile Include="MainWindow\ViewModel\UnhandledExceptionPresenter.cs" />
     <Compile Include="Configuration\ActuatorParser.cs" />
     <Compile Include="Configuration\ActuatorTypeToImageConverter.cs" />
     <Compile Include="Configuration\AreaParser.cs" />
@@ -138,11 +162,15 @@
     <Compile Include="Json\JObjectExtensions.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Core\ViewModelBase.cs" />
-    <Compile Include="Chrome\Views\MainWindow.xaml.cs">
+    <Compile Include="MainWindow\Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Style.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WeatherStation\Views\WeatherStationTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -190,6 +218,7 @@
       <Name>HA4IoT.TraceReceiver</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

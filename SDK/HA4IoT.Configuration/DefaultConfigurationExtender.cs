@@ -1,12 +1,23 @@
 ﻿using System;
 using System.Xml.Linq;
 using HA4IoT.Actuators;
+using HA4IoT.Actuators.BinaryStateActuators;
+using HA4IoT.Actuators.Lamps;
+using HA4IoT.Actuators.RollerShutters;
+using HA4IoT.Actuators.Sockets;
+using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Services;
+using HA4IoT.ExternalServices.OpenWeatherMap;
 using HA4IoT.Hardware;
-using HA4IoT.Hardware.OpenWeatherMapWeatherStation;
+using HA4IoT.Sensors.Buttons;
+using HA4IoT.Sensors.HumiditySensors;
+using HA4IoT.Sensors.TemperatureSensors;
+using HA4IoT.Sensors.Windows;
 
 namespace HA4IoT.Configuration
 {
@@ -25,13 +36,22 @@ namespace HA4IoT.Configuration
             switch (element.Name.LocalName)
             {
                 case "I2CBus": return ParseI2CBus(element);
-                case "OpenWeatherMapWeatherStation": return ParseWeatherStation(element);
 
                 default: throw new ConfigurationInvalidException("Device not supported.", element);
             }
         }
 
-        public override IActuator ParseActuator(XElement element)
+        public override IService ParseService(XElement element)
+        {
+            switch (element.Name.LocalName)
+            {
+                case "OpenWeatherMapWeatherService": return ParseWeatherStation(element);
+
+                default: throw new ConfigurationInvalidException("Device not supported.", element);
+            }
+        }
+
+        public override IComponent ParseComponent(XElement element)
         {
             switch (element.Name.LocalName)
             {
@@ -40,7 +60,6 @@ namespace HA4IoT.Configuration
                 case "Socket": return ParseSocket(element);
                 case "Button": return ParseButton(element);
                 case "RollerShutter": return ParseRollerShutter(element);
-                case "RollerShutterButtons": return ParseRollerShutterButtons(element);
                 case "Window": return ParseWindow(element);
                 case "TemperatureSensor": return ParseTemperatureSensor(element);
                 case "HumiditySensor": return ParseHumiditySensor(element);
@@ -52,97 +71,68 @@ namespace HA4IoT.Configuration
 
         private IDevice ParseI2CBus(XElement element)
         {
-            return new BuiltInI2CBus(new DeviceId(element.GetMandatoryStringFromAttribute("id")), Controller.Logger);
+            return new BuiltInI2CBus(new DeviceId(element.GetMandatoryStringFromAttribute("id")));
         }
 
-        private IDevice ParseWeatherStation(XElement element)
+        private IService ParseWeatherStation(XElement element)
         {
-            return new OpenWeatherMapWeatherStation(
-                new DeviceId(element.GetMandatoryStringFromAttribute("id")), 
+            return new OpenWeatherMapWeatherService( 
                 Controller.Timer,
-                Controller.HttpApiController,
-                Controller.Logger);
+                Controller.ApiController);
         }
 
-        private IActuator ParseCustomBinaryStateOutputActuator(XElement element)
+        private IComponent ParseCustomBinaryStateOutputActuator(XElement element)
         {
             IBinaryOutput output = Parser.ParseBinaryOutput(element.GetMandatorySingleChildElementOrFromContainer("Output"));
 
-            return new CustomBinaryStateOutputActuator(
-                new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
-                output,
-                Controller.HttpApiController,
-                Controller.Logger);
+            return new CustomBinaryStateActuator(
+                new ComponentId(element.GetMandatoryStringFromAttribute("id")),
+                new PortBasedBinaryStateEndpoint(output));
         }
 
-        private IActuator ParseButton(XElement element)
+        private IComponent ParseButton(XElement element)
         {
             IBinaryInput input = Parser.ParseBinaryInput(element.GetMandatorySingleChildElementOrFromContainer("Input"));
 
             return new Button(
-                new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
-                input,
-                Controller.HttpApiController,
-                Controller.Logger,
+                new ComponentId(element.GetMandatoryStringFromAttribute("id")),
+                new PortBasedButtonEndpoint(input), 
                 Controller.Timer);
         }
 
-        private IActuator ParseSocket(XElement element)
+        private IComponent ParseSocket(XElement element)
         {
             IBinaryOutput output = Parser.ParseBinaryOutput(element.GetMandatorySingleChildElementOrFromContainer("Output"));
 
             return new Socket(
-                new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
-                output,
-                Controller.HttpApiController,
-                Controller.Logger);
+                new ComponentId(element.GetMandatoryStringFromAttribute("id")),
+                new PortBasedBinaryStateEndpoint(output));
         }
 
-        private IActuator ParseLamp(XElement element)
+        private IComponent ParseLamp(XElement element)
         {
             IBinaryOutput output = Parser.ParseBinaryOutput(element.GetMandatorySingleChildElementOrFromContainer("Output"));
 
             return new Lamp(
-                new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
-                output,
-                Controller.HttpApiController,
-                Controller.Logger);
+                new ComponentId(element.GetMandatoryStringFromAttribute("id")),
+                new PortBasedBinaryStateEndpoint(output));
         }
 
-        private IActuator ParseRollerShutter(XElement element)
+        private IComponent ParseRollerShutter(XElement element)
         {
             IBinaryOutput powerOutput = Parser.ParseBinaryOutput(element.GetMandatorySingleChildFromContainer("Power"));
             IBinaryOutput directionOutput = Parser.ParseBinaryOutput(element.GetMandatorySingleChildFromContainer("Direction"));
 
             return new RollerShutter(
-                new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
-                powerOutput,
-                directionOutput,
-                Controller.HttpApiController,
-                Controller.Logger,
+                new ComponentId(element.GetMandatoryStringFromAttribute("id")),
+                new PortBasedRollerShutterEndpoint(powerOutput, directionOutput), 
                 Controller.Timer);
         }
 
-        private IActuator ParseRollerShutterButtons(XElement element)
-        {
-            IBinaryInput upInput = Parser.ParseBinaryInput(element.GetMandatorySingleChildFromContainer("Up"));
-            IBinaryInput downInput = Parser.ParseBinaryInput(element.GetMandatorySingleChildFromContainer("Down"));
-
-            return new RollerShutterButtons(
-                new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
-                upInput,
-                downInput,
-                Controller.HttpApiController,
-                Controller.Logger,
-                Controller.Timer);
-        }
-
-        private IActuator ParseWindow(XElement element)
+        private IComponent ParseWindow(XElement element)
         {
             var window = new Window(
-                new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
-                Controller.HttpApiController,
-                Controller.Logger);
+                new ComponentId(element.GetMandatoryStringFromAttribute("id")));
 
             var leftCasementElement = element.Element("LeftCasement");
             if (leftCasementElement != null)
@@ -179,56 +169,52 @@ namespace HA4IoT.Configuration
             return casement;
         }
 
-        private IActuator ParseHumiditySensor(XElement element)
+        private IComponent ParseHumiditySensor(XElement element)
         {
-            ISingleValueSensor sensor = Parser.ParseSingleValueSensor(element.GetMandatorySingleChildElementOrFromContainer("Sensor"));
+            var sensor = Parser.ParseNumericValueSensor(element.GetMandatorySingleChildElementOrFromContainer("Sensor"));
 
             return new HumiditySensor(
-                new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
-                sensor,
-                Controller.HttpApiController,
-                Controller.Logger);
+                new ComponentId(element.GetMandatoryStringFromAttribute("id")),
+                sensor);
         }
 
-        private IActuator ParseTemperatureSensor(XElement element)
+        private IComponent ParseTemperatureSensor(XElement element)
         {
-            ISingleValueSensor sensor = Parser.ParseSingleValueSensor(element.GetMandatorySingleChildElementOrFromContainer("Sensor"));
+            var sensor = Parser.ParseNumericValueSensor(element.GetMandatorySingleChildElementOrFromContainer("Sensor"));
 
             return new TemperatureSensor(
-                new ActuatorId(element.GetMandatoryStringFromAttribute("id")),
-                sensor,
-                Controller.HttpApiController,
-                Controller.Logger);
+                new ComponentId(element.GetMandatoryStringFromAttribute("id")),
+                sensor);
         }
 
-        private IActuator ParseStateMachine(XElement element)
+        private IComponent ParseStateMachine(XElement element)
         {
-            var id = new ActuatorId(element.GetMandatoryStringFromAttribute("id"));
+            var id = new ComponentId(element.GetMandatoryStringFromAttribute("id"));
 
-            var stateMachine = new StateMachine(id, Controller.HttpApiController, Controller.Logger);
+            var stateMachine = new StateMachine(id);
 
             foreach (var stateElement in element.Element("States").Elements("State"))
             {
                 var stateId = stateElement.GetMandatoryStringFromAttribute("id");
-                var state = stateMachine.AddState(stateId);
+                var state = stateMachine.AddState(new StatefulComponentState(stateId));
                 
                 foreach (var lowPortElement in stateElement.Element("LowPorts").Elements())
                 {
-                    state.WithPort(Parser.ParseBinaryOutput(lowPortElement), BinaryState.Low);
+                    state.WithOutput(Parser.ParseBinaryOutput(lowPortElement), BinaryState.Low);
                 }
 
                 foreach (var highPortElement in stateElement.Element("LowPorts").Elements())
                 {
-                    state.WithPort(Parser.ParseBinaryOutput(highPortElement), BinaryState.High);
+                    state.WithOutput(Parser.ParseBinaryOutput(highPortElement), BinaryState.High);
                 }
 
                 foreach (var actuatorElement in stateElement.Element("Actuators").Elements())
                 {
-                    var targetState = actuatorElement.GetMandatoryEnumFromAttribute<BinaryActuatorState>("targetState");
-                    var actuatorId = new ActuatorId(actuatorElement.GetMandatoryStringFromAttribute("id"));
-                    var actuator = Controller.Actuator<IBinaryStateOutputActuator>(actuatorId);
+                    var targetState = actuatorElement.GetMandatoryStringFromAttribute("targetState");
+                    var actuatorId = new ComponentId(actuatorElement.GetMandatoryStringFromAttribute("id"));
+                    var actuator = Controller.GetComponent<IStateMachine>(actuatorId);
 
-                    state.WithActuator(actuator, targetState);
+                    state.WithActuator(actuator, new StatefulComponentState(targetState));
                 }
             }
             

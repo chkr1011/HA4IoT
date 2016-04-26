@@ -21,8 +21,7 @@ namespace HA4IoT.Core
 
             _items.Add(id.Value, item);
         }
-
-
+        
         public void AddOrUpdate(TId id, TItem device)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
@@ -71,6 +70,13 @@ namespace HA4IoT.Core
         public IList<TItem> GetAll()
         {
             return _items.Values.ToList();
+        }
+
+        public bool Contains(TId id)
+        {
+            if (id == null) throw new ArgumentNullException(nameof(id));
+
+            return _items.Any(i => i.Key.Equals(id.Value));
         }
     }
 }

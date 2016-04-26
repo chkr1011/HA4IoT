@@ -114,31 +114,39 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AreaSettingsHttpApiDispatcher.cs" />
     <Compile Include="AreaIdFactory.cs" />
-    <Compile Include="AreaSettings.cs" />
     <Compile Include="AutomationCollection.cs" />
     <Compile Include="ActuatorCollection.cs" />
+    <Compile Include="AreaSettingsWrapper.cs" />
     <Compile Include="ControllerApiDispatcher.cs" />
     <Compile Include="ControllerBase.cs" />
     <Compile Include="ControllerExtensions.cs" />
-    <Compile Include="ControllerSettings.cs" />
     <Compile Include="Discovery\DiscoveryServer.cs" />
     <Compile Include="GenericControllerCollection.cs" />
     <Compile Include="DeviceCollection.cs" />
     <Compile Include="HealthMonitor.cs" />
     <Compile Include="Area.cs" />
     <Compile Include="AreaCollection.cs" />
-    <Compile Include="Settings\SettingsContainerHttpApiDispatcher.cs" />
-    <Compile Include="Settings\Setting.cs" />
+    <Compile Include="Settings\SettingsContainerApiDispatcher.cs" />
     <Compile Include="Settings\SettingsContainer.cs" />
-    <Compile Include="StoragePath.cs" />
     <Compile Include="Timer\Timeout.cs" />
     <Compile Include="Timer\HomeAutomationTimer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Properties\HA4IoT.Core.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Api\HA4IoT.Api.AzureCloud\HA4IoT.Api.AzureCloud.csproj">
+      <Project>{B03D2D62-A682-44AD-9BB8-E88B53973AFA}</Project>
+      <Name>HA4IoT.Api.AzureCloud</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Api\HA4IoT.Api.LocalHttpServer\HA4IoT.Api.LocalRestServer.csproj">
+      <Project>{88CB819A-3CD6-4AC3-B767-1E5360F5124D}</Project>
+      <Name>HA4IoT.Api.LocalRestServer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Api\HA4IoT.Api\HA4IoT.Api.csproj">
+      <Project>{ED4B4304-0E5D-459D-857D-622F790C1A32}</Project>
+      <Name>HA4IoT.Api</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{551337E7-D1EF-4145-92B4-F7086F7665A6}</Project>
       <Name>HA4IoT.Contracts</Name>
@@ -150,6 +158,10 @@
     <ProjectReference Include="..\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
       <Name>HA4IoT.Networking</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HA4IoT.Telemetry\HA4IoT.Telemetry.csproj">
+      <Project>{97F3345C-33B6-4779-9212-5FFBCEEF3F96}</Project>
+      <Name>HA4IoT.Telemetry</Name>
     </ProjectReference>
     <ProjectReference Include="..\Hardware\HA4IoT.Hardware.Pi2\HA4IoT.Hardware.Pi2.csproj">
       <Project>{39819B8F-40F8-418A-AD3A-92A8C8D63268}</Project>

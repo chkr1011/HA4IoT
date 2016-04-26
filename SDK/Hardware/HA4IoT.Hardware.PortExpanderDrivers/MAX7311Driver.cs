@@ -28,8 +28,6 @@ namespace HA4IoT.Hardware.PortExpanderDrivers
             if (state == null) throw new ArgumentNullException(nameof(state));
             if (state.Length != StateSize) throw new ArgumentException("Length is invalid.", nameof(state));
 
-            // TODO: Check error handling here if device is currently not available.
-
             byte[] setConfigurationToOutput = {ConfigurationRegisterA, 0, 0};
             byte[] setState = {OutputPortRegisterA, state[0], state[1]};
 
@@ -42,8 +40,6 @@ namespace HA4IoT.Hardware.PortExpanderDrivers
 
         public byte[] Read()
         {
-            // TODO: Check error handling here if device is currently not available.
-
             byte[] readState = {InputPortRegisterA};
             var buffer = new byte[StateSize];
             _i2CBus.Execute(_address, bus => bus.WriteRead(readState, buffer));

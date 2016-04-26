@@ -1,17 +1,10 @@
-﻿using Windows.Data.Json;
+﻿using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Contracts.Actuators
 {
-    public interface IActuator
+    public interface IActuator : IComponent
     {
-        ActuatorId Id { get; }
-
-        JsonObject ExportConfigurationToJsonObject();
-
-        JsonObject ExportStatusToJsonObject();
-
-        void LoadSettings();
-
-        void ExposeToApi();
+        void SetState(IComponentState state, params IHardwareParameter[] parameters);
     }
 }

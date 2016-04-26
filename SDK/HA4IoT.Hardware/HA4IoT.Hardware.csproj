@@ -114,7 +114,6 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BinaryOutputWithState.cs" />
     <Compile Include="ByteExtensions.cs" />
     <Compile Include="ControllerExtensions.cs" />
     <Compile Include="BuiltInI2CBus.cs" />
@@ -123,9 +122,6 @@
     <Compile Include="InterruptMonitor.cs" />
     <Compile Include="LogicalBinaryOutput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Test\TestInputPort.cs" />
-    <Compile Include="Test\TestOutputPort.cs" />
-    <Compile Include="Test\TestPort.cs" />
     <Content Include="Properties\HA4IoT.Hardware.rd.xml" />
   </ItemGroup>
   <ItemGroup>

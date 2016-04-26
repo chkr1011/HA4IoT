@@ -17,8 +17,6 @@ namespace HA4IoT.Contracts
             {
                 IsDay = timeOfDay > Sunrise && timeOfDay < Sunset;
             }
-
-            IsNight = !IsDay;
         }
 
         public TimeSpan Sunset { get; }
@@ -26,7 +24,5 @@ namespace HA4IoT.Contracts
         public TimeSpan Sunrise { get; }
 
         public bool IsDay { get; }
-
-        public bool IsNight { get; }
     }
 }

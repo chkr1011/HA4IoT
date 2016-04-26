@@ -1,31 +1,31 @@
-﻿using HA4IoT.Actuators;
+﻿using HA4IoT.Actuators.Sockets;
+using HA4IoT.Actuators.StateMachines;
+using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Configuration;
+using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
-using HA4IoT.Hardware.RemoteSwitch;
+using HA4IoT.PersonalAgent;
+using HA4IoT.Sensors.Buttons;
+using HA4IoT.Sensors.HumiditySensors;
+using HA4IoT.Sensors.MotionDetectors;
+using HA4IoT.Sensors.TemperatureSensors;
+using HA4IoT.Sensors.Windows;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
-    internal class OfficeConfiguration
+    internal class OfficeConfiguration : RoomConfiguration
     {
-        private enum Office
+        public enum Office
         {
             TemperatureSensor,
             HumiditySensor,
             MotionDetector,
-
-            LightCeilingFrontLeft,
-            LightCeilingFrontMiddle,
-            LightCeilingFrontRight,
-            LightCeilingMiddleLeft,
-            LightCeilingMiddleMiddle,
-            LightCeilingMiddleRight,
-            LightCeilingRearLeft,
-            LightCeilingRearRight,
 
             SocketFrontLeft,
             SocketFrontRight,
@@ -34,6 +34,7 @@ namespace HA4IoT.Controller.Main.Rooms
             SocketRearRight,
             SocketRearLeft,
             SocketRearLeftEdge,
+
             RemoteSocketDesk,
 
             ButtonUpperLeft,
@@ -42,37 +43,31 @@ namespace HA4IoT.Controller.Main.Rooms
             ButtonLowerRight,
 
             CombinedCeilingLights,
-            CombinedCeilingLightsCouchOnly,
-            CombinedCeilingLightsDeskOnly,
-            CombinedCeilingLightsOther,
 
             WindowLeft,
             WindowRight
         }
 
-        public void Setup(Controller controller, CCToolsBoardController ccToolsController, RemoteSocketController remoteSwitchController)
+        public OfficeConfiguration(IController controller) 
+            : base(controller)
         {
-            var hsrel8 = ccToolsController.CreateHSREL8(Device.OfficeHSREL8, new I2CSlaveAddress(20));
-            var hspe8 = ccToolsController.CreateHSPE8OutputOnly(Device.UpperFloorAndOfficeHSPE8, new I2CSlaveAddress(37));
-            var input4 = controller.Device<HSPE16InputOnly>(Device.Input4);
-            var input5 = controller.Device<HSPE16InputOnly>(Device.Input5);
+        }
 
+        public override void Setup()
+        {
+            var hsrel8 = CCToolsBoardController.CreateHSREL8(InstalledDevice.OfficeHSREL8, new I2CSlaveAddress(20));
+            var hspe8 = CCToolsBoardController.CreateHSPE8OutputOnly(InstalledDevice.UpperFloorAndOfficeHSPE8, new I2CSlaveAddress(37));
+            var input4 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input4);
+            var input5 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input5);
+            
             const int SensorPin = 2;
 
-            var i2cHardwareBridge = controller.Device<I2CHardwareBridge>();
+            var i2cHardwareBridge = Controller.GetDevice<I2CHardwareBridge>();
 
-            var office = controller.CreateArea(Room.Office)
+            var room = Controller.CreateArea(Room.Office)
                 .WithMotionDetector(Office.MotionDetector, input4.GetInput(13))
                 .WithTemperatureSensor(Office.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(Office.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
-                .WithLamp(Office.LightCeilingFrontRight, hsrel8.GetOutput(8).WithInvertedState())
-                .WithLamp(Office.LightCeilingFrontMiddle, hspe8.GetOutput(2).WithInvertedState())
-                .WithLamp(Office.LightCeilingFrontLeft, hspe8.GetOutput(0).WithInvertedState())
-                .WithLamp(Office.LightCeilingMiddleRight, hsrel8.GetOutput(9).WithInvertedState())
-                .WithLamp(Office.LightCeilingMiddleMiddle, hspe8.GetOutput(3).WithInvertedState())
-                .WithLamp(Office.LightCeilingMiddleLeft, hspe8.GetOutput(1).WithInvertedState())
-                .WithLamp(Office.LightCeilingRearRight, hsrel8.GetOutput(12).WithInvertedState())
-                .WithLamp(Office.LightCeilingRearLeft, hsrel8.GetOutput(13).WithInvertedState())
                 .WithSocket(Office.SocketFrontLeft, hsrel8.GetOutput(0))
                 .WithSocket(Office.SocketFrontRight, hsrel8.GetOutput(6))
                 .WithSocket(Office.SocketWindowLeft, hsrel8.GetOutput(10).WithInvertedState())
@@ -86,58 +81,98 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithButton(Office.ButtonUpperRight, input4.GetInput(15))
                 .WithWindow(Office.WindowLeft, w => w.WithLeftCasement(input4.GetInput(11)).WithRightCasement(input4.GetInput(12), input4.GetInput(10)))
                 .WithWindow(Office.WindowRight, w => w.WithLeftCasement(input4.GetInput(8)).WithRightCasement(input4.GetInput(9), input5.GetInput(8)))
-                .WithSocket(Office.RemoteSocketDesk, remoteSwitchController.GetOutput(0))
-                .WithStateMachine(Office.CombinedCeilingLights, SetupLight);
+                .WithSocket(Office.RemoteSocketDesk, RemoteSocketController.GetOutput(0))
+                .WithStateMachine(Office.CombinedCeilingLights, (s, a) => SetupLight(s, hsrel8, hspe8, a));
             
-            office.Button(Office.ButtonUpperLeft).WithLongAction(() =>
+            room.GetButton(Office.ButtonUpperLeft).GetPressedLongTrigger().Attach(() =>
             {
-                office.StateMachine(Office.CombinedCeilingLights).TurnOff();
-                office.Socket(Office.SocketRearLeftEdge).TurnOff();
-                office.Socket(Office.SocketRearLeft).TurnOff();
-                office.Socket(Office.SocketFrontLeft).TurnOff();
+                room.GetStateMachine(Office.CombinedCeilingLights).TryTurnOff();
+                room.Socket(Office.SocketRearLeftEdge).TryTurnOff();
+                room.Socket(Office.SocketRearLeft).TryTurnOff();
+                room.Socket(Office.SocketFrontLeft).TryTurnOff();
             });
         }
 
-        private void SetupLight(StateMachine light, IArea room)
+        private void SetupLight(StateMachine light, HSREL8 hsrel8, HSPE8OutputOnly hspe8, IArea room)
         {
-            var lightsCouchOnly = room.CombineActuators(Office.CombinedCeilingLightsCouchOnly)
-                .WithActuator(room.Lamp(Office.LightCeilingRearRight));
+            // Front lights (left, middle, right)
+            var fl = hspe8[HSPE8Pin.GPIO0].WithInvertedState();
+            var fm = hspe8[HSPE8Pin.GPIO2].WithInvertedState();
+            var fr = hsrel8[HSREL8Pin.GPIO0].WithInvertedState();
 
-            var lightsDeskOnly = room.CombineActuators(Office.CombinedCeilingLightsDeskOnly)
-                .WithActuator(room.Lamp(Office.LightCeilingFrontMiddle))
-                .WithActuator(room.Lamp(Office.LightCeilingFrontLeft))
-                .WithActuator(room.Lamp(Office.LightCeilingMiddleLeft));
+            // Middle lights (left, middle, right)
+            var ml = hspe8[HSPE8Pin.GPIO1].WithInvertedState();
+            var mm = hspe8[HSPE8Pin.GPIO3].WithInvertedState();
+            var mr = hsrel8[HSREL8Pin.GPIO1].WithInvertedState();
+            
+            // Rear lights (left, right)
+            var rl = hsrel8[HSREL8Pin.GPIO5].WithInvertedState();
+            var rr = hsrel8[HSREL8Pin.GPIO4].WithInvertedState();
 
-            var lightsOther = room.CombineActuators(Office.CombinedCeilingLightsOther)
-                .WithActuator(room.Lamp(Office.LightCeilingFrontRight))
-                .WithActuator(room.Lamp(Office.LightCeilingMiddleMiddle))
-                .WithActuator(room.Lamp(Office.LightCeilingMiddleRight))
-                .WithActuator(room.Lamp(Office.LightCeilingRearLeft));
+            light.AddOffState()
+                .WithLowOutput(fl)
+                .WithLowOutput(fm)
+                .WithLowOutput(fr)
+                .WithLowOutput(ml)
+                .WithLowOutput(mm)
+                .WithLowOutput(mr)
+                .WithLowOutput(rl)
+                .WithLowOutput(rr);
+
+            light.AddOnState()
+                .WithHighOutput(fl)
+                .WithHighOutput(fm)
+                .WithHighOutput(fr)
+                .WithHighOutput(ml)
+                .WithHighOutput(mm)
+                .WithHighOutput(mr)
+                .WithHighOutput(rl)
+                .WithHighOutput(rr);
+
+            var deskOnlyStateId = new StatefulComponentState("DeskOnly");
+            light.AddState(deskOnlyStateId)
+                .WithHighOutput(fl)
+                .WithHighOutput(fm)
+                .WithLowOutput(fr)
+                .WithHighOutput(ml)
+                .WithLowOutput(mm)
+                .WithLowOutput(mr)
+                .WithLowOutput(rl)
+                .WithLowOutput(rr);
+
+            var couchOnlyStateId = new StatefulComponentState("CouchOnly");
+            light.AddState(couchOnlyStateId)
+                .WithLowOutput(fl)
+                .WithLowOutput(fm)
+                .WithLowOutput(fr)
+                .WithLowOutput(ml)
+                .WithLowOutput(mm)
+                .WithLowOutput(mr)
+                .WithLowOutput(rl)
+                .WithHighOutput(rr);
 
             light.WithTurnOffIfStateIsAppliedTwice();
 
-            light.AddOffState()
-                .WithActuator(lightsDeskOnly, BinaryActuatorState.Off)
-                .WithActuator(lightsCouchOnly, BinaryActuatorState.Off)
-                .WithActuator(lightsOther, BinaryActuatorState.Off);
+            room.GetButton(Office.ButtonLowerRight)
+                .GetPressedShortlyTrigger()
+                .Attach(light.GetSetStateAction(couchOnlyStateId));
 
-            light.AddOnState()
-                .WithActuator(lightsDeskOnly, BinaryActuatorState.On)
-                .WithActuator(lightsCouchOnly, BinaryActuatorState.On)
-                .WithActuator(lightsOther, BinaryActuatorState.On).
-                ConnectApplyStateWith(room.Button(Office.ButtonUpperLeft));
+            room.GetButton(Office.ButtonLowerLeft)
+                .GetPressedShortlyTrigger()
+                .Attach(light.GetSetStateAction(deskOnlyStateId));
 
-            light.AddState("DeskOnly")
-                .WithActuator(lightsDeskOnly, BinaryActuatorState.On)
-                .WithActuator(lightsCouchOnly, BinaryActuatorState.Off)
-                .WithActuator(lightsOther, BinaryActuatorState.Off)
-                .ConnectApplyStateWith(room.Button(Office.ButtonLowerLeft));
+            room.GetButton(Office.ButtonUpperLeft)
+                .GetPressedShortlyTrigger()
+                .Attach(light.GetSetStateAction(BinaryStateId.On));
 
-            light.AddState("CouchOnly")
-                .WithActuator(lightsDeskOnly, BinaryActuatorState.Off)
-                .WithActuator(lightsCouchOnly, BinaryActuatorState.On)
-                .WithActuator(lightsOther, BinaryActuatorState.Off)
-                .ConnectApplyStateWith(room.Button(Office.ButtonLowerRight));
+            var synonymService = Controller.GetService<SynonymService>();
+            synonymService.AddSynonymsForArea(Room.Office, "Büro", "Arbeitszimmer");
+
+            synonymService.AddSynonymsForComponent(Room.Office, Office.CombinedCeilingLights, "Licht");
+            synonymService.AddSynonymsForComponent(Room.Office, Office.SocketRearLeftEdge, "Rotlicht", "Pufflicht", "Rot");
+
+            synonymService.AddSynonymsForComponentState(deskOnlyStateId, "Schreibtisch");
+            synonymService.AddSynonymsForComponentState(couchOnlyStateId, "Couch");            
         }
     }
 }

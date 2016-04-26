@@ -13,18 +13,27 @@
         Lamp4,
         Lamp5,
         Lamp6,
+        Lamp7,
+        Lamp8,
 
         Socket1,
         Socket2,
 
         Window,
 
-        LedStripRemote,
+        RollerShutter,
 
         BathroomFan,
         CeilingFan,
 
         Button1,
-        Button2
+        Button2,
+
+        ButtonStripRed,
+        ButtonStripBlue,
+        ButtonStripGreen,
+        ButtonStripWhite,
+        ButtonStripOff,
+        ButtonStripOn,
     }
 }

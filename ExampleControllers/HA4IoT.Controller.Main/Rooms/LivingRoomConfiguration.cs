@@ -1,14 +1,21 @@
-﻿using HA4IoT.Actuators;
-using HA4IoT.Actuators.Connectors;
+﻿using HA4IoT.Actuators.Connectors;
+using HA4IoT.Actuators.Lamps;
+using HA4IoT.Actuators.Sockets;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
+using HA4IoT.PersonalAgent;
+using HA4IoT.Sensors.Buttons;
+using HA4IoT.Sensors.HumiditySensors;
+using HA4IoT.Sensors.TemperatureSensors;
+using HA4IoT.Sensors.Windows;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
-    internal class LivingRoomConfiguration
+    internal class LivingRoomConfiguration : RoomConfiguration
     {
         private enum LivingRoom
         {
@@ -44,19 +51,24 @@ namespace HA4IoT.Controller.Main.Rooms
             WindowRight,
         }
 
-        public void Setup(Controller controller, CCToolsBoardController ccToolsController)
+        public LivingRoomConfiguration(IController controller) 
+            : base(controller)
         {
-            var hsrel8 = ccToolsController.CreateHSREL8(Device.LivingRoomHSREL8, new I2CSlaveAddress(18));
-            var hsrel5 = ccToolsController.CreateHSREL5(Device.LivingRoomHSREL5, new I2CSlaveAddress(57));
-            
-            var input0 = controller.Device<HSPE16InputOnly>(Device.Input0);
-            var input1 = controller.Device<HSPE16InputOnly>(Device.Input1);
+        }
 
-            var i2cHardwareBridge = controller.Device<I2CHardwareBridge>();
+        public override void Setup()
+        {
+            var hsrel8 = CCToolsBoardController.CreateHSREL8(InstalledDevice.LivingRoomHSREL8, new I2CSlaveAddress(18));
+            var hsrel5 = CCToolsBoardController.CreateHSREL5(InstalledDevice.LivingRoomHSREL5, new I2CSlaveAddress(57));
+            
+            var input0 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input0);
+            var input1 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input1);
+
+            var i2cHardwareBridge = Controller.GetDevice<I2CHardwareBridge>();
 
             const int SensorPin = 12;
 
-            var livingRoom = controller.CreateArea(Room.LivingRoom)
+            var room = Controller.CreateArea(Room.LivingRoom)
                 .WithTemperatureSensor(LivingRoom.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(LivingRoom.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
                 .WithLamp(LivingRoom.LampCouch, hsrel8.GetOutput(8).WithInvertedState())
@@ -80,15 +92,17 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithWindow(LivingRoom.WindowRight,
                     w => w.WithLeftCasement(input1.GetInput(14), input1.GetInput(15)).WithRightCasement(input1.GetInput(13), input1.GetInput(12)));
 
-            livingRoom.Lamp(LivingRoom.LampDiningTable)
-                .ConnectToggleActionWith(livingRoom.Button(LivingRoom.ButtonUpper))
-                .ConnectToggleActionWith(livingRoom.Button(LivingRoom.ButtonPassage));
+            room.GetLamp(LivingRoom.LampDiningTable)
+                .ConnectToggleActionWith(room.GetButton(LivingRoom.ButtonUpper))
+                .ConnectToggleActionWith(room.GetButton(LivingRoom.ButtonPassage));
 
-            livingRoom.Lamp(LivingRoom.LampCouch).
-                ConnectToggleActionWith(livingRoom.Button(LivingRoom.ButtonMiddle));
+            room.GetLamp(LivingRoom.LampCouch).
+                ConnectToggleActionWith(room.GetButton(LivingRoom.ButtonMiddle));
 
-            livingRoom.Socket(LivingRoom.SocketWallRightEdgeRight).
-                ConnectToggleActionWith(livingRoom.Button(LivingRoom.ButtonLower));
+            room.Socket(LivingRoom.SocketWallRightEdgeRight).
+                ConnectToggleActionWith(room.GetButton(LivingRoom.ButtonLower));
+
+            Controller.GetService<SynonymService>().AddSynonymsForArea(Room.LivingRoom, "Wohnzimmer", "LivingRoom");
         }
     }
 }

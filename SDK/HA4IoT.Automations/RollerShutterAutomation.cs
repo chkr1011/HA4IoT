@@ -4,41 +4,49 @@ using System.Linq;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
-using HA4IoT.Contracts.WeatherStation;
+using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.WeatherService;
 
 namespace HA4IoT.Automations
 {
-    public class RollerShutterAutomation : AutomationBase<RollerShutterAutomationSettings>
+    public class RollerShutterAutomation : AutomationBase
     {
-        private readonly List<ActuatorId> _rollerShutters = new List<ActuatorId>();
+        private readonly List<ComponentId> _rollerShutters = new List<ComponentId>();
 
         private readonly IHomeAutomationTimer _timer;
-        private readonly IWeatherStation _weatherStation;
-        private readonly IActuatorController _actuatorController;
-        private readonly ILogger _logger;
+        private readonly IDaylightService _daylightService;
+        private readonly IWeatherService _weatherService;
+        private readonly IComponentController _componentController;
 
         private bool _maxOutsideTemperatureApplied;
         private bool _autoOpenIsApplied;
         private bool _autoCloseIsApplied;
         
-        public RollerShutterAutomation(AutomationId id, IHomeAutomationTimer timer, IWeatherStation weatherStation, IHttpRequestController httpApiController, IActuatorController actuatorController, ILogger logger)
+        public RollerShutterAutomation(
+            AutomationId id, 
+            IHomeAutomationTimer timer,
+            IDaylightService daylightService,
+            IWeatherService weatherService,
+            IComponentController componentController)
             : base(id)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
-            if (weatherStation == null) throw new ArgumentNullException(nameof(weatherStation));
-            if (actuatorController == null) throw new ArgumentNullException(nameof(actuatorController));
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
+            if (weatherService == null) throw new ArgumentNullException(nameof(weatherService));
+            if (componentController == null) throw new ArgumentNullException(nameof(componentController));
 
             _timer = timer;
-            _weatherStation = weatherStation;
-            _actuatorController = actuatorController;
-            _logger = logger;
+            _daylightService = daylightService;
+            _weatherService = weatherService;
+            _componentController = componentController;
 
-            Settings = new RollerShutterAutomationSettings(id, httpApiController, logger);           
+            SpecialSettingsWrapper = new RollerShutterAutomationSettingsWrapper(Settings);           
         }
+
+        public RollerShutterAutomationSettingsWrapper SpecialSettingsWrapper { get; }
 
         public RollerShutterAutomation WithRollerShutters(params IRollerShutter[] rollerShutters)
         {
@@ -55,16 +63,17 @@ namespace HA4IoT.Automations
 
         public void PerformPendingActions()
         {
-            if (!Settings.IsEnabled.Value)
+            if (!this.GetIsEnabled())
             {
                 return;
             }
 
-            if (!_maxOutsideTemperatureApplied && GetItIsTooHotIsAffected())
+            if (!_maxOutsideTemperatureApplied && TooHotIsAffected())
             {
                 _maxOutsideTemperatureApplied = true;
-                _logger.Info(GetTracePrefix() + $"Closing because outside temperature reaches {Settings.AutoCloseIfTooHotTemperaure.Value}°C.");
-                StartMove(RollerShutterState.MovingDown);
+
+                Log.Info(GetTracePrefix() + $"Closing because outside temperature reaches {SpecialSettingsWrapper.AutoCloseIfTooHotTemperaure}°C.");
+                SetStates(RollerShutterStateId.MovingDown);
 
                 return;
             }
@@ -76,40 +85,49 @@ namespace HA4IoT.Automations
 
             if (!_autoOpenIsApplied && autoOpenIsInRange)
             {
-                if (GetDoNotOpenDueToTimeIsAffected())
+                if (DoNotOpenDueToTimeIsAffected())
                 {
                     return;
                 }
 
-                if (GetDoNotOpenDueToColdTemperatureIsAffected())
+                if (TooColdIsAffected())
                 {
-                    _logger.Info(GetTracePrefix() + $"Cancelling opening because outside temperature is lower than {Settings.DoNotOpenIfTooColdTemperature.Value}°C.");
-                    _autoOpenIsApplied = true;
-
-                    return;
+                    Log.Info(GetTracePrefix() + $"Cancelling opening because outside temperature is lower than {SpecialSettingsWrapper.SkipIfFrozenTemperature}°C.");
+                }
+                else
+                {
+                    SetStates(RollerShutterStateId.MovingUp);
                 }
                 
                 _autoOpenIsApplied = true;
                 _autoCloseIsApplied = false;
-                _maxOutsideTemperatureApplied = false;
 
-                StartMove(RollerShutterState.MovingUp);
-                _logger.Info(GetTracePrefix() + "Applied sunrise");                
+                _maxOutsideTemperatureApplied = false;
+                
+                Log.Info(GetTracePrefix() + "Applied sunrise");                
             }
             else if (!_autoCloseIsApplied && autoCloseIsInRange)
             {
+                if (TooColdIsAffected())
+                {
+                    Log.Info(GetTracePrefix() + $"Cancelling closing because outside temperature is lower than {SpecialSettingsWrapper.SkipIfFrozenTemperature}°C.");
+                }
+                else
+                {
+                    SetStates(RollerShutterStateId.MovingDown);
+                }
+
                 _autoCloseIsApplied = true;
                 _autoOpenIsApplied = false;
-
-                StartMove(RollerShutterState.MovingDown);
-                _logger.Info(GetTracePrefix() + "Applied sunset");
+                
+                Log.Info(GetTracePrefix() + "Applied sunset");
             }
         }
 
-        private bool GetDoNotOpenDueToTimeIsAffected()
+        private bool DoNotOpenDueToTimeIsAffected()
         {
-            if (Settings.DoNotOpenBeforeIsEnabled.Value && 
-                Settings.DoNotOpenBeforeTime.Value > _timer.CurrentTime)
+            if (SpecialSettingsWrapper.SkipBeforeTimestampIsEnabled &&
+                SpecialSettingsWrapper.SkipBeforeTimestamp > _timer.CurrentTime)
             {
                 return true;
             }
@@ -117,10 +135,10 @@ namespace HA4IoT.Automations
             return false;
         }
 
-        private bool GetItIsTooHotIsAffected()
+        private bool TooHotIsAffected()
         {
-            if (Settings.AutoCloseIfTooHotIsEnabled.Value && 
-                _weatherStation.TemperatureSensor.GetValue() > Settings.AutoCloseIfTooHotTemperaure.Value)
+            if (SpecialSettingsWrapper.AutoCloseIfTooHotIsEnabled && 
+                _weatherService.GetTemperature() > SpecialSettingsWrapper.AutoCloseIfTooHotTemperaure)
             {
                 return true;
             }
@@ -128,10 +146,10 @@ namespace HA4IoT.Automations
             return false;
         }
 
-        private bool GetDoNotOpenDueToColdTemperatureIsAffected()
+        private bool TooColdIsAffected()
         {
-            if (Settings.DoNotOpenIfTooColdIsEnabled.Value &&
-                _weatherStation.TemperatureSensor.GetValue() < Settings.DoNotOpenIfTooColdTemperature.Value)
+            if (SpecialSettingsWrapper.SkipIfFrozenIsEnabled &&
+                _weatherService.GetTemperature() < SpecialSettingsWrapper.SkipIfFrozenTemperature)
             {
                 return true;
             }
@@ -141,18 +159,18 @@ namespace HA4IoT.Automations
 
         private IsDayCondition GetIsDayCondition()
         {
-            var condition = new IsDayCondition(_weatherStation, _timer);
-            condition.WithStartAdjustment(Settings.OpenOnSunriseOffset.Value);
-            condition.WithEndAdjustment(Settings.CloseOnSunsetOffset.Value);
+            var condition = new IsDayCondition(_daylightService, _timer);
+            condition.WithStartAdjustment(SpecialSettingsWrapper.OpenOnSunriseOffset);
+            condition.WithEndAdjustment(SpecialSettingsWrapper.CloseOnSunsetOffset);
 
             return condition;
         }
 
-        private void StartMove(RollerShutterState state)
+        private void SetStates(StatefulComponentState state)
         {
             foreach (var rollerShutter in _rollerShutters)
             {
-                _actuatorController.Actuator<IRollerShutter>(rollerShutter).SetState(state);
+                _componentController.GetComponent<IRollerShutter>(rollerShutter).SetState(state);
             }
         }
 

@@ -40,7 +40,7 @@ namespace HA4IoT.Hardware.CCTools
         {
             if (element == null) throw new ArgumentNullException(nameof(element));
 
-            var device = Controller.Device<CCToolsBoardBase>(new DeviceId(element.GetMandatoryStringFromAttribute("deviceId")));
+            var device = Controller.GetDevice<CCToolsBoardBase>(new DeviceId(element.GetMandatoryStringFromAttribute("deviceId")));
             var port = element.GetMandatoryStringFromAttribute("port");
 
             var hspe16 = device as HSPE16InputOnly;
@@ -62,7 +62,7 @@ namespace HA4IoT.Hardware.CCTools
         {
             if (element == null) throw new ArgumentNullException(nameof(element));
 
-            var device = Controller.Device<CCToolsBoardBase>(new DeviceId(element.GetMandatoryStringFromAttribute("deviceId")));
+            var device = Controller.GetDevice<CCToolsBoardBase>(new DeviceId(element.GetMandatoryStringFromAttribute("deviceId")));
             var port = element.GetMandatoryStringFromAttribute("port");
 
             var hspe16 = device as HSPE16OutputOnly;
@@ -103,9 +103,7 @@ namespace HA4IoT.Hardware.CCTools
             return new HSREL5(
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")), 
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
-                Controller.Device<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()),
-                Controller.HttpApiController,
-                Controller.Logger);
+                Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()));
         }
 
         private HSREL8 ParseHSRel8(XElement element)
@@ -113,9 +111,7 @@ namespace HA4IoT.Hardware.CCTools
             return new HSREL8(
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")),
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
-                Controller.Device<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()),
-                Controller.HttpApiController,
-                Controller.Logger);
+                Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()));
         }
 
         private HSPE16OutputOnly ParseHSPE16OutputOnly(XElement element)
@@ -123,9 +119,7 @@ namespace HA4IoT.Hardware.CCTools
             return new HSPE16OutputOnly(
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")),
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
-                Controller.Device<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()),
-                Controller.HttpApiController,
-                Controller.Logger);
+                Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()));
         }
 
         private HSPE16InputOnly ParseHSPE16InputOnly(XElement element)
@@ -133,9 +127,7 @@ namespace HA4IoT.Hardware.CCTools
             return new HSPE16InputOnly(
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")),
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
-                Controller.Device<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()),
-                Controller.HttpApiController,
-                Controller.Logger);
+                Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()));
         }
 
         private HSPE8OutputOnly ParseHSPE8OutputOnly(XElement element)
@@ -143,9 +135,7 @@ namespace HA4IoT.Hardware.CCTools
             return new HSPE8OutputOnly(
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")),
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
-                Controller.Device<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()),
-                Controller.HttpApiController,
-                Controller.Logger);
+                Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()));
         }
 
         private HSPE8InputOnly ParseHSPE8InputOnly(XElement element)
@@ -153,9 +143,7 @@ namespace HA4IoT.Hardware.CCTools
             return new HSPE8InputOnly(
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")),
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
-                Controller.Device<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()),
-                Controller.HttpApiController,
-                Controller.Logger);
+                Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()));
         }
 
         private HSRT16 ParseHSRT16(XElement element)
@@ -163,9 +151,7 @@ namespace HA4IoT.Hardware.CCTools
             return new HSRT16(
                 new DeviceId(element.GetMandatoryStringFromAttribute("id")),
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
-                Controller.Device<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()),
-                Controller.HttpApiController,
-                Controller.Logger);
+                Controller.GetDevice<II2CBus>(element.GetStringFromAttribute("i2cBus", "II2CBus.default").ToDeviceId()));
         }
     }
 }

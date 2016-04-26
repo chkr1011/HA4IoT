@@ -1,8 +1,7 @@
 ﻿using System;
 using Windows.Data.Json;
-using HA4IoT.Contracts.Networking;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Hardware.I2CHardwareBridge;
-using HA4IoT.Networking;
 
 namespace HA4IoT.Hardware.RemoteSwitch
 {
@@ -11,27 +10,20 @@ namespace HA4IoT.Hardware.RemoteSwitch
         private readonly I2CHardwareBridge.I2CHardwareBridge _i2CHardwareBridge;
         private readonly byte _pin;
 
-        public LPD433MHzSignalSender(I2CHardwareBridge.I2CHardwareBridge i2CHardwareBridge, byte pin, IHttpRequestController httpApiController)
+        public LPD433MHzSignalSender(I2CHardwareBridge.I2CHardwareBridge i2CHardwareBridge, byte pin, IApiController apiController)
         {
             if (i2CHardwareBridge == null) throw new ArgumentNullException(nameof(i2CHardwareBridge));
-            if (httpApiController == null) throw new ArgumentNullException(nameof(httpApiController));
+            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
 
             _i2CHardwareBridge = i2CHardwareBridge;
             _pin = pin;
 
-            httpApiController.HandlePost("433MHz").Using(ApiPost);
+            apiController.RouteCommand("433MHz", ApiPost);
         }
 
-        private void ApiPost(HttpContext context)
+        private void ApiPost(IApiContext apiContext)
         {
-            JsonObject requestData;
-            if (!JsonObject.TryParse(context.Request.Body, out requestData))
-            {
-                context.Response.StatusCode = HttpStatusCode.BadRequest;
-                return;
-            }
-
-            JsonArray sequence = requestData.GetNamedArray("sequence", new JsonArray());
+            JsonArray sequence = apiContext.Request.GetNamedArray("sequence", new JsonArray());
             if (sequence.Count == 0)
             {
                 return;

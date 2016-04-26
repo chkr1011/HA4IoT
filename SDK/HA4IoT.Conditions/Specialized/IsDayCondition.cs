@@ -1,17 +1,17 @@
 ﻿using System;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.WeatherStation;
+using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Conditions.Specialized
 {
     public class IsDayCondition : TimeRangeCondition
     {
-        public IsDayCondition(IWeatherStation weatherStation, IHomeAutomationTimer timer) : base(timer)
+        public IsDayCondition(IDaylightService daylightService, IHomeAutomationTimer timer) : base(timer)
         {
-            if (weatherStation == null) throw new ArgumentNullException(nameof(weatherStation));
+            if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
 
-            WithStart(() => weatherStation.Daylight.Sunrise);
-            WithEnd(() => weatherStation.Daylight.Sunset);
+            WithStart(daylightService.GetSunrise);
+            WithEnd(daylightService.GetSunset);
         }
     }
 }

@@ -7,12 +7,12 @@ namespace HA4IoT.Contracts.Core
     {
         void AddDevice(IDevice device);
 
-        TDevice Device<TDevice>(DeviceId id) where TDevice : IDevice;
+        TDevice GetDevice<TDevice>(DeviceId id) where TDevice : IDevice;
 
-        TDevice Device<TDevice>() where TDevice : IDevice;
+        TDevice GetDevice<TDevice>() where TDevice : IDevice;
 
-        IList<TDevice> Devices<TDevice>() where TDevice : IDevice;
+        IList<TDevice> GetDevices<TDevice>() where TDevice : IDevice;
 
-        IList<IDevice> Devices();
+        IList<IDevice> GetDevices();
     }
 }

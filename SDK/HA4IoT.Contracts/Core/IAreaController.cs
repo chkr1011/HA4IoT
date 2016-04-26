@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Configuration;
+using HA4IoT.Contracts.Areas;
 
 namespace HA4IoT.Contracts.Core
 {
@@ -8,8 +7,8 @@ namespace HA4IoT.Contracts.Core
     {
         void AddArea(IArea room);
 
-        IArea Area(AreaId id);
+        IArea GetArea(AreaId id);
 
-        IList<IArea> Areas();
+        IList<IArea> GetAreas();
     }
 }

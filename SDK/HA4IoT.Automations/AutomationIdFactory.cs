@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Configuration;
 
@@ -13,7 +14,7 @@ namespace HA4IoT.Automations
             if (area == null) throw new ArgumentNullException(nameof(area));
 
             string value = area.Id.Value + "." + typeof (TAutomation).Name + "-";
-            value += area.Automations().Count;
+            value += area.GetAutomations().Count;
 
             return new AutomationId(value);
         }

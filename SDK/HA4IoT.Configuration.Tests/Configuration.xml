@@ -4,10 +4,15 @@
                xmlns:I2CHardwareBridge="http://www.ha4iot.de/ConfigurationExtenders/I2CHardwareBridge"
                xmlns:Test="http://www.ha4iot.de/ConfigurationExtenders/Test">
 
+  <!-- Register all unique services -->
+  <Services>
+    <OpenWeatherMapWeatherService />
+  </Services>
+  
+  <!-- Register all physical hardware which is attached to the system -->
   <Devices>
     <Test:I2CBus id="II2CBus.default" />
-    <OpenWeatherMapWeatherStation id="WeatherStation" />
-    
+
     <!-- Shared input devices -->
     <CCTools:HSPE16InputOnly id="Input0" i2cAddress="42" i2cBus="II2CBus.default" />
     <CCTools:HSPE16InputOnly id="Input1" i2cAddress="43" />
@@ -16,6 +21,7 @@
     <CCTools:HSPE16InputOnly id="Input4" i2cAddress="46" />
     <CCTools:HSPE16InputOnly id="Input5" i2cAddress="44" />
 
+    <!-- Dedicated devices per room -->
     <CCTools:HSRel5 id="Bedroom.HSRel5" i2cAddress="38" />
     <CCTools:HSRel8 id="Bedroom.HSRel8" i2cAddress="21" />
 
@@ -24,7 +30,7 @@
 
   <Areas>
     <Area id="Bedroom">
-      <Actuators>
+      <Components>
         <TemperatureSensor id="Bedroom.TemperatureSensor">
           <I2CHardwareBridge:TemperatureSensor i2cHardwareBridgeDeviceId="I2CHardwareBridge" sensorId="6" />
         </TemperatureSensor>
@@ -203,7 +209,7 @@
           </States>
         </StateMachine>
         
-      </Actuators>
+      </Components>
 
       <Automations>
         

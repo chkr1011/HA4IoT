@@ -1,12 +1,12 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("HA4IoT.Automtions")]
+[assembly: AssemblyTitle("HA4IoT.Automations")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Christian Kratky")]
 [assembly: AssemblyProduct("HA4IoT")]
-[assembly: AssemblyCopyright("Copyright © Christian Kratky 2015")]
+[assembly: AssemblyCopyright("Copyright © Christian Kratky 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]

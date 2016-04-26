@@ -5,20 +5,17 @@ namespace HA4IoT.Hardware.RemoteSwitch
 {
     public class RemoteSocketOutputPort : IBinaryOutput
     {
-        private readonly LPD433MHzCodeSequence _onCodeSqCodeSequence;
-        private readonly LPD433MHzCodeSequence _offCodeSequence;
+        private readonly LPD433MHzCodeSequencePair _codeSequencePair;
         private readonly LPD433MHzSignalSender _sender;
         private readonly object _syncRoot = new object();
         private BinaryState _state;
 
-        public RemoteSocketOutputPort(int id, LPD433MHzCodeSequence onCodeSequence, LPD433MHzCodeSequence offCodeSequence, LPD433MHzSignalSender sender)
+        public RemoteSocketOutputPort(int id, LPD433MHzCodeSequencePair codeSequencePair, LPD433MHzSignalSender sender)
         {
-            if (onCodeSequence == null) throw new ArgumentNullException(nameof(onCodeSequence));
-            if (offCodeSequence == null) throw new ArgumentNullException(nameof(offCodeSequence));
+            if (codeSequencePair == null) throw new ArgumentNullException(nameof(codeSequencePair));
             if (sender == null) throw new ArgumentNullException(nameof(sender));
 
-            _onCodeSqCodeSequence = onCodeSequence;
-            _offCodeSequence = offCodeSequence;
+            _codeSequencePair = codeSequencePair;
             _sender = sender;
         }
 
@@ -26,18 +23,18 @@ namespace HA4IoT.Hardware.RemoteSwitch
         {
             if (commit == false)
             {
-                throw new NotSupportedException();
+                return;
             }
 
             lock (_syncRoot)
             {
                 if (state == BinaryState.High)
                 {
-                    _sender.Send(_onCodeSqCodeSequence);
+                    _sender.Send(_codeSequencePair.OnSequence);
                 }
                 else if (state == BinaryState.Low)
                 {
-                    _sender.Send(_offCodeSequence);
+                    _sender.Send(_codeSequencePair.OffSequence);
                 }
                 else
                 {

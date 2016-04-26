@@ -1,4 +1,4 @@
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/MC_SplashScreen.png?raw=true" width="100%">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/SplashScreen.png?raw=true" width="100%">
 <img style="margin:25px" src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/Overview_4to3.png?raw=true" width="100%">
 
 HA4IoT (Home Automation for IoT) is the first SDK for Home Automation using Windows 10 IoT Core and a Raspberry Pi 2. It is a private real life award-winning project which covers many Home Automation purposes.
@@ -7,7 +7,7 @@ HA4IoT (Home Automation for IoT) is the first SDK for Home Automation using Wind
 >
 hackster.io (https://www.hackster.io/blog/win-10-winners)
 
-## Key features
+# Key features
 * Virtual actuators like push buttons, motion motion detectors, lamps, sockets, roller shutters which can be interconnected using a fluent API
 * Responsive WebApp for iOS, Android, OSX and Windows
 * Highly configurable automations with complex conditions
@@ -20,7 +20,7 @@ hackster.io (https://www.hackster.io/blog/win-10-winners)
 * Powerful RESTful API
 * Complete with fritzing sketches and documentation to build devices like 433Mhz sender, sensors etc. on your own
 
-## Supported hardware
+# Supported hardware
 * Any kind of relay board that uses a PCF8574/A, MAX7311, PCA9555D (I2C bus)
 * Any kind of input board (port expander) that uses a PCF8574/A, MAX7311, PCA9555D (I2C bus)
 * Remote switches with 433Mhz receiver
@@ -29,21 +29,25 @@ hackster.io (https://www.hackster.io/blog/win-10-winners)
 * All ports of the Pi2 are available as dedicated inputs or outputs
 * Support for custom hardware providers based on I2C bus, 433Mhz etc.
 
-## Available virtual actuators
-* Button
-* Virtual Button (only available at the App)
-* Switch
-* Motion detector
-* Roller shutter
+# Extensible
+The SDK is designed to be extensible. This means that it is supported to implement wrappers for other hardware. Even if it is using a different bus or protocol. 
+
+# Built-in actuators
 * Lamp
 * Socket
-* Humidity sensor
-* Temperature sensor
-* Window
-* State machine (for complex actuators like fans or 'moods' for lights or fans)
-* Combine multiple actuators into virtual ones
+* Roller shutter
+* State machine (for complex actuators like fans)
+* Logical actuator (allows creating actuators based on several other actuators)
 
-## Available automations
+# Built-in sensors
+* Temperature sensor
+* Humidity sensor
+* Button
+* Switch
+* Motion detector
+* Window
+
+# Built-in automations
 * Opening roller shutters after sunrise
 * Closing roller shutters after sunset
 * Closing roller shutters if outside temperature reaches a custom value (intended for rooms below the roof)
@@ -56,19 +60,25 @@ hackster.io (https://www.hackster.io/blog/win-10-winners)
 * Disable every actuator temporary
 * The project provides a powerful condition framework which allows creating of complex autoamtions using C#
 
-## Quick start
+# Personal Agent
+Register a free bot for the messenger "Telegram" and let the bot control the home. Just tell him what he should do. The bot also supports giving status information like Weather information (Temperature, Humidity etc.), Window states (Open, Closed), Sensor values (Temperature, Humidity) etc. The bot will also send errors and warnings from the log to administrative users (which are defined in the configuration file). Every user who want's to interact with the bot must be added to a whitelist to ensure a high level of privacy.
+
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/PA_RollerShutterAndTemperature.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/PA_WeatherAndWindowsAndLight.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/PA_Debug.PNG?raw=true" width="256">
+
+# Azure
+It is possible to connect the entire controller with the Azure Cloud. This feature is optional and allows interaction with the controller using an EventHub for events (like a changed sensor value or actuator state) and two Queues for sending commands to the controller.
+
+# Quick start
 The software solution contains the project ``HA4IoT.Controller.Demo`` which can be used to start playing around with the SDK. The other projects ``HA4IoT.Controller.Main`` and ``HA4IoT.Controller.Main`` containing a full "real life" configuration which can be used as an example but will not work without the required hardware.
 
-## Documentation
-
+# Documentation
 **At this time, the latest documentation with examples can be found here:** [https://www.hackster.io/cyborg-titanium-14/ck-homeautomation](https://www.hackster.io/cyborg-titanium-14/ck-homeautomation)
 
 A detailed documentation at GitHub is in progress.
 
-## Contributors
-We want you! If you are interested in supporting this project in any way (software, hardware, documentation, fritzing sketches, testing, design, donation) feel free to contact me.
-
-## App
+# App
 Every actuator can be controlled using the web app which is hosted at the Raspberry Pi 2 using the build in webserver. The language for the examples is German but translation of each UI element is supported. The app shows every rooms/areas and provides several overviews like the overview of all temperature sensor. The app is based on Bootstrap and AngularJS and runs on Smartphones, Tables, PCs etc. 
 
 <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/WA_SplashScreen.PNG?raw=true" width="256">
@@ -83,12 +93,14 @@ Every actuator can be controlled using the web app which is hosted at the Raspbe
 <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/WA_WeatherStation.PNG?raw=true" width="256">
 <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/WA_Info.PNG?raw=true" width="256">
 
-## Management Console
-
+# Management Console
 The configuration of each actuator and automation can be updated using the Management Console. This application is a WPF application which runs at the local computer. It sends a discovery signal through the local area network and shows all available HA4IoT controller instances.   
 
- <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/MC_HomeScreen.png?raw=true" width="100%">
- <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/MC_ControllerSelection.png?raw=true" width="100%">
- <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/MC_ActuatorConfiguration.png?raw=true" width="100%">
- <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/MC_AutomationConfiguration.png?raw=true" width="100%">
- <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/MC_TraceViewer.png?raw=true" width="100%">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/MC_Home.png?raw=true" width="100%">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/MC_Controller.png?raw=true" width="100%">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/MC_Component.png?raw=true" width="100%">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/MC_Automation.png?raw=true" width="100%">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/MC_Log.png?raw=true" width="100%">
+
+# Contributors
+If you are interested in supporting this project in any way feel free to contact me.

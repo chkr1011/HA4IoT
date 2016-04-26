@@ -7,14 +7,14 @@ using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
+using HA4IoT.Contracts.Core.Settings;
+using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Triggers;
-using HA4IoT.Contracts.WeatherStation;
 
 namespace HA4IoT.Automations
 {
-    public class TurnOnAndOffAutomation : AutomationBase<AutomationSettings>
+    public class TurnOnAndOffAutomation : AutomationBase
     {
         private readonly ConditionsValidator _enablingConditionsValidator = new ConditionsValidator().WithDefaultState(ConditionState.NotFulfilled);
         private readonly ConditionsValidator _disablingConditionsValidator = new ConditionsValidator().WithDefaultState(ConditionState.NotFulfilled);
@@ -23,41 +23,39 @@ namespace HA4IoT.Automations
 
         private readonly List<Action> _turnOnActions = new List<Action>();
         private readonly List<Action> _turnOffActions = new List<Action>();
-        
+
+        private readonly TurnOnAndOffAutomationSettingsWrapper _wrappedSettings;
         private readonly Stopwatch _lastTurnedOn = new Stopwatch();
 
-        private TimeSpan _duration;
         private TimeSpan? _pauseDuration;
         private TimedAction _turnOffTimeout;
         private bool _turnOffIfButtonPressedWhileAlreadyOn;
         private bool _isOn;
         
-        public TurnOnAndOffAutomation(AutomationId id, IHomeAutomationTimer timer, IHttpRequestController httpApiController, ILogger logger)
+        public TurnOnAndOffAutomation(AutomationId id, IHomeAutomationTimer timer)
             : base(id)
         {
+            if (timer == null) throw new ArgumentNullException(nameof(timer));
+
             _timer = timer;
-
-            WithOnDuration(TimeSpan.FromMinutes(1));
-
-            Settings = new AutomationSettings(id, httpApiController, logger);
+            _wrappedSettings = new TurnOnAndOffAutomationSettingsWrapper(Settings);
         }
 
-        public TurnOnAndOffAutomation WithTrigger(IMotionDetector motionDetector, params IParameter[] parameters)
+        public TurnOnAndOffAutomation WithTrigger(IMotionDetector motionDetector)
         {
             if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
-            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
             motionDetector.GetMotionDetectedTrigger().Attach(Trigger);
             motionDetector.GetDetectionCompletedTrigger().Attach(StartTimeout);
-            motionDetector.Settings.IsEnabled.ValueChanged += CancelTimeoutIfMotionDetectorDeactivated;
+
+            motionDetector.Settings.ValueChanged += CancelTimeoutIfMotionDetectorDeactivated;
             
             return this;
         }
 
-        public TurnOnAndOffAutomation WithTrigger(ITrigger trigger, params IParameter[] parameters)
+        public TurnOnAndOffAutomation WithTrigger(ITrigger trigger)
         {
             if (trigger == null) throw new ArgumentNullException(nameof(trigger));
-            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
             trigger.Triggered += HandleButtonPressed;
             return this;
@@ -79,19 +77,19 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public TurnOnAndOffAutomation WithTarget(IBinaryStateOutputActuator actuator)
+        public TurnOnAndOffAutomation WithTarget(IActuator actuator)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
-            _turnOnActions.Add(() => actuator.TurnOn());
-            _turnOffActions.Add(() => actuator.TurnOff());
+            _turnOnActions.Add(() => actuator.SetState(BinaryStateId.On));
+            _turnOffActions.Add(() => actuator.SetState(BinaryStateId.Off));
             
             return this;
         }
 
         public TurnOnAndOffAutomation WithOnDuration(TimeSpan duration)
         {
-            _duration = duration;
+            _wrappedSettings.Duration = duration;
             return this;
         }
 
@@ -124,34 +122,34 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public TurnOnAndOffAutomation WithEnabledAtDay(IWeatherStation weatherStation)
+        public TurnOnAndOffAutomation WithEnabledAtDay(IDaylightService daylightService)
         {
-            if (weatherStation == null) throw new ArgumentNullException(nameof(weatherStation));
+            if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
 
-            Func<TimeSpan> start = () => weatherStation.Daylight.Sunrise.Add(TimeSpan.FromHours(1));
-            Func<TimeSpan> end = () => weatherStation.Daylight.Sunset.Subtract(TimeSpan.FromHours(1));
+            Func<TimeSpan> start = () => daylightService.GetSunrise().Add(TimeSpan.FromHours(1));
+            Func<TimeSpan> end = () => daylightService.GetSunset().Subtract(TimeSpan.FromHours(1));
 
             _enablingConditionsValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_timer).WithStart(start).WithEnd(end));
             return this;
         }
 
-        public TurnOnAndOffAutomation WithEnabledAtNight(IWeatherStation weatherStation)
+        public TurnOnAndOffAutomation WithEnabledAtNight(IDaylightService daylightService)
         {
-            if (weatherStation == null) throw new ArgumentNullException(nameof(weatherStation));
+            if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
 
-            Func<TimeSpan> start = () => weatherStation.Daylight.Sunset.Subtract(TimeSpan.FromHours(1));
-            Func<TimeSpan> end = () => weatherStation.Daylight.Sunrise.Add(TimeSpan.FromHours(1));
+            Func<TimeSpan> start = () => daylightService.GetSunset().Subtract(TimeSpan.FromHours(1));
+            Func<TimeSpan> end = () => daylightService.GetSunrise().Add(TimeSpan.FromHours(1));
 
             _enablingConditionsValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_timer).WithStart(start).WithEnd(end));
             return this;
         }
 
-        public TurnOnAndOffAutomation WithSkipIfAnyActuatorIsAlreadyOn(params IBinaryStateOutputActuator[] actuators)
+        public TurnOnAndOffAutomation WithSkipIfAnyActuatorIsAlreadyOn(params IStateMachine[] actuators)
         {
             if (actuators == null) throw new ArgumentNullException(nameof(actuators));
 
             _disablingConditionsValidator.WithCondition(ConditionRelation.Or,
-                new Condition().WithExpression(() => actuators.Any(a => a.GetState() == BinaryActuatorState.On)));
+                new Condition().WithExpression(() => actuators.Any(a => a.GetState().Equals(BinaryStateId.On))));
 
             return this;
         }
@@ -181,9 +179,14 @@ namespace HA4IoT.Automations
             StartTimeout();
         }
 
-        private void CancelTimeoutIfMotionDetectorDeactivated(object sender, ValueChangedEventArgs<bool> e)
+        private void CancelTimeoutIfMotionDetectorDeactivated(object sender, SettingValueChangedEventArgs eventArgs)
         {
-            bool isDeactivated = !e.NewValue;
+            if (eventArgs.SettingName != AutomationSettingsWrapper.IsEnabledName)
+            {
+                return;
+            }
+
+            bool isDeactivated = !eventArgs.NewValue.GetBoolean();
 
             if (isDeactivated)
             {
@@ -193,7 +196,7 @@ namespace HA4IoT.Automations
 
         private void Trigger()
         {
-            if (!Settings.IsEnabled)
+            if (!this.GetIsEnabled())
             {
                 return;
             }
@@ -259,7 +262,7 @@ namespace HA4IoT.Automations
                 return;
             }
 
-            _turnOffTimeout = _timer.In(_duration).Do(TurnOff);
+            _turnOffTimeout = _timer.In(_wrappedSettings.Duration).Do(TurnOff);
         }
 
         private bool GetConditionsAreFulfilled()

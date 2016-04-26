@@ -6,10 +6,10 @@ namespace HA4IoT.Contracts.Automations
     {
         void AddAutomation(IAutomation automation);
 
-        IList<TAutomation> Automations<TAutomation>() where TAutomation : IAutomation;
+        IList<TAutomation> GetAutomations<TAutomation>() where TAutomation : IAutomation;
 
-        TAutomation Automation<TAutomation>(AutomationId id) where TAutomation : IAutomation;
+        TAutomation GetAutomation<TAutomation>(AutomationId id) where TAutomation : IAutomation;
 
-        IList<IAutomation> Automations();
+        IList<IAutomation> GetAutomations();
     }
 }

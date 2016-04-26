@@ -1,16 +1,14 @@
-﻿using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
+﻿using HA4IoT.Actuators.BinaryStateActuators;
+using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Components;
 
-namespace HA4IoT.Actuators
+namespace HA4IoT.Actuators.Sockets
 {
-    public class Socket : BinaryStateOutputActuator<ActuatorSettings>
+    public class Socket : BinaryStateActuator, ISocket
     {
-        public Socket(ActuatorId id, IBinaryOutput output, IHttpRequestController httpApiController, ILogger logger)
-            : base(id, output, httpApiController, logger)
+        public Socket(ComponentId id, IBinaryStateEndpoint endpoint)
+            : base(id, endpoint)
         {
-            Settings = new ActuatorSettings(id, logger);
         }
     }
 }
