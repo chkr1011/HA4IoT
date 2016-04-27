@@ -41,15 +41,8 @@ namespace HA4IoT.Controller.Main
             SetupTelegramBot();
             SetupTwitterClient();
 
-            try
-            {
-                GetService<SynonymService>().LoadPersistedSynonyms();
-            }
-            catch (Exception exception)
-            {
-                Log.Error(exception, "Error while loading persisted synonyms.");
-            }
-            
+            GetService<SynonymService>().TryLoadPersistedSynonyms();
+
             ccToolsBoardController.CreateHSPE16InputOnly(InstalledDevice.Input0, new I2CSlaveAddress(42));
             ccToolsBoardController.CreateHSPE16InputOnly(InstalledDevice.Input1, new I2CSlaveAddress(43));
             ccToolsBoardController.CreateHSPE16InputOnly(InstalledDevice.Input2, new I2CSlaveAddress(47));
@@ -100,14 +93,8 @@ namespace HA4IoT.Controller.Main
             };
 
             Task.Run(async () => await telegramBot.TrySendMessageToAdministratorsAsync($"{Emoji.Bell} Das System ist gestartet."));
-            telegramBot.MessageReceived += async (s, e) =>
-            {
-                var messageProcessor = new PersonalAgentMessageProcessor(this);
-                messageProcessor.ProcessMessage(e.Message);
+            new PersonalAgentToTelegramBotDispatcher(this).ExposeToTelegramBot(telegramBot);
 
-                await e.SendResponse(messageProcessor.Answer);
-            };
-            
             RegisterService(telegramBot);
         }
 

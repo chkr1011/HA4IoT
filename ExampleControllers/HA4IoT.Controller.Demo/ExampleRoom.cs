@@ -21,7 +21,7 @@
 
         Window,
 
-        LedStripRemote,
+        RollerShutter,
 
         BathroomFan,
         CeilingFan,
