@@ -17,10 +17,11 @@ namespace HA4IoT.Controller.Default
         {
             InitializeHealthMonitor(LedGpio);
 
+            AddDevice(new BuiltInI2CBus());
+
             var pi2PortController = new Pi2PortController();
             var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>());
 
-            AddDevice(new BuiltInI2CBus());
             AddDevice(pi2PortController);
             AddDevice(ccToolsBoardController);
             
