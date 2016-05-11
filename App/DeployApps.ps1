@@ -87,7 +87,7 @@ function GetIsStaging
 	
 	$choice = [Console]::ReadKey($true).KeyChar;
 	
-	if ($choice -eq 0)
+	if ($choice -eq "0")
 	{
 		return $false;
 	}
