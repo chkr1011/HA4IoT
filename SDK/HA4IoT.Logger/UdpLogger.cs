@@ -15,7 +15,7 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.Logger
 {
-    public class Logger : ILogger
+    public class UdpLogger : ILogger
     {
         private readonly bool _isDebuggerAttached = Debugger.IsAttached;
 
@@ -27,7 +27,7 @@ namespace HA4IoT.Logger
 
         private long _currentId;
 
-        public Logger()
+        public UdpLogger()
         {
             Task.Factory.StartNew(
                 SendQueuedItems, 

@@ -6,7 +6,9 @@ namespace HA4IoT.Contracts.Core
 {
     public class StoragePath
     {
-        public static string Root => ApplicationData.Current.LocalFolder.Path;
+        public static string Root { get; set; } = ApplicationData.Current.LocalFolder.Path;
+
+        public static string AppRoot { get; set; } = WithFilename("App");
 
         public static string WithFilename(params string[] paths)
         {

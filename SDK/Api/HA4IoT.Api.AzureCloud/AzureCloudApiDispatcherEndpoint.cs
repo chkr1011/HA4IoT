@@ -59,6 +59,7 @@ namespace HA4IoT.Api.AzureCloud
             eventData.SetNamedValue("componentId", component.Id.ToJsonValue());
             eventData.SetNamedValue("state", component.ExportStatusToJsonObject());
 
+            // TODO: Create a long running task and a queue. Problems with not working internet connection detected.
             Task.Run(async () => await _eventHubSender?.SendAsync(eventData));
         }
 
