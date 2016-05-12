@@ -17,7 +17,9 @@ namespace HA4IoT.Controller.Local
         private void StartController(object sender, RoutedEventArgs e)
         {
             Log.Instance = new TextBoxLogger(LogTextBox);
-            StoragePath.AppRoot = new DirectoryInfo(@".\..\..\..\..\..\..\App\HA4IoT.WebApp").FullName;
+
+            // The app is only available from other machines. https://msdn.microsoft.com/en-us/library/windows/apps/Hh780593.aspx
+            //StoragePath.AppRoot = new DirectoryInfo(@".\..\..\..\..\..\..\App\HA4IoT.WebApp").FullName;
 
             _controller.RunAsync();
         }
