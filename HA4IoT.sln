@@ -17,11 +17,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App", "App", "{20B098BA-1C6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hardware", "Hardware", "{A1F8CE2B-E00D-445B-9E31-A093BD676A1B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Main", "ExampleControllers\HA4IoT.Controller.Main\HA4IoT.Controller.Main.csproj", "{D3634558-2746-441F-BC09-454B1EC7DC1D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Main", "Controllers\HA4IoT.Controller.Main\HA4IoT.Controller.Main.csproj", "{D3634558-2746-441F-BC09-454B1EC7DC1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Cellar", "ExampleControllers\HA4IoT.Controller.Cellar\HA4IoT.Controller.Cellar.csproj", "{2ECC3769-3EDB-4646-86EE-91FBDACBA972}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Cellar", "Controllers\HA4IoT.Controller.Cellar\HA4IoT.Controller.Cellar.csproj", "{2ECC3769-3EDB-4646-86EE-91FBDACBA972}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Demo", "ExampleControllers\HA4IoT.Controller.Demo\HA4IoT.Controller.Demo.csproj", "{171A1B71-EC5A-42BC-A3D9-0252B157F70A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Demo", "Controllers\HA4IoT.Controller.Demo\HA4IoT.Controller.Demo.csproj", "{171A1B71-EC5A-42BC-A3D9-0252B157F70A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Actuators", "SDK\HA4IoT.Actuators\HA4IoT.Actuators.csproj", "{808ABECF-D9C2-4AB2-95D8-EAF228B44576}"
 EndProject
@@ -107,7 +107,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Components.Tests", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.ManagementApp", "App\HA4IoT.ManagementApp\HA4IoT.ManagementApp.csproj", "{F931A02F-DCAD-4301-8DAD-B7D722A9C410}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Default", "ExampleControllers\HA4IoT.Controller.Default\HA4IoT.Controller.Default.csproj", "{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Default", "Controllers\HA4IoT.Controller.Default\HA4IoT.Controller.Default.csproj", "{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.PersonalAgent", "SDK\HA4IoT.PersonalAgent\HA4IoT.PersonalAgent.csproj", "{A22FDA3A-B331-4399-863B-5F1B8D24BFE9}"
 EndProject
