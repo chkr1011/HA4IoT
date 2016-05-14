@@ -22,12 +22,12 @@ namespace HA4IoT.ExternalServices.TelegramBot
             telegramBot.MessageReceived += ProcessMessageAndSendAnswer;
         }
 
-        private async void ProcessMessageAndSendAnswer(object sender, TelegramBotMessageReceivedEventArgs e)
+        private void ProcessMessageAndSendAnswer(object sender, TelegramBotMessageReceivedEventArgs e)
         {
             var messageProcessor = new PersonalAgentMessageProcessor(_controller);
             messageProcessor.ProcessMessage(e.Message);
 
-            await e.SendResponse(messageProcessor.Answer);
+            e.EnqueueResponse(messageProcessor.Answer);
         }
     }
 }

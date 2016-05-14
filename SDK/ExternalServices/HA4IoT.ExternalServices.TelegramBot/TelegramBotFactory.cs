@@ -47,7 +47,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
                     telegramBot.AllowAllClients = true;
                 }
 
-                telegramBot.StartWaitForMessages();
+                telegramBot.Enable();
 
                 return true;
             }
