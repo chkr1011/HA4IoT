@@ -68,7 +68,8 @@ namespace HA4IoT.CloudTester
                 EventHubPublisherTextBox.Text,
                 EventHubSasTokenTextBox.Text);
 
-            Task.Run(async () => await eventHubSender.SendAsync(new JsonObject()));
+            eventHubSender.Enable();
+            eventHubSender.EnqueueEvent(new JsonObject());
         }
 
         private void SendTestMessageToOutboundQueue(object sender, RoutedEventArgs e)

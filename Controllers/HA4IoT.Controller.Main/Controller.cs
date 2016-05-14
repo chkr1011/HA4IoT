@@ -80,19 +80,15 @@ namespace HA4IoT.Controller.Main
 
             Log.WarningLogged += (s, e) =>
             {
-                Task.Run(
-                    async () =>
-                        await telegramBot.TrySendMessageToAdministratorsAsync($"{Emoji.WarningSign} {e.Message}\r\n{e.Exception}"));
+                telegramBot.EnqueueMessageForAdministrators($"{Emoji.WarningSign} {e.Message}\r\n{e.Exception}");
             };
 
             Log.ErrorLogged += (s, e) =>
             {
-                Task.Run(
-                    async () =>
-                        await telegramBot.TrySendMessageToAdministratorsAsync($"{Emoji.HeavyExclamationMark} {e.Message}\r\n{e.Exception}"));
+                telegramBot.EnqueueMessageForAdministrators($"{Emoji.HeavyExclamationMark} {e.Message}\r\n{e.Exception}");
             };
 
-            Task.Run(async () => await telegramBot.TrySendMessageToAdministratorsAsync($"{Emoji.Bell} Das System ist gestartet."));
+            telegramBot.EnqueueMessageForAdministrators($"{Emoji.Bell} Das System ist gestartet.");
             new PersonalAgentToTelegramBotDispatcher(this).ExposeToTelegramBot(telegramBot);
 
             RegisterService(telegramBot);
