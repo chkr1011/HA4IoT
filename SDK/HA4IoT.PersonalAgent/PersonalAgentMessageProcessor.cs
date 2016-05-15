@@ -15,7 +15,6 @@ namespace HA4IoT.PersonalAgent
 {
     public class PersonalAgentMessageProcessor
     {
-        private readonly List<ComponentId> _filteredComponentIds = new List<ComponentId>();
         private readonly IController _controller;
         
         private MessageContext _messageContext;
@@ -34,7 +33,7 @@ namespace HA4IoT.PersonalAgent
             if (message == null) throw new ArgumentNullException(nameof(message));
 
             var synonymService = _controller.GetService<SynonymService>();
-            var messageContextFactory = new MessageContextFactory(synonymService);
+            var messageContextFactory = new MessageContextFactory(synonymService, _controller);
             _messageContext = messageContextFactory.Create(message);
 
             try
@@ -63,6 +62,14 @@ namespace HA4IoT.PersonalAgent
             debugOutput.AppendLine(_messageContext.OriginalMessage.Text);
 
             int counter = 1;
+            debugOutput.AppendLine("<b>[Identified components]</b>");
+            foreach (var componentId in _messageContext.IdentifiedComponentIds)
+            {
+                debugOutput.AppendLine($"{counter} - {componentId}");
+                counter++;
+            }
+
+            counter = 1;
             debugOutput.AppendLine("<b>[Identified areas]</b>");
             foreach (var areaId in _messageContext.IdentifiedAreaIds)
             {
@@ -71,8 +78,8 @@ namespace HA4IoT.PersonalAgent
             }
 
             counter = 1;
-            debugOutput.AppendLine("<b>[Identified components]</b>");
-            foreach (var componentId in _messageContext.IdentifiedComponentIds)
+            debugOutput.AppendLine("<b>[Filtered components]</b>");
+            foreach (var componentId in _messageContext.FilteredComponentIds)
             {
                 debugOutput.AppendLine($"{counter} - {componentId}");
                 counter++;
@@ -111,9 +118,7 @@ namespace HA4IoT.PersonalAgent
                 return GetWindowStatus();
             }
 
-            FilterComponentIds();
-
-            if (!_filteredComponentIds.Any())
+            if (!_messageContext.FilteredComponentIds.Any())
             {
                 if (_messageContext.IdentifiedComponentIds.Count > 0)
                 {
@@ -123,12 +128,12 @@ namespace HA4IoT.PersonalAgent
                 return $"{Emoji.Confused} Du musst mir schon einen Sensor oder Aktor nennen.";
             }
             
-            if (_filteredComponentIds.Count > 1)
+            if (_messageContext.FilteredComponentIds.Count > 1)
             {
                 return $"{Emoji.Flushed} Bitte nicht mehrere Komponenten auf einmal.";
             }
 
-            if (_filteredComponentIds.Count == 1)
+            if (_messageContext.FilteredComponentIds.Count == 1)
             {
                 var component = _controller.GetComponent<IComponent>(_messageContext.IdentifiedComponentIds.First());
 
@@ -146,34 +151,6 @@ namespace HA4IoT.PersonalAgent
             }
             
             return $"{Emoji.Confused} Das habe ich leider nicht verstanden. Bitte stelle Deine Anfrage präziser.";
-        }
-
-        private void FilterComponentIds()
-        {
-            if (!_messageContext.IdentifiedComponentIds.Any())
-            {
-                return;
-            }
-
-            if (_messageContext.IdentifiedComponentIds.Count == 1)
-            {
-                _filteredComponentIds.Add(_messageContext.IdentifiedComponentIds.First());
-                return;
-            }
-
-            foreach (var componentId in _messageContext.IdentifiedComponentIds)
-            {
-                foreach (var areaId in _messageContext.IdentifiedAreaIds)
-                {
-                    var area = _controller.GetArea(areaId);
-
-                    if (area.GetContainsComponent(componentId))
-                    {
-                        _filteredComponentIds.Add(componentId);
-                        break;
-                    }
-                }
-            }
         }
 
         private string UpdateActuatorState(IActuator actuator)

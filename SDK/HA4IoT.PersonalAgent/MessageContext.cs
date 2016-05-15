@@ -20,6 +20,7 @@ namespace HA4IoT.PersonalAgent
 
             IdentifiedAreaIds = new HashSet<AreaId>();
             IdentifiedComponentIds = new HashSet<ComponentId>();
+            FilteredComponentIds = new HashSet<ComponentId>();
             IdentifiedComponentStates = new HashSet<IComponentState>();
         }
 
@@ -30,6 +31,8 @@ namespace HA4IoT.PersonalAgent
         public HashSet<ComponentId> IdentifiedComponentIds { get; } 
 
         public HashSet<IComponentState> IdentifiedComponentStates { get; }
+
+        public HashSet<ComponentId> FilteredComponentIds { get; } 
 
         public HashSet<AreaId> IdentifiedAreaIds { get; }
 

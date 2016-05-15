@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Actuators;
 using HA4IoT.Actuators.BinaryStateActuators;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;

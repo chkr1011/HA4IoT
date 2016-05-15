@@ -9,7 +9,7 @@ using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Actuators.BinaryStateActuators
 {
-    public class LogicalBinaryStateActuator : ActuatorBase
+    public class LogicalBinaryStateActuator : ActuatorBase, IStateMachine
     {
         private readonly IHomeAutomationTimer _timer;
 
@@ -85,6 +85,26 @@ namespace HA4IoT.Actuators.BinaryStateActuators
             ////{
             ////    actuator.SetState(state, parameters);
             ////}
+        }
+
+        public IComponentState GetNextState(IComponentState baseStateId)
+        {
+            if (baseStateId.Equals(BinaryStateId.Off))
+            {
+                return BinaryStateId.On;
+            }
+
+            if (baseStateId.Equals(BinaryStateId.On))
+            {
+                return BinaryStateId.Off;
+            }
+            
+            throw new StateNotSupportedException(baseStateId);
+        }
+
+        public void SetStateIdAlias(IComponentState id, IComponentState alias)
+        {
+            throw new NotSupportedException();
         }
 
         public void ToggleState(params IHardwareParameter[] parameters)
