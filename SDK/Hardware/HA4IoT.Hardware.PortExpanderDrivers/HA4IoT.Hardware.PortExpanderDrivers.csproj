@@ -107,9 +107,15 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddressPinState.cs" />
+    <Compile Include="MAX7311AddressGenerator.cs" />
     <Compile Include="PCA9555ADriver.cs" />
     <Compile Include="PCA9555Driver.cs" />
     <Compile Include="MAX7311Driver.cs" />
+    <Compile Include="PCA9555AAddressGenerator.cs" />
+    <Compile Include="PCF8574AAddressGenerator.cs" />
+    <Compile Include="PCA9555AddressGenerator.cs" />
+    <Compile Include="PCF8574AddressGenerator.cs" />
     <Compile Include="PCF8574ADriver.cs" />
     <Compile Include="PCF8574Driver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
