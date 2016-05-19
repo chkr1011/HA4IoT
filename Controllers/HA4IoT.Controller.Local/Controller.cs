@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using HA4IoT.Actuators.Lamps;
@@ -14,71 +15,34 @@ namespace HA4IoT.Controller.Local
 {
     public class Controller : ControllerBase
     {
-        private readonly StackPanel _demoLampsStackPanel;
-        private readonly StackPanel _demoButtonStackPanel;
+        private readonly MainPage _mainPage;
 
-        public Controller(StackPanel demoLampsStackPanel, StackPanel demoButtonStackPanel)
+        public Controller(MainPage mainPage)
         {
-            if (demoLampsStackPanel == null) throw new ArgumentNullException(nameof(demoLampsStackPanel));
-            if (demoButtonStackPanel == null) throw new ArgumentNullException(nameof(demoButtonStackPanel));
+            if (mainPage == null) throw new ArgumentNullException(nameof(mainPage));
 
-            _demoLampsStackPanel = demoLampsStackPanel;
-            _demoButtonStackPanel = demoButtonStackPanel;
+            _mainPage = mainPage;
         }
 
-        protected override void Initialize()
+        protected override async void Initialize()
         {
             var area = new Area(new AreaId("TestArea"), this);
-            area.AddComponent(new Lamp(new ComponentId("Lamp1"), CreateDemoBinaryComponent("Lamp 1")));
-            area.AddComponent(new Lamp(new ComponentId("Lamp2"), CreateDemoBinaryComponent("Lamp 2")));
-            area.AddComponent(new Lamp(new ComponentId("Lamp3"), CreateDemoBinaryComponent("Lamp 3")));
-            area.AddComponent(new Lamp(new ComponentId("Lamp4"), CreateDemoBinaryComponent("Lamp 4")));
-            area.AddComponent(new Lamp(new ComponentId("Lamp5"), CreateDemoBinaryComponent("Lamp 5")));
+            area.AddComponent(new Lamp(new ComponentId("Lamp1"), await _mainPage.CreateDemoBinaryComponent("Lamp 1")));
+            area.AddComponent(new Lamp(new ComponentId("Lamp2"), await _mainPage.CreateDemoBinaryComponent("Lamp 2")));
+            area.AddComponent(new Lamp(new ComponentId("Lamp3"), await _mainPage.CreateDemoBinaryComponent("Lamp 3")));
+            area.AddComponent(new Lamp(new ComponentId("Lamp4"), await _mainPage.CreateDemoBinaryComponent("Lamp 4")));
+            area.AddComponent(new Lamp(new ComponentId("Lamp5"), await _mainPage.CreateDemoBinaryComponent("Lamp 5")));
 
-            area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button1"), CreateDemoButton("Button 1"), Timer));
-            area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button2"), CreateDemoButton("Button 2"), Timer));
-            area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button3"), CreateDemoButton("Button 3"), Timer));
-            area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button4"), CreateDemoButton("Button 4"), Timer));
-            area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button5"), CreateDemoButton("Button 5"), Timer));
+            area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button1"), await _mainPage.CreateDemoButton("Button 1"), Timer));
+            area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button2"), await _mainPage.CreateDemoButton("Button 2"), Timer));
+            area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button3"), await _mainPage.CreateDemoButton("Button 3"), Timer));
+            area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button4"), await _mainPage.CreateDemoButton("Button 4"), Timer));
+            area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button5"), await _mainPage.CreateDemoButton("Button 5"), Timer));
 
             area.GetComponent<IButton>(new ComponentId("Button1")).GetPressedShortlyTrigger().Attach(area.GetComponent<ILamp>(new ComponentId("Lamp1")).GetSetNextStateAction());
+            area.GetComponent<IButton>(new ComponentId("Button1")).GetPressedLongTrigger().Attach(area.GetComponent<ILamp>(new ComponentId("Lamp2")).GetSetNextStateAction());
 
             AddArea(area);
-        }
-
-        private IBinaryStateEndpoint CreateDemoBinaryComponent(string caption)
-        {
-            CheckBox checkBox = null;
-
-            _demoLampsStackPanel.Dispatcher.RunAsync(
-                CoreDispatcherPriority.Normal,
-                () =>
-                {
-                    checkBox = new CheckBox();
-                    checkBox.IsEnabled = false;
-                    checkBox.Content = caption;
-
-                    _demoLampsStackPanel.Children.Add(checkBox);
-                }).AsTask().Wait();
-
-            return new CheckBoxBinaryStateEndpoint(checkBox);
-        }
-
-        private IButtonEndpoint CreateDemoButton(string caption)
-        {
-            Button button = null;
-
-            _demoButtonStackPanel.Dispatcher.RunAsync(
-                CoreDispatcherPriority.Normal,
-                () =>
-                {
-                    button = new Button();
-                    button.Content = caption;
-
-                    _demoButtonStackPanel.Children.Add(button);
-                }).AsTask().Wait();
-
-            return new UIButtonButtonEndpoint(button);
         }
     }
 }

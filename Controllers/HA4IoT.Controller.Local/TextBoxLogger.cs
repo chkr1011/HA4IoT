@@ -63,6 +63,7 @@ namespace HA4IoT.Controller.Local
                 () =>
                 {
                     _target.Text += message + Environment.NewLine;
+
                 }).AsTask().Wait();
         }
     }
