@@ -31,12 +31,12 @@ namespace HA4IoT.Actuators.StateMachines
                 return true;
             }
 
-            if (_stateAlias.TryGetValue(stateId, out stateId))
+            if (!_stateAlias.TryGetValue(stateId, out stateId))
             {
-                return true;
+                return false;
             }
 
-            return false;
+            return _states.Any(s => s.Id.Equals(stateId));
         }
 
         public override void SetState(IComponentState id, params IHardwareParameter[] parameters)
