@@ -93,7 +93,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
-    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+    <UseDotNetNativeToolchain>false</UseDotNetNativeToolchain>
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
@@ -145,7 +145,7 @@
       <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
       <Name>HA4IoT.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
+    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
       <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
       <Name>HA4IoT.Hardware</Name>
     </ProjectReference>
