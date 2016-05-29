@@ -115,7 +115,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LogEntrySeverity.cs" />
-    <Compile Include="Logger.cs" />
+    <Compile Include="UdpLogger.cs" />
     <Compile Include="LogEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Properties\HA4IoT.Notifications.rd.xml" />

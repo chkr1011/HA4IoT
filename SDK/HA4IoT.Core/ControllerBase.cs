@@ -21,6 +21,7 @@ using HA4IoT.Core.Discovery;
 using HA4IoT.Core.Settings;
 using HA4IoT.Core.Timer;
 using HA4IoT.Hardware.Pi2;
+using HA4IoT.Logger;
 using HA4IoT.Networking;
 using HA4IoT.Telemetry;
 
@@ -42,15 +43,20 @@ namespace HA4IoT.Core
         public IHomeAutomationTimer Timer { get; protected set; }
         public ISettingsContainer Settings { get; private set; }
 
-        public void RunAsync(IBackgroundTaskInstance taskInstance)
+        public Task RunAsync(IBackgroundTaskInstance taskInstance)
         {
             if (taskInstance == null) throw new ArgumentNullException(nameof(taskInstance));
 
             _deferral = taskInstance.GetDeferral();
 
-            Task.Factory.StartNew(
-                InitializeCore, 
-                CancellationToken.None, 
+            return RunAsync();
+        }
+
+        public Task RunAsync()
+        {
+            return Task.Factory.StartNew(
+                InitializeCore,
+                CancellationToken.None,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);
         }
@@ -208,7 +214,7 @@ namespace HA4IoT.Core
 
             var httpRequestDispatcher = new HttpRequestDispatcher(_httpServer);
             
-            httpRequestDispatcher.MapFolder("App", StoragePath.WithFilename("App"));
+            httpRequestDispatcher.MapFolder("App", StoragePath.AppRoot);
             httpRequestDispatcher.MapFolder("Storage", StoragePath.Root);
         }
 
@@ -232,11 +238,15 @@ namespace HA4IoT.Core
 
         private void InitializeLogging()
         {
-            var logger = new Logger.Logger();
-            Log.Instance = logger;
+            if (Log.Instance == null)
+            {
+                var logger = new UdpLogger();
+                logger.ExposeToApi(ApiController);
 
-            logger.ExposeToApi(ApiController);
-            logger.Info("Starting...");
+                Log.Instance = logger;
+            }
+            
+            Log.Info("Starting...");
         }
 
         private void InitializeCore()

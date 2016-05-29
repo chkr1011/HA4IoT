@@ -3,9 +3,9 @@ using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Hardware.CCTools
 {
-    public class IOBoardPort : IBinaryInput, IBinaryOutput
+    public class CCToolsBoardPort : IBinaryInput, IBinaryOutput
     {
-        public IOBoardPort(int number, CCToolsBoardBase board)
+        public CCToolsBoardPort(int number, CCToolsBoardBase board)
         {
             if (board == null) throw new ArgumentNullException(nameof(board));
 
@@ -49,7 +49,7 @@ namespace HA4IoT.Hardware.CCTools
             return this;
         }
 
-        public IOBoardPort WithInvertedState()
+        public CCToolsBoardPort WithInvertedState()
         {
             InvertValue = true;
             return this;

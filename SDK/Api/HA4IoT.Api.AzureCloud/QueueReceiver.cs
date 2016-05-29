@@ -79,9 +79,11 @@ namespace HA4IoT.Api.AzureCloud
 
             if (result.IsSuccessStatusCode)
             {
-                Task.Run(
+                Task.Factory.StartNew(
                     async () => await HandleQueueMessage(result.Headers, result.Content),
-                    _cancellationTokenSource.Token);
+                    _cancellationTokenSource.Token,
+                    TaskCreationOptions.LongRunning, 
+                    TaskScheduler.Default);
             }
             else
             {

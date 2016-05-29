@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.PersonalAgent;
 
 namespace HA4IoT.PersonalAgent
@@ -10,13 +12,17 @@ namespace HA4IoT.PersonalAgent
         private static readonly char[] WordSeparator = { ' ' };
 
         private readonly SynonymService _synonymService;
+        private readonly IController _controller;
+
         private MessageContext _currentContext;
 
-        public MessageContextFactory(SynonymService synonymService)
+        public MessageContextFactory(SynonymService synonymService, IController controller)
         {
             if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
+            if (controller == null) throw new ArgumentNullException(nameof(controller));
 
             _synonymService = synonymService;
+            _controller = controller;
         }
 
         public MessageContext Create(IInboundMessage message)
@@ -30,6 +36,7 @@ namespace HA4IoT.PersonalAgent
             IdentifyAreas();
             IdentifyComponents();
             IdentifyComponentStates();
+            FilterComponentIds();
 
             return _currentContext;
         }
@@ -77,6 +84,34 @@ namespace HA4IoT.PersonalAgent
                 foreach (IComponentState componentState in _synonymService.GetComponentStatesBySynonym(word))
                 {
                     _currentContext.IdentifiedComponentStates.Add(componentState);
+                }
+            }
+        }
+
+        private void FilterComponentIds()
+        {
+            if (!_currentContext.IdentifiedComponentIds.Any())
+            {
+                return;
+            }
+
+            if (_currentContext.IdentifiedComponentIds.Count == 1)
+            {
+                _currentContext.FilteredComponentIds.Add(_currentContext.IdentifiedComponentIds.First());
+                return;
+            }
+
+            foreach (var componentId in _currentContext.IdentifiedComponentIds)
+            {
+                foreach (var areaId in _currentContext.IdentifiedAreaIds)
+                {
+                    var area = _controller.GetArea(areaId);
+
+                    if (area.GetContainsComponent(componentId))
+                    {
+                        _currentContext.FilteredComponentIds.Add(componentId);
+                        break;
+                    }
                 }
             }
         }

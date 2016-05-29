@@ -4,9 +4,7 @@ namespace HA4IoT.Contracts.Actuators
 {
     public interface IStateMachine : IActuator
     {
-        bool GetSupportsState(IComponentState id);
-
-        IComponentState GetNextState(IComponentState id);
+        IComponentState GetNextState(IComponentState baseStateId);
 
         void SetStateIdAlias(IComponentState id, IComponentState alias);
     }

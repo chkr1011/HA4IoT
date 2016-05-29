@@ -120,6 +120,7 @@
     <Compile Include="Components\ComponentIdFactory.cs" />
     <Compile Include="Components\ComponentStateChangedEventArgs.cs" />
     <Compile Include="Components\IComponent.cs" />
+    <Compile Include="Components\StateNotSupportedException.cs" />
     <Compile Include="Components\UnknownComponentState.cs" />
     <Compile Include="Core\Settings\SettingValueChangedEventArgs.cs" />
     <Compile Include="Hardware\ForceUpdateStateParameter.cs" />

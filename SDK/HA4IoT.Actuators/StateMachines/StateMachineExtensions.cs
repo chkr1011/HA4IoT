@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
