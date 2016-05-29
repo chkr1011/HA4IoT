@@ -13,7 +13,7 @@ namespace HA4IoT.Hardware.CCTools
     {
         private readonly object _syncRoot = new object();
 
-        private readonly Dictionary<int, IOBoardPort> _openPorts = new Dictionary<int, IOBoardPort>();
+        private readonly Dictionary<int, CCToolsBoardPort> _openPorts = new Dictionary<int, CCToolsBoardPort>();
 
         private readonly IPortExpanderDriver _portExpanderDriver;
         
@@ -60,14 +60,14 @@ namespace HA4IoT.Hardware.CCTools
             }
         }
 
-        protected IOBoardPort GetPort(int number)
+        protected CCToolsBoardPort GetPort(int number)
         {
             lock (_syncRoot)
             {
-                IOBoardPort port;
+                CCToolsBoardPort port;
                 if (!_openPorts.TryGetValue(number, out port))
                 {
-                    port = new IOBoardPort(number, this);
+                    port = new CCToolsBoardPort(number, this);
                     _openPorts.Add(number, port);
                 }
 

@@ -156,8 +156,15 @@ namespace HA4IoT.Core.Settings
 
             if (_settingsJson.ContainsKey(name))
             {
-                existingValue = _settingsJson.GetNamedValue(name);
-
+                if (value is JsonObject)
+                {
+                    existingValue = _settingsJson.GetNamedObject(name);
+                }
+                else
+                {
+                    existingValue = _settingsJson.GetNamedValue(name);
+                }
+               
                 if (value.ValueType != existingValue.ValueType)
                 {
                     Log.Warning($"Skipped update of setting '{name}' due to different value types.");

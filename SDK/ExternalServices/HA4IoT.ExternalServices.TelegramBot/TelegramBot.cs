@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -17,6 +18,8 @@ namespace HA4IoT.ExternalServices.TelegramBot
     {
         private const string BaseUri = "https://api.telegram.org/bot";
 
+        private readonly AutoResetEvent _pendingMessagesLock = new AutoResetEvent(false);
+        private readonly List<TelegramOutboundMessage> _pendingMessages = new List<TelegramOutboundMessage>();
         private int _latestUpdateId;
         
         public event EventHandler<TelegramBotMessageReceivedEventArgs> MessageReceived;
@@ -27,29 +30,40 @@ namespace HA4IoT.ExternalServices.TelegramBot
         public HashSet<int> ChatWhitelist { get; } = new HashSet<int>();
         public bool AllowAllClients { get; set; }
 
-        public async Task TrySendMessageToAdministratorsAsync(string text)
+        public void Enable()
+        {
+            Task.Factory.StartNew(
+                async () => await ProcessPendingMessagesAsync(),
+                CancellationToken.None,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default);
+
+            Task.Factory.StartNew(
+                async () => await WaitForUpdates(),
+                CancellationToken.None,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default);
+        }
+
+        public void EnqueueMessage(TelegramOutboundMessage message)
+        {
+            if (message == null) throw new ArgumentNullException(nameof(message));
+
+            lock (_pendingMessages)
+            {
+                _pendingMessages.Add(message);
+            }
+
+            _pendingMessagesLock.Set();
+        }
+
+        public void EnqueueMessageForAdministrators(string text)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
             foreach (var chatId in Administrators)
             {
-                await TrySendMessageAsync(new TelegramOutboundMessage(chatId, text));
-            }
-        }
-
-        public async Task<bool> TrySendMessageAsync(TelegramOutboundMessage message)
-        {
-            if (message == null) throw new ArgumentNullException(nameof(message));
-
-            try
-            {
-                await SendMessageAsync(message);
-                return true;
-            }
-            catch (Exception exception)
-            {
-                Log.Warning(exception, "Error while sending Telegram message.");
-                return false;
+                EnqueueMessage(new TelegramOutboundMessage(chatId, text));
             }
         }
 
@@ -72,13 +86,35 @@ namespace HA4IoT.ExternalServices.TelegramBot
             }
         }
 
-        public void StartWaitForMessages()
+        private async Task ProcessPendingMessagesAsync()
         {
-            Task.Factory.StartNew(
-                async () => await WaitForUpdates(),
-                CancellationToken.None,
-                TaskCreationOptions.LongRunning,
-                TaskScheduler.Default);
+            while (true)
+            {
+                try
+                {
+                    List<TelegramOutboundMessage> pendingMessages;
+                    lock (_pendingMessages)
+                    {
+                        pendingMessages = new List<TelegramOutboundMessage>(_pendingMessages);
+                        _pendingMessages.Clear();
+                    }
+
+                    if (!pendingMessages.Any())
+                    {
+                        _pendingMessagesLock.WaitOne();
+                        continue;
+                    }
+
+                    foreach (var pendingMessage in pendingMessages)
+                    {
+                        await SendMessageAsync(pendingMessage);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    Log.Error(exception, "Error while processing pending Telegram messages.");
+                }
+            }
         }
 
         private async Task WaitForUpdates()
@@ -109,11 +145,11 @@ namespace HA4IoT.ExternalServices.TelegramBot
                 }
 
                 string body = await response.Content.ReadAsStringAsync();
-                await ProcessUpdates(body);
+                ProcessUpdates(body);
             }
         }
 
-        private async Task ProcessUpdates(string body)
+        private void ProcessUpdates(string body)
         {
             JsonObject response;
             if (!JsonObject.TryParse(body, out response))
@@ -131,21 +167,20 @@ namespace HA4IoT.ExternalServices.TelegramBot
                 JsonObject update = updateItem.GetObject();
 
                 _latestUpdateId = (int)update.GetNamedNumber("update_id");
-                await ProcessMessage(update.GetNamedObject("message"));
+                ProcessMessage(update.GetNamedObject("message"));
             }
         }
 
-        private async Task ProcessMessage(JsonObject message)
+        private void ProcessMessage(JsonObject message)
         {
             TelegramInboundMessage inboundMessage = ConvertJsonMessageToInboundMessage(message);
 
             if (!AllowAllClients && !ChatWhitelist.Contains(inboundMessage.ChatId))
             {
-                await TrySendMessageAsync(inboundMessage.CreateResponse("Not authorized!"));
+                EnqueueMessage(inboundMessage.CreateResponse("Not authorized!"));
 
-                await
-                    TrySendMessageToAdministratorsAsync(
-                        $"{Emoji.WarningSign} A none whitelisted client ({inboundMessage.ChatId}) has sent a message: '{inboundMessage.Text}'");
+                EnqueueMessageForAdministrators(
+                    $"{Emoji.WarningSign} A none whitelisted client ({inboundMessage.ChatId}) has sent a message: '{inboundMessage.Text}'");
             }
             else
             {

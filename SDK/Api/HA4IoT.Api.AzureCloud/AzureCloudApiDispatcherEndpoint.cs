@@ -59,7 +59,7 @@ namespace HA4IoT.Api.AzureCloud
             eventData.SetNamedValue("componentId", component.Id.ToJsonValue());
             eventData.SetNamedValue("state", component.ExportStatusToJsonObject());
 
-            Task.Run(async () => await _eventHubSender?.SendAsync(eventData));
+            _eventHubSender?.EnqueueEvent(eventData);
         }
 
         private void SetupEventHubSender(JsonObject settings)
@@ -69,6 +69,8 @@ namespace HA4IoT.Api.AzureCloud
                 settings.GetNamedString("EventHubName"),
                 settings.GetNamedString("PublisherName"),
                 settings.GetNamedString("Authorization"));
+
+            _eventHubSender.Enable();
         }
 
         private void SetupOutboundQueueSender(JsonObject settings)

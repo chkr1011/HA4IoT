@@ -15,6 +15,7 @@ namespace HA4IoT.Hardware.PortExpanderDrivers
         
         public MAX7311Driver(I2CSlaveAddress address, II2CBus i2CBus)
         {
+            if (address == null) throw new ArgumentNullException(nameof(address));
             if (i2CBus == null) throw new ArgumentNullException(nameof(i2CBus));
 
             _address = address;

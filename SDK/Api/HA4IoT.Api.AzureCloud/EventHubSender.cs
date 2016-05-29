@@ -1,13 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Web.Http;
+using Windows.Web.Http.Headers;
 using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Api.AzureCloud
 {
     public class EventHubSender
     {
+        private readonly AutoResetEvent _eventsLock = new AutoResetEvent(false);
+        private readonly List<JsonObject> _pendingEvents = new List<JsonObject>();
+
         private readonly Uri _uri;
         private readonly string _authorization;
 
@@ -22,11 +29,56 @@ namespace HA4IoT.Api.AzureCloud
             _authorization = authorization;
         }
 
-        public async Task SendAsync(JsonObject eventData)
+        public void Enable()
+        {
+            Task.Factory.StartNew(
+                async () => await ProcessPendingEventsAsync(),
+                CancellationToken.None,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default);
+        }
+
+        public void EnqueueEvent(JsonObject eventData)
         {
             if (eventData == null) throw new ArgumentNullException(nameof(eventData));
 
-            await SendToAzureEventHubAsync(eventData);
+            lock (_pendingEvents)
+            {
+                _pendingEvents.Add(eventData);
+            }
+
+            _eventsLock.Set();
+        }
+
+        private async Task ProcessPendingEventsAsync()
+        {
+            while (true)
+            {
+                try
+                {
+                    List<JsonObject> pendingEvents;
+                    lock (_pendingEvents)
+                    {
+                        pendingEvents = new List<JsonObject>(_pendingEvents);
+                        _pendingEvents.Clear();
+                    }
+
+                    if (!pendingEvents.Any())
+                    {
+                        _eventsLock.WaitOne();
+                        continue;
+                    }
+
+                    foreach (var pendingEvent in pendingEvents)
+                    {
+                        await SendToAzureEventHubAsync(pendingEvent);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    Log.Error(exception, "Error while processing pending EventHub events.");
+                }
+            }
         }
 
         private async Task SendToAzureEventHubAsync(JsonObject body)
@@ -64,9 +116,9 @@ namespace HA4IoT.Api.AzureCloud
         private HttpStringContent CreateContent(JsonObject data)
         {
             var content = new HttpStringContent(data.Stringify());
-            ////content.Headers.ContentType = new HttpMediaTypeHeaderValue("application/atom+xml");
-            ////content.Headers.ContentType.Parameters.Add(new HttpNameValueHeaderValue("type", "entry"));
-            ////content.Headers.ContentType.CharSet = "utf-8";
+            content.Headers.ContentType = new HttpMediaTypeHeaderValue("application/atom+xml");
+            content.Headers.ContentType.Parameters.Add(new HttpNameValueHeaderValue("type", "entry"));
+            content.Headers.ContentType.CharSet = "utf-8";
 
             return content;
         }
