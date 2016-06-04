@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Networking;
 using Windows.Networking.Sockets;
@@ -21,19 +20,29 @@ namespace HA4IoT.Logger
 
         private readonly object _syncRoot = new object();
         private readonly List<LogEntry> _history = new List<LogEntry>();
+        private readonly List<LogEntry> _items = new List<LogEntry>();
 
-        private List<LogEntry> _items = new List<LogEntry>();
-        private List<LogEntry> _itemsBuffer = new List<LogEntry>();
+        private readonly Timer _timer;
+        
+        private DatagramSocket _socket;
+        private Stream _outputStream;
 
         private long _currentId;
 
         public UdpLogger()
         {
-            Task.Factory.StartNew(
-                SendQueuedItems, 
-                CancellationToken.None, 
-                TaskCreationOptions.LongRunning,
-                TaskScheduler.Default);
+            _timer = new Timer(SendQueuedItems, null, Timeout.Infinite, Timeout.Infinite);
+        }
+
+        public void Start()
+        {
+            _socket = new DatagramSocket();
+            _socket.Control.DontFragment = true;
+            _socket.ConnectAsync(new HostName("255.255.255.255"), "19227").AsTask().Wait();
+            
+            _outputStream = _socket.OutputStream.AsStreamForWrite();
+
+            _timer.Change(0, Timeout.Infinite);
         }
 
         public void ExposeToApi(IApiController apiController)
@@ -116,44 +125,35 @@ namespace HA4IoT.Logger
             }
         }
 
-        private async Task SendQueuedItems()
+        private void SendQueuedItems(object state)
         {
-            using (DatagramSocket socket = new DatagramSocket())
+            try
             {
-                socket.Control.DontFragment = true;
-                await socket.ConnectAsync(new HostName("255.255.255.255"), "19227");
-
-                using (Stream outputStream = socket.OutputStream.AsStreamForWrite())
+                List<LogEntry> pendingItems = GetPendingItems();
+                if (!pendingItems.Any())
                 {
-                    while (true)
-                    {
-                        List<LogEntry> pendingItems = GetPendingItems();
-                        try
-                        {
-                            foreach (var traceItem in pendingItems)
-                            {
-                                var collection = new[] {traceItem};
-                                JsonObject package = CreatePackage(collection);
-
-                                string data = package.Stringify();
-                                byte[] buffer = Encoding.UTF8.GetBytes(data);
-
-                                outputStream.Write(buffer, 0, buffer.Length);
-                                outputStream.Flush();
-                            }
-                        }
-                        catch (Exception exception)
-                        {
-                            Debug.WriteLine("ERROR: Could not send trace items. " + exception);
-                        }
-                        finally
-                        {
-                            pendingItems.Clear();
-                        }
-
-                        await Task.Delay(50);
-                    }
+                    return;
                 }
+
+                foreach (var traceItem in pendingItems)
+                {
+                    var collection = new[] { traceItem };
+                    JsonObject package = CreatePackage(collection);
+
+                    string data = package.Stringify();
+                    byte[] buffer = Encoding.UTF8.GetBytes(data);
+
+                    _outputStream.Write(buffer, 0, buffer.Length);
+                    _outputStream.Flush();
+                }
+            }
+            catch (Exception exception)
+            {
+                Debug.WriteLine("ERROR: Could not send trace items. " + exception);
+            }
+            finally
+            {
+                _timer.Change(50, Timeout.Infinite);
             }
         }
 
@@ -161,11 +161,10 @@ namespace HA4IoT.Logger
         {
             lock (_syncRoot)
             {
-                var buffer = _items;
-                _items = _itemsBuffer;
-                _itemsBuffer = buffer;
+                var pendingItems = new List<LogEntry>(_items);
+                _items.Clear();
 
-                return _itemsBuffer;
+                return pendingItems;
             }
         }
 
