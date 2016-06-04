@@ -67,7 +67,7 @@ namespace HA4IoT.Controller.Main
 
             var ioBoardsInterruptMonitor = new InterruptMonitor(GetDevice<Pi2PortController>().GetInput(4));
             ioBoardsInterruptMonitor.InterruptDetected += (s, e) => ccToolsBoardController.PollInputBoardStates();
-            ioBoardsInterruptMonitor.StartPollingAsync();
+            ioBoardsInterruptMonitor.Start();
         }
 
         private void SetupTelegramBot()
@@ -80,15 +80,15 @@ namespace HA4IoT.Controller.Main
 
             Log.WarningLogged += (s, e) =>
             {
-                telegramBot.EnqueueMessageForAdministrators($"{Emoji.WarningSign} {e.Message}\r\n{e.Exception}");
+                telegramBot.EnqueueMessageForAdministrators($"{Emoji.WarningSign} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
             };
 
             Log.ErrorLogged += (s, e) =>
             {
-                telegramBot.EnqueueMessageForAdministrators($"{Emoji.HeavyExclamationMark} {e.Message}\r\n{e.Exception}");
+                telegramBot.EnqueueMessageForAdministrators($"{Emoji.HeavyExclamationMark} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
             };
 
-            telegramBot.EnqueueMessageForAdministrators($"{Emoji.Bell} Das System ist gestartet.");
+            telegramBot.EnqueueMessageForAdministrators($"{Emoji.Bell} Das System ist gestartet.", TelegramMessageFormat.HTML);
             new PersonalAgentToTelegramBotDispatcher(this).ExposeToTelegramBot(telegramBot);
 
             RegisterService(telegramBot);

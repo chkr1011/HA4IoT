@@ -1,5 +1,4 @@
 ﻿using System;
-using HA4IoT.Actuators;
 using HA4IoT.Actuators.BinaryStateActuators;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;
@@ -128,9 +127,9 @@ namespace HA4IoT.Controller.Main.Rooms
 
             room.GetButton(Bedroom.ButtonDoor).GetPressedLongTrigger().Attach(() =>
             {
-                room.GetLamp(Bedroom.LampBedLeft).TryTurnOff();
-                room.GetLamp(Bedroom.LampBedRight).TryTurnOff();
-                room.GetLamp(Bedroom.CombinedCeilingLights).TryTurnOff();
+                room.GetStateMachine(Bedroom.LampBedLeft).TryTurnOff();
+                room.GetStateMachine(Bedroom.LampBedRight).TryTurnOff();
+                room.GetStateMachine(Bedroom.CombinedCeilingLights).TryTurnOff();
             });
 
             room.SetupRollerShutterAutomation()

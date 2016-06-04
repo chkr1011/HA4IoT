@@ -37,7 +37,7 @@ namespace HA4IoT.Controller.Default
 
             var ioBoardsInterruptMonitor = new InterruptMonitor(pi2PortController.GetInput(4));
             ioBoardsInterruptMonitor.InterruptDetected += (s, e) => ccToolsBoardController.PollInputBoardStates();
-            ioBoardsInterruptMonitor.StartPollingAsync();
+            ioBoardsInterruptMonitor.Start();
         }
     }
 }

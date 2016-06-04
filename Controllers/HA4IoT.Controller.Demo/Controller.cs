@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
@@ -7,12 +6,9 @@ using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Automations;
-using HA4IoT.Conditions;
-using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
-using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
@@ -132,15 +128,15 @@ namespace HA4IoT.Controller.Demo
 
             Log.WarningLogged += (s, e) =>
             {
-                telegramBot.EnqueueMessageForAdministrators($"{Emoji.WarningSign} {e.Message}\r\n{e.Exception}");
+                telegramBot.EnqueueMessageForAdministrators($"{Emoji.WarningSign} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
             };
 
             Log.ErrorLogged += (s, e) =>
             {
-                telegramBot.EnqueueMessageForAdministrators($"{Emoji.HeavyExclamationMark} {e.Message}\r\n{e.Exception}");
+                telegramBot.EnqueueMessageForAdministrators($"{Emoji.HeavyExclamationMark} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
             };
 
-            telegramBot.EnqueueMessageForAdministrators($"{Emoji.Bell} Das System ist gestartet.");
+            telegramBot.EnqueueMessageForAdministrators($"{Emoji.Bell} Das System ist gestartet.", TelegramMessageFormat.HTML);
 
             new PersonalAgentToTelegramBotDispatcher(this).ExposeToTelegramBot(telegramBot);
 

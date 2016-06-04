@@ -57,13 +57,13 @@ namespace HA4IoT.ExternalServices.TelegramBot
             _pendingMessagesLock.Set();
         }
 
-        public void EnqueueMessageForAdministrators(string text)
+        public void EnqueueMessageForAdministrators(string text, TelegramMessageFormat format)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
             foreach (var chatId in Administrators)
             {
-                EnqueueMessage(new TelegramOutboundMessage(chatId, text));
+                EnqueueMessage(new TelegramOutboundMessage(chatId, text, format));
             }
         }
 
@@ -177,10 +177,10 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
             if (!AllowAllClients && !ChatWhitelist.Contains(inboundMessage.ChatId))
             {
-                EnqueueMessage(inboundMessage.CreateResponse("Not authorized!"));
+                EnqueueMessage(inboundMessage.CreateResponse("Not authorized!", TelegramMessageFormat.PlainText));
 
                 EnqueueMessageForAdministrators(
-                    $"{Emoji.WarningSign} A none whitelisted client ({inboundMessage.ChatId}) has sent a message: '{inboundMessage.Text}'");
+                    $"{Emoji.WarningSign} A none whitelisted client ({inboundMessage.ChatId}) has sent a message: '{inboundMessage.Text}'", TelegramMessageFormat.HTML);
             }
             else
             {
@@ -203,8 +203,12 @@ namespace HA4IoT.ExternalServices.TelegramBot
         {
             var json = new JsonObject();
             json.SetNamedNumber("chat_id", message.ChatId);
-            json.SetNamedString("parse_mode", "HTML");
             json.SetNamedString("text", message.Text);
+
+            if (message.Format == TelegramMessageFormat.HTML)
+            {
+                json.SetNamedString("parse_mode", "HTML");
+            }
 
             return new StringContent(json.Stringify(), Encoding.UTF8, "application/json");
         }
