@@ -12,7 +12,7 @@ function getVersion(callback) {
 }
 
 function loadUILocalizations(callback) {
-    $.getJSON("/app/UILocalizations.json").success(function (result) {
+    $.getJSON("/app/UILocalizations-DE.json").success(function (result) {
         uiLocalizations = result;
     }).fail(function (jqXHR, textStatus, errorThrown) {
         alert(textStatus);
