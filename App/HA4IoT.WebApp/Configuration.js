@@ -8,3 +8,4 @@ appConfiguration.showWindowsOverview = true;
 appConfiguration.showWeatherStation = true;
 
 appConfiguration.actuatorExtender = function (actuator) { };
+

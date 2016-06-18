@@ -2,7 +2,7 @@
     <div class="panel-heading pointer" ng-click="haCtrl.setActivePanel('sensorsOverview')">
         <div>
             <span class="glyphicon glyphicon-th-list"></span>
-            <span class="panel-title">Sensoren</span>
+            <span class="panel-title">{{haCtrl.getUILocalization('UI.Sensors')}}</span>
         </div>
     </div>
     <table class="table table-striped" ng-show="haCtrl.activePanel=='sensorsOverview'">
