@@ -290,12 +290,14 @@ namespace HA4IoT.Core
 
         private void LoadControllerSettings()
         {
-            Settings = new SettingsContainer(StoragePath.WithFilename("Settings.json"));
+            Settings = new SettingsContainer(StoragePath.WithFilename("ControllerConfiguration.json"));
 
             Settings.SetValue("Name", "HA4IoT Controller");
             Settings.SetValue("Description", "The HA4IoT controller which is responsible for this house.");
+            Settings.SetValue("Language", "EN");
 
             Settings.Load();
+            Settings.Save();
         }
 
         private void TryInitialize()
