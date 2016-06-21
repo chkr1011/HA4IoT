@@ -5,9 +5,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
+using Windows.UI.Xaml;
 using HA4IoT.Api;
 using HA4IoT.Api.AzureCloud;
 using HA4IoT.Api.LocalRestServer;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
@@ -251,20 +253,22 @@ namespace HA4IoT.Core
 
         private void InitializeCore()
         {
+            var stopwatch = Stopwatch.StartNew();
+
             try
             {
-                var stopwatch = Stopwatch.StartNew();
-                
-                InitializeHttpApiEndpoint();
                 InitializeLogging();
+                InitializeHttpApiEndpoint();
+                
                 LoadControllerSettings();
                 InitializeDiscovery();
 
                 HomeAutomationTimer timer = InitializeTimer();
 
                 TryInitialize();
-
+                
                 LoadNonControllerSettings();
+                ResetActuatorStates();
 
                 _httpServer.Start(80);
                 ExposeToApi();
@@ -278,7 +282,15 @@ namespace HA4IoT.Core
             }
             catch (Exception exception)
             {
-                Debug.WriteLine(exception.ToString());
+                Log.Error(exception, "Failed to initialize.");
+            }
+        }
+
+        private void ResetActuatorStates()
+        {
+            foreach (var actuator in GetComponents<IActuator>())
+            {
+                actuator.ResetState();
             }
         }
 

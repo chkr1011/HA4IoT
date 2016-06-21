@@ -5,14 +5,14 @@ namespace HA4IoT.Contracts.Actuators
 {
     public class StateChangedEventArgs : EventArgs
     {
-        public StateChangedEventArgs(StatefulComponentState oldState, StatefulComponentState newState)
+        public StateChangedEventArgs(NamedComponentState oldState, NamedComponentState newState)
         {
             OldState = oldState;
             NewState = newState;
         }
 
-        public StatefulComponentState OldState { get; }
+        public NamedComponentState OldState { get; }
 
-        public StatefulComponentState NewState { get; }
+        public NamedComponentState NewState { get; }
     }
 }

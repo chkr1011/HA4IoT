@@ -130,11 +130,11 @@ namespace HA4IoT.Actuators.Tests
             var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
 
             var condition = new ComponentIsInStateCondition(output, BinaryStateId.Off);
-            condition.GetIsFulfilled().ShouldBeEquivalentTo(true);
+            condition.IsFulfilled().ShouldBeEquivalentTo(true);
 
             output.SetNextState();
 
-            condition.GetIsFulfilled().ShouldBeEquivalentTo(false);
+            condition.IsFulfilled().ShouldBeEquivalentTo(false);
         }
     }
 }

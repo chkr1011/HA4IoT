@@ -82,6 +82,11 @@ namespace HA4IoT.Actuators.RollerShutters
             return _state;
         }
 
+        public override void ResetState()
+        {
+            SetState(RollerShutterStateId.Off, new ForceUpdateStateParameter());
+        }
+
         public override void SetState(IComponentState state, params IHardwareParameter[] parameters)
         {
             if (state == null) throw new ArgumentNullException(nameof(state));
@@ -114,7 +119,7 @@ namespace HA4IoT.Actuators.RollerShutters
 
         public override void HandleApiCommand(IApiContext apiContext)
         {
-            var state = new StatefulComponentState(apiContext.Request.GetNamedString("state"));
+            var state = new NamedComponentState(apiContext.Request.GetNamedString("state"));
             SetState(state);
         }
 

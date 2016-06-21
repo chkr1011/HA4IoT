@@ -22,7 +22,7 @@ namespace HA4IoT.Components.Tests
         [TestMethod]
         public void StatefulState_Serialize()
         {
-            IComponentState state = new StatefulComponentState("Off");
+            IComponentState state = new NamedComponentState("Off");
             IJsonValue jsonValue = state.ToJsonValue();
 
             jsonValue.ValueType.ShouldBeEquivalentTo(JsonValueType.String);

@@ -22,7 +22,7 @@ namespace HA4IoT.Actuators.StateMachines
         {
         }
         
-        public bool GetSupportsState(IComponentState stateId)
+        public bool SupportsState(IComponentState stateId)
         {
             if (stateId == null) throw new ArgumentNullException(nameof(stateId));
 
@@ -50,7 +50,7 @@ namespace HA4IoT.Actuators.StateMachines
 
             if (newState.Id.Equals(_activeState?.Id))
             {
-                if (_turnOffIfStateIsAppliedTwice && GetSupportsState(BinaryStateId.Off) && !GetState().Equals(BinaryStateId.Off))
+                if (_turnOffIfStateIsAppliedTwice && SupportsState(BinaryStateId.Off) && !GetState().Equals(BinaryStateId.Off))
                 {
                     SetState(BinaryStateId.Off, parameters);
                     return;
@@ -72,6 +72,14 @@ namespace HA4IoT.Actuators.StateMachines
 
             _activeState = newState;
             OnActiveStateChanged(oldState, newState);
+        }
+
+        public override void ResetState()
+        {
+            if (SupportsState(BinaryStateId.Off))
+            {
+                SetState(BinaryStateId.Off, new ForceUpdateStateParameter());
+            }
         }
 
         public void SetStateIdAlias(IComponentState stateId, IComponentState alias)
@@ -114,7 +122,7 @@ namespace HA4IoT.Actuators.StateMachines
             return this;
         }
 
-        public void SetInitialState(StatefulComponentState id)
+        public void SetInitialState(NamedComponentState id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
@@ -125,7 +133,7 @@ namespace HA4IoT.Actuators.StateMachines
         {
             if (state == null) throw new ArgumentNullException(nameof(state));
 
-            if (GetSupportsState(state.Id))
+            if (SupportsState(state.Id))
             {
                 throw new InvalidOperationException($"State '{state.Id}' already added.");
             }
@@ -148,8 +156,8 @@ namespace HA4IoT.Actuators.StateMachines
 
             if (apiContext.Request.ContainsKey("state"))
             {
-                var stateId = new StatefulComponentState(apiContext.Request.GetNamedString("state", string.Empty));
-                if (!GetSupportsState(stateId))
+                var stateId = new NamedComponentState(apiContext.Request.GetNamedString("state", string.Empty));
+                if (!SupportsState(stateId))
                 {
                     apiContext.ResultCode = ApiResultCode.InvalidBody;
                     apiContext.Response.SetNamedString("Message", "State ID not supported.");
@@ -196,7 +204,7 @@ namespace HA4IoT.Actuators.StateMachines
 
         private void ThrowIfStateNotSupported(IComponentState stateId)
         {
-            if (!GetSupportsState(stateId))
+            if (!SupportsState(stateId))
             {
                 throw new NotSupportedException($"State '{stateId}' is not supported.");
             }

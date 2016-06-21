@@ -63,7 +63,7 @@ namespace HA4IoT.Automations
 
         public void PerformPendingActions()
         {
-            if (!this.GetIsEnabled())
+            if (!this.IsEnabled())
             {
                 return;
             }
@@ -80,7 +80,7 @@ namespace HA4IoT.Automations
 
             // TODO: Add check for heavy hailing
 
-            bool autoOpenIsInRange = GetIsDayCondition().GetIsFulfilled();
+            bool autoOpenIsInRange = GetIsDayCondition().IsFulfilled();
             bool autoCloseIsInRange = !autoOpenIsInRange;
 
             if (!_autoOpenIsApplied && autoOpenIsInRange)
@@ -166,7 +166,7 @@ namespace HA4IoT.Automations
             return condition;
         }
 
-        private void SetStates(StatefulComponentState state)
+        private void SetStates(NamedComponentState state)
         {
             foreach (var rollerShutter in _rollerShutters)
             {

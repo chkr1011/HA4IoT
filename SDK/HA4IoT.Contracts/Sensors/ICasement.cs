@@ -11,7 +11,7 @@ namespace HA4IoT.Contracts.Sensors
 
         event EventHandler<StateChangedEventArgs> StateChanged;
 
-        StatefulComponentState GetState();
+        NamedComponentState GetState();
 
         ITrigger GetOpenedTrigger();
 

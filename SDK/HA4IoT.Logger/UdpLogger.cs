@@ -20,10 +20,10 @@ namespace HA4IoT.Logger
         private readonly bool _isDebuggerAttached = Debugger.IsAttached;
 
         private readonly object _syncRoot = new object();
-        private readonly List<LogEntry> _history = new List<LogEntry>();
+        private readonly List<LogEntry> _history = new List<LogEntry>(100);
 
-        private List<LogEntry> _items = new List<LogEntry>();
-        private List<LogEntry> _itemsBuffer = new List<LogEntry>();
+        private List<LogEntry> _items = new List<LogEntry>(1000);
+        private List<LogEntry> _itemsBuffer = new List<LogEntry>(1000);
 
         private long _currentId;
 
@@ -96,15 +96,22 @@ namespace HA4IoT.Logger
                 _items.Add(logEntry);
                 _currentId++;
 
-                if (logEntry.Severity != LogEntrySeverity.Verbose)
-                {
-                    _history.Add(logEntry);
+                UpdateHistory(logEntry);
+            }
+        }
 
-                    if (_history.Count > 100)
-                    {
-                        _history.RemoveAt(0);
-                    }
-                }
+        private void UpdateHistory(LogEntry newEntry)
+        {
+            if (newEntry.Severity == LogEntrySeverity.Verbose)
+            {
+                return;
+            }
+
+            _history.Add(newEntry);
+
+            if (_history.Count > 100)
+            {
+                _history.RemoveAt(0);
             }
         }
 
