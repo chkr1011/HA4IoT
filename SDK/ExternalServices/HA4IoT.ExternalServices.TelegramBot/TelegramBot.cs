@@ -67,7 +67,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
             }
         }
 
-        public async Task SendMessageAsync(TelegramOutboundMessage message)
+        private async Task SendMessageAsync(TelegramOutboundMessage message)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
@@ -79,7 +79,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    throw new InvalidOperationException($"Sending Telegram message failed (StatusCode={response.StatusCode}).");
+                    throw new InvalidOperationException($"Sending Telegram message '${message.Text}' failed (StatusCode={response.StatusCode}).");
                 }
 
                 Log.Info($"Sent Telegram message '{message.Text}' to chat {message.ChatId}.");
