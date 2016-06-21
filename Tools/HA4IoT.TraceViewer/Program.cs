@@ -15,7 +15,14 @@ namespace HA4IoT.TraceViewer
         public static void Main()
         {
             Console.Title = "Trace Viewer - HA4IoT";
+            Console.WriteLine(@"  _   _    _   _  _  ___    _____   _____                    __     ___                        
+ | | | |  / \ | || ||_ _|__|_   _| |_   _| __ __ _  ___ ___  \ \   / (_) _____      _____ _ __ 
+ | |_| | / _ \| || |_| |/ _ \| |     | || '__/ _` |/ __/ _ \  \ \ / /| |/ _ \ \ /\ / / _ \ '__|
+ |  _  |/ ___ \__   _| | (_) | |     | || | | (_| | (_|  __/   \ V / | |  __/\ V  V /  __/ |   
+ |_| |_/_/   \_\ |_||___\___/|_|     |_||_|  \__,_|\___\___|    \_/  |_|\___| \_/\_/ \___|_|   
+                                                                                               ");
 
+            WriteLine("Ensure that you opened UDP port 19227 at your firewall.", ConsoleColor.White, ConsoleColor.Red);
             Console.Write("Starting... ");
 
             PrepareLogging();
@@ -112,6 +119,24 @@ namespace HA4IoT.TraceViewer
 
                 Console.ForegroundColor = color;
                 Console.WriteLine(line);
+            }
+        }
+
+        private static void WriteLine(string text, ConsoleColor foregroundColor, ConsoleColor backgroundColor = ConsoleColor.Black)
+        {
+            ConsoleColor previousForegroundColor = Console.ForegroundColor;
+            ConsoleColor previousBackgroundColor = Console.BackgroundColor;
+
+            try
+            {
+                Console.ForegroundColor = foregroundColor;
+                Console.BackgroundColor = backgroundColor;
+                Console.WriteLine(text);
+            }
+            finally
+            {
+                Console.ForegroundColor = previousForegroundColor;
+                Console.BackgroundColor = previousBackgroundColor;
             }
         }
     }
