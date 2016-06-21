@@ -137,6 +137,12 @@ namespace HA4IoT.Controller.Demo
 
             Log.ErrorLogged += (s, e) =>
             {
+                if (e.Message.StartsWith("Sending Telegram message failed"))
+                {
+                    // Prevent recursive send of sending failures.
+                    return;
+                }
+
                 telegramBot.EnqueueMessageForAdministrators($"{Emoji.HeavyExclamationMark} {e.Message}\r\n{e.Exception}");
             };
 
