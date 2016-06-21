@@ -108,7 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="KnxController.cs" />
-    <Compile Include="KnxDigitalJoinEndPoint.cs" />
+    <Compile Include="KnxDigitalJoinEnpoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SocketClient.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.Hardware.Knx.rd.xml" />

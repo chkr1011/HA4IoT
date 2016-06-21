@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Actuators;
 
 namespace HA4IoT.Hardware.Knx
 {
@@ -27,6 +28,11 @@ namespace HA4IoT.Hardware.Knx
             {
                 Log.Error(ex, ex.Message);
             }
+        }
+
+        public IBinaryStateEndpoint CreateDigitalJoinEndpoint(string identifier)
+        {
+            return new KnxDigitalJoinEnpoint(identifier, this);
         }
 
         public bool CheckPasword(string password)
