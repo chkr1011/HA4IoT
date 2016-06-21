@@ -30,7 +30,7 @@ namespace HA4IoT.Controller.Main
             AddDevice(new BuiltInI2CBus());
             
             var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>());
-            var knxController = new KnxController("192.168.2.100", "8150");
+            var knxController = new KnxController("192.168.2.100", 8150);
 
             AddDevice(new Pi2PortController());
             AddDevice(ccToolsBoardController);
