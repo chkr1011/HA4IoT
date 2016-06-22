@@ -9,7 +9,6 @@ namespace HA4IoT.Hardware.Knx
 {
     public class KnxController
     {
-        //var knxController = new KnxController("192.168.1.123","8150");
         //var lamp = new HA4IoT.Actuators.Lamp(new ComponentId("Lamp1"), knxController.CreateDigitalJoinEndpoint("d1"));
         SocketClient _socketClient;
 
@@ -35,7 +34,7 @@ namespace HA4IoT.Hardware.Knx
             return new KnxDigitalJoinEnpoint(identifier, this);
         }
 
-        public bool CheckPasword(string password)
+        private bool CheckPasword(string password)
         {
             string result = _socketClient.Send("p=" + password + "\x03");
             Log.Verbose("knx-send-pasword: " + result);
@@ -54,7 +53,7 @@ namespace HA4IoT.Hardware.Knx
 
         }
 
-        public void Initialisation()
+        private void Initialisation()
         {
             string result = _socketClient.Send("i=1\x03");
             Log.Verbose("knx-init: " + result);

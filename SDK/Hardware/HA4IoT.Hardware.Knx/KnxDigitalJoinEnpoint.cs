@@ -11,21 +11,24 @@ namespace HA4IoT.Hardware.Knx
 {
     public class KnxDigitalJoinEnpoint : IBinaryStateEndpoint
     {
-        private readonly string _deviceId;
+        private readonly string _identifier;
         private readonly KnxController _knxController;
 
-        public KnxDigitalJoinEnpoint(string deviceId, KnxController knxController)
+        public KnxDigitalJoinEnpoint(string identifier, KnxController knxController)
         {
-            if (ValidationJoin(deviceId) && ValidationKnxController(knxController) )
+            if (identifier == null) throw new ArgumentNullException(nameof(identifier));
+            if (knxController == null) throw new ArgumentNullException(nameof(knxController));
+
+            if (ValidationJoin(identifier))
             {
-                _deviceId = deviceId;
+                _identifier = identifier;
                 _knxController = knxController;
             }
         }
 
         public void TurnOn(params IHardwareParameter[] parameters)
         {
-            _knxController.DigitalJoinOn(_deviceId);
+            _knxController.DigitalJoinOn(_identifier);
         }
 
         public void TurnOff(params IHardwareParameter[] parameters)
@@ -33,18 +36,11 @@ namespace HA4IoT.Hardware.Knx
             _knxController.DigitalJoinOff(_deviceId);
         }
 
-        public bool ValidationJoin(string join)
+        private bool ValidationJoin(string join)
         {
             Regex regexcheck = new Regex("([das])([0-9])");
             return regexcheck.IsMatch(join);
         }
-
-        public bool ValidationKnxController(KnxController knxController)
-        {
-            if (knxController != null)
-                return true;
-
-            return false;
-        }
+        
     }
 }
