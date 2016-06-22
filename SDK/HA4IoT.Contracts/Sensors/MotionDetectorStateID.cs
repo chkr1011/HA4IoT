@@ -5,7 +5,7 @@ namespace HA4IoT.Contracts.Sensors
 {
     public static class MotionDetectorStateId
     {
-        public static readonly StatefulComponentState Idle = new StatefulComponentState("Idle");
-        public static readonly StatefulComponentState MotionDetected = new StatefulComponentState("MotionDetected");
+        public static readonly NamedComponentState Idle = new NamedComponentState("Idle");
+        public static readonly NamedComponentState MotionDetected = new NamedComponentState("MotionDetected");
     }
 }

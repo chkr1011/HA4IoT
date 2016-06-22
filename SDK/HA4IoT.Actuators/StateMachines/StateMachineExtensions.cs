@@ -36,14 +36,14 @@ namespace HA4IoT.Actuators.StateMachines
         {
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
 
-            return stateMachine.GetSupportsState(BinaryStateId.Off);
+            return stateMachine.SupportsState(BinaryStateId.Off);
         }
 
         public static bool GetSupportsOnState(this IStateMachine stateMachine)
         {
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
 
-            return stateMachine.GetSupportsState(BinaryStateId.On);
+            return stateMachine.SupportsState(BinaryStateId.On);
         }
 
         public static StateMachineState AddOffState(this StateMachine stateMachine)
@@ -60,7 +60,7 @@ namespace HA4IoT.Actuators.StateMachines
             return stateMachine.AddState(BinaryStateId.On);
         }
 
-        public static StateMachineState AddState(this StateMachine stateMachine, StatefulComponentState id)
+        public static StateMachineState AddState(this StateMachine stateMachine, NamedComponentState id)
         {
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
             if (id == null) throw new ArgumentNullException(nameof(id));
@@ -84,7 +84,7 @@ namespace HA4IoT.Actuators.StateMachines
         {
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
 
-            if (!stateMachine.GetSupportsState(BinaryStateId.Off))
+            if (!stateMachine.SupportsState(BinaryStateId.Off))
             {
                 return false;
             }
@@ -97,7 +97,7 @@ namespace HA4IoT.Actuators.StateMachines
         {
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
 
-            if (!stateMachine.GetSupportsState(BinaryStateId.On))
+            if (!stateMachine.SupportsState(BinaryStateId.On))
             {
                 return false;
             }
@@ -106,7 +106,7 @@ namespace HA4IoT.Actuators.StateMachines
             return true;
         }
 
-        public static IAction GetSetStateAction(this IStateMachine stateStateMachine, StatefulComponentState stateId)
+        public static IAction GetSetStateAction(this IStateMachine stateStateMachine, NamedComponentState stateId)
         {
             if (stateStateMachine == null) throw new ArgumentNullException(nameof(stateStateMachine));
             if (stateId == null) throw new ArgumentNullException(nameof(stateId));

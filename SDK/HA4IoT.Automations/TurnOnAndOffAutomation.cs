@@ -196,7 +196,7 @@ namespace HA4IoT.Automations
 
         private void Trigger()
         {
-            if (!this.GetIsEnabled())
+            if (!this.IsEnabled())
             {
                 return;
             }

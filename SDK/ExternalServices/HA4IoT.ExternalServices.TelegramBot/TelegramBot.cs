@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -18,8 +18,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
     {
         private const string BaseUri = "https://api.telegram.org/bot";
 
-        private readonly AutoResetEvent _pendingMessagesLock = new AutoResetEvent(false);
-        private readonly List<TelegramOutboundMessage> _pendingMessages = new List<TelegramOutboundMessage>();
+        private readonly BlockingCollection<TelegramOutboundMessage> _pendingMessages = new BlockingCollection<TelegramOutboundMessage>();
         private int _latestUpdateId;
         
         public event EventHandler<TelegramBotMessageReceivedEventArgs> MessageReceived;
@@ -49,25 +48,20 @@ namespace HA4IoT.ExternalServices.TelegramBot
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
-            lock (_pendingMessages)
-            {
-                _pendingMessages.Add(message);
-            }
-
-            _pendingMessagesLock.Set();
+            _pendingMessages.Add(message);
         }
 
-        public void EnqueueMessageForAdministrators(string text)
+        public void EnqueueMessageForAdministrators(string text, TelegramMessageFormat format = TelegramMessageFormat.HTML)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
             foreach (var chatId in Administrators)
             {
-                EnqueueMessage(new TelegramOutboundMessage(chatId, text));
+                EnqueueMessage(new TelegramOutboundMessage(chatId, text, format));
             }
         }
 
-        public async Task SendMessageAsync(TelegramOutboundMessage message)
+        private async Task SendMessageAsync(TelegramOutboundMessage message)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
@@ -79,10 +73,13 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    throw new InvalidOperationException($"Sending Telegram message failed (StatusCode={response.StatusCode}).");
+                    Log.Warning(
+                        $"Sending Telegram message failed (Message='${message.Text}' StatusCode={response.StatusCode}).");
                 }
-
-                Log.Info($"Sent Telegram message '{message.Text}' to chat {message.ChatId}.");
+                else
+                {
+                    Log.Info($"Sent Telegram message '{message.Text}' to chat {message.ChatId}.");
+                }
             }
         }
 
@@ -92,23 +89,8 @@ namespace HA4IoT.ExternalServices.TelegramBot
             {
                 try
                 {
-                    List<TelegramOutboundMessage> pendingMessages;
-                    lock (_pendingMessages)
-                    {
-                        pendingMessages = new List<TelegramOutboundMessage>(_pendingMessages);
-                        _pendingMessages.Clear();
-                    }
-
-                    if (!pendingMessages.Any())
-                    {
-                        _pendingMessagesLock.WaitOne();
-                        continue;
-                    }
-
-                    foreach (var pendingMessage in pendingMessages)
-                    {
-                        await SendMessageAsync(pendingMessage);
-                    }
+                    TelegramOutboundMessage message = _pendingMessages.Take();
+                    await SendMessageAsync(message);
                 }
                 catch (Exception exception)
                 {
@@ -201,10 +183,19 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
         private StringContent ConvertOutboundMessageToJsonMessage(TelegramOutboundMessage message)
         {
+            if (message.Text.Length > 4096)
+            {
+                throw new InvalidOperationException("The Telegram outbound message is too long.");
+            }
+
             var json = new JsonObject();
             json.SetNamedNumber("chat_id", message.ChatId);
-            json.SetNamedString("parse_mode", "HTML");
             json.SetNamedString("text", message.Text);
+
+            if (message.Format == TelegramMessageFormat.HTML)
+            {
+                json.SetNamedString("parse_mode", "HTML");
+            }
 
             return new StringContent(json.Stringify(), Encoding.UTF8, "application/json");
         }

@@ -21,7 +21,7 @@ namespace HA4IoT.Sensors.Windows
         private readonly Trigger _openedTrigger = new Trigger();
         private readonly Trigger _closedTrigger = new Trigger();
 
-        private StatefulComponentState _state = CasementStateId.Closed;
+        private NamedComponentState _state = CasementStateId.Closed;
 
         public Casement(string id, IBinaryInput fullOpenReedSwitch, IBinaryInput tiltReedSwitch = null)
         {
@@ -46,7 +46,7 @@ namespace HA4IoT.Sensors.Windows
 
         public event EventHandler<StateChangedEventArgs> StateChanged;
 
-        public StatefulComponentState GetState()
+        public NamedComponentState GetState()
         {
             return _state;
         }
@@ -87,7 +87,7 @@ namespace HA4IoT.Sensors.Windows
             OnStateChanged(oldState, _state);
         }
 
-        private void OnStateChanged(StatefulComponentState oldState, StatefulComponentState newState)
+        private void OnStateChanged(NamedComponentState oldState, NamedComponentState newState)
         {
             StateChanged?.Invoke(this, new StateChangedEventArgs(oldState, newState));
         }

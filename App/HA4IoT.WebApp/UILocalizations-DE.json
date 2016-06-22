@@ -15,6 +15,9 @@
   "UI.Sunset": "Sonnenuntergang",
   "UI.Mold": "Schimmel",
 
+  "UI.MotionDetectorsOverview": "Bewegungsmelder",
+  "UI.RollerShuttersOverview": "Roller shutters",
+
   "UI.WeatherStation": "Wetterstation",
   "UI.WeatherStation.Sunrise": "Sonnenaufgang",
   "UI.WeatherStation.Sunset": "Sonnenuntergang",
@@ -57,7 +60,5 @@
   "UI.WeatherStation.Situation.LightShowerSnow": "Leichter Schneeschauer",
   "UI.WeatherStation.Situation.ShowerSnow": "Schneeschauer",
   "UI.WeatherStation.Situation.HeavyShowerSnow": "Starker Schneeschauer",
-  "UI.WeatherStation.Situation.Mist": "Nebel",
-
-  "UI.MotionDetectorsOverview": "Bewegungsmelder"
+  "UI.WeatherStation.Situation.Mist": "Nebel"
 }

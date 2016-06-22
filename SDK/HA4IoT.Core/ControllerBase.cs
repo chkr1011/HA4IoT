@@ -5,9 +5,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
+using Windows.UI.Xaml;
 using HA4IoT.Api;
 using HA4IoT.Api.AzureCloud;
 using HA4IoT.Api.LocalRestServer;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
@@ -240,10 +242,12 @@ namespace HA4IoT.Core
         {
             if (Log.Instance == null)
             {
-                var logger = new UdpLogger();
-                logger.ExposeToApi(ApiController);
+                var udpLogger = new UdpLogger();
+                udpLogger.Start();
 
-                Log.Instance = logger;
+                udpLogger.ExposeToApi(ApiController);
+
+                Log.Instance = udpLogger;
             }
             
             Log.Info("Starting...");
@@ -251,20 +255,22 @@ namespace HA4IoT.Core
 
         private void InitializeCore()
         {
+            var stopwatch = Stopwatch.StartNew();
+
             try
             {
-                var stopwatch = Stopwatch.StartNew();
-                
-                InitializeHttpApiEndpoint();
                 InitializeLogging();
+                InitializeHttpApiEndpoint();
+                
                 LoadControllerSettings();
                 InitializeDiscovery();
 
                 HomeAutomationTimer timer = InitializeTimer();
 
                 TryInitialize();
-
+                
                 LoadNonControllerSettings();
+                ResetActuatorStates();
 
                 _httpServer.Start(80);
                 ExposeToApi();
@@ -278,7 +284,15 @@ namespace HA4IoT.Core
             }
             catch (Exception exception)
             {
-                Debug.WriteLine(exception.ToString());
+                Log.Error(exception, "Failed to initialize.");
+            }
+        }
+
+        private void ResetActuatorStates()
+        {
+            foreach (var actuator in GetComponents<IActuator>())
+            {
+                actuator.ResetState();
             }
         }
 
@@ -290,12 +304,14 @@ namespace HA4IoT.Core
 
         private void LoadControllerSettings()
         {
-            Settings = new SettingsContainer(StoragePath.WithFilename("Settings.json"));
+            Settings = new SettingsContainer(StoragePath.WithFilename("ControllerConfiguration.json"));
 
             Settings.SetValue("Name", "HA4IoT Controller");
             Settings.SetValue("Description", "The HA4IoT controller which is responsible for this house.");
+            Settings.SetValue("Language", "EN");
 
             Settings.Load();
+            Settings.Save();
         }
 
         private void TryInitialize()

@@ -82,9 +82,9 @@ namespace HA4IoT.Sensors.MotionDetectors
             _detectionCompletedTrigger.Execute();
         }
 
-        private void UpdateState(StatefulComponentState newState)
+        private void UpdateState(NamedComponentState newState)
         {
-            if (!this.GetIsEnabled())
+            if (!this.IsEnabled())
             {
                 return;
             }
@@ -103,7 +103,7 @@ namespace HA4IoT.Sensors.MotionDetectors
 
         private void HandleIsEnabledStateChanged(IHomeAutomationTimer timer)
         {
-            if (!this.GetIsEnabled())
+            if (!this.IsEnabled())
             {
                 Log.Info(Id + ": Disabled for 1 hour");
                 _autoEnableAction = timer.In(TimeSpan.FromHours(1)).Do(this.Enable);

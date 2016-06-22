@@ -14,8 +14,6 @@ namespace HA4IoT.Actuators.BinaryStateActuators
 
             AddState(new StateMachineState(BinaryStateId.Off).WithAction(endpoint.TurnOff));
             AddState(new StateMachineState(BinaryStateId.On).WithAction(endpoint.TurnOn));
-
-            SetInitialState(BinaryStateId.Off);
         }
     }
 }

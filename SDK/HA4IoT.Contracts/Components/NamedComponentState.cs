@@ -4,19 +4,19 @@ using HA4IoT.Contracts.Core;
 
 namespace HA4IoT.Contracts.Components
 {
-    public class StatefulComponentState : IdBase, IEquatable<StatefulComponentState>, IComponentState
+    public class NamedComponentState : IdBase, IEquatable<NamedComponentState>, IComponentState
     {
         private readonly IJsonValue _jsonValue;
 
-        public StatefulComponentState(string value) 
-            : base(value)
+        public NamedComponentState(string name) 
+            : base(name)
         {
-            if (string.IsNullOrEmpty(value)) throw new ArgumentException("State ID is invalid.");
+            if (string.IsNullOrEmpty(name)) throw new ArgumentException("Name is invalid.");
 
-            _jsonValue = JsonValue.CreateStringValue(value);
+            _jsonValue = JsonValue.CreateStringValue(name);
         }
 
-        public bool Equals(StatefulComponentState otherState)
+        public bool Equals(NamedComponentState otherState)
         {
             if (ReferenceEquals(otherState, this))
             {
@@ -38,7 +38,7 @@ namespace HA4IoT.Contracts.Components
                 return true;
             }
 
-            return Equals(otherState as StatefulComponentState);
+            return Equals(otherState as NamedComponentState);
         }
 
         public IJsonValue ToJsonValue()

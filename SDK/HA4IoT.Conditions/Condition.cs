@@ -30,7 +30,7 @@ namespace HA4IoT.Conditions
             return thisState;
         }
 
-        public bool GetIsFulfilled()
+        public bool IsFulfilled()
         {
             return Validate() == ConditionState.Fulfilled;
         }

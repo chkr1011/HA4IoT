@@ -27,7 +27,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
             var messageProcessor = new PersonalAgentMessageProcessor(_controller);
             messageProcessor.ProcessMessage(e.Message);
 
-            e.EnqueueResponse(messageProcessor.Answer);
+            e.EnqueueResponse(messageProcessor.Answer, TelegramMessageFormat.HTML);
         }
     }
 }

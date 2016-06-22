@@ -56,20 +56,20 @@ namespace HA4IoT.Automations
         {
             _timeout = _timer.In(_slowDuration).Do(() =>
             {
-                _actuator.SetState(new StatefulComponentState("2"));
+                _actuator.SetState(new NamedComponentState("2"));
                 _timeout = _timer.In(_fastDuration).Do(() => _actuator.TryTurnOff());
             });
         }
 
         private void TurnOn(object sender, EventArgs e)
         {
-            if (!this.GetIsEnabled())
+            if (!this.IsEnabled())
             {
                 
             }
 
             _timeout?.Cancel();
-            _actuator?.SetState(new StatefulComponentState("1"));
+            _actuator?.SetState(new NamedComponentState("1"));
         }
     }
 }

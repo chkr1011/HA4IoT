@@ -12,7 +12,7 @@ function getVersion(callback) {
 }
 
 function loadUILocalizations(callback) {
-    $.getJSON("/app/UILocalizations.json").success(function (result) {
+    $.getJSON("/app/UILocalizations.EN.json").success(function (result) {
         uiLocalizations = result;
     }).fail(function (jqXHR, textStatus, errorThrown) {
         alert(textStatus);
@@ -346,7 +346,6 @@ function updateOnStateCounters(areas) {
         area.onStateCount = count;
     });
 }
-
 
 function invokeActuator(id, request, successCallback) {
     // This hack is required for Safari because only one Ajax request at the same time is allowed.

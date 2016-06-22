@@ -165,7 +165,7 @@ namespace HA4IoT.PersonalAgent
                 return $"{Emoji.Confused} Das was du möchtest ist nicht eindeutig.";
             }
 
-            if (!actuator.GetSupportsState(_messageContext.IdentifiedComponentStates.First()))
+            if (!actuator.SupportsState(_messageContext.IdentifiedComponentStates.First()))
             {
                 return $"{Emoji.Hushed} Das wird nicht funktionieren.";
             }

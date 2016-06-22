@@ -196,7 +196,7 @@ namespace HA4IoT.Configuration
             foreach (var stateElement in element.Element("States").Elements("State"))
             {
                 var stateId = stateElement.GetMandatoryStringFromAttribute("id");
-                var state = stateMachine.AddState(new StatefulComponentState(stateId));
+                var state = stateMachine.AddState(new NamedComponentState(stateId));
                 
                 foreach (var lowPortElement in stateElement.Element("LowPorts").Elements())
                 {
@@ -214,7 +214,7 @@ namespace HA4IoT.Configuration
                     var actuatorId = new ComponentId(actuatorElement.GetMandatoryStringFromAttribute("id"));
                     var actuator = Controller.GetComponent<IStateMachine>(actuatorId);
 
-                    state.WithActuator(actuator, new StatefulComponentState(targetState));
+                    state.WithActuator(actuator, new NamedComponentState(targetState));
                 }
             }
             
