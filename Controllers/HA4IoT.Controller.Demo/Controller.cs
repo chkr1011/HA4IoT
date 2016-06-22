@@ -132,7 +132,7 @@ namespace HA4IoT.Controller.Demo
 
             Log.WarningLogged += (s, e) =>
             {
-                telegramBot.EnqueueMessageForAdministrators($"{Emoji.WarningSign} {e.Message}\r\n{e.Exception}");
+                telegramBot.EnqueueMessageForAdministrators($"{Emoji.WarningSign} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
             };
 
             Log.ErrorLogged += (s, e) =>
@@ -143,7 +143,7 @@ namespace HA4IoT.Controller.Demo
                     return;
                 }
 
-                telegramBot.EnqueueMessageForAdministrators($"{Emoji.HeavyExclamationMark} {e.Message}\r\n{e.Exception}");
+                telegramBot.EnqueueMessageForAdministrators($"{Emoji.HeavyExclamationMark} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
             };
 
             telegramBot.EnqueueMessageForAdministrators($"{Emoji.Bell} Das System ist gestartet.");

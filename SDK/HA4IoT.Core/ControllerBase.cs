@@ -242,10 +242,12 @@ namespace HA4IoT.Core
         {
             if (Log.Instance == null)
             {
-                var logger = new UdpLogger();
-                logger.ExposeToApi(ApiController);
+                var udpLogger = new UdpLogger();
+                udpLogger.Start();
 
-                Log.Instance = logger;
+                udpLogger.ExposeToApi(ApiController);
+
+                Log.Instance = udpLogger;
             }
             
             Log.Info("Starting...");

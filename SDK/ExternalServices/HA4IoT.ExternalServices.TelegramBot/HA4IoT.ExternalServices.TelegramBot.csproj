@@ -110,6 +110,7 @@
     <Compile Include="PersonalAgentToTelegramBotDispatcher.cs" />
     <Compile Include="TelegramInboundMessage.cs" />
     <Compile Include="MessageBase.cs" />
+    <Compile Include="TelegramMessageFormat.cs" />
     <Compile Include="TelegramOutboundMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TelegramBot.cs" />

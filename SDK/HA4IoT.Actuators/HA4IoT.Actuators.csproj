@@ -118,6 +118,7 @@
     <Compile Include="Actions\ActionExtensions.cs" />
     <Compile Include="ActuatorBase.cs" />
     <Compile Include="ActuatorExtensions.cs" />
+    <Compile Include="BinaryStateActuators\BinaryStateActuatorExtensions.cs" />
     <Compile Include="BinaryStateActuators\CustomBinaryStateActuator.cs" />
     <Compile Include="BinaryStateActuators\LogicalBinaryStateActuatorExtensions.cs" />
     <Compile Include="Connectors\BinaryStateActuatorWithButtonConnector.cs" />

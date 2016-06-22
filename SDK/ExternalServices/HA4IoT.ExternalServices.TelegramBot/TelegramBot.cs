@@ -51,13 +51,13 @@ namespace HA4IoT.ExternalServices.TelegramBot
             _pendingMessages.Add(message);
         }
 
-        public void EnqueueMessageForAdministrators(string text)
+        public void EnqueueMessageForAdministrators(string text, TelegramMessageFormat format = TelegramMessageFormat.HTML)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
             foreach (var chatId in Administrators)
             {
-                EnqueueMessage(new TelegramOutboundMessage(chatId, text));
+                EnqueueMessage(new TelegramOutboundMessage(chatId, text, format));
             }
         }
 
@@ -183,10 +183,19 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
         private StringContent ConvertOutboundMessageToJsonMessage(TelegramOutboundMessage message)
         {
+            if (message.Text.Length > 4096)
+            {
+                throw new InvalidOperationException("The Telegram outbound message is too long.");
+            }
+
             var json = new JsonObject();
             json.SetNamedNumber("chat_id", message.ChatId);
-            json.SetNamedString("parse_mode", "HTML");
-            json.SetNamedString("text", message.Text.Substring(0, 4096));
+            json.SetNamedString("text", message.Text);
+
+            if (message.Format == TelegramMessageFormat.HTML)
+            {
+                json.SetNamedString("parse_mode", "HTML");
+            }
 
             return new StringContent(json.Stringify(), Encoding.UTF8, "application/json");
         }
