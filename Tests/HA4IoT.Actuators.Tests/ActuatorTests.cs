@@ -17,6 +17,7 @@ namespace HA4IoT.Actuators.Tests
         {
             var endpoint = new TestBinaryStateEndpoint();
             var socket = new Socket(ComponentIdFactory.EmptyId, endpoint);
+            socket.ResetState();
             
             endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(0);
             endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(1);
@@ -53,6 +54,7 @@ namespace HA4IoT.Actuators.Tests
         {
             var endpoint = new TestBinaryStateEndpoint();
             var lamp = new Lamp(ComponentIdFactory.EmptyId, endpoint);
+            lamp.ResetState();
 
             endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(0);
             endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(1);
@@ -74,6 +76,8 @@ namespace HA4IoT.Actuators.Tests
         {
             var endpoint = new TestBinaryStateEndpoint();
             var lamp = new Lamp(ComponentIdFactory.EmptyId, endpoint);
+            lamp.ResetState();
+
             lamp.SetStateIdAlias(BinaryStateId.On, LevelStateId.Level1);
 
             endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(0);

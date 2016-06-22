@@ -19,7 +19,7 @@ namespace HA4IoT.PersonalAgent.Tests
             messageContext.IdentifiedComponentIds.Count.ShouldBeEquivalentTo(0);
             messageContext.IdentifiedComponentStates.Count.ShouldBeEquivalentTo(0);
 
-            messageContext.Words.Count.ShouldBeEquivalentTo(3);
+            messageContext.Words.Count.ShouldBeEquivalentTo(2);
         }
 
         [TestMethod]
@@ -35,7 +35,7 @@ namespace HA4IoT.PersonalAgent.Tests
             messageContext.IdentifiedComponentIds.Count.ShouldBeEquivalentTo(0);
             messageContext.IdentifiedComponentStates.Count.ShouldBeEquivalentTo(0);
 
-            messageContext.Words.Count.ShouldBeEquivalentTo(4);
+            messageContext.Words.Count.ShouldBeEquivalentTo(3);
         }
     }
 }
