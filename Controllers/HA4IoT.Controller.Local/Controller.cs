@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
-using Windows.UI.Core;
-using Windows.UI.Xaml.Controls;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Actuators.Triggers;
