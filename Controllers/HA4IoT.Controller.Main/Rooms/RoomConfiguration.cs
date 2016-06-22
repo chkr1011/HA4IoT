@@ -2,6 +2,7 @@
 using HA4IoT.Contracts.Core;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.RemoteSwitch;
+using HA4IoT.Hardware.Knx;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
@@ -19,6 +20,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
         public IController Controller { get; }
         public CCToolsBoardController CCToolsBoardController { get; }
+        public KnxController knxController { get; }
         public RemoteSocketController RemoteSocketController { get; }
 
         public abstract void Setup();

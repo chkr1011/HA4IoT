@@ -33,7 +33,12 @@ namespace HA4IoT.Hardware.Knx
 
         public void TurnOff(params IHardwareParameter[] parameters)
         {
-            _knxController.DigitalJoinOff(_deviceId);
+            _knxController.DigitalJoinOff(_identifier);
+        }
+
+        public void Toggle(params IHardwareParameter[] parameters)
+        {
+            _knxController.DigitalJoinToggle(_identifier);
         }
 
         private bool ValidationJoin(string join)
@@ -41,6 +46,6 @@ namespace HA4IoT.Hardware.Knx
             Regex regexcheck = new Regex("([das])([0-9])");
             return regexcheck.IsMatch(join);
         }
-        
+
     }
 }
