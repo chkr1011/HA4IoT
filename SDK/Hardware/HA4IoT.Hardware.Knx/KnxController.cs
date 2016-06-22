@@ -19,7 +19,7 @@ namespace HA4IoT.Hardware.Knx
             {
                 _socketClient = new SocketClient();
                 string result = _socketClient.Connect(hostName, portNumber);
-                Log.Info("knx-open socket: " + result);
+                Log.Verbose("knx-open socket: " + result);
 
                 CheckPasword("");
                 //Initialisation();
@@ -38,13 +38,13 @@ namespace HA4IoT.Hardware.Knx
         public bool CheckPasword(string password)
         {
             string result = _socketClient.Send("p=" + password + "\x03");
-            Log.Info("knx-send-pasword: " + result);
+            Log.Verbose("knx-send-pasword: " + result);
 
             if (result == "Success")
             {
                 string sReceived = _socketClient.Receive();
                 // p=ok\x03 or p=bad\x03
-                Log.Info("knx-pasword answer: " + sReceived);
+                Log.Verbose("knx-pasword answer: " + sReceived);
                 if (sReceived == "p=ok\x03")
                 {
                     return true;
@@ -57,34 +57,34 @@ namespace HA4IoT.Hardware.Knx
         public void Initialisation()
         {
             string result = _socketClient.Send("i=1\x03");
-            Log.Info("knx-init: " + result);
+            Log.Verbose("knx-init: " + result);
 
             if (result == "Success")
             {
                 string sReceived = _socketClient.Receive();
-                Log.Info("knx-init-answer: " + sReceived);
+                Log.Verbose("knx-init-answer: " + sReceived);
             }
         }
 
         public void DigitalJoinToggle(string join)
         {
             string result = _socketClient.Send(join + "=1\x03");
-            Log.Info("knx-send-digitalJoinToggleOn: " + result);
+            Log.Verbose("knx-send-digitalJoinToggleOn: " + result);
 
             result = _socketClient.Send(join + "=0\x03");
-            Log.Info("knx-send-digitalJoinToggleOff: " + result);
+            Log.Verbose("knx-send-digitalJoinToggleOff: " + result);
         }
 
         public void DigitalJoinOn(string join)
         {
             string result = _socketClient.Send(join + "=1\x03");
-            Log.Info("knx-send-digitalJoinOn: " + result);
+            Log.Verbose("knx-send-digitalJoinOn: " + result);
         }
 
         public void DigitalJoinOff(string join)
         {
             string result = _socketClient.Send(join + "=0\x03");
-            Log.Info("knx-send-digitalJoinOff: " + result);
+            Log.Verbose("knx-send-digitalJoinOff: " + result);
         }
 
         public void AnalogJoin(string join, double value)
@@ -96,13 +96,13 @@ namespace HA4IoT.Hardware.Knx
                 value = 65535;
             
             string result = _socketClient.Send(join + "=" + value + "\x03");
-            Log.Info("knx-send-analogJoin: " + result);
+            Log.Verbose("knx-send-analogJoin: " + result);
         }
 
         public void SerialJoin(string join, string value)
         { 
             string result = _socketClient.Send(join + "=" + value + "\x03");
-            Log.Info("knx-send-SerialJoin: " + result);
+            Log.Verbose("knx-send-SerialJoin: " + result);
         }
 
     }

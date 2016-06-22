@@ -16,13 +16,9 @@ namespace HA4IoT.Hardware.Knx
 
         public KnxDigitalJoinEnpoint(string deviceId, KnxController knxController)
         {
-            var regexcheck = new Regex("([s,d,a])([0-9])([=,0-9])");
-            if (regexcheck.IsMatch(deviceId.Substring(0,3))) {
-                _deviceId = deviceId;
-            }
-
-            if (knxController != null)
+            if (ValidationJoin(deviceId) && ValidationKnxController(knxController) )
             {
+                _deviceId = deviceId;
                 _knxController = knxController;
             }
         }
@@ -35,6 +31,20 @@ namespace HA4IoT.Hardware.Knx
         public void TurnOff(params IHardwareParameter[] parameters)
         {
             _knxController.DigitalJoinOff(_deviceId);
+        }
+
+        public bool ValidationJoin(string join)
+        {
+            Regex regexcheck = new Regex("([das])([0-9])");
+            return regexcheck.IsMatch(join);
+        }
+
+        public bool ValidationKnxController(KnxController knxController)
+        {
+            if (knxController != null)
+                return true;
+
+            return false;
         }
     }
 }
