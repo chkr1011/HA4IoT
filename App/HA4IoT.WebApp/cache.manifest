@@ -1,15 +1,16 @@
 CACHE MANIFEST
-# Version 1.10.35
+# Version 1.11.29
 
 CACHE:
 
-index.html
-App.js
+Index.html
 Style.css
-Configuration.js
-Localization.js
 
-UILocalizations.json
+AppController.js
+LocalizationController.js
+
+UILocalizations-EN.json
+UILocalizations-DE.json
 
 Scripts/jquery-2.2.2.min.js
 Scripts/bootstrap.min.js

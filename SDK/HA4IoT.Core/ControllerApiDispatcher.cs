@@ -70,6 +70,7 @@ namespace HA4IoT.Core
             }
 
             configuration.SetNamedValue("areas", areas);
+            configuration.SetNamedValue("controller", _controller.Settings.Export());
 
             apiContext.Response = configuration;
         }
