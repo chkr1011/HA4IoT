@@ -24,6 +24,8 @@ namespace HA4IoT.Hardware.Knx
                 _identifier = identifier;
                 _knxController = knxController;
             }
+            else
+                throw new ArgumentException("identifier is in a wrong format");
         }
 
         public void TurnOn(params IHardwareParameter[] parameters)
