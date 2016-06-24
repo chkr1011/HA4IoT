@@ -20,7 +20,6 @@ namespace HA4IoT.Controller.Main.Rooms
 
         public IController Controller { get; }
         public CCToolsBoardController CCToolsBoardController { get; }
-        public KnxController knxController { get; }
         public RemoteSocketController RemoteSocketController { get; }
 
         public abstract void Setup();
