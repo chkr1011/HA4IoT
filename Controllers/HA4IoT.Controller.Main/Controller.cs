@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Controller.Main.Rooms;
@@ -15,7 +14,6 @@ using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
 using HA4IoT.Contracts.PersonalAgent;
 using HA4IoT.PersonalAgent;
-using HA4IoT.Hardware.Knx;
 
 namespace HA4IoT.Controller.Main
 {
@@ -23,14 +21,13 @@ namespace HA4IoT.Controller.Main
     {
         private const int LedGpio = 22;
 
-        protected override void Initialize()
+        protected override async Task InitializeAsync()
         {
             InitializeHealthMonitor(LedGpio);
 
             AddDevice(new BuiltInI2CBus());
             
             var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>());
-            var knxController = new KnxController("192.168.2.100", 8150);
 
             AddDevice(new Pi2PortController());
             AddDevice(ccToolsBoardController);
@@ -70,6 +67,8 @@ namespace HA4IoT.Controller.Main
             var ioBoardsInterruptMonitor = new InterruptMonitor(GetDevice<Pi2PortController>().GetInput(4));
             ioBoardsInterruptMonitor.InterruptDetected += (s, e) => ccToolsBoardController.PollInputBoardStates();
             ioBoardsInterruptMonitor.Start();
+
+            await base.InitializeAsync();
         }
 
         private void SetupTelegramBot()

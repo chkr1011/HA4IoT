@@ -1,11 +1,7 @@
 ﻿using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace HA4IoT.Hardware.Knx
 {
@@ -19,35 +15,25 @@ namespace HA4IoT.Hardware.Knx
             if (identifier == null) throw new ArgumentNullException(nameof(identifier));
             if (knxController == null) throw new ArgumentNullException(nameof(knxController));
 
-            if (ValidationJoin(identifier))
-            {
-                _identifier = identifier;
-                _knxController = knxController;
-            }
-            else
-                throw new ArgumentException("identifier is in a wrong format");
+            if (!ValidationJoin(identifier)) throw new ArgumentException("identifier is in a wrong format");
+
+            _identifier = identifier;
+            _knxController = knxController;
         }
 
         public void TurnOn(params IHardwareParameter[] parameters)
         {
-            _knxController.DigitalJoinOn(_identifier);
+            _knxController.SendDigitalJoinOn(_identifier);
         }
 
         public void TurnOff(params IHardwareParameter[] parameters)
         {
-            _knxController.DigitalJoinOff(_identifier);
-        }
-
-        public void Toggle(params IHardwareParameter[] parameters)
-        {
-            _knxController.DigitalJoinToggle(_identifier);
+            _knxController.SendDigitalJoinOff(_identifier);
         }
 
         private bool ValidationJoin(string join)
         {
-            Regex regexcheck = new Regex("([das])([0-9])");
-            return regexcheck.IsMatch(join);
+            return new Regex("([das])([0-9])").IsMatch(join);
         }
-
     }
 }

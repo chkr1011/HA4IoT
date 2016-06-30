@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
-using Windows.UI.Xaml;
 using HA4IoT.Api;
 using HA4IoT.Api.AzureCloud;
 using HA4IoT.Api.LocalRestServer;
@@ -195,8 +194,9 @@ namespace HA4IoT.Core
             return true;
         }
 
-        protected virtual void Initialize()
+        protected virtual async Task InitializeAsync()
         {
+            await Task.FromResult(0);
         }
 
         protected void InitializeHealthMonitor(int pi2GpioPinWithLed)
@@ -292,7 +292,14 @@ namespace HA4IoT.Core
         {
             foreach (var actuator in GetComponents<IActuator>())
             {
-                actuator.ResetState();
+                try
+                {
+                    actuator.ResetState();
+                }
+                catch (Exception exception)
+                {
+                    Log.Warning(exception, "Error while initially reset of state for actuator {actuator.Id}.");
+                }
             }
         }
 
@@ -318,7 +325,7 @@ namespace HA4IoT.Core
         {
             try
             {
-                Initialize();
+                InitializeAsync().Wait();
             }
             catch (Exception exception)
             {

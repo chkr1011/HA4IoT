@@ -43,7 +43,7 @@ namespace HA4IoT.Controller.Demo
         private const int LedGpio = 22;
         private const byte I2CHardwareBridge433MHzSenderPin = 6;
         
-        protected override void Initialize()
+        protected override async Task InitializeAsync()
         {
             InitializeHealthMonitor(LedGpio);
 
@@ -73,6 +73,8 @@ namespace HA4IoT.Controller.Demo
             };
 
             SetupDemo();
+
+            await base.InitializeAsync();
         }
 
         private void SetupDemo()

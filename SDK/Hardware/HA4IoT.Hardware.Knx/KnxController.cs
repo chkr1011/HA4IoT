@@ -1,108 +1,95 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Windows.Networking;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Actuators;
 
 namespace HA4IoT.Hardware.Knx
 {
     public class KnxController
     {
+        private readonly object _syncRoot = new object();
+        private readonly HostName _hostName;
+        private readonly int _port;
+        private readonly string _password;
+
         //var lamp = new HA4IoT.Actuators.Lamp(new ComponentId("Lamp1"), knxController.CreateDigitalJoinEndpoint("d1"));
-        SocketClient _socketClient;
-
-        public KnxController(string hostName, int portNumber)
+        
+        public KnxController(HostName hostName, int port, string password = "")
         {
-            try
-            {
-                _socketClient = new SocketClient();
-                string result = _socketClient.Connect(hostName, portNumber);
-                Log.Verbose("knx-open socket: " + result);
+            if (hostName == null) throw new ArgumentNullException(nameof(hostName));
 
-                CheckPasword("");
-                //Initialisation();
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, ex.Message);
-            }
+            _hostName = hostName;
+            _port = port;
+            _password = password;
         }
 
-        public IBinaryStateEndpoint CreateDigitalJoinEndpoint(string identifier)
+        public KnxDigitalJoinEnpoint CreateDigitalJoinEndpoint(string identifier)
         {
             return new KnxDigitalJoinEnpoint(identifier, this);
         }
 
-        private bool CheckPasword(string password)
-        {
-            string result = _socketClient.Send("p=" + password + "\x03");
-            Log.Verbose("knx-send-pasword: " + result);
-
-            if (result == "Success")
-            {
-                string sReceived = _socketClient.Receive();
-                // p=ok\x03 or p=bad\x03
-                Log.Verbose("knx-pasword answer: " + sReceived);
-                if (sReceived == "p=ok\x03")
-                {
-                    return true;
-                }
-            }
-            return false;
-
-        }
-
         private void Initialisation()
         {
-            string result = _socketClient.Send("i=1\x03");
-            Log.Verbose("knx-init: " + result);
-
-            if (result == "Success")
+            using (var knxClient = new KnxClient(_hostName, _port, _password))
             {
-                string sReceived = _socketClient.Receive();
-                Log.Verbose("knx-init-answer: " + sReceived);
+                knxClient.Connect().Wait();
+                string response = knxClient.SendRequestAndWaitForResponse("i=1").Result;
+
+                Log.Verbose("knx-init-answer: " + response);
             }
         }
 
-        public void DigitalJoinToggle(string join)
+        public void SendDigitalJoinOn(string identifier)
         {
-            string result = _socketClient.Send(join + "=1\x03");
-            Log.Verbose("knx-send-digitalJoinToggleOn: " + result);
+            if (identifier == null) throw new ArgumentNullException(nameof(identifier));
 
-            result = _socketClient.Send(join + "=0\x03");
-            Log.Verbose("knx-send-digitalJoinToggleOff: " + result);
+            lock (_syncRoot)
+            {
+                using (var knxClient = new KnxClient(_hostName, _port, _password))
+                {
+                    knxClient.Connect().Wait();
+                    string response = knxClient.SendRequestAndWaitForResponse(identifier + "=1").Result;
+
+                    Log.Verbose("knx-send-digitalJoinOn: " + response);
+                }
+            }
         }
 
-        public void DigitalJoinOn(string join)
+        public void SendDigitalJoinOff(string identifier)
         {
-            string result = _socketClient.Send(join + "=1\x03");
-            Log.Verbose("knx-send-digitalJoinOn: " + result);
+            if (identifier == null) throw new ArgumentNullException(nameof(identifier));
+
+            lock (_syncRoot)
+            {
+                using (var knxClient = new KnxClient(_hostName, _port, _password))
+                {
+                    knxClient.Connect().Wait();
+                    string response = knxClient.SendRequestAndWaitForResponse(identifier + "=0").Result;
+
+                    Log.Verbose("knx-send-digitalJoinOff: " + response);
+                }
+            }
         }
 
-        public void DigitalJoinOff(string join)
+        public void SendAnalogJoin(string identifier, double value)
         {
-            string result = _socketClient.Send(join + "=0\x03");
-            Log.Verbose("knx-send-digitalJoinOff: " + result);
-        }
+            ////if (identifier == null) throw new ArgumentNullException(nameof(identifier));
 
-        public void AnalogJoin(string join, double value)
-        {
-            if (value < 0)
-                value = 0;
+            ////if (value < 0)
+            ////    value = 0;
 
-            if (value > 65535)
-                value = 65535;
+            ////if (value > 65535)
+            ////    value = 65535;
             
-            string result = _socketClient.Send(join + "=" + value + "\x03");
-            Log.Verbose("knx-send-analogJoin: " + result);
+            ////string result = _socketClient.Send(identifier + "=" + value + "\x03");
+            ////Log.Verbose("knx-send-analogJoin: " + result);
         }
 
-        public void SerialJoin(string join, string value)
-        { 
-            string result = _socketClient.Send(join + "=" + value + "\x03");
-            Log.Verbose("knx-send-SerialJoin: " + result);
-        }
+        public void SendSerialJoin(string identifier, string value)
+        {
+            ////if (identifier == null) throw new ArgumentNullException(nameof(identifier));
 
+            ////string result = _socketClient.Send(identifier + "=" + value + "\x03");
+            ////Log.Verbose("knx-send-SerialJoin: " + result);
+        }
     }
 }
