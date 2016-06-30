@@ -21,7 +21,7 @@ namespace HA4IoT.Controller.Main
     {
         private const int LedGpio = 22;
 
-        protected override async Task InitializeAsync()
+        protected override async Task ConfigureAsync()
         {
             InitializeHealthMonitor(LedGpio);
 
@@ -68,7 +68,7 @@ namespace HA4IoT.Controller.Main
             ioBoardsInterruptMonitor.InterruptDetected += (s, e) => ccToolsBoardController.PollInputBoardStates();
             ioBoardsInterruptMonitor.Start();
 
-            await base.InitializeAsync();
+            await base.ConfigureAsync();
         }
 
         private void SetupTelegramBot()

@@ -11,8 +11,6 @@ namespace HA4IoT.Hardware.Knx
         private readonly int _port;
         private readonly string _password;
 
-        //var lamp = new HA4IoT.Actuators.Lamp(new ComponentId("Lamp1"), knxController.CreateDigitalJoinEndpoint("d1"));
-        
         public KnxController(HostName hostName, int port, string password = "")
         {
             if (hostName == null) throw new ArgumentNullException(nameof(hostName));
@@ -27,7 +25,7 @@ namespace HA4IoT.Hardware.Knx
             return new KnxDigitalJoinEnpoint(identifier, this);
         }
 
-        private void Initialisation()
+        private void Initialization()
         {
             using (var knxClient = new KnxClient(_hostName, _port, _password))
             {

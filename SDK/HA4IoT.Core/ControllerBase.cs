@@ -194,7 +194,7 @@ namespace HA4IoT.Core
             return true;
         }
 
-        protected virtual async Task InitializeAsync()
+        protected virtual async Task ConfigureAsync()
         {
             await Task.FromResult(0);
         }
@@ -267,7 +267,7 @@ namespace HA4IoT.Core
 
                 HomeAutomationTimer timer = InitializeTimer();
 
-                TryInitialize();
+                TryConfigure();
                 
                 LoadNonControllerSettings();
                 ResetActuatorStates();
@@ -321,15 +321,16 @@ namespace HA4IoT.Core
             Settings.Save();
         }
 
-        private void TryInitialize()
+        private void TryConfigure()
         {
             try
             {
-                InitializeAsync().Wait();
+                Log.Info("Starting configuration");
+                ConfigureAsync().Wait();
             }
             catch (Exception exception)
             {
-                Log.Error(exception, "Error while initializing");
+                Log.Error(exception, "Error while configuring");
             }
         }
 

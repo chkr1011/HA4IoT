@@ -47,7 +47,7 @@ namespace HA4IoT.Controller.Cellar
             StateMachine
         }
 
-        protected override async Task InitializeAsync()
+        protected override async Task ConfigureAsync()
         {
             InitializeHealthMonitor(22);
 
@@ -81,7 +81,7 @@ namespace HA4IoT.Controller.Cellar
 
             Timer.Tick += (s, e) => { pi2PortController.PollOpenInputPorts(); };
 
-            await base.InitializeAsync();
+            await base.ConfigureAsync();
         }
 
         private void SetupStateMachine(StateMachine stateMachine, IArea garden)

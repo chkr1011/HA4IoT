@@ -25,7 +25,7 @@ namespace HA4IoT.Controller.Local
             _mainPage = mainPage;
         }
 
-        protected override async Task InitializeAsync()
+        protected override async Task ConfigureAsync()
         {
             var area = new Area(new AreaId("TestArea"), this);
             area.AddComponent(new Lamp(new ComponentId("Lamp1"), await _mainPage.CreateDemoBinaryComponent("Lamp 1")));
@@ -37,7 +37,7 @@ namespace HA4IoT.Controller.Local
             var knxController = new KnxController(new HostName("127.0.0.1"), 8900, "mySecretPassword");
             area.AddComponent(new Socket(new ComponentId("Socket1"), knxController.CreateDigitalJoinEndpoint("d1")));
             area.AddComponent(new Socket(new ComponentId("Socket2"), knxController.CreateDigitalJoinEndpoint("d2")));
-            area.AddComponent(new Socket(new ComponentId("Socket3"), knxController.CreateDigitalJoinEndpoint("d3")));
+            area.AddComponent(new Socket(new ComponentId("Socket3"), knxController.CreateDigitalJoinEndpoint("d30")));
 
             area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button1"), await _mainPage.CreateDemoButton("Button 1"), Timer));
             area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button2"), await _mainPage.CreateDemoButton("Button 2"), Timer));

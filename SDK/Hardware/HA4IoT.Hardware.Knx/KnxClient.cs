@@ -40,6 +40,7 @@ namespace HA4IoT.Hardware.Knx
             Log.Verbose($"KnxClient: Connecting with {_hostName}...");
 
             var connectTask = _socket.ConnectAsync(_hostName, _port.ToString()).AsTask();
+            connectTask.ConfigureAwait(false);
             if (!connectTask.Wait(Timeout))
             {
                 throw new TimeoutException("Timeout while connecting KNX Client.");
@@ -107,15 +108,10 @@ namespace HA4IoT.Hardware.Knx
             }
         }
 
-        private IBuffer GeneratePayload(string command)
-        {
-            byte[] data = Encoding.UTF8.GetBytes(command);
-            return data.AsBuffer();
-        }
-
         private void WriteToSocket(byte[] data)
         {
             var writeTask = _socket.OutputStream.WriteAsync(data.AsBuffer()).AsTask();
+            writeTask.ConfigureAwait(false);
             if (!writeTask.Wait(Timeout))
             {
                 throw new TimeoutException("Timeout while sending KNX Client request.");
@@ -128,6 +124,7 @@ namespace HA4IoT.Hardware.Knx
 
             var buffer = new Buffer(64);
             var readTask = _socket.InputStream.ReadAsync(buffer, buffer.Capacity, InputStreamOptions.Partial).AsTask();
+            readTask.ConfigureAwait(false);
             if (!readTask.Wait(Timeout))
             {
                 throw new TimeoutException("Timeout while reading KNX Client response.");
