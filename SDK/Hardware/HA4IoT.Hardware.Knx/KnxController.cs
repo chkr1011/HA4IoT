@@ -31,8 +31,8 @@ namespace HA4IoT.Hardware.Knx
         {
             using (var knxClient = new KnxClient(_hostName, _port, _password))
             {
-                knxClient.Connect().Wait();
-                string response = knxClient.SendRequestAndWaitForResponse("i=1").Result;
+                knxClient.Connect();
+                string response = knxClient.SendRequestAndWaitForResponse("i=1");
 
                 Log.Verbose("knx-init-answer: " + response);
             }
@@ -46,10 +46,10 @@ namespace HA4IoT.Hardware.Knx
             {
                 using (var knxClient = new KnxClient(_hostName, _port, _password))
                 {
-                    knxClient.Connect().Wait();
-                    string response = knxClient.SendRequestAndWaitForResponse(identifier + "=1").Result;
+                    knxClient.Connect();
+                    string response = knxClient.SendRequestAndWaitForResponse(identifier + "=1");
 
-                    Log.Verbose("knx-send-digitalJoinOn: " + response);
+                    Log.Verbose("KnxClient: send-digitalJoinOn: " + response);
                 }
             }
         }
@@ -62,10 +62,10 @@ namespace HA4IoT.Hardware.Knx
             {
                 using (var knxClient = new KnxClient(_hostName, _port, _password))
                 {
-                    knxClient.Connect().Wait();
-                    string response = knxClient.SendRequestAndWaitForResponse(identifier + "=0").Result;
+                    knxClient.Connect();
+                    string response = knxClient.SendRequestAndWaitForResponse(identifier + "=0");
 
-                    Log.Verbose("knx-send-digitalJoinOff: " + response);
+                    Log.Verbose("KnxClient: send-digitalJoinOff: " + response);
                 }
             }
         }

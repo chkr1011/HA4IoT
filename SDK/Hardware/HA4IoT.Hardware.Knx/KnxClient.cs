@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
-using System.Threading.Tasks;
 using Windows.Networking;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
@@ -17,6 +16,7 @@ namespace HA4IoT.Hardware.Knx
         private readonly int _port;
         private readonly string _password;
 
+        private bool _isConnected;
         private bool _isDisposed;
         
         public KnxClient(HostName hostName, int port, string password)
@@ -31,59 +31,79 @@ namespace HA4IoT.Hardware.Knx
             _socket.Control.NoDelay = true;
         }
 
-        public async Task Connect()
+        public int Timeout { get; set; } = 100;
+
+        public void Connect()
         {
             ThrowIfDisposed();
 
             Log.Verbose($"KnxClient: Connecting with {_hostName}...");
-            await _socket.ConnectAsync(_hostName, _port.ToString());
 
-            await Authenticate();
+            var connectTask = _socket.ConnectAsync(_hostName, _port.ToString()).AsTask();
+            if (!connectTask.Wait(Timeout))
+            {
+                throw new TimeoutException("Timeout while connecting KNX Client.");
+            }
+
+            _isConnected = true;
+
+            Authenticate();
 
             Log.Verbose("KnxClient: Connected");
         }
 
-        public async Task SendCommand(string command)
+        public void SendRequest(string request)
         {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+
             ThrowIfDisposed();
+            ThrowIfNotConnected();
 
-            byte[] payload = Encoding.UTF8.GetBytes(command + "\x03");
-            await _socket.OutputStream.WriteAsync(payload.AsBuffer());
+            byte[] payload = Encoding.UTF8.GetBytes(request + "\x03");
+            WriteToSocket(payload);
 
-            Log.Verbose($"KnxClient: Sent {command}");
+            Log.Verbose($"KnxClient: Sent {request}");
         }
 
-        public async Task<string> SendRequestAndWaitForResponse(string request)
+        public string SendRequestAndWaitForResponse(string request)
         {
-            await SendCommand(request);
+            if (request == null) throw new ArgumentNullException(nameof(request));
 
-            var buffer = new Buffer(64);
-            await _socket.InputStream.ReadAsync(buffer, buffer.Length, InputStreamOptions.Partial);
+            ThrowIfDisposed();
+            ThrowIfNotConnected();
 
-            var response = Encoding.UTF8.GetString(buffer.ToArray());
+            byte[] payload = Encoding.UTF8.GetBytes(request + "\x03");
+            WriteToSocket(payload);
+
+            var buffer = ReadFromSocket();
+
+            var response = Encoding.UTF8.GetString(buffer);
             Log.Verbose($"KnxClient: Received {response}");
 
             return response;
         }
 
-        private async Task Authenticate()
+        private void Authenticate()
         {
             Log.Verbose("KnxClient: Authenticating...");
-            await _socket.OutputStream.WriteAsync(GeneratePayload($"p={_password}\x03"));
+            string response = SendRequestAndWaitForResponse($"p={_password}");
 
-            Log.Verbose("KnxClient: Waiting for response...");
-            var buffer = new Buffer(16);
-            await _socket.InputStream.ReadAsync(buffer, buffer.Capacity, InputStreamOptions.Partial);
-
-            ThrowIfNotAuthenticated(buffer);
+            ThrowIfNotAuthenticated(response);
         }
 
-        private void ThrowIfNotAuthenticated(Buffer buffer)
+        private void ThrowIfNotAuthenticated(string response)
         {
-            string response = Encoding.UTF8.GetString(buffer.ToArray());
             if (!response.Equals("p=ok\x03"))
             {
                 throw new InvalidOperationException("Invalid password specified for KNX client.");
+            }
+        }
+
+        private void ThrowIfNotConnected()
+        {
+            if (!_isConnected)
+            {
+                throw new InvalidOperationException("The KNX Client is not connected.");
             }
         }
 
@@ -91,6 +111,29 @@ namespace HA4IoT.Hardware.Knx
         {
             byte[] data = Encoding.UTF8.GetBytes(command);
             return data.AsBuffer();
+        }
+
+        private void WriteToSocket(byte[] data)
+        {
+            var writeTask = _socket.OutputStream.WriteAsync(data.AsBuffer()).AsTask();
+            if (!writeTask.Wait(Timeout))
+            {
+                throw new TimeoutException("Timeout while sending KNX Client request.");
+            }
+        }
+
+        private byte[] ReadFromSocket()
+        {
+            Log.Verbose("KnxClient: Waiting for response...");
+
+            var buffer = new Buffer(64);
+            var readTask = _socket.InputStream.ReadAsync(buffer, buffer.Capacity, InputStreamOptions.Partial).AsTask();
+            if (!readTask.Wait(Timeout))
+            {
+                throw new TimeoutException("Timeout while reading KNX Client response.");
+            }
+
+            return buffer.ToArray();
         }
 
         private void ThrowIfDisposed()

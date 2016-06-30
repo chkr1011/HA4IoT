@@ -298,7 +298,7 @@ namespace HA4IoT.Core
                 }
                 catch (Exception exception)
                 {
-                    Log.Warning(exception, "Error while initially reset of state for actuator {actuator.Id}.");
+                    Log.Warning(exception, $"Error while initially reset of state for actuator '{actuator.Id}'.");
                 }
             }
         }
