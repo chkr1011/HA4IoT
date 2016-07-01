@@ -31,7 +31,7 @@ namespace HA4IoT.Hardware.Knx
             _socket.Control.NoDelay = true;
         }
 
-        public int Timeout { get; set; } = 100;
+        public int Timeout { get; set; } = 150;
 
         public void Connect()
         {
@@ -60,10 +60,7 @@ namespace HA4IoT.Hardware.Knx
             ThrowIfDisposed();
             ThrowIfNotConnected();
 
-            byte[] payload = Encoding.UTF8.GetBytes(request + "\x03");
-            WriteToSocket(payload);
-
-            Log.Verbose($"KnxClient: Sent {request}");
+            WriteToSocket(request);
         }
 
         public string SendRequestAndWaitForResponse(string request)
@@ -73,15 +70,8 @@ namespace HA4IoT.Hardware.Knx
             ThrowIfDisposed();
             ThrowIfNotConnected();
 
-            byte[] payload = Encoding.UTF8.GetBytes(request + "\x03");
-            WriteToSocket(payload);
-
-            var buffer = ReadFromSocket();
-
-            var response = Encoding.UTF8.GetString(buffer);
-            Log.Verbose($"KnxClient: Received {response}");
-
-            return response;
+            WriteToSocket(request);
+            return ReadFromSocket();
         }
 
         private void Authenticate()
@@ -108,17 +98,21 @@ namespace HA4IoT.Hardware.Knx
             }
         }
 
-        private void WriteToSocket(byte[] data)
+        private void WriteToSocket(string request)
         {
-            var writeTask = _socket.OutputStream.WriteAsync(data.AsBuffer()).AsTask();
+            byte[] payload = Encoding.UTF8.GetBytes(request + "\x03");
+
+            var writeTask = _socket.OutputStream.WriteAsync(payload.AsBuffer()).AsTask();
             writeTask.ConfigureAwait(false);
             if (!writeTask.Wait(Timeout))
             {
                 throw new TimeoutException("Timeout while sending KNX Client request.");
             }
+
+            Log.Verbose($"KnxClient: Sent {request}");
         }
 
-        private byte[] ReadFromSocket()
+        private string ReadFromSocket()
         {
             Log.Verbose("KnxClient: Waiting for response...");
 
@@ -130,7 +124,10 @@ namespace HA4IoT.Hardware.Knx
                 throw new TimeoutException("Timeout while reading KNX Client response.");
             }
 
-            return buffer.ToArray();
+            var response = Encoding.UTF8.GetString(buffer.ToArray());
+            Log.Verbose($"KnxClient: Received {response}");
+
+            return response;
         }
 
         private void ThrowIfDisposed()

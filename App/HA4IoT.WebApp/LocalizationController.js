@@ -2,8 +2,8 @@
 
 function localizationController($scope, $http) {
     var c = this;
-
-    c.uiLocalizations = [];
+    c.uiLocalizations = {};
+    c.isInitialized = false;
 
     c.getUILocalization = function (key) {
         var result = c.uiLocalizations[key];
@@ -23,6 +23,7 @@ function localizationController($scope, $http) {
                 alert("Error while loading localization '" + language + "' (" + response.status + ").");
             } else {
                 c.uiLocalizations = response.data;
+                c.isInitialized = true;
             }
         });
     };
