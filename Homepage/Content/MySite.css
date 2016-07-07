@@ -9,6 +9,9 @@ section {
   border-color: #0b8434;
   color: #ffffff; }
 
+.m-b-2 {
+  margin-bottom: 2em; }
+
 #page #header {
   background-image: url("Images/tweed.png");
   background-repeat: repeat;
