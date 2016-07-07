@@ -1,76 +1,47 @@
-﻿
-@{
-    ViewBag.Title = "Index";
+﻿@{
+	ViewBag.Title = "Home";
 }
-
 <div class="row">
-	<div class="col-lg-8 col-lg-offset-1">
-		<div class="col-lg-12">
-			<h2>Präsentation</h2>
-			<p>Posted on May 3, 2016</p>
-			<p>Starting with version 1.12.0 there is a PowerPoint presentation available. It provides an overview of the project.</p>
-			<p>Link: HA4IoT_DE.pdf</p>
-			<p>Posted in Uncategorized | Leave a reply</p>
-		</div>
-		<div class="col-lg-12">
-			<h2>Welcome!</h2>
-			<p>Posted on November 2, 2015</p>
-			<p>Hi,<br/>
-				this is the official homepage of the open source Home Automation SDK “HA4IoT” (Home Automation for Windows 10 IoT Core).<br/>
-				The page is still under development and will be completed within the next months. The very first task is moving the content from the project at hackster.io to this page.<br/>
-				Until everything is migrated, the latest documentation can be found here:
-			</p>
-			<p>Link: https://www.hackster.io/cyborg-titanium-14/ck-homeautomation-784235<br/> Christian/>
-			</p>
-			<p> Posted in Uncategorized | 1 Reply </p>
-		</div>
+	<div class="col-md-7 col-md-offset-1">
+		<h3>Overview</h3>
+		<p>I am developing a home automation solution for the last 3 years. This includes the physical installation of the hardware and developing the software.</p>
+		<img src="~/Content/Images/Overview_4to3.png" class="img-fluid m-b-2" alt="OverviewPlan" />
+		<a href="https://www.hackster.io/cyborg-titanium-14/home-automation-with-raspberry-pi-2-and-windows-10-iot-784235" target="_blank" class="btn success-color-button" role="button">Discription</a>
 	</div>
-
-	<div class="col-lg-3">
-		<h2>Seitenleiste</h2>
-		<div class="col-lg-12">
-			<p>RECEND POSTS</p>
-			<ul>
-				<li>Präsentation</li>
-				<li>Welcome</li>
-			</ul>
-		</div>
-		<div class="col-lg-12">
-			<p>ARCHIVES</p>
-			<ul>
-				<li>May 2016</li>
-				<li>November 2015</li>
-			</ul>
-		</div>
+	<div class="col-md-4">
+		<h3>Sitebar</h3>
 	</div>
 </div>
 
 @section teaser
 {
 	<div class="row">
-		<div class="col-lg-6">
-			<img src="~/Content/Images/Pi2.JPG" width="100px" height="100px" alt="hnjdiosios"/>
+		<div class="col-md-6">
+			<img src="~/Content/Images/Pi2_800x.png" class="img-fluid" alt="RaspberryPi2" />
 		</div>
-		<div class="col-lg-6">
-			<div class="row">
-				<h3>HAUSAUTOMATION AUF DEM RASPBERRY MIT WINDOWS 10 IOT MIT C# und .NET</h3>
-			</div>
-			<div class="row">
-				<p>Download Button</p>
-			</div>
-			<div class="row">
-				<div class="col-lg-4">
-					<img src="http://placehold.it/350x200.png/22B7A9/ffffff" class="img-thumbnail"/>
-				</div>
-				<div class="col-lg-4">
-					<img src="http://placehold.it/350x200.png/0B8434/ffffff" class="img-thumbnail"/>
-				</div>
-				<div class="col-lg-4">
-					<img src="http://placehold.it/350x200.png/913057/ffffff" class="img-thumbnail"/>
+		<div class="col-md-6">
+
+			<div class="row m-b-2">
+				<div class="col-md-12">
+					<h3>HAUSAUTOMATION AUF DEM RASPBERRY MIT WINDOWS 10 IOT MIT C# und .NET</h3>
 				</div>
 			</div>
+
+			<div class="row m-b-2">
+				<div class="col-md-4">
+					<img src="http://placehold.it/350x200.png/22B7A9/ffffff/clear" class="img-thumbnail" />
+				</div>
+				<div class="col-md-4">
+					<img src="http://placehold.it/350x200.png/0B8434/ffffff" class="img-thumbnail" />
+				</div>
+				<div class="col-md-4">
+					<img src="http://placehold.it/350x200.png/913057/ffffff" class="img-thumbnail" />
+				</div>
+			</div>
 			<div class="row">
-				<p>ein paar beispiele</p>
+				<div class="col-md-12">
+					<a href="https://github.com/chkr1011/CK.HomeAutomation" target="_blank" class="btn success-color-button" role="button"><span class="fa fa-download"></span> Repository Download</a>
+				</div>
 			</div>
 		</div>
 	</div>
