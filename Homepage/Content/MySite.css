@@ -1,0 +1,38 @@
+﻿body {
+  background-color: #393840; }
+
+section {
+  background-color: #fff; }
+
+.success-color-button {
+  background-color: #0b8434;
+  border-color: #0b8434;
+  color: #ffffff; }
+
+#page #header {
+  background-image: url("Images/tweed.png");
+  background-repeat: repeat;
+  padding-top: 2em; }
+  #page #header #teaser {
+    background-color: #fff;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    padding-top: 60px;
+    margin-top: 20px; }
+
+#page #trenner {
+  background-color: #0b8434;
+  height: 14px; }
+
+#page section#body {
+  padding-top: 2rem;
+  padding-bottom: 2rem; }
+
+#page #footer {
+  background-color: #232323;
+  color: #a0a0a0;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  margin-bottom: 2em;
+  padding-top: 2em; }
+
