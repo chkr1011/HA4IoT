@@ -272,7 +272,8 @@ namespace HA4IoT.Core
                 LoadNonControllerSettings();
                 ResetActuatorStates();
 
-                _httpServer.Start(80);
+                StartHttpServer();
+
                 ExposeToApi();
 
                 AttachComponentHistoryTracking();
@@ -285,6 +286,19 @@ namespace HA4IoT.Core
             catch (Exception exception)
             {
                 Log.Error(exception, "Failed to initialize.");
+            }
+        }
+
+        private void StartHttpServer()
+        {
+            try
+            {
+                _httpServer.Start(80);
+            }
+            catch (Exception exception)
+            {
+                Log.Error(exception, "Error while starting HTTP server on port 80. Falling back to port 55000");
+                _httpServer.Start(55000);
             }
         }
 
