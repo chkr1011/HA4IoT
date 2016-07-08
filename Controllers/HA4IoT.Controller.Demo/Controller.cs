@@ -7,12 +7,9 @@ using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Automations;
-using HA4IoT.Conditions;
-using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
-using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
@@ -43,7 +40,7 @@ namespace HA4IoT.Controller.Demo
         private const int LedGpio = 22;
         private const byte I2CHardwareBridge433MHzSenderPin = 6;
         
-        protected override void Initialize()
+        protected override async Task ConfigureAsync()
         {
             InitializeHealthMonitor(LedGpio);
 
@@ -73,6 +70,8 @@ namespace HA4IoT.Controller.Demo
             };
 
             SetupDemo();
+
+            await base.ConfigureAsync();
         }
 
         private void SetupDemo()

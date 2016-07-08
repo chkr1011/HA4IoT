@@ -171,6 +171,10 @@
       <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
       <Name>HA4IoT.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.Knx\HA4IoT.Hardware.Knx.csproj">
+      <Project>{1EC3A5D0-65C8-4396-BD56-9179A8BD00D4}</Project>
+      <Name>HA4IoT.Hardware.Knx</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
       <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
       <Name>HA4IoT.Hardware</Name>

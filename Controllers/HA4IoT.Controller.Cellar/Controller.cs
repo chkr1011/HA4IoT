@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.Sockets;
@@ -46,7 +47,7 @@ namespace HA4IoT.Controller.Cellar
             StateMachine
         }
 
-        protected override void Initialize()
+        protected override async Task ConfigureAsync()
         {
             InitializeHealthMonitor(22);
 
@@ -79,6 +80,8 @@ namespace HA4IoT.Controller.Cellar
                 .WithOffBetweenRange(TimeSpan.Parse("22:30:00"), TimeSpan.Parse("05:00:00"));
 
             Timer.Tick += (s, e) => { pi2PortController.PollOpenInputPorts(); };
+
+            await base.ConfigureAsync();
         }
 
         private void SetupStateMachine(StateMachine stateMachine, IArea garden)

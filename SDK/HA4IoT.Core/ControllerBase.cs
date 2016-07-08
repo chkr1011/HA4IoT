@@ -194,8 +194,9 @@ namespace HA4IoT.Core
             return true;
         }
 
-        protected virtual void Initialize()
+        protected virtual async Task ConfigureAsync()
         {
+            await Task.FromResult(0);
         }
 
         protected void InitializeHealthMonitor(int pi2GpioPinWithLed)
@@ -266,7 +267,7 @@ namespace HA4IoT.Core
 
                 HomeAutomationTimer timer = InitializeTimer();
 
-                TryInitialize();
+                TryConfigure();
                 
                 LoadNonControllerSettings();
                 ResetActuatorStates();
@@ -305,7 +306,14 @@ namespace HA4IoT.Core
         {
             foreach (var actuator in GetComponents<IActuator>())
             {
-                actuator.ResetState();
+                try
+                {
+                    actuator.ResetState();
+                }
+                catch (Exception exception)
+                {
+                    Log.Warning(exception, $"Error while initially reset of state for actuator '{actuator.Id}'.");
+                }
             }
         }
 
@@ -327,15 +335,16 @@ namespace HA4IoT.Core
             Settings.Save();
         }
 
-        private void TryInitialize()
+        private void TryConfigure()
         {
             try
             {
-                Initialize();
+                Log.Info("Starting configuration");
+                ConfigureAsync().Wait();
             }
             catch (Exception exception)
             {
-                Log.Error(exception, "Error while initializing");
+                Log.Error(exception, "Error while configuring");
             }
         }
 

@@ -12,6 +12,7 @@ function getVersion(callback) {
 function AppController($scope, $http) {
     var c = this;
 
+    c.isInitialized = false;
     c.appConfiguration = { showWeatherStation: true, showSensorsOverview: true, showRollerShuttersOverview: true, showMotionDetectorsOverview: true, showWindowsOverview: true }
 
     c.rooms = [];
@@ -100,10 +101,7 @@ function AppController($scope, $http) {
             }
 
             c.pollStatus();
-            c.isReady = true;
-
-            $("#content").removeClass("hidden");
-            $("body").css("background", "white");
+            c.isInitialized = true;
         });
     };
 
