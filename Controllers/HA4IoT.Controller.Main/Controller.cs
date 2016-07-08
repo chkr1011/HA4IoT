@@ -1,4 +1,5 @@
-﻿using HA4IoT.Contracts.Hardware;
+﻿using System.Threading.Tasks;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Controller.Main.Rooms;
 using HA4IoT.Core;
