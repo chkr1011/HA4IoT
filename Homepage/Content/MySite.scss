@@ -31,7 +31,21 @@ section {
 			background-color: #fff;
 			border-top-left-radius: 16px;
 			border-top-right-radius: 16px;
-			padding-top: 60px;
+			padding-top: 30px;
+
+			p {
+				text-align:justify;
+				font-size:16px;
+				color:#565656;
+				margin-top:20px;
+
+				strong{
+					font-size:18px;
+					display:inline-block;
+					margin-bottom:10px;
+					color:$siteBlue;
+				}
+			}
 		}
 	}
 
@@ -39,9 +53,17 @@ section {
 		background-color: $siteBlue;
 		height: 10px;
 	}
-	section#body{
+	section#body {
 		padding-top:2rem;
 		padding-bottom:2rem;
+		
+		h3 {
+			font-size:24px;
+			display:inline-block;
+			font-weight:bold;
+			margin-bottom:10px;
+			color:$siteBlue;
+		}
 	}
 
 	#footer {
