@@ -1,4 +1,5 @@
-﻿$siteGreen : #0b8434;
+﻿$siteBlue : #226AA6;
+$siteGreen : #0B8434;
 
 body {
 	background-color: #393840;
@@ -14,6 +15,9 @@ section {
 }
 .m-b-2 {
 	margin-bottom:2em;
+}
+.m-b-1 {
+	margin-bottom:1em;
 }
 
 #page {
@@ -31,9 +35,9 @@ section {
 		}
 	}
 
-	#trenner {
-		background-color: $siteGreen;
-		height: 14px;
+	.trenner {
+		background-color: $siteBlue;
+		height: 10px;
 	}
 	section#body{
 		padding-top:2rem;

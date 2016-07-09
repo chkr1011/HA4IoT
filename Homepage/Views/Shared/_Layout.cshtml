@@ -22,12 +22,15 @@
 					</nav>
 				</div>
 			</div>
-			<div id="teaser" class="container">@RenderSection("teaser", required: false)</div>
+			<div id="teaser" class="container">
+				@RenderSection("teaser", required: false)
+			</div>
 		</div>
-		<div id="trenner" class="container"></div>
+		<div class="trenner container"></div>
 		<section id="body" class="container">
 			@RenderBody()
 		</section>
+		<div class="trenner container"></div>
 		<section id="footer" class="container">
 			<div class="row">
 				<div class="col-lg-3 col-md-offset-9">
@@ -50,7 +53,7 @@
 			</div>
 			<div class="row">
 				<div class="col-md-12">
-					<p>copyright by christian kratky @DateTime.Now.Year</p>
+					<p>copyright by christian kratky @DateTime.Now.Year | @Html.ActionLink("Impressum", "Impressum", "Others")</p>
 				</div>
 			</div>
 		</section>

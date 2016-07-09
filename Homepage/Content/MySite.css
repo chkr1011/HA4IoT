@@ -5,12 +5,15 @@ section {
   background-color: #fff; }
 
 .success-color-button {
-  background-color: #0b8434;
-  border-color: #0b8434;
+  background-color: #0B8434;
+  border-color: #0B8434;
   color: #ffffff; }
 
 .m-b-2 {
   margin-bottom: 2em; }
+
+.m-b-1 {
+  margin-bottom: 1em; }
 
 #page #header {
   background-image: url("Images/tweed.png");
@@ -22,9 +25,9 @@ section {
     border-top-right-radius: 16px;
     padding-top: 60px; }
 
-#page #trenner {
-  background-color: #0b8434;
-  height: 14px; }
+#page .trenner {
+  background-color: #226AA6;
+  height: 10px; }
 
 #page section#body {
   padding-top: 2rem;
