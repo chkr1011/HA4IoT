@@ -15,6 +15,10 @@ section {
 .m-b-1 {
   margin-bottom: 1em; }
 
+.btn-big {
+  padding-top: 10px;
+  padding-bottom: 10px; }
+
 #page #header {
   background-image: url("Images/tweed.png");
   background-repeat: repeat;
