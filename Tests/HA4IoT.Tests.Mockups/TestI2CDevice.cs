@@ -6,7 +6,7 @@ namespace HA4IoT.Tests.Mockups
     public class TestI2CDevice : II2CDevice
     {
         public byte[] LastWrittenBytes { get; private set; }
-        public byte[] BufferForNextRead { get; set; }
+        public byte[] BufferForNextRead { get; set; } = new byte[10];
 
         public void Write(byte[] writeBuffer)
         {
