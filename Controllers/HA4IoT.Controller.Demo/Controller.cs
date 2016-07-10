@@ -57,11 +57,8 @@ namespace HA4IoT.Controller.Demo
             AddDevice(new I2CHardwareBridge(new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer));
 
             RegisterService(new SynonymService());
+            RegisterService(new OpenWeatherMapService(ApiController, GetService<IDateTimeService>(), GetService<ISystemInformationService>()));
 
-            var openWeatherMapService = new OpenWeatherMapService(ApiController, GetService<IDateTimeService>(), GetService<ISystemInformationService>());
-            openWeatherMapService.RegisterServices(this);
-            RegisterService(openWeatherMapService);
-            
             SetupRoom();
 
             GetService<SynonymService>().TryLoadPersistedSynonyms();

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Contracts.Core

@@ -27,9 +27,7 @@ namespace HA4IoT.Controller.Default
             AddDevice(pi2PortController);
             AddDevice(ccToolsBoardController);
 
-            var openWeatherMapService = new OpenWeatherMapService(ApiController, GetService<IDateTimeService>(), GetService<ISystemInformationService>());
-            openWeatherMapService.RegisterServices(this);
-            RegisterService(openWeatherMapService);
+            RegisterService(new OpenWeatherMapService(ApiController, GetService<IDateTimeService>(), GetService<ISystemInformationService>()));
 
             var configurationParser = new ConfigurationParser(this);
             configurationParser.RegisterConfigurationExtender(new DefaultConfigurationExtender(configurationParser, this));

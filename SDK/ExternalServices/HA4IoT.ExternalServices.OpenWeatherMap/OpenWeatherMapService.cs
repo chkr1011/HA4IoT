@@ -31,8 +31,9 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
         
         public OpenWeatherMapService(IApiController apiController, IDateTimeService dateTimeService, ISystemInformationService systemInformationService)
         {
-            if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
             if (apiController == null) throw new ArgumentNullException(nameof(apiController));
+            if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
+            if (systemInformationService == null) throw new ArgumentNullException(nameof(systemInformationService));
 
             _dateTimeService = dateTimeService;
             _systemInformationService = systemInformationService;
@@ -70,12 +71,12 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             _daylightService.Update(sunrise, sunset);
         }
 
-        public void RegisterServices(IController controller)
+        public override void CompleteRegistration(IServiceController serviceController)
         {
-            controller.RegisterService(_outdoorTemperatureService);
-            controller.RegisterService(_outdoorHumdityService);
-            controller.RegisterService(_weatherService);
-            controller.RegisterService(_daylightService);
+            serviceController.RegisterService(_outdoorTemperatureService);
+            serviceController.RegisterService(_outdoorHumdityService);
+            serviceController.RegisterService(_weatherService);
+            serviceController.RegisterService(_daylightService);
         }
 
         private void PersistWeatherData(string weatherData)

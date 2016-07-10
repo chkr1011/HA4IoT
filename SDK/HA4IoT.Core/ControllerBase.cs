@@ -165,6 +165,7 @@ namespace HA4IoT.Core
             }
 
             _services.Add(service);
+            service.CompleteRegistration(this);
         }
 
         public TService GetService<TService>() where TService : IService

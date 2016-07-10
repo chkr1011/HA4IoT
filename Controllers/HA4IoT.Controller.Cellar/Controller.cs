@@ -56,8 +56,7 @@ namespace HA4IoT.Controller.Cellar
 
             AddDevice(new BuiltInI2CBus());
 
-            var weatherStation = new OpenWeatherMapService(ApiController, GetService<IDateTimeService>(), GetService<ISystemInformationService>());
-            weatherStation.RegisterServices(this);
+            RegisterService(new OpenWeatherMapService(ApiController, GetService<IDateTimeService>(), GetService<ISystemInformationService>()));
 
             var ccToolsFactory = new CCToolsBoardController(this, GetDevice<II2CBus>());
             var hsrt16 = ccToolsFactory.CreateHSRT16(Device.CellarHSRT16, new I2CSlaveAddress(32));

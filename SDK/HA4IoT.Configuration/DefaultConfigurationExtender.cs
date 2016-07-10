@@ -7,7 +7,6 @@ using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
@@ -47,9 +46,9 @@ namespace HA4IoT.Configuration
         {
             switch (element.Name.LocalName)
             {
-                case "OpenWeatherMapWeatherService": return ParseWeatherStation(element);
+                case "OpenWeatherMapService": return ParseWeatherStation(element);
 
-                default: throw new ConfigurationInvalidException("Device not supported.", element);
+                default: throw new ConfigurationInvalidException("Service not supported.", element);
             }
         }
 

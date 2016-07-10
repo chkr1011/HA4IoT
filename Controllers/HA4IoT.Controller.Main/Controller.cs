@@ -36,10 +36,7 @@ namespace HA4IoT.Controller.Main
             AddDevice(SetupRemoteSwitchController());
             
             RegisterService(new SynonymService());
-
-            var openWeatherMapService = new OpenWeatherMapService(ApiController, GetService<IDateTimeService>(), GetService<ISystemInformationService>());
-            openWeatherMapService.RegisterServices(this);
-            RegisterService(openWeatherMapService);
+            RegisterService(new OpenWeatherMapService(ApiController, GetService<IDateTimeService>(), GetService<ISystemInformationService>()));
 
             SetupTelegramBot();
             SetupTwitterClient();
