@@ -143,7 +143,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTarget(room.GetStateMachine(Bedroom.LightCeiling))
                 .WithOnDuration(TimeSpan.FromSeconds(15))
                 .WithTurnOnIfAllRollerShuttersClosed(room.GetRollerShutter(Bedroom.RollerShutterLeft), room.GetRollerShutter(Bedroom.RollerShutterRight))
-                .WithEnabledAtNight(Controller.GetService<IDaylightService>())
+                .WithEnabledAtNight(Controller.ServiceLocator.GetService<IDaylightService>())
                 .WithSkipIfAnyActuatorIsAlreadyOn(room.GetLamp(Bedroom.LampBedLeft), room.GetLamp(Bedroom.LampBedRight));
             
             room.WithStateMachine(Bedroom.Fan, (s, r) => SetupFan(s, r, hsrel8));
@@ -158,7 +158,7 @@ namespace HA4IoT.Controller.Main.Rooms
             room.GetButton(Bedroom.ButtonBedRightOuter).WithPressedShortlyAction(() => room.GetStateMachine(Bedroom.Fan).SetNextState());
             room.GetButton(Bedroom.ButtonBedRightOuter).WithPressedLongAction(() => room.GetStateMachine(Bedroom.Fan).TryTurnOff());
 
-            Controller.GetService<SynonymService>().AddSynonymsForArea(Room.Bedroom, "Schlafzimmer", "Bedroom");
+            Controller.ServiceLocator.GetService<SynonymService>().AddSynonymsForArea(Room.Bedroom, "Schlafzimmer", "Bedroom");
         }
 
         private void SetupFan(StateMachine fan, IArea room, HSREL8 hsrel8)

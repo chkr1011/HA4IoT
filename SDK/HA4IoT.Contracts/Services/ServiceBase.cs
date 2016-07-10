@@ -20,7 +20,7 @@ namespace HA4IoT.Contracts.Services
             apiContext.Response = ExportStatusToJsonObject();
         }
 
-        public virtual void CompleteRegistration(IServiceController serviceController)
+        public virtual void CompleteRegistration(IServiceLocator serviceLocator)
         {
         }
     }

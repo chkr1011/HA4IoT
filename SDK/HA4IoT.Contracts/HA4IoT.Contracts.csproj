@@ -123,6 +123,9 @@
     <Compile Include="Components\IComponent.cs" />
     <Compile Include="Components\StateNotSupportedException.cs" />
     <Compile Include="Components\UnknownComponentState.cs" />
+    <Compile Include="Core\ServiceAlreadyRegisteredException.cs" />
+    <Compile Include="Core\ServiceLocator.cs" />
+    <Compile Include="Core\ServiceNotRegisteredException.cs" />
     <Compile Include="Core\Settings\SettingValueChangedEventArgs.cs" />
     <Compile Include="Hardware\ForceUpdateStateParameter.cs" />
     <Compile Include="Hardware\HardwareParameter.cs" />

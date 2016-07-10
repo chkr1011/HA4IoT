@@ -4,13 +4,11 @@ using System.IO;
 using System.Xml.Linq;
 using Windows.Storage;
 using HA4IoT.Contracts.Areas;
-using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
-using HA4IoT.Contracts.Services;
 using HA4IoT.Core;
 
 namespace HA4IoT.Configuration
@@ -92,13 +90,13 @@ namespace HA4IoT.Configuration
 
         private void ParseServices()
         {
-            var devicesElement = _configuration.Root.Element("Services");
-            foreach (XElement serviceElement in devicesElement.Elements())
+            var servicesElement = _configuration.Root.Element("Services");
+            foreach (XElement serviceElement in servicesElement.Elements())
             {
                 try
                 {
-                    IService service = GetConfigurationExtender(serviceElement).ParseService(serviceElement);
-                    _controller.RegisterService(service);
+                    var service = GetConfigurationExtender(serviceElement).ParseService(serviceElement);
+                    _controller.ServiceLocator.RegisterService(service);
                 }
                 catch (Exception exception)
                 {
@@ -114,7 +112,7 @@ namespace HA4IoT.Configuration
             {
                 try
                 {
-                    IDevice device = GetConfigurationExtender(deviceElement).ParseDevice(deviceElement);
+                    var device = GetConfigurationExtender(deviceElement).ParseDevice(deviceElement);
                     _controller.AddDevice(device);
                 }
                 catch (Exception exception)
@@ -148,7 +146,7 @@ namespace HA4IoT.Configuration
             {
                 try
                 {
-                    IComponent component = GetConfigurationExtender(componentElement).ParseComponent(componentElement);
+                    var component = GetConfigurationExtender(componentElement).ParseComponent(componentElement);
                     area.AddComponent(component);
                 }
                 catch (Exception exception)

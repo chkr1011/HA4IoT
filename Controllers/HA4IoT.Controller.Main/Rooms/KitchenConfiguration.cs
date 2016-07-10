@@ -101,9 +101,9 @@ namespace HA4IoT.Controller.Main.Rooms
             room.SetupTurnOnAndOffAutomation()
                 .WithTrigger(room.GetMotionDetector(Kitchen.MotionDetector))
                 .WithTarget(room.GetActuator(Kitchen.CombinedAutomaticLights))
-                .WithEnabledAtNight(Controller.GetService<IDaylightService>());
+                .WithEnabledAtNight(Controller.ServiceLocator.GetService<IDaylightService>());
 
-            Controller.GetService<SynonymService>().AddSynonymsForArea(Room.Kitchen, "Küche", "Kitchen");
+            Controller.ServiceLocator.GetService<SynonymService>().AddSynonymsForArea(Room.Kitchen, "Küche", "Kitchen");
         }
     }
 }

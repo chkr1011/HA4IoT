@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
@@ -17,7 +16,6 @@ using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Services;
 using HA4IoT.Core.Discovery;
 using HA4IoT.Core.Settings;
 using HA4IoT.Core.Timer;
@@ -34,16 +32,16 @@ namespace HA4IoT.Core
         private readonly AreaCollection _areas = new AreaCollection();
         private readonly ComponentCollection _components = new ComponentCollection();
         private readonly AutomationCollection _automations = new AutomationCollection();
-        private readonly List<IService> _services = new List<IService>(); 
-
+        
         private HealthMonitor _healthMonitor;
         private BackgroundTaskDeferral _deferral;
         private HttpServer _httpServer;
 
-        public IApiController ApiController { get; } = new ApiController("api"); 
+        public IApiController ApiController { get; } = new ApiController("api");
+        public IServiceLocator ServiceLocator { get; } = new ServiceLocator();
         public IHomeAutomationTimer Timer { get; protected set; }
         public ISettingsContainer Settings { get; private set; }
-
+        
         public Task RunAsync(IBackgroundTaskInstance taskInstance)
         {
             if (taskInstance == null) throw new ArgumentNullException(nameof(taskInstance));
@@ -154,47 +152,6 @@ namespace HA4IoT.Core
             return _automations.GetAll();
         }
 
-        public void RegisterService<TService>(TService service) where TService : IService
-        {
-            if (service == null) throw new ArgumentNullException(nameof(service));
-
-            TService tmp;
-            if (TryGetService(out tmp))
-            {
-                throw new InvalidOperationException($"Service {service.GetType().FullName} is already registered.");
-            }
-
-            _services.Add(service);
-            service.CompleteRegistration(this);
-        }
-
-        public TService GetService<TService>() where TService : IService
-        {
-            TService service;
-            if (!TryGetService(out service))
-            {
-                throw new InvalidOperationException($"Service {typeof(TService).FullName} is not registered.");
-            }
-
-            return service;
-        }
-
-        public IList<IService> GetServices()
-        {
-            return _services;
-        }
-
-        public bool TryGetService<TService>(out TService service) where TService : IService
-        {
-            service = _services.OfType<TService>().FirstOrDefault();
-            if (service == null)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
         protected virtual async Task ConfigureAsync()
         {
             await Task.FromResult(0);
@@ -260,8 +217,8 @@ namespace HA4IoT.Core
 
             try
             {
-                RegisterService(new DateTimeService());
-                RegisterService(new SystemInformationService());
+                ServiceLocator.RegisterService(new DateTimeService());
+                ServiceLocator.RegisterService(new SystemInformationService());
 
                 InitializeLogging();
                 InitializeHttpApiEndpoint();
@@ -373,13 +330,7 @@ namespace HA4IoT.Core
         private void ExposeToApi()
         {
             new ControllerApiDispatcher(this).ExposeToApi();
-
-            foreach (var service in GetServices())
-            {
-                ApiController.RouteRequest($"service/{service.GetType().Name}", service.HandleApiRequest);
-                ApiController.RouteCommand($"service/{service.GetType().Name}", service.HandleApiCommand);
-            }
-
+            
             foreach (var device in GetDevices())
             {
                 ApiController.RouteRequest($"device/{device.Id}", device.HandleApiRequest);

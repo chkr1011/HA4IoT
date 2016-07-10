@@ -12,6 +12,6 @@ namespace HA4IoT.Contracts.Services
 
         void HandleApiRequest(IApiContext apiContext);
 
-        void CompleteRegistration(IServiceController serviceController);
+        void CompleteRegistration(IServiceLocator serviceLocator);
     }
 }

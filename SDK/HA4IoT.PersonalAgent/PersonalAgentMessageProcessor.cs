@@ -33,7 +33,7 @@ namespace HA4IoT.PersonalAgent
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
-            var synonymService = _controller.GetService<SynonymService>();
+            var synonymService = _controller.ServiceLocator.GetService<SynonymService>();
             var messageContextFactory = new MessageContextFactory(synonymService, _controller);
             _messageContext = messageContextFactory.Create(message);
 
@@ -177,9 +177,9 @@ namespace HA4IoT.PersonalAgent
 
         private string GetWeatherStatus()
         {
-            var weatherService = _controller.GetService<IWeatherService>();
-            var outdoorTemperatureService = _controller.GetService<IOutdoorTemperatureService>();
-            var outdoorHumidityService = _controller.GetService<IOutdoorHumidityService>();
+            var weatherService = _controller.ServiceLocator.GetService<IWeatherService>();
+            var outdoorTemperatureService = _controller.ServiceLocator.GetService<IOutdoorTemperatureService>();
+            var outdoorHumidityService = _controller.ServiceLocator.GetService<IOutdoorHumidityService>();
 
             var response = new StringBuilder();
             response.AppendLine($"{Emoji.BarChart} Das Wetter ist aktuell:");

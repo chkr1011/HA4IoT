@@ -3,9 +3,9 @@ using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Contracts.Core
 {
-    public interface IServiceController
+    public interface IServiceLocator
     {
-        void RegisterService<TService>(TService service) where TService : IService;
+        void RegisterService(IService service);
 
         TService GetService<TService>() where TService : IService;
 

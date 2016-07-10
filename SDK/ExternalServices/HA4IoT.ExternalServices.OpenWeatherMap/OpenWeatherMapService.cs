@@ -71,12 +71,12 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             _daylightService.Update(sunrise, sunset);
         }
 
-        public override void CompleteRegistration(IServiceController serviceController)
+        public override void CompleteRegistration(IServiceLocator serviceLocator)
         {
-            serviceController.RegisterService(_outdoorTemperatureService);
-            serviceController.RegisterService(_outdoorHumdityService);
-            serviceController.RegisterService(_weatherService);
-            serviceController.RegisterService(_daylightService);
+            serviceLocator.RegisterService(_outdoorTemperatureService);
+            serviceLocator.RegisterService(_outdoorHumdityService);
+            serviceLocator.RegisterService(_weatherService);
+            serviceLocator.RegisterService(_daylightService);
         }
 
         private void PersistWeatherData(string weatherData)

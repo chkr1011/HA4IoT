@@ -77,7 +77,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTrigger(room.GetMotionDetector(LowerBathroom.MotionDetector))
                 .WithTarget(room.GetActuator(LowerBathroom.CombinedLights));
 
-            Controller.GetService<SynonymService>().AddSynonymsForArea(Room.LowerBathroom, "BadUnten", "LowerBathroom");
+            Controller.ServiceLocator.GetService<SynonymService>().AddSynonymsForArea(Room.LowerBathroom, "BadUnten", "LowerBathroom");
         }
 
         private void StartBathode(IArea bathroom)

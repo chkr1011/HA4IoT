@@ -11,8 +11,8 @@ namespace HA4IoT.Tests.Mockups
             Log.Instance = new TestLogger();
             Timer = new TestHomeAutomationTimer();
 
-            RegisterService(new DateTimeService());
-            RegisterService(new SystemInformationService());
+            ServiceLocator.RegisterService(new DateTimeService());
+            ServiceLocator.RegisterService(new SystemInformationService());
         }
 
         public void SetTime(TimeSpan value)

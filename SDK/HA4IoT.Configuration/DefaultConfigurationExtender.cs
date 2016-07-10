@@ -17,6 +17,7 @@ using HA4IoT.ExternalServices.OpenWeatherMap;
 using HA4IoT.Hardware;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.HumiditySensors;
+using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Sensors.TemperatureSensors;
 using HA4IoT.Sensors.Windows;
 
@@ -65,6 +66,7 @@ namespace HA4IoT.Configuration
                 case "TemperatureSensor": return ParseTemperatureSensor(element);
                 case "HumiditySensor": return ParseHumiditySensor(element);
                 case "StateMachine": return ParseStateMachine(element);
+                case "MotionDetector": return ParseMotionDetector(element);
 
                 default: throw new ConfigurationInvalidException("Component not supported.", element);
             }
@@ -79,8 +81,8 @@ namespace HA4IoT.Configuration
         {
             return new OpenWeatherMapService( 
                 Controller.ApiController,
-                Controller.GetService<IDateTimeService>(),
-                Controller.GetService<ISystemInformationService>());
+                Controller.ServiceLocator.GetService<IDateTimeService>(),
+                Controller.ServiceLocator.GetService<ISystemInformationService>());
         }
 
         private IComponent ParseCustomBinaryStateOutputActuator(XElement element)
@@ -92,6 +94,16 @@ namespace HA4IoT.Configuration
                 new PortBasedBinaryStateEndpoint(output));
         }
 
+        private IComponent ParseMotionDetector(XElement element)
+        {
+            IBinaryInput input = Parser.ParseBinaryInput(element.GetMandatorySingleChildElementOrFromContainer("Input"));
+
+            return new MotionDetector(
+                new ComponentId(element.GetMandatoryStringFromAttribute("id")),
+                new PortBasedMotionDetectorEndpoint(input), 
+                Controller.Timer);
+        }
+        
         private IComponent ParseButton(XElement element)
         {
             IBinaryInput input = Parser.ParseBinaryInput(element.GetMandatorySingleChildElementOrFromContainer("Input"));

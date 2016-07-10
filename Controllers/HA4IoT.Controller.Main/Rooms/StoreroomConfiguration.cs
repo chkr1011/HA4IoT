@@ -66,13 +66,13 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTarget(storeroom.Socket(Storeroom.CirculatingPump))
                 .WithPauseAfterEveryTurnOn(TimeSpan.FromHours(1))
                 .WithOnDuration(TimeSpan.FromMinutes(1))
-                .WithEnabledAtDay(Controller.GetService<IDaylightService>());
+                .WithEnabledAtDay(Controller.ServiceLocator.GetService<IDaylightService>());
 
             _catLitterBoxTwitterSender =
                 new CatLitterBoxTwitterSender(Controller.Timer).WithTrigger(
                     storeroom.GetMotionDetector(Storeroom.MotionDetectorCatLitterBox));
 
-            Controller.GetService<SynonymService>().AddSynonymsForArea(Room.Storeroom, "Abstellkammer", "Storeroom");
+            Controller.ServiceLocator.GetService<SynonymService>().AddSynonymsForArea(Room.Storeroom, "Abstellkammer", "Storeroom");
         }
     }
 }

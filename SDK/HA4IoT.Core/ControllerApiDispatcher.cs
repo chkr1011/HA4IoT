@@ -22,6 +22,17 @@ namespace HA4IoT.Core
         {
             _controller.ApiController.RouteRequest("configuration", HandleApiGetConfiguration);
             _controller.ApiController.RouteRequest("status", HandleApiGetStatus);
+
+            ExposeServicesToApi();
+        }
+
+        private void ExposeServicesToApi()
+        {
+            foreach (var service in _controller.ServiceLocator.GetServices())
+            {
+                _controller.ApiController.RouteRequest($"service/{service.GetType().Name}", service.HandleApiRequest);
+                _controller.ApiController.RouteCommand($"service/{service.GetType().Name}", service.HandleApiCommand);
+            }
         }
 
         private void HandleApiGetStatus(IApiContext apiContext)
@@ -31,7 +42,7 @@ namespace HA4IoT.Core
             result.SetNamedNumber("version", 1D);
 
             var services = new JsonObject();
-            foreach (var service in _controller.GetServices())
+            foreach (var service in _controller.ServiceLocator.GetServices())
             {
                 services.SetNamedObject(service.GetType().Name, service.ExportStatusToJsonObject());
             }

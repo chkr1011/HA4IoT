@@ -56,13 +56,13 @@ namespace HA4IoT.Controller.Demo
             // Setup the remote switch 433Mhz sender which is attached to the I2C bus (Arduino Nano).
             AddDevice(new I2CHardwareBridge(new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer));
 
-            RegisterService(new SynonymService());
-            RegisterService(new OpenWeatherMapService(ApiController, GetService<IDateTimeService>(), GetService<ISystemInformationService>()));
+            ServiceLocator.RegisterService(new SynonymService());
+            ServiceLocator.RegisterService(new OpenWeatherMapService(ApiController, ServiceLocator.GetService<IDateTimeService>(), ServiceLocator.GetService<ISystemInformationService>()));
 
             SetupRoom();
 
-            GetService<SynonymService>().TryLoadPersistedSynonyms();
-            GetService<SynonymService>().RegisterDefaultComponentStateSynonyms(this);
+            ServiceLocator.GetService<SynonymService>().TryLoadPersistedSynonyms();
+            ServiceLocator.GetService<SynonymService>().RegisterDefaultComponentStateSynonyms(this);
 
             Timer.Tick += (s, e) =>
             {
@@ -100,7 +100,7 @@ namespace HA4IoT.Controller.Demo
             TwitterClient twitterClient;
             if (TwitterClientFactory.TryCreateFromDefaultConfigurationFile(out twitterClient))
             {
-                RegisterService(new TwitterClient());
+                ServiceLocator.RegisterService(new TwitterClient());
                 
                 IAction tweetAction = twitterClient.GetTweetAction($"Someone is here ({DateTime.Now})... @chkratky");
 
@@ -150,7 +150,7 @@ namespace HA4IoT.Controller.Demo
 
             new PersonalAgentToTelegramBotDispatcher(this).ExposeToTelegramBot(telegramBot);
 
-            RegisterService(telegramBot);
+            ServiceLocator.RegisterService(telegramBot);
         }
 
         private void SetupRoom()
@@ -221,7 +221,7 @@ namespace HA4IoT.Controller.Demo
 
         private void RegisterSynonyms()
         {
-            var synonymService = GetService<SynonymService>();
+            var synonymService = ServiceLocator.GetService<SynonymService>();
 
             synonymService.AddSynonymsForArea(Room.ExampleRoom, "Beispielraum", "Beispiel", "Raum");
 

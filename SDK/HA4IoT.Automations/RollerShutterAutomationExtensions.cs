@@ -14,8 +14,8 @@ namespace HA4IoT.Automations
             var automation = new RollerShutterAutomation(
                 AutomationIdFactory.CreateIdFrom<RollerShutterAutomation>(area),
                 area.Controller.Timer,
-                area.Controller.GetService<IDaylightService>(),
-                area.Controller.GetService<IOutdoorTemperatureService>(),
+                area.Controller.ServiceLocator.GetService<IDaylightService>(),
+                area.Controller.ServiceLocator.GetService<IOutdoorTemperatureService>(),
                 area.Controller);
 
             automation.Activate();

@@ -78,7 +78,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithFastDuration(TimeSpan.FromMinutes(12))
                 .WithActuator(room.GetStateMachine(UpperBathroom.Fan));
 
-            Controller.GetService<SynonymService>().AddSynonymsForArea(Room.UpperBathroom, "BadOben", "UpperBathroom");
+            Controller.ServiceLocator.GetService<SynonymService>().AddSynonymsForArea(Room.UpperBathroom, "BadOben", "UpperBathroom");
         }
 
         private void SetupFan(StateMachine stateMachine, IArea room, HSREL5 hsrel5)

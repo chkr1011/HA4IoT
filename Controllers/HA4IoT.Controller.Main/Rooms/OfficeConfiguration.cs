@@ -165,7 +165,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .GetPressedShortlyTrigger()
                 .Attach(light.GetSetStateAction(BinaryStateId.On));
 
-            var synonymService = Controller.GetService<SynonymService>();
+            var synonymService = Controller.ServiceLocator.GetService<SynonymService>();
             synonymService.AddSynonymsForArea(Room.Office, "Büro", "Arbeitszimmer");
 
             synonymService.AddSynonymsForComponent(Room.Office, Office.CombinedCeilingLights, "Licht");

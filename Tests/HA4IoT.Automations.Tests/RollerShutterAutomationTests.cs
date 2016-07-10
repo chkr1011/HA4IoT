@@ -91,7 +91,7 @@ namespace HA4IoT.Automations.Tests
             _daylightService = new TestDaylightService();
 
             _rollerShutter = testRollerShutterFactory.CreateTestRollerShutter();
-            _controller.RegisterService(_weatherStation);
+            _controller.ServiceLocator.RegisterService(_weatherStation);
             _controller.AddComponent(_rollerShutter);
 
             _automation = new RollerShutterAutomation(

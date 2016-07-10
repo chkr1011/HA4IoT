@@ -34,14 +34,14 @@ namespace HA4IoT.Controller.Main
             AddDevice(ccToolsBoardController);
             AddDevice(new I2CHardwareBridge(new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer));
             AddDevice(SetupRemoteSwitchController());
-            
-            RegisterService(new SynonymService());
-            RegisterService(new OpenWeatherMapService(ApiController, GetService<IDateTimeService>(), GetService<ISystemInformationService>()));
+
+            ServiceLocator.RegisterService(new SynonymService());
+            ServiceLocator.RegisterService(new OpenWeatherMapService(ApiController, ServiceLocator.GetService<IDateTimeService>(), ServiceLocator.GetService<ISystemInformationService>()));
 
             SetupTelegramBot();
             SetupTwitterClient();
 
-            GetService<SynonymService>().TryLoadPersistedSynonyms();
+            ServiceLocator.GetService<SynonymService>().TryLoadPersistedSynonyms();
 
             ccToolsBoardController.CreateHSPE16InputOnly(InstalledDevice.Input0, new I2CSlaveAddress(42));
             ccToolsBoardController.CreateHSPE16InputOnly(InstalledDevice.Input1, new I2CSlaveAddress(43));
@@ -61,7 +61,7 @@ namespace HA4IoT.Controller.Main
             new StoreroomConfiguration(this).Setup();
             new LivingRoomConfiguration(this).Setup();
 
-            GetService<SynonymService>().RegisterDefaultComponentStateSynonyms(this);
+            ServiceLocator.GetService<SynonymService>().RegisterDefaultComponentStateSynonyms(this);
 
             InitializeAzureCloudApiEndpoint();
 
@@ -99,7 +99,7 @@ namespace HA4IoT.Controller.Main
             telegramBot.EnqueueMessageForAdministrators($"{Emoji.Bell} Das System ist gestartet.");
             new PersonalAgentToTelegramBotDispatcher(this).ExposeToTelegramBot(telegramBot);
 
-            RegisterService(telegramBot);
+            ServiceLocator.RegisterService(telegramBot);
         }
 
         private void SetupTwitterClient()
@@ -110,7 +110,7 @@ namespace HA4IoT.Controller.Main
                 return;
             }
 
-            RegisterService(twitterClient);
+            ServiceLocator.RegisterService(twitterClient);
         }
 
         private RemoteSocketController SetupRemoteSwitchController()
