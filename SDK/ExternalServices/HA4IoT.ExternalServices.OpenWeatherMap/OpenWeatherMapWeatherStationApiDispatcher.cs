@@ -1,16 +1,17 @@
 ﻿using System;
 using HA4IoT.Contracts.Api;
-using HA4IoT.Contracts.Services.WeatherService;
+using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Weather;
 
 namespace HA4IoT.ExternalServices.OpenWeatherMap
 {
     public class OpenWeatherMapWeatherStationApiDispatcher
     {
         // TODO: Consider add API handling methods to service interface.
-        private readonly OpenWeatherMapWeatherService _weatherStation;
+        private readonly OpenWeatherMapService _weatherStation;
         private readonly IApiController _apiController;
 
-        public OpenWeatherMapWeatherStationApiDispatcher(OpenWeatherMapWeatherService weatherStation, IApiController apiController)
+        public OpenWeatherMapWeatherStationApiDispatcher(OpenWeatherMapService weatherStation, IApiController apiController)
         {
             if (weatherStation == null) throw new ArgumentNullException(nameof(weatherStation));
             if (apiController == null) throw new ArgumentNullException(nameof(apiController));

@@ -6,6 +6,8 @@ namespace HA4IoT.Contracts.Core
     {
         event EventHandler<TimerTickEventArgs> Tick;
 
+        // TODO: Migrate all code to use DateTimeService instead CurrentTime and CurrentDateTime here!
+
         TimeSpan CurrentTime { get; }
 
         DateTime CurrentDateTime { get; }

@@ -259,6 +259,9 @@ namespace HA4IoT.Core
 
             try
             {
+                RegisterService(new DateTimeService());
+                RegisterService(new SystemInformationService());
+
                 InitializeLogging();
                 InitializeHttpApiEndpoint();
                 

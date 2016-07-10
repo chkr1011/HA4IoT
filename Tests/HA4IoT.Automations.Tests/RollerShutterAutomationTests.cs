@@ -86,7 +86,7 @@ namespace HA4IoT.Automations.Tests
 
             var testRollerShutterFactory = new TestRollerShutterFactory(_controller.Timer);
 
-            _weatherStation = new TestWeatherStation(new DeviceId("Test.WeatherStation"), _controller.Timer);
+            _weatherStation = new TestWeatherStation();
             _weatherStation.SetTemperature(20);
             _daylightService = new TestDaylightService();
 

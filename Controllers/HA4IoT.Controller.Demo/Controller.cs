@@ -15,6 +15,7 @@ using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.PersonalAgent;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Triggers;
 using HA4IoT.Core;
 using HA4IoT.ExternalServices.OpenWeatherMap;
@@ -56,7 +57,10 @@ namespace HA4IoT.Controller.Demo
             AddDevice(new I2CHardwareBridge(new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer));
 
             RegisterService(new SynonymService());
-            RegisterService(new OpenWeatherMapWeatherService(Timer, ApiController));
+
+            var openWeatherMapService = new OpenWeatherMapService(ApiController, GetService<IDateTimeService>(), GetService<ISystemInformationService>());
+            openWeatherMapService.RegisterServices(this);
+            RegisterService(openWeatherMapService);
             
             SetupRoom();
 

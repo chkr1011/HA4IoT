@@ -10,6 +10,7 @@ using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Core;
 using HA4IoT.ExternalServices.OpenWeatherMap;
 using HA4IoT.Hardware;
@@ -55,7 +56,8 @@ namespace HA4IoT.Controller.Cellar
 
             AddDevice(new BuiltInI2CBus());
 
-            RegisterService(new OpenWeatherMapWeatherService(Timer, ApiController));
+            var weatherStation = new OpenWeatherMapService(ApiController, GetService<IDateTimeService>(), GetService<ISystemInformationService>());
+            weatherStation.RegisterServices(this);
 
             var ccToolsFactory = new CCToolsBoardController(this, GetDevice<II2CBus>());
             var hsrt16 = ccToolsFactory.CreateHSRT16(Device.CellarHSRT16, new I2CSlaveAddress(32));

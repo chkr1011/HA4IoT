@@ -121,6 +121,7 @@
     <Compile Include="ControllerApiDispatcher.cs" />
     <Compile Include="ControllerBase.cs" />
     <Compile Include="ControllerExtensions.cs" />
+    <Compile Include="DateTimeService.cs" />
     <Compile Include="Discovery\DiscoveryServer.cs" />
     <Compile Include="GenericControllerCollection.cs" />
     <Compile Include="DeviceCollection.cs" />
@@ -129,6 +130,7 @@
     <Compile Include="AreaCollection.cs" />
     <Compile Include="Settings\SettingsContainerApiDispatcher.cs" />
     <Compile Include="Settings\SettingsContainer.cs" />
+    <Compile Include="SystemInformationService.cs" />
     <Compile Include="Timer\Timeout.cs" />
     <Compile Include="Timer\HomeAutomationTimer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

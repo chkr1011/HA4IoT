@@ -7,11 +7,13 @@ using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.ExternalServices.OpenWeatherMap;
 using HA4IoT.Hardware;
 using HA4IoT.Sensors.Buttons;
@@ -65,7 +67,7 @@ namespace HA4IoT.Configuration
                 case "HumiditySensor": return ParseHumiditySensor(element);
                 case "StateMachine": return ParseStateMachine(element);
 
-                default: throw new ConfigurationInvalidException("Actuator not supported.", element);
+                default: throw new ConfigurationInvalidException("Component not supported.", element);
             }
         }
 
@@ -76,9 +78,10 @@ namespace HA4IoT.Configuration
 
         private IService ParseWeatherStation(XElement element)
         {
-            return new OpenWeatherMapWeatherService( 
-                Controller.Timer,
-                Controller.ApiController);
+            return new OpenWeatherMapService( 
+                Controller.ApiController,
+                Controller.GetService<IDateTimeService>(),
+                Controller.GetService<ISystemInformationService>());
         }
 
         private IComponent ParseCustomBinaryStateOutputActuator(XElement element)

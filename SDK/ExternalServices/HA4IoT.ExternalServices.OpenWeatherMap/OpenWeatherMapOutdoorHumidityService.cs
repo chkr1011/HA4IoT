@@ -5,26 +5,26 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.ExternalServices.OpenWeatherMap
 {
-    public class OpenWeatherMapWeatherService : ServiceBase, IWeatherService
+    public class OpenWeatherMapOutdoorHumidityService : ServiceBase, IOutdoorHumidityService
     {
-        private WeatherSituation _weather;
-        
+        private float _outdoorHumidity;
+
         public override JsonObject ExportStatusToJsonObject()
         {
             var status = base.ExportStatusToJsonObject();
-            status.SetNamedString("Weather", _weather.ToString());
+            status.SetNamedNumber("OutdoorTemperature", _outdoorHumidity);
 
             return status;
         }
 
-        public WeatherSituation GetWeather()
+        public float GetOutdoorHumidity()
         {
-            return _weather;
+            return _outdoorHumidity;
         }
 
-        internal void Update(WeatherSituation weather)
+        internal void Update(float outdoorHumidity)
         {
-            _weather = weather;
+            _outdoorHumidity = outdoorHumidity;
         }
     }
 }

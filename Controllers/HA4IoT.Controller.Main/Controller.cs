@@ -13,6 +13,7 @@ using HA4IoT.Hardware.Pi2;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
 using HA4IoT.Contracts.PersonalAgent;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.PersonalAgent;
 
 namespace HA4IoT.Controller.Main
@@ -35,7 +36,10 @@ namespace HA4IoT.Controller.Main
             AddDevice(SetupRemoteSwitchController());
             
             RegisterService(new SynonymService());
-            RegisterService(new OpenWeatherMapWeatherService(Timer, ApiController));
+
+            var openWeatherMapService = new OpenWeatherMapService(ApiController, GetService<IDateTimeService>(), GetService<ISystemInformationService>());
+            openWeatherMapService.RegisterServices(this);
+            RegisterService(openWeatherMapService);
 
             SetupTelegramBot();
             SetupTwitterClient();

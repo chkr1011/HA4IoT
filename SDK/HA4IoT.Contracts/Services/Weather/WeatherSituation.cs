@@ -1,4 +1,4 @@
-﻿namespace HA4IoT.Contracts.Services.WeatherService
+﻿namespace HA4IoT.Contracts.Services.Weather
 {
     public enum WeatherSituation
     {
