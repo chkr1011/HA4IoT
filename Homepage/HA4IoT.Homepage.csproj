@@ -94,6 +94,7 @@
     <Content Include="Content\Images\Pi2.JPG" />
     <Content Include="Content\Images\Pi2_800x.png" />
     <Content Include="Content\Images\RepoButton.png" />
+    <Content Include="Content\Images\Terminal.jpg" />
     <Content Include="Content\Images\tweed.png" />
     <Content Include="Content\Images\TwitButton.png" />
     <Content Include="Content\MySite.css">
