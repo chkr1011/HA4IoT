@@ -5,9 +5,12 @@ section {
   background-color: #fff; }
 
 .success-color-button {
-  background-color: #0B8434;
-  border-color: #0B8434;
-  color: #ffffff; }
+  background-color: #226AA6;
+  border-color: #226AA6;
+  color: #ffffff;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-size: 20px; }
 
 .m-b-2 {
   margin-bottom: 2em; }
@@ -39,7 +42,7 @@ section {
         margin-bottom: 10px;
         color: #226AA6; }
 
-#page .trenner {
+#page .separator {
   background-color: #226AA6;
   height: 10px; }
 

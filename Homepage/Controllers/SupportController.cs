@@ -6,9 +6,9 @@ using System.Web.Mvc;
 
 namespace HA4IoT.Homepage.Controllers
 {
-    public class AboutMeController : Controller
+    public class SupportController : Controller
     {
-        // GET: AboutMe
+        // GET: Support
         public ActionResult Index()
         {
             return View();

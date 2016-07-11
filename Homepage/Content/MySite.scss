@@ -9,9 +9,12 @@ section {
 	background-color: #fff;
 }
 .success-color-button {
-	background-color: $siteGreen;
-	border-color: $siteGreen;
+	background-color: $siteBlue;
+	border-color: $siteBlue;
 	color:#ffffff;
+	padding-top:5px;
+	padding-bottom:5px;
+	font-size:20px;
 }
 .m-b-2 {
 	margin-bottom:2em;
@@ -53,7 +56,7 @@ section {
 		}
 	}
 
-	.trenner {
+	.separator {
 		background-color: $siteBlue;
 		height: 10px;
 	}
