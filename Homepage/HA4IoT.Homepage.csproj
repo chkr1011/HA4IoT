@@ -95,7 +95,7 @@
     <Content Include="Content\Images\Pi2_800x.png" />
     <Content Include="Content\Images\RepoButton.png" />
     <Content Include="Content\Images\tweed.png" />
-    <Content Include="Content\Images\TwitterButton.png" />
+    <Content Include="Content\Images\TwitButton.png" />
     <Content Include="Content\MySite.css">
       <DependentUpon>MySite.scss</DependentUpon>
     </Content>
@@ -212,7 +212,6 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AboutMeController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\OthersController.cs" />
     <Compile Include="Controllers\SupportController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -235,7 +234,6 @@
     <Content Include="Views\Shared\DisplayTemplates\MenuHelperModel.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\CanonicalHelperModel.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\BootstrapMenuHelperModel.cshtml" />
-    <Content Include="Views\Others\Impressum.cshtml" />
     <Content Include="Views\AboutMe\Index.cshtml" />
     <Content Include="Views\Support\Index.cshtml" />
     <None Include="Web.Debug.config">
