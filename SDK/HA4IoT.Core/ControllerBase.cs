@@ -35,17 +35,17 @@ namespace HA4IoT.Core
         private readonly ComponentCollection _components = new ComponentCollection();
         private readonly AutomationCollection _automations = new AutomationCollection();
         private readonly SystemInformationService _systemInformationService = new SystemInformationService();
+        private readonly int? _statusLedNumber;
 
         private BackgroundTaskDeferral _deferral;
         private HttpServer _httpServer;
-        private int _statusLedNumber;
-
+        
         public IApiController ApiController { get; } = new ApiController("api");
         public IServiceLocator ServiceLocator { get; } = new ServiceLocator();
         public IHomeAutomationTimer Timer { get; protected set; }
         public ISettingsContainer Settings { get; private set; }
 
-        protected ControllerBase(int statusLedNumber)
+        protected ControllerBase(int? statusLedNumber)
         {
             _statusLedNumber = statusLedNumber;
         }
@@ -167,8 +167,12 @@ namespace HA4IoT.Core
 
         private void InitializeHealthMonitor()
         {
-            var pi2PortController = new Pi2PortController();
-            var ledPin = pi2PortController.GetOutput(_statusLedNumber);
+            IBinaryOutput ledPin = null;
+            if (_statusLedNumber.HasValue)
+            {
+                var pi2PortController = new Pi2PortController();
+                ledPin = pi2PortController.GetOutput(_statusLedNumber.Value);
+            }
 
             ServiceLocator.RegisterService(typeof(HealthService), new HealthService(ledPin, Timer, ServiceLocator.GetService<ISystemInformationService>()));
         }
@@ -232,12 +236,12 @@ namespace HA4IoT.Core
 
                 InitializeLogging();
                 InitializeHttpApiEndpoint();
-                InitializeHealthMonitor();
-
+                
                 LoadControllerSettings();
                 InitializeDiscovery();
 
                 var timer = InitializeTimer();
+                InitializeHealthMonitor();
 
                 TryConfigure();
                 CreateConfigurationStatistics();

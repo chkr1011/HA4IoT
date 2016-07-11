@@ -19,7 +19,7 @@ namespace HA4IoT.Controller.Local
         private readonly MainPage _mainPage;
 
         public Controller(MainPage mainPage)
-            : base(22)
+            : base(null)
         {
             if (mainPage == null) throw new ArgumentNullException(nameof(mainPage));
 

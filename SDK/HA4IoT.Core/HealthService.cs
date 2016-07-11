@@ -26,6 +26,7 @@ namespace HA4IoT.Core
 
         public HealthService(IBinaryOutput statusLed, IHomeAutomationTimer timer, ISystemInformationService systemInformationService)
         {
+            if (timer == null) throw new ArgumentNullException(nameof(timer));
             if (systemInformationService == null) throw new ArgumentNullException(nameof(systemInformationService));
 
             _statusLed = statusLed;
@@ -35,7 +36,7 @@ namespace HA4IoT.Core
             {
                 _ledTimeout.Start(TimeSpan.FromMilliseconds(1));
             }
-
+            
             timer.Tick += Tick;
         }
 
