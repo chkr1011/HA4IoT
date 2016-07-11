@@ -95,8 +95,9 @@ namespace HA4IoT.Configuration
             {
                 try
                 {
+                    // TODO: Get the type from an attribute.
                     var service = GetConfigurationExtender(serviceElement).ParseService(serviceElement);
-                    _controller.ServiceLocator.RegisterService(service);
+                    _controller.ServiceLocator.RegisterService(service.GetType(), service);
                 }
                 catch (Exception exception)
                 {

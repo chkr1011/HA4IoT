@@ -73,10 +73,10 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
 
         public override void CompleteRegistration(IServiceLocator serviceLocator)
         {
-            serviceLocator.RegisterService(_outdoorTemperatureService);
-            serviceLocator.RegisterService(_outdoorHumdityService);
-            serviceLocator.RegisterService(_weatherService);
-            serviceLocator.RegisterService(_daylightService);
+            serviceLocator.RegisterService(typeof(IOutdoorTemperatureService), _outdoorTemperatureService);
+            serviceLocator.RegisterService(typeof(IOutdoorHumidityService), _outdoorHumdityService);
+            serviceLocator.RegisterService(typeof(IWeatherService), _weatherService);
+            serviceLocator.RegisterService(typeof(IDaylightService), _daylightService);
         }
 
         private void PersistWeatherData(string weatherData)

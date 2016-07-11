@@ -56,8 +56,11 @@ namespace HA4IoT.Controller.Demo
             // Setup the remote switch 433Mhz sender which is attached to the I2C bus (Arduino Nano).
             AddDevice(new I2CHardwareBridge(new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer));
 
-            ServiceLocator.RegisterService(new SynonymService());
-            ServiceLocator.RegisterService(new OpenWeatherMapService(ApiController, ServiceLocator.GetService<IDateTimeService>(), ServiceLocator.GetService<ISystemInformationService>()));
+            ServiceLocator.RegisterService(typeof(SynonymService), new SynonymService());
+            ServiceLocator.RegisterService(typeof (OpenWeatherMapService),
+                new OpenWeatherMapService(ApiController, 
+                    ServiceLocator.GetService<IDateTimeService>(),
+                    ServiceLocator.GetService<ISystemInformationService>()));
 
             SetupRoom();
 
@@ -100,7 +103,7 @@ namespace HA4IoT.Controller.Demo
             TwitterService twitterService;
             if (TwitterServiceFactory.TryCreateFromDefaultConfigurationFile(out twitterService))
             {
-                ServiceLocator.RegisterService(new TwitterService());
+                ServiceLocator.RegisterService(typeof(TwitterService), new TwitterService());
                 
                 IAction tweetAction = twitterService.GetTweetAction($"Someone is here ({DateTime.Now})... @chkratky");
 
@@ -150,7 +153,7 @@ namespace HA4IoT.Controller.Demo
 
             new PersonalAgentToTelegramBotDispatcher(this).ExposeToTelegramBot(telegramBotService);
 
-            ServiceLocator.RegisterService(telegramBotService);
+            ServiceLocator.RegisterService(typeof(TelegramBotService), telegramBotService);
         }
 
         private void SetupRoom()

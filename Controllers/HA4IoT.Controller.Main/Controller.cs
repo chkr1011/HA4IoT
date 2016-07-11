@@ -35,8 +35,12 @@ namespace HA4IoT.Controller.Main
             AddDevice(new I2CHardwareBridge(new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer));
             AddDevice(SetupRemoteSwitchController());
 
-            ServiceLocator.RegisterService(new SynonymService());
-            ServiceLocator.RegisterService(new OpenWeatherMapService(ApiController, ServiceLocator.GetService<IDateTimeService>(), ServiceLocator.GetService<ISystemInformationService>()));
+            ServiceLocator.RegisterService(typeof(SynonymService), new SynonymService());
+            ServiceLocator.RegisterService(typeof(OpenWeatherMapService), 
+                new OpenWeatherMapService(
+                    ApiController,
+                    ServiceLocator.GetService<IDateTimeService>(),
+                    ServiceLocator.GetService<ISystemInformationService>()));
 
             SetupTelegramBot();
             SetupTwitterClient();
@@ -99,7 +103,7 @@ namespace HA4IoT.Controller.Main
             telegramBotService.EnqueueMessageForAdministrators($"{Emoji.Bell} Das System ist gestartet.");
             new PersonalAgentToTelegramBotDispatcher(this).ExposeToTelegramBot(telegramBotService);
 
-            ServiceLocator.RegisterService(telegramBotService);
+            ServiceLocator.RegisterService(typeof(TelegramBotService), telegramBotService);
         }
 
         private void SetupTwitterClient()
@@ -110,7 +114,7 @@ namespace HA4IoT.Controller.Main
                 return;
             }
 
-            ServiceLocator.RegisterService(twitterService);
+            ServiceLocator.RegisterService(typeof(TwitterService), twitterService);
         }
 
         private RemoteSocketController SetupRemoteSwitchController()

@@ -163,7 +163,7 @@ namespace HA4IoT.Core
             var pi2PortController = new Pi2PortController();
             var ledPin = pi2PortController.GetOutput(pi2GpioPinWithLed);
 
-            ServiceLocator.RegisterService(new HealthService(ledPin, Timer, ServiceLocator.GetService<ISystemInformationService>()));
+            ServiceLocator.RegisterService(typeof(HealthService), new HealthService(ledPin, Timer, ServiceLocator.GetService<ISystemInformationService>()));
         }
 
         private void InitializeHttpApiEndpoint()
@@ -218,8 +218,8 @@ namespace HA4IoT.Core
             {
                 var stopwatch = Stopwatch.StartNew();
                 
-                ServiceLocator.RegisterService(new DateTimeService());
-                ServiceLocator.RegisterService(_systemInformationService);
+                ServiceLocator.RegisterService(typeof(IDateTimeService), new DateTimeService());
+                ServiceLocator.RegisterService(typeof(ISystemInformationService), _systemInformationService);
 
                 InitializeLogging();
                 InitializeHttpApiEndpoint();

@@ -8,53 +8,72 @@ namespace HA4IoT.Contracts.Core
 {
     public class ServiceLocator : IServiceLocator
     {
+        private readonly object _syncRoot = new object();
         private readonly Dictionary<Type, IService> _services = new Dictionary<Type, IService>();
         
-        public void RegisterService(IService service)
+        public void RegisterService(Type interfaceType, IService service)
         {
+            if (interfaceType == null) throw new ArgumentNullException(nameof(interfaceType));
             if (service == null) throw new ArgumentNullException(nameof(service));
 
-            var serviceType = service.GetType();
-            if (_services.Keys.Any(s => serviceType.IsAssignableFrom(s)))
+            lock (_syncRoot)
             {
-                throw new ServiceAlreadyRegisteredException(serviceType);
+                if (!interfaceType.IsInstanceOfType(service))
+                {
+                    throw new InvalidOperationException("The service is not implementing the required interface.");
+                }
+
+                if (_services.ContainsKey(interfaceType))
+                {
+                    throw new ServiceAlreadyRegisteredException(interfaceType);
+                }
+
+                _services.Add(interfaceType, service);
             }
 
-            _services.Add(serviceType, service);
             service.CompleteRegistration(this);
         }
 
         public TService GetService<TService>() where TService : IService
         {
-            var serviceType = typeof(TService);
-            var key = _services.Keys.FirstOrDefault(s => serviceType.IsAssignableFrom(s));
+            var interfaceType = typeof(TService);
 
-            if (key == null)
+            lock (_syncRoot)
             {
-                throw new ServiceNotRegisteredException(typeof(TService));
+                IService serviceBuffer;
+                if (_services.TryGetValue(interfaceType, out serviceBuffer))
+                {
+                    return (TService) serviceBuffer;
+                }
             }
 
-            return (TService)_services[key];
+            throw new ServiceNotRegisteredException(typeof(TService));
         }
 
         public bool TryGetService<TService>(out TService service) where TService : IService
         {
-            var serviceType = typeof(TService);
-            var key = _services.Keys.FirstOrDefault(s => serviceType.IsAssignableFrom(s));
+            var interfaceType = typeof(TService);
 
-            if (key == null)
+            lock (_syncRoot)
             {
-                service = default(TService);
-                return false;
+                IService serviceBuffer;
+                if (_services.TryGetValue(interfaceType, out serviceBuffer))
+                {
+                    service = (TService) serviceBuffer;
+                    return true;
+                }
             }
 
-            service = (TService)_services[key];
-            return true;
+            service = default(TService);
+            return false;
         }
 
-        public IList<IService> GetServices()
+        public IList<ServiceRegistration> GetServices()
         {
-            return _services.Values.ToList();
+            lock (_syncRoot)
+            {
+                return _services.Select(s => new ServiceRegistration(s.Key, s.Value)).ToList();
+            }
         }
     }
 }

@@ -30,8 +30,8 @@ namespace HA4IoT.Core
         {
             foreach (var service in _controller.ServiceLocator.GetServices())
             {
-                _controller.ApiController.RouteRequest($"service/{service.GetType().Name}", service.HandleApiRequest);
-                _controller.ApiController.RouteCommand($"service/{service.GetType().Name}", service.HandleApiCommand);
+                _controller.ApiController.RouteRequest($"service/{service.InterfaceType.Name}", service.ServiceInstance.HandleApiRequest);
+                _controller.ApiController.RouteCommand($"service/{service.InterfaceType.Name}", service.ServiceInstance.HandleApiCommand);
             }
         }
 
@@ -44,7 +44,7 @@ namespace HA4IoT.Core
             var services = new JsonObject();
             foreach (var service in _controller.ServiceLocator.GetServices())
             {
-                services.SetNamedObject(service.GetType().Name, service.ExportStatusToJsonObject());
+                services.SetNamedObject(service.InterfaceType.Name, service.ServiceInstance.ExportStatusToJsonObject());
             }
 
             result.SetNamedValue("services", services);
