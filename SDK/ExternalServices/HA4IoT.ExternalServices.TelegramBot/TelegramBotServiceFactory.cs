@@ -6,17 +6,17 @@ using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.ExternalServices.TelegramBot
 {
-    public static class TelegramBotFactory
+    public static class TelegramBotServiceFactory
     {
-        public static bool TryCreateFromDefaultConfigurationFile(out TelegramBot telegramBot)
+        public static bool TryCreateFromDefaultConfigurationFile(out TelegramBotService telegramBotService)
         {
             string filename = StoragePath.WithFilename("TelegramBotConfiguration.json");
-            return TryCreateFromConfigurationFile(filename, out telegramBot);
+            return TryCreateFromConfigurationFile(filename, out telegramBotService);
         }
 
-        public static bool TryCreateFromConfigurationFile(string filename, out TelegramBot telegramBot)
+        public static bool TryCreateFromConfigurationFile(string filename, out TelegramBotService telegramBotService)
         {
-            telegramBot = null;
+            telegramBotService = null;
 
             try
             {
@@ -29,25 +29,25 @@ namespace HA4IoT.ExternalServices.TelegramBot
                 string fileContent = File.ReadAllText(filename);
                 JsonObject json = JsonObject.Parse(fileContent);
 
-                telegramBot = new TelegramBot();
-                telegramBot.AuthenticationToken = json.GetNamedString("AuthenticationToken");
+                telegramBotService = new TelegramBotService();
+                telegramBotService.AuthenticationToken = json.GetNamedString("AuthenticationToken");
 
                 foreach (var administratorItem in json.GetNamedArray("Administrators", new JsonArray()))
                 {
-                    telegramBot.Administrators.Add((int)administratorItem.GetNumber());
+                    telegramBotService.Administrators.Add((int)administratorItem.GetNumber());
                 }
 
                 foreach (var chatWhitelistItem in json.GetNamedArray("ChatWhitelist", new JsonArray()))
                 {
-                    telegramBot.ChatWhitelist.Add((int)chatWhitelistItem.GetNumber());
+                    telegramBotService.ChatWhitelist.Add((int)chatWhitelistItem.GetNumber());
                 }
 
                 if (json.GetNamedBoolean("AllowAllClients", false))
                 {
-                    telegramBot.AllowAllClients = true;
+                    telegramBotService.AllowAllClients = true;
                 }
 
-                telegramBot.Enable();
+                telegramBotService.Enable();
 
                 return true;
             }

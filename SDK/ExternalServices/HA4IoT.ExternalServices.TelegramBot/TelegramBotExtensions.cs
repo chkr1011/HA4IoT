@@ -9,7 +9,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
             if (messageReceivedEventArgs == null) throw new ArgumentNullException(nameof(messageReceivedEventArgs));
             if (text == null) throw new ArgumentNullException(nameof(text));
 
-            messageReceivedEventArgs.TelegramBot.EnqueueMessage(
+            messageReceivedEventArgs.TelegramBotService.EnqueueMessage(
                 messageReceivedEventArgs.Message.CreateResponse(text, format));
         }
     }

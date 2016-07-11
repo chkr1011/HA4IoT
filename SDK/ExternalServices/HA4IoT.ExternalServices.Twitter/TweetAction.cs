@@ -7,29 +7,29 @@ namespace HA4IoT.ExternalServices.Twitter
     public class TweetAction : IAction
     {
         private readonly Func<string> _messageProvider;
-        private readonly TwitterClient _twitterClient;
+        private readonly TwitterService _twitterService;
 
-        public TweetAction(Func<string> messageProvider, TwitterClient twitterClient)
+        public TweetAction(Func<string> messageProvider, TwitterService twitterService)
         {
             if (messageProvider == null) throw new ArgumentNullException(nameof(messageProvider));
-            if (twitterClient == null) throw new ArgumentNullException(nameof(twitterClient));
+            if (twitterService == null) throw new ArgumentNullException(nameof(twitterService));
 
             _messageProvider = messageProvider;
-            _twitterClient = twitterClient;
+            _twitterService = twitterService;
         }
 
-        public TweetAction(string message, TwitterClient twitterClient)
+        public TweetAction(string message, TwitterService twitterService)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
-            if (twitterClient == null) throw new ArgumentNullException(nameof(twitterClient));
+            if (twitterService == null) throw new ArgumentNullException(nameof(twitterService));
 
             _messageProvider = () => message;
-            _twitterClient = twitterClient;
+            _twitterService = twitterService;
         }
 
         public void Execute()
         {
-            Task.Run(() => _twitterClient.Tweet(_messageProvider()));
+            Task.Run(() => _twitterService.Tweet(_messageProvider()));
         }
     }
 }

@@ -98,14 +98,14 @@ namespace HA4IoT.Controller.Main
 
             try
             {
-                TwitterClient twitterClient;
-                if (!TwitterClientFactory.TryCreateFromDefaultConfigurationFile(out twitterClient))
+                TwitterService twitterService;
+                if (!TwitterServiceFactory.TryCreateFromDefaultConfigurationFile(out twitterService))
                 {
                     Log.Verbose("Twitter API is disabled.");
                     return;
                 }
                 
-                await twitterClient.Tweet(message);
+                await twitterService.Tweet(message);
 
                 _lastTweetTimestamp = DateTime.Now;
                 Log.Info("Successfully tweeted: " + message);

@@ -74,15 +74,15 @@ namespace HA4IoT.Controller.Main
 
         private void SetupTelegramBot()
         {
-            TelegramBot telegramBot;
-            if (!TelegramBotFactory.TryCreateFromDefaultConfigurationFile(out telegramBot))
+            TelegramBotService telegramBotService;
+            if (!TelegramBotServiceFactory.TryCreateFromDefaultConfigurationFile(out telegramBotService))
             {
                 return;
             }
 
             Log.WarningLogged += (s, e) =>
             {
-                telegramBot.EnqueueMessageForAdministrators($"{Emoji.WarningSign} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
+                telegramBotService.EnqueueMessageForAdministrators($"{Emoji.WarningSign} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
             };
 
             Log.ErrorLogged += (s, e) =>
@@ -93,24 +93,24 @@ namespace HA4IoT.Controller.Main
                     return;
                 }
 
-                telegramBot.EnqueueMessageForAdministrators($"{Emoji.HeavyExclamationMark} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
+                telegramBotService.EnqueueMessageForAdministrators($"{Emoji.HeavyExclamationMark} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
             };
 
-            telegramBot.EnqueueMessageForAdministrators($"{Emoji.Bell} Das System ist gestartet.");
-            new PersonalAgentToTelegramBotDispatcher(this).ExposeToTelegramBot(telegramBot);
+            telegramBotService.EnqueueMessageForAdministrators($"{Emoji.Bell} Das System ist gestartet.");
+            new PersonalAgentToTelegramBotDispatcher(this).ExposeToTelegramBot(telegramBotService);
 
-            ServiceLocator.RegisterService(telegramBot);
+            ServiceLocator.RegisterService(telegramBotService);
         }
 
         private void SetupTwitterClient()
         {
-            TwitterClient twitterClient;
-            if (!TwitterClientFactory.TryCreateFromDefaultConfigurationFile(out twitterClient))
+            TwitterService twitterService;
+            if (!TwitterServiceFactory.TryCreateFromDefaultConfigurationFile(out twitterService))
             {
                 return;
             }
 
-            ServiceLocator.RegisterService(twitterClient);
+            ServiceLocator.RegisterService(twitterService);
         }
 
         private RemoteSocketController SetupRemoteSwitchController()

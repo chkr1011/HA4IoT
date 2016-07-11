@@ -97,12 +97,12 @@ namespace HA4IoT.Controller.Demo
             ILamp lamp3 = area.GetLamp(ExampleRoom.Lamp3);
             
             // Integrate the twitter client if the configuration file is available.
-            TwitterClient twitterClient;
-            if (TwitterClientFactory.TryCreateFromDefaultConfigurationFile(out twitterClient))
+            TwitterService twitterService;
+            if (TwitterServiceFactory.TryCreateFromDefaultConfigurationFile(out twitterService))
             {
-                ServiceLocator.RegisterService(new TwitterClient());
+                ServiceLocator.RegisterService(new TwitterService());
                 
-                IAction tweetAction = twitterClient.GetTweetAction($"Someone is here ({DateTime.Now})... @chkratky");
+                IAction tweetAction = twitterService.GetTweetAction($"Someone is here ({DateTime.Now})... @chkratky");
 
                 motionDetectedTrigger.Attach(tweetAction);
                 buttonTrigger.Attach(tweetAction);
@@ -124,15 +124,15 @@ namespace HA4IoT.Controller.Demo
 
         private void SetupTelegramBot()
         {
-            TelegramBot telegramBot;
-            if (!TelegramBotFactory.TryCreateFromDefaultConfigurationFile(out telegramBot))
+            TelegramBotService telegramBotService;
+            if (!TelegramBotServiceFactory.TryCreateFromDefaultConfigurationFile(out telegramBotService))
             {
                 return;
             }
 
             Log.WarningLogged += (s, e) =>
             {
-                telegramBot.EnqueueMessageForAdministrators($"{Emoji.WarningSign} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
+                telegramBotService.EnqueueMessageForAdministrators($"{Emoji.WarningSign} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
             };
 
             Log.ErrorLogged += (s, e) =>
@@ -143,14 +143,14 @@ namespace HA4IoT.Controller.Demo
                     return;
                 }
 
-                telegramBot.EnqueueMessageForAdministrators($"{Emoji.HeavyExclamationMark} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
+                telegramBotService.EnqueueMessageForAdministrators($"{Emoji.HeavyExclamationMark} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
             };
 
-            telegramBot.EnqueueMessageForAdministrators($"{Emoji.Bell} Das System ist gestartet.");
+            telegramBotService.EnqueueMessageForAdministrators($"{Emoji.Bell} Das System ist gestartet.");
 
-            new PersonalAgentToTelegramBotDispatcher(this).ExposeToTelegramBot(telegramBot);
+            new PersonalAgentToTelegramBotDispatcher(this).ExposeToTelegramBot(telegramBotService);
 
-            ServiceLocator.RegisterService(telegramBot);
+            ServiceLocator.RegisterService(telegramBotService);
         }
 
         private void SetupRoom()
@@ -239,7 +239,7 @@ namespace HA4IoT.Controller.Demo
 
             trigger.Attach(action);
             
-            var twitterClient = new TwitterClient();
+            var twitterClient = new TwitterService();
             trigger.Attach(twitterClient.GetTweetAction("Hello World"));
         }
 
