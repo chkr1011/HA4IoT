@@ -16,6 +16,7 @@ using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Core.Discovery;
 using HA4IoT.Core.Settings;
 using HA4IoT.Core.Timer;
@@ -32,8 +33,8 @@ namespace HA4IoT.Core
         private readonly AreaCollection _areas = new AreaCollection();
         private readonly ComponentCollection _components = new ComponentCollection();
         private readonly AutomationCollection _automations = new AutomationCollection();
-        
-        private HealthMonitor _healthMonitor;
+        private readonly SystemInformationService _systemInformationService = new SystemInformationService();
+
         private BackgroundTaskDeferral _deferral;
         private HttpServer _httpServer;
 
@@ -162,7 +163,7 @@ namespace HA4IoT.Core
             var pi2PortController = new Pi2PortController();
             var ledPin = pi2PortController.GetOutput(pi2GpioPinWithLed);
 
-            _healthMonitor = new HealthMonitor(ledPin, Timer, ApiController);
+            ServiceLocator.RegisterService(new HealthService(ledPin, Timer, ServiceLocator.GetService<ISystemInformationService>()));
         }
 
         private void InitializeHttpApiEndpoint()
@@ -213,12 +214,12 @@ namespace HA4IoT.Core
 
         private void InitializeCore()
         {
-            var stopwatch = Stopwatch.StartNew();
-
             try
             {
+                var stopwatch = Stopwatch.StartNew();
+                
                 ServiceLocator.RegisterService(new DateTimeService());
-                ServiceLocator.RegisterService(new SystemInformationService());
+                ServiceLocator.RegisterService(_systemInformationService);
 
                 InitializeLogging();
                 InitializeHttpApiEndpoint();
@@ -226,10 +227,11 @@ namespace HA4IoT.Core
                 LoadControllerSettings();
                 InitializeDiscovery();
 
-                HomeAutomationTimer timer = InitializeTimer();
+                var timer = InitializeTimer();
 
                 TryConfigure();
-                
+                CreateConfigurationStatistics();
+
                 LoadNonControllerSettings();
                 ResetActuatorStates();
 
@@ -241,6 +243,9 @@ namespace HA4IoT.Core
 
                 stopwatch.Stop();
                 Log.Info("Startup completed after " + stopwatch.Elapsed);
+                
+                _systemInformationService.Set("Health/StartupDuration", stopwatch.Elapsed);
+                _systemInformationService.Set("Health/StartupTimestamp", DateTime.Now);
 
                 timer.Run();
             }
@@ -363,6 +368,16 @@ namespace HA4IoT.Core
                 var history = new ComponentStateHistoryTracker(component);
                 history.ExposeToApi(ApiController);
             }
+        }
+
+        private void CreateConfigurationStatistics()
+        {
+            var systemInformationService = ServiceLocator.GetService<ISystemInformationService>();
+            systemInformationService.Set("Components/Count", _components.GetAll().Count);
+            systemInformationService.Set("Areas/Count", _areas.GetAll().Count);
+            systemInformationService.Set("Automations/Count", _automations.GetAll().Count);
+
+            systemInformationService.Set("Services/Count", ServiceLocator.GetServices().Count);
         }
     }
 }

@@ -12,10 +12,6 @@ namespace HA4IoT.Core.Timer
 
         public event EventHandler<TimerTickEventArgs> Tick;
         
-        public TimeSpan CurrentTime => CurrentDateTime.TimeOfDay;
-
-        public DateTime CurrentDateTime => DateTime.Now;
-
         public TimedAction In(TimeSpan dueTime)
         {
             return new TimedAction(dueTime, TimeSpan.Zero, this);

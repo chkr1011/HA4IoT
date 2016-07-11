@@ -11,13 +11,14 @@ namespace HA4IoT.Tests.Mockups
             Log.Instance = new TestLogger();
             Timer = new TestHomeAutomationTimer();
 
-            ServiceLocator.RegisterService(new DateTimeService());
+            ServiceLocator.RegisterService(new TestDaylightService());
+            ServiceLocator.RegisterService(new TestDateTimeService());
             ServiceLocator.RegisterService(new SystemInformationService());
         }
 
         public void SetTime(TimeSpan value)
         {
-            ((TestHomeAutomationTimer)Timer).SetTime(value);
+            ServiceLocator.GetService<TestDateTimeService>().SetTime(value);
         }
     }
 }
