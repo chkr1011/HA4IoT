@@ -9,29 +9,32 @@
 	<link rel="stylesheet" href="~/Content/_bootstrap.min.css" type="text/css" />
 	<link rel="stylesheet" href="~/Content/font-awesome.min.css" type="text/css" />
 	<link rel="stylesheet" href="~/Content/MySite.min.css" type="text/css" />
-	<meta name="description" content="HA4IOT by Christian Kratky" />
+	<meta name="description" content="HA4IoT by Christian Kratky" />
 </head>
 <body>
 	<div id="page">
 		<div id="header">
-			<div id="kopf" class="header container">
+			<div class="header container">
 				<div class="row">
 					<nav id="navigation" class="navbar navbar-default">
-						<a class="navbar-brand">HA4IOT</a>
+						<a class="navbar-brand">HA4IoT</a>
 						@Html.MvcSiteMap().Menu("BootstrapMenuHelperModel")
 					</nav>
 				</div>
 			</div>
-			<div id="teaser" class="container">@RenderSection("teaser", required: false)</div>
+			<div id="teaser" class="container">
+				@RenderSection("teaser", required: false)
+			</div>
 		</div>
-		<div id="trenner" class="container"></div>
+		<div class="separator container"></div>
 		<section id="body" class="container">
 			@RenderBody()
 		</section>
+		<div class="separator container"></div>
 		<section id="footer" class="container">
 			<div class="row">
 				<div class="col-lg-3 col-md-offset-9">
-					<h5>Folge mir auf:</h5>
+					<h5>Follow me and get latest updates:</h5>
 					<ul class="list-unstyled">
 						<li>
 							<a href="https://twitter.com/chkratky" title="Twitter"><span class="fa fa-twitter-square" aria-hidden="true"></span> Twitter</a>
@@ -50,11 +53,10 @@
 			</div>
 			<div class="row">
 				<div class="col-md-12">
-					<p>copyright by christian kratky @DateTime.Now.Year</p>
+					<p>(c) Christian Kratky @DateTime.Now.Year</p>
 				</div>
 			</div>
 		</section>
 	</div>
 </body>
 </html>
-<script src="~/scripts/bootstrap.min.js" language="javascript"></script>

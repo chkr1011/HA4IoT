@@ -77,10 +77,26 @@
   <ItemGroup>
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
+    <Content Include="Content\Images\AppScreen\WA_Areas_02.PNG" />
+    <Content Include="Content\Images\AppScreen\WA_Bathroom_03.PNG" />
+    <Content Include="Content\Images\AppScreen\WA_Bedroom-1_04.PNG" />
+    <Content Include="Content\Images\AppScreen\WA_Bedroom-2_05.PNG" />
+    <Content Include="Content\Images\AppScreen\WA_Bedroom-2_06.PNG" />
+    <Content Include="Content\Images\AppScreen\WA_Info_11.PNG" />
+    <Content Include="Content\Images\AppScreen\WA_SensorsOverview_08.PNG" />
+    <Content Include="Content\Images\AppScreen\WA_SplashScreen_01.PNG" />
+    <Content Include="Content\Images\AppScreen\WA_Storeroom_07.PNG" />
+    <Content Include="Content\Images\AppScreen\WA_WeatherStation_10.PNG" />
+    <Content Include="Content\Images\AppScreen\WA_WindowOverview_09.PNG" />
+    <Content Include="Content\Images\DokuButton.png" />
+    <Content Include="Content\Images\IMG_1592.jpg" />
     <Content Include="Content\Images\Overview_4to3.png" />
     <Content Include="Content\Images\Pi2.JPG" />
     <Content Include="Content\Images\Pi2_800x.png" />
+    <Content Include="Content\Images\RepoButton.png" />
+    <Content Include="Content\Images\Terminal.jpg" />
     <Content Include="Content\Images\tweed.png" />
+    <Content Include="Content\Images\TwitButton.png" />
     <Content Include="Content\MySite.css">
       <DependentUpon>MySite.scss</DependentUpon>
     </Content>
@@ -188,6 +204,7 @@
     <None Include="MvcSiteMapSchema.xsd">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Properties\PublishProfiles\HA4IoTHomepage - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-2.2.4.intellisense.js" />
     <Content Include="Scripts\jquery-2.2.4.js" />
     <Content Include="Scripts\jquery-2.2.4.min.js" />
@@ -195,7 +212,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\AboutMeController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\SupportController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -217,6 +236,8 @@
     <Content Include="Views\Shared\DisplayTemplates\MenuHelperModel.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\CanonicalHelperModel.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\BootstrapMenuHelperModel.cshtml" />
+    <Content Include="Views\AboutMe\Index.cshtml" />
+    <Content Include="Views\Support\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
