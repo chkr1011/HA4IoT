@@ -1,15 +1,15 @@
 ﻿using System;
-using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Actuators.Triggers
 {
     public class IntervalTrigger : Trigger
     {
-        public IntervalTrigger(TimeSpan interval, IHomeAutomationTimer timer)
+        public IntervalTrigger(TimeSpan interval, ISchedulerService scheduleService)
         {
-            if (timer == null) throw new ArgumentNullException(nameof(timer));
+            if (scheduleService == null) throw new ArgumentNullException(nameof(scheduleService));
 
-            timer.Every(interval).Do(Execute);
+            scheduleService.Every(interval).Do(Execute);
         }
     }
 }

@@ -15,10 +15,13 @@ namespace HA4IoT.Controller.Default
     {
         private const int LedGpio = 22;
 
+        public Controller()
+            : base(LedGpio)
+        {
+        }
+
         protected override async Task ConfigureAsync()
         {
-            InitializeHealthMonitor(LedGpio);
-
             AddDevice(new BuiltInI2CBus());
 
             var pi2PortController = new Pi2PortController();

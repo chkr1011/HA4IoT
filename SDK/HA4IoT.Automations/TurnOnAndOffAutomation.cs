@@ -21,7 +21,7 @@ namespace HA4IoT.Automations
         private readonly ConditionsValidator _disablingConditionsValidator = new ConditionsValidator().WithDefaultState(ConditionState.NotFulfilled);
 
         private readonly IDateTimeService _dateTimeService;
-        private readonly IHomeAutomationTimer _timer;
+        private readonly ISchedulerService _schedulerService;
 
         private readonly List<Action> _turnOnActions = new List<Action>();
         private readonly List<Action> _turnOffActions = new List<Action>();
@@ -34,14 +34,14 @@ namespace HA4IoT.Automations
         private bool _turnOffIfButtonPressedWhileAlreadyOn;
         private bool _isOn;
         
-        public TurnOnAndOffAutomation(AutomationId id, IDateTimeService dateTimeService, IHomeAutomationTimer timer)
+        public TurnOnAndOffAutomation(AutomationId id, IDateTimeService dateTimeService, ISchedulerService schedulerService)
             : base(id)
         {
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
-            if (timer == null) throw new ArgumentNullException(nameof(timer));
+            if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
 
             _dateTimeService = dateTimeService;
-            _timer = timer;
+            _schedulerService = schedulerService;
 
             _wrappedSettings = new TurnOnAndOffAutomationSettingsWrapper(Settings);
         }
@@ -267,7 +267,7 @@ namespace HA4IoT.Automations
                 return;
             }
 
-            _turnOffTimeout = _timer.In(_wrappedSettings.Duration).Do(TurnOff);
+            _turnOffTimeout = _schedulerService.In(_wrappedSettings.Duration).Do(TurnOff);
         }
 
         private bool GetConditionsAreFulfilled()

@@ -5,7 +5,6 @@ using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 
@@ -16,7 +15,7 @@ namespace HA4IoT.Automations
         private readonly IDateTimeService _dateTimeService;
         private readonly IDaylightService _daylightService;
 
-        public ConditionalOnAutomation(AutomationId id, IHomeAutomationTimer timer, IDateTimeService dateTimeService, IDaylightService daylightService) 
+        public ConditionalOnAutomation(AutomationId id, ISchedulerService schedulerService, IDateTimeService dateTimeService, IDaylightService daylightService) 
             : base(id)
         {
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
@@ -25,7 +24,7 @@ namespace HA4IoT.Automations
             _dateTimeService = dateTimeService;
             _daylightService = daylightService;
             
-            WithTrigger(new IntervalTrigger(TimeSpan.FromMinutes(1), timer));
+            WithTrigger(new IntervalTrigger(TimeSpan.FromMinutes(1), schedulerService));
         }
 
         public ConditionalOnAutomation WithOnAtNightRange()

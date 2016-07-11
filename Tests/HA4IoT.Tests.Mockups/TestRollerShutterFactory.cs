@@ -1,6 +1,7 @@
 ﻿using System;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Core;
 
 namespace HA4IoT.Tests.Mockups
 {
@@ -17,7 +18,7 @@ namespace HA4IoT.Tests.Mockups
 
         public TestRollerShutter CreateTestRollerShutter()
         {
-            return new TestRollerShutter(ComponentIdFactory.EmptyId, new TestRollerShutterEndpoint(), _timer);
+            return new TestRollerShutter(ComponentIdFactory.EmptyId, new TestRollerShutterEndpoint(), _timer, new SchedulerService(_timer));
         }
     }
 }

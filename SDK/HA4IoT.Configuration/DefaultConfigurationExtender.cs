@@ -101,7 +101,7 @@ namespace HA4IoT.Configuration
             return new MotionDetector(
                 new ComponentId(element.GetMandatoryStringFromAttribute("id")),
                 new PortBasedMotionDetectorEndpoint(input), 
-                Controller.Timer);
+                Controller.ServiceLocator.GetService<ISchedulerService>());
         }
         
         private IComponent ParseButton(XElement element)
@@ -139,8 +139,9 @@ namespace HA4IoT.Configuration
 
             return new RollerShutter(
                 new ComponentId(element.GetMandatoryStringFromAttribute("id")),
-                new PortBasedRollerShutterEndpoint(powerOutput, directionOutput), 
-                Controller.Timer);
+                new PortBasedRollerShutterEndpoint(powerOutput, directionOutput),
+                Controller.Timer,
+                Controller.ServiceLocator.GetService<ISchedulerService>());
         }
 
         private IComponent ParseWindow(XElement element)

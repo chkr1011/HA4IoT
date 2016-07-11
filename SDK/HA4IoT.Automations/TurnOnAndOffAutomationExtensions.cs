@@ -1,5 +1,6 @@
 ﻿using System;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Automations
@@ -14,7 +15,7 @@ namespace HA4IoT.Automations
                 new TurnOnAndOffAutomation(
                     AutomationIdFactory.CreateIdFrom<TurnOnAndOffAutomation>(area),
                     area.Controller.ServiceLocator.GetService<IDateTimeService>(),
-                    area.Controller.Timer);
+                    area.Controller.ServiceLocator.GetService<ISchedulerService>());
 
             area.AddAutomation(automation);
 

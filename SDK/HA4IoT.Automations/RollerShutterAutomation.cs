@@ -17,7 +17,7 @@ namespace HA4IoT.Automations
     {
         private readonly List<ComponentId> _rollerShutters = new List<ComponentId>();
 
-        private readonly IHomeAutomationTimer _timer;
+        private readonly ISchedulerService _schedulerService;
         private readonly IDateTimeService _dateTimeService;
         private readonly IDaylightService _daylightService;
         private readonly IOutdoorTemperatureService _outdoorTemperatureService;
@@ -29,20 +29,20 @@ namespace HA4IoT.Automations
         
         public RollerShutterAutomation(
             AutomationId id, 
-            IHomeAutomationTimer timer,
+            ISchedulerService schedulerService,
             IDateTimeService dateTimeService,
             IDaylightService daylightService,
             IOutdoorTemperatureService outdoorTemperatureService,
             IComponentController componentController)
             : base(id)
         {
-            if (timer == null) throw new ArgumentNullException(nameof(timer));
+            if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
             if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
             if (outdoorTemperatureService == null) throw new ArgumentNullException(nameof(outdoorTemperatureService));
             if (componentController == null) throw new ArgumentNullException(nameof(componentController));
 
-            _timer = timer;
+            _schedulerService = schedulerService;
             _dateTimeService = dateTimeService;
             _daylightService = daylightService;
             _outdoorTemperatureService = outdoorTemperatureService;
@@ -63,7 +63,7 @@ namespace HA4IoT.Automations
 
         public void Activate()
         {
-            _timer.Every(TimeSpan.FromSeconds(10)).Do(PerformPendingActions);
+            _schedulerService.Every(TimeSpan.FromSeconds(10)).Do(PerformPendingActions);
         }
 
         public void PerformPendingActions()

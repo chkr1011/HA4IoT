@@ -47,10 +47,13 @@ namespace HA4IoT.Controller.Cellar
             StateMachine
         }
 
+        public Controller(int statusLedNumber) 
+            : base(statusLedNumber)
+        {
+        }
+
         protected override async Task ConfigureAsync()
         {
-            InitializeHealthMonitor(22);
-
             var pi2PortController = new Pi2PortController();
 
             AddDevice(new BuiltInI2CBus());

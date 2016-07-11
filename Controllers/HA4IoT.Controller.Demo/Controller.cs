@@ -15,6 +15,7 @@ using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.PersonalAgent;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Triggers;
 using HA4IoT.Core;
@@ -40,11 +41,14 @@ namespace HA4IoT.Controller.Demo
     {
         private const int LedGpio = 22;
         private const byte I2CHardwareBridge433MHzSenderPin = 6;
-        
+
+        public Controller()
+            : base(LedGpio)
+        {
+        }
+
         protected override async Task ConfigureAsync()
         {
-            InitializeHealthMonitor(LedGpio);
-
             AddDevice(new BuiltInI2CBus());
 
             var piPortController = new Pi2PortController();
@@ -54,7 +58,7 @@ namespace HA4IoT.Controller.Demo
             AddDevice(ccToolsBoardController);
 
             // Setup the remote switch 433Mhz sender which is attached to the I2C bus (Arduino Nano).
-            AddDevice(new I2CHardwareBridge(new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer));
+            AddDevice(new I2CHardwareBridge(new I2CSlaveAddress(50), GetDevice<II2CBus>(), ServiceLocator.GetService<ISchedulerService>()));
 
             ServiceLocator.RegisterService(typeof(SynonymService), new SynonymService());
             ServiceLocator.RegisterService(typeof (OpenWeatherMapService),
@@ -170,7 +174,7 @@ namespace HA4IoT.Controller.Demo
             var intertechno = new IntertechnoCodeSequenceProvider();
             var brennenstuhl = new BrennenstuhlCodeSequenceProvider();
 
-            var remoteSwitchController = new RemoteSocketController(remoteSwitchSender, Timer)
+            var remoteSwitchController = new RemoteSocketController(remoteSwitchSender, ServiceLocator.GetService<ISchedulerService>())
                 .WithRemoteSocket(0, intertechno.GetSequencePair(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1))
                 .WithRemoteSocket(1, intertechno.GetSequencePair(IntertechnoSystemCode.B, IntertechnoUnitCode.Unit1))
                 .WithRemoteSocket(2, brennenstuhl.GetSequencePair(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.B))

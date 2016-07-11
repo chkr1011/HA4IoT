@@ -10,7 +10,8 @@ namespace HA4IoT.Tests.Mockups
     {
         private readonly TestDateTimeService _dateTimeService = new TestDateTimeService();
 
-        public TestController()
+        public TestController() 
+            : base(22)
         {
             Log.Instance = new TestLogger();
             Timer = new TestHomeAutomationTimer();
@@ -18,6 +19,7 @@ namespace HA4IoT.Tests.Mockups
             ServiceLocator.RegisterService(typeof(IDaylightService), new TestDaylightService());
             ServiceLocator.RegisterService(typeof(IDateTimeService), _dateTimeService);
             ServiceLocator.RegisterService(typeof(ISystemInformationService), new SystemInformationService());
+            ServiceLocator.RegisterService(typeof(ISchedulerService), new SchedulerService(Timer));
         }
 
         public void SetTime(TimeSpan value)

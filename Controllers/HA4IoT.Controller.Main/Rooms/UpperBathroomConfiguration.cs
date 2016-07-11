@@ -7,6 +7,7 @@ using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
@@ -72,7 +73,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTarget(combinedLights)
                 .WithOnDuration(TimeSpan.FromMinutes(8));
             
-            new BathroomFanAutomation(AutomationIdFactory.CreateIdFrom<BathroomFanAutomation>(room), Controller.Timer)
+            new BathroomFanAutomation(AutomationIdFactory.CreateIdFrom<BathroomFanAutomation>(room), Controller.ServiceLocator.GetService<ISchedulerService>())
                 .WithTrigger(room.GetMotionDetector(UpperBathroom.MotionDetector))
                 .WithSlowDuration(TimeSpan.FromMinutes(8))
                 .WithFastDuration(TimeSpan.FromMinutes(12))

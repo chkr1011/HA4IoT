@@ -210,6 +210,7 @@
     <Compile Include="Networking\IHttpRequestDispatcherAction.cs" />
     <Compile Include="Networking\IImportFromJsonValue.cs" />
     <Compile Include="Services\IDaylightService.cs" />
+    <Compile Include="Services\ISchedulerService.cs" />
     <Compile Include="Services\System\DateTimeService.cs" />
     <Compile Include="Services\System\ISystemInformationService.cs" />
     <Compile Include="Services\Weather\IOutdoorHumidityService.cs" />

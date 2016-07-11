@@ -6,7 +6,7 @@ namespace HA4IoT.Controller.Cellar
     {
         public void Run(IBackgroundTaskInstance taskInstance)
         {
-            new Controller().RunAsync(taskInstance);
+            new Controller(22).RunAsync(taskInstance);
         }
     }
 }

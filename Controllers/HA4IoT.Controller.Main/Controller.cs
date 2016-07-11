@@ -13,6 +13,7 @@ using HA4IoT.Hardware.Pi2;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
 using HA4IoT.Contracts.PersonalAgent;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.PersonalAgent;
 
@@ -22,17 +23,20 @@ namespace HA4IoT.Controller.Main
     {
         private const int LedGpio = 22;
 
+        public Controller() 
+            : base(LedGpio)
+        {
+        }
+
         protected override async Task ConfigureAsync()
         {
-            InitializeHealthMonitor(LedGpio);
-
             AddDevice(new BuiltInI2CBus());
             
             var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>());
 
             AddDevice(new Pi2PortController());
             AddDevice(ccToolsBoardController);
-            AddDevice(new I2CHardwareBridge(new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer));
+            AddDevice(new I2CHardwareBridge(new I2CSlaveAddress(50), GetDevice<II2CBus>(), ServiceLocator.GetService<ISchedulerService>()));
             AddDevice(SetupRemoteSwitchController());
 
             ServiceLocator.RegisterService(typeof(SynonymService), new SynonymService());
@@ -125,7 +129,7 @@ namespace HA4IoT.Controller.Main
             var brennenstuhl = new BrennenstuhlCodeSequenceProvider();
             var ldp433MHzSender = new LPD433MHzSignalSender(i2cHardwareBridge, LDP433MhzSenderPin, ApiController);
 
-            var remoteSwitchController = new RemoteSocketController(ldp433MHzSender, Timer)
+            var remoteSwitchController = new RemoteSocketController(ldp433MHzSender, ServiceLocator.GetService<ISchedulerService>())
                 .WithRemoteSocket(0, brennenstuhl.GetSequencePair(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A));
 
             return remoteSwitchController;

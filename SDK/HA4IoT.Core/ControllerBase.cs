@@ -16,6 +16,7 @@ using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Core.Discovery;
 using HA4IoT.Core.Settings;
@@ -27,7 +28,7 @@ using HA4IoT.Telemetry;
 
 namespace HA4IoT.Core
 {
-    public abstract class ControllerBase : IController
+    public class ControllerBase : IController
     {
         private readonly DeviceCollection _devices = new DeviceCollection();
         private readonly AreaCollection _areas = new AreaCollection();
@@ -37,12 +38,18 @@ namespace HA4IoT.Core
 
         private BackgroundTaskDeferral _deferral;
         private HttpServer _httpServer;
+        private int _statusLedNumber;
 
         public IApiController ApiController { get; } = new ApiController("api");
         public IServiceLocator ServiceLocator { get; } = new ServiceLocator();
         public IHomeAutomationTimer Timer { get; protected set; }
         public ISettingsContainer Settings { get; private set; }
-        
+
+        protected ControllerBase(int statusLedNumber)
+        {
+            _statusLedNumber = statusLedNumber;
+        }
+
         public Task RunAsync(IBackgroundTaskInstance taskInstance)
         {
             if (taskInstance == null) throw new ArgumentNullException(nameof(taskInstance));
@@ -158,10 +165,10 @@ namespace HA4IoT.Core
             await Task.FromResult(0);
         }
 
-        protected void InitializeHealthMonitor(int pi2GpioPinWithLed)
+        private void InitializeHealthMonitor()
         {
             var pi2PortController = new Pi2PortController();
-            var ledPin = pi2PortController.GetOutput(pi2GpioPinWithLed);
+            var ledPin = pi2PortController.GetOutput(_statusLedNumber);
 
             ServiceLocator.RegisterService(typeof(HealthService), new HealthService(ledPin, Timer, ServiceLocator.GetService<ISystemInformationService>()));
         }
@@ -183,16 +190,18 @@ namespace HA4IoT.Core
         {
             var azureCloudApiDispatcherEndpoint = new AzureCloudApiDispatcherEndpoint();
 
-            azureCloudApiDispatcherEndpoint.TryInitializeFromConfigurationFile(
-                StoragePath.WithFilename("AzureCloudApiDispatcherEndpointSettings.json"));
-
-            ApiController.RegisterEndpoint(azureCloudApiDispatcherEndpoint);
+            if (azureCloudApiDispatcherEndpoint.TryInitializeFromConfigurationFile(
+                StoragePath.WithFilename("AzureCloudApiDispatcherEndpointSettings.json")))
+            {
+                ApiController.RegisterEndpoint(azureCloudApiDispatcherEndpoint);
+            }
         }
 
         private HomeAutomationTimer InitializeTimer()
         {
             var timer = new HomeAutomationTimer();
             Timer = timer;
+            ServiceLocator.RegisterService(typeof(ISchedulerService), new SchedulerService(Timer));
 
             return timer;
         }
@@ -223,7 +232,8 @@ namespace HA4IoT.Core
 
                 InitializeLogging();
                 InitializeHttpApiEndpoint();
-                
+                InitializeHealthMonitor();
+
                 LoadControllerSettings();
                 InitializeDiscovery();
 
