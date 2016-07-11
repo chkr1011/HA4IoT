@@ -8,6 +8,7 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Services.Weather;
 
 namespace HA4IoT.Automations
@@ -17,6 +18,7 @@ namespace HA4IoT.Automations
         private readonly List<ComponentId> _rollerShutters = new List<ComponentId>();
 
         private readonly IHomeAutomationTimer _timer;
+        private readonly IDateTimeService _dateTimeService;
         private readonly IDaylightService _daylightService;
         private readonly IOutdoorTemperatureService _outdoorTemperatureService;
         private readonly IComponentController _componentController;
@@ -28,17 +30,20 @@ namespace HA4IoT.Automations
         public RollerShutterAutomation(
             AutomationId id, 
             IHomeAutomationTimer timer,
+            IDateTimeService dateTimeService,
             IDaylightService daylightService,
             IOutdoorTemperatureService outdoorTemperatureService,
             IComponentController componentController)
             : base(id)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
+            if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
             if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
             if (outdoorTemperatureService == null) throw new ArgumentNullException(nameof(outdoorTemperatureService));
             if (componentController == null) throw new ArgumentNullException(nameof(componentController));
 
             _timer = timer;
+            _dateTimeService = dateTimeService;
             _daylightService = daylightService;
             _outdoorTemperatureService = outdoorTemperatureService;
             _componentController = componentController;
@@ -141,7 +146,7 @@ namespace HA4IoT.Automations
         private bool DoNotOpenDueToTimeIsAffected()
         {
             if (SpecialSettingsWrapper.SkipBeforeTimestampIsEnabled &&
-                SpecialSettingsWrapper.SkipBeforeTimestamp > _timer.CurrentTime)
+                SpecialSettingsWrapper.SkipBeforeTimestamp > _dateTimeService.GetTime())
             {
                 return true;
             }
@@ -173,7 +178,7 @@ namespace HA4IoT.Automations
 
         private IsDayCondition GetIsDayCondition()
         {
-            var condition = new IsDayCondition(_daylightService, _timer);
+            var condition = new IsDayCondition(_daylightService, _dateTimeService);
             condition.WithStartAdjustment(SpecialSettingsWrapper.OpenOnSunriseOffset);
             condition.WithEndAdjustment(SpecialSettingsWrapper.CloseOnSunsetOffset);
 

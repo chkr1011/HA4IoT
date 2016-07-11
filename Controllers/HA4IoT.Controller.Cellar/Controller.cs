@@ -9,7 +9,6 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Core;
 using HA4IoT.ExternalServices.OpenWeatherMap;
@@ -77,7 +76,7 @@ namespace HA4IoT.Controller.Cellar
 
             garden.SetupConditionalOnAutomation()
                 .WithActuator(garden.GetLamp(Garden.LampParkingLot))
-                .WithOnAtNightRange(ServiceLocator.GetService<IDaylightService>())
+                .WithOnAtNightRange()
                 .WithOffBetweenRange(TimeSpan.Parse("22:30:00"), TimeSpan.Parse("05:00:00"));
 
             Timer.Tick += (s, e) => { pi2PortController.PollOpenInputPorts(); };

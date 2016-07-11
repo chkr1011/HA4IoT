@@ -1,5 +1,7 @@
 ﻿using System;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Automations
 {
@@ -12,7 +14,9 @@ namespace HA4IoT.Automations
             var automation =
                 new ConditionalOnAutomation(
                     AutomationIdFactory.CreateIdFrom<ConditionalOnAutomation>(area), 
-                    area.Controller.Timer);
+                    area.Controller.Timer,
+                    area.Controller.ServiceLocator.GetService<IDateTimeService>(),
+                    area.Controller.ServiceLocator.GetService<IDaylightService>());
 
             area.AddAutomation(automation);
 

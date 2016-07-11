@@ -116,6 +116,7 @@
     <Compile Include="TestBinaryStateEndpoint.cs" />
     <Compile Include="TestButton.cs" />
     <Compile Include="TestButtonEndpoint.cs" />
+    <Compile Include="TestDateTimeService.cs" />
     <Compile Include="TestI2CDevice.cs" />
     <Compile Include="TestInboundMessage.cs" />
     <Compile Include="TestNumericValueSensorEndpoint.cs" />

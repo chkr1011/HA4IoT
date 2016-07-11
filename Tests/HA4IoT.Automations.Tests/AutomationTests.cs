@@ -49,7 +49,7 @@ namespace HA4IoT.Automations.Tests
 
             automation
                 .WithTrigger(testButton.GetPressedShortlyTrigger())
-                .WithCondition(ConditionRelation.And, new TimeRangeCondition(testController.Timer).WithStart(TimeSpan.FromHours(1)).WithEnd(TimeSpan.FromHours(2)))
+                .WithCondition(ConditionRelation.And, new TimeRangeCondition(testController.ServiceLocator.GetService<TestDateTimeService>()).WithStart(TimeSpan.FromHours(1)).WithEnd(TimeSpan.FromHours(2)))
                 .WithActionIfConditionsFulfilled(testOutput.GetSetNextStateAction());
             
             testOutput.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);

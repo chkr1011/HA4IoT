@@ -7,26 +7,30 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Automations
 {
     public class ConditionalOnAutomation : Automation
     {
-        private readonly IHomeAutomationTimer _timer;
+        private readonly IDateTimeService _dateTimeService;
+        private readonly IDaylightService _daylightService;
 
-        public ConditionalOnAutomation(AutomationId id, IHomeAutomationTimer timer) 
+        public ConditionalOnAutomation(AutomationId id, IHomeAutomationTimer timer, IDateTimeService dateTimeService, IDaylightService daylightService) 
             : base(id)
         {
-            _timer = timer;
+            if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
+            if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
 
+            _dateTimeService = dateTimeService;
+            _daylightService = daylightService;
+            
             WithTrigger(new IntervalTrigger(TimeSpan.FromMinutes(1), timer));
         }
 
-        public ConditionalOnAutomation WithOnAtNightRange(IDaylightService daylightService)
+        public ConditionalOnAutomation WithOnAtNightRange()
         {
-            if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
-
-            var nightCondition = new TimeRangeCondition(_timer).WithStart(daylightService.GetSunset).WithEnd(daylightService.GetSunrise);
+            var nightCondition = new TimeRangeCondition(_dateTimeService).WithStart(_daylightService.GetSunset).WithEnd(_daylightService.GetSunrise);
             WithCondition(ConditionRelation.And, nightCondition);
 
             return this;
@@ -34,7 +38,7 @@ namespace HA4IoT.Automations
 
         public ConditionalOnAutomation WithOffBetweenRange(TimeSpan from, TimeSpan until)
         {
-            WithCondition(ConditionRelation.AndNot, new TimeRangeCondition(_timer).WithStart(() => from).WithEnd(() => until));
+            WithCondition(ConditionRelation.AndNot, new TimeRangeCondition(_dateTimeService).WithStart(() => from).WithEnd(() => until));
 
             return this;
         }

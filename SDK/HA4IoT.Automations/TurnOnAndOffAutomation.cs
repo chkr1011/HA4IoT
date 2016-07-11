@@ -10,6 +10,7 @@ using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Automations
@@ -19,6 +20,7 @@ namespace HA4IoT.Automations
         private readonly ConditionsValidator _enablingConditionsValidator = new ConditionsValidator().WithDefaultState(ConditionState.NotFulfilled);
         private readonly ConditionsValidator _disablingConditionsValidator = new ConditionsValidator().WithDefaultState(ConditionState.NotFulfilled);
 
+        private readonly IDateTimeService _dateTimeService;
         private readonly IHomeAutomationTimer _timer;
 
         private readonly List<Action> _turnOnActions = new List<Action>();
@@ -32,12 +34,15 @@ namespace HA4IoT.Automations
         private bool _turnOffIfButtonPressedWhileAlreadyOn;
         private bool _isOn;
         
-        public TurnOnAndOffAutomation(AutomationId id, IHomeAutomationTimer timer)
+        public TurnOnAndOffAutomation(AutomationId id, IDateTimeService dateTimeService, IHomeAutomationTimer timer)
             : base(id)
         {
+            if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
             if (timer == null) throw new ArgumentNullException(nameof(timer));
 
+            _dateTimeService = dateTimeService;
             _timer = timer;
+
             _wrappedSettings = new TurnOnAndOffAutomationSettingsWrapper(Settings);
         }
 
@@ -104,7 +109,7 @@ namespace HA4IoT.Automations
             if (@from == null) throw new ArgumentNullException(nameof(@from));
             if (until == null) throw new ArgumentNullException(nameof(until));
 
-            _enablingConditionsValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_timer).WithStart(from).WithEnd(until));
+            _enablingConditionsValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_dateTimeService).WithStart(from).WithEnd(until));
             return this;
         }
 
@@ -129,7 +134,7 @@ namespace HA4IoT.Automations
             Func<TimeSpan> start = () => daylightService.GetSunrise().Add(TimeSpan.FromHours(1));
             Func<TimeSpan> end = () => daylightService.GetSunset().Subtract(TimeSpan.FromHours(1));
 
-            _enablingConditionsValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_timer).WithStart(start).WithEnd(end));
+            _enablingConditionsValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_dateTimeService).WithStart(start).WithEnd(end));
             return this;
         }
 
@@ -140,7 +145,7 @@ namespace HA4IoT.Automations
             Func<TimeSpan> start = () => daylightService.GetSunset().Subtract(TimeSpan.FromHours(1));
             Func<TimeSpan> end = () => daylightService.GetSunrise().Add(TimeSpan.FromHours(1));
 
-            _enablingConditionsValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_timer).WithStart(start).WithEnd(end));
+            _enablingConditionsValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_dateTimeService).WithStart(start).WithEnd(end));
             return this;
         }
 
