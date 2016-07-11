@@ -97,6 +97,7 @@
     <Content Include="Content\Images\Terminal.jpg" />
     <Content Include="Content\Images\tweed.png" />
     <Content Include="Content\Images\TwitButton.png" />
+    <Content Include="Content\lightbox.css" />
     <Content Include="Content\MySite.css">
       <DependentUpon>MySite.scss</DependentUpon>
     </Content>
@@ -195,6 +196,10 @@
     <Content Include="Content\_bootstrap-sprockets.scss" />
     <Content Include="Content\_bootstrap.scss" />
     <Content Include="Content\MySite.scss" />
+    <Content Include="img\close.png" />
+    <Content Include="img\loading.gif" />
+    <Content Include="img\next.png" />
+    <Content Include="img\prev.png" />
     <Content Include="Mvc.sitemap" />
     <Content Include="fonts\FontAwesome.otf" />
     <Content Include="fonts\fontawesome-webfont.woff2" />
@@ -205,9 +210,15 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Properties\PublishProfiles\HA4IoTHomepage - Web Deploy.pubxml" />
+    <Content Include="sass\_variables.sass" />
+    <Content Include="sass\screen.sass" />
+    <Content Include="sass\lightbox.sass" />
     <None Include="Scripts\jquery-2.2.4.intellisense.js" />
     <Content Include="Scripts\jquery-2.2.4.js" />
     <Content Include="Scripts\jquery-2.2.4.min.js" />
+    <Content Include="Scripts\lightbox-2.6.js" />
+    <Content Include="Scripts\lightbox-2.6.min.js" />
+    <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
