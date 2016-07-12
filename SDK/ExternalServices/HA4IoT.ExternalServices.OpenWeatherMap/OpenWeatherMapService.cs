@@ -111,9 +111,9 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             try
             {
                 using (var httpClient = new HttpClient())
-                using (HttpResponseMessage result = httpClient.GetAsync(uri).GetResults())
+                using (HttpResponseMessage result = httpClient.GetAsync(uri).AsTask().Result)
                 {
-                    return result.Content.ReadAsStringAsync().GetResults();
+                    return result.Content.ReadAsStringAsync().AsTask().Result;
                 }
             }
             finally
