@@ -3,6 +3,7 @@ using FluentAssertions;
 using HA4IoT.Automations;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Core;
+using HA4IoT.Core.Scheduling;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 

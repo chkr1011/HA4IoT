@@ -2,7 +2,6 @@
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.Sockets;
 using HA4IoT.Automations;
-using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services;
@@ -59,10 +58,9 @@ namespace HA4IoT.Controller.Main.Rooms
 
             storeroom.WithSocket(Storeroom.CirculatingPump, hsrel5UpperHeatingValves.GetOutput(3));
 
-            // TODO: Create RoomIdFactory like ActuatorIdFactory.
             storeroom.SetupTurnOnAndOffAutomation()
-                .WithTrigger(Controller.GetArea(new AreaId(Room.Kitchen.ToString())).GetMotionDetector(KitchenConfiguration.Kitchen.MotionDetector))
-                .WithTrigger(Controller.GetArea(new AreaId(Room.LowerBathroom.ToString())).GetMotionDetector(LowerBathroomConfiguration.LowerBathroom.MotionDetector))
+                .WithTrigger(Controller.GetArea(AreaIdFactory.Create(Room.Kitchen)).GetMotionDetector(KitchenConfiguration.Kitchen.MotionDetector))
+                .WithTrigger(Controller.GetArea(AreaIdFactory.Create(Room.LowerBathroom)).GetMotionDetector(LowerBathroomConfiguration.LowerBathroom.MotionDetector))
                 .WithTarget(storeroom.Socket(Storeroom.CirculatingPump))
                 .WithPauseAfterEveryTurnOn(TimeSpan.FromHours(1))
                 .WithOnDuration(TimeSpan.FromMinutes(1))

@@ -111,7 +111,7 @@ namespace HA4IoT.Sensors.MotionDetectors
             if (!this.IsEnabled())
             {
                 Log.Info(Id + ": Disabled for 1 hour");
-                _autoEnableAction = _schedulerService.In(TimeSpan.FromHours(1)).Do(this.Enable);
+                _autoEnableAction = _schedulerService.In(TimeSpan.FromHours(1)).Execute(this.Enable);
             }
             else
             {

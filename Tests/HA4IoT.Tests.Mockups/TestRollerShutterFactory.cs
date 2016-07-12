@@ -2,6 +2,7 @@
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Core;
+using HA4IoT.Core.Scheduling;
 
 namespace HA4IoT.Tests.Mockups
 {

@@ -18,7 +18,7 @@ namespace HA4IoT.Contracts.Core
             _timer.Tick += CheckForTimeout;
         }
 
-        public TimedAction Do(Action action)
+        public TimedAction Execute(Action action)
         {
             _action = action;
             return this;

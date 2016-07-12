@@ -5,6 +5,7 @@ using HA4IoT.Actuators.BinaryStateActuators;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Actuators.StateMachines;
+using HA4IoT.Actuators.Triggers;
 using HA4IoT.Automations;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
@@ -105,12 +106,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithActuator(room.GetLamp(Floor.StairwayLampCeiling))
                 .WithActuator(room.GetLamp(Floor.StairwayLampWall));
 
-            room.SetupTurnOnAndOffAutomation()
-                .WithTrigger(room.GetMotionDetector(Floor.StairwayMotionDetector))
-                .WithTrigger(room.GetButton(Floor.ButtonStairway).GetPressedShortlyTrigger())
-                .WithTarget(room.GetActuator(Floor.CombinedStairwayLamp))
-                .WithEnabledAtNight(Controller.ServiceLocator.GetService<IDaylightService>())
-                .WithOnDuration(TimeSpan.FromSeconds(30));
+            SetupStairwayLamps(room);
 
             room.CombineActuators(Floor.CombinedLamps)
                 .WithActuator(room.GetLamp(Floor.Lamp1))
@@ -133,6 +129,16 @@ namespace HA4IoT.Controller.Main.Rooms
             room.SetupRollerShutterAutomation().WithRollerShutters(room.GetRollerShutter(Floor.StairwayRollerShutter));
 
             Controller.ServiceLocator.GetService<SynonymService>().AddSynonymsForArea(Room.Floor, "Flur", "Floor");
+        }
+
+        private void SetupStairwayLamps(IArea room)
+        {
+            room.SetupTurnOnAndOffAutomation()
+                .WithTrigger(room.GetMotionDetector(Floor.StairwayMotionDetector))
+                .WithTrigger(room.GetButton(Floor.ButtonStairway).GetPressedShortlyTrigger())
+                .WithTarget(room.GetActuator(Floor.CombinedStairwayLamp))
+                .WithEnabledAtNight(Controller.ServiceLocator.GetService<IDaylightService>())
+                .WithOnDuration(TimeSpan.FromSeconds(30));
         }
 
         private void SetupStairsCeilingLamps(IArea floor, HSPE8OutputOnly hspe8UpperFloor)

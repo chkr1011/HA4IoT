@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
@@ -63,7 +64,7 @@ namespace HA4IoT.Automations
 
         public void Activate()
         {
-            _schedulerService.Every(TimeSpan.FromSeconds(10)).Do(PerformPendingActions);
+            _schedulerService.RegisterSchedule("RollerShutterAutomation-" + Guid.NewGuid(), TimeSpan.FromSeconds(10), PerformPendingActions);
         }
 
         public void PerformPendingActions()

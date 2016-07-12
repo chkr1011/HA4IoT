@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts.Conditions;
 using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Conditions.Specialized

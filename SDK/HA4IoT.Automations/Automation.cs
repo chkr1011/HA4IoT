@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using HA4IoT.Conditions;
 using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Automations;
+using HA4IoT.Contracts.Conditions;
 using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Automations

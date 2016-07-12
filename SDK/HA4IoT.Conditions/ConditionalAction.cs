@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using HA4IoT.Contracts.Actions;
+using HA4IoT.Contracts.Conditions;
 
 namespace HA4IoT.Conditions
 {

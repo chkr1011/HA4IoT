@@ -144,7 +144,7 @@ namespace HA4IoT.Actuators.RollerShutters
             _movingDuration.Restart();
 
             _autoOffTimer?.Cancel();
-            _autoOffTimer = _schedulerService.In(_settings.AutoOffTimeout).Do(() => SetState(RollerShutterStateId.Off));
+            _autoOffTimer = _schedulerService.In(_settings.AutoOffTimeout).Execute(() => SetState(RollerShutterStateId.Off));
         }
 
         private void UpdatePosition(TimerTickEventArgs timerTickEventArgs)

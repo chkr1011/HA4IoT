@@ -107,6 +107,9 @@ namespace HA4IoT.ExternalServices.TelegramBot
                 {
                     await WaitForNextUpdates();
                 }
+                catch (TaskCanceledException)
+                {                    
+                }
                 catch (Exception exception)
                 {
                     Log.Warning(exception, "Error while waiting for next Telegram updates.");

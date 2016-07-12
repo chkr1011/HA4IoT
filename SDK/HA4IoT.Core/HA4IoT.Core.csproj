@@ -128,7 +128,8 @@
     <Compile Include="HealthService.cs" />
     <Compile Include="Area.cs" />
     <Compile Include="AreaCollection.cs" />
-    <Compile Include="SchedulerService.cs" />
+    <Compile Include="Scheduling\Schedule.cs" />
+    <Compile Include="Scheduling\SchedulerService.cs" />
     <Compile Include="Settings\SettingsContainerApiDispatcher.cs" />
     <Compile Include="Settings\SettingsContainer.cs" />
     <Compile Include="SystemInformationService.cs" />

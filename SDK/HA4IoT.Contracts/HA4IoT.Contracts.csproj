@@ -123,6 +123,8 @@
     <Compile Include="Components\IComponent.cs" />
     <Compile Include="Components\StateNotSupportedException.cs" />
     <Compile Include="Components\UnknownComponentState.cs" />
+    <Compile Include="Conditions\ConditionState.cs" />
+    <Compile Include="Conditions\ICondition.cs" />
     <Compile Include="Core\ServiceAlreadyRegisteredException.cs" />
     <Compile Include="Core\ServiceLocator.cs" />
     <Compile Include="Core\ServiceNotRegisteredException.cs" />

@@ -9,7 +9,7 @@ namespace HA4IoT.Actuators.Triggers
         {
             if (scheduleService == null) throw new ArgumentNullException(nameof(scheduleService));
 
-            scheduleService.Every(interval).Do(Execute);
+            scheduleService.RegisterSchedule("IntervalTrigger-" + Guid.NewGuid(), interval, Execute);
         }
     }
 }

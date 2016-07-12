@@ -31,11 +31,13 @@ namespace HA4IoT.Api.AzureCloud
 
         public void Enable()
         {
-            Task.Factory.StartNew(
+            var task = Task.Factory.StartNew(
                 async () => await ProcessPendingEventsAsync(),
                 CancellationToken.None,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);
+
+            task.ConfigureAwait(false);
         }
 
         public void EnqueueEvent(JsonObject eventData)

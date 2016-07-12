@@ -19,6 +19,7 @@ using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Core.Discovery;
+using HA4IoT.Core.Scheduling;
 using HA4IoT.Core.Settings;
 using HA4IoT.Core.Timer;
 using HA4IoT.Hardware.Pi2;
@@ -61,11 +62,14 @@ namespace HA4IoT.Core
 
         public Task RunAsync()
         {
-            return Task.Factory.StartNew(
+            var task = Task.Factory.StartNew(
                 InitializeCore,
                 CancellationToken.None,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);
+
+            task.ConfigureAwait(false);
+            return task;
         }
         
         public void AddArea(IArea area)

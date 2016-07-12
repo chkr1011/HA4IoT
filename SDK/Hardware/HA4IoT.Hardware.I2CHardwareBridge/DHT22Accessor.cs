@@ -18,7 +18,7 @@ namespace HA4IoT.Hardware.I2CHardwareBridge
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
             
             _i2CHardwareBridge = i2CHardwareBridge;
-            schedulerService.Every(TimeSpan.FromSeconds(10)).Do(FetchValues);
+            schedulerService.RegisterSchedule("DHT22Updater", TimeSpan.FromSeconds(10), FetchValues);
         }
 
         public event EventHandler ValuesUpdated;

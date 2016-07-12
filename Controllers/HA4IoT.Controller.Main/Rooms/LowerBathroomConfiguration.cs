@@ -91,7 +91,7 @@ namespace HA4IoT.Controller.Main.Rooms
             bathroom.GetLamp(LowerBathroom.LampMirror).TryTurnOff();
 
             _bathmodeResetTimer?.Cancel();
-            _bathmodeResetTimer = bathroom.Controller.ServiceLocator.GetService<ISchedulerService>().In(TimeSpan.FromHours(1)).Do(() => bathroom.GetMotionDetector().Enable());
+            _bathmodeResetTimer = bathroom.Controller.ServiceLocator.GetService<ISchedulerService>().In(TimeSpan.FromHours(1)).Execute(() => bathroom.GetMotionDetector().Enable());
         }
     }
 }

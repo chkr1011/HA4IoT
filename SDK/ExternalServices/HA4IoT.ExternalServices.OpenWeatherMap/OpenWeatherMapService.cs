@@ -1,8 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Web.Http;
 using HA4IoT.Contracts.Api;
@@ -29,7 +27,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
         
         private string _previousResponse;
         
-        public OpenWeatherMapService(IApiController apiController, IDateTimeService dateTimeService, ISystemInformationService systemInformationService)
+        public OpenWeatherMapService(IApiController apiController, IDateTimeService dateTimeService, ISchedulerService schedulerService, ISystemInformationService systemInformationService)
         {
             if (apiController == null) throw new ArgumentNullException(nameof(apiController));
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
@@ -40,13 +38,9 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             
             LoadPersistedValues();
 
-            Task.Factory.StartNew(
-                async () => await FetchWeahterData(),
-                CancellationToken.None,
-                TaskCreationOptions.LongRunning, 
-                TaskScheduler.Default);
-
             new OpenWeatherMapWeatherStationApiDispatcher(this, apiController).ExposeToApi();
+
+            schedulerService.RegisterSchedule("OpenWeatherMapServiceUpdater", TimeSpan.FromMinutes(5), Refresh);
         }
 
         public override JsonObject ExportStatusToJsonObject()
@@ -79,44 +73,35 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             serviceLocator.RegisterService(typeof(IDaylightService), _daylightService);
         }
 
+        public override void HandleApiCommand(IApiContext apiContext)
+        {
+            Refresh();
+        }
+
         private void PersistWeatherData(string weatherData)
         {
             File.WriteAllText(_cacheFilename, weatherData);
         }
 
-        private async Task FetchWeahterData()
+        private void Refresh()
         {
-            while (true)
+            Log.Verbose("Fetching OWM weather data");
+            string response = FetchWeatherData();
+
+            if (!string.Equals(response, _previousResponse))
             {
-                try
-                {
-                    Log.Verbose("Fetching OWM weather data");
-                    string response = await FetchWeatherData();
+                PersistWeatherData(response);
+                ParseWeatherData(response);
 
-                    if (!string.Equals(response, _previousResponse))
-                    {
-                        PersistWeatherData(response);
-                        ParseWeatherData(response);
+                _previousResponse = response;
 
-                        _previousResponse = response;
-
-                        _systemInformationService.Set("OpenWeatherMapService/LastUpdatedTimestamp", _dateTimeService.GetDateTime());
-                    }
-
-                    _systemInformationService.Set("OpenWeatherMapService/LastFetchedTimestamp", _dateTimeService.GetDateTime());
-                }
-                catch (Exception exception)
-                {
-                    Log.Warning(exception, "Could not fetch OWM weather data");
-                }
-                finally
-                {
-                    await Task.Delay(TimeSpan.FromMinutes(5));
-                }
+                _systemInformationService.Set("OpenWeatherMapService/LastUpdatedTimestamp", _dateTimeService.GetDateTime());
             }
+
+            _systemInformationService.Set("OpenWeatherMapService/LastFetchedTimestamp", _dateTimeService.GetDateTime());
         }
 
-        private async Task<string> FetchWeatherData()
+        private string FetchWeatherData()
         {
             Uri uri = new OpenWeatherMapConfigurationParser().GetUri();
 
@@ -126,9 +111,9 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             try
             {
                 using (var httpClient = new HttpClient())
-                using (HttpResponseMessage result = await httpClient.GetAsync(uri))
+                using (HttpResponseMessage result = httpClient.GetAsync(uri).GetResults())
                 {
-                    return await result.Content.ReadAsStringAsync();
+                    return result.Content.ReadAsStringAsync().GetResults();
                 }
             }
             finally

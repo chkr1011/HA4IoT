@@ -82,6 +82,7 @@ namespace HA4IoT.Configuration
             return new OpenWeatherMapService( 
                 Controller.ApiController,
                 Controller.ServiceLocator.GetService<IDateTimeService>(),
+                Controller.ServiceLocator.GetService<ISchedulerService>(),
                 Controller.ServiceLocator.GetService<ISystemInformationService>());
         }
 

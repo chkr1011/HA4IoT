@@ -44,6 +44,7 @@ namespace HA4IoT.Controller.Main
                 new OpenWeatherMapService(
                     ApiController,
                     ServiceLocator.GetService<IDateTimeService>(),
+                    ServiceLocator.GetService<ISchedulerService>(),
                     ServiceLocator.GetService<ISystemInformationService>()));
 
             SetupTelegramBot();

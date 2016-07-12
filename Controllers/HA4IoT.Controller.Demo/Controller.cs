@@ -64,6 +64,7 @@ namespace HA4IoT.Controller.Demo
             ServiceLocator.RegisterService(typeof (OpenWeatherMapService),
                 new OpenWeatherMapService(ApiController, 
                     ServiceLocator.GetService<IDateTimeService>(),
+                    ServiceLocator.GetService<ISchedulerService>(),
                     ServiceLocator.GetService<ISystemInformationService>()));
 
             SetupRoom();

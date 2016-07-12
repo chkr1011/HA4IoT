@@ -9,6 +9,7 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Core;
 using HA4IoT.ExternalServices.OpenWeatherMap;
@@ -61,6 +62,7 @@ namespace HA4IoT.Controller.Cellar
             ServiceLocator.RegisterService(typeof (OpenWeatherMapWeatherService),
                 new OpenWeatherMapService(ApiController,
                     ServiceLocator.GetService<IDateTimeService>(),
+                    ServiceLocator.GetService<ISchedulerService>(),
                     ServiceLocator.GetService<ISystemInformationService>()));
 
             var ccToolsFactory = new CCToolsBoardController(this, GetDevice<II2CBus>());

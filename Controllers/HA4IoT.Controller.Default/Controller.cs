@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using HA4IoT.Configuration;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Core;
 using HA4IoT.ExternalServices.OpenWeatherMap;
@@ -34,6 +35,7 @@ namespace HA4IoT.Controller.Default
                 typeof(OpenWeatherMapWeatherService),
                 new OpenWeatherMapService(ApiController, 
                     ServiceLocator.GetService<IDateTimeService>(),
+                    ServiceLocator.GetService<ISchedulerService>(),
                     ServiceLocator.GetService<ISystemInformationService>()));
 
             var configurationParser = new ConfigurationParser(this);

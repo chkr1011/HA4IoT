@@ -55,10 +55,10 @@ namespace HA4IoT.Automations
 
         private void StartTimeout(object sender, EventArgs e)
         {
-            _timeout = _schedulerService.In(_slowDuration).Do(() =>
+            _timeout = _schedulerService.In(_slowDuration).Execute(() =>
             {
                 _actuator.SetState(new NamedComponentState("2"));
-                _timeout = _schedulerService.In(_fastDuration).Do(() => _actuator.TryTurnOff());
+                _timeout = _schedulerService.In(_fastDuration).Execute(() => _actuator.TryTurnOff());
             });
         }
 

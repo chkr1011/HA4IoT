@@ -1,4 +1,4 @@
-﻿namespace HA4IoT.Conditions
+﻿namespace HA4IoT.Contracts.Conditions
 {
     public enum ConditionState
     {

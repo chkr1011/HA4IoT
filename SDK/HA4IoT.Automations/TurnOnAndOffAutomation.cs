@@ -6,6 +6,7 @@ using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
+using HA4IoT.Contracts.Conditions;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Contracts.Sensors;
@@ -17,6 +18,7 @@ namespace HA4IoT.Automations
 {
     public class TurnOnAndOffAutomation : AutomationBase
     {
+        private readonly object _syncRoot = new object();
         private readonly ConditionsValidator _enablingConditionsValidator = new ConditionsValidator().WithDefaultState(ConditionState.NotFulfilled);
         private readonly ConditionsValidator _disablingConditionsValidator = new ConditionsValidator().WithDefaultState(ConditionState.NotFulfilled);
 
@@ -50,11 +52,11 @@ namespace HA4IoT.Automations
         {
             if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
 
-            motionDetector.GetMotionDetectedTrigger().Attach(Trigger);
+            motionDetector.GetMotionDetectedTrigger().Attach(ExecuteAutoTrigger);
             motionDetector.GetDetectionCompletedTrigger().Attach(StartTimeout);
 
             motionDetector.Settings.ValueChanged += CancelTimeoutIfMotionDetectorDeactivated;
-            
+
             return this;
         }
 
@@ -62,7 +64,7 @@ namespace HA4IoT.Automations
         {
             if (trigger == null) throw new ArgumentNullException(nameof(trigger));
 
-            trigger.Triggered += HandleButtonPressed;
+            trigger.Attach(ExecuteManualTrigger);
             return this;
         }
 
@@ -171,19 +173,6 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        private void HandleButtonPressed(object sender, EventArgs e)
-        {
-            if (_turnOffIfButtonPressedWhileAlreadyOn && _isOn)
-            {
-                TurnOff();
-                return;
-            }
-
-            // The state should be turned on because manual actions are not conditional.
-            TurnOn();
-            StartTimeout();
-        }
-
         private void CancelTimeoutIfMotionDetectorDeactivated(object sender, SettingValueChangedEventArgs eventArgs)
         {
             if (eventArgs.SettingName != AutomationSettingsWrapper.IsEnabledName)
@@ -195,28 +184,69 @@ namespace HA4IoT.Automations
 
             if (isDeactivated)
             {
-                _turnOffTimeout?.Cancel();
+                lock (_syncRoot)
+                {
+                    _turnOffTimeout?.Cancel();
+                }
             }
         }
 
-        private void Trigger()
+        private void ExecuteManualTrigger()
         {
-            if (!this.IsEnabled())
+            lock (_syncRoot)
             {
-                return;
-            }
+                if (_isOn)
+                {
+                    if (_turnOffIfButtonPressedWhileAlreadyOn)
+                    {
+                        TurnOff();
+                        return;
+                    }
 
-            if (!GetConditionsAreFulfilled())
+                    StartTimeout();
+                }
+                else
+                {
+                    TurnOn();
+                    StartTimeout();
+                }
+            }
+        }
+
+        private void ExecuteAutoTrigger()
+        {
+            lock (_syncRoot)
             {
-                return;
-            }
+                if (!this.IsEnabled())
+                {
+                    return;
+                }
 
-            if (IsPausing())
+                if (!GetConditionsAreFulfilled())
+                {
+                    return;
+                }
+
+                if (IsPausing())
+                {
+                    return;
+                }
+
+                TurnOn();
+            }
+        }
+
+        private void StartTimeout()
+        {
+            lock (_syncRoot)
             {
-                return;
-            }
+                if (!GetConditionsAreFulfilled())
+                {
+                    return;
+                }
 
-            TurnOn();
+                _turnOffTimeout = _schedulerService.In(_wrappedSettings.Duration).Execute(TurnOff);
+            }
         }
 
         private bool IsPausing()
@@ -258,16 +288,6 @@ namespace HA4IoT.Automations
 
             _isOn = false;
             _lastTurnedOn.Stop();
-        }
-
-        private void StartTimeout()
-        {
-            if (!GetConditionsAreFulfilled())
-            {
-                return;
-            }
-
-            _turnOffTimeout = _schedulerService.In(_wrappedSettings.Duration).Do(TurnOff);
         }
 
         private bool GetConditionsAreFulfilled()
