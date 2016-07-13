@@ -13,6 +13,8 @@ using HA4IoT.Hardware.Pi2;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
 using HA4IoT.Contracts.PersonalAgent;
+using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.PersonalAgent;
 
 namespace HA4IoT.Controller.Main
@@ -21,26 +23,34 @@ namespace HA4IoT.Controller.Main
     {
         private const int LedGpio = 22;
 
+        public Controller() 
+            : base(LedGpio)
+        {
+        }
+
         protected override async Task ConfigureAsync()
         {
-            InitializeHealthMonitor(LedGpio);
-
             AddDevice(new BuiltInI2CBus());
             
             var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>());
 
             AddDevice(new Pi2PortController());
             AddDevice(ccToolsBoardController);
-            AddDevice(new I2CHardwareBridge(new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer));
+            AddDevice(new I2CHardwareBridge(new I2CSlaveAddress(50), GetDevice<II2CBus>(), ServiceLocator.GetService<ISchedulerService>()));
             AddDevice(SetupRemoteSwitchController());
-            
-            RegisterService(new SynonymService());
-            RegisterService(new OpenWeatherMapWeatherService(Timer, ApiController));
+
+            ServiceLocator.RegisterService(typeof(SynonymService), new SynonymService());
+            ServiceLocator.RegisterService(typeof(OpenWeatherMapService), 
+                new OpenWeatherMapService(
+                    ApiController,
+                    ServiceLocator.GetService<IDateTimeService>(),
+                    ServiceLocator.GetService<ISchedulerService>(),
+                    ServiceLocator.GetService<ISystemInformationService>()));
 
             SetupTelegramBot();
             SetupTwitterClient();
 
-            GetService<SynonymService>().TryLoadPersistedSynonyms();
+            ServiceLocator.GetService<SynonymService>().TryLoadPersistedSynonyms();
 
             ccToolsBoardController.CreateHSPE16InputOnly(InstalledDevice.Input0, new I2CSlaveAddress(42));
             ccToolsBoardController.CreateHSPE16InputOnly(InstalledDevice.Input1, new I2CSlaveAddress(43));
@@ -60,7 +70,7 @@ namespace HA4IoT.Controller.Main
             new StoreroomConfiguration(this).Setup();
             new LivingRoomConfiguration(this).Setup();
 
-            GetService<SynonymService>().RegisterDefaultComponentStateSynonyms(this);
+            ServiceLocator.GetService<SynonymService>().RegisterDefaultComponentStateSynonyms(this);
 
             InitializeAzureCloudApiEndpoint();
 
@@ -73,15 +83,15 @@ namespace HA4IoT.Controller.Main
 
         private void SetupTelegramBot()
         {
-            TelegramBot telegramBot;
-            if (!TelegramBotFactory.TryCreateFromDefaultConfigurationFile(out telegramBot))
+            TelegramBotService telegramBotService;
+            if (!TelegramBotServiceFactory.TryCreateFromDefaultConfigurationFile(out telegramBotService))
             {
                 return;
             }
 
             Log.WarningLogged += (s, e) =>
             {
-                telegramBot.EnqueueMessageForAdministrators($"{Emoji.WarningSign} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
+                telegramBotService.EnqueueMessageForAdministrators($"{Emoji.WarningSign} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
             };
 
             Log.ErrorLogged += (s, e) =>
@@ -92,24 +102,24 @@ namespace HA4IoT.Controller.Main
                     return;
                 }
 
-                telegramBot.EnqueueMessageForAdministrators($"{Emoji.HeavyExclamationMark} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
+                telegramBotService.EnqueueMessageForAdministrators($"{Emoji.HeavyExclamationMark} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
             };
 
-            telegramBot.EnqueueMessageForAdministrators($"{Emoji.Bell} Das System ist gestartet.");
-            new PersonalAgentToTelegramBotDispatcher(this).ExposeToTelegramBot(telegramBot);
+            telegramBotService.EnqueueMessageForAdministrators($"{Emoji.Bell} Das System ist gestartet.");
+            new PersonalAgentToTelegramBotDispatcher(this).ExposeToTelegramBot(telegramBotService);
 
-            RegisterService(telegramBot);
+            ServiceLocator.RegisterService(typeof(TelegramBotService), telegramBotService);
         }
 
         private void SetupTwitterClient()
         {
-            TwitterClient twitterClient;
-            if (!TwitterClientFactory.TryCreateFromDefaultConfigurationFile(out twitterClient))
+            TwitterService twitterService;
+            if (!TwitterServiceFactory.TryCreateFromDefaultConfigurationFile(out twitterService))
             {
                 return;
             }
 
-            RegisterService(twitterClient);
+            ServiceLocator.RegisterService(typeof(TwitterService), twitterService);
         }
 
         private RemoteSocketController SetupRemoteSwitchController()
@@ -120,7 +130,7 @@ namespace HA4IoT.Controller.Main
             var brennenstuhl = new BrennenstuhlCodeSequenceProvider();
             var ldp433MHzSender = new LPD433MHzSignalSender(i2cHardwareBridge, LDP433MhzSenderPin, ApiController);
 
-            var remoteSwitchController = new RemoteSocketController(ldp433MHzSender, Timer)
+            var remoteSwitchController = new RemoteSocketController(ldp433MHzSender, ServiceLocator.GetService<ISchedulerService>())
                 .WithRemoteSocket(0, brennenstuhl.GetSequencePair(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A));
 
             return remoteSwitchController;

@@ -4,6 +4,7 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Actuators.RollerShutters
 {
@@ -33,7 +34,8 @@ namespace HA4IoT.Actuators.RollerShutters
             var rollerShutter = new RollerShutter(
                 ComponentIdFactory.Create(area.Id, id), 
                 new PortBasedRollerShutterEndpoint(powerOutput, directionOutput),
-                area.Controller.Timer);
+                area.Controller.Timer,
+                area.Controller.ServiceLocator.GetService<ISchedulerService>());
 
             area.AddComponent(rollerShutter);
             return area;

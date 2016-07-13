@@ -1,5 +1,6 @@
 ﻿using Windows.Data.Json;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Core;
 
 namespace HA4IoT.Contracts.Services
 {
@@ -17,6 +18,10 @@ namespace HA4IoT.Contracts.Services
         public virtual void HandleApiRequest(IApiContext apiContext)
         {
             apiContext.Response = ExportStatusToJsonObject();
+        }
+
+        public virtual void CompleteRegistration(IServiceLocator serviceLocator)
+        {
         }
     }
 }

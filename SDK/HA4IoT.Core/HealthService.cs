@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Windows.Data.Json;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Core.Timer;
-using HA4IoT.Networking;
 
 namespace HA4IoT.Core
 {
-    public class HealthMonitor
+    public class HealthService : ServiceBase
     {
+        private readonly ISystemInformationService _systemInformationService;
+
         private readonly List<int> _durations = new List<int>(100);
         private readonly Timeout _ledTimeout = new Timeout();
-        private readonly DateTime _startedDate;
         private readonly IBinaryOutput _statusLed;
-        private readonly IHomeAutomationTimer _timer;
         private float? _averageTimerDuration;
 
         private bool _ledState;
@@ -24,35 +24,26 @@ namespace HA4IoT.Core
 
         private float? _minTimerDuration;
 
-        public HealthMonitor(IBinaryOutput statusLed, IHomeAutomationTimer timer, IApiController apiController)
+        public HealthService(IBinaryOutput statusLed, IHomeAutomationTimer timer, ISystemInformationService systemInformationService)
         {
             if (timer == null) throw new ArgumentNullException(nameof(timer));
-            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
+            if (systemInformationService == null) throw new ArgumentNullException(nameof(systemInformationService));
 
             _statusLed = statusLed;
-            _timer = timer;
-            _startedDate = _timer.CurrentDateTime;
+            _systemInformationService = systemInformationService;
 
             if (statusLed != null)
             {
                 _ledTimeout.Start(TimeSpan.FromMilliseconds(1));
             }
-
+            
             timer.Tick += Tick;
-            apiController.RouteRequest("health", HandleApiGet);
-            apiController.RouteCommand("health/reset", c => ResetStatistics());
         }
 
-        private void HandleApiGet(IApiContext apiContext)
-        {
-            var status = new JsonObject();
-            status.SetNamedNumber("timerMin", _minTimerDuration);
-            status.SetNamedValue("timerMax", _maxTimerDuration.ToJsonValue());
-            status.SetNamedValue("timerAverage", _averageTimerDuration.ToJsonValue());
-            status.SetNamedValue("upTime", (_timer.CurrentDateTime - _startedDate).ToJsonValue());
-            status.SetNamedValue("systemTime", _timer.CurrentDateTime.ToJsonValue());
 
-            apiContext.Response = status;
+        public override void HandleApiCommand(IApiContext apiContext)
+        {
+            ResetStatistics();
         }
 
         private void ResetStatistics()
@@ -79,14 +70,18 @@ namespace HA4IoT.Core
                 _averageTimerDuration = _durations.Sum() / (float)_durations.Count;
                 _durations.Clear();
 
+                _systemInformationService.Set("Health/SystemTime", DateTime.Now);
+
                 if (!_maxTimerDuration.HasValue || _averageTimerDuration > _maxTimerDuration.Value)
                 {
                     _maxTimerDuration = _averageTimerDuration;
+                    _systemInformationService.Set("Health/TimerDurationAverageMax", _averageTimerDuration);
                 }
 
                 if (!_minTimerDuration.HasValue || _averageTimerDuration < _minTimerDuration.Value)
                 {
                     _minTimerDuration = _averageTimerDuration;
+                    _systemInformationService.Set("Health/TimerDurationAverageMin", _averageTimerDuration);
                 }
             }
         }

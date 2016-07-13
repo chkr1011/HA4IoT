@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts.Conditions;
 
 namespace HA4IoT.Conditions
 {

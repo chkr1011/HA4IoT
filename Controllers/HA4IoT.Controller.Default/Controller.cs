@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 using HA4IoT.Configuration;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Core;
 using HA4IoT.ExternalServices.OpenWeatherMap;
 using HA4IoT.Hardware;
@@ -14,10 +16,13 @@ namespace HA4IoT.Controller.Default
     {
         private const int LedGpio = 22;
 
+        public Controller()
+            : base(LedGpio)
+        {
+        }
+
         protected override async Task ConfigureAsync()
         {
-            InitializeHealthMonitor(LedGpio);
-
             AddDevice(new BuiltInI2CBus());
 
             var pi2PortController = new Pi2PortController();
@@ -25,8 +30,13 @@ namespace HA4IoT.Controller.Default
 
             AddDevice(pi2PortController);
             AddDevice(ccToolsBoardController);
-            
-            RegisterService(new OpenWeatherMapWeatherService(Timer, ApiController));
+
+            ServiceLocator.RegisterService(
+                typeof(OpenWeatherMapWeatherService),
+                new OpenWeatherMapService(ApiController, 
+                    ServiceLocator.GetService<IDateTimeService>(),
+                    ServiceLocator.GetService<ISchedulerService>(),
+                    ServiceLocator.GetService<ISystemInformationService>()));
 
             var configurationParser = new ConfigurationParser(this);
             configurationParser.RegisterConfigurationExtender(new DefaultConfigurationExtender(configurationParser, this));

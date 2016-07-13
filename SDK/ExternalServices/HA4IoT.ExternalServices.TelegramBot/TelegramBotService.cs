@@ -14,7 +14,7 @@ using HttpClient = System.Net.Http.HttpClient;
 
 namespace HA4IoT.ExternalServices.TelegramBot
 {
-    public class TelegramBot : ServiceBase
+    public class TelegramBotService : ServiceBase
     {
         private const string BaseUri = "https://api.telegram.org/bot";
 
@@ -106,6 +106,9 @@ namespace HA4IoT.ExternalServices.TelegramBot
                 try
                 {
                     await WaitForNextUpdates();
+                }
+                catch (TaskCanceledException)
+                {                    
                 }
                 catch (Exception exception)
                 {

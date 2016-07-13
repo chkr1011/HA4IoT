@@ -12,10 +12,12 @@ using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.ExternalServices.OpenWeatherMap;
 using HA4IoT.Hardware;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.HumiditySensors;
+using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Sensors.TemperatureSensors;
 using HA4IoT.Sensors.Windows;
 
@@ -45,9 +47,9 @@ namespace HA4IoT.Configuration
         {
             switch (element.Name.LocalName)
             {
-                case "OpenWeatherMapWeatherService": return ParseWeatherStation(element);
+                case "OpenWeatherMapService": return ParseWeatherStation(element);
 
-                default: throw new ConfigurationInvalidException("Device not supported.", element);
+                default: throw new ConfigurationInvalidException("Service not supported.", element);
             }
         }
 
@@ -64,8 +66,9 @@ namespace HA4IoT.Configuration
                 case "TemperatureSensor": return ParseTemperatureSensor(element);
                 case "HumiditySensor": return ParseHumiditySensor(element);
                 case "StateMachine": return ParseStateMachine(element);
+                case "MotionDetector": return ParseMotionDetector(element);
 
-                default: throw new ConfigurationInvalidException("Actuator not supported.", element);
+                default: throw new ConfigurationInvalidException("Component not supported.", element);
             }
         }
 
@@ -76,9 +79,11 @@ namespace HA4IoT.Configuration
 
         private IService ParseWeatherStation(XElement element)
         {
-            return new OpenWeatherMapWeatherService( 
-                Controller.Timer,
-                Controller.ApiController);
+            return new OpenWeatherMapService( 
+                Controller.ApiController,
+                Controller.ServiceLocator.GetService<IDateTimeService>(),
+                Controller.ServiceLocator.GetService<ISchedulerService>(),
+                Controller.ServiceLocator.GetService<ISystemInformationService>());
         }
 
         private IComponent ParseCustomBinaryStateOutputActuator(XElement element)
@@ -90,6 +95,16 @@ namespace HA4IoT.Configuration
                 new PortBasedBinaryStateEndpoint(output));
         }
 
+        private IComponent ParseMotionDetector(XElement element)
+        {
+            IBinaryInput input = Parser.ParseBinaryInput(element.GetMandatorySingleChildElementOrFromContainer("Input"));
+
+            return new MotionDetector(
+                new ComponentId(element.GetMandatoryStringFromAttribute("id")),
+                new PortBasedMotionDetectorEndpoint(input), 
+                Controller.ServiceLocator.GetService<ISchedulerService>());
+        }
+        
         private IComponent ParseButton(XElement element)
         {
             IBinaryInput input = Parser.ParseBinaryInput(element.GetMandatorySingleChildElementOrFromContainer("Input"));
@@ -125,8 +140,9 @@ namespace HA4IoT.Configuration
 
             return new RollerShutter(
                 new ComponentId(element.GetMandatoryStringFromAttribute("id")),
-                new PortBasedRollerShutterEndpoint(powerOutput, directionOutput), 
-                Controller.Timer);
+                new PortBasedRollerShutterEndpoint(powerOutput, directionOutput),
+                Controller.Timer,
+                Controller.ServiceLocator.GetService<ISchedulerService>());
         }
 
         private IComponent ParseWindow(XElement element)

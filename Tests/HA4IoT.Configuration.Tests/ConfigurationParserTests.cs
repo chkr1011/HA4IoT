@@ -7,7 +7,7 @@ using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Services.WeatherService;
+using HA4IoT.Contracts.Services.Weather;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.Sensors.Buttons;
@@ -49,12 +49,7 @@ namespace HA4IoT.Configuration.Tests
         public void Parse_WeatherStation()
         {
             var controller = GetController();
-
-            IWeatherService weatherStation;
-            if (!controller.TryGetService(out weatherStation))
-            {
-                throw new InvalidOperationException();
-            }
+            controller.ServiceLocator.GetService<IWeatherService>();
         }
         
         [TestMethod]

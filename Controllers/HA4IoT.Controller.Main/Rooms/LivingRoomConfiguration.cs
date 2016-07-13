@@ -102,7 +102,7 @@ namespace HA4IoT.Controller.Main.Rooms
             room.Socket(LivingRoom.SocketWallRightEdgeRight).
                 ConnectToggleActionWith(room.GetButton(LivingRoom.ButtonLower));
 
-            Controller.GetService<SynonymService>().AddSynonymsForArea(Room.LivingRoom, "Wohnzimmer", "LivingRoom");
+            Controller.ServiceLocator.GetService<SynonymService>().AddSynonymsForArea(Room.LivingRoom, "Wohnzimmer", "LivingRoom");
         }
     }
 }

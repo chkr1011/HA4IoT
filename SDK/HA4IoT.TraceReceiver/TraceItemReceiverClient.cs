@@ -26,10 +26,13 @@ namespace HA4IoT.TraceReceiver
         {
             _cancellationTokenSource = new CancellationTokenSource();
 
-            Task.Factory.StartNew(
+            var task = Task.Factory.StartNew(
                 Receive,
                 _cancellationTokenSource.Token,
-                TaskCreationOptions.LongRunning, TaskScheduler.Default);
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default);
+
+            task.ConfigureAwait(false);
         }
 
         private async Task Receive()

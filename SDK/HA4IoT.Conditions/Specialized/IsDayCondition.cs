@@ -1,12 +1,13 @@
 ﻿using System;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Conditions.Specialized
 {
     public class IsDayCondition : TimeRangeCondition
     {
-        public IsDayCondition(IDaylightService daylightService, IHomeAutomationTimer timer) : base(timer)
+        public IsDayCondition(IDaylightService daylightService, IDateTimeService dateTimeService) 
+            : base(dateTimeService)
         {
             if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
 

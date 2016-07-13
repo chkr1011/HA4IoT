@@ -2,6 +2,7 @@
 using FluentAssertions;
 using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
+using HA4IoT.Contracts.Conditions;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -20,10 +21,10 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void DayRange_IN_RANGE_ShouldBeFulfilled()
         {
-            var timer = new TestHomeAutomationTimer();
-            timer.SetTime(TimeSpan.Parse("10:00"));
+            var dateTimeService = new TestDateTimeService();
+            dateTimeService.SetTime(TimeSpan.Parse("10:00"));
 
-            var condition = new TimeRangeCondition(timer)
+            var condition = new TimeRangeCondition(dateTimeService)
                 .WithStart(TimeSpan.Parse("08:00"))
                 .WithEnd(TimeSpan.Parse("18:00"));
                 
@@ -33,10 +34,10 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void DayRange_OUT_OF_RANGE_ShouldBeNotFulfilled()
         {
-            var timer = new TestHomeAutomationTimer();
-            timer.SetTime(TimeSpan.Parse("21:00"));
+            var dateTimeService = new TestDateTimeService();
+            dateTimeService.SetTime(TimeSpan.Parse("21:00"));
 
-            var condition = new TimeRangeCondition(timer)
+            var condition = new TimeRangeCondition(dateTimeService)
                 .WithStart(TimeSpan.Parse("08:00"))
                 .WithEnd(TimeSpan.Parse("18:00"));
 
@@ -46,10 +47,10 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void NightRange_IN_RANGE_ShouldBeFulfilled()
         {
-            var timer = new TestHomeAutomationTimer();
-            timer.SetTime(new TimeSpan(21, 00, 00, 00));
+            var dateTimeService = new TestDateTimeService();
+            dateTimeService.SetTime(TimeSpan.Parse("21:00"));
 
-            var condition = new TimeRangeCondition(timer)
+            var condition = new TimeRangeCondition(dateTimeService)
                 .WithStart(TimeSpan.Parse("18:00"))
                 .WithEnd(TimeSpan.Parse("08:00"));
 
@@ -59,10 +60,10 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void NightRange_OUT_OF_RANGE_ShouldBeNotFulfilled()
         {
-            var timer = new TestHomeAutomationTimer();
-            timer.SetTime(TimeSpan.Parse("15:00"));
+            var dateTimeService = new TestDateTimeService();
+            dateTimeService.SetTime(TimeSpan.Parse("15:00"));
 
-            var condition = new TimeRangeCondition(timer)
+            var condition = new TimeRangeCondition(dateTimeService)
                 .WithStart(TimeSpan.Parse("18:00"))
                 .WithEnd(TimeSpan.Parse("08:00"));
 
@@ -72,11 +73,11 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void AdjustedRange_OUT_OF_RANGE_ShouldBeNotFulfilled()
         {
-            var timer = new TestHomeAutomationTimer();
-            timer.SetTime(TimeSpan.Parse("15:00"));
+            var dateTimeService = new TestDateTimeService();
+            dateTimeService.SetTime(TimeSpan.Parse("15:00"));
 
             // 10-18 adjusted to 16-18
-            var condition = new TimeRangeCondition(timer)
+            var condition = new TimeRangeCondition(dateTimeService)
                 .WithStart(TimeSpan.Parse("10:00"))
                 .WithEnd(TimeSpan.Parse("18:00"))
                 .WithStartAdjustment(TimeSpan.FromHours(6));
@@ -87,11 +88,11 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void AdjustedRange_IN_RANGE_ShouldBeFulfilled()
         {
-            var timer = new TestHomeAutomationTimer();
-            timer.SetTime(TimeSpan.Parse("17:00"));
+            var dateTimeService = new TestDateTimeService();
+            dateTimeService.SetTime(TimeSpan.Parse("17:00"));
 
             // 10-18 adjusted to 16-18
-            var condition = new TimeRangeCondition(timer)
+            var condition = new TimeRangeCondition(dateTimeService)
                 .WithStart(TimeSpan.Parse("10:00"))
                 .WithEnd(TimeSpan.Parse("18:00"))
                 .WithStartAdjustment(TimeSpan.FromHours(6));

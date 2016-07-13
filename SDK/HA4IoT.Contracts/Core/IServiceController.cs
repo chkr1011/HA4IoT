@@ -1,16 +1,16 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Contracts.Core
 {
-    public interface IServiceController
+    public interface IServiceLocator
     {
-        void RegisterService<TService>(TService service) where TService : IService;
+        void RegisterService(Type interfaceType, IService service);
 
         TService GetService<TService>() where TService : IService;
 
-        IList<IService> GetServices();
+        IList<ServiceRegistration> GetServices();
 
         bool TryGetService<TService>(out TService service) where TService : IService;
     }

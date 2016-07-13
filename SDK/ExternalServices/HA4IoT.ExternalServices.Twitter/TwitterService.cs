@@ -12,7 +12,7 @@ using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.ExternalServices.Twitter
 {
-    public class TwitterClient : ServiceBase
+    public class TwitterService : ServiceBase
     {
         private string _nonce;
         private string _timestamp;

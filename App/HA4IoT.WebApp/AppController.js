@@ -137,7 +137,7 @@ function AppController($scope, $http) {
 
             updateOnStateCounters(c.rooms);
 
-            c.weatherStation = data.services.OpenWeatherMapWeatherService;
+            c.weatherStation = data.services.OpenWeatherMapService;
 
             $scope.$apply(function () { $scope.msgs = data; });
         }).fail(function (jqXHR, textStatus, errorThrown) {

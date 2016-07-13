@@ -3,6 +3,7 @@ using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Sensors.MotionDetectors
 {
@@ -16,7 +17,7 @@ namespace HA4IoT.Sensors.MotionDetectors
             var motionDetector = new MotionDetector(
                 ComponentIdFactory.Create(area.Id, id), 
                 new PortBasedMotionDetectorEndpoint(input), 
-                area.Controller.Timer);
+                area.Controller.ServiceLocator.GetService<ISchedulerService>());
 
             area.AddComponent(motionDetector);
             return area;

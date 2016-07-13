@@ -7,9 +7,10 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.PersonalAgent;
 using HA4IoT.Contracts.Sensors;
-using HA4IoT.Contracts.Services.WeatherService;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Weather;
 
 namespace HA4IoT.PersonalAgent
 {
@@ -32,7 +33,7 @@ namespace HA4IoT.PersonalAgent
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
-            var synonymService = _controller.GetService<SynonymService>();
+            var synonymService = _controller.ServiceLocator.GetService<SynonymService>();
             var messageContextFactory = new MessageContextFactory(synonymService, _controller);
             _messageContext = messageContextFactory.Create(message);
 
@@ -176,13 +177,15 @@ namespace HA4IoT.PersonalAgent
 
         private string GetWeatherStatus()
         {
-            var weatherService = _controller.GetService<IWeatherService>();
+            var weatherService = _controller.ServiceLocator.GetService<IWeatherService>();
+            var outdoorTemperatureService = _controller.ServiceLocator.GetService<IOutdoorTemperatureService>();
+            var outdoorHumidityService = _controller.ServiceLocator.GetService<IOutdoorHumidityService>();
 
             var response = new StringBuilder();
             response.AppendLine($"{Emoji.BarChart} Das Wetter ist aktuell:");
-            response.AppendLine($"Temperatur: {weatherService.GetTemperature()}°C");
-            response.AppendLine($"Luftfeuchtigkeit: {weatherService.GetHumidity()}%");
-            response.AppendLine($"Situation: {weatherService.GetSituation()}");
+            response.AppendLine($"Temperatur: {outdoorTemperatureService.GetOutdoorTemperature()}°C");
+            response.AppendLine($"Luftfeuchtigkeit: {outdoorHumidityService.GetOutdoorHumidity()}%");
+            response.AppendLine($"Situation: {weatherService.GetWeather()}");
 
             return response.ToString();
         }

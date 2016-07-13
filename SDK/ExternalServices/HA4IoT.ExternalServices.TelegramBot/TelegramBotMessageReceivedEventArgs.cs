@@ -4,16 +4,16 @@ namespace HA4IoT.ExternalServices.TelegramBot
 {
     public class TelegramBotMessageReceivedEventArgs : EventArgs
     {
-        public TelegramBotMessageReceivedEventArgs(TelegramBot telegramBot, TelegramInboundMessage message)
+        public TelegramBotMessageReceivedEventArgs(TelegramBotService telegramBotService, TelegramInboundMessage message)
         {
-            if (telegramBot == null) throw new ArgumentNullException(nameof(telegramBot));
+            if (telegramBotService == null) throw new ArgumentNullException(nameof(telegramBotService));
             if (message == null) throw new ArgumentNullException(nameof(message));
 
-            TelegramBot = telegramBot;
+            TelegramBotService = telegramBotService;
             Message = message;
         }
 
-        public TelegramBot TelegramBot { get; }
+        public TelegramBotService TelegramBotService { get; }
 
         public TelegramInboundMessage Message { get; }
     }

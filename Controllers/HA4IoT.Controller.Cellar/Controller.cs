@@ -10,6 +10,7 @@ using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Core;
 using HA4IoT.ExternalServices.OpenWeatherMap;
 using HA4IoT.Hardware;
@@ -47,15 +48,22 @@ namespace HA4IoT.Controller.Cellar
             StateMachine
         }
 
+        public Controller(int statusLedNumber) 
+            : base(statusLedNumber)
+        {
+        }
+
         protected override async Task ConfigureAsync()
         {
-            InitializeHealthMonitor(22);
-
             var pi2PortController = new Pi2PortController();
 
             AddDevice(new BuiltInI2CBus());
 
-            RegisterService(new OpenWeatherMapWeatherService(Timer, ApiController));
+            ServiceLocator.RegisterService(typeof (OpenWeatherMapWeatherService),
+                new OpenWeatherMapService(ApiController,
+                    ServiceLocator.GetService<IDateTimeService>(),
+                    ServiceLocator.GetService<ISchedulerService>(),
+                    ServiceLocator.GetService<ISystemInformationService>()));
 
             var ccToolsFactory = new CCToolsBoardController(this, GetDevice<II2CBus>());
             var hsrt16 = ccToolsFactory.CreateHSRT16(Device.CellarHSRT16, new I2CSlaveAddress(32));
@@ -76,7 +84,7 @@ namespace HA4IoT.Controller.Cellar
 
             garden.SetupConditionalOnAutomation()
                 .WithActuator(garden.GetLamp(Garden.LampParkingLot))
-                .WithOnAtNightRange(GetService<IDaylightService>())
+                .WithOnAtNightRange()
                 .WithOffBetweenRange(TimeSpan.Parse("22:30:00"), TimeSpan.Parse("05:00:00"));
 
             Timer.Tick += (s, e) => { pi2PortController.PollOpenInputPorts(); };

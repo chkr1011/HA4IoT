@@ -1,20 +1,22 @@
 ﻿using System;
-using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Conditions;
+using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Conditions.Specialized
 {
     public class TimeRangeCondition : Condition
     {
-        private readonly IHomeAutomationTimer _timer;
+        private readonly IDateTimeService _dateTimeService;
 
         private Func<TimeSpan> _startValueProvider;
         private Func<TimeSpan> _endValueProvider;
 
-        public TimeRangeCondition(IHomeAutomationTimer timer)
+        public TimeRangeCondition(IDateTimeService dateTimeService)
         {
-            if (timer == null) throw new ArgumentNullException(nameof(timer));
+            if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
 
-            _timer = timer;
+            _dateTimeService = dateTimeService;
+
             WithExpression(() => Check());
         }
 
@@ -83,7 +85,7 @@ namespace HA4IoT.Conditions.Specialized
             }
 
             var timeRangeChecker = new TimeRangeChecker();
-            if (timeRangeChecker.IsTimeInRange(_timer.CurrentTime, startValue, endValue))
+            if (timeRangeChecker.IsTimeInRange(_dateTimeService.GetTime(), startValue, endValue))
             {
                 return ConditionState.Fulfilled;
             }

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HA4IoT.Contracts.Conditions;
 
 namespace HA4IoT.Conditions
 {
-    public class Condition
+    public class Condition : ICondition
     {
         private readonly ConditionsValidator _relatedConditionsValidator;
 
@@ -28,11 +29,6 @@ namespace HA4IoT.Conditions
             }
 
             return thisState;
-        }
-
-        public bool IsFulfilled()
-        {
-            return Validate() == ConditionState.Fulfilled;
         }
 
         public Condition WithRelatedCondition(ConditionRelation relation, Condition condition)

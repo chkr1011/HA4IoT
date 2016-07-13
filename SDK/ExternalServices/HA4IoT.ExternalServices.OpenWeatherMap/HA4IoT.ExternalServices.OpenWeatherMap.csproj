@@ -108,8 +108,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="OpenWeatherMapConfigurationParser.cs" />
-    <Compile Include="OpenWeatherMapResponseParser.cs" />
+    <Compile Include="OpenWeatherMapOutdoorHumidityService.cs" />
+    <Compile Include="OpenWeatherMapDaylightService.cs" />
     <Compile Include="OpenWeatherMapWeatherService.cs" />
+    <Compile Include="OpenWeatherMapOutdoorTemperatureService.cs" />
+    <Compile Include="OpenWeatherMapResponseParser.cs" />
+    <Compile Include="OpenWeatherMapService.cs" />
     <Compile Include="OpenWeatherMapWeatherSituationParser.cs" />
     <Compile Include="OpenWeatherMapWeatherStationApiDispatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
