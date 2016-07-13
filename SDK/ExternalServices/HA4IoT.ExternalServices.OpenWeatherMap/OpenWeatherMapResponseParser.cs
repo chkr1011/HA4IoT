@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Linq;
 using Windows.Data.Json;
-using HA4IoT.Contracts.Services.WeatherService;
+using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Weather;
 
 namespace HA4IoT.ExternalServices.OpenWeatherMap
 {

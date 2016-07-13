@@ -129,7 +129,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithHighOutput(rl)
                 .WithHighOutput(rr);
 
-            var deskOnlyStateId = new StatefulComponentState("DeskOnly");
+            var deskOnlyStateId = new NamedComponentState("DeskOnly");
             light.AddState(deskOnlyStateId)
                 .WithHighOutput(fl)
                 .WithHighOutput(fm)
@@ -140,7 +140,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithLowOutput(rl)
                 .WithLowOutput(rr);
 
-            var couchOnlyStateId = new StatefulComponentState("CouchOnly");
+            var couchOnlyStateId = new NamedComponentState("CouchOnly");
             light.AddState(couchOnlyStateId)
                 .WithLowOutput(fl)
                 .WithLowOutput(fm)
@@ -165,7 +165,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .GetPressedShortlyTrigger()
                 .Attach(light.GetSetStateAction(BinaryStateId.On));
 
-            var synonymService = Controller.GetService<SynonymService>();
+            var synonymService = Controller.ServiceLocator.GetService<SynonymService>();
             synonymService.AddSynonymsForArea(Room.Office, "Büro", "Arbeitszimmer");
 
             synonymService.AddSynonymsForComponent(Room.Office, Office.CombinedCeilingLights, "Licht");

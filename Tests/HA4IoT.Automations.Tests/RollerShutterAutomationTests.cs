@@ -2,6 +2,8 @@
 using FluentAssertions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -86,17 +88,18 @@ namespace HA4IoT.Automations.Tests
 
             var testRollerShutterFactory = new TestRollerShutterFactory(_controller.Timer);
 
-            _weatherStation = new TestWeatherStation(new DeviceId("Test.WeatherStation"), _controller.Timer);
+            _weatherStation = new TestWeatherStation();
             _weatherStation.SetTemperature(20);
             _daylightService = new TestDaylightService();
 
             _rollerShutter = testRollerShutterFactory.CreateTestRollerShutter();
-            _controller.RegisterService(_weatherStation);
+            _controller.ServiceLocator.RegisterService(typeof(TestWeatherStation), _weatherStation);
             _controller.AddComponent(_rollerShutter);
 
             _automation = new RollerShutterAutomation(
                 AutomationIdFactory.EmptyId, 
-                _controller.Timer,
+                _controller.ServiceLocator.GetService<ISchedulerService>(),
+                _controller.ServiceLocator.GetService<IDateTimeService>(),
                 _daylightService,
                 _weatherStation,
                 _controller);

@@ -7,6 +7,7 @@ using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
@@ -72,13 +73,13 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTarget(combinedLights)
                 .WithOnDuration(TimeSpan.FromMinutes(8));
             
-            new BathroomFanAutomation(AutomationIdFactory.CreateIdFrom<BathroomFanAutomation>(room), Controller.Timer)
+            new BathroomFanAutomation(AutomationIdFactory.CreateIdFrom<BathroomFanAutomation>(room), Controller.ServiceLocator.GetService<ISchedulerService>())
                 .WithTrigger(room.GetMotionDetector(UpperBathroom.MotionDetector))
                 .WithSlowDuration(TimeSpan.FromMinutes(8))
                 .WithFastDuration(TimeSpan.FromMinutes(12))
                 .WithActuator(room.GetStateMachine(UpperBathroom.Fan));
 
-            Controller.GetService<SynonymService>().AddSynonymsForArea(Room.UpperBathroom, "BadOben", "UpperBathroom");
+            Controller.ServiceLocator.GetService<SynonymService>().AddSynonymsForArea(Room.UpperBathroom, "BadOben", "UpperBathroom");
         }
 
         private void SetupFan(StateMachine stateMachine, IArea room, HSREL5 hsrel5)
@@ -87,8 +88,8 @@ namespace HA4IoT.Controller.Main.Rooms
             var fanPort1 = hsrel5.GetOutput(5);
 
             stateMachine.AddOffState().WithOutput(fanPort0, BinaryState.Low).WithOutput(fanPort1, BinaryState.Low);
-            stateMachine.AddState(new StatefulComponentState("1")).WithOutput(fanPort0, BinaryState.High).WithOutput(fanPort1, BinaryState.Low);
-            stateMachine.AddState(new StatefulComponentState("2")).WithOutput(fanPort0, BinaryState.High).WithOutput(fanPort1, BinaryState.High);
+            stateMachine.AddState(new NamedComponentState("1")).WithOutput(fanPort0, BinaryState.High).WithOutput(fanPort1, BinaryState.Low);
+            stateMachine.AddState(new NamedComponentState("2")).WithOutput(fanPort0, BinaryState.High).WithOutput(fanPort1, BinaryState.High);
             stateMachine.TryTurnOff();
         }
     }

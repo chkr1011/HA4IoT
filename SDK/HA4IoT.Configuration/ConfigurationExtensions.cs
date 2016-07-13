@@ -135,7 +135,7 @@ namespace HA4IoT.Configuration
             if (containerElementName == null) throw new ArgumentNullException(nameof(containerElementName));
 
             var childElements = element.Elements().ToList();
-            if (childElements.Count() == 1)
+            if (childElements.Count == 1)
             {
                 return childElements.First();
             }

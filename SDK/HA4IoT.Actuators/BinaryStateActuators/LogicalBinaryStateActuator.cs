@@ -53,6 +53,11 @@ namespace HA4IoT.Actuators.BinaryStateActuators
             return _state;
         }
 
+        public override void ResetState()
+        {
+            SetState(BinaryStateId.Off, new ForceUpdateStateParameter());
+        }
+
         public override void SetState(IComponentState state, params IHardwareParameter[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));

@@ -113,7 +113,7 @@ namespace HA4IoT.Sensors.Windows
             SetState(newState);
         }
 
-        private StatefulComponentState GetStateInternal()
+        private NamedComponentState GetStateInternal()
         {
             if (Casements.Any(c => c.GetState() == CasementStateId.Open))
             {

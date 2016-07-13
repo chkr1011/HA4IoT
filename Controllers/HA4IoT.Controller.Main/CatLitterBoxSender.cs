@@ -81,12 +81,12 @@ namespace HA4IoT.Controller.Main
 
         private async Task Tweet(TimeSpan timeInLitterBox)
         {
-            if (GetIsTweetingTooFrequently())
+            if (IsTweetingTooFrequently())
             {
                 return;
             }
 
-            if (GetDurationIsTooShort(timeInLitterBox))
+            if (DurationIsTooShort(timeInLitterBox))
             {
                 return;
             }
@@ -98,14 +98,14 @@ namespace HA4IoT.Controller.Main
 
             try
             {
-                TwitterClient twitterClient;
-                if (!TwitterClientFactory.TryCreateFromDefaultConfigurationFile(out twitterClient))
+                TwitterService twitterService;
+                if (!TwitterServiceFactory.TryCreateFromDefaultConfigurationFile(out twitterService))
                 {
                     Log.Verbose("Twitter API is disabled.");
                     return;
                 }
                 
-                await twitterClient.Tweet(message);
+                await twitterService.Tweet(message);
 
                 _lastTweetTimestamp = DateTime.Now;
                 Log.Info("Successfully tweeted: " + message);
@@ -129,12 +129,12 @@ namespace HA4IoT.Controller.Main
             return message + string.Format(Suffix, (int)_effectiveTimeInLitterBox.TotalSeconds, _count);
         }
 
-        private bool GetIsTweetingTooFrequently()
+        private bool IsTweetingTooFrequently()
         {
             return _lastTweetTimestamp.HasValue && (DateTime.Now - _lastTweetTimestamp) < TimeSpan.FromMinutes(5);
         }
 
-        private bool GetDurationIsTooShort(TimeSpan timeInLitterBox)
+        private bool DurationIsTooShort(TimeSpan timeInLitterBox)
         {
             _effectiveTimeInLitterBox = timeInLitterBox - _timeout.Duration;
             return _effectiveTimeInLitterBox < TimeSpan.FromSeconds(10);

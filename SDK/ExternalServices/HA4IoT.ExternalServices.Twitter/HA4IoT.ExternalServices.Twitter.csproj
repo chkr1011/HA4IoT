@@ -109,8 +109,8 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TweetAction.cs" />
-    <Compile Include="TwitterClient.cs" />
-    <Compile Include="TwitterClientFactory.cs" />
+    <Compile Include="TwitterService.cs" />
+    <Compile Include="TwitterServiceFactory.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.ExternalServices.Twitter.rd.xml" />
   </ItemGroup>
   <ItemGroup>

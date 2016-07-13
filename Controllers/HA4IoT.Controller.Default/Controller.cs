@@ -1,5 +1,8 @@
-﻿using HA4IoT.Configuration;
+﻿using System.Threading.Tasks;
+using HA4IoT.Configuration;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Core;
 using HA4IoT.ExternalServices.OpenWeatherMap;
 using HA4IoT.Hardware;
@@ -13,10 +16,13 @@ namespace HA4IoT.Controller.Default
     {
         private const int LedGpio = 22;
 
-        protected override void Initialize()
+        public Controller()
+            : base(LedGpio)
         {
-            InitializeHealthMonitor(LedGpio);
+        }
 
+        protected override async Task ConfigureAsync()
+        {
             AddDevice(new BuiltInI2CBus());
 
             var pi2PortController = new Pi2PortController();
@@ -24,8 +30,13 @@ namespace HA4IoT.Controller.Default
 
             AddDevice(pi2PortController);
             AddDevice(ccToolsBoardController);
-            
-            RegisterService(new OpenWeatherMapWeatherService(Timer, ApiController));
+
+            ServiceLocator.RegisterService(
+                typeof(OpenWeatherMapWeatherService),
+                new OpenWeatherMapService(ApiController, 
+                    ServiceLocator.GetService<IDateTimeService>(),
+                    ServiceLocator.GetService<ISchedulerService>(),
+                    ServiceLocator.GetService<ISystemInformationService>()));
 
             var configurationParser = new ConfigurationParser(this);
             configurationParser.RegisterConfigurationExtender(new DefaultConfigurationExtender(configurationParser, this));
@@ -37,7 +48,9 @@ namespace HA4IoT.Controller.Default
 
             var ioBoardsInterruptMonitor = new InterruptMonitor(pi2PortController.GetInput(4));
             ioBoardsInterruptMonitor.InterruptDetected += (s, e) => ccToolsBoardController.PollInputBoardStates();
-            ioBoardsInterruptMonitor.StartPollingAsync();
+            ioBoardsInterruptMonitor.Start();
+
+            await base.ConfigureAsync();
         }
     }
 }

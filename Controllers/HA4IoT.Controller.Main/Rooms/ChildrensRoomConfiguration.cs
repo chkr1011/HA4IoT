@@ -71,7 +71,7 @@ namespace HA4IoT.Controller.Main.Rooms
             room.GetRollerShutter(ChildrensRoom.RollerShutter)
                 .ConnectWith(room.GetButton(ChildrensRoom.RollerShutterButtonUp), room.GetButton(ChildrensRoom.RollerShutterButtonDown));
 
-            Controller.GetService<SynonymService>().AddSynonymsForArea(Room.ChildrensRoom, "Kinderzimmer", "ChildrensRoom");
+            Controller.ServiceLocator.GetService<SynonymService>().AddSynonymsForArea(Room.ChildrensRoom, "Kinderzimmer", "ChildrensRoom");
         }
     }
 }

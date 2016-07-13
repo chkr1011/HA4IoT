@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HA4IoT.Contracts.Conditions;
 
 namespace HA4IoT.Conditions
 {

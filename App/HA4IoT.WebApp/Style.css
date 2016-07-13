@@ -113,10 +113,6 @@ body {
     margin: 0;
 }
 
-.hidden {
-    display: none;
-}
-
 .loadingTitle {
     color: white;
     font: 300 24px/1 'Open sans condensed', sans-serif;

@@ -118,6 +118,7 @@
     <Compile Include="Actions\ActionExtensions.cs" />
     <Compile Include="ActuatorBase.cs" />
     <Compile Include="ActuatorExtensions.cs" />
+    <Compile Include="BinaryStateActuators\BinaryStateActuatorExtensions.cs" />
     <Compile Include="BinaryStateActuators\CustomBinaryStateActuator.cs" />
     <Compile Include="BinaryStateActuators\LogicalBinaryStateActuatorExtensions.cs" />
     <Compile Include="Connectors\BinaryStateActuatorWithButtonConnector.cs" />
@@ -132,8 +133,10 @@
     <Compile Include="RollerShutters\PortBasedRollerShutterEndpoint.cs" />
     <Compile Include="RollerShutters\RollerShutterSettingsWrapper.cs" />
     <Compile Include="StateMachines\StateMachineExtensions.cs" />
+    <Compile Include="Triggers\ConditionalTrigger.cs" />
     <Compile Include="Triggers\IntervalTrigger.cs" />
     <Compile Include="Triggers\Trigger.cs" />
+    <Compile Include="Triggers\TriggerBase.cs" />
     <Compile Include="Triggers\TriggerExtensions.cs" />
     <Compile Include="RollerShutters\RollerShutterExtensions.cs" />
     <Compile Include="Connectors\RollerShutterWithRollerShutterButtonsConnector.cs" />

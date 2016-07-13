@@ -8,6 +8,7 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Networking;
 using Action = HA4IoT.Actuators.Actions.Action;
 
@@ -18,6 +19,7 @@ namespace HA4IoT.Actuators.RollerShutters
         private readonly Stopwatch _movingDuration = new Stopwatch();
         private readonly IRollerShutterEndpoint _endpoint;
         private readonly IHomeAutomationTimer _timer;
+        private readonly ISchedulerService _schedulerService;
 
         private readonly IAction _startMoveUpAction;
         private readonly IAction _turnOffAction;
@@ -33,14 +35,18 @@ namespace HA4IoT.Actuators.RollerShutters
         public RollerShutter(
             ComponentId id, 
             IRollerShutterEndpoint endpoint,
-            IHomeAutomationTimer timer)
+            IHomeAutomationTimer timer,
+            ISchedulerService schedulerService)
             : base(id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
+            if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
 
             _endpoint = endpoint;
             _timer = timer;
+            _schedulerService = schedulerService;
+
             timer.Tick += (s, e) => UpdatePosition(e);
             _settings = new RollerShutterSettingsWrapper(Settings);
 
@@ -82,6 +88,11 @@ namespace HA4IoT.Actuators.RollerShutters
             return _state;
         }
 
+        public override void ResetState()
+        {
+            SetState(RollerShutterStateId.Off, new ForceUpdateStateParameter());
+        }
+
         public override void SetState(IComponentState state, params IHardwareParameter[] parameters)
         {
             if (state == null) throw new ArgumentNullException(nameof(state));
@@ -114,7 +125,7 @@ namespace HA4IoT.Actuators.RollerShutters
 
         public override void HandleApiCommand(IApiContext apiContext)
         {
-            var state = new StatefulComponentState(apiContext.Request.GetNamedString("state"));
+            var state = new NamedComponentState(apiContext.Request.GetNamedString("state"));
             SetState(state);
         }
 
@@ -133,7 +144,7 @@ namespace HA4IoT.Actuators.RollerShutters
             _movingDuration.Restart();
 
             _autoOffTimer?.Cancel();
-            _autoOffTimer = _timer.In(_settings.AutoOffTimeout).Do(() => SetState(RollerShutterStateId.Off));
+            _autoOffTimer = _schedulerService.In(_settings.AutoOffTimeout).Execute(() => SetState(RollerShutterStateId.Off));
         }
 
         private void UpdatePosition(TimerTickEventArgs timerTickEventArgs)

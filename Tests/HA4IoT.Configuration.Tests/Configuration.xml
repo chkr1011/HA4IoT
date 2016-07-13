@@ -6,7 +6,7 @@
 
   <!-- Register all unique services -->
   <Services>
-    <OpenWeatherMapWeatherService />
+    <OpenWeatherMapService />
   </Services>
   
   <!-- Register all physical hardware which is attached to the system -->

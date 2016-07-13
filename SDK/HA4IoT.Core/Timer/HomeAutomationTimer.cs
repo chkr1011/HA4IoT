@@ -12,20 +12,6 @@ namespace HA4IoT.Core.Timer
 
         public event EventHandler<TimerTickEventArgs> Tick;
         
-        public TimeSpan CurrentTime => CurrentDateTime.TimeOfDay;
-
-        public DateTime CurrentDateTime => DateTime.Now;
-
-        public TimedAction In(TimeSpan dueTime)
-        {
-            return new TimedAction(dueTime, TimeSpan.Zero, this);
-        }
-
-        public TimedAction Every(TimeSpan interval)
-        {
-            return new TimedAction(TimeSpan.FromMilliseconds(1), interval, this);
-        }
-
         public void Run()
         {
             Log.Verbose($"Timer is running on thread {Environment.CurrentManagedThreadId}");

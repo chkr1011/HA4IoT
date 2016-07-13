@@ -20,7 +20,7 @@ namespace HA4IoT.Automations
             automation.Settings.SetValue("IsEnabled", false);
         }
 
-        public static bool GetIsEnabled(this IAutomation automation)
+        public static bool IsEnabled(this IAutomation automation)
         {
             if (automation == null) throw new ArgumentNullException(nameof(automation));
 

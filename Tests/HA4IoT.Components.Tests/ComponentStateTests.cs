@@ -29,8 +29,8 @@ namespace HA4IoT.Components.Tests
         [TestMethod]
         public void State_Equals_State()
         {
-            IComponentState state1 = new StatefulComponentState("Off");
-            IComponentState state2 = new StatefulComponentState("Off");
+            IComponentState state1 = new NamedComponentState("Off");
+            IComponentState state2 = new NamedComponentState("Off");
 
             state1.Equals(state2).ShouldBeEquivalentTo(true);
         }
@@ -38,8 +38,8 @@ namespace HA4IoT.Components.Tests
         [TestMethod]
         public void State_NotEquals_State()
         {
-            IComponentState state1 = new StatefulComponentState("Off");
-            IComponentState state2 = new StatefulComponentState("On");
+            IComponentState state1 = new NamedComponentState("Off");
+            IComponentState state2 = new NamedComponentState("On");
 
             state1.Equals(state2).ShouldBeEquivalentTo(false);
         }
@@ -47,7 +47,7 @@ namespace HA4IoT.Components.Tests
         [TestMethod]
         public void State_NotEquals_DifferentState()
         {
-            IComponentState state1 = new StatefulComponentState("Off");
+            IComponentState state1 = new NamedComponentState("Off");
             IComponentState state2 = new NumericSensorValue(5);
 
             state1.Equals(state2).ShouldBeEquivalentTo(false);

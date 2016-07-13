@@ -110,8 +110,8 @@
     <Compile Include="ActionExtensions.cs" />
     <Compile Include="Condition.cs" />
     <Compile Include="ConditionalAction.cs" />
+    <Compile Include="ConditionExtensions.cs" />
     <Compile Include="ConditionRelation.cs" />
-    <Compile Include="ConditionState.cs" />
     <Compile Include="ConditionsValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RelatedCondition.cs" />

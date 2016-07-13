@@ -20,14 +20,14 @@ namespace HA4IoT.Components
             component.GeneralSettingsWrapper.IsEnabled = false;
         }
 
-        public static bool GetIsEnabled(this IComponent component)
+        public static bool IsEnabled(this IComponent component)
         {
             if (component == null) throw new ArgumentNullException(nameof(component));
 
             return component.GeneralSettingsWrapper.IsEnabled;
         }
 
-        public static bool GetSupportsState(this IComponent component, IComponentState componentState)
+        public static bool SupportsState(this IComponent component, IComponentState componentState)
         {
             if (componentState == null) throw new ArgumentNullException(nameof(componentState));
             if (component == null) throw new ArgumentNullException(nameof(component));

@@ -2,6 +2,7 @@
 using HA4IoT.Contracts.Core;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.RemoteSwitch;
+using HA4IoT.Hardware.Knx;
 
 namespace HA4IoT.Controller.Main.Rooms
 {

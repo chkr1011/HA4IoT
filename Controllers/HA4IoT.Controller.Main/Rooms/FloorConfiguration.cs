@@ -5,6 +5,7 @@ using HA4IoT.Actuators.BinaryStateActuators;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Actuators.StateMachines;
+using HA4IoT.Actuators.Triggers;
 using HA4IoT.Automations;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
@@ -105,12 +106,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithActuator(room.GetLamp(Floor.StairwayLampCeiling))
                 .WithActuator(room.GetLamp(Floor.StairwayLampWall));
 
-            room.SetupTurnOnAndOffAutomation()
-                .WithTrigger(room.GetMotionDetector(Floor.StairwayMotionDetector))
-                .WithTrigger(room.GetButton(Floor.ButtonStairway).GetPressedShortlyTrigger())
-                .WithTarget(room.GetActuator(Floor.CombinedStairwayLamp))
-                .WithEnabledAtNight(Controller.GetService<IDaylightService>())
-                .WithOnDuration(TimeSpan.FromSeconds(30));
+            SetupStairwayLamps(room);
 
             room.CombineActuators(Floor.CombinedLamps)
                 .WithActuator(room.GetLamp(Floor.Lamp1))
@@ -123,16 +119,26 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTrigger(room.GetButton(Floor.ButtonLowerFloorAtBathroom).GetPressedShortlyTrigger())
                 .WithTrigger(room.GetButton(Floor.ButtonLowerFloorAtKitchen).GetPressedShortlyTrigger())
                 .WithTarget(room.GetActuator(Floor.CombinedLamps))
-                .WithEnabledAtNight(Controller.GetService<IDaylightService>())
+                .WithEnabledAtNight(Controller.ServiceLocator.GetService<IDaylightService>())
                 .WithTurnOffIfButtonPressedWhileAlreadyOn()
                 .WithOnDuration(TimeSpan.FromSeconds(20));
 
             SetupStairsCeilingLamps(room, hspe8UpperFloor);
-            SetupStairsLamps(room, Controller.GetService<IDaylightService>(), hspe16FloorAndLowerBathroom);
+            SetupStairsLamps(room, hspe16FloorAndLowerBathroom);
             
             room.SetupRollerShutterAutomation().WithRollerShutters(room.GetRollerShutter(Floor.StairwayRollerShutter));
 
-            Controller.GetService<SynonymService>().AddSynonymsForArea(Room.Floor, "Flur", "Floor");
+            Controller.ServiceLocator.GetService<SynonymService>().AddSynonymsForArea(Room.Floor, "Flur", "Floor");
+        }
+
+        private void SetupStairwayLamps(IArea room)
+        {
+            room.SetupTurnOnAndOffAutomation()
+                .WithTrigger(room.GetMotionDetector(Floor.StairwayMotionDetector))
+                .WithTrigger(room.GetButton(Floor.ButtonStairway).GetPressedShortlyTrigger())
+                .WithTarget(room.GetActuator(Floor.CombinedStairwayLamp))
+                .WithEnabledAtNight(Controller.ServiceLocator.GetService<IDaylightService>())
+                .WithOnDuration(TimeSpan.FromSeconds(30));
         }
 
         private void SetupStairsCeilingLamps(IArea floor, HSPE8OutputOnly hspe8UpperFloor)
@@ -180,7 +186,7 @@ namespace HA4IoT.Controller.Main.Rooms
             };
         }
 
-        private void SetupStairsLamps(IArea floor, IDaylightService daylightService, HSPE16OutputOnly hspe16FloorAndLowerBathroom)
+        private void SetupStairsLamps(IArea floor, HSPE16OutputOnly hspe16FloorAndLowerBathroom)
         {
             var output = new LogicalBinaryOutput()
                 .WithOutput(hspe16FloorAndLowerBathroom[HSPE16Pin.GPIO8])
@@ -195,7 +201,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             floor.SetupConditionalOnAutomation()
                 .WithActuator(floor.GetLamp(Floor.LampStairs))
-                .WithOnAtNightRange(daylightService)
+                .WithOnAtNightRange()
                 .WithOffBetweenRange(TimeSpan.FromHours(23), TimeSpan.FromHours(4));
         }
     }

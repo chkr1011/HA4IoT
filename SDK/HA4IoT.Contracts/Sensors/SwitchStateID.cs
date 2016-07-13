@@ -5,7 +5,7 @@ namespace HA4IoT.Contracts.Sensors
 {
     public static class SwitchStateId
     {
-        public static readonly StatefulComponentState Off = new StatefulComponentState("Off");
-        public static readonly StatefulComponentState On = new StatefulComponentState("On");
+        public static readonly NamedComponentState Off = new NamedComponentState("Off");
+        public static readonly NamedComponentState On = new NamedComponentState("On");
     }
 }

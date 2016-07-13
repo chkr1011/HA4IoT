@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Hardware.I2CHardwareBridge
 {
@@ -12,13 +12,13 @@ namespace HA4IoT.Hardware.I2CHardwareBridge
         private readonly Dictionary<byte, float> _humidities = new Dictionary<byte, float>();
         private readonly Dictionary<byte, float> _temperatures = new Dictionary<byte, float>();
         
-        public DHT22Accessor(Hardware.I2CHardwareBridge.I2CHardwareBridge i2CHardwareBridge, IHomeAutomationTimer timer)
+        public DHT22Accessor(I2CHardwareBridge i2CHardwareBridge, ISchedulerService schedulerService)
         {
             if (i2CHardwareBridge == null) throw new ArgumentNullException(nameof(i2CHardwareBridge));
-            if (timer == null) throw new ArgumentNullException(nameof(timer));
-
+            if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
+            
             _i2CHardwareBridge = i2CHardwareBridge;
-            timer.Every(TimeSpan.FromSeconds(10)).Do(FetchValues);
+            schedulerService.RegisterSchedule("DHT22Updater", TimeSpan.FromSeconds(10), FetchValues);
         }
 
         public event EventHandler ValuesUpdated;

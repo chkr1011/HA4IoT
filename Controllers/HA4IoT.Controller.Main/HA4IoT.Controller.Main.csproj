@@ -155,6 +155,10 @@
       <Project>{60F9E539-3FF5-40DE-B0C4-BE99CAE57736}</Project>
       <Name>HA4IoT.Components</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Conditions\HA4IoT.Conditions.csproj">
+      <Project>{3822E69D-FD79-4797-98E2-7C05973B6522}</Project>
+      <Name>HA4IoT.Conditions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Configuration\HA4IoT.Configuration.csproj">
       <Project>{F9D92EA6-3763-47F5-9EFD-6D83804C95E6}</Project>
       <Name>HA4IoT.Configuration</Name>
@@ -170,6 +174,10 @@
     <ProjectReference Include="..\..\SDK\HA4IoT.Core\HA4IoT.Core.csproj">
       <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
       <Name>HA4IoT.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.Knx\HA4IoT.Hardware.Knx.csproj">
+      <Project>{1EC3A5D0-65C8-4396-BD56-9179A8BD00D4}</Project>
+      <Name>HA4IoT.Hardware.Knx</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
       <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>

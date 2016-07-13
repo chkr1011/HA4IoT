@@ -7,21 +7,26 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Sensors.MotionDetectors
 {
     public class MotionDetector : SensorBase, IMotionDetector
     {
+        private readonly ISchedulerService _schedulerService;
         private readonly Trigger _motionDetectedTrigger = new Trigger();
         private readonly Trigger _detectionCompletedTrigger = new Trigger();
 
         private TimedAction _autoEnableAction;
 
-        public MotionDetector(ComponentId id, IMotionDetectorEndpoint endpoint, IHomeAutomationTimer timer)
+        public MotionDetector(ComponentId id, IMotionDetectorEndpoint endpoint, ISchedulerService schedulerService)
             : base(id)
         {
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
+            if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
+
+            _schedulerService = schedulerService;
 
             SetState(MotionDetectorStateId.Idle);
 
@@ -32,7 +37,7 @@ namespace HA4IoT.Sensors.MotionDetectors
             {
                 if (e.SettingName == "IsEnabled")
                 {
-                    HandleIsEnabledStateChanged(timer);
+                    HandleIsEnabledStateChanged();
                 }
             };
         }
@@ -82,9 +87,9 @@ namespace HA4IoT.Sensors.MotionDetectors
             _detectionCompletedTrigger.Execute();
         }
 
-        private void UpdateState(StatefulComponentState newState)
+        private void UpdateState(NamedComponentState newState)
         {
-            if (!this.GetIsEnabled())
+            if (!this.IsEnabled())
             {
                 return;
             }
@@ -101,12 +106,12 @@ namespace HA4IoT.Sensors.MotionDetectors
             }
         }
 
-        private void HandleIsEnabledStateChanged(IHomeAutomationTimer timer)
+        private void HandleIsEnabledStateChanged()
         {
-            if (!this.GetIsEnabled())
+            if (!this.IsEnabled())
             {
                 Log.Info(Id + ": Disabled for 1 hour");
-                _autoEnableAction = timer.In(TimeSpan.FromHours(1)).Do(this.Enable);
+                _autoEnableAction = _schedulerService.In(TimeSpan.FromHours(1)).Execute(this.Enable);
             }
             else
             {

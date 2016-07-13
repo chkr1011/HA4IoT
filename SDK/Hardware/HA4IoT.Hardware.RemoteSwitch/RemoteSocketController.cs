@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using HA4IoT.Contracts.Api;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Hardware.RemoteSwitch
 {
@@ -13,16 +13,16 @@ namespace HA4IoT.Hardware.RemoteSwitch
         private readonly Dictionary<int, RemoteSocketOutputPort> _ports = new Dictionary<int, RemoteSocketOutputPort>();
         private readonly LPD433MHzSignalSender _sender;
 
-        public RemoteSocketController(LPD433MHzSignalSender sender, IHomeAutomationTimer timer)
+        public RemoteSocketController(LPD433MHzSignalSender sender, ISchedulerService schedulerService)
         {
             if (sender == null) throw new ArgumentNullException(nameof(sender));
-            if (timer == null) throw new ArgumentNullException(nameof(timer));
+            if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
 
             _sender = sender;
 
             // Ensure that the state of the remote switch is restored if the original remote is used
             // or the switch has been removed from the socket and plugged in at another place.
-            timer.Every(TimeSpan.FromSeconds(5)).Do(RefreshStates);
+            schedulerService.RegisterSchedule("RCSocketStateSender", TimeSpan.FromSeconds(5), RefreshStates);
         }
 
         public DeviceId Id { get; } = new DeviceId("RemoteSocketController");

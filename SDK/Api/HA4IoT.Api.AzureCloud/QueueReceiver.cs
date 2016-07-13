@@ -38,11 +38,13 @@ namespace HA4IoT.Api.AzureCloud
 
             _wasStarted = true;
 
-            Task.Factory.StartNew(
+            var task = Task.Factory.StartNew(
                 WaitForMessages,
                 _cancellationTokenSource.Token,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);
+
+            task.ConfigureAwait(false);
         }
 
         public void Stop()
@@ -79,11 +81,13 @@ namespace HA4IoT.Api.AzureCloud
 
             if (result.IsSuccessStatusCode)
             {
-                Task.Factory.StartNew(
+                var task = Task.Factory.StartNew(
                     async () => await HandleQueueMessage(result.Headers, result.Content),
                     _cancellationTokenSource.Token,
                     TaskCreationOptions.LongRunning, 
                     TaskScheduler.Default);
+
+                task.ConfigureAwait(false);
             }
             else
             {

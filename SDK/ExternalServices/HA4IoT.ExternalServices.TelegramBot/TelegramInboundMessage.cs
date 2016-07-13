@@ -13,9 +13,9 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
         public DateTime Timestamp { get; }
 
-        public TelegramOutboundMessage CreateResponse(string text)
+        public TelegramOutboundMessage CreateResponse(string text, TelegramMessageFormat format = TelegramMessageFormat.HTML)
         {
-            return new TelegramOutboundMessage(ChatId, text);
+            return new TelegramOutboundMessage(ChatId, text, format);
         }
     }
 }

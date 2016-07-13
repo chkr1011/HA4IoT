@@ -1,23 +1,23 @@
 ﻿using System;
 using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Tests.Mockups
 {
     public class TestMotionDetectorFactory
     {
-        private readonly IHomeAutomationTimer _timer;
+        private readonly ISchedulerService _schedulerService;
 
-        public TestMotionDetectorFactory(IHomeAutomationTimer timer)
+        public TestMotionDetectorFactory(ISchedulerService schedulerService)
         {
-            if (timer == null) throw new ArgumentNullException(nameof(timer));
+            if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
 
-            _timer = timer;
+            _schedulerService = schedulerService;
         }
 
         public TestMotionDetector CreateTestMotionDetector()
         {
-            return new TestMotionDetector(ComponentIdFactory.EmptyId, new TestMotionDetectorEndpoint(), _timer);
+            return new TestMotionDetector(ComponentIdFactory.EmptyId, new TestMotionDetectorEndpoint(), _schedulerService);
         }
     }
 }

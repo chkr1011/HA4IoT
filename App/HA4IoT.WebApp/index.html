@@ -14,50 +14,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 </head>
 
-<body style="background: #286090;" ng-app="app" ng-controller="HomeAutomationController as haCtrl">
-
-    <div ng-hide="haCtrl.isReady==true">
-        <div class="loadingIndicator">
-            <div class="loadingAnimation"></div>
-            <h3 class="loadingTitle">
-                Home Automation
-                <br />
-                <br />
-                <span class="loadingMessage">HA4IoT...</span>
-            </h3>
+<body style="background: #286090;" ng-app="app" ng-controller="AppController as haCtrl">
+    <div ng-app="app" ng-controller="LocalizationController as localizationCtrl">
+        <div ng-hide="haCtrl.isInitialized && localizationCtrl.isInitialized">
+            <div class="loadingIndicator">
+                <div class="loadingAnimation"></div>
+                <h3 class="loadingTitle">
+                    Home Automation
+                    <br />
+                    <br />
+                    <span class="loadingMessage">HA4IoT...</span>
+                </h3>
+            </div>
         </div>
+
+        <div class="container-fluid" id="content" ng-show="haCtrl.isInitialized && localizationCtrl.isInitialized">
+            <div ng-include="'Views/RoomsOverviewTemplate.html'"></div>
+            <div ng-show="haCtrl.appConfiguration.showWeatherStation" ng-include="'Views/WeatherStationTemplate.html'"></div>
+            <div ng-show="haCtrl.appConfiguration.showSensorsOverview" ng-include="'Views/SensorsOverviewTemplate.html'"></div>
+            <div ng-show="haCtrl.appConfiguration.showRollerShuttersOverview" ng-include="'Views/RollerShuttersOverviewTemplate.html'"></div>
+            <div ng-show="haCtrl.appConfiguration.showWindowsOverview" ng-include="'Views/WindowsOverviewTemplate.html'"></div>
+            <div ng-show="haCtrl.appConfiguration.showMotionDetectorsOverview" ng-include="'Views/MotionDetectorsOverviewTemplate.html'"></div>
+
+            <div ng-include="'Views/BottomBarTemplate.html'"></div>
+        </div>
+
+        <link rel="stylesheet" href="Content/bootstrap.min.css" />
+        <link rel="stylesheet" href="Content/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="Style.css">
+
+        <script type="text/javascript" src="Scripts/jquery-2.2.2.min.js"></script>
+        <script type="text/javascript" src="Scripts/bootstrap.min.js"></script>
+        <script type="text/javascript" src="Scripts/angular.min.js"></script>
+        <script type="text/javascript" src="Scripts/Chart.min.js"></script>
+
+        <script type="text/javascript">
+            var app = angular.module("app", []);
+
+            history.replaceState(null, null, window.location.pathname);
+        </script>
+
+        <script type="text/javascript" src="LocalizationController.js"></script>
+        <script type="text/javascript" src="AppController.js"></script>
+        
     </div>
-
-    <div class="hidden container-fluid" id="content">
-        <div ng-include="'Views/RoomsOverviewTemplate.html'"></div>
-
-        <div ng-show="haCtrl.appConfiguration.showWeatherStation" ng-include="'Views/WeatherStationTemplate.html'"></div>
-        <div ng-show="haCtrl.appConfiguration.showSensorsOverview" ng-include="'Views/SensorsOverviewTemplate.html'"></div>
-        <div ng-show="haCtrl.appConfiguration.showRollerShuttersOverview" ng-include="'Views/RollerShuttersOverviewTemplate.html'"></div>
-        <div ng-show="haCtrl.appConfiguration.showWindowsOverview" ng-include="'Views/WindowsOverviewTemplate.html'"></div>
-        <div ng-show="haCtrl.appConfiguration.showMotionDetectorsOverview" ng-include="'Views/MotionDetectorsOverviewTemplate.html'"></div>
-
-        <div ng-include="'Views/BottomBarTemplate.html'"></div>
-    </div>
-
-    <link rel="stylesheet" href="Content/bootstrap.min.css" />
-    <link rel="stylesheet" href="Content/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="Style.css">
-
-    <script type="text/javascript" src="Scripts/jquery-2.2.2.min.js"></script>
-    <script type="text/javascript" src="Scripts/bootstrap.min.js"></script>
-    <script type="text/javascript" src="Scripts/angular.min.js"></script>
-    <script type="text/javascript" src="Scripts/Chart.min.js"></script>
-
-    <script type="text/javascript">
-        appConfiguration = {};
-        actuatorConfigurationResolver = null;
-        history.replaceState(null, null, window.location.pathname);
-    </script>
-
-    <script type="text/javascript" src="Localization.js"></script>
-    <script type="text/javascript" src="Configuration.js"></script>
-    <script type="text/javascript" src="App.js"></script>
-
 </body>
 </html>

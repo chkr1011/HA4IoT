@@ -6,7 +6,7 @@
         <span class="label"
               style="margin-left: 10px"
               ng-class="{'label-danger':actuator.state.state>=actuator.dangerValue,'label-warning':actuator.state.state>=actuator.warningValue,'label-success':actuator.state.state<actuator.warningValue}">
-            {{ haCtrl.getUILocalization('UI.Mold') }}
+            {{ localizationCtrl.getUILocalization('UI.Mold') }}
         </span>
     </div>
 </div>

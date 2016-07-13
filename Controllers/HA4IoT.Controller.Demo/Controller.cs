@@ -7,17 +7,16 @@ using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Automations;
-using HA4IoT.Conditions;
-using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
-using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.PersonalAgent;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Triggers;
 using HA4IoT.Core;
 using HA4IoT.ExternalServices.OpenWeatherMap;
@@ -42,11 +41,14 @@ namespace HA4IoT.Controller.Demo
     {
         private const int LedGpio = 22;
         private const byte I2CHardwareBridge433MHzSenderPin = 6;
-        
-        protected override void Initialize()
-        {
-            InitializeHealthMonitor(LedGpio);
 
+        public Controller()
+            : base(LedGpio)
+        {
+        }
+
+        protected override async Task ConfigureAsync()
+        {
             AddDevice(new BuiltInI2CBus());
 
             var piPortController = new Pi2PortController();
@@ -56,15 +58,19 @@ namespace HA4IoT.Controller.Demo
             AddDevice(ccToolsBoardController);
 
             // Setup the remote switch 433Mhz sender which is attached to the I2C bus (Arduino Nano).
-            AddDevice(new I2CHardwareBridge(new I2CSlaveAddress(50), GetDevice<II2CBus>(), Timer));
+            AddDevice(new I2CHardwareBridge(new I2CSlaveAddress(50), GetDevice<II2CBus>(), ServiceLocator.GetService<ISchedulerService>()));
 
-            RegisterService(new SynonymService());
-            RegisterService(new OpenWeatherMapWeatherService(Timer, ApiController));
-            
+            ServiceLocator.RegisterService(typeof(SynonymService), new SynonymService());
+            ServiceLocator.RegisterService(typeof (OpenWeatherMapService),
+                new OpenWeatherMapService(ApiController, 
+                    ServiceLocator.GetService<IDateTimeService>(),
+                    ServiceLocator.GetService<ISchedulerService>(),
+                    ServiceLocator.GetService<ISystemInformationService>()));
+
             SetupRoom();
 
-            GetService<SynonymService>().TryLoadPersistedSynonyms();
-            GetService<SynonymService>().RegisterDefaultComponentStateSynonyms(this);
+            ServiceLocator.GetService<SynonymService>().TryLoadPersistedSynonyms();
+            ServiceLocator.GetService<SynonymService>().RegisterDefaultComponentStateSynonyms(this);
 
             Timer.Tick += (s, e) =>
             {
@@ -73,6 +79,8 @@ namespace HA4IoT.Controller.Demo
             };
 
             SetupDemo();
+
+            await base.ConfigureAsync();
         }
 
         private void SetupDemo()
@@ -97,12 +105,12 @@ namespace HA4IoT.Controller.Demo
             ILamp lamp3 = area.GetLamp(ExampleRoom.Lamp3);
             
             // Integrate the twitter client if the configuration file is available.
-            TwitterClient twitterClient;
-            if (TwitterClientFactory.TryCreateFromDefaultConfigurationFile(out twitterClient))
+            TwitterService twitterService;
+            if (TwitterServiceFactory.TryCreateFromDefaultConfigurationFile(out twitterService))
             {
-                RegisterService(new TwitterClient());
+                ServiceLocator.RegisterService(typeof(TwitterService), new TwitterService());
                 
-                IAction tweetAction = twitterClient.GetTweetAction($"Someone is here ({DateTime.Now})... @chkratky");
+                IAction tweetAction = twitterService.GetTweetAction($"Someone is here ({DateTime.Now})... @chkratky");
 
                 motionDetectedTrigger.Attach(tweetAction);
                 buttonTrigger.Attach(tweetAction);
@@ -124,27 +132,33 @@ namespace HA4IoT.Controller.Demo
 
         private void SetupTelegramBot()
         {
-            TelegramBot telegramBot;
-            if (!TelegramBotFactory.TryCreateFromDefaultConfigurationFile(out telegramBot))
+            TelegramBotService telegramBotService;
+            if (!TelegramBotServiceFactory.TryCreateFromDefaultConfigurationFile(out telegramBotService))
             {
                 return;
             }
 
             Log.WarningLogged += (s, e) =>
             {
-                telegramBot.EnqueueMessageForAdministrators($"{Emoji.WarningSign} {e.Message}\r\n{e.Exception}");
+                telegramBotService.EnqueueMessageForAdministrators($"{Emoji.WarningSign} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
             };
 
             Log.ErrorLogged += (s, e) =>
             {
-                telegramBot.EnqueueMessageForAdministrators($"{Emoji.HeavyExclamationMark} {e.Message}\r\n{e.Exception}");
+                if (e.Message.StartsWith("Sending Telegram message failed"))
+                {
+                    // Prevent recursive send of sending failures.
+                    return;
+                }
+
+                telegramBotService.EnqueueMessageForAdministrators($"{Emoji.HeavyExclamationMark} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
             };
 
-            telegramBot.EnqueueMessageForAdministrators($"{Emoji.Bell} Das System ist gestartet.");
+            telegramBotService.EnqueueMessageForAdministrators($"{Emoji.Bell} Das System ist gestartet.");
 
-            new PersonalAgentToTelegramBotDispatcher(this).ExposeToTelegramBot(telegramBot);
+            new PersonalAgentToTelegramBotDispatcher(this).ExposeToTelegramBot(telegramBotService);
 
-            RegisterService(telegramBot);
+            ServiceLocator.RegisterService(typeof(TelegramBotService), telegramBotService);
         }
 
         private void SetupRoom()
@@ -161,7 +175,7 @@ namespace HA4IoT.Controller.Demo
             var intertechno = new IntertechnoCodeSequenceProvider();
             var brennenstuhl = new BrennenstuhlCodeSequenceProvider();
 
-            var remoteSwitchController = new RemoteSocketController(remoteSwitchSender, Timer)
+            var remoteSwitchController = new RemoteSocketController(remoteSwitchSender, ServiceLocator.GetService<ISchedulerService>())
                 .WithRemoteSocket(0, intertechno.GetSequencePair(IntertechnoSystemCode.A, IntertechnoUnitCode.Unit1))
                 .WithRemoteSocket(1, intertechno.GetSequencePair(IntertechnoSystemCode.B, IntertechnoUnitCode.Unit1))
                 .WithRemoteSocket(2, brennenstuhl.GetSequencePair(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.B))
@@ -215,7 +229,7 @@ namespace HA4IoT.Controller.Demo
 
         private void RegisterSynonyms()
         {
-            var synonymService = GetService<SynonymService>();
+            var synonymService = ServiceLocator.GetService<SynonymService>();
 
             synonymService.AddSynonymsForArea(Room.ExampleRoom, "Beispielraum", "Beispiel", "Raum");
 
@@ -233,7 +247,7 @@ namespace HA4IoT.Controller.Demo
 
             trigger.Attach(action);
             
-            var twitterClient = new TwitterClient();
+            var twitterClient = new TwitterService();
             trigger.Attach(twitterClient.GetTweetAction("Hello World"));
         }
 
@@ -245,8 +259,8 @@ namespace HA4IoT.Controller.Demo
 
             stateMachine.AddOffState().WithLowOutput(gear1).WithLowOutput(gear2);
 
-            stateMachine.AddState(new StatefulComponentState("1")).WithHighOutput(gear1).WithLowOutput(gear2);
-            stateMachine.AddState(new StatefulComponentState("2")).WithLowOutput(gear1).WithHighOutput(gear2);
+            stateMachine.AddState(new NamedComponentState("1")).WithHighOutput(gear1).WithLowOutput(gear2);
+            stateMachine.AddState(new NamedComponentState("2")).WithLowOutput(gear1).WithHighOutput(gear2);
         }
 
         private void SetupLEDStripRemote(I2CHardwareBridge i2CHardwareBridge, IArea area)

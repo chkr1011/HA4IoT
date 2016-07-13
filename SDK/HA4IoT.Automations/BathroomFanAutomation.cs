@@ -5,23 +5,24 @@ using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Automations
 {
     public class BathroomFanAutomation : AutomationBase
     {
-        private readonly IHomeAutomationTimer _timer;
+        private readonly ISchedulerService _schedulerService;
         private IStateMachine _actuator;
         private TimeSpan _fastDuration;
         private TimeSpan _slowDuration;
         private TimedAction _timeout;
 
-        public BathroomFanAutomation(AutomationId id, IHomeAutomationTimer timer)
+        public BathroomFanAutomation(AutomationId id, ISchedulerService schedulerService)
             : base(id)
         {
-            if (timer == null) throw new ArgumentNullException(nameof(timer));
+            if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
 
-            _timer = timer;
+            _schedulerService = schedulerService;
         }
 
         public BathroomFanAutomation WithTrigger(IMotionDetector motionDetector)
@@ -54,22 +55,22 @@ namespace HA4IoT.Automations
 
         private void StartTimeout(object sender, EventArgs e)
         {
-            _timeout = _timer.In(_slowDuration).Do(() =>
+            _timeout = _schedulerService.In(_slowDuration).Execute(() =>
             {
-                _actuator.SetState(new StatefulComponentState("2"));
-                _timeout = _timer.In(_fastDuration).Do(() => _actuator.TryTurnOff());
+                _actuator.SetState(new NamedComponentState("2"));
+                _timeout = _schedulerService.In(_fastDuration).Execute(() => _actuator.TryTurnOff());
             });
         }
 
         private void TurnOn(object sender, EventArgs e)
         {
-            if (!this.GetIsEnabled())
+            if (!this.IsEnabled())
             {
-                
+                return;
             }
 
             _timeout?.Cancel();
-            _actuator?.SetState(new StatefulComponentState("1"));
+            _actuator?.SetState(new NamedComponentState("1"));
         }
     }
 }

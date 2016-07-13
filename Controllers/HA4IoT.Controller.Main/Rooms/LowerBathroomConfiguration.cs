@@ -7,6 +7,7 @@ using HA4IoT.Automations;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
@@ -77,7 +78,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTrigger(room.GetMotionDetector(LowerBathroom.MotionDetector))
                 .WithTarget(room.GetActuator(LowerBathroom.CombinedLights));
 
-            Controller.GetService<SynonymService>().AddSynonymsForArea(Room.LowerBathroom, "BadUnten", "LowerBathroom");
+            Controller.ServiceLocator.GetService<SynonymService>().AddSynonymsForArea(Room.LowerBathroom, "BadUnten", "LowerBathroom");
         }
 
         private void StartBathode(IArea bathroom)
@@ -90,7 +91,7 @@ namespace HA4IoT.Controller.Main.Rooms
             bathroom.GetLamp(LowerBathroom.LampMirror).TryTurnOff();
 
             _bathmodeResetTimer?.Cancel();
-            _bathmodeResetTimer = bathroom.Controller.Timer.In(TimeSpan.FromHours(1)).Do(() => bathroom.GetMotionDetector().Enable());
+            _bathmodeResetTimer = bathroom.Controller.ServiceLocator.GetService<ISchedulerService>().In(TimeSpan.FromHours(1)).Execute(() => bathroom.GetMotionDetector().Enable());
         }
     }
 }

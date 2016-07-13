@@ -62,9 +62,9 @@ namespace HA4IoT.Sensors.Buttons
             return new List<IComponentState> {ButtonStateId.Released, ButtonStateId.Pressed};
         }
 
-        private void HandleInputStateChanged(StatefulComponentState state)
+        private void HandleInputStateChanged(NamedComponentState state)
         {
-            if (!this.GetIsEnabled())
+            if (!this.IsEnabled())
             {
                 return;
             }

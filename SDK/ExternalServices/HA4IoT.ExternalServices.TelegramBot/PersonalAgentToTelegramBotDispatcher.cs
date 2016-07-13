@@ -15,11 +15,11 @@ namespace HA4IoT.ExternalServices.TelegramBot
             _controller = controller;
         }
 
-        public void ExposeToTelegramBot(TelegramBot telegramBot)
+        public void ExposeToTelegramBot(TelegramBotService telegramBotService)
         {
-            if (telegramBot == null) throw new ArgumentNullException(nameof(telegramBot));
+            if (telegramBotService == null) throw new ArgumentNullException(nameof(telegramBotService));
 
-            telegramBot.MessageReceived += ProcessMessageAndSendAnswer;
+            telegramBotService.MessageReceived += ProcessMessageAndSendAnswer;
         }
 
         private void ProcessMessageAndSendAnswer(object sender, TelegramBotMessageReceivedEventArgs e)
@@ -27,7 +27,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
             var messageProcessor = new PersonalAgentMessageProcessor(_controller);
             messageProcessor.ProcessMessage(e.Message);
 
-            e.EnqueueResponse(messageProcessor.Answer);
+            e.EnqueueResponse(messageProcessor.Answer, TelegramMessageFormat.HTML);
         }
     }
 }
