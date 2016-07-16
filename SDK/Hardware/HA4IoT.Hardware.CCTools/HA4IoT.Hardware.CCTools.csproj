@@ -39,7 +39,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <PlatformTarget>ARM</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <OutputPath>..\..\bin\ARM\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <NoWarn>;2008</NoWarn>
     <DebugType>full</DebugType>
@@ -132,7 +132,7 @@
     <Compile Include="CCToolsBoardPort.cs" />
     <Compile Include="CCToolsBoardStateChangedEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Content Include="Properties\HA4IoT.Hardware.CCTools.rd.xml" />
+    <EmbeddedResource Include="Properties\HA4IoT.Hardware.CCTools.rd.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\HA4IoT.Configuration\HA4IoT.Configuration.csproj">
