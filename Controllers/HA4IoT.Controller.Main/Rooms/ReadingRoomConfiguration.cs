@@ -56,7 +56,7 @@ namespace HA4IoT.Controller.Main.Rooms
             var room = Controller.CreateArea(Room.ReadingRoom)
                 .WithTemperatureSensor(ReadingRoom.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(ReadingRoom.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
-                .WithLamp(ReadingRoom.LightCeilingMiddle, hsrel5.GetOutput(6).WithInvertedState())
+                .WithLamp(ReadingRoom.LightCeilingMiddle, hsrel5[HSREL5Pin.GPIO0])
                 .WithRollerShutter(ReadingRoom.RollerShutter, hsrel5[HSREL5Pin.Relay4], hsrel5[HSREL5Pin.Relay3])
                 .WithSocket(ReadingRoom.SocketWindow, hsrel5[HSREL5Pin.Relay0])
                 .WithSocket(ReadingRoom.SocketWallLeft, hsrel5[HSREL5Pin.Relay1])

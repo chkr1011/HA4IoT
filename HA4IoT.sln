@@ -469,8 +469,6 @@ Global
 		{4558BE1E-0A43-40FC-A697-3732398FB126}.Debug|x86 (For local).ActiveCfg = Debug|x86
 		{4558BE1E-0A43-40FC-A697-3732398FB126}.Debug|x86 (For local).Build.0 = Debug|x86
 		{4558BE1E-0A43-40FC-A697-3732398FB126}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|ARM
-		{4558BE1E-0A43-40FC-A697-3732398FB126}.Release|ARM (For Raspberry Pi).Build.0 = Release|ARM
-		{4558BE1E-0A43-40FC-A697-3732398FB126}.Release|ARM (For Raspberry Pi).Deploy.0 = Release|ARM
 		{4558BE1E-0A43-40FC-A697-3732398FB126}.Release|x86 (For local).ActiveCfg = Release|x86
 		{4558BE1E-0A43-40FC-A697-3732398FB126}.Release|x86 (For local).Build.0 = Release|x86
 		{1EC3A5D0-65C8-4396-BD56-9179A8BD00D4}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
@@ -497,8 +495,6 @@ Global
 		{DF91A86C-235F-44E7-AA3C-72FA0B786250}.Debug|x86 (For local).ActiveCfg = Debug|x86
 		{DF91A86C-235F-44E7-AA3C-72FA0B786250}.Debug|x86 (For local).Build.0 = Debug|x86
 		{DF91A86C-235F-44E7-AA3C-72FA0B786250}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|ARM
-		{DF91A86C-235F-44E7-AA3C-72FA0B786250}.Release|ARM (For Raspberry Pi).Build.0 = Release|ARM
-		{DF91A86C-235F-44E7-AA3C-72FA0B786250}.Release|ARM (For Raspberry Pi).Deploy.0 = Release|ARM
 		{DF91A86C-235F-44E7-AA3C-72FA0B786250}.Release|x86 (For local).ActiveCfg = Release|x86
 		{DF91A86C-235F-44E7-AA3C-72FA0B786250}.Release|x86 (For local).Build.0 = Release|x86
 		{DF91A86C-235F-44E7-AA3C-72FA0B786250}.Release|x86 (For local).Deploy.0 = Release|x86

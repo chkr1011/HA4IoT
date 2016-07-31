@@ -106,8 +106,9 @@ namespace HA4IoT.Controller.Main.Rooms
             var mr = hsrel8[HSREL8Pin.GPIO1].WithInvertedState();
             
             // Rear lights (left, right)
-            var rl = hsrel8[HSREL8Pin.GPIO5].WithInvertedState();
-            var rr = hsrel8[HSREL8Pin.GPIO4].WithInvertedState();
+            // Two mechanical relays.
+            var rl = hsrel8[HSREL8Pin.GPIO5];
+            var rr = hsrel8[HSREL8Pin.GPIO4];
 
             light.AddOffState()
                 .WithLowOutput(fl)

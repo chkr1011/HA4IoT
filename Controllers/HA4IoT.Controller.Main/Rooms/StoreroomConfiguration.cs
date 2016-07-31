@@ -1,6 +1,7 @@
 ﻿using System;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.Sockets;
+using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Automations;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
@@ -43,8 +44,8 @@ namespace HA4IoT.Controller.Main.Rooms
             var storeroom = Controller.CreateArea(Room.Storeroom)
                 .WithMotionDetector(Storeroom.MotionDetector, input3.GetInput(12))
                 .WithMotionDetector(Storeroom.MotionDetectorCatLitterBox, input3.GetInput(11).WithInvertedState())
-                .WithLamp(Storeroom.LightCeiling, hsrel5Stairway.GetOutput(7).WithInvertedState())
-                .WithSocket(Storeroom.CatLitterBoxFan, hsrel8LowerHeatingValves.GetOutput(15));
+                .WithLamp(Storeroom.LightCeiling, hsrel5Stairway[HSREL5Pin.GPIO1])
+                .WithSocket(Storeroom.CatLitterBoxFan, hsrel5Stairway[HSREL5Pin.GPIO2]);
 
             storeroom.SetupTurnOnAndOffAutomation()
                 .WithTrigger(storeroom.GetMotionDetector(Storeroom.MotionDetector))
@@ -56,7 +57,12 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTarget(storeroom.Socket(Storeroom.CatLitterBoxFan))
                 .WithOnDuration(TimeSpan.FromMinutes(2));
 
-            storeroom.WithSocket(Storeroom.CirculatingPump, hsrel5UpperHeatingValves.GetOutput(3));
+            storeroom.WithSocket(Storeroom.CirculatingPump, hsrel5UpperHeatingValves[HSREL5Pin.Relay3]);
+            
+            // Both relays are used for water source selection (True+True = Lowerr, False+False = Upper)
+            // Second relays is with capacitor. Disable second with delay before disable first one.
+            hsrel5UpperHeatingValves[HSREL5Pin.GPIO0].Write(BinaryState.Low);
+            hsrel5UpperHeatingValves[HSREL5Pin.GPIO1].Write(BinaryState.Low);
 
             storeroom.SetupTurnOnAndOffAutomation()
                 .WithTrigger(Controller.GetArea(AreaIdFactory.Create(Room.Kitchen)).GetMotionDetector(KitchenConfiguration.Kitchen.MotionDetector))
