@@ -1,4 +1,4 @@
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/SplashScreen.png?raw=true" width="100%">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.13.0/SplashScreen.png?raw=true" width="100%">
 <img style="margin:25px" src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/Overview_4to3.png?raw=true" width="100%">
 
 HA4IoT (Home Automation for IoT) is the first SDK for Home Automation using Windows 10 IoT Core and a Raspberry Pi 2. It is a private real life award-winning project which covers many Home Automation purposes.
