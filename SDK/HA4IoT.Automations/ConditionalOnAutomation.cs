@@ -6,6 +6,7 @@ using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Automations
@@ -29,7 +30,7 @@ namespace HA4IoT.Automations
 
         public ConditionalOnAutomation WithOnAtNightRange()
         {
-            var nightCondition = new TimeRangeCondition(_dateTimeService).WithStart(_daylightService.GetSunset).WithEnd(_daylightService.GetSunrise);
+            var nightCondition = new TimeRangeCondition(_dateTimeService).WithStart(_daylightService.Sunset).WithEnd(_daylightService.Sunrise);
             WithCondition(ConditionRelation.And, nightCondition);
 
             return this;

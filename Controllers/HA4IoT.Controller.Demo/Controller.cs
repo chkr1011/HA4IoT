@@ -62,7 +62,7 @@ namespace HA4IoT.Controller.Demo
 
             ServiceLocator.RegisterService(typeof(SynonymService), new SynonymService());
             ServiceLocator.RegisterService(typeof (OpenWeatherMapService),
-                new OpenWeatherMapService(ApiController, 
+                new OpenWeatherMapService( 
                     ServiceLocator.GetService<IDateTimeService>(),
                     ServiceLocator.GetService<ISchedulerService>(),
                     ServiceLocator.GetService<ISystemInformationService>()));

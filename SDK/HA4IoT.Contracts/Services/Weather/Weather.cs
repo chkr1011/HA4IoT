@@ -1,6 +1,6 @@
 ﻿namespace HA4IoT.Contracts.Services.Weather
 {
-    public enum WeatherSituation
+    public enum Weather
     {
         Unknown,
 

@@ -13,19 +13,10 @@ namespace HA4IoT.Tests.Mockups
             DateTime = new DateTime(DateTime.Year, DateTime.Month, DateTime.Day, time.Hours, time.Minutes, time.Seconds);
         }
 
-        public DateTime GetDate()
-        {
-            return DateTime.Date;
-        }
-
-        public TimeSpan GetTime()
-        {
-            return DateTime.TimeOfDay;
-        }
-
-        public DateTime GetDateTime()
-        {
-            return DateTime;
-        }
+        public DateTime Date => DateTime.Date;
+    
+        public TimeSpan Time => DateTime.TimeOfDay;
+    
+        public DateTime Now => this.DateTime;
     }
 }

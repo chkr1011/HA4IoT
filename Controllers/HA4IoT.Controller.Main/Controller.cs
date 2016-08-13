@@ -14,8 +14,15 @@ using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
 using HA4IoT.Contracts.PersonalAgent;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Daylight;
+using HA4IoT.Contracts.Services.OutdoorHumidity;
+using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.System;
+using HA4IoT.Contracts.Services.Weather;
 using HA4IoT.PersonalAgent;
+using HA4IoT.Services;
+using HA4IoT.Services.ControllerSlave;
+using HA4IoT.Services.Environment;
 
 namespace HA4IoT.Controller.Main
 {
@@ -40,13 +47,8 @@ namespace HA4IoT.Controller.Main
             AddDevice(SetupRemoteSwitchController());
 
             ServiceLocator.RegisterService(typeof(SynonymService), new SynonymService());
-            ServiceLocator.RegisterService(typeof(OpenWeatherMapService), 
-                new OpenWeatherMapService(
-                    ApiController,
-                    ServiceLocator.GetService<IDateTimeService>(),
-                    ServiceLocator.GetService<ISchedulerService>(),
-                    ServiceLocator.GetService<ISystemInformationService>()));
 
+            SetupOpenWeatherMapService();
             SetupTelegramBot();
             SetupTwitterClient();
 
@@ -79,6 +81,23 @@ namespace HA4IoT.Controller.Main
             ioBoardsInterruptMonitor.Start();
 
             await base.ConfigureAsync();
+        }
+
+        private void SetupOpenWeatherMapService()
+        {
+            var controllerSlaveService = new ControllerSlaveService("127.0.0.1", ServiceLocator.GetService<ISchedulerService>(), ServiceLocator.GetService<IDateTimeService>());
+            ServiceLocator.RegisterService(typeof(ControllerSlaveService), controllerSlaveService);
+
+            var openWeatherMapService = new OpenWeatherMapService(
+            ServiceLocator.GetService<IDateTimeService>(),
+            ServiceLocator.GetService<ISchedulerService>(),
+            ServiceLocator.GetService<ISystemInformationService>());
+
+            ServiceLocator.RegisterService(typeof(IOutdoorTemperatureService), new OutdoorTemperatureService(openWeatherMapService, ServiceLocator.GetService<IDateTimeService>()));
+            ServiceLocator.RegisterService(typeof(IOutdoorHumidityService), new OutdootHumidityService(openWeatherMapService, ServiceLocator.GetService<IDateTimeService>()));
+            ServiceLocator.RegisterService(typeof(IDaylightService), new DaylightService(openWeatherMapService, ServiceLocator.GetService<IDateTimeService>()));
+            ServiceLocator.RegisterService(typeof(IWeatherService), new WeatherService(openWeatherMapService, ServiceLocator.GetService<IDateTimeService>()));
+            ServiceLocator.RegisterService(typeof(OpenWeatherMapService), openWeatherMapService);
         }
 
         private void SetupTelegramBot()

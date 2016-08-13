@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;

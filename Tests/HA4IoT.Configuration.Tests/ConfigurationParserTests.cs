@@ -7,6 +7,7 @@ using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Weather;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
@@ -45,12 +46,12 @@ namespace HA4IoT.Configuration.Tests
             controller.GetAreas().Count.ShouldBeEquivalentTo(1);
         }
 
-        [TestMethod]
-        public void Parse_WeatherStation()
-        {
-            var controller = GetController();
-            controller.ServiceLocator.GetService<IWeatherService>();
-        }
+        ////[TestMethod]
+        ////public void Parse_WeatherStation()
+        ////{
+        ////    var controller = GetController();
+        ////    controller.ServiceLocator.GetService<IWeatherService>();
+        ////}
         
         [TestMethod]
         public void Parse_Socket()

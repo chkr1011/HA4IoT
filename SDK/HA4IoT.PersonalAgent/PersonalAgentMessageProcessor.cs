@@ -10,6 +10,8 @@ using HA4IoT.Contracts.Sensors;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.OutdoorHumidity;
+using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.Weather;
 
 namespace HA4IoT.PersonalAgent
@@ -183,9 +185,9 @@ namespace HA4IoT.PersonalAgent
 
             var response = new StringBuilder();
             response.AppendLine($"{Emoji.BarChart} Das Wetter ist aktuell:");
-            response.AppendLine($"Temperatur: {outdoorTemperatureService.GetOutdoorTemperature()}°C");
-            response.AppendLine($"Luftfeuchtigkeit: {outdoorHumidityService.GetOutdoorHumidity()}%");
-            response.AppendLine($"Situation: {weatherService.GetWeather()}");
+            response.AppendLine($"Temperatur: {outdoorTemperatureService.OutdoorTemperature}°C");
+            response.AppendLine($"Luftfeuchtigkeit: {outdoorHumidityService.OutdoorHumidity}%");
+            response.AppendLine($"Situation: {weatherService.Weather}");
 
             return response.ToString();
         }

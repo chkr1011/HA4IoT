@@ -4,10 +4,10 @@ namespace HA4IoT.Contracts.Services.System
 {
     public interface IDateTimeService : IService
     {
-        DateTime GetDate();
+        DateTime Date { get; }
 
-        TimeSpan GetTime();
+        TimeSpan Time { get; }
 
-        DateTime GetDateTime();
+        DateTime Now { get; }
     }
 }

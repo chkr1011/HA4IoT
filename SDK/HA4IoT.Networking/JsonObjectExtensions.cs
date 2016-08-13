@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
 using System.Text;
 using Windows.Data.Json;
@@ -294,6 +295,14 @@ namespace HA4IoT.Networking
             }
         }
 
+        public static void SetNamedEnum(this JsonObject jsonObject, string name, Enum value)
+        {
+            if (jsonObject == null) throw new ArgumentNullException(nameof(jsonObject));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
+            jsonObject.SetNamedValue(name, JsonValue.CreateStringValue(value.ToString()));
+        }
+
         public static void SetNamedBoolean(this JsonObject jsonObject, string name, bool value)
         {
             if (jsonObject == null) throw new ArgumentNullException(nameof(jsonObject));
@@ -361,6 +370,20 @@ namespace HA4IoT.Networking
             {
                 jsonObject.SetNamedString(name, value.Value.ToString("c"));
             }
+        }
+
+        public static TimeSpan? GetNamedTimeSpan(this JsonObject jsonObject, string name)
+        {
+            if (jsonObject == null) throw new ArgumentNullException(nameof(jsonObject));
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
+            var value = jsonObject.GetNamedValue(name);
+            if (value.ValueType == JsonValueType.Null)
+            {
+                return null;
+            }
+
+            return TimeSpan.ParseExact(value.GetString(), "c", DateTimeFormatInfo.InvariantInfo);
         }
 
         public static JsonObject WithNamedString(this JsonObject jsonObject, string name, string value)

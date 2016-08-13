@@ -1,5 +1,6 @@
 ﻿using System;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Conditions.Specialized
@@ -11,8 +12,8 @@ namespace HA4IoT.Conditions.Specialized
         {
             if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
 
-            WithStart(daylightService.GetSunset);
-            WithEnd(daylightService.GetSunrise);
+            WithStart(daylightService.Sunset);
+            WithEnd(daylightService.Sunrise);
         }
     }
 }

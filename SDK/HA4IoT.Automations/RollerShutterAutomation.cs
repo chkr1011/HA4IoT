@@ -9,8 +9,9 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Daylight;
+using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Contracts.Services.Weather;
 
 namespace HA4IoT.Automations
 {
@@ -147,7 +148,7 @@ namespace HA4IoT.Automations
         private bool DoNotOpenDueToTimeIsAffected()
         {
             if (SpecialSettingsWrapper.SkipBeforeTimestampIsEnabled &&
-                SpecialSettingsWrapper.SkipBeforeTimestamp > _dateTimeService.GetTime())
+                SpecialSettingsWrapper.SkipBeforeTimestamp > _dateTimeService.Time)
             {
                 return true;
             }
@@ -158,7 +159,7 @@ namespace HA4IoT.Automations
         private bool TooHotIsAffected()
         {
             if (SpecialSettingsWrapper.AutoCloseIfTooHotIsEnabled && 
-                _outdoorTemperatureService.GetOutdoorTemperature() > SpecialSettingsWrapper.AutoCloseIfTooHotTemperaure)
+                _outdoorTemperatureService.OutdoorTemperature > SpecialSettingsWrapper.AutoCloseIfTooHotTemperaure)
             {
                 return true;
             }
@@ -169,7 +170,7 @@ namespace HA4IoT.Automations
         private bool TooColdIsAffected()
         {
             if (SpecialSettingsWrapper.SkipIfFrozenIsEnabled &&
-                _outdoorTemperatureService.GetOutdoorTemperature() < SpecialSettingsWrapper.SkipIfFrozenTemperature)
+                _outdoorTemperatureService.OutdoorTemperature < SpecialSettingsWrapper.SkipIfFrozenTemperature)
             {
                 return true;
             }

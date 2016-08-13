@@ -141,6 +141,10 @@
       <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
       <Name>HA4IoT.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Services\HA4IoT.Services.csproj">
+      <Project>{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF}</Project>
+      <Name>HA4IoT.Services</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
       <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
       <Name>HA4IoT.Hardware</Name>

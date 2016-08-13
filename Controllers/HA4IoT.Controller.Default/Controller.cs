@@ -2,13 +2,18 @@
 using HA4IoT.Configuration;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Daylight;
+using HA4IoT.Contracts.Services.OutdoorHumidity;
+using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.System;
+using HA4IoT.Contracts.Services.Weather;
 using HA4IoT.Core;
 using HA4IoT.ExternalServices.OpenWeatherMap;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.Hardware.Pi2;
+using HA4IoT.Services.Environment;
 
 namespace HA4IoT.Controller.Default
 {
@@ -31,12 +36,16 @@ namespace HA4IoT.Controller.Default
             AddDevice(pi2PortController);
             AddDevice(ccToolsBoardController);
 
-            ServiceLocator.RegisterService(
-                typeof(OpenWeatherMapWeatherService),
-                new OpenWeatherMapService(ApiController, 
-                    ServiceLocator.GetService<IDateTimeService>(),
-                    ServiceLocator.GetService<ISchedulerService>(),
-                    ServiceLocator.GetService<ISystemInformationService>()));
+            var openWeatherMapService = new OpenWeatherMapService(
+                ServiceLocator.GetService<IDateTimeService>(),
+                ServiceLocator.GetService<ISchedulerService>(),
+                ServiceLocator.GetService<ISystemInformationService>());
+
+            ServiceLocator.RegisterService(typeof(IOutdoorTemperatureService), new OutdoorTemperatureService(openWeatherMapService, ServiceLocator.GetService<IDateTimeService>()));
+            ServiceLocator.RegisterService(typeof(IOutdoorHumidityService), new OutdootHumidityService(openWeatherMapService, ServiceLocator.GetService<IDateTimeService>()));
+            ServiceLocator.RegisterService(typeof(IDaylightService), new DaylightService(openWeatherMapService, ServiceLocator.GetService<IDateTimeService>()));
+            ServiceLocator.RegisterService(typeof(IWeatherService), new WeatherService(openWeatherMapService, ServiceLocator.GetService<IDateTimeService>()));
+            ServiceLocator.RegisterService(typeof(OpenWeatherMapService), openWeatherMapService);
 
             var configurationParser = new ConfigurationParser(this);
             configurationParser.RegisterConfigurationExtender(new DefaultConfigurationExtender(configurationParser, this));

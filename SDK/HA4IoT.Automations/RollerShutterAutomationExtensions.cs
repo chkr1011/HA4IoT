@@ -1,8 +1,9 @@
 ﻿using System;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Daylight;
+using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Contracts.Services.Weather;
 
 namespace HA4IoT.Automations
 {

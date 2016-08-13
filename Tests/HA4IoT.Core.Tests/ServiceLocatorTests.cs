@@ -4,6 +4,7 @@ using FluentAssertions;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -115,20 +116,11 @@ namespace HA4IoT.Core.Tests
                 throw new NotImplementedException();
             }
 
-            public DateTime GetDate()
-            {
-                throw new NotImplementedException();
-            }
-
-            public TimeSpan GetTime()
-            {
-                throw new NotImplementedException();
-            }
-
-            public DateTime GetDateTime()
-            {
-                throw new NotImplementedException();
-            }
+            public DateTime Date { get; set; }
+        
+            public TimeSpan Time { get; set; }
+        
+            public DateTime Now { get; set; }
         }
     }
 }

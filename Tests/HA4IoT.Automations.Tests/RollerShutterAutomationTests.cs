@@ -23,14 +23,14 @@ namespace HA4IoT.Automations.Tests
         {
             Setup();
             
-            _weatherStation.SetTemperature(1.5F);
+            _weatherStation.OutdoorTemperature = 1.5F;
             _automation.WithDoNotOpenIfOutsideTemperatureIsBelowThan(2);
             _automation.PerformPendingActions();
             _rollerShutter.GetState().ShouldBeEquivalentTo(RollerShutterStateId.Off);
 
             Setup();
 
-            _weatherStation.SetTemperature(2.5F);
+            _weatherStation.OutdoorTemperature = 2.5F;
             _automation.WithDoNotOpenIfOutsideTemperatureIsBelowThan(2);
             _automation.PerformPendingActions();
             _rollerShutter.GetState().ShouldBeEquivalentTo(RollerShutterStateId.MovingUp);
@@ -42,12 +42,12 @@ namespace HA4IoT.Automations.Tests
             Setup();
             SkipOpenDueToSunrise();
 
-            _weatherStation.SetTemperature(20F);
+            _weatherStation.OutdoorTemperature = 20F;
             _automation.WithCloseIfOutsideTemperatureIsGreaterThan(25);
             _automation.PerformPendingActions();
             _rollerShutter.GetState().ShouldBeEquivalentTo(RollerShutterStateId.Off);
 
-            _weatherStation.SetTemperature(25.5F);
+            _weatherStation.OutdoorTemperature = 25.5F;
             _automation.PerformPendingActions();
             _rollerShutter.GetState().ShouldBeEquivalentTo(RollerShutterStateId.MovingDown);
         }
@@ -89,7 +89,7 @@ namespace HA4IoT.Automations.Tests
             var testRollerShutterFactory = new TestRollerShutterFactory(_controller.Timer);
 
             _weatherStation = new TestWeatherStation();
-            _weatherStation.SetTemperature(20);
+            _weatherStation.OutdoorTemperature = 20;
             _daylightService = new TestDaylightService();
 
             _rollerShutter = testRollerShutterFactory.CreateTestRollerShutter();

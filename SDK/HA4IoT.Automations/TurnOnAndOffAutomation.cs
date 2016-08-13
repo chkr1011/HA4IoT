@@ -11,6 +11,7 @@ using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Triggers;
 
@@ -133,8 +134,8 @@ namespace HA4IoT.Automations
         {
             if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
 
-            Func<TimeSpan> start = () => daylightService.GetSunrise().Add(TimeSpan.FromHours(1));
-            Func<TimeSpan> end = () => daylightService.GetSunset().Subtract(TimeSpan.FromHours(1));
+            Func<TimeSpan> start = () => daylightService.Sunrise.Add(TimeSpan.FromHours(1));
+            Func<TimeSpan> end = () => daylightService.Sunset.Subtract(TimeSpan.FromHours(1));
 
             _enablingConditionsValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_dateTimeService).WithStart(start).WithEnd(end));
             return this;
@@ -144,8 +145,8 @@ namespace HA4IoT.Automations
         {
             if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
 
-            Func<TimeSpan> start = () => daylightService.GetSunset().Subtract(TimeSpan.FromHours(1));
-            Func<TimeSpan> end = () => daylightService.GetSunrise().Add(TimeSpan.FromHours(1));
+            Func<TimeSpan> start = () => daylightService.Sunset.Subtract(TimeSpan.FromHours(1));
+            Func<TimeSpan> end = () => daylightService.Sunrise.Add(TimeSpan.FromHours(1));
 
             _enablingConditionsValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_dateTimeService).WithStart(start).WithEnd(end));
             return this;

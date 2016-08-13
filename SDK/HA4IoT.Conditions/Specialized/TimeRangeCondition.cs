@@ -85,7 +85,7 @@ namespace HA4IoT.Conditions.Specialized
             }
 
             var timeRangeChecker = new TimeRangeChecker();
-            if (timeRangeChecker.IsTimeInRange(_dateTimeService.GetTime(), startValue, endValue))
+            if (timeRangeChecker.IsTimeInRange(_dateTimeService.Time, startValue, endValue))
             {
                 return ConditionState.Fulfilled;
             }
