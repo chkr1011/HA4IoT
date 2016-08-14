@@ -11,7 +11,11 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services.Daylight;
+using HA4IoT.Contracts.Services.OutdoorHumidity;
+using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.System;
+using HA4IoT.Contracts.Services.Weather;
+using HA4IoT.ExternalServices.OpenWeatherMap;
 using HA4IoT.Hardware.Knx;
 
 namespace HA4IoT.Controller.Local
@@ -29,12 +33,17 @@ namespace HA4IoT.Controller.Local
 
         public void RegisterServices(IContainerService containerService)
         {
+            containerService.RegisterSingleton<OpenWeatherMapService>();
+            containerService.RegisterSingleton<IOutdoorTemperatureProvider, OpenWeatherMapOutdoorTemperatureProvider>();
+            containerService.RegisterSingleton<IOutdoorHumidityProvider, OpenWeatherMapOutdoorHumidityProvider>();
+            containerService.RegisterSingleton<IDaylightProvider, OpenWeatherMapDaylightProvider>();
+            containerService.RegisterSingleton<IWeatherProvider, OpenWeatherMapWeatherProvider>();
         }
 
-        public async Task Configure(IContainerService factoryService)
+        public async Task Configure(IContainerService containerService)
         {
-            var areaService = factoryService.GetInstance<IAreaService>();
-            var timerService = factoryService.GetInstance<ITimerService>();
+            var areaService = containerService.GetInstance<IAreaService>();
+            var timerService = containerService.GetInstance<ITimerService>();
             
             var area = areaService.CreateArea(new AreaId("TestArea"));
             area.AddComponent(new Lamp(new ComponentId("Lamp1"), await _mainPage.CreateDemoBinaryComponent("Lamp 1")));
@@ -68,8 +77,6 @@ namespace HA4IoT.Controller.Local
             area.GetComponent<IButton>("Button5".AsComponentId())
                 .GetPressedShortlyTrigger()
                 .Attach(area.GetComponent<ISocket>("Socket3".AsComponentId()).GetSetNextStateAction());
-
-            areaService.AddArea(area);
         }
     }
 }

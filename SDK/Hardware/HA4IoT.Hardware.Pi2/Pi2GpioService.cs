@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using Windows.Devices.Gpio;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Hardware.Services;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Hardware.Pi2
 {
-    public class Pi2GpioService : ServiceBase, IBinaryOutputController, IBinaryInputController
+    public class Pi2GpioService : ServiceBase, IPi2GpioService
     {
         private readonly GpioController _gpioController = GpioController.GetDefault();
         private readonly Dictionary<int, Pi2Gpio> _openPorts = new Dictionary<int, Pi2Gpio>();

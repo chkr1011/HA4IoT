@@ -121,7 +121,7 @@
     <Compile Include="Devices\DeviceCollection.cs" />
     <Compile Include="Devices\DeviceService.cs" />
     <Compile Include="Environment\DaylightService.cs" />
-    <Compile Include="Environment\OutdootHumidityService.cs" />
+    <Compile Include="Environment\OutdoorHumidityService.cs" />
     <Compile Include="Environment\OutdoorTemperatureService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Environment\WeatherService.cs" />
@@ -133,6 +133,7 @@
     <Compile Include="Health\HealthServiceOptions.cs" />
     <Compile Include="Scheduling\Schedule.cs" />
     <Compile Include="Scheduling\SchedulerService.cs" />
+    <Compile Include="System\SystemEventsService.cs" />
     <Compile Include="System\SystemInformationService.cs" />
     <Compile Include="System\Timeout.cs" />
     <Compile Include="System\TimerService.cs" />

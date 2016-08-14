@@ -109,7 +109,7 @@ namespace HA4IoT.Controller.Main.Rooms
             _automationFactory = automationFactory;
         }
 
-        public void Setup()
+        public void Apply()
         {
             var hsrel5 = _ccToolsBoardService.CreateHSREL5(InstalledDevice.BedroomHSREL5, new I2CSlaveAddress(38));
             var hsrel8 = _ccToolsBoardService.CreateHSREL8(InstalledDevice.BedroomHSREL8, new I2CSlaveAddress(21));

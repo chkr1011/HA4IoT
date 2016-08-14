@@ -77,7 +77,7 @@ namespace HA4IoT.Controller.Main.Rooms
             _sensorFactory = sensorFactory;
         }
 
-        public void Setup()
+        public void Apply()
         {
             var hspe16_FloorAndLowerBathroom = _deviceService.GetDevice<HSPE16OutputOnly>(InstalledDevice.LowerFloorAndLowerBathroomHSPE16);
             var input3 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input3);

@@ -91,7 +91,7 @@ namespace HA4IoT.Controller.Main.Rooms
             _sensorFactory = sensorFactory;
         }
 
-        public void Setup()
+        public void Apply()
         {
             var hsrel8 = _ccToolsBoardService.CreateHSREL8(InstalledDevice.OfficeHSREL8, new I2CSlaveAddress(20));
             var hspe8 = _ccToolsBoardService.CreateHSPE8OutputOnly(InstalledDevice.UpperFloorAndOfficeHSPE8, new I2CSlaveAddress(37));

@@ -127,11 +127,12 @@
     <Compile Include="Conditions\ConditionState.cs" />
     <Compile Include="Conditions\ICondition.cs" />
     <Compile Include="Core\IHA4IoTInitializer.cs" />
-    <Compile Include="Core\IStartupCompletedNotification.cs" />
+    <Compile Include="Services\System\ISystemEventsService.cs" />
     <Compile Include="Core\Settings\SettingValueChangedEventArgs.cs" />
     <Compile Include="Hardware\ForceUpdateStateParameter.cs" />
     <Compile Include="Hardware\HardwareParameter.cs" />
     <Compile Include="Hardware\IsPartOfLogicalUpdateParameter.cs" />
+    <Compile Include="Hardware\Services\IPi2GpioService.cs" />
     <Compile Include="Logging\MessageWithExceptionLoggedEventArgs.cs" />
     <Compile Include="Logging\MessageLoggedEventArgs.cs" />
     <Compile Include="PersonalAgent\Emoji.cs" />

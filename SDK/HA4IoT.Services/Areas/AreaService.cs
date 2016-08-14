@@ -4,6 +4,7 @@ using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Services.Areas
 {
@@ -14,13 +15,24 @@ namespace HA4IoT.Services.Areas
         private readonly IComponentService _componentService;
         private readonly IAutomationService _automationService;
 
-        public AreaService(IComponentService componentService, IAutomationService automationService)
+        public AreaService(
+            IComponentService componentService,
+            IAutomationService automationService,
+            ISystemEventsService systemEventsService,
+            ISystemInformationService systemInformationService)
         {
             if (componentService == null) throw new ArgumentNullException(nameof(componentService));
             if (automationService == null) throw new ArgumentNullException(nameof(automationService));
+            if (systemEventsService == null) throw new ArgumentNullException(nameof(systemEventsService));
+            if (systemInformationService == null) throw new ArgumentNullException(nameof(systemInformationService));
 
             _componentService = componentService;
             _automationService = automationService;
+
+            systemEventsService.StartupCompleted += (s, e) =>
+            {
+                systemInformationService.Set("Areas/Count", _areas.GetAll().Count);
+            };
         }
 
         public IArea CreateArea(AreaId id)

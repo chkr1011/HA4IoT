@@ -10,7 +10,7 @@ namespace HA4IoT.Hardware.RemoteSwitch
         private readonly object _syncRoot = new object();
         private BinaryState _state;
 
-        public RemoteSocketOutputPort(int id, LPD433MHzCodeSequencePair codeSequencePair, LPD433MHzSignalSender sender)
+        public RemoteSocketOutputPort(LPD433MHzCodeSequencePair codeSequencePair, LPD433MHzSignalSender sender)
         {
             if (codeSequencePair == null) throw new ArgumentNullException(nameof(codeSequencePair));
             if (sender == null) throw new ArgumentNullException(nameof(sender));

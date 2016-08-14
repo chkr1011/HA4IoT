@@ -22,15 +22,18 @@ namespace HA4IoT.Tests.Mockups
         {
             Log.Instance = new TestLogger();
 
+            var systemInformationService = new SystemInformationService();
+            var systemEventsService = new SystemEventsService();
+
             SchedulerService = new SchedulerService(TimerService);
-            AutomationService = new AutomationService();
-            ComponentService = new ComponentService(new SystemInformationService());
-            AreaService = new AreaService(ComponentService, AutomationService);
+            AutomationService = new AutomationService(systemEventsService, systemInformationService);
+            ComponentService = new ComponentService(systemEventsService, systemInformationService);
+            AreaService = new AreaService(ComponentService, AutomationService, systemEventsService, systemInformationService);
         }
 
         public ITimerService TimerService { get; } = new TestTimerService();
         public ISchedulerService SchedulerService { get; }
-        public IDateTimeService DateTimeService { get; } = new TestDateTimeService();
+        public IDateTimeService DateTimeService => _dateTimeService;
         public IDaylightService DaylightService { get; } = new TestDaylightService();
         public IComponentService ComponentService { get; }
         public IAutomationService AutomationService { get; }

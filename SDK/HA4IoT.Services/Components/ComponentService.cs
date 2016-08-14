@@ -7,16 +7,21 @@ using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Services.Components
 {
-    public class ComponentService : ServiceBase, IComponentService, IStartupCompletedNotification
+    public class ComponentService : ServiceBase, IComponentService
     {
-        private readonly ISystemInformationService _systemInformationService;
         private readonly ComponentCollection _components = new ComponentCollection();
 
-        public ComponentService(ISystemInformationService systemInformationService)
+        public ComponentService(
+            ISystemEventsService systemEventsService,
+            ISystemInformationService systemInformationService)
         {
+            if (systemEventsService == null) throw new ArgumentNullException(nameof(systemEventsService));
             if (systemInformationService == null) throw new ArgumentNullException(nameof(systemInformationService));
 
-            _systemInformationService = systemInformationService;
+            systemEventsService.StartupCompleted += (s, e) =>
+            {
+                systemInformationService.Set("Components/Count", _components.GetAll().Count);
+            };
         }
 
         public void AddComponent(IComponent component)
@@ -53,11 +58,6 @@ namespace HA4IoT.Services.Components
             if (id == null) throw new ArgumentNullException(nameof(id));
 
             return _components.Get<TComponent>(id);
-        }
-
-        public void OnStartupCompleted()
-        {
-            _systemInformationService.Set("Components/Count", _components.GetAll().Count);
         }
     }
 }

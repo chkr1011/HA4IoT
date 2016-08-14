@@ -1,5 +1,4 @@
 ﻿using System;
-using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 
@@ -9,19 +8,15 @@ namespace HA4IoT.Tests.Mockups
     {
         public DateTime DateTime { get; set; }
 
-        public void SetTime(TimeSpan time)
-        {
-            DateTime = new DateTime(DateTime.Year, DateTime.Month, DateTime.Day, time.Hours, time.Minutes, time.Seconds);
-        }
-
         public DateTime Date => DateTime.Date;
     
         public TimeSpan Time => DateTime.TimeOfDay;
     
         public DateTime Now => DateTime;
 
-        public void HandleApiCall(IApiContext apiContext)
+        public void SetTime(TimeSpan time)
         {
+            DateTime = new DateTime(DateTime.Year, DateTime.Month, DateTime.Day, time.Hours, time.Minutes, time.Seconds);
         }
     }
 }

@@ -100,7 +100,7 @@ namespace HA4IoT.Controller.Main.Rooms
             _sensorFactory = sensorFactory;
         }
 
-        public void Setup()
+        public void Apply()
         {
             var hsrel5Stairway = _ccToolsBoardService.CreateHSREL5(InstalledDevice.StairwayHSREL5, new I2CSlaveAddress(60));
             var hspe8UpperFloor = _deviceService.GetDevice<HSPE8OutputOnly>(InstalledDevice.UpperFloorAndOfficeHSPE8);

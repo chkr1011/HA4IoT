@@ -49,7 +49,16 @@ namespace HA4IoT.Api
 
             _commandRoutes.Add(GenerateUri(uri), handler);
         }
-        
+
+        public void Route(string uri, Action<IApiContext> handler)
+        {
+            if (uri == null) throw new ArgumentNullException(nameof(uri));
+            if (handler == null) throw new ArgumentNullException(nameof(handler));
+
+            _requestRoutes.Add(GenerateUri(uri), handler);
+            _commandRoutes.Add(GenerateUri(uri), handler);
+        }
+
         public void RegisterEndpoint(IApiDispatcherEndpoint endpoint)
         {
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));

@@ -4,14 +4,14 @@ using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Networking;
 using Windows.Networking.Sockets;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Core.Discovery;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Networking;
 using HA4IoT.Settings;
 
 namespace HA4IoT.Core
 {
-    public sealed class DiscoveryServer : IDisposable, IStartupCompletedNotification
+    public sealed class DiscoveryServer : IDisposable
     {
         private int DEFAULT_PORT = 19228;
 
@@ -19,11 +19,14 @@ namespace HA4IoT.Core
 
         private DatagramSocket _socket;
 
-        public DiscoveryServer(ControllerSettings controllerSettings)
+        public DiscoveryServer(ControllerSettings controllerSettings, ISystemEventsService systemEventsService)
         {
             if (controllerSettings == null) throw new ArgumentNullException(nameof(controllerSettings));
+            if (systemEventsService == null) throw new ArgumentNullException(nameof(systemEventsService));
 
             _controllerSettings = controllerSettings;
+
+            systemEventsService.StartupCompleted += (s, e) => Start();
         }
 
         public void Start()
@@ -75,11 +78,6 @@ namespace HA4IoT.Core
         public void Dispose()
         {
             _socket?.Dispose();
-        }
-
-        public void OnStartupCompleted()
-        {
-            Start();
         }
     }
 }

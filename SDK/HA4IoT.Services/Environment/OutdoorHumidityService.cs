@@ -7,11 +7,11 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.Services.Environment
 {
-    public class OutdootHumidityService : ServiceBase, IOutdoorHumidityService
+    public class OutdoorHumidityService : ServiceBase, IOutdoorHumidityService
     {
         private readonly IDateTimeService _dateTimeService;
 
-        public OutdootHumidityService(IOutdoorHumidityProvider provider, IDateTimeService dateTimeService)
+        public OutdoorHumidityService(IOutdoorHumidityProvider provider, IDateTimeService dateTimeService)
         {
             if (provider == null) throw new ArgumentNullException(nameof(provider));
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));

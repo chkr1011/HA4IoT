@@ -16,7 +16,7 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.ExternalServices.OpenWeatherMap
 {
-    public class OpenWeatherMapService : ServiceBase, IOutdoorTemperatureProvider, IOutdoorHumidityProvider, IDaylightProvider, IWeatherProvider
+    public class OpenWeatherMapService : ServiceBase
     {
         private readonly string _cacheFilename = StoragePath.WithFilename("OpenWeatherMapCache.json");
 

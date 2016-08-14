@@ -108,8 +108,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="OpenWeatherMapConfigurationParser.cs" />
+    <Compile Include="OpenWeatherMapDaylightProvider.cs" />
+    <Compile Include="OpenWeatherMapOutdoorHumidityProvider.cs" />
+    <Compile Include="OpenWeatherMapOutdoorTemperatureProvider.cs" />
     <Compile Include="OpenWeatherMapResponseParser.cs" />
     <Compile Include="OpenWeatherMapService.cs" />
+    <Compile Include="OpenWeatherMapWeatherProvider.cs" />
     <Compile Include="OpenWeatherMapWeatherSituationParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.ExternalServices.OpenWeatherMap.rd.xml" />

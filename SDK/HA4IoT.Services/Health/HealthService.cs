@@ -4,14 +4,14 @@ using System.Linq;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Hardware.Services;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Hardware.Pi2;
 using HA4IoT.Services.System;
 
 namespace HA4IoT.Services.Health
 {
-    public class HealthService : ServiceBase, IApiExposedService
+    public class HealthService : ServiceBase
     {
         private readonly ISystemInformationService _systemInformationService;
 
@@ -27,7 +27,7 @@ namespace HA4IoT.Services.Health
 
         public HealthService(
             HealthServiceOptions options, 
-            Pi2GpioService pi2GpioService,
+            IPi2GpioService pi2GpioService,
             ITimerService timerService, 
             ISystemInformationService systemInformationService)
         {
@@ -46,9 +46,12 @@ namespace HA4IoT.Services.Health
             timerService.Tick += Tick;
         }
 
-        public void HandleApiCall(IApiContext apiContext)
+        public override void HandleApiCall(IApiContext apiContext)
         {
-            ResetStatistics();
+            if (apiContext.CallType == ApiCallType.Command)
+            {
+                ResetStatistics();
+            }
         }
 
         private void ResetStatistics()

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -9,25 +8,48 @@ using Windows.Data.Json;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.PersonalAgent;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Networking;
+using HA4IoT.PersonalAgent;
 using HttpClient = System.Net.Http.HttpClient;
 
 namespace HA4IoT.ExternalServices.TelegramBot
 {
     public class TelegramBotService : ServiceBase
     {
+        private readonly TelegramBotServiceOptions _options;
+        private readonly PersonalAgentService _personalAgentService;
         private const string BaseUri = "https://api.telegram.org/bot";
 
         private readonly BlockingCollection<TelegramOutboundMessage> _pendingMessages = new BlockingCollection<TelegramOutboundMessage>();
         private int _latestUpdateId;
-        
-        public event EventHandler<TelegramBotMessageReceivedEventArgs> MessageReceived;
 
-        public string AuthenticationToken { get; set; }
+        public TelegramBotService(TelegramBotServiceOptions options, ISystemEventsService systemEventsService, PersonalAgentService personalAgentService)
+        {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (personalAgentService == null) throw new ArgumentNullException(nameof(personalAgentService));
 
-        public HashSet<int> Administrators { get; } = new HashSet<int>();
-        public HashSet<int> ChatWhitelist { get; } = new HashSet<int>();
-        public bool AllowAllClients { get; set; }
+            _options = options;
+            _personalAgentService = personalAgentService;
+
+            systemEventsService.StartupCompleted += (s, e) => Enable();
+
+            Log.WarningLogged += (s, e) =>
+            {
+                EnqueueMessageForAdministrators($"{Emoji.WarningSign} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
+            };
+
+            Log.ErrorLogged += (s, e) =>
+            {
+                if (e.Message.StartsWith("Sending Telegram message failed"))
+                {
+                    // Prevent recursive send of sending failures.
+                    return;
+                }
+
+                EnqueueMessageForAdministrators($"{Emoji.HeavyExclamationMark} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
+            };
+        }
 
         public void Enable()
         {
@@ -42,6 +64,8 @@ namespace HA4IoT.ExternalServices.TelegramBot
                 CancellationToken.None,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);
+
+            EnqueueMessageForAdministrators($"{Emoji.Bell} Das System ist gestartet.");
         }
 
         public void EnqueueMessage(TelegramOutboundMessage message)
@@ -55,7 +79,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
-            foreach (var chatId in Administrators)
+            foreach (var chatId in _options.Administrators)
             {
                 EnqueueMessage(new TelegramOutboundMessage(chatId, text, format));
             }
@@ -67,7 +91,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
             using (var httpClient = new HttpClient())
             {
-                string uri = $"{BaseUri}{AuthenticationToken}/sendMessage";
+                string uri = $"{BaseUri}{_options.AuthenticationToken}/sendMessage";
                 StringContent body = ConvertOutboundMessageToJsonMessage(message);
                 HttpResponseMessage response = await httpClient.PostAsync(uri, body);
 
@@ -121,7 +145,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
         {
             using (var httpClient = new HttpClient())
             {
-                string uri = $"{BaseUri}{AuthenticationToken}/getUpdates?timeout=60&offset={_latestUpdateId + 1}";
+                string uri = $"{BaseUri}{_options.AuthenticationToken}/getUpdates?timeout=60&offset={_latestUpdateId + 1}";
                 HttpResponseMessage response = await httpClient.GetAsync(uri);
 
                 if (!response.IsSuccessStatusCode)
@@ -160,7 +184,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
         {
             TelegramInboundMessage inboundMessage = ConvertJsonMessageToInboundMessage(message);
 
-            if (!AllowAllClients && !ChatWhitelist.Contains(inboundMessage.ChatId))
+            if (!_options.AllowAllClients && !_options.ChatWhitelist.Contains(inboundMessage.ChatId))
             {
                 EnqueueMessage(inboundMessage.CreateResponse("Not authorized!"));
 
@@ -169,7 +193,9 @@ namespace HA4IoT.ExternalServices.TelegramBot
             }
             else
             {
-                MessageReceived?.Invoke(this, new TelegramBotMessageReceivedEventArgs(this, inboundMessage));
+                var answer = _personalAgentService.ProcessMessage(inboundMessage);
+                var response = inboundMessage.CreateResponse(answer);
+                EnqueueMessage(response);
             }
         }
 

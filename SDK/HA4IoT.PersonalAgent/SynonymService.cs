@@ -9,7 +9,6 @@ using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Networking;
-using ServiceBase = HA4IoT.Contracts.Services.ServiceBase;
 
 namespace HA4IoT.PersonalAgent
 {

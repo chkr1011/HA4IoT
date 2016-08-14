@@ -114,6 +114,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ContainerExtensions.cs" />
     <Compile Include="ControllerApiDispatcher.cs" />
     <Compile Include="HA4IoTController.cs" />
     <Compile Include="ControllerOptions.cs" />
@@ -185,6 +186,10 @@
     <ProjectReference Include="..\Hardware\HA4IoT.Hardware.Pi2\HA4IoT.Hardware.Pi2.csproj">
       <Project>{39819B8F-40F8-418A-AD3A-92A8C8D63268}</Project>
       <Name>HA4IoT.Hardware.Pi2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Hardware\HA4IoT.Hardware.RemoteSwitch\HA4IoT.Hardware.RemoteSwitch.csproj">
+      <Project>{BADA2E47-5626-4E9E-92A7-8F712D084493}</Project>
+      <Name>HA4IoT.Hardware.RemoteSwitch</Name>
     </ProjectReference>
     <ProjectReference Include="..\Hardware\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
       <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>

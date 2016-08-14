@@ -12,7 +12,6 @@ namespace HA4IoT.Automations.Tests
         private TestController _controller;
         private TestRollerShutter _rollerShutter;
         private TestWeatherStation _weatherStation;
-        private TestDaylightService _daylightService;
         private RollerShutterAutomation _automation;
 
         [TestMethod]
@@ -87,8 +86,7 @@ namespace HA4IoT.Automations.Tests
 
             _weatherStation = new TestWeatherStation();
             _weatherStation.OutdoorTemperature = 20;
-            _daylightService = new TestDaylightService();
-
+            
             _rollerShutter = testRollerShutterFactory.CreateTestRollerShutter();
             _controller.ComponentService.AddComponent(_rollerShutter);
 
@@ -96,7 +94,7 @@ namespace HA4IoT.Automations.Tests
                 AutomationIdFactory.EmptyId,
                 _controller.SchedulerService,
                 _controller.DateTimeService,
-                _daylightService,
+                _controller.DaylightService,
                 _weatherStation,
                 _controller.ComponentService);
 

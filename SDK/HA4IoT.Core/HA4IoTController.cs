@@ -14,12 +14,18 @@ using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Hardware.Services;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Daylight;
+using HA4IoT.Contracts.Services.OutdoorHumidity;
+using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.System;
+using HA4IoT.Contracts.Services.Weather;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.Pi2;
+using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Logger;
 using HA4IoT.Networking;
 using HA4IoT.PersonalAgent;
@@ -28,6 +34,7 @@ using HA4IoT.Services.Areas;
 using HA4IoT.Services.Automations;
 using HA4IoT.Services.Components;
 using HA4IoT.Services.Devices;
+using HA4IoT.Services.Environment;
 using HA4IoT.Services.Health;
 using HA4IoT.Services.Scheduling;
 using HA4IoT.Services.System;
@@ -40,7 +47,12 @@ namespace HA4IoT.Core
     public class HA4IoTController
     {
         private readonly Container _container = new Container();
+
         private readonly ControllerOptions _options;
+        private readonly TimerService _timerService = new TimerService();
+        private readonly SystemEventsService _systemEventsService = new SystemEventsService();
+        private readonly SystemInformationService _systemInformationService = new SystemInformationService();
+        private readonly ContainerService _containerService;
 
         private BackgroundTaskDeferral _deferral;
         private HttpServer _httpServer;
@@ -50,6 +62,8 @@ namespace HA4IoT.Core
             if (options == null) throw new ArgumentNullException(nameof(options));
 
             _options = options;
+            
+            _containerService = new ContainerService(_container);
         }
 
         public IHA4IoTInitializer Initializer { get; set; }
@@ -59,7 +73,6 @@ namespace HA4IoT.Core
             if (taskInstance == null) throw new ArgumentNullException(nameof(taskInstance));
 
             _deferral = taskInstance.GetDeferral();
-
             return RunAsync();
         }
 
@@ -83,7 +96,6 @@ namespace HA4IoT.Core
             _container.GetInstance<IApiService>().RegisterEndpoint(httpApiDispatcherEndpoint);
 
             var httpRequestDispatcher = new HttpRequestDispatcher(_httpServer);
-
             httpRequestDispatcher.MapFolder("App", StoragePath.AppRoot);
             httpRequestDispatcher.MapFolder("Storage", StoragePath.Root);
         }
@@ -135,17 +147,14 @@ namespace HA4IoT.Core
 
                 AttachComponentHistoryTracking();
 
-                foreach (var service in _container.GetAllInstances<IStartupCompletedNotification>())
-                {
-                    service.OnStartupCompleted();
-                }
-
+                _systemEventsService.FireStartupCompleted();
                 stopwatch.Stop();
+
                 Log.Info("Startup completed after " + stopwatch.Elapsed);
 
-                _container.GetInstance<ISystemInformationService>().Set("Health/StartupDuration", stopwatch.Elapsed);
-                _container.GetInstance<ISystemInformationService>().Set("Health/StartupTimestamp", DateTime.Now);
-                _container.GetInstance<ITimerService>().Run();
+                _systemInformationService.Set("Health/StartupDuration", stopwatch.Elapsed);
+                _systemInformationService.Set("Health/StartupTimestamp", DateTime.Now);
+                _timerService.Run();
             }
             catch (Exception exception)
             {
@@ -155,25 +164,23 @@ namespace HA4IoT.Core
 
         private void RegisterServices()
         {
-            var containerService = new ContainerService(_container);
-
             _container.RegisterSingleton<ControllerSettings>();
 
             _container.RegisterSingleton(() => new HealthServiceOptions { StatusLed = _options.StatusLedNumber });
             _container.RegisterSingleton<HealthService>();
-
             _container.RegisterSingleton<DiscoveryServer>();
 
             _container.RegisterSingleton<II2CBusService, BuiltInI2CBusService>();
-
-            _container.RegisterSingleton<Pi2GpioService>(); // TODO: Create interface!
+            _container.RegisterSingleton<IPi2GpioService, Pi2GpioService>();
             _container.RegisterSingleton<CCToolsBoardService>();
+            _container.RegisterSingleton<RemoteSocketService>();
 
-            _container.RegisterSingleton<IContainerService>(() => containerService);
-            _container.RegisterSingleton<ISystemInformationService, SystemInformationService>();
+            _container.RegisterSingleton<ITimerService>(() => _timerService);
+            _container.RegisterSingleton<ISystemEventsService>(() => _systemEventsService);
+            _container.RegisterSingleton<IContainerService>(() => _containerService);
+            _container.RegisterSingleton<ISystemInformationService>(() => _systemInformationService);
             _container.RegisterSingleton<IDateTimeService, DateTimeService>();
             _container.RegisterSingleton<ISchedulerService, SchedulerService>();
-            _container.RegisterSingleton<ITimerService, TimerService>();
 
             _container.RegisterSingleton<IDeviceService, DeviceService>();
             _container.RegisterSingleton<IComponentService, ComponentService>();
@@ -185,9 +192,16 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<SensorFactory>();
 
             _container.RegisterSingleton<IApiService, ApiService>();
+
+            _container.RegisterSingleton<PersonalAgentService>();
             _container.RegisterSingleton<SynonymService>();
 
-            Initializer?.RegisterServices(containerService);
+            _container.RegisterSingleton<IOutdoorTemperatureService, OutdoorTemperatureService>();
+            _container.RegisterSingleton<IOutdoorHumidityService, OutdoorHumidityService>();
+            _container.RegisterSingleton<IDaylightService, DaylightService>();
+            _container.RegisterSingleton<IWeatherService, WeatherService>();
+
+            Initializer?.RegisterServices(_containerService);
 
             _container.Verify();
         }
@@ -226,7 +240,7 @@ namespace HA4IoT.Core
             try
             {
                 Log.Info("Starting configuration");
-                Initializer?.Configure(_container.GetInstance<IContainerService>()).Wait();
+                Initializer?.Configure(_containerService).Wait();
             }
             catch (Exception exception)
             {
@@ -267,17 +281,5 @@ namespace HA4IoT.Core
                 history.ExposeToApi(_container.GetInstance<IApiService>());
             }
         }
-
-        // TODO: Migrate!
-
-        ////private void CreateConfigurationStatistics()
-        ////{
-        ////    var systemInformationService = ServiceLocator.GetService<ISystemInformationService>();
-        ////    systemInformationService.Set("Components/Count", _components.GetAll().Count);
-        ////    systemInformationService.Set("Areas/Count", _areas.GetAll().Count);
-        ////    systemInformationService.Set("Automations/Count", _automations.GetAll().Count);
-
-        ////    systemInformationService.Set("Services/Count", ServiceLocator.GetServices().Count);
-        ////}
     }
 }

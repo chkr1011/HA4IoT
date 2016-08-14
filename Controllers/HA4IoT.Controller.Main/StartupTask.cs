@@ -3,8 +3,7 @@ using Windows.ApplicationModel.Background;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.PersonalAgent;
+using HA4IoT.Contracts.Hardware.Services;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.OutdoorHumidity;
@@ -15,22 +14,20 @@ using HA4IoT.Controller.Main.Rooms;
 using HA4IoT.Core;
 using HA4IoT.ExternalServices.OpenWeatherMap;
 using HA4IoT.ExternalServices.TelegramBot;
-using HA4IoT.ExternalServices.Twitter;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
-using HA4IoT.Hardware.Pi2;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
 using HA4IoT.PersonalAgent;
 using HA4IoT.Services.ControllerSlave;
-using HA4IoT.Services.Environment;
 
 namespace HA4IoT.Controller.Main
 {
     public sealed class StartupTask : IBackgroundTask
     {
         private const int LedGpio = 22;
+        private const int LDP433MhzSenderPin = 10;
 
         public void Run(IBackgroundTaskInstance taskInstance)
         {
@@ -46,18 +43,21 @@ namespace HA4IoT.Controller.Main
         {
             public void RegisterServices(IContainerService containerService)
             {
-                RegisterI2CHardwareBridgeService(containerService);
                 RegisterOpenWeatherMapService(containerService);
                 RegisterControllerSlaveService(containerService);
-                RegisterTwitterClientService(containerService);
                 RegisterTelegramBotService(containerService);
             }
 
             public Task Configure(IContainerService containerService)
             {
                 var ccToolsBoardService = containerService.GetInstance<CCToolsBoardService>();
-                var pi2GpioService = containerService.GetInstance<Pi2GpioService>();
+                var pi2GpioService = containerService.GetInstance<IPi2GpioService>();
                 var synonymService = containerService.GetInstance<SynonymService>();
+                var deviceService = containerService.GetInstance<IDeviceService>();
+                var i2CBusService = containerService.GetInstance<II2CBusService>();
+                var schedulerService = containerService.GetInstance<ISchedulerService>();
+                var remoteSocketService = containerService.GetInstance<RemoteSocketService>();
+                var apiService = containerService.GetInstance<IApiService>();
 
                 synonymService.TryLoadPersistedSynonyms();
 
@@ -67,17 +67,24 @@ namespace HA4IoT.Controller.Main
                 ccToolsBoardService.CreateHSPE16InputOnly(InstalledDevice.Input3, new I2CSlaveAddress(45));
                 ccToolsBoardService.CreateHSPE16InputOnly(InstalledDevice.Input4, new I2CSlaveAddress(46));
                 ccToolsBoardService.CreateHSPE16InputOnly(InstalledDevice.Input5, new I2CSlaveAddress(44));
+                
+                var i2CHardwareBridge = new I2CHardwareBridge(new I2CSlaveAddress(50), i2CBusService, schedulerService);
+                deviceService.AddDevice(i2CHardwareBridge);
+                
+                remoteSocketService.Sender = new LPD433MHzSignalSender(i2CHardwareBridge, LDP433MhzSenderPin, apiService);
+                var brennenstuhl = new BrennenstuhlCodeSequenceProvider();
+                remoteSocketService.RegisterRemoteSocket(0, brennenstuhl.GetSequencePair(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A));
 
-                containerService.GetInstance<BedroomConfiguration>().Setup();
-                containerService.GetInstance<OfficeConfiguration>().Setup();
-                containerService.GetInstance<UpperBathroomConfiguration>().Setup();
-                containerService.GetInstance<ReadingRoomConfiguration>().Setup();
-                containerService.GetInstance<ChildrensRoomRoomConfiguration>().Setup();
-                containerService.GetInstance<KitchenConfiguration>().Setup();
-                containerService.GetInstance<FloorConfiguration>().Setup();
-                containerService.GetInstance<LowerBathroomConfiguration>().Setup();
-                containerService.GetInstance<StoreroomConfiguration>().Setup();
-                containerService.GetInstance<LivingRoomConfiguration>().Setup();
+                containerService.GetInstance<BedroomConfiguration>().Apply();
+                containerService.GetInstance<OfficeConfiguration>().Apply();
+                containerService.GetInstance<UpperBathroomConfiguration>().Apply();
+                containerService.GetInstance<ReadingRoomConfiguration>().Apply();
+                containerService.GetInstance<ChildrensRoomRoomConfiguration>().Apply();
+                containerService.GetInstance<KitchenConfiguration>().Apply();
+                containerService.GetInstance<FloorConfiguration>().Apply();
+                containerService.GetInstance<LowerBathroomConfiguration>().Apply();
+                containerService.GetInstance<StoreroomConfiguration>().Apply();
+                containerService.GetInstance<LivingRoomConfiguration>().Apply();
 
                 synonymService.RegisterDefaultComponentStateSynonyms();
 
@@ -90,87 +97,40 @@ namespace HA4IoT.Controller.Main
 
             private void RegisterOpenWeatherMapService(IContainerService containerService)
             {
-                var dateTimeService = containerService.GetInstance<IDateTimeService>();
-                var openWeatherMapService = containerService.GetInstance<OpenWeatherMapService>();
-
-                containerService.RegisterSingleton(() => openWeatherMapService);
-                containerService.RegisterSingleton<IOutdoorTemperatureService>(() => new OutdoorTemperatureService(openWeatherMapService, dateTimeService));
-                containerService.RegisterSingleton<IOutdoorHumidityService>(() => new OutdootHumidityService(openWeatherMapService, dateTimeService));
-                containerService.RegisterSingleton<IDaylightService>(() => new DaylightService(openWeatherMapService, dateTimeService));
-                containerService.RegisterSingleton<IWeatherService>(() => new WeatherService(openWeatherMapService, dateTimeService));
+                containerService.RegisterSingleton<OpenWeatherMapService>();
+                containerService.RegisterSingleton<IOutdoorTemperatureProvider, OpenWeatherMapOutdoorTemperatureProvider>();
+                containerService.RegisterSingleton<IOutdoorHumidityProvider, OpenWeatherMapOutdoorHumidityProvider>();
+                containerService.RegisterSingleton<IDaylightProvider, OpenWeatherMapDaylightProvider>();
+                containerService.RegisterSingleton<IWeatherProvider, OpenWeatherMapWeatherProvider>();
             }
 
             private void RegisterControllerSlaveService(IContainerService containerService)
             {
-                var controllerSlaveServiceOptions = new ControllerSlaveServiceOptions
+                var options = new ControllerSlaveServiceOptions
                 {
                     MasterControllerAddress = "127.0.0.1"
                 };
 
-                containerService.RegisterSingleton(() => controllerSlaveServiceOptions);
+                containerService.RegisterSingleton(() => options);
                 containerService.RegisterSingleton<ControllerSlaveService>();
+                ////containerService.RegisterSingleton<IOutdoorTemperatureProvider, OpenWeatherMapOutdoorTemperatureProvider>();
+                ////containerService.RegisterSingleton<IOutdoorHumidityProvider, OpenWeatherMapOutdoorHumidityProvider>();
+                ////containerService.RegisterSingleton<IDaylightProvider, OpenWeatherMapDaylightProvider>();
+                ////containerService.RegisterSingleton<IWeatherProvider, OpenWeatherMapWeatherProvider>();
+
+                // TODO: Create providers for controller slave service like open weather map...
             }
 
             private void RegisterTelegramBotService(IContainerService containerService)
             {
-                TelegramBotService telegramBotService;
-                if (!TelegramBotServiceFactory.TryCreateFromDefaultConfigurationFile(out telegramBotService))
+                TelegramBotServiceOptions options;
+                if (!TelegramBotServiceOptionsFactory.TryCreateFromDefaultConfigurationFile(out options))
                 {
                     return;
                 }
 
-                Log.WarningLogged += (s, e) =>
-                {
-                    telegramBotService.EnqueueMessageForAdministrators($"{Emoji.WarningSign} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
-                };
-
-                Log.ErrorLogged += (s, e) =>
-                {
-                    if (e.Message.StartsWith("Sending Telegram message failed"))
-                    {
-                        // Prevent recursive send of sending failures.
-                        return;
-                    }
-
-                    telegramBotService.EnqueueMessageForAdministrators($"{Emoji.HeavyExclamationMark} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
-                };
-
-                telegramBotService.EnqueueMessageForAdministrators($"{Emoji.Bell} Das System ist gestartet.");
-
-                containerService.GetInstance<PersonalAgentToTelegramBotDispatcher>().ExposeToTelegramBot(telegramBotService);
-                containerService.RegisterSingleton(() => telegramBotService);
-            }
-
-            private void RegisterTwitterClientService(IContainerService containerService)
-            {
-                TwitterClientService twitterClientService;
-                if (!TwitterClientServiceFactory.TryCreateFromDefaultConfigurationFile(out twitterClientService))
-                {
-                    return;
-                }
-
-                containerService.RegisterSingleton(() => twitterClientService);
-            }
-
-            private void RegisterI2CHardwareBridgeService(IContainerService containerService)
-            {
-                const int LDP433MhzSenderPin = 10;
-
-                var deviceService = containerService.GetInstance<IDeviceService>();
-                var i2CBusService = containerService.GetInstance<II2CBusService>();
-                var schedulerService = containerService.GetInstance<ISchedulerService>();
-                var apiService = containerService.GetInstance<IApiService>();
-
-                var i2CHardwareBridge = new I2CHardwareBridge(new I2CSlaveAddress(50), i2CBusService, schedulerService);
-                deviceService.AddDevice(i2CHardwareBridge);
-
-                var brennenstuhl = new BrennenstuhlCodeSequenceProvider();
-                var ldp433MHzSender = new LPD433MHzSignalSender(i2CHardwareBridge, LDP433MhzSenderPin, apiService);
-
-                var remoteSwitchService = new RemoteSocketService(ldp433MHzSender, schedulerService)
-                    .WithRemoteSocket(0, brennenstuhl.GetSequencePair(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A));
-
-                containerService.RegisterSingleton(() => remoteSwitchService);
+                containerService.RegisterSingleton(() => options);
+                containerService.RegisterSingleton<TelegramBotService>();
             }
         }
     }

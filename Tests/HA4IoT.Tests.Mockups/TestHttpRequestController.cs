@@ -31,6 +31,10 @@ namespace HA4IoT.Tests.Mockups
         {
         }
 
+        public void Route(string uri, Action<IApiContext> handler)
+        {
+        }
+
         public void NotifyStateChanged(IComponent component)
         {
         }

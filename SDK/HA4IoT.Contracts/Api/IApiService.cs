@@ -11,6 +11,8 @@ namespace HA4IoT.Contracts.Api
 
         void RouteCommand(string uri, Action<IApiContext> handler);
 
+        void Route(string uri, Action<IApiContext> handler);
+
         void NotifyStateChanged(IComponent component);
     }
 }

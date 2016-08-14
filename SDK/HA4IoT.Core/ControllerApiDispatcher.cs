@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Reflection;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Networking;
@@ -63,18 +61,11 @@ namespace HA4IoT.Core
                     _apiService.RouteCommand($"service/{registration.ServiceType.Name}", apiExposedService.HandleApiCall);
                 }
             }
-
-            foreach (var device in _deviceService.GetDevices())
-            {
-                _apiService.RouteRequest($"device/{device.Id}", device.HandleApiCall);
-                _apiService.RouteCommand($"device/{device.Id}", device.HandleApiCall);
-            }
-
+            
             foreach (var component in _componentService.GetComponents())
             {
-                _apiService.RouteCommand($"component/{component.Id}/status", component.HandleApiCall);
-                _apiService.RouteRequest($"component/{component.Id}/status", component.HandleApiCall);
-
+                _apiService.Route($"component/{component.Id}/status", component.HandleApiCall);
+                
                 new SettingsContainerApiDispatcher(component.Settings, $"component/{component.Id}", _apiService).ExposeToApi();
                 component.StateChanged += (s, e) => _apiService.NotifyStateChanged(component);
             }

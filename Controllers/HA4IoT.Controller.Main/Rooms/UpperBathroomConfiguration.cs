@@ -77,7 +77,7 @@ namespace HA4IoT.Controller.Main.Rooms
             _sensorFactory = sensorFactory;
         }
 
-        public void Setup()
+        public void Apply()
         {
             var hsrel5 = _ccToolsBoardService.CreateHSREL5(InstalledDevice.UpperBathroomHSREL5, new I2CSlaveAddress(61));
             var input5 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input5);

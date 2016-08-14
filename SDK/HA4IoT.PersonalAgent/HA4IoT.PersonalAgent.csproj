@@ -110,6 +110,7 @@
     <Compile Include="ApiInboundMessage.cs" />
     <Compile Include="MessageContext.cs" />
     <Compile Include="MessageContextFactory.cs" />
+    <Compile Include="PersonalAgentService.cs" />
     <Compile Include="PersonalAgentToApiDispatcher.cs" />
     <Compile Include="PersonalAgentMessageProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

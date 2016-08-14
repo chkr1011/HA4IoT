@@ -71,7 +71,7 @@ namespace HA4IoT.Controller.Main.Rooms
             _sensorFactory = sensorFactory;
         }
 
-        public void Setup()
+        public void Apply()
         {
             var hsrel8LowerHeatingValves = _ccToolsBoardService.CreateHSREL8(InstalledDevice.LowerHeatingValvesHSREL8, new I2CSlaveAddress(16));
             var hsrel5UpperHeatingValves = _ccToolsBoardService.CreateHSREL5(InstalledDevice.UpperHeatingValvesHSREL5, new I2CSlaveAddress(56));
