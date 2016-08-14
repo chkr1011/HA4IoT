@@ -115,8 +115,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ByteExtensions.cs" />
-    <Compile Include="ControllerExtensions.cs" />
-    <Compile Include="BuiltInI2CBus.cs" />
+    <Compile Include="BuiltInI2CBusService.cs" />
     <Compile Include="DeviceIdFactory.cs" />
     <Compile Include="I2CDeviceWrapper.cs" />
     <Compile Include="InterruptMonitor.cs" />

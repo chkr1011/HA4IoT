@@ -1,12 +1,12 @@
-﻿using HA4IoT.Actuators.Connectors;
+﻿using System;
+using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Actuators.Sockets;
 using HA4IoT.Automations;
-using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Core;
-using HA4IoT.Hardware;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.PersonalAgent;
@@ -14,11 +14,18 @@ using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.TemperatureSensors;
 using HA4IoT.Sensors.Windows;
+using HA4IoT.Services.Areas;
+using HA4IoT.Services.Devices;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
-    internal class ReadingRoomConfiguration : RoomConfiguration
+    internal class ReadingRoomConfiguration
     {
+        private readonly IAreaService _areaService;
+        private readonly SynonymService _synonymService;
+        private readonly IDeviceService _deviceService;
+        private readonly CCToolsBoardService _ccToolsBoardService;
+
         private enum ReadingRoom
         {
             TemperatureSensor,
@@ -39,23 +46,34 @@ namespace HA4IoT.Controller.Main.Rooms
             Window
         }
 
-        public ReadingRoomConfiguration(IController controller) 
-            : base(controller)
+        public ReadingRoomConfiguration(
+            IAreaService areaService,
+            SynonymService synonymService,
+            IDeviceService deviceService,
+            CCToolsBoardService ccToolsBoardService)
         {
+            if (areaService == null) throw new ArgumentNullException(nameof(areaService));
+            if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
+            if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
+            if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
+
+            _areaService = areaService;
+            _synonymService = synonymService;
+            _deviceService = deviceService;
+            _ccToolsBoardService = ccToolsBoardService;
         }
 
-        public override void Setup()
+        public void Setup()
         {
-            var hsrel5 = CCToolsBoardController.CreateHSREL5(InstalledDevice.ReadingRoomHSREL5, new I2CSlaveAddress(62));
-            var input2 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input2);
-
-            var i2cHardwareBridge = Controller.GetDevice<I2CHardwareBridge>();
+            var hsrel5 = _ccToolsBoardService.CreateHSREL5(InstalledDevice.ReadingRoomHSREL5, new I2CSlaveAddress(62));
+            var input2 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input2);
+            var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
 
             const int SensorPin = 9;
 
-            var room = Controller.CreateArea(Room.ReadingRoom)
-                .WithTemperatureSensor(ReadingRoom.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
-                .WithHumiditySensor(ReadingRoom.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
+            var room = _areaService.CreateArea(Room.ReadingRoom)
+                .WithTemperatureSensor(ReadingRoom.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
+                .WithHumiditySensor(ReadingRoom.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
                 .WithLamp(ReadingRoom.LightCeilingMiddle, hsrel5[HSREL5Pin.GPIO0])
                 .WithRollerShutter(ReadingRoom.RollerShutter, hsrel5[HSREL5Pin.Relay4], hsrel5[HSREL5Pin.Relay3])
                 .WithSocket(ReadingRoom.SocketWindow, hsrel5[HSREL5Pin.Relay0])
@@ -71,7 +89,7 @@ namespace HA4IoT.Controller.Main.Rooms
             room.GetRollerShutter(ReadingRoom.RollerShutter)
                 .ConnectWith(room.GetButton(ReadingRoom.RollerShutterButtonUp), room.GetButton(ReadingRoom.RollerShutterButtonDown));
 
-            Controller.ServiceLocator.GetService<SynonymService>().AddSynonymsForArea(Room.ReadingRoom, "Lesezimmer", "Gästezimmer", "ReadingRoom");
+            _synonymService.AddSynonymsForArea(Room.ReadingRoom, "Lesezimmer", "Gästezimmer", "ReadingRoom");
         }
     }
 }

@@ -103,7 +103,7 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void Associate_TriggerWithActuatorAction()
         {
-            var buttonFactory = new TestButtonFactory(new TestHomeAutomationTimer());
+            var buttonFactory = new TestButtonFactory(new TestTimerService());
             var stateMachineFactory = new TestStateMachineFactory();
 
             var testButton = buttonFactory.CreateTestButton();

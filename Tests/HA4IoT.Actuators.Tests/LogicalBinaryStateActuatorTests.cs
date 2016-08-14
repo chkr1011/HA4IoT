@@ -13,7 +13,7 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void TurnOn_CombinedActuators()
         {
-            var timer = new TestHomeAutomationTimer();
+            var timer = new TestTimerService();
             
             var stateMachineFactory = new TestStateMachineFactory();
             var testActuator1 = stateMachineFactory.CreateTestStateMachineWithOnOffStates();

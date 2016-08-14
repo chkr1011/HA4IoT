@@ -1,10 +1,11 @@
 ﻿using System;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Tests.Mockups
 {
-    public class TestI2CBus : II2CBus
+    public class TestI2CBus : II2CBusService
     {
         public TestI2CBus(DeviceId deviceId)
         {

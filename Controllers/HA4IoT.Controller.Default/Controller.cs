@@ -28,10 +28,8 @@ namespace HA4IoT.Controller.Default
 
         protected override async Task ConfigureAsync()
         {
-            AddDevice(new BuiltInI2CBus());
-
-            var pi2PortController = new Pi2PortController();
-            var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>());
+            var pi2PortController = new Pi2GpioService();
+            var ccToolsBoardController = new CCToolsBoardService(this, GetDevice<II2CBusService>());
 
             AddDevice(pi2PortController);
             AddDevice(ccToolsBoardController);

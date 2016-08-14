@@ -20,7 +20,7 @@ namespace HA4IoT.Automations.Tests
                 testController.ServiceLocator.GetService<IDateTimeService>(),
                 testController.ServiceLocator.GetService<IDaylightService>());
 
-            var testButtonFactory = new TestButtonFactory(testController.Timer);
+            var testButtonFactory = new TestButtonFactory(testController.TimerService);
             var testStateMachineFactory = new TestStateMachineFactory();
 
             var testButton = testButtonFactory.CreateTestButton();

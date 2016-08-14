@@ -45,7 +45,7 @@ namespace HA4IoT.Logger
             _timer.Change(0, Timeout.Infinite);
         }
 
-        public void ExposeToApi(IApiController apiController)
+        public void ExposeToApi(IApiService apiController)
         {
             if (apiController == null) throw new ArgumentNullException(nameof(apiController));
 

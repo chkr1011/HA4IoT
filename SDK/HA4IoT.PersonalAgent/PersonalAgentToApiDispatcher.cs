@@ -1,22 +1,22 @@
 ﻿using System;
 using HA4IoT.Contracts.Api;
-using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Networking;
 
 namespace HA4IoT.PersonalAgent
 {
     public class PersonalAgentToApiDispatcher
     {
-        private readonly IController _controller;
-
-        public PersonalAgentToApiDispatcher(IController controller)
+        private readonly IContainerService _factoryService;
+        
+        public PersonalAgentToApiDispatcher(IContainerService factoryService)
         {
-            if (controller == null) throw new ArgumentNullException(nameof(controller));
+            if (_factoryService == null) throw new ArgumentNullException(nameof(factoryService));
 
-            _controller = controller;
+            _factoryService = factoryService;
         }
 
-        public void ExposeToApi(IApiController apiController)
+        public void ExposeToApi(IApiService apiController)
         {
             if (apiController == null) throw new ArgumentNullException(nameof(apiController));
 
@@ -32,7 +32,7 @@ namespace HA4IoT.PersonalAgent
                 return;
             }
             
-            var messageProcessor = new PersonalAgentMessageProcessor(_controller);
+            var messageProcessor = _factoryService.GetInstance<PersonalAgentMessageProcessor>();
             messageProcessor.ProcessMessage(new ApiInboundMessage(DateTime.Now, message));
 
             apiContext.Response.SetNamedString("answer", messageProcessor.Answer);

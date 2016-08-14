@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;
-using HA4IoT.Actuators.RollerShutters;
-using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Actuators.Triggers;
-using HA4IoT.Automations;
 using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
@@ -25,15 +21,11 @@ using HA4IoT.ExternalServices.Twitter;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
-using HA4IoT.Hardware.Pi2;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
 using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.HumiditySensors;
-using HA4IoT.Sensors.MotionDetectors;
-using HA4IoT.Sensors.TemperatureSensors;
-using HA4IoT.Sensors.Windows;
 
 namespace HA4IoT.Controller.Demo
 {
@@ -47,18 +39,10 @@ namespace HA4IoT.Controller.Demo
         {
         }
 
-        protected override async Task ConfigureAsync()
+        protected override async Task ConfigureAsync(IDeviceService deviceService)
         {
-            AddDevice(new BuiltInI2CBus());
-
-            var piPortController = new Pi2PortController();
-            AddDevice(piPortController);
-
-            var ccToolsBoardController = new CCToolsBoardController(this, GetDevice<II2CBus>());
-            AddDevice(ccToolsBoardController);
-
             // Setup the remote switch 433Mhz sender which is attached to the I2C bus (Arduino Nano).
-            AddDevice(new I2CHardwareBridge(new I2CSlaveAddress(50), GetDevice<II2CBus>(), ServiceLocator.GetService<ISchedulerService>()));
+            deviceService.AddDevice(new I2CHardwareBridge(new I2CSlaveAddress(50), GetDevice<II2CBusService>(), ServiceLocator.GetService<ISchedulerService>()));
 
             ServiceLocator.RegisterService(typeof(SynonymService), new SynonymService());
             ServiceLocator.RegisterService(typeof (OpenWeatherMapService),
@@ -72,7 +56,7 @@ namespace HA4IoT.Controller.Demo
             ServiceLocator.GetService<SynonymService>().TryLoadPersistedSynonyms();
             ServiceLocator.GetService<SynonymService>().RegisterDefaultComponentStateSynonyms(this);
 
-            Timer.Tick += (s, e) =>
+            TimerService.Tick += (s, e) =>
             {
                 piPortController.PollOpenInputPorts();
                 ccToolsBoardController.PollInputBoardStates();
@@ -163,7 +147,7 @@ namespace HA4IoT.Controller.Demo
 
         private void SetupRoom()
         {
-            var ccToolsBoardController = GetDevice<CCToolsBoardController>();
+            var ccToolsBoardController = GetDevice<CCToolsBoardService>();
 
             var hspe16 = ccToolsBoardController.CreateHSPE16InputOnly(InstalledDevice.HSPE16, new I2CSlaveAddress(41));
             var hsrel8 = ccToolsBoardController.CreateHSREL8(InstalledDevice.HSRel8, new I2CSlaveAddress(40));

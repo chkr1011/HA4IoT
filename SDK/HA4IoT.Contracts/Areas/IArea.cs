@@ -1,18 +1,21 @@
 ﻿using Windows.Data.Json;
-using HA4IoT.Contracts.Automations;
-using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core.Settings;
 
 namespace HA4IoT.Contracts.Areas
 {
-    public interface IArea : IAutomationController, IComponentController
+    public interface IArea
     {
         AreaId Id { get; }
 
         ISettingsContainer Settings { get; }
-
-        IController Controller { get; }
-
+        
         JsonObject ExportConfigurationToJsonObject();
+
+        void AddComponent(IComponent component);
+
+        TComponent GetComponent<TComponent>() where TComponent : IComponent;
+
+        TComponent GetComponent<TComponent>(ComponentId id) where TComponent : IComponent;
     }
 }

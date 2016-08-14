@@ -12,7 +12,7 @@ namespace HA4IoT.Sensors.Buttons
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
             
-            var virtualButton = new Button(ComponentIdFactory.Create(area.Id, id), new EmptyButtonEndpoint(), area.Controller.Timer);
+            var virtualButton = new Button(ComponentIdFactory.Create(area.Id, id), new EmptyButtonEndpoint(), area.Controller.TimerService);
             initializer?.Invoke(virtualButton);
 
             area.AddComponent(virtualButton);
@@ -27,7 +27,7 @@ namespace HA4IoT.Sensors.Buttons
             var button = new Button(
                 ComponentIdFactory.Create(area.Id, id), 
                 new PortBasedButtonEndpoint(input),
-                area.Controller.Timer);
+                area.Controller.TimerService);
 
             initializer?.Invoke(button);
 
@@ -49,14 +49,14 @@ namespace HA4IoT.Sensors.Buttons
             var upButton = new Button(
                 ComponentIdFactory.Create(area.Id, upId),
                 new PortBasedButtonEndpoint(upInput), 
-                area.Controller.Timer);
+                area.Controller.TimerService);
 
             area.AddComponent(upButton);
 
             var downButton = new Button(
                 ComponentIdFactory.Create(area.Id, downId),
                 new PortBasedButtonEndpoint(downInput), 
-                area.Controller.Timer);
+                area.Controller.TimerService);
 
             area.AddComponent(downButton);
 

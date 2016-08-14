@@ -8,6 +8,7 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Services.Weather;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
@@ -26,7 +27,7 @@ namespace HA4IoT.Configuration.Tests
         [TestMethod]
         public void Parse_I2CBusDevice()
         {
-            GetController().GetDevices<II2CBus>().Count.ShouldBeEquivalentTo(1);
+            GetController().GetDevices<II2CBusService>().Count.ShouldBeEquivalentTo(1);
         }
 
         [TestMethod]

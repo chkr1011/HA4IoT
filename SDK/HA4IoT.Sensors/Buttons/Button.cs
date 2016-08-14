@@ -8,6 +8,7 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Sensors.Buttons
@@ -19,7 +20,7 @@ namespace HA4IoT.Sensors.Buttons
         private readonly Trigger _pressedLongTrigger = new Trigger();
         private readonly ButtonSettingsWrapper _settings;
 
-        public Button(ComponentId id, IButtonEndpoint endpoint, IHomeAutomationTimer timer)
+        public Button(ComponentId id, IButtonEndpoint endpoint, ITimerService timerService)
             : base(id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
@@ -29,7 +30,7 @@ namespace HA4IoT.Sensors.Buttons
 
             SetState(ButtonStateId.Released);
 
-            timer.Tick += CheckForTimeout;
+            timerService.Tick += CheckForTimeout;
             endpoint.Pressed += (s, e) => HandleInputStateChanged(ButtonStateId.Pressed);
             endpoint.Released += (s, e) => HandleInputStateChanged(ButtonStateId.Released);
         }

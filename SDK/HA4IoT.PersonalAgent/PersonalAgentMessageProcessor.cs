@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.PersonalAgent;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Components;
+using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.OutdoorHumidity;
 using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.Weather;
@@ -18,15 +17,35 @@ namespace HA4IoT.PersonalAgent
 {
     public class PersonalAgentMessageProcessor
     {
-        private readonly IController _controller;
-        
+        private readonly SynonymService _synonymService;
+        private readonly IComponentService _componentService;
+        private readonly IAreaService _areaService;
+        private readonly IWeatherService _weatherService;
+        private readonly IOutdoorTemperatureService _outdoorTemperatureService;
+        private readonly IOutdoorHumidityService _outdoorHumidityService;
+
         private MessageContext _messageContext;
 
-        public PersonalAgentMessageProcessor(IController controller)
+        public PersonalAgentMessageProcessor(
+            SynonymService synonymService,
+            IComponentService componentService,
+            IAreaService areaService,
+            IWeatherService weatherService,
+            IOutdoorTemperatureService outdoorTemperatureService,
+            IOutdoorHumidityService outdoorHumidityService)
         {
-            if (controller == null) throw new ArgumentNullException(nameof(controller));
+            if (componentService == null) throw new ArgumentNullException(nameof(componentService));
+            if (areaService == null) throw new ArgumentNullException(nameof(areaService));
+            if (weatherService == null) throw new ArgumentNullException(nameof(weatherService));
+            if (outdoorTemperatureService == null) throw new ArgumentNullException(nameof(outdoorTemperatureService));
+            if (outdoorHumidityService == null) throw new ArgumentNullException(nameof(outdoorHumidityService));
 
-            _controller = controller;
+            _synonymService = synonymService;
+            _componentService = componentService;
+            _areaService = areaService;
+            _weatherService = weatherService;
+            _outdoorTemperatureService = outdoorTemperatureService;
+            _outdoorHumidityService = outdoorHumidityService;
         }
 
         public string Answer { get; private set; }
@@ -35,8 +54,7 @@ namespace HA4IoT.PersonalAgent
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
-            var synonymService = _controller.ServiceLocator.GetService<SynonymService>();
-            var messageContextFactory = new MessageContextFactory(synonymService, _controller);
+            var messageContextFactory = new MessageContextFactory(_synonymService, _areaService);
             _messageContext = messageContextFactory.Create(message);
 
             try
@@ -138,7 +156,7 @@ namespace HA4IoT.PersonalAgent
 
             if (_messageContext.FilteredComponentIds.Count == 1)
             {
-                var component = _controller.GetComponent<IComponent>(_messageContext.IdentifiedComponentIds.First());
+                var component = _componentService.GetComponent<IComponent>(_messageContext.IdentifiedComponentIds.First());
 
                 IActuator actuator = component as IActuator;
                 if (actuator != null)
@@ -179,22 +197,18 @@ namespace HA4IoT.PersonalAgent
 
         private string GetWeatherStatus()
         {
-            var weatherService = _controller.ServiceLocator.GetService<IWeatherService>();
-            var outdoorTemperatureService = _controller.ServiceLocator.GetService<IOutdoorTemperatureService>();
-            var outdoorHumidityService = _controller.ServiceLocator.GetService<IOutdoorHumidityService>();
-
             var response = new StringBuilder();
             response.AppendLine($"{Emoji.BarChart} Das Wetter ist aktuell:");
-            response.AppendLine($"Temperatur: {outdoorTemperatureService.OutdoorTemperature}°C");
-            response.AppendLine($"Luftfeuchtigkeit: {outdoorHumidityService.OutdoorHumidity}%");
-            response.AppendLine($"Situation: {weatherService.Weather}");
+            response.AppendLine($"Temperatur: {_outdoorTemperatureService.OutdoorTemperature}°C");
+            response.AppendLine($"Luftfeuchtigkeit: {_outdoorHumidityService.OutdoorHumidity}%");
+            response.AppendLine($"Wetter: {_weatherService.Weather}");
 
             return response.ToString();
         }
 
         private string GetWindowStatus()
         {
-            var allWindows = _controller.GetComponents<IWindow>();
+            var allWindows = _componentService.GetComponents<IWindow>();
             List<IWindow> openWindows = allWindows.Where(w => w.Casements.Any(c => !c.GetState().Equals(CasementStateId.Closed))).ToList();
 
             string response;

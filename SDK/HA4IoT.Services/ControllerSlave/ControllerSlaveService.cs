@@ -14,7 +14,7 @@ namespace HA4IoT.Services.ControllerSlave
 {
     public class ControllerSlaveService : ServiceBase, IOutdoorTemperatureProvider, IOutdoorHumidityProvider, IDaylightProvider, IWeatherProvider
     {
-        private readonly string _masterControllerAddress;
+        private readonly ControllerSlaveServiceOptions _masterControllerAddress;
         private readonly IDateTimeService _dateTimeService;
 
         public event EventHandler<OutdoorTemperatureFetchedEventArgs> OutdoorTemperatureFetched;
@@ -25,13 +25,13 @@ namespace HA4IoT.Services.ControllerSlave
         private DateTime? _lastPull;
         private DateTime? _lastSuccessfulPull;
 
-        public ControllerSlaveService(string masterControllerAddress, ISchedulerService scheduler, IDateTimeService dateTimeService)
+        public ControllerSlaveService(ControllerSlaveServiceOptions options, ISchedulerService scheduler, IDateTimeService dateTimeService)
         {
-            if (masterControllerAddress == null) throw new ArgumentNullException(nameof(masterControllerAddress));
+            if (options == null) throw new ArgumentNullException(nameof(options));
             if (scheduler == null) throw new ArgumentNullException(nameof(scheduler));
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
 
-            _masterControllerAddress = masterControllerAddress;
+            _masterControllerAddress = options;
             _dateTimeService = dateTimeService;
 
             scheduler.RegisterSchedule("ControllerSlavePolling", TimeSpan.FromMinutes(5), PullValues);
@@ -98,7 +98,7 @@ namespace HA4IoT.Services.ControllerSlave
 
         private JsonObject PullValue(string serviceName)
         {
-            var uri = new Uri($"http://{_masterControllerAddress}:80/api/service/{serviceName}");
+            var uri = new Uri($"http://{_masterControllerAddress.MasterControllerAddress}:80/api/service/{serviceName}");
             using (var webClient = new HttpClient())
             {
                 string body = webClient.GetStringAsync(uri).Result;

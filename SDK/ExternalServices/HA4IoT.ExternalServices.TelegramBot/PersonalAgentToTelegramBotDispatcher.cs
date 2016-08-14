@@ -1,18 +1,18 @@
 ﻿using System;
-using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.PersonalAgent;
 
 namespace HA4IoT.ExternalServices.TelegramBot
 {
     public class PersonalAgentToTelegramBotDispatcher
     {
-        private readonly IController _controller;
-
-        public PersonalAgentToTelegramBotDispatcher(IController controller)
+        private readonly IContainerService _containerService;
+        
+        public PersonalAgentToTelegramBotDispatcher(IContainerService containerService)
         {
-            if (controller == null) throw new ArgumentNullException(nameof(controller));
-
-            _controller = controller;
+            if (containerService == null) throw new ArgumentNullException(nameof(containerService));
+            
+            _containerService = containerService;
         }
 
         public void ExposeToTelegramBot(TelegramBotService telegramBotService)
@@ -24,7 +24,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
         private void ProcessMessageAndSendAnswer(object sender, TelegramBotMessageReceivedEventArgs e)
         {
-            var messageProcessor = new PersonalAgentMessageProcessor(_controller);
+            var messageProcessor = _containerService.GetInstance<PersonalAgentMessageProcessor>();
             messageProcessor.ProcessMessage(e.Message);
 
             e.EnqueueResponse(messageProcessor.Answer, TelegramMessageFormat.HTML);

@@ -34,7 +34,7 @@ namespace HA4IoT.Actuators.RollerShutters
             var rollerShutter = new RollerShutter(
                 ComponentIdFactory.Create(area.Id, id), 
                 new PortBasedRollerShutterEndpoint(powerOutput, directionOutput),
-                area.Controller.Timer,
+                area.Controller.TimerService,
                 area.Controller.ServiceLocator.GetService<ISchedulerService>());
 
             area.AddComponent(rollerShutter);

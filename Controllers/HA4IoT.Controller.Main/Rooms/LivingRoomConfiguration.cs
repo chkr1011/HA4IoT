@@ -1,10 +1,9 @@
 ﻿using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.Sockets;
-using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Core;
-using HA4IoT.Hardware;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.PersonalAgent;
@@ -12,11 +11,18 @@ using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.TemperatureSensors;
 using HA4IoT.Sensors.Windows;
+using HA4IoT.Services.Areas;
+using HA4IoT.Services.Devices;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
-    internal class LivingRoomConfiguration : RoomConfiguration
+    internal class LivingRoomConfiguration
     {
+        private readonly IDeviceService _deviceService;
+        private readonly IAreaService _areaService;
+        private readonly CCToolsBoardService _ccToolsBoardService;
+        private readonly SynonymService _synonymService;
+
         private enum LivingRoom
         {
             MotionDetector,
@@ -51,26 +57,32 @@ namespace HA4IoT.Controller.Main.Rooms
             WindowRight,
         }
 
-        public LivingRoomConfiguration(IController controller) 
-            : base(controller)
+        public LivingRoomConfiguration(
+            IDeviceService deviceService,
+            IAreaService areaService,
+            CCToolsBoardService ccToolsBoardService, 
+            SynonymService synonymService)
         {
+            _deviceService = deviceService;
+            _areaService = areaService;
+            _ccToolsBoardService = ccToolsBoardService;
+            _synonymService = synonymService;
         }
 
-        public override void Setup()
+        public void Setup()
         {
-            var hsrel8 = CCToolsBoardController.CreateHSREL8(InstalledDevice.LivingRoomHSREL8, new I2CSlaveAddress(18));
-            var hsrel5 = CCToolsBoardController.CreateHSREL5(InstalledDevice.LivingRoomHSREL5, new I2CSlaveAddress(57));
+            var hsrel8 = _ccToolsBoardService.CreateHSREL8(InstalledDevice.LivingRoomHSREL8, new I2CSlaveAddress(18));
+            var hsrel5 = _ccToolsBoardService.CreateHSREL5(InstalledDevice.LivingRoomHSREL5, new I2CSlaveAddress(57));
             
-            var input0 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input0);
-            var input1 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input1);
-
-            var i2cHardwareBridge = Controller.GetDevice<I2CHardwareBridge>();
+            var input0 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input0);
+            var input1 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input1);
+            var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
 
             const int SensorPin = 12;
 
-            var room = Controller.CreateArea(Room.LivingRoom)
-                .WithTemperatureSensor(LivingRoom.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
-                .WithHumiditySensor(LivingRoom.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
+            var room = _areaService.CreateArea(Room.LivingRoom)
+                .WithTemperatureSensor(LivingRoom.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
+                .WithHumiditySensor(LivingRoom.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
                 .WithLamp(LivingRoom.LampCouch, hsrel8.GetOutput(8).WithInvertedState())
                 .WithLamp(LivingRoom.LampDiningTable, hsrel8.GetOutput(9).WithInvertedState())
                 .WithSocket(LivingRoom.SocketWindowLeftLower, hsrel8.GetOutput(1))
@@ -102,7 +114,7 @@ namespace HA4IoT.Controller.Main.Rooms
             room.Socket(LivingRoom.SocketWallRightEdgeRight).
                 ConnectToggleActionWith(room.GetButton(LivingRoom.ButtonLower));
 
-            Controller.ServiceLocator.GetService<SynonymService>().AddSynonymsForArea(Room.LivingRoom, "Wohnzimmer", "LivingRoom");
+            _synonymService.AddSynonymsForArea(Room.LivingRoom, "Wohnzimmer", "LivingRoom");
         }
     }
 }

@@ -2,15 +2,16 @@
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Hardware.I2CHardwareBridge
 {
     public class I2CHardwareBridge : IDevice
     {
         private readonly I2CSlaveAddress _address;
-        private readonly II2CBus _i2CBus;
+        private readonly II2CBusService _i2CBus;
 
-        public I2CHardwareBridge(I2CSlaveAddress address, II2CBus i2cBus, ISchedulerService schedulerService)
+        public I2CHardwareBridge(I2CSlaveAddress address, II2CBusService i2cBus, ISchedulerService schedulerService)
         {
             if (i2cBus == null) throw new ArgumentNullException(nameof(i2cBus));
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));

@@ -113,8 +113,8 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Pi2Port.cs" />
-    <Compile Include="Pi2PortController.cs" />
+    <Compile Include="Pi2Gpio.cs" />
+    <Compile Include="Pi2GpioService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.Hardware.Pi2.rd.xml" />
   </ItemGroup>

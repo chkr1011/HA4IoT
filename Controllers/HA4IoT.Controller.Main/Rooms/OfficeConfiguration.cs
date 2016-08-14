@@ -1,26 +1,36 @@
-﻿using HA4IoT.Actuators.Sockets;
+﻿using System;
+using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Core;
-using HA4IoT.Hardware;
+using HA4IoT.Contracts.Services.Daylight;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
+using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Sensors.TemperatureSensors;
 using HA4IoT.Sensors.Windows;
+using HA4IoT.Services.Areas;
+using HA4IoT.Services.Devices;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
-    internal class OfficeConfiguration : RoomConfiguration
+    internal class OfficeConfiguration
     {
+        private readonly IDeviceService _deviceService;
+        private readonly IAreaService _areaService;
+        private readonly IDaylightService _daylightService;
+        private readonly CCToolsBoardService _ccToolsBoardService;
+        private readonly SynonymService _synonymService;
+        private readonly RemoteSocketService _remoteSocketService;
+
         public enum Office
         {
             TemperatureSensor,
@@ -48,26 +58,43 @@ namespace HA4IoT.Controller.Main.Rooms
             WindowRight
         }
 
-        public OfficeConfiguration(IController controller) 
-            : base(controller)
+        public OfficeConfiguration(
+            IDeviceService deviceService,
+            IAreaService areaService,
+            IDaylightService daylightService,
+            CCToolsBoardService ccToolsBoardService,
+            SynonymService synonymService,
+            RemoteSocketService remoteSocketService)
         {
+            if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
+            if (areaService == null) throw new ArgumentNullException(nameof(areaService));
+            if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
+            if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
+            if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
+            if (remoteSocketService == null) throw new ArgumentNullException(nameof(remoteSocketService));
+
+            _deviceService = deviceService;
+            _areaService = areaService;
+            _daylightService = daylightService;
+            _ccToolsBoardService = ccToolsBoardService;
+            _synonymService = synonymService;
+            _remoteSocketService = remoteSocketService;
         }
 
-        public override void Setup()
+        public void Setup()
         {
-            var hsrel8 = CCToolsBoardController.CreateHSREL8(InstalledDevice.OfficeHSREL8, new I2CSlaveAddress(20));
-            var hspe8 = CCToolsBoardController.CreateHSPE8OutputOnly(InstalledDevice.UpperFloorAndOfficeHSPE8, new I2CSlaveAddress(37));
-            var input4 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input4);
-            var input5 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input5);
-            
+            var hsrel8 = _ccToolsBoardService.CreateHSREL8(InstalledDevice.OfficeHSREL8, new I2CSlaveAddress(20));
+            var hspe8 = _ccToolsBoardService.CreateHSPE8OutputOnly(InstalledDevice.UpperFloorAndOfficeHSPE8, new I2CSlaveAddress(37));
+            var input4 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input4);
+            var input5 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input5);
+            var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
+
             const int SensorPin = 2;
 
-            var i2cHardwareBridge = Controller.GetDevice<I2CHardwareBridge>();
-
-            var room = Controller.CreateArea(Room.Office)
+            var room = _areaService.CreateArea(Room.Office)
                 .WithMotionDetector(Office.MotionDetector, input4.GetInput(13))
-                .WithTemperatureSensor(Office.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
-                .WithHumiditySensor(Office.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
+                .WithTemperatureSensor(Office.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
+                .WithHumiditySensor(Office.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
                 .WithSocket(Office.SocketFrontLeft, hsrel8.GetOutput(0))
                 .WithSocket(Office.SocketFrontRight, hsrel8.GetOutput(6))
                 .WithSocket(Office.SocketWindowLeft, hsrel8.GetOutput(10).WithInvertedState())
@@ -81,7 +108,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithButton(Office.ButtonUpperRight, input4.GetInput(15))
                 .WithWindow(Office.WindowLeft, w => w.WithLeftCasement(input4.GetInput(11)).WithRightCasement(input4.GetInput(12), input4.GetInput(10)))
                 .WithWindow(Office.WindowRight, w => w.WithLeftCasement(input4.GetInput(8)).WithRightCasement(input4.GetInput(9), input5.GetInput(8)))
-                .WithSocket(Office.RemoteSocketDesk, RemoteSocketController.GetOutput(0))
+                .WithSocket(Office.RemoteSocketDesk, _remoteSocketService.GetOutput(0))
                 .WithStateMachine(Office.CombinedCeilingLights, (s, a) => SetupLight(s, hsrel8, hspe8, a));
             
             room.GetButton(Office.ButtonUpperLeft).GetPressedLongTrigger().Attach(() =>
@@ -166,14 +193,13 @@ namespace HA4IoT.Controller.Main.Rooms
                 .GetPressedShortlyTrigger()
                 .Attach(light.GetSetStateAction(BinaryStateId.On));
 
-            var synonymService = Controller.ServiceLocator.GetService<SynonymService>();
-            synonymService.AddSynonymsForArea(Room.Office, "Büro", "Arbeitszimmer");
+            _synonymService.AddSynonymsForArea(Room.Office, "Büro", "Arbeitszimmer");
 
-            synonymService.AddSynonymsForComponent(Room.Office, Office.CombinedCeilingLights, "Licht");
-            synonymService.AddSynonymsForComponent(Room.Office, Office.SocketRearLeftEdge, "Rotlicht", "Pufflicht", "Rot");
+            _synonymService.AddSynonymsForComponent(Room.Office, Office.CombinedCeilingLights, "Licht");
+            _synonymService.AddSynonymsForComponent(Room.Office, Office.SocketRearLeftEdge, "Rotlicht", "Pufflicht", "Rot");
 
-            synonymService.AddSynonymsForComponentState(deskOnlyStateId, "Schreibtisch");
-            synonymService.AddSynonymsForComponentState(couchOnlyStateId, "Couch");            
+            _synonymService.AddSynonymsForComponentState(deskOnlyStateId, "Schreibtisch");
+            _synonymService.AddSynonymsForComponentState(couchOnlyStateId, "Couch");            
         }
     }
 }

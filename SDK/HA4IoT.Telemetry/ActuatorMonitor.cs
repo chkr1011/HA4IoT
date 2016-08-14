@@ -1,18 +1,25 @@
 ﻿using System;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Telemetry
 {
     public abstract class ActuatorMonitor
-    { 
-        public void Connect(IController controller)
-        {
-            if (controller == null) throw new ArgumentNullException(nameof(controller));
+    {
+        private readonly IComponentService _componentService;
 
-            foreach (var component in controller.GetComponents<IComponent>())
+        protected ActuatorMonitor(IComponentService componentService)
+        {
+            if (componentService == null) throw new ArgumentNullException(nameof(componentService));
+
+            _componentService = componentService;
+        }
+
+        public void Connect()
+        {
+            foreach (var component in _componentService.GetComponents())
             {
                 OnComponentConnecting(component);
 

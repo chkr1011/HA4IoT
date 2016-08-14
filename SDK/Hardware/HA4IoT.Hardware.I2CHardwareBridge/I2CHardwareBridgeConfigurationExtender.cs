@@ -6,6 +6,7 @@ using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Hardware.I2CHardwareBridge
 {
@@ -64,7 +65,7 @@ namespace HA4IoT.Hardware.I2CHardwareBridge
         {
             return new I2CHardwareBridge(
                 new I2CSlaveAddress(element.GetMandatoryIntFromAttribute("i2cAddress")),
-                Controller.GetDevice<II2CBus>(new DeviceId(element.GetStringFromAttribute("i2cBus", "II2CBus.default"))),
+                Controller.GetDevice<II2CBusService>(new DeviceId(element.GetStringFromAttribute("i2cBus", "II2CBus.default"))),
                 Controller.ServiceLocator.GetService<ISchedulerService>());
         }
     }

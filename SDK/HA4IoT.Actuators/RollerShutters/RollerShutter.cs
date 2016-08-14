@@ -9,6 +9,7 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Networking;
 using Action = HA4IoT.Actuators.Actions.Action;
 
@@ -18,7 +19,7 @@ namespace HA4IoT.Actuators.RollerShutters
     {
         private readonly Stopwatch _movingDuration = new Stopwatch();
         private readonly IRollerShutterEndpoint _endpoint;
-        private readonly IHomeAutomationTimer _timer;
+        private readonly ITimerService _timerService;
         private readonly ISchedulerService _schedulerService;
 
         private readonly IAction _startMoveUpAction;
@@ -35,7 +36,7 @@ namespace HA4IoT.Actuators.RollerShutters
         public RollerShutter(
             ComponentId id, 
             IRollerShutterEndpoint endpoint,
-            IHomeAutomationTimer timer,
+            ITimerService timerService,
             ISchedulerService schedulerService)
             : base(id)
         {
@@ -44,10 +45,10 @@ namespace HA4IoT.Actuators.RollerShutters
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
 
             _endpoint = endpoint;
-            _timer = timer;
+            _timerService = timerService;
             _schedulerService = schedulerService;
 
-            timer.Tick += (s, e) => UpdatePosition(e);
+            timerService.Tick += (s, e) => UpdatePosition(e);
             _settings = new RollerShutterSettingsWrapper(Settings);
 
             _startMoveUpAction = new Action(() => SetState(RollerShutterStateId.MovingUp));

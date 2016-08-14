@@ -10,7 +10,7 @@ namespace HA4IoT.Actuators.BinaryStateActuators
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
 
-            var actuator = new LogicalBinaryStateActuator(ComponentIdFactory.Create(area.Id, id), area.Controller.Timer);
+            var actuator = new LogicalBinaryStateActuator(ComponentIdFactory.Create(area.Id, id), area.Controller.TimerService);
             area.AddComponent(actuator);
             return actuator;
         }

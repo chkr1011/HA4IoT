@@ -1,7 +1,6 @@
 ﻿using System;
 using FluentAssertions;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Tests.Mockups;
@@ -86,7 +85,7 @@ namespace HA4IoT.Automations.Tests
             _controller = new TestController();
             _controller.SetTime(TimeSpan.Parse("12:00"));
 
-            var testRollerShutterFactory = new TestRollerShutterFactory(_controller.Timer);
+            var testRollerShutterFactory = new TestRollerShutterFactory(_controller.TimerService);
 
             _weatherStation = new TestWeatherStation();
             _weatherStation.OutdoorTemperature = 20;

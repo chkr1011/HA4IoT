@@ -4,6 +4,7 @@ using HA4IoT.Actuators.BinaryStateActuators;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Actuators.Animations
 {
@@ -14,7 +15,7 @@ namespace HA4IoT.Actuators.Animations
         private IComponentState _targetState;
         private TimeSpan _duration = TimeSpan.FromMilliseconds(250);
         
-        public DirectionAnimation(IHomeAutomationTimer timer) : base(timer)
+        public DirectionAnimation(ITimerService timerService) : base(timerService)
         {
         }
 

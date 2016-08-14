@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,43 +13,62 @@ using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Core.Settings;
-using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Core.Discovery;
-using HA4IoT.Core.Scheduling;
-using HA4IoT.Core.Settings;
-using HA4IoT.Core.Timer;
+using HA4IoT.Hardware;
+using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.Pi2;
 using HA4IoT.Logger;
 using HA4IoT.Networking;
+using HA4IoT.PersonalAgent;
+using HA4IoT.Services.Areas;
+using HA4IoT.Services.Automations;
+using HA4IoT.Services.Components;
+using HA4IoT.Services.Devices;
+using HA4IoT.Services.Health;
+using HA4IoT.Services.Scheduling;
+using HA4IoT.Services.System;
 using HA4IoT.Telemetry;
+using SimpleInjector;
 
 namespace HA4IoT.Core
 {
     public class ControllerBase : IController
     {
-        private readonly DeviceCollection _devices = new DeviceCollection();
-        private readonly AreaCollection _areas = new AreaCollection();
-        private readonly ComponentCollection _components = new ComponentCollection();
-        private readonly AutomationCollection _automations = new AutomationCollection();
-        private readonly SystemInformationService _systemInformationService = new SystemInformationService();
-        private readonly int? _statusLedNumber;
+        private readonly Container _container = new Container();
 
         private BackgroundTaskDeferral _deferral;
         private HttpServer _httpServer;
         
-        public IApiController ApiController { get; } = new ApiController("api");
-        public IServiceLocator ServiceLocator { get; } = new ServiceLocator();
-        public IHomeAutomationTimer Timer { get; protected set; }
         public ISettingsContainer Settings { get; private set; }
+
+        public IInitializer Initializer { get; set; }
 
         protected ControllerBase(int? statusLedNumber)
         {
-            _statusLedNumber = statusLedNumber;
-        }
+            _container.RegisterSingleton(() => new HealthServiceOptions {StatusLed = statusLedNumber});
+            _container.RegisterSingleton<HealthService>();
 
+            _container.RegisterSingleton<II2CBusService, BuiltInI2CBusService>();
+            _container.RegisterSingleton<Pi2GpioService>();
+            _container.RegisterSingleton<CCToolsBoardService>();
+            
+            _container.RegisterSingleton<IContainerService>(() => new ContainerService(_container));
+            _container.RegisterSingleton<ISystemInformationService, SystemInformationService>();
+            _container.RegisterSingleton<IDateTimeService, DateTimeService>();
+            _container.RegisterSingleton<ISchedulerService, SchedulerService>();
+            _container.RegisterSingleton<ITimerService, TimerService>();
+
+            _container.RegisterSingleton<IAreaService, AreaService>();
+            _container.RegisterSingleton<IDeviceService, DeviceService>();
+            _container.RegisterSingleton<IComponentService, ComponentService>();
+            _container.RegisterSingleton<IAutomationService, AutomationService>();
+
+            _container.RegisterSingleton<IApiService, ApiService>();
+            _container.RegisterSingleton<SynonymService>();
+        }
+        
         public Task RunAsync(IBackgroundTaskInstance taskInstance)
         {
             if (taskInstance == null) throw new ArgumentNullException(nameof(taskInstance));
@@ -72,121 +90,17 @@ namespace HA4IoT.Core
             return task;
         }
         
-        public void AddArea(IArea area)
-        {
-            _areas.AddUnique(area.Id, area);
-        }
-
-        public IArea GetArea(AreaId id)
-        {
-            return _areas.Get(id);
-        }
-
-        public IList<IArea> GetAreas()
-        {
-            return _areas.GetAll();
-        }
-
-        public void AddComponent(IComponent component)
-        {
-            if (component == null) throw new ArgumentNullException(nameof(component));
-
-            _components.AddUnique(component.Id, component);
-        }
-
-        public TComponent GetComponent<TComponent>() where TComponent : IComponent
-        {
-            return _components.Get<TComponent>();
-        }
-
-        public IList<TComponent> GetComponents<TComponent>() where TComponent : IComponent
-        {
-            return _components.GetAll<TComponent>();
-        }
-
-        public IList<IComponent> GetComponents()
-        {
-            return _components.GetAll();
-        }
-
-        public bool GetContainsComponent(ComponentId componentId)
-        {
-            return _components.Contains(componentId);
-        }
-
-        public TComponent GetComponent<TComponent>(ComponentId id) where TComponent : IComponent
-        {
-            return _components.Get<TComponent>(id);
-        }
-
-        public void AddDevice(IDevice device)
-        {
-            _devices.AddUnique(device.Id, device);
-        }
-
-        public TDevice GetDevice<TDevice>(DeviceId id) where TDevice : IDevice
-        {
-            return _devices.Get<TDevice>(id);
-        }
-
-        public TDevice GetDevice<TDevice>() where TDevice : IDevice
-        {
-            return _devices.Get<TDevice>();
-        }
-
-        public IList<TDevice> GetDevices<TDevice>() where TDevice : IDevice
-        {
-            return _devices.GetAll<TDevice>();
-        }
-
-        public IList<IDevice> GetDevices()
-        {
-            return _devices.GetAll();
-        }
-
-        public void AddAutomation(IAutomation automation)
-        {
-            _automations.AddOrUpdate(automation.Id, automation);
-        }
-
-        public IList<TAutomation> GetAutomations<TAutomation>() where TAutomation : IAutomation
-        {
-            return _automations.GetAll<TAutomation>();
-        }
-
-        public TAutomation GetAutomation<TAutomation>(AutomationId id) where TAutomation : IAutomation
-        {
-            return _automations.Get<TAutomation>(id);
-        }
-
-        public IList<IAutomation> GetAutomations()
-        {
-            return _automations.GetAll();
-        }
-
-        protected virtual async Task ConfigureAsync()
+        protected virtual async Task ConfigureAsync(IContainerService factoryService)
         {
             await Task.FromResult(0);
         }
-
-        private void InitializeHealthMonitor()
-        {
-            IBinaryOutput ledPin = null;
-            if (_statusLedNumber.HasValue)
-            {
-                var pi2PortController = new Pi2PortController();
-                ledPin = pi2PortController.GetOutput(_statusLedNumber.Value);
-            }
-
-            ServiceLocator.RegisterService(typeof(HealthService), new HealthService(ledPin, Timer, ServiceLocator.GetService<ISystemInformationService>()));
-        }
-
+        
         private void InitializeHttpApiEndpoint()
         {
             _httpServer = new HttpServer();
 
             var httpApiDispatcherEndpoint = new LocalHttpServerApiDispatcherEndpoint(_httpServer);
-            ApiController.RegisterEndpoint(httpApiDispatcherEndpoint);
+            _container.GetInstance<IApiService>().RegisterEndpoint(httpApiDispatcherEndpoint);
 
             var httpRequestDispatcher = new HttpRequestDispatcher(_httpServer);
             
@@ -194,34 +108,29 @@ namespace HA4IoT.Core
             httpRequestDispatcher.MapFolder("Storage", StoragePath.Root);
         }
 
-        protected void InitializeAzureCloudApiEndpoint()
+        private bool TryInitializeAzureCloudApiEndpoint()
         {
             var azureCloudApiDispatcherEndpoint = new AzureCloudApiDispatcherEndpoint();
 
             if (azureCloudApiDispatcherEndpoint.TryInitializeFromConfigurationFile(
                 StoragePath.WithFilename("AzureCloudApiDispatcherEndpointSettings.json")))
             {
-                ApiController.RegisterEndpoint(azureCloudApiDispatcherEndpoint);
+                _container.GetInstance<IApiService>().RegisterEndpoint(azureCloudApiDispatcherEndpoint);
+
+                return true;
             }
+
+            return false;
         }
 
-        private HomeAutomationTimer InitializeTimer()
-        {
-            var timer = new HomeAutomationTimer();
-            Timer = timer;
-            ServiceLocator.RegisterService(typeof(ISchedulerService), new SchedulerService(Timer));
-
-            return timer;
-        }
-
-        private void InitializeLogging()
+        private void InitializeLogger()
         {
             if (Log.Instance == null)
             {
                 var udpLogger = new UdpLogger();
                 udpLogger.Start();
 
-                udpLogger.ExposeToApi(ApiController);
+                udpLogger.ExposeToApi(_container.GetInstance<IApiService>());
 
                 Log.Instance = udpLogger;
             }
@@ -235,21 +144,14 @@ namespace HA4IoT.Core
             {
                 var stopwatch = Stopwatch.StartNew();
                 
-                ServiceLocator.RegisterService(typeof(IDateTimeService), new DateTimeService());
-                ServiceLocator.RegisterService(typeof(ISystemInformationService), _systemInformationService);
-
-                InitializeLogging();
+                InitializeLogger();
                 InitializeHttpApiEndpoint();
                 
                 LoadControllerSettings();
                 InitializeDiscovery();
-
-                var timer = InitializeTimer();
-                InitializeHealthMonitor();
-
+                
                 TryConfigure();
-                CreateConfigurationStatistics();
-
+                
                 LoadNonControllerSettings();
                 ResetActuatorStates();
 
@@ -259,13 +161,17 @@ namespace HA4IoT.Core
 
                 AttachComponentHistoryTracking();
 
+                foreach (var service in _container.GetAllInstances<IStartupCompletedNotification>())
+                {
+                    service.OnStartupCompleted();
+                }
+                
                 stopwatch.Stop();
                 Log.Info("Startup completed after " + stopwatch.Elapsed);
                 
-                _systemInformationService.Set("Health/StartupDuration", stopwatch.Elapsed);
-                _systemInformationService.Set("Health/StartupTimestamp", DateTime.Now);
-
-                timer.Run();
+                _container.GetInstance<ISystemInformationService>().Set("Health/StartupDuration", stopwatch.Elapsed);
+                _container.GetInstance<ISystemInformationService>().Set("Health/StartupTimestamp", DateTime.Now);
+                _container.GetInstance<ITimerService>().Run();
             }
             catch (Exception exception)
             {
@@ -286,9 +192,10 @@ namespace HA4IoT.Core
             }
         }
 
+        // TODO: To OnStartupCompleted
         private void ResetActuatorStates()
         {
-            foreach (var actuator in GetComponents<IActuator>())
+            foreach (var actuator in _container.GetInstance<IComponentService>().GetComponents<IActuator>())
             {
                 try
                 {
@@ -324,7 +231,10 @@ namespace HA4IoT.Core
             try
             {
                 Log.Info("Starting configuration");
-                ConfigureAsync().Wait();
+                Initializer?.RegisterServices();
+                Initializer?.Initialize();
+
+                ConfigureAsync(_container.GetInstance<IContainerService>()).Wait();
             }
             catch (Exception exception)
             {
@@ -334,17 +244,17 @@ namespace HA4IoT.Core
 
         private void LoadNonControllerSettings()
         {
-            foreach (var area in _areas.GetAll())
+            foreach (var area in _container.GetInstance<IAreaService>().GetAreas())
             {
                 area.Settings.Load();
             }
 
-            foreach (var component in _components.GetAll())
+            foreach (var component in _container.GetInstance<IComponentService>().GetComponents())
             {
                 component.Settings.Load();
             }
 
-            foreach (var automation in _automations.GetAll())
+            foreach (var automation in _container.GetInstance<IAutomationService>().GetAutomations())
             {
                 automation.Settings.Load();
             }
@@ -352,50 +262,30 @@ namespace HA4IoT.Core
 
         private void ExposeToApi()
         {
-            new ControllerApiDispatcher(this).ExposeToApi();
-            
-            foreach (var device in GetDevices())
-            {
-                ApiController.RouteRequest($"device/{device.Id}", device.HandleApiRequest);
-                ApiController.RouteCommand($"device/{device.Id}", device.HandleApiCommand);
-            }
+            _container.GetInstance<ControllerApiDispatcher>().ExposeToApi();
 
-            foreach (var area in _areas.GetAll())
-            {
-                new SettingsContainerApiDispatcher(area.Settings, $"area/{area.Id}", ApiController).ExposeToApi();
-            }
-
-            foreach (var component in _components.GetAll())
-            {
-                new SettingsContainerApiDispatcher(component.Settings, $"component/{component.Id}", ApiController).ExposeToApi();
-                ApiController.RouteCommand($"component/{component.Id}/status", component.HandleApiCommand);
-                ApiController.RouteRequest($"component/{component.Id}/status", component.HandleApiRequest);
-                component.StateChanged += (s, e) => ApiController.NotifyStateChanged(component);
-            }
-
-            foreach (var automation in _automations.GetAll())
-            {
-                new SettingsContainerApiDispatcher(automation.Settings, $"automation/{automation.Id}", ApiController).ExposeToApi();
-            }
+            TryInitializeAzureCloudApiEndpoint();
         }
 
         private void AttachComponentHistoryTracking()
         {
-            foreach (var component in GetComponents())
+            foreach (var component in _container.GetInstance<IComponentService>().GetComponents())
             {
                 var history = new ComponentStateHistoryTracker(component);
-                history.ExposeToApi(ApiController);
+                history.ExposeToApi(_container.GetInstance<IApiService>());
             }
         }
 
-        private void CreateConfigurationStatistics()
-        {
-            var systemInformationService = ServiceLocator.GetService<ISystemInformationService>();
-            systemInformationService.Set("Components/Count", _components.GetAll().Count);
-            systemInformationService.Set("Areas/Count", _areas.GetAll().Count);
-            systemInformationService.Set("Automations/Count", _automations.GetAll().Count);
+        // TODO: Migrate!
 
-            systemInformationService.Set("Services/Count", ServiceLocator.GetServices().Count);
-        }
+        ////private void CreateConfigurationStatistics()
+        ////{
+        ////    var systemInformationService = ServiceLocator.GetService<ISystemInformationService>();
+        ////    systemInformationService.Set("Components/Count", _components.GetAll().Count);
+        ////    systemInformationService.Set("Areas/Count", _areas.GetAll().Count);
+        ////    systemInformationService.Set("Automations/Count", _automations.GetAll().Count);
+
+        ////    systemInformationService.Set("Services/Count", ServiceLocator.GetServices().Count);
+        ////}
     }
 }

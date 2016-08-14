@@ -113,7 +113,6 @@
     <Compile Include="Rooms\ChildrensRoomConfiguration.cs" />
     <Compile Include="Rooms\ReadingRoomConfiguration.cs" />
     <Compile Include="Rooms\Room.cs" />
-    <Compile Include="Rooms\RoomConfiguration.cs" />
     <Compile Include="Rooms\StoreroomConfiguration.cs" />
     <Compile Include="Rooms\UpperBathroomConfiguration.cs" />
     <Compile Include="StartupTask.cs" />

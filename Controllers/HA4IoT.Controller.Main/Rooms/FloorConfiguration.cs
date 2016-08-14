@@ -5,15 +5,12 @@ using HA4IoT.Actuators.BinaryStateActuators;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Actuators.StateMachines;
-using HA4IoT.Actuators.Triggers;
 using HA4IoT.Automations;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Daylight;
-using HA4IoT.Core;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
@@ -22,11 +19,19 @@ using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Sensors.TemperatureSensors;
+using HA4IoT.Services.Areas;
+using HA4IoT.Services.Devices;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
-    internal class FloorConfiguration : RoomConfiguration
+    internal class FloorConfiguration
     {
+        private readonly IAreaService _areaService;
+        private readonly IDaylightService _daylightService;
+        private readonly IDeviceService _deviceService;
+        private readonly CCToolsBoardService _ccToolsBoardService;
+        private readonly SynonymService _synonymService;
+
         private enum Floor
         {
             StairwayMotionDetector,
@@ -62,32 +67,46 @@ namespace HA4IoT.Controller.Main.Rooms
             LampStairs
         }
 
-        public FloorConfiguration(IController controller)
-            : base(controller)
+        public FloorConfiguration(
+            IAreaService areaService,
+            IDaylightService daylightService,
+            IDeviceService deviceService,
+            CCToolsBoardService ccToolsBoardService,
+            SynonymService synonymService)
         {
+            if (areaService == null) throw new ArgumentNullException(nameof(areaService));
+            if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
+            if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
+            if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
+            if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
+
+            _areaService = areaService;
+            _daylightService = daylightService;
+            _deviceService = deviceService;
+            _ccToolsBoardService = ccToolsBoardService;
+            _synonymService = synonymService;
         }
 
-        public override void Setup()
+        public void Setup()
         {
-            var hsrel5Stairway = CCToolsBoardController.CreateHSREL5(InstalledDevice.StairwayHSREL5, new I2CSlaveAddress(60));
-            var hspe8UpperFloor = Controller.Device<HSPE8OutputOnly>(InstalledDevice.UpperFloorAndOfficeHSPE8);
-            var hspe16FloorAndLowerBathroom = CCToolsBoardController.CreateHSPE16OutputOnly(InstalledDevice.LowerFloorAndLowerBathroomHSPE16, new I2CSlaveAddress(17));
+            var hsrel5Stairway = _ccToolsBoardService.CreateHSREL5(InstalledDevice.StairwayHSREL5, new I2CSlaveAddress(60));
+            var hspe8UpperFloor = _deviceService.GetDevice<HSPE8OutputOnly>(InstalledDevice.UpperFloorAndOfficeHSPE8);
+            var hspe16FloorAndLowerBathroom = _ccToolsBoardService.CreateHSPE16OutputOnly(InstalledDevice.LowerFloorAndLowerBathroomHSPE16, new I2CSlaveAddress(17));
 
-            var input1 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input1);
-            var input2 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input2);
-            var input4 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input4);
-
-            var i2cHardwareBridge = Controller.GetDevice<I2CHardwareBridge>();
+            var input1 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input1);
+            var input2 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input2);
+            var input4 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input4);
+            var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
 
             const int SensorPin = 5;
 
-            var room = Controller.CreateArea(Room.Floor)
+            var room = _areaService.CreateArea(Room.Floor)
                 .WithMotionDetector(Floor.StairwayMotionDetector, input2.GetInput(1))
                 .WithMotionDetector(Floor.StairsLowerMotionDetector, input4.GetInput(7))
                 .WithMotionDetector(Floor.StairsUpperMotionDetector, input4.GetInput(6))
                 .WithMotionDetector(Floor.LowerFloorMotionDetector, input1.GetInput(4))
-                .WithTemperatureSensor(Floor.LowerFloorTemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
-                .WithHumiditySensor(Floor.LowerFloorHumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
+                .WithTemperatureSensor(Floor.LowerFloorTemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
+                .WithHumiditySensor(Floor.LowerFloorHumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
                 .WithLamp(Floor.Lamp1, hspe16FloorAndLowerBathroom.GetOutput(5).WithInvertedState())
                 .WithLamp(Floor.Lamp2, hspe16FloorAndLowerBathroom.GetOutput(6).WithInvertedState())
                 .WithLamp(Floor.Lamp3, hspe16FloorAndLowerBathroom.GetOutput(7).WithInvertedState())
@@ -120,7 +139,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTrigger(room.GetButton(Floor.ButtonLowerFloorAtBathroom).GetPressedShortlyTrigger())
                 .WithTrigger(room.GetButton(Floor.ButtonLowerFloorAtKitchen).GetPressedShortlyTrigger())
                 .WithTarget(room.GetActuator(Floor.CombinedLamps))
-                .WithEnabledAtNight(Controller.ServiceLocator.GetService<IDaylightService>())
+                .WithEnabledAtNight(_daylightService)
                 .WithTurnOffIfButtonPressedWhileAlreadyOn()
                 .WithOnDuration(TimeSpan.FromSeconds(20));
 
@@ -129,7 +148,7 @@ namespace HA4IoT.Controller.Main.Rooms
             
             room.SetupRollerShutterAutomation().WithRollerShutters(room.GetRollerShutter(Floor.StairwayRollerShutter));
 
-            Controller.ServiceLocator.GetService<SynonymService>().AddSynonymsForArea(Room.Floor, "Flur", "Floor");
+            _synonymService.AddSynonymsForArea(Room.Floor, "Flur", "Floor");
         }
 
         private void SetupStairwayLamps(IArea room)
@@ -138,7 +157,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTrigger(room.GetMotionDetector(Floor.StairwayMotionDetector))
                 .WithTrigger(room.GetButton(Floor.ButtonStairway).GetPressedShortlyTrigger())
                 .WithTarget(room.GetActuator(Floor.CombinedStairwayLamp))
-                .WithEnabledAtNight(Controller.ServiceLocator.GetService<IDaylightService>())
+                .WithEnabledAtNight(_daylightService)
                 .WithOnDuration(TimeSpan.FromSeconds(30));
         }
 

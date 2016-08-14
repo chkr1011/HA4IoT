@@ -108,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actions\IAction.cs" />
+    <Compile Include="Areas\AreaIdFactory.cs" />
     <Compile Include="Components\ComponentIdExtensions.cs" />
     <Compile Include="Components\ComponentStatusKey.cs" />
     <Compile Include="Components\ComponentConfigurationKey.cs" />
@@ -125,10 +126,8 @@
     <Compile Include="Components\UnknownComponentState.cs" />
     <Compile Include="Conditions\ConditionState.cs" />
     <Compile Include="Conditions\ICondition.cs" />
-    <Compile Include="Core\ServiceAlreadyRegisteredException.cs" />
-    <Compile Include="Core\ServiceLocator.cs" />
-    <Compile Include="Core\ServiceNotRegisteredException.cs" />
-    <Compile Include="Core\ServiceRegistration.cs" />
+    <Compile Include="Core\IInitializer.cs" />
+    <Compile Include="Core\IStartupCompletedNotification.cs" />
     <Compile Include="Core\Settings\SettingValueChangedEventArgs.cs" />
     <Compile Include="Hardware\ForceUpdateStateParameter.cs" />
     <Compile Include="Hardware\HardwareParameter.cs" />
@@ -161,7 +160,7 @@
     <Compile Include="Api\ApiRequestReceivedEventArgs.cs" />
     <Compile Include="Api\ApiResultCode.cs" />
     <Compile Include="Api\IApiContext.cs" />
-    <Compile Include="Api\IApiController.cs" />
+    <Compile Include="Api\IApiService.cs" />
     <Compile Include="Api\IApiDispatcherEndpoint.cs" />
     <Compile Include="Automations\AutomationId.cs" />
     <Compile Include="Sensors\ButtonStateID.cs" />
@@ -176,20 +175,20 @@
     <Compile Include="Sensors\ITemperatureSensor.cs" />
     <Compile Include="Sensors\SwitchStateID.cs" />
     <Compile Include="Automations\IAutomation.cs" />
-    <Compile Include="Automations\IAutomationController.cs" />
+    <Compile Include="Automations\IAutomationService.cs" />
     <Compile Include="Configuration\ConfigurationInvalidException.cs" />
-    <Compile Include="Core\IActuatorController.cs" />
+    <Compile Include="Components\IComponentService.cs" />
     <Compile Include="Core\Discovery\DiscoveryResponse.cs" />
-    <Compile Include="Core\IAreaController.cs" />
+    <Compile Include="Areas\IAreaService.cs" />
     <Compile Include="Core\IController.cs" />
     <Compile Include="Areas\IArea.cs" />
     <Compile Include="Areas\AreaId.cs" />
     <Compile Include="Configuration\HandleConfigurationNodeResult.cs" />
     <Compile Include="Configuration\IConfigurationExtender.cs" />
     <Compile Include="Core\IdBase.cs" />
-    <Compile Include="Core\IDeviceController.cs" />
-    <Compile Include="Core\IHomeAutomationTimer.cs" />
-    <Compile Include="Core\IServiceController.cs" />
+    <Compile Include="Services\System\IDeviceService.cs" />
+    <Compile Include="Services\System\IContainerService.cs" />
+    <Compile Include="Services\System\ITimerService.cs" />
     <Compile Include="Core\Settings\ISettingsContainer.cs" />
     <Compile Include="Core\StoragePath.cs" />
     <Compile Include="Core\TimedAction.cs" />
@@ -218,7 +217,7 @@
     <Compile Include="Services\ISchedulerService.cs" />
     <Compile Include="Services\Weather\IWeatherProvider.cs" />
     <Compile Include="Services\OutdoorHumidity\OutdoorHumidityFetchedEventArgs.cs" />
-    <Compile Include="Services\System\DateTimeService.cs" />
+    <Compile Include="Services\System\IDateTimeService.cs" />
     <Compile Include="Services\System\ISystemInformationService.cs" />
     <Compile Include="Services\OutdoorHumidity\IOutdoorHumidityService.cs" />
     <Compile Include="Services\OutdoorTemperature\IOutdoorTemperatureProvider.cs" />
@@ -239,7 +238,7 @@
     <Compile Include="Hardware\IBinaryInputController.cs" />
     <Compile Include="Hardware\IBinaryOutput.cs" />
     <Compile Include="Hardware\IBinaryOutputController.cs" />
-    <Compile Include="Hardware\II2CBus.cs" />
+    <Compile Include="Services\System\II2CBusService.cs" />
     <Compile Include="Hardware\IPortExpanderDriver.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

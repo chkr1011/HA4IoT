@@ -11,7 +11,7 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void TestRollerShutter()
         {
-            var rollerShutterFactory = new TestRollerShutterFactory(new TestHomeAutomationTimer());
+            var rollerShutterFactory = new TestRollerShutterFactory(new TestTimerService());
             TestRollerShutter rollerShutter = rollerShutterFactory.CreateTestRollerShutter();
 
             rollerShutter.GetState().Equals(RollerShutterStateId.Off).ShouldBeEquivalentTo(true);

@@ -15,7 +15,7 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void Should_TurnOn_IfMotionDetected()
         {
-            var schedulerService = new SchedulerService(new TestHomeAutomationTimer());
+            var schedulerService = new SchedulerService(new TestTimerService());
             var motionDetectorFactory = new TestMotionDetectorFactory(schedulerService);
             var stateMachineFactory = new TestStateMachineFactory();
 
@@ -35,11 +35,11 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void Should_TurnOn_IfButtonPressedShort()
         {
-            var timer = new TestHomeAutomationTimer();
+            var timer = new TestTimerService();
             var buttonFactory = new TestButtonFactory(timer);
             var stateMachineFactory = new TestStateMachineFactory();
 
-            var automation = new TurnOnAndOffAutomation(AutomationIdFactory.EmptyId, new TestDateTimeService(), new SchedulerService(new TestHomeAutomationTimer()));
+            var automation = new TurnOnAndOffAutomation(AutomationIdFactory.EmptyId, new TestDateTimeService(), new SchedulerService(new TestTimerService()));
             var button = buttonFactory.CreateTestButton();
             var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
             output.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
@@ -55,7 +55,7 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void Should_NotTurnOn_IfMotionDetected_AndTimeRangeConditionIs_NotFulfilled()
         {
-            var timer = new TestHomeAutomationTimer();
+            var timer = new TestTimerService();
             var dateTimeService = new TestDateTimeService();
             dateTimeService.SetTime(TimeSpan.Parse("18:00:00"));
 
@@ -79,7 +79,7 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void Should_TurnOn_IfButtonPressed_EvenIfTimeRangeConditionIs_NotFulfilled()
         {
-            var timer = new TestHomeAutomationTimer();
+            var timer = new TestTimerService();
             var dateTimeService = new TestDateTimeService();
             dateTimeService.SetTime(TimeSpan.Parse("18:00:00"));
 
@@ -103,7 +103,7 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void Should_NotTurnOn_IfMotionDetected_AndSkipConditionIs_Fulfilled()
         {
-            var timer = new TestHomeAutomationTimer();
+            var timer = new TestTimerService();
             var dateTimeService = new TestDateTimeService();
             dateTimeService.SetTime(TimeSpan.Parse("14:00:00"));
 
@@ -136,7 +136,7 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void Should_TurnOn_IfMotionDetected_AndSkipConditionIs_NotFulfilled()
         {
-            var timer = new TestHomeAutomationTimer();
+            var timer = new TestTimerService();
             var dateTimeService = new TestDateTimeService();
             dateTimeService.SetTime(TimeSpan.Parse("14:00:00"));
 
@@ -168,7 +168,7 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void Should_TurnOff_IfButtonPressed_WhileTargetIsAlreadyOn()
         {
-            var timer = new TestHomeAutomationTimer();
+            var timer = new TestTimerService();
             var dateTimeService = new TestDateTimeService();
             dateTimeService.SetTime(TimeSpan.Parse("14:00:00"));
 

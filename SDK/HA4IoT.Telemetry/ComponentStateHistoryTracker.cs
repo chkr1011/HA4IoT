@@ -42,7 +42,7 @@ namespace HA4IoT.Telemetry
             }
         }
 
-        public void ExposeToApi(IApiController apiController)
+        public void ExposeToApi(IApiService apiController)
         {
             if (apiController == null) throw new ArgumentNullException(nameof(apiController));
 

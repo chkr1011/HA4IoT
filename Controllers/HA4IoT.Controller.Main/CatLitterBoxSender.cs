@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
-using HA4IoT.Core.Timer;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.ExternalServices.Twitter;
+using HA4IoT.Services.System;
 
 namespace HA4IoT.Controller.Main
 {
@@ -37,11 +38,11 @@ namespace HA4IoT.Controller.Main
                 "Hey, this one looks like you :-)"         
             };
 
-        public CatLitterBoxTwitterSender(IHomeAutomationTimer timer)
+        public CatLitterBoxTwitterSender(ITimerService timerService)
         {
-            if (timer == null) throw new ArgumentNullException(nameof(timer));
+            if (timerService == null) throw new ArgumentNullException(nameof(timerService));
 
-            timer.Tick += Tick;
+            timerService.Tick += Tick;
         }
 
         public CatLitterBoxTwitterSender WithTrigger(IMotionDetector motionDetector)
@@ -98,8 +99,8 @@ namespace HA4IoT.Controller.Main
 
             try
             {
-                TwitterService twitterService;
-                if (!TwitterServiceFactory.TryCreateFromDefaultConfigurationFile(out twitterService))
+                TwitterClientService twitterService;
+                if (!TwitterClientServiceFactory.TryCreateFromDefaultConfigurationFile(out twitterService))
                 {
                     Log.Verbose("Twitter API is disabled.");
                     return;

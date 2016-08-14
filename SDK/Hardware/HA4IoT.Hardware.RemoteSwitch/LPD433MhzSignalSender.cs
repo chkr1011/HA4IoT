@@ -10,7 +10,7 @@ namespace HA4IoT.Hardware.RemoteSwitch
         private readonly I2CHardwareBridge.I2CHardwareBridge _i2CHardwareBridge;
         private readonly byte _pin;
 
-        public LPD433MHzSignalSender(I2CHardwareBridge.I2CHardwareBridge i2CHardwareBridge, byte pin, IApiController apiController)
+        public LPD433MHzSignalSender(I2CHardwareBridge.I2CHardwareBridge i2CHardwareBridge, byte pin, IApiService apiController)
         {
             if (i2CHardwareBridge == null) throw new ArgumentNullException(nameof(i2CHardwareBridge));
             if (apiController == null) throw new ArgumentNullException(nameof(apiController));

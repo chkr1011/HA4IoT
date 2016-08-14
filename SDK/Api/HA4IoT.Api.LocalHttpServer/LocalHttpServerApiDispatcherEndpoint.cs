@@ -10,11 +10,11 @@ namespace HA4IoT.Api.LocalRestServer
 {
     public class LocalHttpServerApiDispatcherEndpoint : IApiDispatcherEndpoint
     {
-        public LocalHttpServerApiDispatcherEndpoint(HttpServer httpRequestController)
+        public LocalHttpServerApiDispatcherEndpoint(HttpServer httpServer)
         {
-            if (httpRequestController == null) throw new ArgumentNullException(nameof(httpRequestController));
+            if (httpServer == null) throw new ArgumentNullException(nameof(httpServer));
 
-            httpRequestController.RequestReceived += DispatchRequest;
+            httpServer.RequestReceived += DispatchRequest;
         }
 
         public event EventHandler<ApiRequestReceivedEventArgs> RequestReceived;

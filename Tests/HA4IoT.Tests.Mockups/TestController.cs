@@ -16,12 +16,12 @@ namespace HA4IoT.Tests.Mockups
             : base(22)
         {
             Log.Instance = new TestLogger();
-            Timer = new TestHomeAutomationTimer();
+            TimerService = new TestTimerService();
 
             ServiceLocator.RegisterService(typeof(IDaylightService), new TestDaylightService());
             ServiceLocator.RegisterService(typeof(IDateTimeService), _dateTimeService);
             ServiceLocator.RegisterService(typeof(ISystemInformationService), new SystemInformationService());
-            ServiceLocator.RegisterService(typeof(ISchedulerService), new SchedulerService(Timer));
+            ServiceLocator.RegisterService(typeof(ISchedulerService), new SchedulerService(TimerService));
         }
 
         public void SetTime(TimeSpan value)

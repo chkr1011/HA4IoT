@@ -16,7 +16,7 @@ namespace HA4IoT.Automations.Tests
         [TestMethod]
         public void Automation_Toggle()
         {
-            var timer = new TestHomeAutomationTimer();
+            var timer = new TestTimerService();
             var testButtonFactory = new TestButtonFactory(timer);
             var testStateMachineFactory = new TestStateMachineFactory();
 
@@ -42,7 +42,7 @@ namespace HA4IoT.Automations.Tests
             var testController = new TestController();
             var automation = new Automation(AutomationIdFactory.EmptyId);
 
-            var testButtonFactory = new TestButtonFactory(testController.Timer);
+            var testButtonFactory = new TestButtonFactory(testController.TimerService);
             var testStateMachineFactory = new TestStateMachineFactory();
 
             var testButton = testButtonFactory.CreateTestButton();

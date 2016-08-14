@@ -114,27 +114,9 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AreaIdFactory.cs" />
-    <Compile Include="AutomationCollection.cs" />
-    <Compile Include="ActuatorCollection.cs" />
-    <Compile Include="AreaSettingsWrapper.cs" />
     <Compile Include="ControllerApiDispatcher.cs" />
     <Compile Include="ControllerBase.cs" />
-    <Compile Include="ControllerExtensions.cs" />
-    <Compile Include="DateTimeService.cs" />
-    <Compile Include="Discovery\DiscoveryServer.cs" />
-    <Compile Include="GenericControllerCollection.cs" />
-    <Compile Include="DeviceCollection.cs" />
-    <Compile Include="HealthService.cs" />
-    <Compile Include="Area.cs" />
-    <Compile Include="AreaCollection.cs" />
-    <Compile Include="Scheduling\Schedule.cs" />
-    <Compile Include="Scheduling\SchedulerService.cs" />
-    <Compile Include="Settings\SettingsContainerApiDispatcher.cs" />
-    <Compile Include="Settings\SettingsContainer.cs" />
-    <Compile Include="SystemInformationService.cs" />
-    <Compile Include="Timer\Timeout.cs" />
-    <Compile Include="Timer\HomeAutomationTimer.cs" />
+    <Compile Include="DiscoveryServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.Core.rd.xml" />
   </ItemGroup>
@@ -163,15 +145,32 @@
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
       <Name>HA4IoT.Networking</Name>
     </ProjectReference>
+    <ProjectReference Include="..\HA4IoT.PersonalAgent\HA4IoT.PersonalAgent.csproj">
+      <Project>{A22FDA3A-B331-4399-863B-5F1B8D24BFE9}</Project>
+      <Name>HA4IoT.PersonalAgent</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HA4IoT.Services\HA4IoT.Services.csproj">
+      <Project>{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF}</Project>
+      <Name>HA4IoT.Services</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Telemetry\HA4IoT.Telemetry.csproj">
       <Project>{97F3345C-33B6-4779-9212-5FFBCEEF3F96}</Project>
       <Name>HA4IoT.Telemetry</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Hardware\HA4IoT.Hardware.CCTools\HA4IoT.Hardware.CCTools.csproj">
+      <Project>{b0a7ef01-9382-422c-81af-c90dc5a7affd}</Project>
+      <Name>HA4IoT.Hardware.CCTools</Name>
     </ProjectReference>
     <ProjectReference Include="..\Hardware\HA4IoT.Hardware.Pi2\HA4IoT.Hardware.Pi2.csproj">
       <Project>{39819B8F-40F8-418A-AD3A-92A8C8D63268}</Project>
       <Name>HA4IoT.Hardware.Pi2</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Hardware\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
+      <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
+      <Name>HA4IoT.Hardware</Name>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

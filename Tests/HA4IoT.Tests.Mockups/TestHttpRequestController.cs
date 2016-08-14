@@ -6,7 +6,7 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.Tests.Mockups
 {
-    public class TestHttpRequestController : IHttpRequestController, IApiController
+    public class TestHttpRequestController : IHttpRequestController, IApiService
     {
         public IHttpRequestDispatcherAction HandleGet(string uri)
         {

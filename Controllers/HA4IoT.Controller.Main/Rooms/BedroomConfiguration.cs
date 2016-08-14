@@ -9,10 +9,8 @@ using HA4IoT.Automations;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Daylight;
-using HA4IoT.Core;
-using HA4IoT.Hardware;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.PersonalAgent;
@@ -21,11 +19,19 @@ using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Sensors.TemperatureSensors;
 using HA4IoT.Sensors.Windows;
+using HA4IoT.Services.Areas;
+using HA4IoT.Services.Devices;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
-    internal class BedroomConfiguration : RoomConfiguration
+    internal class BedroomConfiguration
     {
+        private readonly IDeviceService _deviceService;
+        private readonly IAreaService _areaService;
+        private readonly IDaylightService _daylightService;
+        private readonly CCToolsBoardService _ccToolsBoardService;
+        private readonly SynonymService _synonymService;
+
         private enum Bedroom
         {
             TemperatureSensor,
@@ -70,24 +76,39 @@ namespace HA4IoT.Controller.Main.Rooms
             WindowRight
         }
 
-        public BedroomConfiguration(Controller controller)
-            : base(controller)
+        public BedroomConfiguration(
+            IDeviceService deviceService,
+            IAreaService areaService,
+            IDaylightService daylightService,
+            CCToolsBoardService ccToolsBoardService,
+            SynonymService synonymService)
         {
+            if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
+            if (areaService == null) throw new ArgumentNullException(nameof(areaService));
+            if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
+            if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
+            if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
+
+            _deviceService = deviceService;
+            _areaService = areaService;
+            _daylightService = daylightService;
+            _ccToolsBoardService = ccToolsBoardService;
+            _synonymService = synonymService;
         }
 
-        public override void Setup()
+        public void Setup()
         {
-            var hsrel5 = CCToolsBoardController.CreateHSREL5(InstalledDevice.BedroomHSREL5, new I2CSlaveAddress(38));
-            var hsrel8 = CCToolsBoardController.CreateHSREL8(InstalledDevice.BedroomHSREL8, new I2CSlaveAddress(21));
-            var input5 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input5);
-            var input4 = Controller.Device<HSPE16InputOnly>(InstalledDevice.Input4);
+            var hsrel5 = _ccToolsBoardService.CreateHSREL5(InstalledDevice.BedroomHSREL5, new I2CSlaveAddress(38));
+            var hsrel8 = _ccToolsBoardService.CreateHSREL8(InstalledDevice.BedroomHSREL8, new I2CSlaveAddress(21));
+            var input5 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input5);
+            var input4 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input4);
+            var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
 
-            var i2cHardwareBridge = Controller.GetDevice<I2CHardwareBridge>();
             const int SensorPin = 6;
 
-            var room = Controller.CreateArea(Room.Bedroom)
-                .WithTemperatureSensor(Bedroom.TemperatureSensor, i2cHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
-                .WithHumiditySensor(Bedroom.HumiditySensor, i2cHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
+            var room = _areaService.CreateArea(Room.Bedroom)
+                .WithTemperatureSensor(Bedroom.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
+                .WithHumiditySensor(Bedroom.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
                 .WithMotionDetector(Bedroom.MotionDetector, input5.GetInput(12))
                 .WithLamp(Bedroom.LightCeiling, hsrel5.GetOutput(5).WithInvertedState())
                 .WithLamp(Bedroom.LightCeilingWindow, hsrel5.GetOutput(6).WithInvertedState())
@@ -144,7 +165,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTarget(room.GetStateMachine(Bedroom.LightCeiling))
                 .WithOnDuration(TimeSpan.FromSeconds(15))
                 .WithTurnOnIfAllRollerShuttersClosed(room.GetRollerShutter(Bedroom.RollerShutterLeft), room.GetRollerShutter(Bedroom.RollerShutterRight))
-                .WithEnabledAtNight(Controller.ServiceLocator.GetService<IDaylightService>())
+                .WithEnabledAtNight(_daylightService)
                 .WithSkipIfAnyActuatorIsAlreadyOn(room.GetLamp(Bedroom.LampBedLeft), room.GetLamp(Bedroom.LampBedRight));
             
             room.WithStateMachine(Bedroom.Fan, (s, r) => SetupFan(s, r, hsrel8));
@@ -159,7 +180,7 @@ namespace HA4IoT.Controller.Main.Rooms
             room.GetButton(Bedroom.ButtonBedRightOuter).WithPressedShortlyAction(() => room.GetStateMachine(Bedroom.Fan).SetNextState());
             room.GetButton(Bedroom.ButtonBedRightOuter).WithPressedLongAction(() => room.GetStateMachine(Bedroom.Fan).TryTurnOff());
 
-            Controller.ServiceLocator.GetService<SynonymService>().AddSynonymsForArea(Room.Bedroom, "Schlafzimmer", "Bedroom");
+            _synonymService.AddSynonymsForArea(Room.Bedroom, "Schlafzimmer", "Bedroom");
         }
 
         private void SetupFan(StateMachine fan, IArea room, HSREL8 hsrel8)

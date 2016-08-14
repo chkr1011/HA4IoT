@@ -101,13 +101,13 @@ namespace HA4IoT.PersonalAgent
                 return;
             }
 
-            string fileContent = File.ReadAllText(_areaSynonymsFilename);
-            JsonObject _source = JsonObject.Parse(fileContent);
+            var fileContent = File.ReadAllText(_areaSynonymsFilename);
+            var source = JsonObject.Parse(fileContent);
 
-            foreach (var key in _source.Keys)
+            foreach (var key in source.Keys)
             {
                 var areaId = new AreaId(key);
-                HashSet<string> synonyms = ConvertJsonArrayToSynonyms(_source.GetNamedArray(key));
+                HashSet<string> synonyms = ConvertJsonArrayToSynonyms(source.GetNamedArray(key));
 
                 target[areaId] = synonyms;
             }
@@ -122,13 +122,13 @@ namespace HA4IoT.PersonalAgent
                 return;
             }
 
-            string fileContent = File.ReadAllText(_componentSynonymsFilename);
-            JsonObject _source = JsonObject.Parse(fileContent);
+            var fileContent = File.ReadAllText(_componentSynonymsFilename);
+            var source = JsonObject.Parse(fileContent);
 
-            foreach (var key in _source.Keys)
+            foreach (var key in source.Keys)
             {
                 var componentId = new ComponentId(key);
-                HashSet<string> synonyms = ConvertJsonArrayToSynonyms(_source.GetNamedArray(key));
+                HashSet<string> synonyms = ConvertJsonArrayToSynonyms(source.GetNamedArray(key));
 
                 target[componentId] = synonyms;
             }
