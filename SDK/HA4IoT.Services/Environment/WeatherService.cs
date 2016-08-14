@@ -24,9 +24,9 @@ namespace HA4IoT.Services.Environment
 
         public Weather Weather { get; private set; }
 
-        public override JsonObject ExportStatusToJsonObject()
+        public override JsonObject GetStatus()
         {
-            var status = base.ExportStatusToJsonObject();
+            var status = base.GetStatus();
             status.SetNamedEnum("Weather", Weather);
             status.SetNamedDateTime("Timestamp", Timestamp);
 

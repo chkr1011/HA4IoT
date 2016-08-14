@@ -12,7 +12,7 @@ using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.PersonalAgent;
-using HA4IoT.Sensors.Buttons;
+using HA4IoT.Sensors;
 using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Sensors.TemperatureSensors;
@@ -28,6 +28,9 @@ namespace HA4IoT.Controller.Main.Rooms
         private readonly ISchedulerService _schedulerService;
         private readonly IAreaService _areaService;
         private readonly SynonymService _synonymService;
+        private readonly AutomationFactory _automationFactory;
+        private readonly ActuatorFactory _actuatorFactory;
+        private readonly SensorFactory _sensorFactory;
         private TimedAction _bathmodeResetTimer;
 
         public enum LowerBathroom
@@ -52,17 +55,26 @@ namespace HA4IoT.Controller.Main.Rooms
             IDeviceService deviceService, 
             ISchedulerService schedulerService,
             IAreaService areaService, 
-            SynonymService synonymService)
+            SynonymService synonymService,
+            AutomationFactory automationFactory,
+            ActuatorFactory actuatorFactory,
+            SensorFactory sensorFactory)
         {
             if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
             if (areaService == null) throw new ArgumentNullException(nameof(areaService));
             if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
+            if (automationFactory == null) throw new ArgumentNullException(nameof(automationFactory));
+            if (actuatorFactory == null) throw new ArgumentNullException(nameof(actuatorFactory));
+            if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
 
             _deviceService = deviceService;
             _schedulerService = schedulerService;
             _areaService = areaService;
             _synonymService = synonymService;
+            _automationFactory = automationFactory;
+            _actuatorFactory = actuatorFactory;
+            _sensorFactory = sensorFactory;
         }
 
         public void Setup()
@@ -74,7 +86,6 @@ namespace HA4IoT.Controller.Main.Rooms
             const int SensorPin = 3;
 
             var room = _areaService.CreateArea(Room.LowerBathroom)
-                .WithMotionDetector(LowerBathroom.MotionDetector, input3.GetInput(15))
                 .WithTemperatureSensor(LowerBathroom.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(LowerBathroom.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
                 .WithLamp(LowerBathroom.LightCeilingDoor, hspe16_FloorAndLowerBathroom.GetOutput(0).WithInvertedState())
@@ -83,15 +94,17 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithLamp(LowerBathroom.LampMirror, hspe16_FloorAndLowerBathroom.GetOutput(4).WithInvertedState())
                 .WithWindow(LowerBathroom.Window, w => w.WithCenterCasement(input3.GetInput(13), input3.GetInput(14)));
 
-            room.WithVirtualButton(LowerBathroom.StartBathmodeButton, b => b.GetPressedShortlyTrigger().Attach(() => StartBathode(room)));
+            _sensorFactory.RegisterMotionDetector(room, LowerBathroom.MotionDetector, input3.GetInput(15));
 
-            room.CombineActuators(LowerBathroom.CombinedLights)
+            _sensorFactory.RegisterVirtualButton(room, LowerBathroom.StartBathmodeButton, b => b.GetPressedShortlyTrigger().Attach(() => StartBathode(room)));
+
+            _actuatorFactory.RegisterLogicalActuator(room, LowerBathroom.CombinedLights)
                 .WithActuator(room.GetLamp(LowerBathroom.LightCeilingDoor))
                 .WithActuator(room.GetLamp(LowerBathroom.LightCeilingMiddle))
                 .WithActuator(room.GetLamp(LowerBathroom.LightCeilingWindow))
                 .WithActuator(room.GetLamp(LowerBathroom.LampMirror));
 
-            room.SetupTurnOnAndOffAutomation()
+            _automationFactory.RegisterTurnOnAndOffAutomation(room)
                 .WithTrigger(room.GetMotionDetector(LowerBathroom.MotionDetector))
                 .WithTarget(room.GetActuator(LowerBathroom.CombinedLights));
 

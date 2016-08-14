@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 
@@ -17,6 +18,10 @@ namespace HA4IoT.Tests.Mockups
     
         public TimeSpan Time => DateTime.TimeOfDay;
     
-        public DateTime Now => this.DateTime;
+        public DateTime Now => DateTime;
+
+        public void HandleApiCall(IApiContext apiContext)
+        {
+        }
     }
 }

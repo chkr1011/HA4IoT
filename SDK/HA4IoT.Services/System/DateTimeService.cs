@@ -14,7 +14,7 @@ namespace HA4IoT.Services.System
     
         public DateTime Now => DateTime.Now;
     
-        public override void HandleApiRequest(IApiContext apiContext)
+        public void HandleApiCall(IApiContext apiContext)
         {
             apiContext.Response.SetNamedDateTime("Date", Date);
             apiContext.Response.SetNamedTimeSpan("Time", Time);

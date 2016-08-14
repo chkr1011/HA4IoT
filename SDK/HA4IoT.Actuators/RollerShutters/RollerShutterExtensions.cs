@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
@@ -10,7 +11,7 @@ namespace HA4IoT.Actuators.RollerShutters
 {
     public static class RollerShutterExtensions
     {
-        public static IRollerShutter[] GetRollerShutters(this IArea area)
+        public static IList<IRollerShutter> GetRollerShutters(this IArea area)
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
 
@@ -22,23 +23,6 @@ namespace HA4IoT.Actuators.RollerShutters
             if (area == null) throw new ArgumentNullException(nameof(area));
 
             return area.GetComponent<RollerShutter>(ComponentIdFactory.Create(area.Id, id));
-        }
-
-        public static IArea WithRollerShutter(this IArea area, Enum id, IBinaryOutput powerOutput, IBinaryOutput directionOutput)
-        {
-            if (area == null) throw new ArgumentNullException(nameof(area));
-
-            if (powerOutput == null) throw new ArgumentNullException(nameof(powerOutput));
-            if (directionOutput == null) throw new ArgumentNullException(nameof(directionOutput));
-
-            var rollerShutter = new RollerShutter(
-                ComponentIdFactory.Create(area.Id, id), 
-                new PortBasedRollerShutterEndpoint(powerOutput, directionOutput),
-                area.Controller.TimerService,
-                area.Controller.ServiceLocator.GetService<ISchedulerService>());
-
-            area.AddComponent(rollerShutter);
-            return area;
         }
     }
 }

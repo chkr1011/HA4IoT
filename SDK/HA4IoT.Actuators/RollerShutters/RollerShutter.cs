@@ -124,10 +124,13 @@ namespace HA4IoT.Actuators.RollerShutters
             OnActiveStateChanged(oldState, _state);
         }
 
-        public override void HandleApiCommand(IApiContext apiContext)
+        public override void HandleApiCall(IApiContext apiContext)
         {
-            var state = new NamedComponentState(apiContext.Request.GetNamedString("state"));
-            SetState(state);
+            if (apiContext.CallType == ApiCallType.Command)
+            {
+                var state = new NamedComponentState(apiContext.Request.GetNamedString("state"));
+                SetState(state);
+            }
         }
 
         public override IList<IComponentState> GetSupportedStates()

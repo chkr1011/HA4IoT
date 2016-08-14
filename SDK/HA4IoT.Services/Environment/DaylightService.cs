@@ -24,9 +24,9 @@ namespace HA4IoT.Services.Environment
         public TimeSpan Sunset { get; private set; }
         public DateTime? Timestamp { get; private set; }
 
-        public override JsonObject ExportStatusToJsonObject()
+        public override JsonObject GetStatus()
         {
-            var status = base.ExportStatusToJsonObject();
+            var status = base.GetStatus();
             status.SetNamedTimeSpan("Sunrise", Sunrise);
             status.SetNamedTimeSpan("Sunset", Sunset);
             status.SetNamedDateTime("Timestamp", Timestamp);

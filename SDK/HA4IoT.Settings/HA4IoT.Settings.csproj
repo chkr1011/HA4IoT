@@ -107,10 +107,17 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ControllerSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SettingsContainer.cs" />
     <Compile Include="SettingsContainerApiDispatcher.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.Settings.rd.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
+      <Project>{E1EDAC4B-83B9-46F4-9F6A-3BAE97D79F29}</Project>
+      <Name>HA4IoT.Contracts</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

@@ -52,7 +52,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
         public event EventHandler<DaylightFetchedEventArgs> DaylightFetched;
         public event EventHandler<WeatherFetchedEventArgs> WeatherFetched;
 
-        public override JsonObject ExportStatusToJsonObject()
+        public override JsonObject GetStatus()
         {
             var result = new JsonObject();
 
@@ -66,9 +66,12 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             return result;
         }
         
-        public override void HandleApiCommand(IApiContext apiContext)
+        public override void HandleApiCall(IApiContext apiContext)
         {
-            Refresh();
+            if (apiContext.CallType == ApiCallType.Command)
+            {
+                Refresh();
+            }
         }
 
         private void PersistWeatherData(string weatherData)

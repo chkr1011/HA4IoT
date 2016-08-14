@@ -23,7 +23,8 @@ namespace HA4IoT.Hardware
             DeviceInformationCollection deviceInformation = DeviceInformation.FindAllAsync(deviceSelector).AsTask().Result;
             if (deviceInformation.Count == 0)
             {
-                throw new InvalidOperationException("I2C bus not found.");
+                //throw new InvalidOperationException("I2C bus not found.");
+                return;
             }
 
             _i2CBusId = deviceInformation.First().Id;

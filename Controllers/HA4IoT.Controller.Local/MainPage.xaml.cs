@@ -7,12 +7,13 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Core;
 
 namespace HA4IoT.Controller.Local
 {
     public sealed partial class MainPage
     {
-        private readonly Controller _controller;
+        private readonly Core.HA4IoTController _controller;
 
         public MainPage()
         {
@@ -20,7 +21,8 @@ namespace HA4IoT.Controller.Local
 
             Log.Instance = new TextBoxLogger(LogTextBox);
 
-            _controller = new Controller(this);
+            _controller = new Core.HA4IoTController(new ControllerOptions());
+            _controller.Initializer = new Initializer(this);
 
             // The app is only available from other machines. https://msdn.microsoft.com/en-us/library/windows/apps/Hh780593.aspx
             StoragePathTextBox.Text = StoragePath.Root;
@@ -48,7 +50,7 @@ namespace HA4IoT.Controller.Local
 
             return result;
         }
-        
+
         public async Task<IButtonEndpoint> CreateDemoButton(string caption)
         {
             IButtonEndpoint result = null;

@@ -1,33 +1,9 @@
 ﻿using System;
-using HA4IoT.Contracts.Areas;
-using HA4IoT.Contracts.Services;
-using HA4IoT.Contracts.Services.Daylight;
-using HA4IoT.Contracts.Services.OutdoorTemperature;
-using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Automations
 {
     public static class RollerShutterAutomationExtensions
     {
-        public static RollerShutterAutomation SetupRollerShutterAutomation(this IArea area)
-        {
-            if (area == null) throw new ArgumentNullException(nameof(area));
-
-            var automation = new RollerShutterAutomation(
-                AutomationIdFactory.CreateIdFrom<RollerShutterAutomation>(area),
-                area.Controller.ServiceLocator.GetService<ISchedulerService>(),
-                area.Controller.ServiceLocator.GetService<IDateTimeService>(),
-                area.Controller.ServiceLocator.GetService<IDaylightService>(),
-                area.Controller.ServiceLocator.GetService<IOutdoorTemperatureService>(),
-                area.Controller);
-
-            automation.Activate();
-
-            area.AddAutomation(automation);
-
-            return automation;
-        }
-        
         public static RollerShutterAutomation WithDoNotOpenBefore(this RollerShutterAutomation automation, TimeSpan minTime)
         {
             if (automation == null) throw new ArgumentNullException(nameof(automation));

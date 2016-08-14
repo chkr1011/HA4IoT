@@ -141,8 +141,13 @@ namespace HA4IoT.Actuators.StateMachines
             _states.Add(state);
         }
 
-        public override void HandleApiCommand(IApiContext apiContext)
+        public override void HandleApiCall(IApiContext apiContext)
         {
+            if (apiContext.CallType != ApiCallType.Command)
+            {
+                return;
+            }
+
             if (apiContext.Request.ContainsKey("action"))
             {
                 string action = apiContext.Request.GetNamedString("action", "nextState");

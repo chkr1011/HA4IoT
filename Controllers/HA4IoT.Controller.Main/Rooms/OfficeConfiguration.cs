@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Actuators;
 using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Actuators.Triggers;
@@ -12,6 +13,7 @@ using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.PersonalAgent;
+using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.MotionDetectors;
@@ -30,6 +32,8 @@ namespace HA4IoT.Controller.Main.Rooms
         private readonly CCToolsBoardService _ccToolsBoardService;
         private readonly SynonymService _synonymService;
         private readonly RemoteSocketService _remoteSocketService;
+        private readonly ActuatorFactory _actuatorFactory;
+        private readonly SensorFactory _sensorFactory;
 
         public enum Office
         {
@@ -64,7 +68,9 @@ namespace HA4IoT.Controller.Main.Rooms
             IDaylightService daylightService,
             CCToolsBoardService ccToolsBoardService,
             SynonymService synonymService,
-            RemoteSocketService remoteSocketService)
+            RemoteSocketService remoteSocketService,
+            ActuatorFactory actuatorFactory,
+            SensorFactory sensorFactory)
         {
             if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
             if (areaService == null) throw new ArgumentNullException(nameof(areaService));
@@ -72,6 +78,8 @@ namespace HA4IoT.Controller.Main.Rooms
             if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
             if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
             if (remoteSocketService == null) throw new ArgumentNullException(nameof(remoteSocketService));
+            if (actuatorFactory == null) throw new ArgumentNullException(nameof(actuatorFactory));
+            if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
 
             _deviceService = deviceService;
             _areaService = areaService;
@@ -79,6 +87,8 @@ namespace HA4IoT.Controller.Main.Rooms
             _ccToolsBoardService = ccToolsBoardService;
             _synonymService = synonymService;
             _remoteSocketService = remoteSocketService;
+            _actuatorFactory = actuatorFactory;
+            _sensorFactory = sensorFactory;
         }
 
         public void Setup()
@@ -92,31 +102,34 @@ namespace HA4IoT.Controller.Main.Rooms
             const int SensorPin = 2;
 
             var room = _areaService.CreateArea(Room.Office)
-                .WithMotionDetector(Office.MotionDetector, input4.GetInput(13))
                 .WithTemperatureSensor(Office.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(Office.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
-                .WithSocket(Office.SocketFrontLeft, hsrel8.GetOutput(0))
-                .WithSocket(Office.SocketFrontRight, hsrel8.GetOutput(6))
-                .WithSocket(Office.SocketWindowLeft, hsrel8.GetOutput(10).WithInvertedState())
-                .WithSocket(Office.SocketWindowRight, hsrel8.GetOutput(11).WithInvertedState())
-                .WithSocket(Office.SocketRearLeftEdge, hsrel8.GetOutput(7))
-                .WithSocket(Office.SocketRearLeft, hsrel8.GetOutput(2))
-                .WithSocket(Office.SocketRearRight, hsrel8.GetOutput(1))
-                .WithButton(Office.ButtonUpperLeft, input5.GetInput(0))
-                .WithButton(Office.ButtonLowerLeft, input5.GetInput(1))
-                .WithButton(Office.ButtonLowerRight, input4.GetInput(14))
-                .WithButton(Office.ButtonUpperRight, input4.GetInput(15))
                 .WithWindow(Office.WindowLeft, w => w.WithLeftCasement(input4.GetInput(11)).WithRightCasement(input4.GetInput(12), input4.GetInput(10)))
                 .WithWindow(Office.WindowRight, w => w.WithLeftCasement(input4.GetInput(8)).WithRightCasement(input4.GetInput(9), input5.GetInput(8)))
-                .WithSocket(Office.RemoteSocketDesk, _remoteSocketService.GetOutput(0))
                 .WithStateMachine(Office.CombinedCeilingLights, (s, a) => SetupLight(s, hsrel8, hspe8, a));
-            
+
+            _sensorFactory.RegisterMotionDetector(room, Office.MotionDetector, input4.GetInput(13));
+
+            _actuatorFactory.RegisterSocket(room, Office.SocketFrontLeft, hsrel8.GetOutput(0));
+            _actuatorFactory.RegisterSocket(room, Office.SocketFrontRight, hsrel8.GetOutput(6));
+            _actuatorFactory.RegisterSocket(room, Office.SocketWindowLeft, hsrel8.GetOutput(10).WithInvertedState());
+            _actuatorFactory.RegisterSocket(room, Office.SocketWindowRight, hsrel8.GetOutput(11).WithInvertedState());
+            _actuatorFactory.RegisterSocket(room, Office.SocketRearLeftEdge, hsrel8.GetOutput(7));
+            _actuatorFactory.RegisterSocket(room, Office.SocketRearLeft, hsrel8.GetOutput(2));
+            _actuatorFactory.RegisterSocket(room, Office.SocketRearRight, hsrel8.GetOutput(1));
+            _actuatorFactory.RegisterSocket(room, Office.RemoteSocketDesk, _remoteSocketService.GetOutput(0));
+
+            _sensorFactory.RegisterButton(room, Office.ButtonUpperLeft, input5.GetInput(0));
+            _sensorFactory.RegisterButton(room, Office.ButtonLowerLeft, input5.GetInput(1));
+            _sensorFactory.RegisterButton(room, Office.ButtonLowerRight, input4.GetInput(14));
+            _sensorFactory.RegisterButton(room, Office.ButtonUpperRight, input4.GetInput(15));
+
             room.GetButton(Office.ButtonUpperLeft).GetPressedLongTrigger().Attach(() =>
             {
                 room.GetStateMachine(Office.CombinedCeilingLights).TryTurnOff();
-                room.Socket(Office.SocketRearLeftEdge).TryTurnOff();
-                room.Socket(Office.SocketRearLeft).TryTurnOff();
-                room.Socket(Office.SocketFrontLeft).TryTurnOff();
+                room.GetSocket(Office.SocketRearLeftEdge).TryTurnOff();
+                room.GetSocket(Office.SocketRearLeft).TryTurnOff();
+                room.GetSocket(Office.SocketFrontLeft).TryTurnOff();
             });
         }
 

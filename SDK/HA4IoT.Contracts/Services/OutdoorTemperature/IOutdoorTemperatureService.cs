@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Contracts.Services.OutdoorTemperature
 {
-    public interface IOutdoorTemperatureService : IService
+    public interface IOutdoorTemperatureService : IApiExposedService
     {
         float OutdoorTemperature { get; }
 

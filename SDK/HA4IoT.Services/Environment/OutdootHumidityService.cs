@@ -31,9 +31,9 @@ namespace HA4IoT.Services.Environment
             Timestamp = _dateTimeService.Now;
         }
 
-        public override JsonObject ExportStatusToJsonObject()
+        public override JsonObject GetStatus()
         {
-            var status = base.ExportStatusToJsonObject();
+            var status = base.GetStatus();
             status.SetNamedNumber("OutdoorHumidity", OutdoorHumidity);
             status.SetNamedDateTime("Timestamp", Timestamp);
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Actuators;
 using HA4IoT.Actuators.BinaryStateActuators;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.StateMachines;
@@ -11,6 +12,7 @@ using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.PersonalAgent;
+using HA4IoT.Sensors;
 using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Sensors.TemperatureSensors;
@@ -26,6 +28,9 @@ namespace HA4IoT.Controller.Main.Rooms
         private readonly ISchedulerService _schedulerService;
         private readonly IAreaService _areaService;
         private readonly SynonymService _synonymService;
+        private readonly AutomationFactory _automationFactory;
+        private readonly ActuatorFactory _actuatorFactory;
+        private readonly SensorFactory _sensorFactory;
 
         private enum UpperBathroom
         {
@@ -48,19 +53,28 @@ namespace HA4IoT.Controller.Main.Rooms
             IDeviceService deviceService,
             ISchedulerService schedulerService,
             IAreaService areaService,
-            SynonymService synonymService)
+            SynonymService synonymService,
+            AutomationFactory automationFactory,
+            ActuatorFactory actuatorFactory,
+            SensorFactory sensorFactory)
         {
             if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
             if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
             if (areaService == null) throw new ArgumentNullException(nameof(areaService));
             if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
+            if (automationFactory == null) throw new ArgumentNullException(nameof(automationFactory));
+            if (actuatorFactory == null) throw new ArgumentNullException(nameof(actuatorFactory));
+            if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
 
             _ccToolsBoardService = ccToolsBoardService;
             _deviceService = deviceService;
             _schedulerService = schedulerService;
             _areaService = areaService;
             _synonymService = synonymService;
+            _automationFactory = automationFactory;
+            _actuatorFactory = actuatorFactory;
+            _sensorFactory = sensorFactory;
         }
 
         public void Setup()
@@ -74,21 +88,22 @@ namespace HA4IoT.Controller.Main.Rooms
             var room = _areaService.CreateArea(Room.UpperBathroom)
                 .WithTemperatureSensor(UpperBathroom.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(UpperBathroom.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
-                .WithMotionDetector(UpperBathroom.MotionDetector, input5.GetInput(15))
                 .WithLamp(UpperBathroom.LightCeilingDoor, hsrel5.GetOutput(0))
                 .WithLamp(UpperBathroom.LightCeilingEdge, hsrel5.GetOutput(1))
                 .WithLamp(UpperBathroom.LightCeilingMirrorCabinet, hsrel5.GetOutput(2))
                 .WithLamp(UpperBathroom.LampMirrorCabinet, hsrel5.GetOutput(3))
                 .WithStateMachine(UpperBathroom.Fan, (s, r) => SetupFan(s, hsrel5));
 
+            _sensorFactory.RegisterMotionDetector(room, UpperBathroom.MotionDetector, input5.GetInput(15));
+
             var combinedLights =
-                room.CombineActuators(UpperBathroom.CombinedCeilingLights)
+                _actuatorFactory.RegisterLogicalActuator(room, UpperBathroom.CombinedCeilingLights)
                     .WithActuator(room.GetLamp(UpperBathroom.LightCeilingDoor))
                     .WithActuator(room.GetLamp(UpperBathroom.LightCeilingEdge))
                     .WithActuator(room.GetLamp(UpperBathroom.LightCeilingMirrorCabinet))
                     .WithActuator(room.GetLamp(UpperBathroom.LampMirrorCabinet));
 
-            room.SetupTurnOnAndOffAutomation()
+            _automationFactory.RegisterTurnOnAndOffAutomation(room)
                 .WithTrigger(room.GetMotionDetector(UpperBathroom.MotionDetector))
                 .WithTarget(combinedLights)
                 .WithOnDuration(TimeSpan.FromMinutes(8));

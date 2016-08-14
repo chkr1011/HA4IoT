@@ -47,7 +47,7 @@ namespace HA4IoT.Services.System
             _values[name] = value.ToJsonValue();
         }
 
-        public override void HandleApiRequest(IApiContext apiContext)
+        public void HandleApiCall(IApiContext apiContext)
         {
             apiContext.Response = new JsonObject();
 

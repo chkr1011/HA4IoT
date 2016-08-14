@@ -57,10 +57,8 @@ namespace HA4IoT.Sensors.MotionDetectors
             return new List<IComponentState> {MotionDetectorStateId.Idle, MotionDetectorStateId.MotionDetected};
         }
 
-        public override void HandleApiCommand(IApiContext apiContext)
+        public override void HandleApiCall(IApiContext apiContext)
         {
-            base.HandleApiCommand(apiContext);
-            
             if (apiContext.Request.ContainsKey("action"))
             {
                 string action = apiContext.Request.GetNamedString("action");

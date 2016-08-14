@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Contracts.Services.System
 {
-    public interface IDateTimeService : IService
+    public interface IDateTimeService : IApiExposedService
     {
         DateTime Date { get; }
 

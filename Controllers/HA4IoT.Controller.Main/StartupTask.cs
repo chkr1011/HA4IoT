@@ -12,6 +12,7 @@ using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Services.Weather;
 using HA4IoT.Controller.Main.Rooms;
+using HA4IoT.Core;
 using HA4IoT.ExternalServices.OpenWeatherMap;
 using HA4IoT.ExternalServices.TelegramBot;
 using HA4IoT.ExternalServices.Twitter;
@@ -29,13 +30,19 @@ namespace HA4IoT.Controller.Main
 {
     public sealed class StartupTask : IBackgroundTask
     {
+        private const int LedGpio = 22;
+
         public void Run(IBackgroundTaskInstance taskInstance)
         {
-            var controller = new Controller { Initializer = new Initializer() };
+            var controller = new HA4IoTController(new ControllerOptions { StatusLedNumber = LedGpio })
+            {
+                Initializer = new Initializer()
+            };
+
             controller.RunAsync(taskInstance);
         }
 
-        private class Initializer : IInitializer
+        private class Initializer : IHA4IoTInitializer
         {
             public void RegisterServices(IContainerService containerService)
             {
@@ -45,13 +52,13 @@ namespace HA4IoT.Controller.Main
                 RegisterTwitterClientService(containerService);
                 RegisterTelegramBotService(containerService);
             }
-            
-            public Task Initialize(IContainerService containerService)
+
+            public Task Configure(IContainerService containerService)
             {
                 var ccToolsBoardService = containerService.GetInstance<CCToolsBoardService>();
                 var pi2GpioService = containerService.GetInstance<Pi2GpioService>();
                 var synonymService = containerService.GetInstance<SynonymService>();
-              
+
                 synonymService.TryLoadPersistedSynonyms();
 
                 ccToolsBoardService.CreateHSPE16InputOnly(InstalledDevice.Input0, new I2CSlaveAddress(42));
@@ -73,8 +80,6 @@ namespace HA4IoT.Controller.Main
                 containerService.GetInstance<LivingRoomConfiguration>().Setup();
 
                 synonymService.RegisterDefaultComponentStateSynonyms();
-
-                InitializeAzureCloudApiEndpoint();
 
                 var ioBoardsInterruptMonitor = new InterruptMonitor(pi2GpioService.GetInput(4));
                 ioBoardsInterruptMonitor.InterruptDetected += (s, e) => ccToolsBoardService.PollInputBoardStates();
@@ -158,7 +163,7 @@ namespace HA4IoT.Controller.Main
 
                 var i2CHardwareBridge = new I2CHardwareBridge(new I2CSlaveAddress(50), i2CBusService, schedulerService);
                 deviceService.AddDevice(i2CHardwareBridge);
-                
+
                 var brennenstuhl = new BrennenstuhlCodeSequenceProvider();
                 var ldp433MHzSender = new LPD433MHzSignalSender(i2CHardwareBridge, LDP433MhzSenderPin, apiService);
 

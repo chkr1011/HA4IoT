@@ -6,7 +6,6 @@ using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Daylight;
@@ -19,11 +18,10 @@ namespace HA4IoT.Automations
     {
         private readonly List<ComponentId> _rollerShutters = new List<ComponentId>();
 
-        private readonly ISchedulerService _schedulerService;
         private readonly IDateTimeService _dateTimeService;
         private readonly IDaylightService _daylightService;
         private readonly IOutdoorTemperatureService _outdoorTemperatureService;
-        private readonly IComponentController _componentController;
+        private readonly IComponentService _componentService;
 
         private bool _maxOutsideTemperatureApplied;
         private bool _autoOpenIsApplied;
@@ -35,22 +33,23 @@ namespace HA4IoT.Automations
             IDateTimeService dateTimeService,
             IDaylightService daylightService,
             IOutdoorTemperatureService outdoorTemperatureService,
-            IComponentController componentController)
+            IComponentService componentService)
             : base(id)
         {
-            if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
             if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
             if (outdoorTemperatureService == null) throw new ArgumentNullException(nameof(outdoorTemperatureService));
-            if (componentController == null) throw new ArgumentNullException(nameof(componentController));
+            if (componentService == null) throw new ArgumentNullException(nameof(componentService));
 
-            _schedulerService = schedulerService;
             _dateTimeService = dateTimeService;
             _daylightService = daylightService;
             _outdoorTemperatureService = outdoorTemperatureService;
-            _componentController = componentController;
+            _componentService = componentService;
+            _componentService = componentService;
 
-            SpecialSettingsWrapper = new RollerShutterAutomationSettingsWrapper(Settings);           
+            SpecialSettingsWrapper = new RollerShutterAutomationSettingsWrapper(Settings);
+
+            schedulerService.RegisterSchedule("RollerShutterAutomation-" + Guid.NewGuid(), TimeSpan.FromSeconds(10), PerformPendingActions);
         }
 
         public RollerShutterAutomationSettingsWrapper SpecialSettingsWrapper { get; }
@@ -63,9 +62,12 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public void Activate()
+        public RollerShutterAutomation WithRollerShutters(IList<IRollerShutter> rollerShutters)
         {
-            _schedulerService.RegisterSchedule("RollerShutterAutomation-" + Guid.NewGuid(), TimeSpan.FromSeconds(10), PerformPendingActions);
+            if (rollerShutters == null) throw new ArgumentNullException(nameof(rollerShutters));
+
+            _rollerShutters.AddRange(rollerShutters.Select(rs => rs.Id));
+            return this;
         }
 
         public void PerformPendingActions()
@@ -191,7 +193,7 @@ namespace HA4IoT.Automations
         {
             foreach (var rollerShutter in _rollerShutters)
             {
-                _componentController.GetComponent<IRollerShutter>(rollerShutter).SetState(state);
+                _componentService.GetComponent<IRollerShutter>(rollerShutter).SetState(state);
             }
         }
 

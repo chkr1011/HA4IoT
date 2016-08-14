@@ -126,7 +126,7 @@
     <Compile Include="Components\UnknownComponentState.cs" />
     <Compile Include="Conditions\ConditionState.cs" />
     <Compile Include="Conditions\ICondition.cs" />
-    <Compile Include="Core\IInitializer.cs" />
+    <Compile Include="Core\IHA4IoTInitializer.cs" />
     <Compile Include="Core\IStartupCompletedNotification.cs" />
     <Compile Include="Core\Settings\SettingValueChangedEventArgs.cs" />
     <Compile Include="Hardware\ForceUpdateStateParameter.cs" />
@@ -176,16 +176,13 @@
     <Compile Include="Sensors\SwitchStateID.cs" />
     <Compile Include="Automations\IAutomation.cs" />
     <Compile Include="Automations\IAutomationService.cs" />
-    <Compile Include="Configuration\ConfigurationInvalidException.cs" />
     <Compile Include="Components\IComponentService.cs" />
     <Compile Include="Core\Discovery\DiscoveryResponse.cs" />
     <Compile Include="Areas\IAreaService.cs" />
-    <Compile Include="Core\IController.cs" />
     <Compile Include="Areas\IArea.cs" />
     <Compile Include="Areas\AreaId.cs" />
-    <Compile Include="Configuration\HandleConfigurationNodeResult.cs" />
-    <Compile Include="Configuration\IConfigurationExtender.cs" />
     <Compile Include="Core\IdBase.cs" />
+    <Compile Include="Services\IApiExposedService.cs" />
     <Compile Include="Services\System\IDeviceService.cs" />
     <Compile Include="Services\System\IContainerService.cs" />
     <Compile Include="Services\System\ITimerService.cs" />
@@ -222,7 +219,6 @@
     <Compile Include="Services\OutdoorHumidity\IOutdoorHumidityService.cs" />
     <Compile Include="Services\OutdoorTemperature\IOutdoorTemperatureProvider.cs" />
     <Compile Include="Services\OutdoorTemperature\IOutdoorTemperatureService.cs" />
-    <Compile Include="Services\IService.cs" />
     <Compile Include="Services\Weather\IWeatherService.cs" />
     <Compile Include="Services\ServiceBase.cs" />
     <Compile Include="Services\OutdoorTemperature\OutdoorTemperatureFetchedEventArgs.cs" />
@@ -244,6 +240,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Weather\Weather.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.Contracts.rd.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="SimpleInjector">
+      <HintPath>..\..\..\..\..\.nuget\packages\SimpleInjector\3.2.0\lib\portable-net4+sl4+wp8+win8+wpa81\SimpleInjector.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

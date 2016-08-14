@@ -16,9 +16,9 @@ namespace HA4IoT.Automations.Tests
         {
             var testController = new TestController();
             var automation = new ConditionalOnAutomation(AutomationIdFactory.EmptyId,
-                testController.ServiceLocator.GetService<ISchedulerService>(),
-                testController.ServiceLocator.GetService<IDateTimeService>(),
-                testController.ServiceLocator.GetService<IDaylightService>());
+                testController.SchedulerService,
+                testController.DateTimeService,
+                testController.DaylightService);
 
             var testButtonFactory = new TestButtonFactory(testController.TimerService);
             var testStateMachineFactory = new TestStateMachineFactory();

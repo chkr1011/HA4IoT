@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Reflection;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Core.Settings;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Core.Settings;
 using HA4IoT.Networking;
+using HA4IoT.Settings;
 
 namespace HA4IoT.Core
 {
@@ -17,25 +20,33 @@ namespace HA4IoT.Core
         private readonly IComponentService _componentService;
         private readonly IAreaService _areaService;
         private readonly IAutomationService _automationService;
+        private readonly IContainerService _containerService;
+        private readonly ControllerSettings _controllerSettings;
 
         public ControllerApiDispatcher(
             IApiService apiService,
             IDeviceService deviceService,
             IComponentService componentService,
             IAreaService areaService,
-            IAutomationService automationService)
+            IAutomationService automationService,
+            IContainerService containerService,
+            ControllerSettings controllerSettings)
         {
             if (apiService == null) throw new ArgumentNullException(nameof(apiService));
             if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
             if (componentService == null) throw new ArgumentNullException(nameof(componentService));
             if (areaService == null) throw new ArgumentNullException(nameof(areaService));
             if (automationService == null) throw new ArgumentNullException(nameof(automationService));
+            if (containerService == null) throw new ArgumentNullException(nameof(containerService));
+            if (controllerSettings == null) throw new ArgumentNullException(nameof(controllerSettings));
 
             _apiService = apiService;
             _deviceService = deviceService;
             _componentService = componentService;
             _areaService = areaService;
             _automationService = automationService;
+            _containerService = containerService;
+            _controllerSettings = controllerSettings;
         }
 
         public void ExposeToApi()
@@ -43,34 +54,34 @@ namespace HA4IoT.Core
             _apiService.RouteRequest("configuration", HandleApiGetConfiguration);
             _apiService.RouteRequest("status", HandleApiGetStatus);
 
-            ExposeServicesToApi();
-        }
-
-        private void ExposeServicesToApi()
-        {
-            foreach (var service in _controller.ServiceLocator.GetServices())
+            foreach (var registration in _containerService.GetCurrentRegistrations())
             {
-                _apiService.RouteRequest($"service/{service.InterfaceType.Name}", service.ServiceInstance.HandleApiRequest);
-                _apiService.RouteCommand($"service/{service.InterfaceType.Name}", service.ServiceInstance.HandleApiCommand);
+                var apiExposedService = registration.GetInstance() as IApiExposedService;
+                if (apiExposedService != null)
+                {
+                    _apiService.RouteRequest($"service/{registration.ServiceType.Name}", apiExposedService.HandleApiCall);
+                    _apiService.RouteCommand($"service/{registration.ServiceType.Name}", apiExposedService.HandleApiCall);
+                }
             }
 
             foreach (var device in _deviceService.GetDevices())
             {
-                _apiService.RouteRequest($"device/{device.Id}", device.HandleApiRequest);
-                _apiService.RouteCommand($"device/{device.Id}", device.HandleApiCommand);
+                _apiService.RouteRequest($"device/{device.Id}", device.HandleApiCall);
+                _apiService.RouteCommand($"device/{device.Id}", device.HandleApiCall);
+            }
+
+            foreach (var component in _componentService.GetComponents())
+            {
+                _apiService.RouteCommand($"component/{component.Id}/status", component.HandleApiCall);
+                _apiService.RouteRequest($"component/{component.Id}/status", component.HandleApiCall);
+
+                new SettingsContainerApiDispatcher(component.Settings, $"component/{component.Id}", _apiService).ExposeToApi();
+                component.StateChanged += (s, e) => _apiService.NotifyStateChanged(component);
             }
 
             foreach (var area in _areaService.GetAreas())
             {
                 new SettingsContainerApiDispatcher(area.Settings, $"area/{area.Id}", _apiService).ExposeToApi();
-            }
-
-            foreach (var component in _componentService.GetComponents())
-            {
-                new SettingsContainerApiDispatcher(component.Settings, $"component/{component.Id}", _apiService).ExposeToApi();
-                _apiService.RouteCommand($"component/{component.Id}/status", component.HandleApiCommand);
-                _apiService.RouteRequest($"component/{component.Id}/status", component.HandleApiRequest);
-                component.StateChanged += (s, e) => _apiService.NotifyStateChanged(component);
             }
 
             foreach (var automation in _automationService.GetAutomations())
@@ -86,10 +97,10 @@ namespace HA4IoT.Core
             result.SetNamedNumber("version", 1D);
 
             var services = new JsonObject();
-            foreach (var service in _controller.ServiceLocator.GetServices())
-            {
-                services.SetNamedObject(service.InterfaceType.Name, service.ServiceInstance.ExportStatusToJsonObject());
-            }
+            ////foreach (var service in _controller.ServiceLocator.GetServices())
+            ////{
+            ////    services.SetNamedObject(service.InterfaceType.Name, service.ServiceInstance.ExportStatusToJsonObject());
+            ////}
 
             result.SetNamedValue("services", services);
 
@@ -125,7 +136,7 @@ namespace HA4IoT.Core
             }
 
             configuration.SetNamedValue("areas", areas);
-            configuration.SetNamedValue("controller", _controller.Settings.Export());
+            configuration.SetNamedValue("controller", _controllerSettings.Export());
 
             apiContext.Response = configuration;
         }

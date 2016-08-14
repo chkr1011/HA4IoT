@@ -3,7 +3,7 @@ using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Contracts.Services.System
 {
-    public interface II2CBusService : IService
+    public interface II2CBusService : IApiExposedService
     {
         /// <summary>
         /// Executes the specified action providing the <see cref="II2CDevice"/> for the device with the specified address.

@@ -3,8 +3,8 @@ using Windows.Data.Json;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Core.Settings;
-using HA4IoT.Core.Settings;
 using HA4IoT.Networking;
+using HA4IoT.Settings;
 
 namespace HA4IoT.Automations
 {

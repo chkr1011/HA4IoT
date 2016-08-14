@@ -13,7 +13,7 @@ using HA4IoT.Networking;
 
 namespace HA4IoT.Services.Scheduling
 {
-    public class SchedulerService : Contracts.Services.ServiceBase, ISchedulerService
+    public class SchedulerService : ServiceBase, ISchedulerService
     {
         private readonly object _syncRoot = new object();
         private readonly Dictionary<string, Schedule> _schedules = new Dictionary<string, Schedule>();
@@ -32,7 +32,7 @@ namespace HA4IoT.Services.Scheduling
             return new TimedAction(dueTime, TimeSpan.Zero, _timerService);
         }
 
-        public override void HandleApiRequest(IApiContext apiContext)
+        public void HandleApiCall(IApiContext apiContext)
         {
             lock (_syncRoot)
             {

@@ -37,9 +37,9 @@ namespace HA4IoT.Services.ControllerSlave
             scheduler.RegisterSchedule("ControllerSlavePolling", TimeSpan.FromMinutes(5), PullValues);
         }
 
-        public override JsonObject ExportStatusToJsonObject()
+        public override JsonObject GetStatus()
         {
-            var status = base.ExportStatusToJsonObject();
+            var status = base.GetStatus();
             status.SetNamedDateTime("LastPull", _lastPull);
             status.SetNamedDateTime("LastSuccessfulPull", _lastSuccessfulPull);
 

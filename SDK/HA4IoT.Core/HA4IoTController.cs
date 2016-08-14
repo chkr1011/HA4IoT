@@ -3,16 +3,17 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
+using HA4IoT.Actuators;
 using HA4IoT.Api;
 using HA4IoT.Api.AzureCloud;
 using HA4IoT.Api.LocalRestServer;
+using HA4IoT.Automations;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
@@ -22,6 +23,7 @@ using HA4IoT.Hardware.Pi2;
 using HA4IoT.Logger;
 using HA4IoT.Networking;
 using HA4IoT.PersonalAgent;
+using HA4IoT.Sensors;
 using HA4IoT.Services.Areas;
 using HA4IoT.Services.Automations;
 using HA4IoT.Services.Components;
@@ -29,46 +31,29 @@ using HA4IoT.Services.Devices;
 using HA4IoT.Services.Health;
 using HA4IoT.Services.Scheduling;
 using HA4IoT.Services.System;
+using HA4IoT.Settings;
 using HA4IoT.Telemetry;
 using SimpleInjector;
 
 namespace HA4IoT.Core
 {
-    public class ControllerBase : IController
+    public class HA4IoTController
     {
         private readonly Container _container = new Container();
+        private readonly ControllerOptions _options;
 
         private BackgroundTaskDeferral _deferral;
         private HttpServer _httpServer;
-        
-        public ISettingsContainer Settings { get; private set; }
 
-        public IInitializer Initializer { get; set; }
-
-        protected ControllerBase(int? statusLedNumber)
+        public HA4IoTController(ControllerOptions options)
         {
-            _container.RegisterSingleton(() => new HealthServiceOptions {StatusLed = statusLedNumber});
-            _container.RegisterSingleton<HealthService>();
+            if (options == null) throw new ArgumentNullException(nameof(options));
 
-            _container.RegisterSingleton<II2CBusService, BuiltInI2CBusService>();
-            _container.RegisterSingleton<Pi2GpioService>();
-            _container.RegisterSingleton<CCToolsBoardService>();
-            
-            _container.RegisterSingleton<IContainerService>(() => new ContainerService(_container));
-            _container.RegisterSingleton<ISystemInformationService, SystemInformationService>();
-            _container.RegisterSingleton<IDateTimeService, DateTimeService>();
-            _container.RegisterSingleton<ISchedulerService, SchedulerService>();
-            _container.RegisterSingleton<ITimerService, TimerService>();
-
-            _container.RegisterSingleton<IAreaService, AreaService>();
-            _container.RegisterSingleton<IDeviceService, DeviceService>();
-            _container.RegisterSingleton<IComponentService, ComponentService>();
-            _container.RegisterSingleton<IAutomationService, AutomationService>();
-
-            _container.RegisterSingleton<IApiService, ApiService>();
-            _container.RegisterSingleton<SynonymService>();
+            _options = options;
         }
-        
+
+        public IHA4IoTInitializer Initializer { get; set; }
+
         public Task RunAsync(IBackgroundTaskInstance taskInstance)
         {
             if (taskInstance == null) throw new ArgumentNullException(nameof(taskInstance));
@@ -81,7 +66,7 @@ namespace HA4IoT.Core
         public Task RunAsync()
         {
             var task = Task.Factory.StartNew(
-                InitializeCore,
+                Startup,
                 CancellationToken.None,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);
@@ -89,12 +74,7 @@ namespace HA4IoT.Core
             task.ConfigureAwait(false);
             return task;
         }
-        
-        protected virtual async Task ConfigureAsync(IContainerService factoryService)
-        {
-            await Task.FromResult(0);
-        }
-        
+
         private void InitializeHttpApiEndpoint()
         {
             _httpServer = new HttpServer();
@@ -103,7 +83,7 @@ namespace HA4IoT.Core
             _container.GetInstance<IApiService>().RegisterEndpoint(httpApiDispatcherEndpoint);
 
             var httpRequestDispatcher = new HttpRequestDispatcher(_httpServer);
-            
+
             httpRequestDispatcher.MapFolder("App", StoragePath.AppRoot);
             httpRequestDispatcher.MapFolder("Storage", StoragePath.Root);
         }
@@ -123,41 +103,35 @@ namespace HA4IoT.Core
             return false;
         }
 
-        private void InitializeLogger()
-        {
-            if (Log.Instance == null)
-            {
-                var udpLogger = new UdpLogger();
-                udpLogger.Start();
-
-                udpLogger.ExposeToApi(_container.GetInstance<IApiService>());
-
-                Log.Instance = udpLogger;
-            }
-            
-            Log.Info("Starting...");
-        }
-
-        private void InitializeCore()
+        private void Startup()
         {
             try
             {
                 var stopwatch = Stopwatch.StartNew();
-                
-                InitializeLogger();
+
+                UdpLogger udpLogger = null;
+                if (Log.Instance == null)
+                {
+                    udpLogger = new UdpLogger();
+                    udpLogger.Start();
+                    Log.Instance = udpLogger;
+                }
+
+                Log.Info("Starting...");
+
+                RegisterServices();
+
                 InitializeHttpApiEndpoint();
-                
-                LoadControllerSettings();
-                InitializeDiscovery();
-                
+
                 TryConfigure();
-                
+
                 LoadNonControllerSettings();
                 ResetActuatorStates();
 
                 StartHttpServer();
 
                 ExposeToApi();
+                udpLogger?.ExposeToApi(_container.GetInstance<IApiService>());
 
                 AttachComponentHistoryTracking();
 
@@ -165,10 +139,10 @@ namespace HA4IoT.Core
                 {
                     service.OnStartupCompleted();
                 }
-                
+
                 stopwatch.Stop();
                 Log.Info("Startup completed after " + stopwatch.Elapsed);
-                
+
                 _container.GetInstance<ISystemInformationService>().Set("Health/StartupDuration", stopwatch.Elapsed);
                 _container.GetInstance<ISystemInformationService>().Set("Health/StartupTimestamp", DateTime.Now);
                 _container.GetInstance<ITimerService>().Run();
@@ -177,6 +151,45 @@ namespace HA4IoT.Core
             {
                 Log.Error(exception, "Failed to initialize.");
             }
+        }
+
+        private void RegisterServices()
+        {
+            var containerService = new ContainerService(_container);
+
+            _container.RegisterSingleton<ControllerSettings>();
+
+            _container.RegisterSingleton(() => new HealthServiceOptions { StatusLed = _options.StatusLedNumber });
+            _container.RegisterSingleton<HealthService>();
+
+            _container.RegisterSingleton<DiscoveryServer>();
+
+            _container.RegisterSingleton<II2CBusService, BuiltInI2CBusService>();
+
+            _container.RegisterSingleton<Pi2GpioService>(); // TODO: Create interface!
+            _container.RegisterSingleton<CCToolsBoardService>();
+
+            _container.RegisterSingleton<IContainerService>(() => containerService);
+            _container.RegisterSingleton<ISystemInformationService, SystemInformationService>();
+            _container.RegisterSingleton<IDateTimeService, DateTimeService>();
+            _container.RegisterSingleton<ISchedulerService, SchedulerService>();
+            _container.RegisterSingleton<ITimerService, TimerService>();
+
+            _container.RegisterSingleton<IDeviceService, DeviceService>();
+            _container.RegisterSingleton<IComponentService, ComponentService>();
+            _container.RegisterSingleton<IAreaService, AreaService>();
+            _container.RegisterSingleton<IAutomationService, AutomationService>();
+
+            _container.RegisterSingleton<AutomationFactory>();
+            _container.RegisterSingleton<ActuatorFactory>();
+            _container.RegisterSingleton<SensorFactory>();
+
+            _container.RegisterSingleton<IApiService, ApiService>();
+            _container.RegisterSingleton<SynonymService>();
+
+            Initializer?.RegisterServices(containerService);
+
+            _container.Verify();
         }
 
         private void StartHttpServer()
@@ -208,33 +221,12 @@ namespace HA4IoT.Core
             }
         }
 
-        private void InitializeDiscovery()
-        {
-            var discoveryServer = new DiscoveryServer(this);
-            discoveryServer.Start();
-        }
-
-        private void LoadControllerSettings()
-        {
-            Settings = new SettingsContainer(StoragePath.WithFilename("ControllerConfiguration.json"));
-
-            Settings.SetValue("Name", "HA4IoT Controller");
-            Settings.SetValue("Description", "The HA4IoT controller which is responsible for this house.");
-            Settings.SetValue("Language", "EN");
-
-            Settings.Load();
-            Settings.Save();
-        }
-
         private void TryConfigure()
         {
             try
             {
                 Log.Info("Starting configuration");
-                Initializer?.RegisterServices();
-                Initializer?.Initialize();
-
-                ConfigureAsync(_container.GetInstance<IContainerService>()).Wait();
+                Initializer?.Configure(_container.GetInstance<IContainerService>()).Wait();
             }
             catch (Exception exception)
             {

@@ -1,8 +1,8 @@
 ﻿using System;
 using Windows.Data.Json;
 using FluentAssertions;
-using HA4IoT.Core.Settings;
 using HA4IoT.Networking;
+using HA4IoT.Settings;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace HA4IoT.Configuration.Tests

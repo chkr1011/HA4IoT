@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Contracts.Services.System
 {
-    public interface ISystemInformationService : IService
+    public interface ISystemInformationService : IApiExposedService
     {
         void Set(string name, string value);
 

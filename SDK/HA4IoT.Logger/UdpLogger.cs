@@ -45,11 +45,11 @@ namespace HA4IoT.Logger
             _timer.Change(0, Timeout.Infinite);
         }
 
-        public void ExposeToApi(IApiService apiController)
+        public void ExposeToApi(IApiService apiService)
         {
-            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
+            if (apiService == null) throw new ArgumentNullException(nameof(apiService));
 
-            apiController.RouteRequest("trace", HandleApiGet);
+            apiService.RouteRequest("trace", HandleApiGet);
         }
 
         public void Verbose(string message)

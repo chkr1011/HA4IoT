@@ -6,8 +6,6 @@ namespace HA4IoT.Contracts.Hardware
     {
         DeviceId Id { get; }
 
-        void HandleApiCommand(IApiContext apiContext);
-
-        void HandleApiRequest(IApiContext apiContext);
+        void HandleApiCall(IApiContext apiContext);
     }
 }

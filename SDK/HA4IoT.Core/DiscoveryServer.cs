@@ -7,22 +7,23 @@ using Windows.Networking.Sockets;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Core.Discovery;
 using HA4IoT.Networking;
+using HA4IoT.Settings;
 
 namespace HA4IoT.Core
 {
-    public sealed class DiscoveryServer : IDisposable
+    public sealed class DiscoveryServer : IDisposable, IStartupCompletedNotification
     {
         private int DEFAULT_PORT = 19228;
 
-        private readonly IController _controller;
+        private readonly ControllerSettings _controllerSettings;
 
         private DatagramSocket _socket;
 
-        public DiscoveryServer(IController controller)
+        public DiscoveryServer(ControllerSettings controllerSettings)
         {
-            if (controller == null) throw new ArgumentNullException(nameof(controller));
+            if (controllerSettings == null) throw new ArgumentNullException(nameof(controllerSettings));
 
-            _controller = controller;
+            _controllerSettings = controllerSettings;
         }
 
         public void Start()
@@ -39,11 +40,7 @@ namespace HA4IoT.Core
 
         private void SendResponse(DatagramSocket sender, DatagramSocketMessageReceivedEventArgs args)
         {
-            // TODO: Add wrapper.
-            var response = new DiscoveryResponse(
-                _controller.Settings.GetString("Name"),
-                _controller.Settings.GetString("Description"));
-
+            var response = new DiscoveryResponse(_controllerSettings.Name, _controllerSettings.Description);
             SendResponseAsync(args.RemoteAddress, response).Wait();
         }
 
@@ -78,6 +75,11 @@ namespace HA4IoT.Core
         public void Dispose()
         {
             _socket?.Dispose();
+        }
+
+        public void OnStartupCompleted()
+        {
+            Start();
         }
     }
 }

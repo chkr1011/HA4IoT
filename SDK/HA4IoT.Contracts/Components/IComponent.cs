@@ -21,9 +21,7 @@ namespace HA4IoT.Contracts.Components
 
         IList<IComponentState> GetSupportedStates();
 
-        void HandleApiCommand(IApiContext apiContext);
-
-        void HandleApiRequest(IApiContext apiContext);
+        void HandleApiCall(IApiContext apiContext);
 
         JsonObject ExportConfigurationToJsonObject();
 

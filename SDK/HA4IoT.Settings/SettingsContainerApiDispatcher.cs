@@ -1,4 +1,6 @@
 ﻿using System;
+using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Core.Settings;
 
 namespace HA4IoT.Settings
 {

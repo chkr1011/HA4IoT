@@ -142,29 +142,32 @@ namespace HA4IoT.Hardware.CCTools
             }
         }
 
-        public void HandleApiCommand(IApiContext apiContext)
+        public void HandleApiCall(IApiContext apiContext)
         {
-            JsonArray state = apiContext.Request.GetNamedArray("state", null);
-            if (state != null)
+            if (apiContext.CallType == ApiCallType.Command)
             {
-                byte[] buffer = JsonValueToByteArray(state);
-                SetState(buffer);
+                JsonArray state = apiContext.Request.GetNamedArray("state", null);
+                if (state != null)
+                {
+                    byte[] buffer = JsonValueToByteArray(state);
+                    SetState(buffer);
+                }
+
+                var commit = apiContext.Request.GetNamedBoolean("commit", true);
+                if (commit)
+                {
+                    CommitChanges();
+                }
             }
 
-            var commit = apiContext.Request.GetNamedBoolean("commit", true);
-            if (commit)
+            if (apiContext.CallType == ApiCallType.Request)
             {
-                CommitChanges();
+                var result = new JsonObject();
+                result.SetNamedValue("state", GetState().ToJsonValue());
+                result.SetNamedValue("committed-state", GetCommittedState().ToJsonValue());
+
+                apiContext.Response = result;
             }
-        }
-
-        public void HandleApiRequest(IApiContext apiContext)
-        {
-            var result = new JsonObject();
-            result.SetNamedValue("state", GetState().ToJsonValue());
-            result.SetNamedValue("committed-state", GetCommittedState().ToJsonValue());
-
-            apiContext.Response = result;
         }
 
         internal BinaryState GetPortState(int pinNumber)

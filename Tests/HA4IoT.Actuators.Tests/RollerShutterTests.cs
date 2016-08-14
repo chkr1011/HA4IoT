@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Services.Scheduling;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -11,7 +12,9 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void TestRollerShutter()
         {
-            var rollerShutterFactory = new TestRollerShutterFactory(new TestTimerService());
+            var timerService = new TestTimerService();
+            var rollerShutterFactory = new TestRollerShutterFactory(timerService, new SchedulerService(timerService));
+
             TestRollerShutter rollerShutter = rollerShutterFactory.CreateTestRollerShutter();
 
             rollerShutter.GetState().Equals(RollerShutterStateId.Off).ShouldBeEquivalentTo(true);

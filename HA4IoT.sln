@@ -519,8 +519,8 @@ Global
 		{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF}.Release|ARM (For Raspberry Pi).Build.0 = Release|Any CPU
 		{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF}.Release|x86 (For local).ActiveCfg = Release|x86
 		{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF}.Release|x86 (For local).Build.0 = Release|x86
-		{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|Any CPU
-		{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|Any CPU
+		{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
+		{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|ARM
 		{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879}.Debug|x86 (For local).ActiveCfg = Debug|x86
 		{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879}.Debug|x86 (For local).Build.0 = Debug|x86
 		{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|Any CPU

@@ -101,7 +101,6 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controller.cs" />
     <Compile Include="InstalledDevice.cs" />
     <Compile Include="Rooms\BedroomConfiguration.cs" />
     <Compile Include="CatLitterBoxSender.cs" />

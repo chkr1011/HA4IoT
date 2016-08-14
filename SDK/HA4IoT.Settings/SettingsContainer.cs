@@ -3,6 +3,8 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using Windows.Data.Json;
+using HA4IoT.Contracts.Core.Settings;
+using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Settings
 {

@@ -129,7 +129,7 @@
     <Compile Include="TestHttpRequestController.cs" />
     <Compile Include="TestHomeAutomationTimer.cs" />
     <Compile Include="TestHumiditySensor.cs" />
-    <Compile Include="TestI2CBus.cs" />
+    <Compile Include="TestI2CBusService.cs" />
     <Compile Include="TestMotionDetector.cs" />
     <Compile Include="TestLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -154,10 +154,6 @@
       <Project>{e1edac4b-83b9-46f4-9f6a-3bae97d79f29}</Project>
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Core\HA4IoT.Core.csproj">
-      <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
-      <Name>HA4IoT.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Logger\HA4IoT.Logger.csproj">
       <Project>{15DB669D-AF71-4E89-9748-0290A2E5D291}</Project>
       <Name>HA4IoT.Logger</Name>
@@ -169,6 +165,10 @@
     <ProjectReference Include="..\..\SDK\HA4IoT.Sensors\HA4IoT.Sensors.csproj">
       <Project>{8892e736-cdd0-48eb-ad9e-a1c8aa230fd7}</Project>
       <Name>HA4IoT.Sensors</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Services\HA4IoT.Services.csproj">
+      <Project>{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF}</Project>
+      <Name>HA4IoT.Services</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

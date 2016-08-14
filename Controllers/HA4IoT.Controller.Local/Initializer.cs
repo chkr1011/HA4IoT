@@ -8,26 +8,30 @@ using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Core;
 using HA4IoT.Hardware.Knx;
 
 namespace HA4IoT.Controller.Local
 {
-    public class Controller : ControllerBase
+    public class Initializer : IHA4IoTInitializer
     {
         private readonly MainPage _mainPage;
 
-        public Controller(MainPage mainPage)
-            : base(null)
+        public Initializer(MainPage mainPage)
         {
             if (mainPage == null) throw new ArgumentNullException(nameof(mainPage));
 
             _mainPage = mainPage;
         }
 
-        protected override async Task ConfigureAsync(IContainerService factoryService)
+        public void RegisterServices(IContainerService containerService)
+        {
+        }
+
+        public async Task Configure(IContainerService factoryService)
         {
             var areaService = factoryService.GetInstance<IAreaService>();
             var timerService = factoryService.GetInstance<ITimerService>();

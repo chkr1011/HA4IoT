@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Actuators;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.Sockets;
 using HA4IoT.Automations;
@@ -8,6 +9,7 @@ using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.PersonalAgent;
+using HA4IoT.Sensors;
 using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Services.Areas;
 using HA4IoT.Services.Devices;
@@ -22,6 +24,9 @@ namespace HA4IoT.Controller.Main.Rooms
         private readonly CCToolsBoardService _ccToolsBoardService;
         private readonly ITimerService _timerService;
         private readonly IDaylightService _daylightService;
+        private readonly AutomationFactory _automationFactory;
+        private readonly ActuatorFactory _actuatorFactory;
+        private readonly SensorFactory _sensorFactory;
         private CatLitterBoxTwitterSender _catLitterBoxTwitterSender;
 
         private enum Storeroom
@@ -40,7 +45,10 @@ namespace HA4IoT.Controller.Main.Rooms
             IDeviceService deviceService,
             CCToolsBoardService ccToolsBoardService,
             ITimerService timerService,
-            IDaylightService daylightService)
+            IDaylightService daylightService,
+            AutomationFactory automationFactory,
+            ActuatorFactory actuatorFactory,
+            SensorFactory sensorFactory)
         {
             if (areaService == null) throw new ArgumentNullException(nameof(areaService));
             if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
@@ -48,6 +56,9 @@ namespace HA4IoT.Controller.Main.Rooms
             if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
             if (timerService == null) throw new ArgumentNullException(nameof(timerService));
             if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
+            if (automationFactory == null) throw new ArgumentNullException(nameof(automationFactory));
+            if (actuatorFactory == null) throw new ArgumentNullException(nameof(actuatorFactory));
+            if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
 
             _areaService = areaService;
             _synonymService = synonymService;
@@ -55,6 +66,9 @@ namespace HA4IoT.Controller.Main.Rooms
             _ccToolsBoardService = ccToolsBoardService;
             _timerService = timerService;
             _daylightService = daylightService;
+            _automationFactory = automationFactory;
+            _actuatorFactory = actuatorFactory;
+            _sensorFactory = sensorFactory;
         }
 
         public void Setup()
@@ -65,40 +79,41 @@ namespace HA4IoT.Controller.Main.Rooms
             var hsrel5Stairway = _deviceService.GetDevice<HSREL5>(InstalledDevice.StairwayHSREL5);
             var input3 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input3);
 
-            var storeroom = _areaService.CreateArea(Room.Storeroom)
-                .WithMotionDetector(Storeroom.MotionDetector, input3.GetInput(12))
-                .WithMotionDetector(Storeroom.MotionDetectorCatLitterBox, input3.GetInput(11).WithInvertedState())
-                .WithLamp(Storeroom.LightCeiling, hsrel5Stairway[HSREL5Pin.GPIO1])
-                .WithSocket(Storeroom.CatLitterBoxFan, hsrel5Stairway[HSREL5Pin.GPIO2]);
+            var room = _areaService.CreateArea(Room.Storeroom)
+                .WithLamp(Storeroom.LightCeiling, hsrel5Stairway[HSREL5Pin.GPIO1]);
 
-            storeroom.SetupTurnOnAndOffAutomation()
-                .WithTrigger(storeroom.GetMotionDetector(Storeroom.MotionDetector))
-                .WithTarget(storeroom.GetLamp(Storeroom.LightCeiling))
+            _sensorFactory.RegisterMotionDetector(room, Storeroom.MotionDetector, input3.GetInput(12));
+            _sensorFactory.RegisterMotionDetector(room, Storeroom.MotionDetectorCatLitterBox, input3.GetInput(11).WithInvertedState());
+
+            _actuatorFactory.RegisterSocket(room, Storeroom.CatLitterBoxFan, hsrel5Stairway[HSREL5Pin.GPIO2]);
+            _actuatorFactory.RegisterSocket(room, Storeroom.CirculatingPump, hsrel5UpperHeatingValves[HSREL5Pin.Relay3]);
+
+            _automationFactory.RegisterTurnOnAndOffAutomation(room)
+                .WithTrigger(room.GetMotionDetector(Storeroom.MotionDetector))
+                .WithTarget(room.GetLamp(Storeroom.LightCeiling))
                 .WithOnDuration(TimeSpan.FromMinutes(1));
 
-            storeroom.SetupTurnOnAndOffAutomation()
-                .WithTrigger(storeroom.GetMotionDetector(Storeroom.MotionDetectorCatLitterBox))
-                .WithTarget(storeroom.Socket(Storeroom.CatLitterBoxFan))
+            _automationFactory.RegisterTurnOnAndOffAutomation(room)
+                .WithTrigger(room.GetMotionDetector(Storeroom.MotionDetectorCatLitterBox))
+                .WithTarget(room.GetSocket(Storeroom.CatLitterBoxFan))
                 .WithOnDuration(TimeSpan.FromMinutes(2));
 
-            storeroom.WithSocket(Storeroom.CirculatingPump, hsrel5UpperHeatingValves[HSREL5Pin.Relay3]);
-            
             // Both relays are used for water source selection (True+True = Lowerr, False+False = Upper)
             // Second relays is with capacitor. Disable second with delay before disable first one.
             hsrel5UpperHeatingValves[HSREL5Pin.GPIO0].Write(BinaryState.Low);
             hsrel5UpperHeatingValves[HSREL5Pin.GPIO1].Write(BinaryState.Low);
 
-            storeroom.SetupTurnOnAndOffAutomation()
+            _automationFactory.RegisterTurnOnAndOffAutomation(room)
                 .WithTrigger(_areaService.GetArea(Room.Kitchen).GetMotionDetector(KitchenConfiguration.Kitchen.MotionDetector))
                 .WithTrigger(_areaService.GetArea(Room.LowerBathroom).GetMotionDetector(LowerBathroomConfiguration.LowerBathroom.MotionDetector))
-                .WithTarget(storeroom.Socket(Storeroom.CirculatingPump))
+                .WithTarget(room.GetSocket(Storeroom.CirculatingPump))
                 .WithPauseAfterEveryTurnOn(TimeSpan.FromHours(1))
                 .WithOnDuration(TimeSpan.FromMinutes(1))
                 .WithEnabledAtDay(_daylightService);
 
             _catLitterBoxTwitterSender =
                 new CatLitterBoxTwitterSender(_timerService).WithTrigger(
-                    storeroom.GetMotionDetector(Storeroom.MotionDetectorCatLitterBox));
+                    room.GetMotionDetector(Storeroom.MotionDetectorCatLitterBox));
 
             _synonymService.AddSynonymsForArea(Room.Storeroom, "Abstellkammer", "Storeroom");
         }

@@ -7,8 +7,8 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Core.Settings;
 using HA4IoT.Networking;
+using HA4IoT.Settings;
 
 namespace HA4IoT.Components
 {
@@ -68,13 +68,8 @@ namespace HA4IoT.Components
             return status;
         }
 
-        public virtual void HandleApiCommand(IApiContext apiContext)
+        public virtual void HandleApiCall(IApiContext apiContext)
         {
-        }
-
-        public virtual void HandleApiRequest(IApiContext apiContext)
-        {
-            apiContext.Response = ExportStatusToJsonObject();
         }
 
         protected void OnActiveStateChanged(IComponentState oldState, IComponentState newState)

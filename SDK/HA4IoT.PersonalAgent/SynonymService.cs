@@ -7,12 +7,13 @@ using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Networking;
 using ServiceBase = HA4IoT.Contracts.Services.ServiceBase;
 
 namespace HA4IoT.PersonalAgent
 {
-    public class SynonymService : ServiceBase
+    public class SynonymService : ServiceBase, IApiExposedService
     {
         private readonly IComponentService _componentService;
         private readonly Dictionary<AreaId, HashSet<string>> _areaSynonyms = new Dictionary<AreaId, HashSet<string>>();
@@ -121,7 +122,7 @@ namespace HA4IoT.PersonalAgent
             return _componentStateSynonyms.Where(i => i.Value.Any(s => s.Equals(synonym, StringComparison.CurrentCultureIgnoreCase))).Select(i => i.Key).ToList();
         }
 
-        public override void HandleApiRequest(IApiContext apiContext)
+        public void HandleApiCall(IApiContext apiContext)
         {
             apiContext.Response.SetNamedObject("AreaSynonyms", _storage.ConvertAreaSynonymsToJsonObject(_areaSynonyms));
 

@@ -45,16 +45,19 @@ namespace HA4IoT.Sensors.Buttons
             return _pressedLongTrigger;
         }
 
-        public override void HandleApiCommand(IApiContext apiContext)
+        public override void HandleApiCall(IApiContext apiContext)
         {
-            string action = apiContext.Request.GetNamedString("duration", string.Empty);
-            if (action.Equals(ButtonPressedDuration.Long.ToString(), StringComparison.OrdinalIgnoreCase))
+            if (apiContext.CallType == ApiCallType.Command)
             {
-                OnPressedLong();
-            }
-            else
-            {
-                OnPressedShortlyShort();
+                string action = apiContext.Request.GetNamedString("duration", string.Empty);
+                if (action.Equals(ButtonPressedDuration.Long.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    OnPressedLong();
+                }
+                else
+                {
+                    OnPressedShortlyShort();
+                }
             }
         }
 
