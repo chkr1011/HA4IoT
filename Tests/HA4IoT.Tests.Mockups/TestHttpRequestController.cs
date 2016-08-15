@@ -8,6 +8,10 @@ namespace HA4IoT.Tests.Mockups
 {
     public class TestHttpRequestController : IHttpRequestController, IApiService
     {
+        public event EventHandler<ApiRequestReceivedEventArgs> StatusRequested;
+
+        public event EventHandler<ApiRequestReceivedEventArgs> ConfigurationRequested;
+
         public IHttpRequestDispatcherAction HandleGet(string uri)
         {
             return new HttpRequestDispatcherAction(HttpMethod.Get, uri);

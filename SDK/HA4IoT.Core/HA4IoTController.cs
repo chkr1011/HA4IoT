@@ -52,8 +52,9 @@ namespace HA4IoT.Core
         private readonly TimerService _timerService = new TimerService();
         private readonly SystemEventsService _systemEventsService = new SystemEventsService();
         private readonly SystemInformationService _systemInformationService = new SystemInformationService();
+        private readonly ApiService _apiService = new ApiService();
         private readonly ContainerService _containerService;
-
+        
         private BackgroundTaskDeferral _deferral;
         private HttpServer _httpServer;
 
@@ -65,8 +66,6 @@ namespace HA4IoT.Core
             
             _containerService = new ContainerService(_container);
         }
-
-        public IHA4IoTInitializer Initializer { get; set; }
 
         public Task RunAsync(IBackgroundTaskInstance taskInstance)
         {
@@ -179,9 +178,10 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<ISystemEventsService>(() => _systemEventsService);
             _container.RegisterSingleton<IContainerService>(() => _containerService);
             _container.RegisterSingleton<ISystemInformationService>(() => _systemInformationService);
+            _container.RegisterSingleton<IApiService>(() => _apiService);
             _container.RegisterSingleton<IDateTimeService, DateTimeService>();
             _container.RegisterSingleton<ISchedulerService, SchedulerService>();
-
+            
             _container.RegisterSingleton<IDeviceService, DeviceService>();
             _container.RegisterSingleton<IComponentService, ComponentService>();
             _container.RegisterSingleton<IAreaService, AreaService>();
@@ -191,8 +191,6 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<ActuatorFactory>();
             _container.RegisterSingleton<SensorFactory>();
 
-            _container.RegisterSingleton<IApiService, ApiService>();
-
             _container.RegisterSingleton<PersonalAgentService>();
             _container.RegisterSingleton<SynonymService>();
 
@@ -201,9 +199,18 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<IDaylightService, DaylightService>();
             _container.RegisterSingleton<IWeatherService, WeatherService>();
 
-            Initializer?.RegisterServices(_containerService);
+            _options.Configurator?.RegisterServices(_containerService);
 
             _container.Verify();
+
+            foreach (var registration in _containerService.GetCurrentRegistrations())
+            {
+                var apiExposedService = registration.GetInstance() as IApiExposedService;
+                if (apiExposedService != null)
+                {
+                    _apiService.Route($"service/{registration.ServiceType.Name}", apiExposedService.HandleApiCall);
+                }
+            }
         }
 
         private void StartHttpServer()
@@ -240,7 +247,7 @@ namespace HA4IoT.Core
             try
             {
                 Log.Info("Starting configuration");
-                Initializer?.Configure(_containerService).Wait();
+                _options.Configurator?.Configure(_containerService).Wait();
             }
             catch (Exception exception)
             {
@@ -268,7 +275,10 @@ namespace HA4IoT.Core
 
         private void ExposeToApi()
         {
-            _container.GetInstance<ControllerApiDispatcher>().ExposeToApi();
+            _apiService.ConfigurationRequested += (s, e) =>
+            {
+                e.Context.Response.SetNamedValue("controller", _container.GetInstance<ControllerSettings>().Export());
+            };
 
             TryInitializeAzureCloudApiEndpoint();
         }

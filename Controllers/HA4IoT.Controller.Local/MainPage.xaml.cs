@@ -13,7 +13,7 @@ namespace HA4IoT.Controller.Local
 {
     public sealed partial class MainPage
     {
-        private readonly Core.HA4IoTController _controller;
+        private readonly HA4IoTController _controller;
 
         public MainPage()
         {
@@ -21,9 +21,11 @@ namespace HA4IoT.Controller.Local
 
             Log.Instance = new TextBoxLogger(LogTextBox);
 
-            _controller = new Core.HA4IoTController(new ControllerOptions());
-            _controller.Initializer = new Initializer(this);
+            var options = new ControllerOptions();
+            options.Configurator = new Initializer(this);
 
+            _controller = new HA4IoTController(options);
+            
             // The app is only available from other machines. https://msdn.microsoft.com/en-us/library/windows/apps/Hh780593.aspx
             StoragePathTextBox.Text = StoragePath.Root;
             AppPathTextBox.Text = StoragePath.AppRoot;

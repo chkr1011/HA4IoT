@@ -126,7 +126,7 @@
     <Compile Include="Components\UnknownComponentState.cs" />
     <Compile Include="Conditions\ConditionState.cs" />
     <Compile Include="Conditions\ICondition.cs" />
-    <Compile Include="Core\IHA4IoTInitializer.cs" />
+    <Compile Include="Core\IConfigurator.cs" />
     <Compile Include="Services\System\ISystemEventsService.cs" />
     <Compile Include="Core\Settings\SettingValueChangedEventArgs.cs" />
     <Compile Include="Hardware\ForceUpdateStateParameter.cs" />

@@ -111,8 +111,6 @@
     <Compile Include="MessageContext.cs" />
     <Compile Include="MessageContextFactory.cs" />
     <Compile Include="PersonalAgentService.cs" />
-    <Compile Include="PersonalAgentToApiDispatcher.cs" />
-    <Compile Include="PersonalAgentMessageProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SynonymService.cs" />
     <Compile Include="SynonymServiceStorage.cs" />

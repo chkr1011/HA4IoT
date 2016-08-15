@@ -3,7 +3,7 @@ using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Contracts.Core
 {
-    public interface IHA4IoTInitializer
+    public interface IConfigurator
     {
         void RegisterServices(IContainerService containerService);
 

@@ -4,7 +4,6 @@ using System.Diagnostics;
 using Windows.Data.Json;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
-using Windows.Storage.Streams;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Networking;
@@ -21,7 +20,12 @@ namespace HA4IoT.Api
         public ApiService()
         {
             RouteRequest("requests", HandleRequestApiDescription);
+            RouteRequest("status", HandleStatusRequest);
+            RouteRequest("configuration", HandleConfigurationRequest);
         }
+
+        public event EventHandler<ApiRequestReceivedEventArgs> StatusRequested;
+        public event EventHandler<ApiRequestReceivedEventArgs> ConfigurationRequested;
 
         public void NotifyStateChanged(IComponent component)
         {
@@ -67,6 +71,24 @@ namespace HA4IoT.Api
             endpoint.RequestReceived += RouteRequest;
         }
 
+        private void HandleStatusRequest(IApiContext apiContext)
+        {
+            apiContext.Response.SetNamedString("type", "HA4IoT.Status");
+            apiContext.Response.SetNamedNumber("version", 1D);
+
+            var eventArgs = new ApiRequestReceivedEventArgs(apiContext);
+            StatusRequested?.Invoke(this, eventArgs);
+        }
+
+        private void HandleConfigurationRequest(IApiContext apiContext)
+        {
+            apiContext.Response.SetNamedString("type", "HA4IoT.Configuration");
+            apiContext.Response.SetNamedNumber("version", 1D);
+
+            var eventArgs = new ApiRequestReceivedEventArgs(apiContext);
+            ConfigurationRequested?.Invoke(this, eventArgs);
+        }
+
         private string GenerateUri(string relativePath)
         {
             return $"/api/{relativePath}".Trim();
@@ -74,7 +96,7 @@ namespace HA4IoT.Api
 
         private void RouteRequest(object sender, ApiRequestReceivedEventArgs e)
         {
-            string uri = e.Context.Uri.Trim();
+            var uri = e.Context.Uri.Trim();
 
             Action<IApiContext> handler;
             if (e.Context.CallType == ApiCallType.Request && _requestRoutes.TryGetValue(uri, out handler))
@@ -100,7 +122,7 @@ namespace HA4IoT.Api
         {
             try
             {
-                Stopwatch stopwatch = Stopwatch.StartNew();
+                var stopwatch = Stopwatch.StartNew();
                 handler(apiContext);
                 stopwatch.Stop();
 
@@ -127,8 +149,8 @@ namespace HA4IoT.Api
 
         private string GenerateHash(string input)
         {
-            IBuffer buffer = CryptographicBuffer.ConvertStringToBinary(input, BinaryStringEncoding.Utf8);
-            IBuffer hashBuffer = _hashAlgorithm.HashData(buffer);
+            var buffer = CryptographicBuffer.ConvertStringToBinary(input, BinaryStringEncoding.Utf8);
+            var hashBuffer = _hashAlgorithm.HashData(buffer);
 
             return CryptographicBuffer.EncodeToBase64String(hashBuffer);
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Api;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
@@ -24,11 +25,12 @@ namespace HA4IoT.Tests.Mockups
 
             var systemInformationService = new SystemInformationService();
             var systemEventsService = new SystemEventsService();
+            var apiService = new ApiService();
 
             SchedulerService = new SchedulerService(TimerService);
-            AutomationService = new AutomationService(systemEventsService, systemInformationService);
-            ComponentService = new ComponentService(systemEventsService, systemInformationService);
-            AreaService = new AreaService(ComponentService, AutomationService, systemEventsService, systemInformationService);
+            AutomationService = new AutomationService(systemEventsService, systemInformationService, apiService);
+            ComponentService = new ComponentService(systemEventsService, systemInformationService, apiService);
+            AreaService = new AreaService(ComponentService, AutomationService, systemEventsService, systemInformationService, apiService);
         }
 
         public ITimerService TimerService { get; } = new TestTimerService();
