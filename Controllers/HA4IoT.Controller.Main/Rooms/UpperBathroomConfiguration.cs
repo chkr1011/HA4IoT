@@ -1,6 +1,5 @@
 ﻿using System;
 using HA4IoT.Actuators;
-using HA4IoT.Actuators.BinaryStateActuators;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Automations;
@@ -88,13 +87,14 @@ namespace HA4IoT.Controller.Main.Rooms
             var room = _areaService.CreateArea(Room.UpperBathroom)
                 .WithTemperatureSensor(UpperBathroom.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(UpperBathroom.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
-                .WithLamp(UpperBathroom.LightCeilingDoor, hsrel5.GetOutput(0))
-                .WithLamp(UpperBathroom.LightCeilingEdge, hsrel5.GetOutput(1))
-                .WithLamp(UpperBathroom.LightCeilingMirrorCabinet, hsrel5.GetOutput(2))
-                .WithLamp(UpperBathroom.LampMirrorCabinet, hsrel5.GetOutput(3))
                 .WithStateMachine(UpperBathroom.Fan, (s, r) => SetupFan(s, hsrel5));
 
             _sensorFactory.RegisterMotionDetector(room, UpperBathroom.MotionDetector, input5.GetInput(15));
+
+            _actuatorFactory.RegisterLamp(room, UpperBathroom.LightCeilingDoor, hsrel5.GetOutput(0));
+            _actuatorFactory.RegisterLamp(room, UpperBathroom.LightCeilingEdge, hsrel5.GetOutput(1));
+            _actuatorFactory.RegisterLamp(room, UpperBathroom.LightCeilingMirrorCabinet, hsrel5.GetOutput(2));
+            _actuatorFactory.RegisterLamp(room, UpperBathroom.LampMirrorCabinet, hsrel5.GetOutput(3));
 
             var combinedLights =
                 _actuatorFactory.RegisterLogicalActuator(room, UpperBathroom.CombinedCeilingLights)

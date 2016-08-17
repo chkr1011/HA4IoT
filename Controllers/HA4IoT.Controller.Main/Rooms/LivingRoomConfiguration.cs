@@ -99,13 +99,14 @@ namespace HA4IoT.Controller.Main.Rooms
             var room = _areaService.CreateArea(Room.LivingRoom)
                 .WithTemperatureSensor(LivingRoom.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(LivingRoom.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
-                .WithLamp(LivingRoom.LampCouch, hsrel8.GetOutput(8).WithInvertedState())
-                .WithLamp(LivingRoom.LampDiningTable, hsrel8.GetOutput(9).WithInvertedState())
                 .WithWindow(LivingRoom.WindowLeft,
                     w => w.WithLeftCasement(input0.GetInput(10), input0.GetInput(11)).WithRightCasement(input0.GetInput(9), input0.GetInput(8)))
                 .WithWindow(LivingRoom.WindowRight,
                     w => w.WithLeftCasement(input1.GetInput(14), input1.GetInput(15)).WithRightCasement(input1.GetInput(13), input1.GetInput(12)));
-            
+
+            _actuatorFactory.RegisterLamp(room, LivingRoom.LampCouch, hsrel8.GetOutput(8).WithInvertedState());
+            _actuatorFactory.RegisterLamp(room, LivingRoom.LampDiningTable, hsrel8.GetOutput(9).WithInvertedState());
+
             _actuatorFactory.RegisterSocket(room, LivingRoom.SocketWindowLeftLower, hsrel8.GetOutput(1));
             _actuatorFactory.RegisterSocket(room, LivingRoom.SocketWindowMiddleLower, hsrel8.GetOutput(2));
             _actuatorFactory.RegisterSocket(room, LivingRoom.SocketWindowRightLower, hsrel8.GetOutput(3));

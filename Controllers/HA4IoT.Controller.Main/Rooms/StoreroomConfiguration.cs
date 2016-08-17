@@ -79,8 +79,9 @@ namespace HA4IoT.Controller.Main.Rooms
             var hsrel5Stairway = _deviceService.GetDevice<HSREL5>(InstalledDevice.StairwayHSREL5);
             var input3 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input3);
 
-            var room = _areaService.CreateArea(Room.Storeroom)
-                .WithLamp(Storeroom.LightCeiling, hsrel5Stairway[HSREL5Pin.GPIO1]);
+            var room = _areaService.CreateArea(Room.Storeroom);
+
+            _actuatorFactory.RegisterLamp(room, Storeroom.LightCeiling, hsrel5Stairway[HSREL5Pin.GPIO1]);
 
             _sensorFactory.RegisterMotionDetector(room, Storeroom.MotionDetector, input3.GetInput(12));
             _sensorFactory.RegisterMotionDetector(room, Storeroom.MotionDetectorCatLitterBox, input3.GetInput(11).WithInvertedState());

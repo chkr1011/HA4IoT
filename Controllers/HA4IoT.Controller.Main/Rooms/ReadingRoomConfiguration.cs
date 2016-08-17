@@ -89,8 +89,9 @@ namespace HA4IoT.Controller.Main.Rooms
                     i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(ReadingRoom.HumiditySensor,
                     i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
-                .WithLamp(ReadingRoom.LightCeilingMiddle, hsrel5[HSREL5Pin.GPIO0])
                 .WithWindow(ReadingRoom.Window, w => w.WithCenterCasement(input2.GetInput(8))); // Tilt = input2.GetInput(9) -- currently broken!
+
+            _actuatorFactory.RegisterLamp(room, ReadingRoom.LightCeilingMiddle, hsrel5[HSREL5Pin.GPIO0]);
 
             _actuatorFactory.RegisterRollerShutter(room, ReadingRoom.RollerShutter, hsrel5[HSREL5Pin.Relay4], hsrel5[HSREL5Pin.Relay3]);
             _sensorFactory.RegisterRollerShutterButtons(room, ReadingRoom.RollerShutterButtonUp, input2.GetInput(12),

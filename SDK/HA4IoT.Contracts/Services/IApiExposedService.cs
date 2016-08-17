@@ -3,7 +3,7 @@ using HA4IoT.Contracts.Api;
 
 namespace HA4IoT.Contracts.Services
 {
-    public interface IApiExposedService
+    public interface IApiExposedService : IService
     {
         void HandleApiCall(IApiContext apiContext);
 

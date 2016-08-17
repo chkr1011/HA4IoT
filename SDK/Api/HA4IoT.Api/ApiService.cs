@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using Windows.Data.Json;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Networking;
 
 namespace HA4IoT.Api
@@ -61,6 +63,35 @@ namespace HA4IoT.Api
 
             _requestRoutes.Add(GenerateUri(uri), handler);
             _commandRoutes.Add(GenerateUri(uri), handler);
+        }
+
+        public void Expose(string baseUri, object controller)
+        {
+            if (baseUri == null) throw new ArgumentNullException(nameof(baseUri));
+            if (controller == null) throw new ArgumentNullException(nameof(controller));
+
+            foreach (var method in controller.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance))
+            {
+                var methodAttribute = method.GetCustomAttribute<ApiMethodAttribute>();
+                if (methodAttribute == null)
+                {
+                    continue;
+                }
+
+                string uri = $"{baseUri}/{method.Name}";
+                Action<IApiContext> handler = apiContext => method.Invoke(controller, new object[] { apiContext });
+
+                if (methodAttribute.CallType == ApiCallType.Command)
+                {
+                    RouteCommand(uri, handler);
+                }
+                else if (methodAttribute.CallType == ApiCallType.Request)
+                {
+                    RouteRequest(uri, handler);
+                }
+
+                Log.Verbose($"Exposed API method to: {uri}");
+            }
         }
 
         public void RegisterEndpoint(IApiDispatcherEndpoint endpoint)

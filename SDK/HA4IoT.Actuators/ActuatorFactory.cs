@@ -1,5 +1,6 @@
 ﻿using System;
 using HA4IoT.Actuators.BinaryStateActuators;
+using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Actuators.Sockets;
 using HA4IoT.Contracts.Actuators;
@@ -51,6 +52,17 @@ namespace HA4IoT.Actuators
             area.AddComponent(socket);
 
             return socket;
+        }
+
+        public ILamp RegisterLamp(IArea area, Enum id, IBinaryOutput output)
+        {
+            if (area == null) throw new ArgumentNullException(nameof(area));
+            if (output == null) throw new ArgumentNullException(nameof(output));
+
+            var lamp = new Lamp(ComponentIdFactory.Create(area.Id, id), new PortBasedBinaryStateEndpoint(output));
+            area.AddComponent(lamp);
+
+            return lamp;
         }
 
         public LogicalBinaryStateActuator RegisterLogicalActuator(IArea area, Enum id)

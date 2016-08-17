@@ -87,12 +87,13 @@ namespace HA4IoT.Controller.Main.Rooms
             var room = _areaService.CreateArea(Room.ChildrensRoom)
                 .WithTemperatureSensor(ChildrensRoom.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(ChildrensRoom.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
-                .WithLamp(ChildrensRoom.LightCeilingMiddle, hsrel5[HSREL5Pin.GPIO0])
                 .WithWindow(ChildrensRoom.Window, w => w.WithCenterCasement(input0.GetInput(5), input0.GetInput(4)));
 
             _actuatorFactory.RegisterSocket(room, ChildrensRoom.SocketWindow, hsrel5[HSREL5Pin.Relay0]);
             _actuatorFactory.RegisterSocket(room, ChildrensRoom.SocketWallLeft, hsrel5[HSREL5Pin.Relay1]);
             _actuatorFactory.RegisterSocket(room, ChildrensRoom.SocketWallRight, hsrel5[HSREL5Pin.Relay2]);
+
+            _actuatorFactory.RegisterLamp(room, ChildrensRoom.LightCeilingMiddle, hsrel5[HSREL5Pin.GPIO0]);
 
             _sensorFactory.RegisterButton(room, ChildrensRoom.Button, input0.GetInput(0));
 

@@ -5,6 +5,10 @@ namespace HA4IoT.Contracts.Services
 {
     public abstract class ServiceBase : IApiExposedService
     {
+        public virtual void Startup()
+        {
+        }
+
         public virtual void HandleApiCall(IApiContext apiContext)
         {
         }

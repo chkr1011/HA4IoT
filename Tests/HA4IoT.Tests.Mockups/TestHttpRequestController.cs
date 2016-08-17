@@ -39,6 +39,10 @@ namespace HA4IoT.Tests.Mockups
         {
         }
 
+        public void Expose(string baseUri, object controller)
+        {
+        }
+
         public void NotifyStateChanged(IComponent component)
         {
         }

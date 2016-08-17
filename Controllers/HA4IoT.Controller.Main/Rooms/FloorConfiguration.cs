@@ -1,7 +1,6 @@
 ﻿using System;
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Animations;
-using HA4IoT.Actuators.BinaryStateActuators;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Actuators.StateMachines;
@@ -117,12 +116,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTemperatureSensor(Floor.LowerFloorTemperatureSensor,
                     i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(Floor.LowerFloorHumiditySensor,
-                    i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
-                .WithLamp(Floor.Lamp1, hspe16FloorAndLowerBathroom.GetOutput(5).WithInvertedState())
-                .WithLamp(Floor.Lamp2, hspe16FloorAndLowerBathroom.GetOutput(6).WithInvertedState())
-                .WithLamp(Floor.Lamp3, hspe16FloorAndLowerBathroom.GetOutput(7).WithInvertedState())
-                .WithLamp(Floor.StairwayLampCeiling, hsrel5Stairway.GetOutput(0))
-                .WithLamp(Floor.StairwayLampWall, hsrel5Stairway.GetOutput(1));
+                    i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
 
             _sensorFactory.RegisterMotionDetector(room, Floor.StairwayMotionDetector, input2.GetInput(1));
             _sensorFactory.RegisterMotionDetector(room, Floor.StairsLowerMotionDetector, input4.GetInput(7));
@@ -139,6 +133,12 @@ namespace HA4IoT.Controller.Main.Rooms
             _sensorFactory.RegisterButton(room, Floor.ButtonStairsLowerLower, input1.GetInput(2));
             _sensorFactory.RegisterButton(room, Floor.ButtonStairsUpper, input4.GetInput(4));
             _sensorFactory.RegisterButton(room, Floor.ButtonStairway, input1.GetInput(6));
+
+            _actuatorFactory.RegisterLamp(room, Floor.Lamp1, hspe16FloorAndLowerBathroom.GetOutput(5).WithInvertedState());
+            _actuatorFactory.RegisterLamp(room, Floor.Lamp2, hspe16FloorAndLowerBathroom.GetOutput(6).WithInvertedState());
+            _actuatorFactory.RegisterLamp(room, Floor.Lamp3, hspe16FloorAndLowerBathroom.GetOutput(7).WithInvertedState());
+            _actuatorFactory.RegisterLamp(room, Floor.StairwayLampCeiling, hsrel5Stairway.GetOutput(0));
+            _actuatorFactory.RegisterLamp(room, Floor.StairwayLampWall, hsrel5Stairway.GetOutput(1));
 
             _actuatorFactory.RegisterLogicalActuator(room, Floor.CombinedStairwayLamp)
                 .WithActuator(room.GetLamp(Floor.StairwayLampCeiling))
@@ -161,8 +161,8 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTurnOffIfButtonPressedWhileAlreadyOn()
                 .WithOnDuration(TimeSpan.FromSeconds(20));
 
-            SetupStairsCeilingLamps(_automationFactory, room, hspe8UpperFloor);
-            SetupStairsLamps(_automationFactory, room, hspe16FloorAndLowerBathroom);
+            SetupStairsCeilingLamps(room, hspe8UpperFloor);
+            SetupStairsLamps(room, hspe16FloorAndLowerBathroom);
 
             _automationFactory.RegisterRollerShutterAutomation(room)
                 .WithRollerShutters(room.GetRollerShutter(Floor.StairwayRollerShutter));
@@ -180,7 +180,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithOnDuration(TimeSpan.FromSeconds(30));
         }
 
-        private void SetupStairsCeilingLamps(AutomationFactory automationFactory, IArea room, HSPE8OutputOnly hspe8UpperFloor)
+        private void SetupStairsCeilingLamps(IArea room, HSPE8OutputOnly hspe8UpperFloor)
         {
             var output = new LogicalBinaryOutput()
                 .WithOutput(hspe8UpperFloor[HSPE8Pin.GPIO4])
@@ -189,9 +189,9 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithOutput(hspe8UpperFloor[HSPE8Pin.GPIO6])
                 .WithInvertedState();
 
-            room.WithLamp(Floor.LampStairsCeiling, output);
+            _actuatorFactory.RegisterLamp(room, Floor.LampStairsCeiling, output);
 
-            automationFactory.RegisterTurnOnAndOffAutomation(room)
+            _automationFactory.RegisterTurnOnAndOffAutomation(room)
                 .WithTrigger(room.GetMotionDetector(Floor.StairsLowerMotionDetector))
                 .WithTrigger(room.GetMotionDetector(Floor.StairsUpperMotionDetector))
                 //.WithTrigger(floor.GetButton(Floor.ButtonStairsUpper).GetPressedShortlyTrigger())
@@ -225,7 +225,7 @@ namespace HA4IoT.Controller.Main.Rooms
             };
         }
 
-        private void SetupStairsLamps(AutomationFactory automationFactory, IArea room, HSPE16OutputOnly hspe16FloorAndLowerBathroom)
+        private void SetupStairsLamps(IArea room, HSPE16OutputOnly hspe16FloorAndLowerBathroom)
         {
             var output = new LogicalBinaryOutput()
                 .WithOutput(hspe16FloorAndLowerBathroom[HSPE16Pin.GPIO8])
@@ -236,9 +236,9 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithOutput(hspe16FloorAndLowerBathroom[HSPE16Pin.GPIO12])
                 .WithInvertedState();
 
-            room.WithLamp(Floor.LampStairs, output);
+            _actuatorFactory.RegisterLamp(room, Floor.LampStairs, output);
 
-            automationFactory.RegisterConditionalOnAutomation(room)
+            _automationFactory.RegisterConditionalOnAutomation(room)
                 .WithActuator(room.GetLamp(Floor.LampStairs))
                 .WithOnAtNightRange()
                 .WithOffBetweenRange(TimeSpan.FromHours(23), TimeSpan.FromHours(4));

@@ -102,12 +102,17 @@ namespace HA4IoT.Services.Areas
             return Settings.Export();
         }
 
+        // TODO: Remove service methods. Create separate interface.
         public JsonObject GetStatus()
         {
             return null;
         }
 
         public void HandleApiCall(IApiContext apiContext)
+        {
+        }
+
+        public void Startup()
         {
         }
     }

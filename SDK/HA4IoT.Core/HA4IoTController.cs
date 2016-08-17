@@ -18,6 +18,7 @@ using HA4IoT.Contracts.Hardware.Services;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Daylight;
+using HA4IoT.Contracts.Services.Notifications;
 using HA4IoT.Contracts.Services.OutdoorHumidity;
 using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.System;
@@ -28,6 +29,7 @@ using HA4IoT.Hardware.Pi2;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Logger;
 using HA4IoT.Networking;
+using HA4IoT.Notifications;
 using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors;
 using HA4IoT.Services.Areas;
@@ -50,6 +52,7 @@ namespace HA4IoT.Core
 
         private readonly ControllerOptions _options;
         private readonly TimerService _timerService = new TimerService();
+        private readonly DateTimeService _dateTimeService = new DateTimeService();
         private readonly SystemEventsService _systemEventsService = new SystemEventsService();
         private readonly SystemInformationService _systemInformationService = new SystemInformationService();
         private readonly ApiService _apiService = new ApiService();
@@ -137,7 +140,8 @@ namespace HA4IoT.Core
                 TryConfigure();
 
                 LoadNonControllerSettings();
-                ResetActuatorStates();
+
+                SignalStartup();
 
                 StartHttpServer();
 
@@ -152,12 +156,26 @@ namespace HA4IoT.Core
                 Log.Info("Startup completed after " + stopwatch.Elapsed);
 
                 _systemInformationService.Set("Health/StartupDuration", stopwatch.Elapsed);
-                _systemInformationService.Set("Health/StartupTimestamp", DateTime.Now);
+                _systemInformationService.Set("Health/StartupTimestamp", _dateTimeService.Now);
                 _timerService.Run();
             }
             catch (Exception exception)
             {
                 Log.Error(exception, "Failed to initialize.");
+            }
+        }
+
+        private void SignalStartup()
+        {
+            foreach (var registration in _container.GetRegistrationsOf<IService>())
+            {
+                ((IService)registration.GetInstance()).Startup();
+            }
+
+            foreach (var registration in _container.GetRegistrationsOf<IApiExposedService>())
+            {
+                _apiService.Route($"service/{registration.ServiceType.Name}", ((IApiExposedService)registration.GetInstance()).HandleApiCall);
+                _apiService.Expose($"service/{registration.ServiceType.Name}", registration.GetInstance());
             }
         }
 
@@ -179,8 +197,9 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<IContainerService>(() => _containerService);
             _container.RegisterSingleton<ISystemInformationService>(() => _systemInformationService);
             _container.RegisterSingleton<IApiService>(() => _apiService);
-            _container.RegisterSingleton<IDateTimeService, DateTimeService>();
+            _container.RegisterSingleton<IDateTimeService>(() => _dateTimeService);
             _container.RegisterSingleton<ISchedulerService, SchedulerService>();
+            _container.RegisterSingleton<INotificationService, NotificationService>();
             
             _container.RegisterSingleton<IDeviceService, DeviceService>();
             _container.RegisterSingleton<IComponentService, ComponentService>();
@@ -202,15 +221,6 @@ namespace HA4IoT.Core
             _options.Configurator?.RegisterServices(_containerService);
 
             _container.Verify();
-
-            foreach (var registration in _containerService.GetCurrentRegistrations())
-            {
-                var apiExposedService = registration.GetInstance() as IApiExposedService;
-                if (apiExposedService != null)
-                {
-                    _apiService.Route($"service/{registration.ServiceType.Name}", apiExposedService.HandleApiCall);
-                }
-            }
         }
 
         private void StartHttpServer()
@@ -223,22 +233,6 @@ namespace HA4IoT.Core
             {
                 Log.Error(exception, "Error while starting HTTP server on port 80. Falling back to port 55000");
                 _httpServer.Start(55000);
-            }
-        }
-
-        // TODO: To OnStartupCompleted
-        private void ResetActuatorStates()
-        {
-            foreach (var actuator in _container.GetInstance<IComponentService>().GetComponents<IActuator>())
-            {
-                try
-                {
-                    actuator.ResetState();
-                }
-                catch (Exception exception)
-                {
-                    Log.Warning(exception, $"Error while initially reset of state for actuator '{actuator.Id}'.");
-                }
             }
         }
 

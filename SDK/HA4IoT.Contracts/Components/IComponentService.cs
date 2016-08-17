@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Contracts.Components
 {
-    public interface IComponentService
+    public interface IComponentService : IApiExposedService
     {
         void AddComponent(IComponent component);
 

@@ -1,10 +1,8 @@
 ﻿using System;
 using HA4IoT.Actuators;
-using HA4IoT.Actuators.BinaryStateActuators;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
-using HA4IoT.Actuators.Sockets;
 using HA4IoT.Automations;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
@@ -106,15 +104,16 @@ namespace HA4IoT.Controller.Main.Rooms
             var room = _areaService.CreateArea(Room.Kitchen)
                 .WithTemperatureSensor(Kitchen.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(Kitchen.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
-                .WithLamp(Kitchen.LightCeilingMiddle, hsrel5.GetOutput(5).WithInvertedState())
-                .WithLamp(Kitchen.LightCeilingWindow, hsrel5.GetOutput(6).WithInvertedState())
-                .WithLamp(Kitchen.LightCeilingWall, hsrel5.GetOutput(7).WithInvertedState())
-                .WithLamp(Kitchen.LightCeilingDoor, hspe8.GetOutput(0).WithInvertedState())
-                .WithLamp(Kitchen.LightCeilingPassageInner, hspe8.GetOutput(1).WithInvertedState())
-                .WithWindow(Kitchen.Window, w => w.WithCenterCasement(input0.GetInput(6), input0.GetInput(7)))
-                .WithLamp(Kitchen.LightCeilingPassageOuter, hspe8.GetOutput(2).WithInvertedState());
+                .WithWindow(Kitchen.Window, w => w.WithCenterCasement(input0.GetInput(6), input0.GetInput(7)));
 
             _sensorFactory.RegisterMotionDetector(room, Kitchen.MotionDetector, input1.GetInput(8));
+
+            _actuatorFactory.RegisterLamp(room, Kitchen.LightCeilingPassageOuter, hspe8.GetOutput(2).WithInvertedState());
+            _actuatorFactory.RegisterLamp(room, Kitchen.LightCeilingMiddle, hsrel5.GetOutput(5).WithInvertedState());
+            _actuatorFactory.RegisterLamp(room, Kitchen.LightCeilingWindow, hsrel5.GetOutput(6).WithInvertedState());
+            _actuatorFactory.RegisterLamp(room, Kitchen.LightCeilingWall, hsrel5.GetOutput(7).WithInvertedState());
+            _actuatorFactory.RegisterLamp(room, Kitchen.LightCeilingDoor, hspe8.GetOutput(0).WithInvertedState());
+            _actuatorFactory.RegisterLamp(room, Kitchen.LightCeilingPassageInner, hspe8.GetOutput(1).WithInvertedState());
 
             _actuatorFactory.RegisterSocket(room, Kitchen.SocketWall, hsrel5.GetOutput(2));
             _actuatorFactory.RegisterRollerShutter(room, Kitchen.RollerShutter, hsrel5.GetOutput(4), hsrel5.GetOutput(3));

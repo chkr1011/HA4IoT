@@ -1,6 +1,5 @@
 ﻿using System;
 using HA4IoT.Actuators;
-using HA4IoT.Actuators.BinaryStateActuators;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
@@ -122,11 +121,6 @@ namespace HA4IoT.Controller.Main.Rooms
             var room = _areaService.CreateArea(Room.Bedroom)
                 .WithTemperatureSensor(Bedroom.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
                 .WithHumiditySensor(Bedroom.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
-                .WithLamp(Bedroom.LightCeiling, hsrel5.GetOutput(5).WithInvertedState())
-                .WithLamp(Bedroom.LightCeilingWindow, hsrel5.GetOutput(6).WithInvertedState())
-                .WithLamp(Bedroom.LightCeilingWall, hsrel5.GetOutput(7).WithInvertedState())
-                .WithLamp(Bedroom.LampBedLeft, hsrel5.GetOutput(4))
-                .WithLamp(Bedroom.LampBedRight, hsrel8.GetOutput(8).WithInvertedState())
                 .WithWindow(Bedroom.WindowLeft, w => w.WithCenterCasement(input5.GetInput(2)))
                 .WithWindow(Bedroom.WindowRight, w => w.WithCenterCasement(input5.GetInput(3)));
 
@@ -145,6 +139,12 @@ namespace HA4IoT.Controller.Main.Rooms
 
             _sensorFactory.RegisterRollerShutterButtons(room, Bedroom.RollerShutterButtonsLowerUp, input5.GetInput(4),
                 Bedroom.RollerShutterButtonsLowerDown, input5.GetInput(5));
+
+            _actuatorFactory.RegisterLamp(room, Bedroom.LightCeiling, hsrel5.GetOutput(5).WithInvertedState());
+            _actuatorFactory.RegisterLamp(room, Bedroom.LightCeilingWindow, hsrel5.GetOutput(6).WithInvertedState());
+            _actuatorFactory.RegisterLamp(room, Bedroom.LightCeilingWall, hsrel5.GetOutput(7).WithInvertedState());
+            _actuatorFactory.RegisterLamp(room, Bedroom.LampBedLeft, hsrel5.GetOutput(4));
+            _actuatorFactory.RegisterLamp(room, Bedroom.LampBedRight, hsrel8.GetOutput(8).WithInvertedState());
 
             _actuatorFactory.RegisterSocket(room, Bedroom.SocketWindowLeft, hsrel5[HSREL5Pin.Relay0]);
             _actuatorFactory.RegisterSocket(room, Bedroom.SocketWindowRight, hsrel5[HSREL5Pin.Relay1]);
