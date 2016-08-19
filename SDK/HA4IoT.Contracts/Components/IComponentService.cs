@@ -3,7 +3,7 @@ using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Contracts.Components
 {
-    public interface IComponentService : IApiExposedService
+    public interface IComponentService : IService
     {
         void AddComponent(IComponent component);
 

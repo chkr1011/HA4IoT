@@ -11,9 +11,11 @@ using Windows.Networking.Sockets;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Networking;
+using HA4IoT.Networking.Json;
 
 namespace HA4IoT.Logger
 {
+    [ApiClass("Logger")]
     public class UdpLogger : ILogger
     {
         private readonly bool _isDebuggerAttached = Debugger.IsAttached;
@@ -45,13 +47,6 @@ namespace HA4IoT.Logger
             _timer.Change(0, Timeout.Infinite);
         }
 
-        public void ExposeToApi(IApiService apiService)
-        {
-            if (apiService == null) throw new ArgumentNullException(nameof(apiService));
-
-            apiService.RouteRequest("trace", HandleApiGet);
-        }
-
         public void Verbose(string message)
         {
             Publish(LogEntrySeverity.Verbose, message);
@@ -80,6 +75,17 @@ namespace HA4IoT.Logger
         public void Error(Exception exception, string message)
         {
             Publish(LogEntrySeverity.Error, message + Environment.NewLine + exception);
+        }
+
+        [ApiMethod(ApiCallType.Request)]
+        public void History(IApiContext apiContext)
+        {
+            if (apiContext == null) throw new ArgumentNullException(nameof(apiContext));
+
+            lock (_syncRoot)
+            {
+                apiContext.Response = CreatePackage(_history);
+            }
         }
 
         private void Publish(LogEntrySeverity type, string message, params object[] parameters)
@@ -119,14 +125,6 @@ namespace HA4IoT.Logger
                 {
                     _history.RemoveAt(0);
                 }
-            }
-        }
-
-        private void HandleApiGet(IApiContext apiContext)
-        {
-            lock (_syncRoot)
-            {
-                apiContext.Response = CreatePackage(_history);
             }
         }
 

@@ -7,6 +7,7 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Networking;
+using HA4IoT.Networking.Json;
 
 namespace HA4IoT.Api.AzureCloud
 {
@@ -122,7 +123,6 @@ namespace HA4IoT.Api.AzureCloud
             if (!eventArgs.IsHandled)
             {
                 Log.Warning("Received Azure queue message is not handled.");
-                Log.Warning("Received Azure queue message is not handled.");
                 return;
             }
 
@@ -137,16 +137,16 @@ namespace HA4IoT.Api.AzureCloud
             string clientEtag = context.Request.GetNamedString("ETag", string.Empty);
             
             var brokerProperties = new JsonObject();
-            brokerProperties.SetNamedString("CorrelationId", correlationId);
+            brokerProperties.SetValue("CorrelationId", correlationId);
 
             var message = new JsonObject();
-            message.SetNamedString("ResultCode", context.ResultCode.ToString());
-            message.SetNamedNumber("ProcessingDuration", context.ProcessingStopwatch.ElapsedMilliseconds);
+            message.SetValue("ResultCode", context.ResultCode.ToString());
+            message.SetValue("ProcessingDuration", context.ProcessingStopwatch.ElapsedMilliseconds);
 
             if (context.CallType == ApiCallType.Request)
             {
                 string serverEtag = context.Response.GetNamedObject("Meta", new JsonObject()).GetNamedString("Hash", string.Empty);
-                message.SetNamedString("ETag", serverEtag);
+                message.SetValue("ETag", serverEtag);
 
                 if (!string.Equals(clientEtag, serverEtag))
                 {

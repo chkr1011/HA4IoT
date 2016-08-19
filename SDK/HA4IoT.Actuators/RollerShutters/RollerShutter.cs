@@ -8,9 +8,8 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Networking;
+using HA4IoT.Networking.Json;
 using Action = HA4IoT.Actuators.Actions.Action;
 
 namespace HA4IoT.Actuators.RollerShutters
@@ -79,7 +78,7 @@ namespace HA4IoT.Actuators.RollerShutters
         {
             var status = base.ExportStatusToJsonObject();
 
-            status.SetNamedNumber("position", _position);
+            status.SetValue("position", _position);
             
             return status;
         }

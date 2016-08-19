@@ -7,11 +7,14 @@ using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.Weather;
 using System.Net.Http;
 using Windows.Data.Json;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Networking;
+using HA4IoT.Networking.Json;
 
 namespace HA4IoT.Services.ControllerSlave
 {
+    [ApiServiceClass(typeof(ControllerSlaveService))]
     public class ControllerSlaveService : ServiceBase, IOutdoorTemperatureProvider, IOutdoorHumidityProvider, IDaylightProvider, IWeatherProvider
     {
         private readonly ControllerSlaveServiceOptions _masterControllerAddress;
@@ -37,13 +40,11 @@ namespace HA4IoT.Services.ControllerSlave
             scheduler.RegisterSchedule("ControllerSlavePolling", TimeSpan.FromMinutes(5), PullValues);
         }
 
-        public override JsonObject GetStatus()
+        [ApiMethod(ApiCallType.Request)]
+        public void Status(IApiContext apiContext)
         {
-            var status = base.GetStatus();
-            status.SetNamedDateTime("LastPull", _lastPull);
-            status.SetNamedDateTime("LastSuccessfulPull", _lastSuccessfulPull);
-
-            return status;
+            apiContext.Response.SetValue("LastPull", _lastPull);
+            apiContext.Response.SetValue("LastSuccessfulPull", _lastSuccessfulPull);
         }
 
         private void PullValues()
@@ -77,8 +78,8 @@ namespace HA4IoT.Services.ControllerSlave
         private void PullDaylight()
         {
             var response = PullValue("IDaylightService");
-            var sunrise = response.GetNamedTimeSpan("Sunrise").Value;
-            var sunset = response.GetNamedTimeSpan("Sunset").Value;
+            var sunrise = response.GetTimeSpan("Sunrise").Value;
+            var sunset = response.GetTimeSpan("Sunset").Value;
             DaylightFetched?.Invoke(this, new DaylightFetchedEventArgs(sunrise, sunset));
         }
 

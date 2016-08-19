@@ -6,9 +6,8 @@ using Windows.ApplicationModel.Background;
 using HA4IoT.Actuators;
 using HA4IoT.Api;
 using HA4IoT.Api.AzureCloud;
-using HA4IoT.Api.LocalRestServer;
+using HA4IoT.Api.LocalHttpServer;
 using HA4IoT.Automations;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
@@ -29,6 +28,7 @@ using HA4IoT.Hardware.Pi2;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Logger;
 using HA4IoT.Networking;
+using HA4IoT.Networking.Http;
 using HA4IoT.Notifications;
 using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors;
@@ -49,25 +49,15 @@ namespace HA4IoT.Core
     public class HA4IoTController
     {
         private readonly Container _container = new Container();
-
         private readonly ControllerOptions _options;
-        private readonly TimerService _timerService = new TimerService();
-        private readonly DateTimeService _dateTimeService = new DateTimeService();
-        private readonly SystemEventsService _systemEventsService = new SystemEventsService();
-        private readonly SystemInformationService _systemInformationService = new SystemInformationService();
-        private readonly ApiService _apiService = new ApiService();
-        private readonly ContainerService _containerService;
-        
-        private BackgroundTaskDeferral _deferral;
-        private HttpServer _httpServer;
 
+        private BackgroundTaskDeferral _deferral;
+        
         public HA4IoTController(ControllerOptions options)
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
 
             _options = options;
-            
-            _containerService = new ContainerService(_container);
         }
 
         public Task RunAsync(IBackgroundTaskInstance taskInstance)
@@ -90,127 +80,131 @@ namespace HA4IoT.Core
             return task;
         }
 
-        private void InitializeHttpApiEndpoint()
-        {
-            _httpServer = new HttpServer();
-
-            var httpApiDispatcherEndpoint = new LocalHttpServerApiDispatcherEndpoint(_httpServer);
-            _container.GetInstance<IApiService>().RegisterEndpoint(httpApiDispatcherEndpoint);
-
-            var httpRequestDispatcher = new HttpRequestDispatcher(_httpServer);
-            httpRequestDispatcher.MapFolder("App", StoragePath.AppRoot);
-            httpRequestDispatcher.MapFolder("Storage", StoragePath.Root);
-        }
-
-        private bool TryInitializeAzureCloudApiEndpoint()
-        {
-            var azureCloudApiDispatcherEndpoint = new AzureCloudApiDispatcherEndpoint();
-
-            if (azureCloudApiDispatcherEndpoint.TryInitializeFromConfigurationFile(
-                StoragePath.WithFilename("AzureCloudApiDispatcherEndpointSettings.json")))
-            {
-                _container.GetInstance<IApiService>().RegisterEndpoint(azureCloudApiDispatcherEndpoint);
-
-                return true;
-            }
-
-            return false;
-        }
-
         private void Startup()
         {
             try
             {
                 var stopwatch = Stopwatch.StartNew();
 
-                UdpLogger udpLogger = null;
-                if (Log.Instance == null)
-                {
-                    udpLogger = new UdpLogger();
-                    udpLogger.Start();
-                    Log.Instance = udpLogger;
-                }
+                SetupLogger();
 
                 Log.Info("Starting...");
 
                 RegisterServices();
-
-                InitializeHttpApiEndpoint();
-
                 TryConfigure();
 
-                LoadNonControllerSettings();
+                LoadNonControllerSettings(); // TODO: Remove!
 
-                SignalStartup();
+                StartupServices();
+                ExecuteConfigurators();
+                ExposeRegistrationsToApi();
 
-                StartHttpServer();
+                _container.GetInstance<HttpServer>().Bind(_options.HttpServerPort);
 
-                ExposeToApi();
-                udpLogger?.ExposeToApi(_container.GetInstance<IApiService>());
-
-                AttachComponentHistoryTracking();
-
-                _systemEventsService.FireStartupCompleted();
+                _container.GetInstance<SystemEventsService>().FireStartupCompleted();
                 stopwatch.Stop();
 
                 Log.Info("Startup completed after " + stopwatch.Elapsed);
 
-                _systemInformationService.Set("Health/StartupDuration", stopwatch.Elapsed);
-                _systemInformationService.Set("Health/StartupTimestamp", _dateTimeService.Now);
-                _timerService.Run();
+                _container.GetInstance<ISystemInformationService>().Set("Health/StartupDuration", stopwatch.Elapsed);
+                _container.GetInstance<ISystemInformationService>()
+                    .Set("Health/StartupTimestamp", _container.GetInstance<IDateTimeService>().Now);
+
+                _container.GetInstance<ITimerService>().Run();
             }
             catch (Exception exception)
             {
                 Log.Error(exception, "Failed to initialize.");
             }
+
+            finally
+            {
+                _deferral?.Complete();
+            }
         }
 
-        private void SignalStartup()
+        private void SetupLogger()
+        {
+            if (Log.Instance != null)
+            {
+                return;
+            }
+
+            var udpLogger = new UdpLogger();
+            udpLogger.Start();
+            
+            Log.Instance = udpLogger;
+        }
+
+        private void StartupServices()
         {
             foreach (var registration in _container.GetRegistrationsOf<IService>())
             {
                 ((IService)registration.GetInstance()).Startup();
             }
+        }
 
-            foreach (var registration in _container.GetRegistrationsOf<IApiExposedService>())
+        private void ExecuteConfigurators()
+        {
+            foreach (var registration in _container.GetRegistrationsOf<IConfigurator>())
             {
-                _apiService.Route($"service/{registration.ServiceType.Name}", ((IApiExposedService)registration.GetInstance()).HandleApiCall);
-                _apiService.Expose($"service/{registration.ServiceType.Name}", registration.GetInstance());
+                ((IConfigurator)registration.GetInstance()).Execute();
             }
+        }
+
+        private void ExposeRegistrationsToApi()
+        {
+            var apiService = _container.GetInstance<IApiService>();
+            foreach (var registration in _container.GetCurrentRegistrations())
+            {
+                apiService.Expose(registration.GetInstance());
+            }
+
+            // TODO: Remove!
+            _container.GetInstance<IApiService>().ConfigurationRequested += (s, e) =>
+            {
+                e.Context.Response.SetNamedValue("controller", _container.GetInstance<ControllerSettings>().Export());
+            };
         }
 
         private void RegisterServices()
         {
+            var containerService = new ContainerService(_container);
+
+            _container.RegisterSingleton(() => Log.Instance);
             _container.RegisterSingleton<ControllerSettings>();
 
             _container.RegisterSingleton(() => new HealthServiceOptions { StatusLed = _options.StatusLedNumber });
-            _container.RegisterSingleton<HealthService>();
+            _container.RegisterSingleton<IHealthService, HealthService>();
             _container.RegisterSingleton<DiscoveryServer>();
+            _container.RegisterSingleton<HttpServer>();
 
+            _container.RegisterSingleton<ITimerService, TimerService>();
+            _container.RegisterSingleton<ISystemEventsService, SystemEventsService>();
+            _container.RegisterSingleton<IContainerService>(() => containerService);
+            _container.RegisterSingleton<ISystemInformationService, SystemInformationService>();
+            _container.RegisterSingleton<IApiService, ApiService>();
+            _container.RegisterSingleton<IDateTimeService, DateTimeService>();
+            _container.RegisterSingleton<ISchedulerService, SchedulerService>();
+            _container.RegisterSingleton<INotificationService, NotificationService>();
+            
             _container.RegisterSingleton<II2CBusService, BuiltInI2CBusService>();
             _container.RegisterSingleton<IPi2GpioService, Pi2GpioService>();
             _container.RegisterSingleton<CCToolsBoardService>();
             _container.RegisterSingleton<RemoteSocketService>();
 
-            _container.RegisterSingleton<ITimerService>(() => _timerService);
-            _container.RegisterSingleton<ISystemEventsService>(() => _systemEventsService);
-            _container.RegisterSingleton<IContainerService>(() => _containerService);
-            _container.RegisterSingleton<ISystemInformationService>(() => _systemInformationService);
-            _container.RegisterSingleton<IApiService>(() => _apiService);
-            _container.RegisterSingleton<IDateTimeService>(() => _dateTimeService);
-            _container.RegisterSingleton<ISchedulerService, SchedulerService>();
-            _container.RegisterSingleton<INotificationService, NotificationService>();
-            
             _container.RegisterSingleton<IDeviceService, DeviceService>();
-            _container.RegisterSingleton<IComponentService, ComponentService>();
-            _container.RegisterSingleton<IAreaService, AreaService>();
-            _container.RegisterSingleton<IAutomationService, AutomationService>();
 
-            _container.RegisterSingleton<AutomationFactory>();
+            _container.RegisterSingleton<IComponentService, ComponentService>();
             _container.RegisterSingleton<ActuatorFactory>();
             _container.RegisterSingleton<SensorFactory>();
 
-            _container.RegisterSingleton<PersonalAgentService>();
+            _container.RegisterSingleton<IAreaService, AreaService>();
+
+            _container.RegisterSingleton<IAutomationService, AutomationService>();
+            _container.RegisterSingleton<AutomationFactory>();
+            
+            _container.RegisterSingleton<IPersonalAgentService, PersonalAgentService>();
             _container.RegisterSingleton<SynonymService>();
 
             _container.RegisterSingleton<IOutdoorTemperatureService, OutdoorTemperatureService>();
@@ -218,39 +212,34 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<IDaylightService, DaylightService>();
             _container.RegisterSingleton<IWeatherService, WeatherService>();
 
-            _options.Configurator?.RegisterServices(_containerService);
+            _container.Register<AppFolderConfigurator>();
+            _container.Register<LocalHttpServerApiDispatcherEndpointConfigurator>();
+            _container.Register<AzureCloudApiDispatcherEndpointConfigurator>();
+            _container.Register<ComponentStateHistoryTrackerConfigurator>();
+
+            _options.Configuration?.RegisterServices(containerService);
 
             _container.Verify();
         }
-
-        private void StartHttpServer()
-        {
-            try
-            {
-                _httpServer.Start(80);
-            }
-            catch (Exception exception)
-            {
-                Log.Error(exception, "Error while starting HTTP server on port 80. Falling back to port 55000");
-                _httpServer.Start(55000);
-            }
-        }
-
+        
         private void TryConfigure()
         {
             try
             {
                 Log.Info("Starting configuration");
-                _options.Configurator?.Configure(_containerService).Wait();
+                _options.Configuration?.Configure(_container.GetInstance<IContainerService>()).Wait();
             }
             catch (Exception exception)
             {
                 Log.Error(exception, "Error while configuring");
+
+                _container.GetInstance<INotificationService>().CreateError("Configuration is invalid");
             }
         }
 
         private void LoadNonControllerSettings()
         {
+            // TODO: Remove!
             foreach (var area in _container.GetInstance<IAreaService>().GetAreas())
             {
                 area.Settings.Load();
@@ -264,25 +253,6 @@ namespace HA4IoT.Core
             foreach (var automation in _container.GetInstance<IAutomationService>().GetAutomations())
             {
                 automation.Settings.Load();
-            }
-        }
-
-        private void ExposeToApi()
-        {
-            _apiService.ConfigurationRequested += (s, e) =>
-            {
-                e.Context.Response.SetNamedValue("controller", _container.GetInstance<ControllerSettings>().Export());
-            };
-
-            TryInitializeAzureCloudApiEndpoint();
-        }
-
-        private void AttachComponentHistoryTracking()
-        {
-            foreach (var component in _container.GetInstance<IComponentService>().GetComponents())
-            {
-                var history = new ComponentStateHistoryTracker(component);
-                history.ExposeToApi(_container.GetInstance<IApiService>());
             }
         }
     }

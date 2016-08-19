@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 using SimpleInjector;
 
 namespace HA4IoT.Services.System
 {
-    public class ContainerService : IContainerService
+    public class ContainerService : ServiceBase, IContainerService
     {
         private readonly Container _container;
 
@@ -19,11 +19,6 @@ namespace HA4IoT.Services.System
         public TService GetInstance<TService>() where TService : class
         {
             return _container.GetInstance<TService>();
-        }
-
-        public IEnumerable<InstanceProducer> GetCurrentRegistrations()
-        {
-            return _container.GetCurrentRegistrations();
         }
 
         public void RegisterSingleton<TConcrete>() where TConcrete : class

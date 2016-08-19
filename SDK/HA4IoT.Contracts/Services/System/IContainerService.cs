@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Contracts.Services.System
 {
-    public interface IContainerService
+    public interface IContainerService : IService
     {
         TService GetInstance<TService>() where TService : class;
         

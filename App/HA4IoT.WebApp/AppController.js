@@ -17,7 +17,8 @@ function AppController($scope, $http) {
 
     c.rooms = [];
 
-    c.weatherStation = {};
+    c.status;
+
     c.sensors = [];
     c.rollerShutters = [];
     c.motionDetectors = [];
@@ -119,16 +120,15 @@ function AppController($scope, $http) {
         }, 100);
     }
 
-    c.previousHash = "";
     c.pollStatus = function () {
         $.ajax({ method: "GET", url: "/api/status", timeout: 2500 }).done(function (data) {
             c.errorMessage = null;
 
-            if (data.Meta.Hash === c.previousHash) {
+            if (c.status != null && data.Meta.Hash === c.status.Meta.Hash) {
                 return;
             }
 
-            c.previousHash = data.Meta.Hash;
+            c.status = data;
             console.log("Updating UI due to state changes");
 
             $.each(data.components, function (id, state) {
@@ -136,8 +136,6 @@ function AppController($scope, $http) {
             });
 
             updateOnStateCounters(c.rooms);
-
-            c.weatherStation = data.services.OpenWeatherMapService;
 
             $scope.$apply(function () { $scope.msgs = data; });
         }).fail(function (jqXHR, textStatus, errorThrown) {

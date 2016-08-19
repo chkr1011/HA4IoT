@@ -115,6 +115,7 @@
   <ItemGroup>
     <Compile Include="ActuatorMonitor.cs" />
     <Compile Include="ComponentStateHistoryTracker.cs" />
+    <Compile Include="ComponentStateHistoryTrackerConfigurator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.Telemetry.rd.xml" />
   </ItemGroup>

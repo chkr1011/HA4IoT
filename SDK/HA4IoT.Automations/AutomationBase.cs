@@ -4,6 +4,7 @@ using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Networking;
+using HA4IoT.Networking.Json;
 using HA4IoT.Settings;
 
 namespace HA4IoT.Automations
@@ -27,7 +28,7 @@ namespace HA4IoT.Automations
         public virtual JsonObject ExportConfigurationAsJsonValue()
         {
             var result = new JsonObject();
-            result.SetNamedString("type", GetType().Name);
+            result.SetValue("type", GetType().Name);
 
             if (Settings != null)
             {

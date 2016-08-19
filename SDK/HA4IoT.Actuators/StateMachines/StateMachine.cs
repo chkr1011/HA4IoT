@@ -6,6 +6,7 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Networking;
+using HA4IoT.Networking.Json;
 
 namespace HA4IoT.Actuators.StateMachines
 {
@@ -165,7 +166,7 @@ namespace HA4IoT.Actuators.StateMachines
                 if (!SupportsState(stateId))
                 {
                     apiContext.ResultCode = ApiResultCode.InvalidBody;
-                    apiContext.Response.SetNamedString("Message", "State ID not supported.");
+                    apiContext.Response.SetValue("Message", "State ID not supported.");
                 }
 
                 SetState(stateId);

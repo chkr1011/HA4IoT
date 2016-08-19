@@ -8,11 +8,13 @@ using Windows.Security.Cryptography.Core;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Networking;
+using HA4IoT.Networking.Json;
 
 namespace HA4IoT.Api
 {
-    public class ApiService : IApiService
+    public class ApiService : ServiceBase, IApiService
     {
         private readonly List<IApiDispatcherEndpoint> _endpoints = new List<IApiDispatcherEndpoint>();
         private readonly Dictionary<string, Action<IApiContext>> _requestRoutes = new Dictionary<string, Action<IApiContext>>(StringComparer.OrdinalIgnoreCase);
@@ -65,6 +67,21 @@ namespace HA4IoT.Api
             _commandRoutes.Add(GenerateUri(uri), handler);
         }
 
+        public void Expose(object controller)
+        {
+            if (controller == null) throw new ArgumentNullException(nameof(controller));
+
+            var controllerType = controller.GetType();
+
+            var classAttribute = controllerType.GetTypeInfo().GetCustomAttribute<ApiClassAttribute>();
+            if (classAttribute == null)
+            {
+                return;
+            }
+
+            Expose(classAttribute.Uri, controller);
+        }
+
         public void Expose(string baseUri, object controller)
         {
             if (baseUri == null) throw new ArgumentNullException(nameof(baseUri));
@@ -90,7 +107,7 @@ namespace HA4IoT.Api
                     RouteRequest(uri, handler);
                 }
 
-                Log.Verbose($"Exposed API method to: {uri}");
+                Log.Verbose($"Exposed API method to URI '{methodAttribute.CallType}:{uri}'");
             }
         }
 
@@ -104,8 +121,8 @@ namespace HA4IoT.Api
 
         private void HandleStatusRequest(IApiContext apiContext)
         {
-            apiContext.Response.SetNamedString("type", "HA4IoT.Status");
-            apiContext.Response.SetNamedNumber("version", 1D);
+            apiContext.Response.SetValue("type", "HA4IoT.Status");
+            apiContext.Response.SetValue("version", 1D);
 
             var eventArgs = new ApiRequestReceivedEventArgs(apiContext);
             StatusRequested?.Invoke(this, eventArgs);
@@ -113,8 +130,8 @@ namespace HA4IoT.Api
 
         private void HandleConfigurationRequest(IApiContext apiContext)
         {
-            apiContext.Response.SetNamedString("type", "HA4IoT.Configuration");
-            apiContext.Response.SetNamedNumber("version", 1D);
+            apiContext.Response.SetValue("type", "HA4IoT.Configuration");
+            apiContext.Response.SetValue("version", 1D);
 
             var eventArgs = new ApiRequestReceivedEventArgs(apiContext);
             ConfigurationRequested?.Invoke(this, eventArgs);
@@ -158,9 +175,9 @@ namespace HA4IoT.Api
                 stopwatch.Stop();
 
                 var metaInformation = new JsonObject();
-                metaInformation.SetNamedNullValue("Hash");
-                metaInformation.SetNamedNullValue("ProcessingDuration");
-                apiContext.Response.SetNamedObject("Meta", metaInformation);
+                metaInformation.SetValue("Hash");
+                metaInformation.SetValue("ProcessingDuration");
+                apiContext.Response.SetValue("Meta", metaInformation);
 
                 string hash = null;
                 if (apiContext.CallType == ApiCallType.Request)
@@ -168,8 +185,8 @@ namespace HA4IoT.Api
                     hash = GenerateHash(apiContext.Response.Stringify());
                 }
 
-                metaInformation.SetNamedString("Hash", hash);
-                metaInformation.SetNamedNumber("ProcessingDuration", stopwatch.ElapsedMilliseconds);
+                metaInformation.SetValue("Hash", hash);
+                metaInformation.SetValue("ProcessingDuration", stopwatch.ElapsedMilliseconds);
             }
             catch (Exception exception)
             {
@@ -194,7 +211,7 @@ namespace HA4IoT.Api
                 requestRoutes.Add(JsonValue.CreateStringValue(requestRoute.Key));
             }
 
-            apiContext.Response.SetNamedArray("Requests", requestRoutes);
+            apiContext.Response.SetValue("Requests", requestRoutes);
 
             var commandRoutes = new JsonArray();
             foreach (var commandRoute in _commandRoutes)
@@ -202,7 +219,7 @@ namespace HA4IoT.Api
                 commandRoutes.Add(JsonValue.CreateStringValue(commandRoute.Key));
             }
 
-            apiContext.Response.SetNamedArray("Commands", requestRoutes);
+            apiContext.Response.SetValue("Commands", requestRoutes);
         }
 
         private JsonObject ConvertExceptionToJsonObject(Exception exception)
@@ -210,10 +227,10 @@ namespace HA4IoT.Api
             // Do not use a generic serializer because sometines not all propterties are readable
             // and throwing exceptions in the getter.
             var jsonObject = new JsonObject()
-                .WithNamedString("Type", exception.GetType().FullName)
-                .WithNamedString("Source", exception.Source)
-                .WithNamedString("Message", exception.Message)
-                .WithNamedString("StackTrace", exception.StackTrace);
+                .WithString("Type", exception.GetType().FullName)
+                .WithString("Source", exception.Source)
+                .WithString("Message", exception.Message)
+                .WithString("StackTrace", exception.StackTrace);
 
             if (exception.InnerException != null)
             {

@@ -3,6 +3,7 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
+using HA4IoT.Networking.Http;
 
 namespace HA4IoT.Tests.Mockups
 {
@@ -39,6 +40,10 @@ namespace HA4IoT.Tests.Mockups
         {
         }
 
+        public void Expose(object controller)
+        {
+        }
+
         public void Expose(string baseUri, object controller)
         {
         }
@@ -48,6 +53,10 @@ namespace HA4IoT.Tests.Mockups
         }
 
         public void RegisterEndpoint(IApiDispatcherEndpoint endpoint)
+        {
+        }
+
+        public void Startup()
         {
         }
     }

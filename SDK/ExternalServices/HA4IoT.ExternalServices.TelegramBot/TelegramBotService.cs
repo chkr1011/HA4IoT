@@ -10,6 +10,7 @@ using HA4IoT.Contracts.PersonalAgent;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Networking;
+using HA4IoT.Networking.Json;
 using HA4IoT.PersonalAgent;
 using HttpClient = System.Net.Http.HttpClient;
 
@@ -24,15 +25,13 @@ namespace HA4IoT.ExternalServices.TelegramBot
         private readonly BlockingCollection<TelegramOutboundMessage> _pendingMessages = new BlockingCollection<TelegramOutboundMessage>();
         private int _latestUpdateId;
 
-        public TelegramBotService(TelegramBotServiceOptions options, ISystemEventsService systemEventsService, PersonalAgentService personalAgentService)
+        public TelegramBotService(TelegramBotServiceOptions options, PersonalAgentService personalAgentService)
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
             if (personalAgentService == null) throw new ArgumentNullException(nameof(personalAgentService));
 
             _options = options;
             _personalAgentService = personalAgentService;
-
-            systemEventsService.StartupCompleted += (s, e) => Enable();
 
             Log.WarningLogged += (s, e) =>
             {
@@ -49,6 +48,11 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
                 EnqueueMessageForAdministrators($"{Emoji.HeavyExclamationMark} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
             };
+        }
+
+        public override void Startup()
+        {
+            Enable();
         }
 
         public void Enable()
@@ -218,12 +222,12 @@ namespace HA4IoT.ExternalServices.TelegramBot
             }
 
             var json = new JsonObject();
-            json.SetNamedNumber("chat_id", message.ChatId);
-            json.SetNamedString("text", message.Text);
+            json.SetValue("chat_id", message.ChatId);
+            json.SetValue("text", message.Text);
 
             if (message.Format == TelegramMessageFormat.HTML)
             {
-                json.SetNamedString("parse_mode", "HTML");
+                json.SetValue("parse_mode", "HTML");
             }
 
             return new StringContent(json.Stringify(), Encoding.UTF8, "application/json");

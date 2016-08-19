@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using Windows.Data.Json;
 using Windows.Web.Http;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
@@ -12,10 +11,11 @@ using HA4IoT.Contracts.Services.OutdoorHumidity;
 using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Services.Weather;
-using HA4IoT.Networking;
+using HA4IoT.Networking.Json;
 
 namespace HA4IoT.ExternalServices.OpenWeatherMap
 {
+    [ApiServiceClass(typeof(OpenWeatherMapService))]
     public class OpenWeatherMapService : ServiceBase
     {
         private readonly string _cacheFilename = StoragePath.WithFilename("OpenWeatherMapCache.json");
@@ -25,11 +25,16 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
         
         private string _previousResponse;
 
-        private float _temperature;
-        private float _humidity;
-        private TimeSpan _sunrise;
-        private TimeSpan _sunset;
-        private Weather _weather;
+        [JsonMember]
+        public float Temperature { get; private set; }
+        [JsonMember]
+        public float Humidity { get; private set; }
+        [JsonMember]
+        public TimeSpan Sunrise { get; private set; }
+        [JsonMember]
+        public TimeSpan Sunset { get; private set; }
+        [JsonMember]
+        public Weather Weather { get; private set; }
         
         public OpenWeatherMapService(
             IDateTimeService dateTimeService, 
@@ -52,26 +57,16 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
         public event EventHandler<DaylightFetchedEventArgs> DaylightFetched;
         public event EventHandler<WeatherFetchedEventArgs> WeatherFetched;
 
-        public override JsonObject GetStatus()
+        [ApiMethod(ApiCallType.Command)]
+        public void Status(IApiContext apiContext)
         {
-            var result = new JsonObject();
-
-            result.SetNamedString("situation", _weather.ToString());
-            result.SetNamedNumber("temperature", _temperature);
-            result.SetNamedNumber("humidity", _humidity);
-            
-            result.SetNamedTimeSpan("sunrise", _sunrise);
-            result.SetNamedTimeSpan("sunset", _sunset);
-
-            return result;
+            apiContext.Response = this.ToJsonObject(ToJsonObjectMode.Explicit);
         }
-        
-        public override void HandleApiCall(IApiContext apiContext)
+
+        [ApiMethod(ApiCallType.Command)]
+        public void Refresh(IApiContext apiContext)
         {
-            if (apiContext.CallType == ApiCallType.Command)
-            {
-                Refresh();
-            }
+            Refresh();
         }
 
         private void PersistWeatherData(string weatherData)
@@ -125,18 +120,18 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
                 var parser = new OpenWeatherMapResponseParser();
                 parser.Parse(weatherData);
 
-                _weather = parser.Weather;
+                Weather = parser.Weather;
                 WeatherFetched?.Invoke(this, new WeatherFetchedEventArgs(parser.Weather));
                 
-                _temperature = parser.Temperature;
-                OutdoorTemperatureFetched?.Invoke(this, new OutdoorTemperatureFetchedEventArgs(_temperature));
+                Temperature = parser.Temperature;
+                OutdoorTemperatureFetched?.Invoke(this, new OutdoorTemperatureFetchedEventArgs(Temperature));
 
-                _humidity = parser.Humidity;
-                OutdoorHumidityFetched?.Invoke(this, new OutdoorHumidityFetchedEventArgs(_humidity));
+                Humidity = parser.Humidity;
+                OutdoorHumidityFetched?.Invoke(this, new OutdoorHumidityFetchedEventArgs(Humidity));
 
-                _sunrise = parser.Sunrise;
-                _sunset = parser.Sunset;
-                DaylightFetched?.Invoke(this, new DaylightFetchedEventArgs(_sunrise, _sunset));
+                Sunrise = parser.Sunrise;
+                Sunset = parser.Sunset;
+                DaylightFetched?.Invoke(this, new DaylightFetchedEventArgs(Sunrise, Sunset));
             }
             catch (Exception exception)
             {

@@ -7,6 +7,7 @@ using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Triggers;
 using HA4IoT.Networking;
+using HA4IoT.Networking.Json;
 
 namespace HA4IoT.Sensors.Windows
 {
@@ -67,7 +68,7 @@ namespace HA4IoT.Sensors.Windows
             var state = new JsonObject();
             foreach (var casement in Casements)
             {
-                state.SetNamedString(casement.Id, casement.GetState().Value);
+                state.SetValue(casement.Id, casement.GetState().Value);
             }
 
             status.SetNamedValue("state", state);

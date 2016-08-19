@@ -16,5 +16,9 @@ namespace HA4IoT.Tests.Mockups
         {
             Tick?.Invoke(this, new TimerTickEventArgs(elapsedTime));
         }
+
+        public void Startup()
+        {
+        }
     }
 }

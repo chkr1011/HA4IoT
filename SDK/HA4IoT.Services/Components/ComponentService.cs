@@ -28,6 +28,7 @@ namespace HA4IoT.Services.Components
 
             _systemInformationService = systemInformationService;
             _apiService = apiService;
+
             apiService.StatusRequested += HandleApiStatusRequest;
         }
 

@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Contracts.Services.Notifications
 {
-    public interface INotificationService : IApiExposedService
+    public interface INotificationService : IService
     {
         void Create(NotificationType type, string text, TimeSpan timeToLive);
 

@@ -16,7 +16,6 @@ using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.HumiditySensors;
-using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Sensors.TemperatureSensors;
 using HA4IoT.Sensors.Windows;
 using HA4IoT.Services.Areas;
@@ -93,8 +92,8 @@ namespace HA4IoT.Controller.Main.Rooms
 
         public void Apply()
         {
-            var hsrel8 = _ccToolsBoardService.CreateHSREL8(InstalledDevice.OfficeHSREL8, new I2CSlaveAddress(20));
-            var hspe8 = _ccToolsBoardService.CreateHSPE8OutputOnly(InstalledDevice.UpperFloorAndOfficeHSPE8, new I2CSlaveAddress(37));
+            var hsrel8 = _ccToolsBoardService.RegisterHSREL8(InstalledDevice.OfficeHSREL8, new I2CSlaveAddress(20));
+            var hspe8 = _ccToolsBoardService.RegisterHSPE8OutputOnly(InstalledDevice.UpperFloorAndOfficeHSPE8, new I2CSlaveAddress(37));
             var input4 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input4);
             var input5 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input5);
             var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();

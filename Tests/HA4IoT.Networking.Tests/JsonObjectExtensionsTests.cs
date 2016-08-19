@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using Windows.Data.Json;
-using FluentAssertions;
+﻿using Windows.Data.Json;
+using HA4IoT.Networking.Json;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace HA4IoT.Networking.Tests
@@ -10,93 +8,88 @@ namespace HA4IoT.Networking.Tests
     public class JsonObjectExtensionsTests
     {
         [TestMethod]
-        public void String_ToJsonValue()
+        public void JsonImport_Flat()
         {
-            IJsonValue jsonValue = "Test".ToJsonValue();
-            (jsonValue == null).ShouldBeEquivalentTo(false);
-            jsonValue.ValueType.ShouldBeEquivalentTo(JsonValueType.String);
-            jsonValue.GetString().ShouldBeEquivalentTo("Test");
-        }
-        
-        [TestMethod]
-        public void Number_ToJsonValue()
-        {
-            IJsonValue jsonValue = 1.6D.ToJsonValue();
-            (jsonValue == null).ShouldBeEquivalentTo(false);
-            jsonValue.ValueType.ShouldBeEquivalentTo(JsonValueType.Number);
-            jsonValue.GetNumber().ShouldBeEquivalentTo(1.6D);
+            var source = new JsonObject();
+            source.SetValue("B", 1);
+            source.SetValue("C", 2);
+
+            var target = new JsonObject();
+            target.SetValue("A", 0);
+
+            target.Import(source);
+
+            string result = target.ToString();
+            Assert.AreEqual("{\"A\":0,\"C\":2,\"B\":1}", result);
         }
 
         [TestMethod]
-        public void Bool_ToJsonValue()
+        public void JsonImport_ExistingRoot()
         {
-            IJsonValue jsonValue = true.ToJsonValue();
-            (jsonValue == null).ShouldBeEquivalentTo(false);
-            jsonValue.ValueType.ShouldBeEquivalentTo(JsonValueType.Boolean);
-            jsonValue.GetBoolean().ShouldBeEquivalentTo(true);
+            var target = new JsonObject();
+            target.SetValue("A", new JsonObject().WithNumber("X", 0).WithNumber("Y", 1));
+
+            var source = new JsonObject();
+            source.SetValue("A", new JsonObject().WithNumber("Z", 2));
+
+            target.Import(source);
+
+            string result = target.ToString();
+            Assert.AreEqual("{\"A\":{\"X\":0,\"Y\":1,\"Z\":2}}", result);
         }
 
         [TestMethod]
-        public void Null_ToJsonValue()
+        public void JsonImport_ExistingPath()
         {
-            IJsonValue jsonValue = ((object)null).ToJsonValue();
-            (jsonValue == null).ShouldBeEquivalentTo(false);
-            jsonValue.ValueType.ShouldBeEquivalentTo(JsonValueType.Null);
+            var tX = new JsonObject();
+            tX.SetValue("P", 99);
+
+            var tA = new JsonObject();
+            tA.SetNamedValue("X", tX);
+
+            var target = new JsonObject();
+            target.SetNamedValue("A", tA);
+            
+            var sX = new JsonObject();
+            sX.SetValue("Q", 100);
+
+            var sA = new JsonObject();
+            sA.SetNamedValue("X", sX);
+            
+            var source = new JsonObject();
+            source.SetNamedValue("A", sA);
+
+            target.Import(source);
+
+            string result = target.ToString();
+            Assert.AreEqual("{\"A\":{\"X\":{\"P\":99,\"Q\":100}}}", result);
         }
 
         [TestMethod]
-        public void Object_ToJsonObject()
+        public void JsonImport_ExistingValue()
         {
-            var data = new Data();
-            data.id = "123abc";
-            data.flag = true;
-            data.number = 11.11M;
+            var source = new JsonObject();
+            source.SetValue("A", 0);
+            
+            var target = new JsonObject();
+            target.SetValue("A", 1);
 
-            var stopwatch = Stopwatch.StartNew();
-            var jsonObject = data.ToJsonObject();
-            stopwatch.Stop();
+            target.Import(source);
 
-            Debug.WriteLine(jsonObject.Stringify());
-
-            jsonObject.Stringify().ShouldBeEquivalentTo("{\"id\":\"123abc\",\"number\":11.11,\"flag\":true,\"nullableFloat\":null}");
-
-            Debug.WriteLine("Serializing object to JSON object took " + stopwatch.Elapsed.TotalMilliseconds + "ms.");
+            string result = target.ToString();
+            Assert.AreEqual("{\"A\":0}", result);
         }
 
         [TestMethod]
-        public void Array_ToJsonArray()
+        public void JsonImport_ExistingValueWithDifferentType()
         {
-            var stopwatch = Stopwatch.StartNew();
+            var source = new JsonObject();
+            source.SetValue("A", false);
 
-            var items = new List<object>();
-            items.Add(0);
-            items.Add(true);
-            items.Add("Hello World");
-            items.Add(null);
-            items.Add(new Data { flag = true, id = "123ABC", number = 1.1M});
-
-            var value = items.ToJsonValue();
-            stopwatch.Stop();
-
-            value.ValueType.ShouldBeEquivalentTo(JsonValueType.Array);
-
-            JsonArray array = value.GetArray();
-            string json = array.Stringify();
-
-            json.ShouldBeEquivalentTo("[0,true,\"Hello World\",null,{\"id\":\"123ABC\",\"number\":1.1,\"flag\":true,\"nullableFloat\":null}]");
-
-            Debug.WriteLine("Serializing array to JSON array took " + stopwatch.Elapsed.TotalMilliseconds + "ms.");
-        }
-
-        private class Data
-        {
-            public string id { get; set; }
-            public decimal number { get; set; }
-            public bool flag { get; set; }
-            public float? nullableFloat { get; set; }
-
-            [HideFromToJsonObject]
-            public bool? nullableBool { get; set; }
+            var target = new JsonObject();
+            target.SetValue("A", 1);
+            
+            Assert.ThrowsException<ImportNotPossibleException>(() => target.Import(source));
         }
     }
 }

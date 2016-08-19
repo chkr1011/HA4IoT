@@ -7,6 +7,7 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Networking;
+using HA4IoT.Networking.Json;
 
 namespace HA4IoT.Telemetry
 {
@@ -85,7 +86,7 @@ namespace HA4IoT.Telemetry
             }
 
             apiContext.Response.SetNamedValue("history", dataPoints);
-            apiContext.Response.SetNamedNumber("fileSize", fileSize);
+            apiContext.Response.SetValue("fileSize", fileSize);
         }
 
         private JsonObject ConvertCsvLineToJsonObject(string line)
@@ -93,8 +94,8 @@ namespace HA4IoT.Telemetry
             string[] columns = line.Split(CsvSeparator, StringSplitOptions.RemoveEmptyEntries);
 
             var dataPoint = new JsonObject();
-            dataPoint.SetNamedString("timestamp", columns[0]);
-            dataPoint.SetNamedString("state", columns[1]);
+            dataPoint.SetValue("timestamp", columns[0]);
+            dataPoint.SetValue("state", columns[1]);
 
             return dataPoint;
         }

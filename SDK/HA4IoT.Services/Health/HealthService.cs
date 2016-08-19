@@ -11,7 +11,8 @@ using HA4IoT.Services.System;
 
 namespace HA4IoT.Services.Health
 {
-    public class HealthService : ServiceBase
+    [ApiServiceClass(typeof(HealthService))]
+    public class HealthService : ServiceBase, IHealthService
     {
         private readonly ISystemInformationService _systemInformationService;
 
@@ -46,12 +47,10 @@ namespace HA4IoT.Services.Health
             timerService.Tick += Tick;
         }
 
-        public override void HandleApiCall(IApiContext apiContext)
+        [ApiMethod(ApiCallType.Command)]
+        public void Reset(IApiContext apiContext)
         {
-            if (apiContext.CallType == ApiCallType.Command)
-            {
-                ResetStatistics();
-            }
+            ResetStatistics();
         }
 
         private void ResetStatistics()

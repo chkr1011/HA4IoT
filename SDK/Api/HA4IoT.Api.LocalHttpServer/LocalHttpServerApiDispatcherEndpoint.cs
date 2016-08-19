@@ -4,9 +4,11 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking;
+using HA4IoT.Networking.Http;
+using HA4IoT.Networking.Json;
 using HttpMethod = HA4IoT.Contracts.Networking.HttpMethod;
 
-namespace HA4IoT.Api.LocalRestServer
+namespace HA4IoT.Api.LocalHttpServer
 {
     public class LocalHttpServerApiDispatcherEndpoint : IApiDispatcherEndpoint
     {

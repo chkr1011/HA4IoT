@@ -2,6 +2,7 @@
 using System.Linq;
 using FluentAssertions;
 using HA4IoT.Contracts.Networking;
+using HA4IoT.Networking.Http;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace HA4IoT.Networking.Tests

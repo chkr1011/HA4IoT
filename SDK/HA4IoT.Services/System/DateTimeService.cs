@@ -3,9 +3,11 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Networking;
+using HA4IoT.Networking.Json;
 
 namespace HA4IoT.Services.System
 {
+    [ApiServiceClass(typeof(IDateTimeService))]
     public class DateTimeService : ServiceBase, IDateTimeService
     {
         public DateTime Date => DateTime.Now.Date;
@@ -14,11 +16,10 @@ namespace HA4IoT.Services.System
     
         public DateTime Now => DateTime.Now;
     
-        public void HandleApiCall(IApiContext apiContext)
+        [ApiMethod(ApiCallType.Request)]
+        public void Status(IApiContext apiContext)
         {
-            apiContext.Response.SetNamedDateTime("Date", Date);
-            apiContext.Response.SetNamedTimeSpan("Time", Time);
-            apiContext.Response.SetNamedDateTime("Now", Now);
+            apiContext.Response = this.ToJsonObject();
         }
     }
 }

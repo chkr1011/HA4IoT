@@ -8,6 +8,7 @@ using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Sensors.MotionDetectors

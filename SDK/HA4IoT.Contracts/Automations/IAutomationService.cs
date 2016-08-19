@@ -3,7 +3,7 @@ using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Contracts.Automations
 {
-    public interface IAutomationService : IApiExposedService
+    public interface IAutomationService : IService
     {
         void AddAutomation(IAutomation automation);
 

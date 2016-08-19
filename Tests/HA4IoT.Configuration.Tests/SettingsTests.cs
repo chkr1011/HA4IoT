@@ -2,6 +2,7 @@
 using Windows.Data.Json;
 using FluentAssertions;
 using HA4IoT.Networking;
+using HA4IoT.Networking.Json;
 using HA4IoT.Settings;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -61,9 +62,9 @@ namespace HA4IoT.Configuration.Tests
             firedCount.ShouldBeEquivalentTo(3);
 
             var importSource = new JsonObject();
-            importSource.SetNamedString("A", "x");
-            importSource.SetNamedNumber("B", 2);
-            importSource.SetNamedBoolean("C", true);
+            importSource.SetValue("A", "x");
+            importSource.SetValue("B", 2);
+            importSource.SetValue("C", true);
             
             settings.Import(importSource);
 
@@ -83,9 +84,9 @@ namespace HA4IoT.Configuration.Tests
             settings.SetValue("C", true);
 
             var exportComparison = new JsonObject();
-            exportComparison.SetNamedString("A", "A");
-            exportComparison.SetNamedNumber("B", 1);
-            exportComparison.SetNamedBoolean("C", true);
+            exportComparison.SetValue("A", "A");
+            exportComparison.SetValue("B", 1);
+            exportComparison.SetValue("C", true);
 
             settings.Export().Stringify().ShouldBeEquivalentTo(exportComparison.Stringify());
         }

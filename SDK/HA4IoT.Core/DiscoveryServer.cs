@@ -7,6 +7,7 @@ using Windows.Networking.Sockets;
 using HA4IoT.Contracts.Core.Discovery;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Networking;
+using HA4IoT.Networking.Json;
 using HA4IoT.Settings;
 
 namespace HA4IoT.Core

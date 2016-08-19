@@ -15,10 +15,12 @@ using HA4IoT.Contracts.Services.OutdoorHumidity;
 using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.Weather;
 using HA4IoT.Networking;
+using HA4IoT.Networking.Json;
 
 namespace HA4IoT.PersonalAgent
 {
-    public class PersonalAgentService : ServiceBase
+    [ApiServiceClass(typeof(PersonalAgentService))]
+    public class PersonalAgentService : ServiceBase, IPersonalAgentService
     {
         private readonly SynonymService _synonymService;
         private readonly IComponentService _componentService;
@@ -76,13 +78,9 @@ namespace HA4IoT.PersonalAgent
             return answer;
         }
 
-        public override void HandleApiCall(IApiContext apiContext)
+        [ApiMethod(ApiCallType.Command)]
+        public void Ask(IApiContext apiContext)
         {
-            if (apiContext.CallType != ApiCallType.Command)
-            {
-                return;
-            }
-
             string message = apiContext.Request.GetNamedString("message", string.Empty);
             if (string.IsNullOrEmpty(message))
             {
@@ -93,7 +91,7 @@ namespace HA4IoT.PersonalAgent
             var inboundMessage = new ApiInboundMessage(DateTime.Now, message);
             var answer = ProcessMessage(inboundMessage);
 
-            apiContext.Response.SetNamedString("answer", answer);
+            apiContext.Response.SetValue("answer", answer);
         }
 
         private string GenerateDebugOutput(MessageContext messageContext)

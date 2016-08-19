@@ -21,8 +21,11 @@ namespace HA4IoT.Controller.Local
 
             Log.Instance = new TextBoxLogger(LogTextBox);
 
-            var options = new ControllerOptions();
-            options.Configurator = new Initializer(this);
+            var options = new ControllerOptions
+            {
+                Configuration = new Initializer(this),
+                HttpServerPort = 1025
+            };
 
             _controller = new HA4IoTController(options);
             

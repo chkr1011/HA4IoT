@@ -78,7 +78,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
         public void Apply()
         {
-            var hsrel5 = _ccToolsBoardService.CreateHSREL5(InstalledDevice.ChildrensRoomHSREL5, new I2CSlaveAddress(63));
+            var hsrel5 = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.ChildrensRoomHSREL5, new I2CSlaveAddress(63));
             var input0 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input0);
             var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
 

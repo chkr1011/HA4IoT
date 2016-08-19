@@ -81,7 +81,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Api", "SDK\Api\HA4Io
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Api.AzureCloud", "SDK\Api\HA4IoT.Api.AzureCloud\HA4IoT.Api.AzureCloud.csproj", "{B03D2D62-A682-44AD-9BB8-E88B53973AFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Api.LocalRestServer", "SDK\Api\HA4IoT.Api.LocalHttpServer\HA4IoT.Api.LocalRestServer.csproj", "{88CB819A-3CD6-4AC3-B767-1E5360F5124D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Api.LocalHttpServer", "SDK\Api\HA4IoT.Api.LocalHttpServer\HA4IoT.Api.LocalHttpServer.csproj", "{88CB819A-3CD6-4AC3-B767-1E5360F5124D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.SasTokenGenerator", "Tools\HA4IoT.SasTokenGenerator\HA4IoT.SasTokenGenerator.csproj", "{2B4A23E4-96DC-49A5-A364-CD922CFFD80A}"
 EndProject

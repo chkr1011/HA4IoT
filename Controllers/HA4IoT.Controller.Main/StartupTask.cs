@@ -4,10 +4,8 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.Services;
-using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.OutdoorHumidity;
-using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Services.Weather;
 using HA4IoT.Controller.Main.Rooms;
@@ -31,11 +29,11 @@ namespace HA4IoT.Controller.Main
 
         public void Run(IBackgroundTaskInstance taskInstance)
         {
-            var controller = new HA4IoTController(new ControllerOptions {StatusLedNumber = LedGpio, Configurator = new Configurator()});
+            var controller = new HA4IoTController(new ControllerOptions { StatusLedNumber = LedGpio, Configuration = new MainConfiguration() });
             controller.RunAsync(taskInstance);
         }
 
-        private class Configurator : IConfigurator
+        private class MainConfiguration : IConfiguration
         {
             public void RegisterServices(IContainerService containerService)
             {
@@ -57,16 +55,16 @@ namespace HA4IoT.Controller.Main
 
                 synonymService.TryLoadPersistedSynonyms();
 
-                ccToolsBoardService.CreateHSPE16InputOnly(InstalledDevice.Input0, new I2CSlaveAddress(42));
-                ccToolsBoardService.CreateHSPE16InputOnly(InstalledDevice.Input1, new I2CSlaveAddress(43));
-                ccToolsBoardService.CreateHSPE16InputOnly(InstalledDevice.Input2, new I2CSlaveAddress(47));
-                ccToolsBoardService.CreateHSPE16InputOnly(InstalledDevice.Input3, new I2CSlaveAddress(45));
-                ccToolsBoardService.CreateHSPE16InputOnly(InstalledDevice.Input4, new I2CSlaveAddress(46));
-                ccToolsBoardService.CreateHSPE16InputOnly(InstalledDevice.Input5, new I2CSlaveAddress(44));
-                
+                ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input0, new I2CSlaveAddress(42));
+                ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input1, new I2CSlaveAddress(43));
+                ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input2, new I2CSlaveAddress(47));
+                ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input3, new I2CSlaveAddress(45));
+                ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input4, new I2CSlaveAddress(46));
+                ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input5, new I2CSlaveAddress(44));
+
                 var i2CHardwareBridge = new I2CHardwareBridge(new I2CSlaveAddress(50), i2CBusService, schedulerService);
                 deviceService.AddDevice(i2CHardwareBridge);
-                
+
                 remoteSocketService.Sender = new LPD433MHzSignalSender(i2CHardwareBridge, LDP433MhzSenderPin, apiService);
                 var brennenstuhl = new BrennenstuhlCodeSequenceProvider();
                 remoteSocketService.RegisterRemoteSocket(0, brennenstuhl.GetSequencePair(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A));
@@ -94,7 +92,7 @@ namespace HA4IoT.Controller.Main
             private void RegisterOpenWeatherMapService(IContainerService containerService)
             {
                 containerService.RegisterSingleton<OpenWeatherMapService>();
-                containerService.RegisterSingleton<IOutdoorTemperatureProvider, OpenWeatherMapOutdoorTemperatureProvider>();
+                //containerService.RegisterSingleton<IOutdoorTemperatureProvider, OpenWeatherMapOutdoorTemperatureProvider>();
                 containerService.RegisterSingleton<IOutdoorHumidityProvider, OpenWeatherMapOutdoorHumidityProvider>();
                 containerService.RegisterSingleton<IDaylightProvider, OpenWeatherMapDaylightProvider>();
                 containerService.RegisterSingleton<IWeatherProvider, OpenWeatherMapWeatherProvider>();
@@ -109,10 +107,10 @@ namespace HA4IoT.Controller.Main
 
                 containerService.RegisterSingleton(() => options);
                 containerService.RegisterSingleton<ControllerSlaveService>();
-                ////containerService.RegisterSingleton<IOutdoorTemperatureProvider, OpenWeatherMapOutdoorTemperatureProvider>();
-                ////containerService.RegisterSingleton<IOutdoorHumidityProvider, OpenWeatherMapOutdoorHumidityProvider>();
-                ////containerService.RegisterSingleton<IDaylightProvider, OpenWeatherMapDaylightProvider>();
-                ////containerService.RegisterSingleton<IWeatherProvider, OpenWeatherMapWeatherProvider>();
+                ////containerService.RegisterSingleton<IOutdoorTemperatureProvider,ControllerSlaveOutdoorTemperatureProvider>();
+                ////containerService.RegisterSingleton<IOutdoorHumidityProvider, ControllerSlaveOutdoorHumidityProvider>();
+                ////containerService.RegisterSingleton<IDaylightProvider, ControllerSlaveDaylightProvider>();
+                ////containerService.RegisterSingleton<IWeatherProvider, ControllerSlaveMapWeatherProvider>();
 
                 // TODO: Create providers for controller slave service like open weather map...
             }

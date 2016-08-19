@@ -9,10 +9,11 @@ using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Networking;
+using HA4IoT.Networking.Json;
 
 namespace HA4IoT.PersonalAgent
 {
-    public class SynonymService : ServiceBase, IApiExposedService
+    public class SynonymService : ServiceBase
     {
         private readonly IComponentService _componentService;
         private readonly Dictionary<AreaId, HashSet<string>> _areaSynonyms = new Dictionary<AreaId, HashSet<string>>();
@@ -123,12 +124,12 @@ namespace HA4IoT.PersonalAgent
 
         public void HandleApiCall(IApiContext apiContext)
         {
-            apiContext.Response.SetNamedObject("AreaSynonyms", _storage.ConvertAreaSynonymsToJsonObject(_areaSynonyms));
+            apiContext.Response.SetValue("AreaSynonyms", _storage.ConvertAreaSynonymsToJsonObject(_areaSynonyms));
 
-            apiContext.Response.SetNamedObject("ComponentSynonyms",
+            apiContext.Response.SetValue("ComponentSynonyms",
                 _storage.ConvertComponentSynonymsToJsonObject(_componentSynonyms));
 
-            apiContext.Response.SetNamedArray("ComponentStateSynonyms",
+            apiContext.Response.SetValue("ComponentStateSynonyms",
                 _storage.ConvertComponentStateSynonymsToJsonArray(_componentStateSynonyms));
         }
 

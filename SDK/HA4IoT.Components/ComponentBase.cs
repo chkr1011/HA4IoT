@@ -8,6 +8,7 @@ using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Networking;
+using HA4IoT.Networking.Json;
 using HA4IoT.Settings;
 
 namespace HA4IoT.Components
@@ -41,8 +42,8 @@ namespace HA4IoT.Components
         public virtual JsonObject ExportConfigurationToJsonObject()
         {
             var configuration = new JsonObject();
-            configuration.SetNamedString(ComponentConfigurationKey.Type, GetType().Name);
-            configuration.SetNamedObject(ComponentConfigurationKey.Settings, Settings.Export());
+            configuration.SetValue(ComponentConfigurationKey.Type, GetType().Name);
+            configuration.SetValue(ComponentConfigurationKey.Settings, Settings.Export());
 
             var supportedStates = GetSupportedStates();
             if (supportedStates != null)
@@ -53,7 +54,7 @@ namespace HA4IoT.Components
                     supportedStatesJson.Add(supportedState.ToJsonValue());
                 }
 
-                configuration.SetNamedArray(ComponentConfigurationKey.SupportedStates, supportedStatesJson);
+                configuration.SetValue(ComponentConfigurationKey.SupportedStates, supportedStatesJson);
             }
             
             return configuration;
@@ -62,9 +63,9 @@ namespace HA4IoT.Components
         public virtual JsonObject ExportStatusToJsonObject()
         {
             var status = new JsonObject();
-            status.SetNamedObject(ComponentConfigurationKey.Settings, Settings.Export());
+            status.SetValue(ComponentConfigurationKey.Settings, Settings.Export());
             status.SetNamedValue(ActuatorStatusKey.State, GetState().ToJsonValue());
-            status.SetNamedDateTime(ActuatorStatusKey.StateLastChanged, _stateLastChanged);
+            status.SetValue(ActuatorStatusKey.StateLastChanged, _stateLastChanged);
             return status;
         }
 

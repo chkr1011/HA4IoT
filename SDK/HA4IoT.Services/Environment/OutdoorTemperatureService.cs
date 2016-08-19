@@ -1,25 +1,34 @@
 ﻿using System;
-using Windows.Data.Json;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Networking;
+using HA4IoT.Networking.Json;
 
 namespace HA4IoT.Services.Environment
 {
+    [ApiServiceClass(typeof(IOutdoorTemperatureService))]
     public class OutdoorTemperatureService : ServiceBase, IOutdoorTemperatureService
     {
         private readonly IDateTimeService _dateTimeService;
 
-        public OutdoorTemperatureService(IOutdoorTemperatureProvider provider, IDateTimeService dateTimeService)
+        public OutdoorTemperatureService(IOutdoorTemperatureProvider provider, IDateTimeService dateTimeService, IApiService apiService)
         {
             if (provider == null) throw new ArgumentNullException(nameof(provider));
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
 
             _dateTimeService = dateTimeService;
+
             provider.OutdoorTemperatureFetched += Update;
+
+            apiService.StatusRequested += (s, e) =>
+            {
+                e.Context.Response.Import(this.ToJsonObject(ToJsonObjectMode.Explicit));
+            };
         }
 
+        [JsonMember]
         public float OutdoorTemperature { get; private set; }
 
         public DateTime? Timestamp { get; private set; }
@@ -31,13 +40,10 @@ namespace HA4IoT.Services.Environment
             Timestamp = _dateTimeService.Now;
         }
 
-        public override JsonObject GetStatus()
+        [ApiMethod(ApiCallType.Request)]
+        public void Status(IApiContext apiContext)
         {
-            var status = base.GetStatus();
-            status.SetNamedNumber("OutdoorTemperature", OutdoorTemperature);
-            status.SetNamedDateTime("Timestamp", Timestamp);
-
-            return status;
+            apiContext.Response = this.ToJsonObject();
         }
     }
 }

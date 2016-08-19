@@ -3,11 +3,12 @@ using System.Diagnostics;
 using System.Threading;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Services.System
 {
-    public class TimerService : ITimerService
+    public class TimerService : ServiceBase, ITimerService
     {
         private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
 

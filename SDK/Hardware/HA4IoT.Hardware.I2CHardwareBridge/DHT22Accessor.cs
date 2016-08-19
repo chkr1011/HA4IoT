@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Hardware.I2CHardwareBridge
 {

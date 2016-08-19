@@ -20,7 +20,7 @@ using HA4IoT.Hardware.Knx;
 
 namespace HA4IoT.Controller.Local
 {
-    public class Initializer : IConfigurator
+    public class Initializer : IConfiguration
     {
         private readonly MainPage _mainPage;
 

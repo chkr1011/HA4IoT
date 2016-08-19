@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Contracts.Services.Weather
 {
-    public interface IWeatherService : IApiExposedService
+    public interface IWeatherService : IService
     {
         Weather Weather { get; }
 

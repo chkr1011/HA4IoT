@@ -116,29 +116,34 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BadRequestException.cs" />
-    <Compile Include="BinaryBody.cs" />
-    <Compile Include="HideFromToJsonObjectAttribute.cs" />
-    <Compile Include="HttpClientHandler.cs" />
-    <Compile Include="HttpHeaderCollectionExtensions.cs" />
-    <Compile Include="HttpHeaderNames.cs" />
-    <Compile Include="HttpResponseSerializer.cs" />
-    <Compile Include="IHttpRequestDispatcher.cs" />
-    <Compile Include="StringBody.cs" />
-    <Compile Include="JsonObjectExtensions.cs" />
-    <Compile Include="JsonObjectSerializer.cs" />
-    <Compile Include="MappedFolderController.cs" />
-    <Compile Include="HttpRequestController.cs" />
-    <Compile Include="HttpRequestDispatcher.cs" />
-    <Compile Include="HttpRequestDispatcherAction.cs" />
-    <Compile Include="HttpRequestParser.cs" />
-    <Compile Include="HttpServer.cs" />
-    <Compile Include="JsonBody.cs" />
-    <Compile Include="MimeTypeProvider.cs" />
+    <Compile Include="Http\BadRequestException.cs" />
+    <Compile Include="Http\BinaryBody.cs" />
+    <Compile Include="Json\ImportNotPossibleException.cs" />
+    <Compile Include="Json\JsonMemberAttribute.cs" />
+    <Compile Include="Json\NoJsonMemberAttribute.cs" />
+    <Compile Include="Http\HttpClientHandler.cs" />
+    <Compile Include="Http\HttpHeaderCollectionExtensions.cs" />
+    <Compile Include="Http\HttpHeaderNames.cs" />
+    <Compile Include="Http\HttpResponseSerializer.cs" />
+    <Compile Include="Http\IHttpRequestDispatcher.cs" />
+    <Compile Include="Json\JsonValueCache.cs" />
+    <Compile Include="Json\JsonValueConverter.cs" />
+    <Compile Include="Http\StringBody.cs" />
+    <Compile Include="Json\JsonObjectExtensions.cs" />
+    <Compile Include="Json\JsonObjectSerializer.cs" />
+    <Compile Include="Http\MappedFolderController.cs" />
+    <Compile Include="Http\HttpRequestController.cs" />
+    <Compile Include="Http\HttpRequestDispatcher.cs" />
+    <Compile Include="Http\HttpRequestDispatcherAction.cs" />
+    <Compile Include="Http\HttpRequestParser.cs" />
+    <Compile Include="Http\HttpServer.cs" />
+    <Compile Include="Json\JsonBody.cs" />
+    <Compile Include="Http\MimeTypeProvider.cs" />
+    <Compile Include="Json\ToJsonObjectMode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="HttpRequestReceivedEventArgs.cs" />
-    <Compile Include="StatusDescriptionProvider.cs" />
-    <Compile Include="PlainTextBody.cs" />
+    <Compile Include="Http\HttpRequestReceivedEventArgs.cs" />
+    <Compile Include="Http\StatusDescriptionProvider.cs" />
+    <Compile Include="Http\PlainTextBody.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.Networking.rd.xml" />
   </ItemGroup>
   <ItemGroup>

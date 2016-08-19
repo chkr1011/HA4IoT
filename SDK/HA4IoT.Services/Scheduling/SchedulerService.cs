@@ -10,6 +10,7 @@ using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Networking;
+using HA4IoT.Networking.Json;
 
 namespace HA4IoT.Services.Scheduling
 {
@@ -39,12 +40,12 @@ namespace HA4IoT.Services.Scheduling
                 foreach (var schedule in _schedules)
                 {
                     var scheduleObject = new JsonObject();
-                    scheduleObject.SetNamedDateTime("LastExecutionTimestamp", schedule.Value.LastExecutionTimestamp);
-                    scheduleObject.SetNamedTimeSpan("LastExecutionDuration", schedule.Value.LastExecutionDuration);
-                    scheduleObject.SetNamedTimeSpan("Interval", schedule.Value.Interval);
-                    scheduleObject.SetNamedString("LastErrorMessage", schedule.Value.LastErrorMessage);
+                    scheduleObject.SetValue("LastExecutionTimestamp", schedule.Value.LastExecutionTimestamp);
+                    scheduleObject.SetValue("LastExecutionDuration", schedule.Value.LastExecutionDuration);
+                    scheduleObject.SetValue("Interval", schedule.Value.Interval);
+                    scheduleObject.SetValue("LastErrorMessage", schedule.Value.LastErrorMessage);
 
-                    apiContext.Response.SetNamedObject(schedule.Key, scheduleObject);
+                    apiContext.Response.SetValue(schedule.Key, scheduleObject);
                 }
             }
         }

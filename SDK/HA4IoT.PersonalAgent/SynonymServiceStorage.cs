@@ -6,6 +6,7 @@ using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Networking;
+using HA4IoT.Networking.Json;
 
 namespace HA4IoT.PersonalAgent
 {
@@ -42,7 +43,7 @@ namespace HA4IoT.PersonalAgent
             var result = new JsonObject();
             foreach (var synonym in synonyms)
             {
-                result.SetNamedArray(synonym.Key.Value, ConvertSynonymsToJsonArray(synonym.Value));
+                result.SetValue(synonym.Key.Value, ConvertSynonymsToJsonArray(synonym.Value));
             }
 
             return result;
@@ -62,7 +63,7 @@ namespace HA4IoT.PersonalAgent
             var result = new JsonObject();
             foreach (var synonym in synonyms)
             {
-                result.SetNamedArray(synonym.Key.Value, ConvertSynonymsToJsonArray(synonym.Value));
+                result.SetValue(synonym.Key.Value, ConvertSynonymsToJsonArray(synonym.Value));
             }
 
             return result;
@@ -83,7 +84,7 @@ namespace HA4IoT.PersonalAgent
             foreach (var synonym in synonyms)
             {
                 var item = new JsonObject();
-                item.SetNamedObject("ComponentState", synonym.Key.ToJsonObject());
+                item.SetValue("ComponentState", synonym.Key.ToJsonObject());
                 item.SetNamedValue("Synonyms", ConvertSynonymsToJsonArray(synonym.Value));
 
                 result.Add(item);

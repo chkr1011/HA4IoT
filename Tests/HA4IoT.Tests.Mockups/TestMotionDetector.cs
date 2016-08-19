@@ -1,6 +1,7 @@
 ﻿using System;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Sensors.MotionDetectors;
 
 namespace HA4IoT.Tests.Mockups
