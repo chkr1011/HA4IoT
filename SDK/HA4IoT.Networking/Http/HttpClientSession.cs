@@ -7,6 +7,7 @@ using Windows.Networking.Sockets;
 using Windows.Security.Cryptography.Core;
 using HA4IoT.Contracts.Networking;
 using HA4IoT.Networking.Json;
+using HA4IoT.Networking.WebSockets;
 
 namespace HA4IoT.Networking.Http
 {

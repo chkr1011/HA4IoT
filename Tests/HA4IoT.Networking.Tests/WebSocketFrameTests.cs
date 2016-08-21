@@ -3,6 +3,7 @@ using System.Text;
 using Windows.Data.Json;
 using HA4IoT.Networking.Http;
 using HA4IoT.Networking.Json;
+using HA4IoT.Networking.WebSockets;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace HA4IoT.Networking.Tests

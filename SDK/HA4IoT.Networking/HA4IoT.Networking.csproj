@@ -118,9 +118,9 @@
   <ItemGroup>
     <Compile Include="Http\BadRequestException.cs" />
     <Compile Include="Http\BinaryBody.cs" />
-    <Compile Include="Http\WebSocketClientSession.cs" />
-    <Compile Include="Http\WebSocketFrame.cs" />
-    <Compile Include="Http\WebSocketOpcode.cs" />
+    <Compile Include="WebSockets\WebSocketClientSession.cs" />
+    <Compile Include="WebSockets\WebSocketFrame.cs" />
+    <Compile Include="WebSockets\WebSocketOpcode.cs" />
     <Compile Include="Json\ImportNotPossibleException.cs" />
     <Compile Include="Json\JsonMemberAttribute.cs" />
     <Compile Include="Json\NoJsonMemberAttribute.cs" />
@@ -154,7 +154,12 @@
       <Project>{551337E7-D1EF-4145-92B4-F7086F7665A6}</Project>
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Hardware\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
+      <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
+      <Name>HA4IoT.Hardware</Name>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

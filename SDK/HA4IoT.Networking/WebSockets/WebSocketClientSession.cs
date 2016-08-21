@@ -7,7 +7,7 @@ using Windows.Storage.Streams;
 using HA4IoT.Contracts.Networking;
 using Buffer = Windows.Storage.Streams.Buffer;
 
-namespace HA4IoT.Networking.Http
+namespace HA4IoT.Networking.WebSockets
 {
     public class WebSocketClientSession : IWebSocketClientSession
     {
