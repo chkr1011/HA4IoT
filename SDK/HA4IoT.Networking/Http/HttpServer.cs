@@ -40,13 +40,13 @@ namespace HA4IoT.Networking.Http
         private void HandleConnection(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
             Task.Factory.StartNew(
-                () => HandleRequests(args.Socket),
+                () => HandleConnection(args.Socket),
                 CancellationToken.None,
                 TaskCreationOptions.LongRunning, 
                 TaskScheduler.Default).ConfigureAwait(false);
         }
 
-        private void HandleRequests(StreamSocket clientSocket)
+        private void HandleConnection(StreamSocket clientSocket)
         {
             using (var clientSession = new HttpClientSession(clientSocket, HandleHttpRequest, HandleWebSocketConnected))
             {
@@ -63,8 +63,7 @@ namespace HA4IoT.Networking.Http
 
         private void HandleWebSocketConnected(WebSocketContext webSocketContext)
         {
-
-            webSocketContext.SendFrame(new JsonObject().WithString("Hello12121212121212121212121212121212121212121212121212121AAAAAAAAAAAAAAA", "World56565656565656565656565656565656565656565656565BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBCCCCCCCCCC"));
+            webSocketContext.Send(new JsonObject().WithString("Hello", "World"));
         }
 
         private bool HandleHttpRequest(HttpContext httpContext)

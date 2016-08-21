@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using System.Threading.Tasks;
 using Windows.Data.Json;
 
 namespace HA4IoT.Contracts.Networking
@@ -15,24 +14,36 @@ namespace HA4IoT.Contracts.Networking
             if (webSocketClientSession == null) throw new ArgumentNullException(nameof(webSocketClientSession));
 
             HttpRequest = httpRequest;
+
             _webSocketClientSession = webSocketClientSession;
         }
 
         public HttpRequest HttpRequest { get; }
 
-        public void SendFrame(JsonObject data)
+        public void Send(JsonObject data)
+        {
+            if (data == null) throw new ArgumentNullException(nameof(data));
+            
+            Send(data.ToString());
+        }
+
+        public void Send(string data)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
 
-            var buffer = Encoding.UTF8.GetBytes(data.ToString());
-            SendFrame(buffer);
+            Send(Encoding.UTF8.GetBytes(data));
         }
 
-        public void SendFrame(byte[] data)
+        public void Send(byte[] data)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
 
             _webSocketClientSession.SendAsync(data);
+        }
+
+        public void Close()
+        {
+            // TODO: Implement
         }
     }
 }

@@ -22,10 +22,19 @@ namespace HA4IoT.Networking.WebSockets
 
         public async Task WaitForDataAsync()
         {
-            var buffer = new Buffer(16*1024);
-            var data = await _clientSocket.InputStream.ReadAsync(buffer, 1024, InputStreamOptions.Partial);
+            var buffer = new Buffer(16 * 1024);
+            var data = await _clientSocket.InputStream.ReadAsync(buffer, buffer.Capacity, InputStreamOptions.Partial);
+            
+            var webSocketFrame = WebSocketFrame.FromByteArray(data.ToArray());
+            if (webSocketFrame.Opcode == WebSocketOpcode.Ping)
+            {
+                webSocketFrame.Opcode = WebSocketOpcode.Pong;
+                await SendAsync(webSocketFrame);
 
-            Debug.WriteLine("Received something!?");
+                return;
+            }
+
+            // TODO: Handle request.
         }
 
         public async Task SendAsync(byte[] data)
@@ -33,6 +42,11 @@ namespace HA4IoT.Networking.WebSockets
             if (data == null) throw new ArgumentNullException(nameof(data));
 
             var frame = WebSocketFrame.Create(data);
+            await SendAsync(frame);
+        }
+
+        private async Task SendAsync(WebSocketFrame frame)
+        {
             var frameBuffer = frame.ToByteArray().AsBuffer();
 
             await _clientSocket.OutputStream.WriteAsync(frameBuffer);
