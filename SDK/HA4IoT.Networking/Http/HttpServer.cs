@@ -2,9 +2,11 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Data.Json;
 using Windows.Networking.Sockets;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Networking;
+using HA4IoT.Networking.Json;
 
 namespace HA4IoT.Networking.Http
 {
@@ -29,7 +31,7 @@ namespace HA4IoT.Networking.Http
         }
 
         public event EventHandler<HttpRequestReceivedEventArgs> RequestReceived;
-
+        
         public void Dispose()
         {
             _serverSocket.Dispose();
@@ -44,13 +46,13 @@ namespace HA4IoT.Networking.Http
                 TaskScheduler.Default).ConfigureAwait(false);
         }
 
-        private void HandleRequests(StreamSocket client)
+        private void HandleRequests(StreamSocket clientSocket)
         {
-            using (var clientHandler = new HttpClientHandler(client, HandleClientRequest))
+            using (var clientSession = new HttpClientSession(clientSocket, HandleHttpRequest, HandleWebSocketConnected))
             {
                 try
                 {
-                    clientHandler.HandleRequests();
+                    clientSession.WaitForData();
                 }
                 catch (Exception exception)
                 {
@@ -59,7 +61,13 @@ namespace HA4IoT.Networking.Http
             }
         }
 
-        private bool HandleClientRequest(HttpClientHandler clientHandler, HttpContext httpContext)
+        private void HandleWebSocketConnected(WebSocketContext webSocketContext)
+        {
+
+            webSocketContext.SendFrame(new JsonObject().WithString("Hello12121212121212121212121212121212121212121212121212121AAAAAAAAAAAAAAA", "World56565656565656565656565656565656565656565656565BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBCCCCCCCCCC"));
+        }
+
+        private bool HandleHttpRequest(HttpContext httpContext)
         {
             var handlerCollection = RequestReceived;
             if (handlerCollection == null)

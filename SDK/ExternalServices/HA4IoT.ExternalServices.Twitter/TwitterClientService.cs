@@ -17,6 +17,7 @@ namespace HA4IoT.ExternalServices.Twitter
         private string _nonce;
         private string _timestamp;
 
+        // TODO: Create "TwitterClientServiceOptions"
         public string AccessTokenSecret { get; set; }
         public string AccessToken { get; set; }
         public string CosumerSecret { get; set; }

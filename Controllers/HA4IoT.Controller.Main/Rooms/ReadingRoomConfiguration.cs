@@ -12,9 +12,6 @@ using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
-using HA4IoT.Sensors.HumiditySensors;
-using HA4IoT.Sensors.TemperatureSensors;
-using HA4IoT.Sensors.Windows;
 using HA4IoT.Services.Areas;
 using HA4IoT.Services.Devices;
 
@@ -84,12 +81,15 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 9;
 
-            var room = _areaService.CreateArea(Room.ReadingRoom)
-                .WithTemperatureSensor(ReadingRoom.TemperatureSensor,
-                    i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
-                .WithHumiditySensor(ReadingRoom.HumiditySensor,
-                    i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
-                .WithWindow(ReadingRoom.Window, w => w.WithCenterCasement(input2.GetInput(8))); // Tilt = input2.GetInput(9) -- currently broken!
+            var room = _areaService.CreateArea(Room.ReadingRoom);
+
+            _sensorFactory.RegisterWindow(room, ReadingRoom.Window, w => w.WithCenterCasement(input2.GetInput(8))); // Tilt = input2.GetInput(9) -- currently broken!
+
+            _sensorFactory.RegisterTemperatureSensor(room, ReadingRoom.TemperatureSensor,
+                i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
+
+            _sensorFactory.RegisterHumiditySensor(room, ReadingRoom.HumiditySensor,
+                i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
 
             _actuatorFactory.RegisterLamp(room, ReadingRoom.LightCeilingMiddle, hsrel5[HSREL5Pin.GPIO0]);
 

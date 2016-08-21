@@ -15,9 +15,6 @@ using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
-using HA4IoT.Sensors.HumiditySensors;
-using HA4IoT.Sensors.TemperatureSensors;
-using HA4IoT.Sensors.Windows;
 using HA4IoT.Services.Areas;
 using HA4IoT.Services.Devices;
 
@@ -100,12 +97,21 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 2;
 
-            var room = _areaService.CreateArea(Room.Office)
-                .WithTemperatureSensor(Office.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
-                .WithHumiditySensor(Office.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
-                .WithWindow(Office.WindowLeft, w => w.WithLeftCasement(input4.GetInput(11)).WithRightCasement(input4.GetInput(12), input4.GetInput(10)))
-                .WithWindow(Office.WindowRight, w => w.WithLeftCasement(input4.GetInput(8)).WithRightCasement(input4.GetInput(9), input5.GetInput(8)))
-                .WithStateMachine(Office.CombinedCeilingLights, (s, a) => SetupLight(s, hsrel8, hspe8, a));
+            var room = _areaService.CreateArea(Room.Office);
+
+            _sensorFactory.RegisterWindow(room, Office.WindowLeft,
+                w => w.WithLeftCasement(input4.GetInput(11)).WithRightCasement(input4.GetInput(12), input4.GetInput(10)));
+
+            _sensorFactory.RegisterWindow(room, Office.WindowRight,
+                w => w.WithLeftCasement(input4.GetInput(8)).WithRightCasement(input4.GetInput(9), input5.GetInput(8)));
+
+            _actuatorFactory.RegisterStateMachine(room, Office.CombinedCeilingLights, (s, a) => SetupLight(s, hsrel8, hspe8, a));
+
+            _sensorFactory.RegisterTemperatureSensor(room, Office.TemperatureSensor,
+                i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
+
+            _sensorFactory.RegisterHumiditySensor(room, Office.HumiditySensor,
+                i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
 
             _sensorFactory.RegisterMotionDetector(room, Office.MotionDetector, input4.GetInput(13));
 
@@ -143,7 +149,7 @@ namespace HA4IoT.Controller.Main.Rooms
             var ml = hspe8[HSPE8Pin.GPIO1].WithInvertedState();
             var mm = hspe8[HSPE8Pin.GPIO3].WithInvertedState();
             var mr = hsrel8[HSREL8Pin.GPIO1].WithInvertedState();
-            
+
             // Rear lights (left, right)
             // Two mechanical relays.
             var rl = hsrel8[HSREL8Pin.GPIO5];
@@ -211,7 +217,7 @@ namespace HA4IoT.Controller.Main.Rooms
             _synonymService.AddSynonymsForComponent(Room.Office, Office.SocketRearLeftEdge, "Rotlicht", "Pufflicht", "Rot");
 
             _synonymService.AddSynonymsForComponentState(deskOnlyStateId, "Schreibtisch");
-            _synonymService.AddSynonymsForComponentState(couchOnlyStateId, "Couch");            
+            _synonymService.AddSynonymsForComponentState(couchOnlyStateId, "Couch");
         }
     }
 }

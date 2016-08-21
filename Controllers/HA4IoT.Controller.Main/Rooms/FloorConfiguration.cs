@@ -16,9 +16,7 @@ using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
-using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.MotionDetectors;
-using HA4IoT.Sensors.TemperatureSensors;
 using HA4IoT.Services.Areas;
 using HA4IoT.Services.Devices;
 
@@ -112,11 +110,13 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 5;
 
-            var room = _areaService.CreateArea(Room.Floor)
-                .WithTemperatureSensor(Floor.LowerFloorTemperatureSensor,
-                    i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
-                .WithHumiditySensor(Floor.LowerFloorHumiditySensor,
-                    i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
+            var room = _areaService.CreateArea(Room.Floor);
+
+            _sensorFactory.RegisterTemperatureSensor(room, Floor.LowerFloorTemperatureSensor,
+                i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
+
+            _sensorFactory.RegisterHumiditySensor(room, Floor.LowerFloorHumiditySensor,
+                i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
 
             _sensorFactory.RegisterMotionDetector(room, Floor.StairwayMotionDetector, input2.GetInput(1));
             _sensorFactory.RegisterMotionDetector(room, Floor.StairsLowerMotionDetector, input4.GetInput(7));

@@ -15,10 +15,7 @@ using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
-using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.MotionDetectors;
-using HA4IoT.Sensors.TemperatureSensors;
-using HA4IoT.Sensors.Windows;
 using HA4IoT.Services.Areas;
 using HA4IoT.Services.Devices;
 
@@ -118,11 +115,16 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 6;
 
-            var room = _areaService.CreateArea(Room.Bedroom)
-                .WithTemperatureSensor(Bedroom.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
-                .WithHumiditySensor(Bedroom.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
-                .WithWindow(Bedroom.WindowLeft, w => w.WithCenterCasement(input5.GetInput(2)))
-                .WithWindow(Bedroom.WindowRight, w => w.WithCenterCasement(input5.GetInput(3)));
+            var room = _areaService.CreateArea(Room.Bedroom);
+
+            _sensorFactory.RegisterWindow(room, Bedroom.WindowLeft, w => w.WithCenterCasement(input5.GetInput(2)));
+            _sensorFactory.RegisterWindow(room, Bedroom.WindowRight, w => w.WithCenterCasement(input5.GetInput(3)));
+
+            _sensorFactory.RegisterTemperatureSensor(room, Bedroom.TemperatureSensor,
+                i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
+
+            _sensorFactory.RegisterHumiditySensor(room, Bedroom.HumiditySensor,
+                i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
 
             _sensorFactory.RegisterMotionDetector(room, Bedroom.MotionDetector, input5.GetInput(12));
 
@@ -189,7 +191,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithEnabledAtNight(_daylightService)
                 .WithSkipIfAnyActuatorIsAlreadyOn(room.GetLamp(Bedroom.LampBedLeft), room.GetLamp(Bedroom.LampBedRight));
 
-            room.WithStateMachine(Bedroom.Fan, (s, r) => SetupFan(s, r, hsrel8));
+            _actuatorFactory.RegisterStateMachine(room, Bedroom.Fan, (s, r) => SetupFan(s, r, hsrel8));
 
             room.GetButton(Bedroom.ButtonBedLeftInner).WithPressedShortlyAction(() => room.GetLamp(Bedroom.LampBedLeft).SetNextState());
             room.GetButton(Bedroom.ButtonBedLeftInner).WithPressedLongAction(() => room.GetStateMachine(Bedroom.CombinedCeilingLights).SetNextState());

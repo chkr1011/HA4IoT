@@ -22,16 +22,7 @@ namespace HA4IoT.Sensors.TemperatureSensors
 
             return new SensorValueUnderranTrigger(sensor).WithTarget(target).WithDelta(delta);
         }
-
-        public static IArea WithTemperatureSensor(this IArea area, Enum id, INumericValueSensorEndpoint endpoint)
-        {
-            if (area == null) throw new ArgumentNullException(nameof(area));
-            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
-
-            area.AddComponent(new TemperatureSensor(ComponentIdFactory.Create(area.Id, id), endpoint));
-            return area;
-        }
-        
+       
         public static ITemperatureSensor GetTemperatureSensor(this IArea area, Enum id)
         {
             if (area == null) throw new ArgumentNullException(nameof(area));

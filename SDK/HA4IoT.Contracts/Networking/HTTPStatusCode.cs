@@ -2,6 +2,7 @@
 {
     public enum HttpStatusCode
     {
+        SwitchingProtocols = 101,
         OK = 200,
         NotModified = 304,
         BadRequest = 400,

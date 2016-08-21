@@ -12,9 +12,6 @@ using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
-using HA4IoT.Sensors.HumiditySensors;
-using HA4IoT.Sensors.TemperatureSensors;
-using HA4IoT.Sensors.Windows;
 using HA4IoT.Services.Areas;
 using HA4IoT.Services.Devices;
 
@@ -84,10 +81,15 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 7;
 
-            var room = _areaService.CreateArea(Room.ChildrensRoom)
-                .WithTemperatureSensor(ChildrensRoom.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
-                .WithHumiditySensor(ChildrensRoom.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
-                .WithWindow(ChildrensRoom.Window, w => w.WithCenterCasement(input0.GetInput(5), input0.GetInput(4)));
+            var room = _areaService.CreateArea(Room.ChildrensRoom);
+
+            _sensorFactory.RegisterWindow(room, ChildrensRoom.Window, w => w.WithCenterCasement(input0.GetInput(5), input0.GetInput(4)));
+
+            _sensorFactory.RegisterTemperatureSensor(room, ChildrensRoom.TemperatureSensor,
+                i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
+
+            _sensorFactory.RegisterHumiditySensor(room, ChildrensRoom.HumiditySensor,
+                i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
 
             _actuatorFactory.RegisterSocket(room, ChildrensRoom.SocketWindow, hsrel5[HSREL5Pin.Relay0]);
             _actuatorFactory.RegisterSocket(room, ChildrensRoom.SocketWallLeft, hsrel5[HSREL5Pin.Relay1]);

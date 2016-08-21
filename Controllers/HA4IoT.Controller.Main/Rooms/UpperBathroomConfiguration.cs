@@ -6,15 +6,12 @@ using HA4IoT.Automations;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors;
-using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.MotionDetectors;
-using HA4IoT.Sensors.TemperatureSensors;
 using HA4IoT.Services.Areas;
 using HA4IoT.Services.Devices;
 
@@ -83,11 +80,16 @@ namespace HA4IoT.Controller.Main.Rooms
             var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
 
             const int SensorPin = 4;
-            
-            var room = _areaService.CreateArea(Room.UpperBathroom)
-                .WithTemperatureSensor(UpperBathroom.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
-                .WithHumiditySensor(UpperBathroom.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
-                .WithStateMachine(UpperBathroom.Fan, (s, r) => SetupFan(s, hsrel5));
+
+            var room = _areaService.CreateArea(Room.UpperBathroom);
+
+            _actuatorFactory.RegisterStateMachine(room, UpperBathroom.Fan, (s, r) => SetupFan(s, hsrel5));
+
+            _sensorFactory.RegisterTemperatureSensor(room, UpperBathroom.TemperatureSensor,
+                i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
+
+            _sensorFactory.RegisterHumiditySensor(room, UpperBathroom.HumiditySensor,
+                i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
 
             _sensorFactory.RegisterMotionDetector(room, UpperBathroom.MotionDetector, input5.GetInput(15));
 

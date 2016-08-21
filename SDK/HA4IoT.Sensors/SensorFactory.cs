@@ -3,10 +3,12 @@ using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Sensors;
-using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Sensors.Buttons;
+using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.MotionDetectors;
+using HA4IoT.Sensors.TemperatureSensors;
+using HA4IoT.Sensors.Windows;
 
 namespace HA4IoT.Sensors
 {
@@ -22,6 +24,28 @@ namespace HA4IoT.Sensors
 
             _timerService = timerService;
             _schedulerService = schedulerService;
+        }
+
+        public ITemperatureSensor RegisterTemperatureSensor(IArea area, Enum id, INumericValueSensorEndpoint endpoint)
+        {
+            if (area == null) throw new ArgumentNullException(nameof(area));
+            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
+
+            var temperatureSensor = new TemperatureSensor(ComponentIdFactory.Create(area.Id, id), endpoint);
+            area.AddComponent(temperatureSensor);
+            
+            return temperatureSensor;
+        }
+
+        public IHumiditySensor RegisterHumiditySensor(IArea area, Enum id, INumericValueSensorEndpoint endpoint)
+        {
+            if (area == null) throw new ArgumentNullException(nameof(area));
+            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
+
+            var humditySensor = new HumiditySensor(ComponentIdFactory.Create(area.Id, id), endpoint);
+            area.AddComponent(humditySensor);
+
+            return humditySensor;
         }
 
         public IButton RegisterVirtualButton(IArea area, Enum id, Action<IButton> initializer = null)
@@ -92,6 +116,18 @@ namespace HA4IoT.Sensors
             area.AddComponent(motionDetector);
 
             return motionDetector;
+        }
+
+        public IWindow RegisterWindow(IArea area, Enum id, Action<Window> initializer)
+        {
+            if (area == null) throw new ArgumentNullException(nameof(area));
+            if (initializer == null) throw new ArgumentNullException(nameof(initializer));
+
+            var window = new Window(ComponentIdFactory.Create(area.Id, id));
+            initializer(window);
+
+            area.AddComponent(window);
+            return window;
         }
     }
 }

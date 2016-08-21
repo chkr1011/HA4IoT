@@ -118,10 +118,13 @@
   <ItemGroup>
     <Compile Include="Http\BadRequestException.cs" />
     <Compile Include="Http\BinaryBody.cs" />
+    <Compile Include="Http\WebSocketClientSession.cs" />
+    <Compile Include="Http\WebSocketFrame.cs" />
+    <Compile Include="Http\WebSocketOpcode.cs" />
     <Compile Include="Json\ImportNotPossibleException.cs" />
     <Compile Include="Json\JsonMemberAttribute.cs" />
     <Compile Include="Json\NoJsonMemberAttribute.cs" />
-    <Compile Include="Http\HttpClientHandler.cs" />
+    <Compile Include="Http\HttpClientSession.cs" />
     <Compile Include="Http\HttpHeaderCollectionExtensions.cs" />
     <Compile Include="Http\HttpHeaderNames.cs" />
     <Compile Include="Http\HttpResponseSerializer.cs" />

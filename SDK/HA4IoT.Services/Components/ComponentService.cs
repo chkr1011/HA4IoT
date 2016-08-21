@@ -7,10 +7,12 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
+using HA4IoT.Networking.Http;
 using HA4IoT.Settings;
 
 namespace HA4IoT.Services.Components
 {
+    [ApiServiceClass(typeof(IComponentService))]
     public class ComponentService : ServiceBase, IComponentService
     {
         private readonly ISystemInformationService _systemInformationService;
@@ -87,6 +89,45 @@ namespace HA4IoT.Services.Components
             if (id == null) throw new ArgumentNullException(nameof(id));
 
             return _components.Get<TComponent>(id);
+        }
+
+        [ApiMethod(ApiCallType.Command)]
+        public void Update(IApiContext apiContext)
+        {
+            // TODO: Consider creating classes as optional method parameters which are filled via reflection from Request JSON.
+            var componentId = apiContext.Request.GetNamedString("ComponentId", string.Empty);
+            if (string.IsNullOrEmpty(componentId))
+            {
+                throw new BadRequestException("Property 'ComponentId' is missing.");
+            }
+
+            var component = _components.Get(new ComponentId(componentId));
+            component.HandleApiCall(apiContext);
+        }
+
+        [ApiMethod(ApiCallType.Command)]
+        public void Status(IApiContext apiContext)
+        {
+            
+        }
+
+        [ApiMethod(ApiCallType.Command)]
+        public void Reset(IApiContext apiContext)
+        {
+            var componentId = apiContext.Request.GetNamedString("ComponentId", string.Empty);
+            if (string.IsNullOrEmpty(componentId))
+            {
+                throw new BadRequestException("Property 'ComponentId' is missing.");
+            }
+
+            var component = _components.Get(new ComponentId(componentId));
+            var actuator = component as IActuator;
+            if (actuator == null)
+            {
+                throw new BadRequestException("The component is no actuator.");
+            }
+
+            actuator.ResetState();
         }
 
         private void HandleApiStatusRequest(object sender, ApiRequestReceivedEventArgs e)

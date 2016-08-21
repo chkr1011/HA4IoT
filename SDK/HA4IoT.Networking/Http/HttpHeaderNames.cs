@@ -19,5 +19,13 @@
         public static string ETag = "ETag";
 
         public static string Expect = "Expect";
+
+        public static string Upgrade = "Upgrade";
+
+        public static string SecWebSocketAccept = "Sec-WebSocket-Accept";
+
+        public static string SecWebSocketProtocol = "Sec-WebSocket-Protocol";
+
+        public static string SecWebSocketKey = "Sec-WebSocket-Key";
     }
 }

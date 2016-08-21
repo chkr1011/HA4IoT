@@ -13,10 +13,7 @@ using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
-using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.MotionDetectors;
-using HA4IoT.Sensors.TemperatureSensors;
-using HA4IoT.Sensors.Windows;
 using HA4IoT.Services.Areas;
 using HA4IoT.Services.Devices;
 
@@ -101,10 +98,15 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 11;
 
-            var room = _areaService.CreateArea(Room.Kitchen)
-                .WithTemperatureSensor(Kitchen.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
-                .WithHumiditySensor(Kitchen.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
-                .WithWindow(Kitchen.Window, w => w.WithCenterCasement(input0.GetInput(6), input0.GetInput(7)));
+            var room = _areaService.CreateArea(Room.Kitchen);
+
+            _sensorFactory.RegisterWindow(room, Kitchen.Window, w => w.WithCenterCasement(input0.GetInput(6), input0.GetInput(7)));
+
+            _sensorFactory.RegisterTemperatureSensor(room, Kitchen.TemperatureSensor,
+                i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
+
+            _sensorFactory.RegisterHumiditySensor(room, Kitchen.HumiditySensor,
+                i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
 
             _sensorFactory.RegisterMotionDetector(room, Kitchen.MotionDetector, input1.GetInput(8));
 

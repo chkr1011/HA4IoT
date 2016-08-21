@@ -23,15 +23,6 @@ namespace HA4IoT.Sensors.HumiditySensors
             return new SensorValueUnderranTrigger(sensor).WithTarget(value).WithDelta(delta);
         }
 
-        public static IArea WithHumiditySensor(this IArea area, Enum id, INumericValueSensorEndpoint endpoint)
-        {
-            if (area == null) throw new ArgumentNullException(nameof(area));
-            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
-
-            area.AddComponent(new HumiditySensor(ComponentIdFactory.Create(area.Id, id), endpoint));
-            return area;
-        }
-
         public static IHumiditySensor GetHumiditySensor(this IArea area, Enum id)
         {
             if (area == null) throw new ArgumentNullException(nameof(area));

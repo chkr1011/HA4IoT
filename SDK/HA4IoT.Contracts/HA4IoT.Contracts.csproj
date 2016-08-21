@@ -130,6 +130,8 @@
     <Compile Include="Conditions\ICondition.cs" />
     <Compile Include="Core\IConfiguration.cs" />
     <Compile Include="Core\IConfigurator.cs" />
+    <Compile Include="Networking\IWebSocketClientSession.cs" />
+    <Compile Include="Networking\WebSocketContext.cs" />
     <Compile Include="Services\ApiServiceClassAttribute.cs" />
     <Compile Include="Services\IPersonalAgentService.cs" />
     <Compile Include="Services\IService.cs" />

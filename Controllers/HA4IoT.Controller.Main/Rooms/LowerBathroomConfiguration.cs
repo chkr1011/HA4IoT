@@ -6,16 +6,12 @@ using HA4IoT.Automations;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors;
-using HA4IoT.Sensors.HumiditySensors;
 using HA4IoT.Sensors.MotionDetectors;
-using HA4IoT.Sensors.TemperatureSensors;
-using HA4IoT.Sensors.Windows;
 using HA4IoT.Services.Areas;
 using HA4IoT.Services.Devices;
 
@@ -51,9 +47,9 @@ namespace HA4IoT.Controller.Main.Rooms
         }
 
         public LowerBathroomConfiguration(
-            IDeviceService deviceService, 
+            IDeviceService deviceService,
             ISchedulerService schedulerService,
-            IAreaService areaService, 
+            IAreaService areaService,
             SynonymService synonymService,
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
@@ -84,10 +80,15 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 3;
 
-            var room = _areaService.CreateArea(Room.LowerBathroom)
-                .WithTemperatureSensor(LowerBathroom.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
-                .WithHumiditySensor(LowerBathroom.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
-                .WithWindow(LowerBathroom.Window, w => w.WithCenterCasement(input3.GetInput(13), input3.GetInput(14)));
+            var room = _areaService.CreateArea(Room.LowerBathroom);
+
+            _sensorFactory.RegisterWindow(room, LowerBathroom.Window, w => w.WithCenterCasement(input3.GetInput(13), input3.GetInput(14)));
+
+            _sensorFactory.RegisterTemperatureSensor(room, LowerBathroom.TemperatureSensor,
+                i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
+
+            _sensorFactory.RegisterHumiditySensor(room, LowerBathroom.HumiditySensor,
+                i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
 
             _sensorFactory.RegisterMotionDetector(room, LowerBathroom.MotionDetector, input3.GetInput(15));
 

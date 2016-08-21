@@ -10,21 +10,6 @@ namespace HA4IoT.Actuators.StateMachines
 {
     public static class StateMachineExtensions
     {
-        public static IArea WithStateMachine(this IArea area, Enum id, Action<StateMachine, IArea> initializer)
-        {
-            if (area == null) throw new ArgumentNullException(nameof(area));
-            if (initializer == null) throw new ArgumentNullException(nameof(initializer));
-
-            var stateMachine = new StateMachine(
-                ComponentIdFactory.Create(area.Id, id));
-
-            initializer(stateMachine, area);
-            stateMachine.SetInitialState(BinaryStateId.Off);
-
-            area.AddComponent(stateMachine);
-            return area;
-        }
-
         public static IStateMachine GetStateMachine(this IArea area, Enum id)
         {
             if (area == null) throw new ArgumentNullException(nameof(area));

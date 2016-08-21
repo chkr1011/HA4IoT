@@ -11,9 +11,6 @@ using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
-using HA4IoT.Sensors.HumiditySensors;
-using HA4IoT.Sensors.TemperatureSensors;
-using HA4IoT.Sensors.Windows;
 using HA4IoT.Services.Areas;
 using HA4IoT.Services.Devices;
 
@@ -96,13 +93,19 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 12;
 
-            var room = _areaService.CreateArea(Room.LivingRoom)
-                .WithTemperatureSensor(LivingRoom.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin))
-                .WithHumiditySensor(LivingRoom.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin))
-                .WithWindow(LivingRoom.WindowLeft,
-                    w => w.WithLeftCasement(input0.GetInput(10), input0.GetInput(11)).WithRightCasement(input0.GetInput(9), input0.GetInput(8)))
-                .WithWindow(LivingRoom.WindowRight,
+            var room = _areaService.CreateArea(Room.LivingRoom);
+
+            _sensorFactory.RegisterWindow(room, LivingRoom.WindowLeft,
+                    w => w.WithLeftCasement(input0.GetInput(10), input0.GetInput(11)).WithRightCasement(input0.GetInput(9), input0.GetInput(8)));
+
+            _sensorFactory.RegisterWindow(room, LivingRoom.WindowRight,
                     w => w.WithLeftCasement(input1.GetInput(14), input1.GetInput(15)).WithRightCasement(input1.GetInput(13), input1.GetInput(12)));
+
+            _sensorFactory.RegisterTemperatureSensor(room, LivingRoom.TemperatureSensor,
+                i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
+
+            _sensorFactory.RegisterHumiditySensor(room, LivingRoom.HumiditySensor,
+                i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
 
             _actuatorFactory.RegisterLamp(room, LivingRoom.LampCouch, hsrel8.GetOutput(8).WithInvertedState());
             _actuatorFactory.RegisterLamp(room, LivingRoom.LampDiningTable, hsrel8.GetOutput(9).WithInvertedState());
