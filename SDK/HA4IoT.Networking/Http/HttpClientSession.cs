@@ -15,8 +15,8 @@ namespace HA4IoT.Networking.Http
     {
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
-        private const int REQUEST_BUFFER_SIZE = 16*1024;
-        private readonly byte[] _buffer = new byte[REQUEST_BUFFER_SIZE];
+        private const int RequestBufferSize = 16 * 1024;
+        private readonly byte[] _buffer = new byte[RequestBufferSize];
 
         private readonly HttpRequestParser _requestParser = new HttpRequestParser();
         private readonly HttpResponseSerializer _responseSerializer = new HttpResponseSerializer();
@@ -41,7 +41,7 @@ namespace HA4IoT.Networking.Http
 
             _client = client;
             _inputStream = _client.InputStream.AsStreamForRead(_buffer.Length);
-            _outputStream = _client.OutputStream.AsStreamForWrite(REQUEST_BUFFER_SIZE);
+            _outputStream = _client.OutputStream.AsStreamForWrite(RequestBufferSize);
 
             _httpRequestReceivedCallback = httpRequestReceivedCallback;
             _webSocketConnectedCallback = webSocketConnectedCallback;
@@ -53,7 +53,11 @@ namespace HA4IoT.Networking.Http
             {
                 if (_webSocketClientSession != null)
                 {
-                    _webSocketClientSession.WaitForDataAsync().Wait();
+                    var webSocketFrame = _webSocketClientSession.WaitForFrame().Result;
+                    if (webSocketFrame.Opcode == WebSocketOpcode.ConnectionClose)
+                    {
+                        _cancellationTokenSource.Cancel();
+                    }
                 }
                 else
                 {

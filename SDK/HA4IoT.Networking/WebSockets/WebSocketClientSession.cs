@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
@@ -11,6 +11,8 @@ namespace HA4IoT.Networking.WebSockets
 {
     public class WebSocketClientSession : IWebSocketClientSession
     {
+        private const int RequestBufferSize = 16 * 1024;
+
         private readonly StreamSocket _clientSocket;
 
         public WebSocketClientSession(StreamSocket clientSocket)
@@ -20,9 +22,9 @@ namespace HA4IoT.Networking.WebSockets
             _clientSocket = clientSocket;
         }
 
-        public async Task WaitForDataAsync()
+        public async Task<WebSocketFrame> WaitForFrame()
         {
-            var buffer = new Buffer(16 * 1024);
+            var buffer = new Buffer(RequestBufferSize);
             var data = await _clientSocket.InputStream.ReadAsync(buffer, buffer.Capacity, InputStreamOptions.Partial);
             
             var webSocketFrame = WebSocketFrame.FromByteArray(data.ToArray());
@@ -31,10 +33,16 @@ namespace HA4IoT.Networking.WebSockets
                 webSocketFrame.Opcode = WebSocketOpcode.Pong;
                 await SendAsync(webSocketFrame);
 
-                return;
+                return webSocketFrame;
+            }
+
+            if (webSocketFrame.Opcode == WebSocketOpcode.ConnectionClose)
+            {
+                return webSocketFrame;
             }
 
             // TODO: Handle request.
+            return webSocketFrame;
         }
 
         public async Task SendAsync(byte[] data)

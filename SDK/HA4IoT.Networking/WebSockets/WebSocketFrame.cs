@@ -1,5 +1,4 @@
 ﻿using System;
-using HA4IoT.Hardware;
 
 namespace HA4IoT.Networking.WebSockets
 {
@@ -23,13 +22,16 @@ namespace HA4IoT.Networking.WebSockets
         public static WebSocketFrame FromByteArray(byte[] data)
         {
             var webSocketFrame = new WebSocketFrame();
-            if ((data[0] & 0x1) > 0)
+
+            var firstByte = data[0];
+
+            if ((firstByte & 1) > 0)
             {
                 webSocketFrame.Fin = true;
-                data[0] = data[0].SetBit(0, false);
+                firstByte = (byte)(254 & firstByte); 
             }
 
-            webSocketFrame.Opcode = (WebSocketOpcode)data[0];
+            webSocketFrame.Opcode = (WebSocketOpcode)firstByte;
 
             // TODO: Parse payload, mask etc. And Apply mask!
 

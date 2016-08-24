@@ -36,5 +36,21 @@ namespace HA4IoT.Networking.Tests
 
             CollectionAssert.AreEqual(expected, result);
         }
+
+        [TestMethod]
+        public void WebSocketFrame_Parse()
+        {
+            var payload = new JsonObject().WithString("Hello", "World").ToString();
+            var payloadBuffer = Encoding.UTF8.GetBytes(payload);
+            var sourceWebSocketFrame = WebSocketFrame.Create(payloadBuffer);
+            sourceWebSocketFrame.Opcode = WebSocketOpcode.Ping;
+
+            var buffer = sourceWebSocketFrame.ToByteArray();
+
+            var targetWebSocketFrame = WebSocketFrame.FromByteArray(buffer);
+
+            Assert.AreEqual(sourceWebSocketFrame.Fin, targetWebSocketFrame.Fin);
+            Assert.AreEqual(sourceWebSocketFrame.Opcode, targetWebSocketFrame.Opcode);
+        }
     }
 }
