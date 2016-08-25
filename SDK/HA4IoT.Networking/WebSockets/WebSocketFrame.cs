@@ -32,19 +32,24 @@ namespace HA4IoT.Networking.WebSockets
             return webSocketFrame;
         }
 
-        public static WebSocketFrame FromByteArray(byte[] data)
+        public static WebSocketFrameParseResult Parse(byte[] data)
         {
             // https://tools.ietf.org/html/rfc6455
+
+            if (data.Length < 2)
+            {
+                return new WebSocketFrameParseResult(null, data);
+            }
 
             var webSocketFrame = new WebSocketFrame();
 
             var firstByte = data[0];
             var secondByte = data[1];
 
-            if ((firstByte & 1) == 1)
+            if ((firstByte & 128) == 128)
             {
                 webSocketFrame.Fin = true;
-                firstByte = (byte)(~1 & firstByte);
+                firstByte = (byte)(127 & firstByte);
             }
 
             webSocketFrame.Opcode = (WebSocketOpcode)firstByte;
@@ -89,7 +94,10 @@ namespace HA4IoT.Networking.WebSockets
                 }
             }
 
-            return webSocketFrame;
+            var overhead = new byte[data.Length - payloadOffset - payloadLength];
+            Array.Copy(data, data.Length - overhead.Length, overhead, 0, overhead.Length);
+
+            return new WebSocketFrameParseResult(webSocketFrame, overhead);
         }
 
         public byte[] ToByteArray()
@@ -101,7 +109,7 @@ namespace HA4IoT.Networking.WebSockets
 
             if (Fin)
             {
-                frame[0] |= 1;
+                frame[0] |= 128;
             }
 
             frame[0] |= (byte)Opcode;

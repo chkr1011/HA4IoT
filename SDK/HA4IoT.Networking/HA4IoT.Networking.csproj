@@ -123,6 +123,7 @@
     <Compile Include="WebSockets\WebSocketClientSession.cs" />
     <Compile Include="WebSockets\WebSocketConnectedEventArgs.cs" />
     <Compile Include="WebSockets\WebSocketFrame.cs" />
+    <Compile Include="WebSockets\WebSocketFrameParseResult.cs" />
     <Compile Include="WebSockets\WebSocketOpcode.cs" />
     <Compile Include="Json\ImportNotPossibleException.cs" />
     <Compile Include="Json\JsonMemberAttribute.cs" />

@@ -22,8 +22,8 @@ namespace HA4IoT.Networking
             _clientSocket = clientSocket;
 
             _httpClientSession = new HttpClientSession(clientSocket);
-            _httpClientSession.UpgradedToWebSocketSession += UpgradeToWebSocketSession;
             _httpClientSession.HttpRequestReceived += HandleHttpRequest;
+            _httpClientSession.UpgradedToWebSocketSession += UpgradeToWebSocketSession;
         }
 
         public event EventHandler<HttpRequestReceivedEventArgs> HttpRequestReceived;
@@ -50,10 +50,12 @@ namespace HA4IoT.Networking
 
         private void UpgradeToWebSocketSession(object sender, UpgradedToWebSocketSessionEventArgs eventArgs)
         {
+            _httpClientSession.HttpRequestReceived -= HandleHttpRequest;
             _httpClientSession.UpgradedToWebSocketSession -= UpgradeToWebSocketSession;
             _httpClientSession = null;
 
             _webSocketClientSession = new WebSocketClientSession(_clientSocket);
+            _webSocketClientSession.Closed += OnWebSocketClientSessionClosed;
             var webSocketConnectedEventArgs = new WebSocketConnectedEventArgs(eventArgs.HttpRequest, _webSocketClientSession);
 
             try
@@ -67,6 +69,11 @@ namespace HA4IoT.Networking
                     _cancellationTokenSource.Cancel();
                 }
             }
+        }
+
+        private void OnWebSocketClientSessionClosed(object sender, EventArgs eventArgs)
+        {
+            _cancellationTokenSource.Cancel();
         }
 
         private void HandleHttpRequest(object sender, HttpRequestReceivedEventArgs e)

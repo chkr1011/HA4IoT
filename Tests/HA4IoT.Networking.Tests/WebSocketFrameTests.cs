@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text;
 using Windows.Data.Json;
-using HA4IoT.Networking.Http;
 using HA4IoT.Networking.Json;
 using HA4IoT.Networking.WebSockets;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -47,7 +46,7 @@ namespace HA4IoT.Networking.Tests
 
             var buffer = sourceWebSocketFrame.ToByteArray();
 
-            var targetWebSocketFrame = WebSocketFrame.FromByteArray(buffer);
+            var targetWebSocketFrame = WebSocketFrame.Parse(buffer).WebSocketFrame;
 
             Assert.AreEqual(sourceWebSocketFrame.Fin, targetWebSocketFrame.Fin);
             Assert.AreEqual(sourceWebSocketFrame.Opcode, targetWebSocketFrame.Opcode);

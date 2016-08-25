@@ -21,6 +21,8 @@ namespace HA4IoT.Networking.WebSockets
         private readonly List<WebSocketFrame> _frameQueue = new List<WebSocketFrame>();
         private readonly StreamSocket _clientSocket;
 
+        private byte[] _overhead = new byte[0];
+
         public WebSocketClientSession(StreamSocket clientSocket)
         {
             if (clientSocket == null) throw new ArgumentNullException(nameof(clientSocket));
@@ -34,20 +36,23 @@ namespace HA4IoT.Networking.WebSockets
 
         public event EventHandler Closed;
 
-        public async Task<WebSocketFrame> WaitForFrameAsync()
+        public async Task WaitForFrameAsync()
         {
             var buffer = new Buffer(RequestBufferSize);
-            var data = await _clientSocket.InputStream.ReadAsync(buffer, buffer.Capacity, InputStreamOptions.Partial);
+            await _clientSocket.InputStream.ReadAsync(buffer, buffer.Capacity, InputStreamOptions.Partial);
 
-            if (data == null || data.Length == 0)
+            var data = new List<byte>(_overhead);
+            _overhead = new byte[0];
+            data.AddRange(buffer.ToArray());
+
+            var parseWebSocketFrameResult = WebSocketFrame.Parse(data.ToArray());
+            if (parseWebSocketFrameResult.WebSocketFrame == null)
             {
-                Log.Verbose($"WebSocket session '{_sessionUid}' received no data.");
-                return null;
+                _overhead = parseWebSocketFrameResult.Overhead;
+                return;
             }
 
-            var webSocketFrame = WebSocketFrame.FromByteArray(data.ToArray());
-            Log.Verbose($"WebSocket session '{_sessionUid}' received '{webSocketFrame.Opcode}' from client.");
-
+            var webSocketFrame = parseWebSocketFrameResult.WebSocketFrame;
             switch (webSocketFrame.Opcode)
             {
                 case WebSocketOpcode.Ping:
@@ -55,18 +60,18 @@ namespace HA4IoT.Networking.WebSockets
                         webSocketFrame.Opcode = WebSocketOpcode.Pong;
                         await SendAsync(webSocketFrame);
 
-                        return webSocketFrame;
+                        return;
                     }
 
                 case WebSocketOpcode.ConnectionClose:
                     {
-                        Closed?.Invoke(this, EventArgs.Empty);
-                        return webSocketFrame;
+                        CloseAsync().Wait();
+                        return;
                     }
 
                 case WebSocketOpcode.Pong:
                     {
-                        return webSocketFrame;
+                        return;
                     }
             }
 
@@ -79,14 +84,12 @@ namespace HA4IoT.Networking.WebSockets
 
                 MessageReceived?.Invoke(this, new WebSocketMessageReceivedEventArgs(message, this));
             }
-
-            return webSocketFrame;
         }
 
         public async Task CloseAsync()
         {
             await _clientSocket.CancelIOAsync();
-            _clientSocket.Dispose();
+            Closed?.Invoke(this, EventArgs.Empty);
 
             Log.Verbose($"WebSocket session '{_sessionUid}' closed.");
         }
@@ -172,8 +175,6 @@ namespace HA4IoT.Networking.WebSockets
 
             await _clientSocket.OutputStream.WriteAsync(frameBuffer);
             await _clientSocket.OutputStream.FlushAsync();
-
-            Log.Verbose($"WebSocket session '{_sessionUid}' sent {frame.Opcode} to client.");
         }
     }
 }
