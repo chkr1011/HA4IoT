@@ -2,7 +2,7 @@
 {
     public enum WebSocketOpcode : byte
     {
-        // Documentation is in LSB. Values here are MSB instead
+        // Values here including the FIN bit set to 0.
         Continuation = 0, // 0x0
         Text = 128, // 0x1
         Binary = 64, // 0x2

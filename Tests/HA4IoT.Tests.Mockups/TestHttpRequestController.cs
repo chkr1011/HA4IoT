@@ -2,6 +2,7 @@
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Networking;
+using HA4IoT.Contracts.Networking.Http;
 using HA4IoT.Networking;
 using HA4IoT.Networking.Http;
 

@@ -9,6 +9,30 @@ namespace HA4IoT.Networking.Json
 {
     public static class JsonObjectSerializer
     {
+        public static JsonObject SerializeException(Exception exception)
+        {
+            if (exception == null) throw new ArgumentNullException(nameof(exception));
+
+            // Do not use a generic serializer because sometines not all propterties are readable
+            // and throwing exceptions in the getter.
+            var jsonObject = new JsonObject()
+                .WithString("Type", exception.GetType().FullName)
+                .WithString("Source", exception.Source)
+                .WithString("Message", exception.Message)
+                .WithString("StackTrace", exception.StackTrace);
+
+            if (exception.InnerException != null)
+            {
+                jsonObject.SetNamedValue("InnerException", SerializeException(exception.InnerException));
+            }
+            else
+            {
+                jsonObject.SetNamedValue("InnerException", JsonValue.CreateNullValue());
+            }
+
+            return jsonObject;
+        }
+
         public static JsonObject ToIndexedJsonObject<TKey, TValue>(this Dictionary<TKey, TValue> entries)
         {
             if (entries == null) throw new ArgumentNullException(nameof(entries));

@@ -5,9 +5,8 @@ using System.Text;
 using System.Threading;
 using Windows.Networking.Sockets;
 using Windows.Security.Cryptography.Core;
-using HA4IoT.Contracts.Networking;
+using HA4IoT.Contracts.Networking.Http;
 using HA4IoT.Networking.Json;
-using HA4IoT.Networking.WebSockets;
 
 namespace HA4IoT.Networking.Http
 {
@@ -24,45 +23,25 @@ namespace HA4IoT.Networking.Http
         private readonly StreamSocket _client;
         private readonly Stream _inputStream;
         private readonly Stream _outputStream;
-
-        private readonly Func<HttpContext, bool> _httpRequestReceivedCallback;
-        private readonly Action<WebSocketContext> _webSocketConnectedCallback;
-
-        private WebSocketClientSession _webSocketClientSession;
         
-        public HttpClientSession(
-            StreamSocket client, 
-            Func<HttpContext, bool> httpRequestReceivedCallback,
-            Action<WebSocketContext> webSocketConnectedCallback)
+        public HttpClientSession(StreamSocket client)
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
-            if (httpRequestReceivedCallback == null) throw new ArgumentNullException(nameof(httpRequestReceivedCallback));
-            if (webSocketConnectedCallback == null) throw new ArgumentNullException(nameof(webSocketConnectedCallback));
-
+            
             _client = client;
             _inputStream = _client.InputStream.AsStreamForRead(_buffer.Length);
             _outputStream = _client.OutputStream.AsStreamForWrite(RequestBufferSize);
-
-            _httpRequestReceivedCallback = httpRequestReceivedCallback;
-            _webSocketConnectedCallback = webSocketConnectedCallback;
         }
 
-        public void WaitForData()
+        public event EventHandler<UpgradedToWebSocketSessionEventArgs> UpgradedToWebSocketSession;
+
+        public event EventHandler<HttpRequestReceivedEventArgs> HttpRequestReceived;
+
+        public void WaitForRequest()
         {
             while (!_cancellationTokenSource.IsCancellationRequested)
             {
-                if (_webSocketClientSession != null)
-                {
-                    var webSocketFrame = _webSocketClientSession.WaitForFrame().Result;
-                    if (webSocketFrame.Opcode == WebSocketOpcode.ConnectionClose)
-                    {
-                        _cancellationTokenSource.Cancel();
-                    }
-                }
-                else
-                {
-                    HandleHttpRequest();
-                }
+                HandleHttpRequest();
             }
         }
 
@@ -127,10 +106,12 @@ namespace HA4IoT.Networking.Http
         {
             try
             {
-                bool requestHandled = _httpRequestReceivedCallback.Invoke(context);
-                if (!requestHandled)
+                var eventArgs = new HttpRequestReceivedEventArgs(context);
+                HttpRequestReceived?.Invoke(this, eventArgs);
+
+                if (!eventArgs.IsHandled)
                 {
-                    context.Response.StatusCode = HttpStatusCode.BadRequest;
+                    context.Response.StatusCode = HttpStatusCode.NotFound;
                 }
             }
             catch (Exception exception)
@@ -166,12 +147,10 @@ namespace HA4IoT.Networking.Http
             httpContext.Response.Headers[HttpHeaderNames.Connection] = "Upgrade";
             httpContext.Response.Headers[HttpHeaderNames.Upgrade] = "websocket";
             httpContext.Response.Headers[HttpHeaderNames.SecWebSocketAccept] = GenerateWebSocketAccept(httpContext);
-            //httpContext.Response.Headers[HttpHeaderNames.SecWebSocketProtocol] = "HA4IoT";
+            //httpContext.Response.Headers[HttpHeaderNames.SecWebSocketProtocol] = string.Empty;
 
             SendResponse(httpContext);
-
-            _webSocketClientSession = new WebSocketClientSession(_client);
-            _webSocketConnectedCallback(new WebSocketContext(httpContext.Request, _webSocketClientSession));
+            UpgradedToWebSocketSession?.Invoke(this, new UpgradedToWebSocketSessionEventArgs(httpContext.Request));
         }
 
         private string GenerateWebSocketAccept(HttpContext httpContext)
@@ -188,6 +167,8 @@ namespace HA4IoT.Networking.Http
 
         public void Dispose()
         {
+            _client.CancelIOAsync().AsTask().Wait();
+
             _inputStream.Dispose();
             _outputStream.Dispose();
             _client.Dispose();

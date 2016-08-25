@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HA4IoT.Contracts.Networking
+namespace HA4IoT.Contracts.Networking.Http
 {
     public class HttpHeaderCollection : Dictionary<string, string>
     {

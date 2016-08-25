@@ -9,7 +9,6 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Networking;
 using HA4IoT.Networking.Json;
 
 namespace HA4IoT.Api
@@ -191,7 +190,7 @@ namespace HA4IoT.Api
             catch (Exception exception)
             {
                 apiContext.ResultCode = ApiResultCode.InternalError;
-                apiContext.Response = ConvertExceptionToJsonObject(exception);
+                apiContext.Response = JsonObjectSerializer.SerializeException(exception);
             }
         }
 
@@ -220,28 +219,6 @@ namespace HA4IoT.Api
             }
 
             apiContext.Response.SetValue("Commands", requestRoutes);
-        }
-
-        private JsonObject ConvertExceptionToJsonObject(Exception exception)
-        {
-            // Do not use a generic serializer because sometines not all propterties are readable
-            // and throwing exceptions in the getter.
-            var jsonObject = new JsonObject()
-                .WithString("Type", exception.GetType().FullName)
-                .WithString("Source", exception.Source)
-                .WithString("Message", exception.Message)
-                .WithString("StackTrace", exception.StackTrace);
-
-            if (exception.InnerException != null)
-            {
-                jsonObject.SetNamedValue("InnerException", ConvertExceptionToJsonObject(exception.InnerException));
-            }
-            else
-            {
-                jsonObject.SetNamedValue("InnerException", JsonValue.CreateNullValue());
-            }
-
-            return jsonObject;
         }
     }
 }

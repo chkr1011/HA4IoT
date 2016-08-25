@@ -51,6 +51,7 @@ namespace HA4IoT.Networking.Tests
 
             Assert.AreEqual(sourceWebSocketFrame.Fin, targetWebSocketFrame.Fin);
             Assert.AreEqual(sourceWebSocketFrame.Opcode, targetWebSocketFrame.Opcode);
+            CollectionAssert.AreEqual(payloadBuffer, targetWebSocketFrame.Payload);
         }
     }
 }

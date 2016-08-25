@@ -2,11 +2,9 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 using Windows.Networking.Sockets;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking;
-using HA4IoT.Networking.Json;
+using HA4IoT.Networking.WebSockets;
 
 namespace HA4IoT.Networking.Http
 {
@@ -31,7 +29,8 @@ namespace HA4IoT.Networking.Http
         }
 
         public event EventHandler<HttpRequestReceivedEventArgs> RequestReceived;
-        
+        public event EventHandler<WebSocketConnectedEventArgs> WebSocketConnected;
+
         public void Dispose()
         {
             _serverSocket.Dispose();
@@ -48,11 +47,14 @@ namespace HA4IoT.Networking.Http
 
         private void HandleConnection(StreamSocket clientSocket)
         {
-            using (var clientSession = new HttpClientSession(clientSocket, HandleHttpRequest, HandleWebSocketConnected))
+            using (var clientSession = new ClientSession(clientSocket))
             {
                 try
                 {
-                    clientSession.WaitForData();
+                    clientSession.HttpRequestReceived += HandleHttpRequest;
+                    clientSession.WebSocketConnected += HandleWebSocketConnected;
+
+                    clientSession.Run();
                 }
                 catch (Exception exception)
                 {
@@ -61,30 +63,27 @@ namespace HA4IoT.Networking.Http
             }
         }
 
-        private void HandleWebSocketConnected(WebSocketContext webSocketContext)
+        private void HandleWebSocketConnected(object sender, WebSocketConnectedEventArgs eventArgs)
         {
-            webSocketContext.Send(new JsonObject().WithString("Hello", "World"));
+            WebSocketConnected?.Invoke(this, eventArgs);
         }
 
-        private bool HandleHttpRequest(HttpContext httpContext)
+        private void HandleHttpRequest(object sender, HttpRequestReceivedEventArgs eventArgs)
         {
             var handlerCollection = RequestReceived;
             if (handlerCollection == null)
             {
-                return false;
+                return;
             }
 
-            var eventArgs = new HttpRequestReceivedEventArgs(httpContext);
             foreach (var handler in handlerCollection.GetInvocationList())
             {
                 handler.DynamicInvoke(this, eventArgs);
                 if (eventArgs.IsHandled)
                 {
-                    return true;
+                    return;
                 }
             }
-
-            return false;
         }
     }
 }

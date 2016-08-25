@@ -1,4 +1,4 @@
-﻿namespace HA4IoT.Contracts.Networking
+﻿namespace HA4IoT.Contracts.Networking.Http
 {
     public enum HttpMethod
     {

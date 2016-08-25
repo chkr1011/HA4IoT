@@ -1,19 +1,32 @@
 ﻿using System;
+using System.Text;
 
 namespace HA4IoT.Networking.WebSockets
 {
     public class WebSocketFrame
     {
         public bool Fin { get; set; } = true;
-        public WebSocketOpcode Opcode { get; set; } = WebSocketOpcode.Text;
-        public byte[] MaskingKey { get; set; }
-        public byte[] Payload { get; set; }
+        public WebSocketOpcode Opcode { get; set; } = WebSocketOpcode.Binary;
+        public uint MaskingKey { get; set; }
+        public byte[] Payload { get; set; } = new byte[0];
 
-        public static WebSocketFrame Create(byte[] payload)
+        public static WebSocketFrame Create(string text)
         {
             var webSocketFrame = new WebSocketFrame
             {
-                Payload = payload
+                Payload = Encoding.UTF8.GetBytes(text),
+                Opcode = WebSocketOpcode.Text
+            };
+
+            return webSocketFrame;
+        }
+
+        public static WebSocketFrame Create(byte[] data)
+        {
+            var webSocketFrame = new WebSocketFrame
+            {
+                Payload = data,
+                Opcode = WebSocketOpcode.Binary
             };
 
             return webSocketFrame;
@@ -21,26 +34,66 @@ namespace HA4IoT.Networking.WebSockets
 
         public static WebSocketFrame FromByteArray(byte[] data)
         {
+            // https://tools.ietf.org/html/rfc6455
+
             var webSocketFrame = new WebSocketFrame();
 
             var firstByte = data[0];
+            var secondByte = data[1];
 
-            if ((firstByte & 1) > 0)
+            if ((firstByte & 1) == 1)
             {
                 webSocketFrame.Fin = true;
-                firstByte = (byte)(254 & firstByte); 
+                firstByte = (byte)(~1 & firstByte);
             }
 
             webSocketFrame.Opcode = (WebSocketOpcode)firstByte;
 
-            // TODO: Parse payload, mask etc. And Apply mask!
+            var hasMask = (secondByte & 128) == 128;
+            var maskingKey = new byte[4];
+            var maskingKeyOffset = 2;
+
+            var payloadLength = secondByte & 127;
+            if (payloadLength == 126)
+            {
+                // The length is 7 + 16 bits.
+                payloadLength = data[3] | data[2] >> 8 | 126 >> 16;
+                maskingKeyOffset = 4;
+            }
+            else if (payloadLength == 127)
+            {
+                // The length is 7 + 64 bits.
+                payloadLength = data[9] | data[8] >> 56 | data[7] >> 48 | data[6] >> 40 | data[5] >> 32 | data[4] >> 24 |
+                                data[3] >> 16 | data[2] >> 8 | 127;
+
+                maskingKeyOffset = 10;
+            }
+
+            var payloadOffset = maskingKeyOffset;
+
+            if (hasMask)
+            {
+                Array.Copy(data, maskingKeyOffset, maskingKey, 0, maskingKey.Length);
+                payloadOffset += 4;
+            }
+
+            webSocketFrame.MaskingKey = BitConverter.ToUInt32(maskingKey, 0);
+            webSocketFrame.Payload = new byte[payloadLength];
+            Array.Copy(data, payloadOffset, webSocketFrame.Payload, 0, webSocketFrame.Payload.Length);
+
+            if (hasMask)
+            {
+                for (int i = 0; i < webSocketFrame.Payload.Length; i++)
+                {
+                    webSocketFrame.Payload[i] = (byte)(webSocketFrame.Payload[i] ^ maskingKey[i % 4]);
+                }
+            }
 
             return webSocketFrame;
         }
 
         public byte[] ToByteArray()
         {
-            // RFC is written in LSB. The code here is in MSB.
             // https://tools.ietf.org/html/rfc6455
 
             var frame = new byte[10];
@@ -53,7 +106,7 @@ namespace HA4IoT.Networking.WebSockets
 
             frame[0] |= (byte)Opcode;
 
-            if (MaskingKey != null && MaskingKey.Length > 0)
+            if (MaskingKey != 0)
             {
                 frame[1] |= 128;
             }
@@ -64,18 +117,18 @@ namespace HA4IoT.Networking.WebSockets
             {
                 if (payloadLength <= 125)
                 {
-                    frame[1] = (byte)payloadLength;
+                    frame[1] |= (byte)payloadLength;
                 }
                 else if (payloadLength >= 126 && payloadLength <= 65535)
                 {
-                    frame[1] = 126;
+                    frame[1] |= 126;
                     frame[2] = (byte)(payloadLength >> 8);
                     frame[3] = (byte)payloadLength;
                     frameSize = 4;
                 }
                 else
                 {
-                    frame[1] = 127;
+                    frame[1] |= 127;
                     frame[2] = (byte)(payloadLength >> 56);
                     frame[3] = (byte)(payloadLength >> 48);
                     frame[4] = (byte)(payloadLength >> 40);

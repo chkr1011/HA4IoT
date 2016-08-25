@@ -1,4 +1,5 @@
 using HA4IoT.Contracts.Networking;
+using HA4IoT.Contracts.Networking.Http;
 
 namespace HA4IoT.Networking.Http
 {

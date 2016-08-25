@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using HA4IoT.Contracts.Networking;
+using HA4IoT.Contracts.Networking.Http;
 
 namespace HA4IoT.Networking.Http
 {
@@ -68,6 +69,7 @@ namespace HA4IoT.Networking.Http
             }
 
             string relativeUri = requestUri.Substring(_baseUri.Length).Trim('/');
+
             foreach (var handler in _handlers)
             {
                 if (!handler.Method.Equals(e.Context.Request.Method))
@@ -77,14 +79,14 @@ namespace HA4IoT.Networking.Http
                 
                 if (handler.HandleRequestsWithDifferentSubUrl)
                 {
-                    if (!relativeUri.StartsWith(handler.Uri, StringComparison.OrdinalIgnoreCase))
+                    if (!relativeUri.StartsWith(handler.Uri))
                     {
                         continue;
                     }
                 }
                 else
                 {
-                    if (!handler.Uri.Equals(relativeUri, StringComparison.OrdinalIgnoreCase))
+                    if (!handler.Uri.Equals(relativeUri))
                     {
                         continue;
                     }
