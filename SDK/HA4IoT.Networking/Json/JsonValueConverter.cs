@@ -140,6 +140,12 @@ namespace HA4IoT.Networking.Json
                 return JsonValue.CreateStringValue(dateTimeValue.Value.ToString("O"));
             }
 
+            var guidValue = source as Guid?;
+            if (guidValue.HasValue)
+            {
+                return JsonValue.CreateStringValue(source.ToString());
+            }
+
             var array = source as IEnumerable;
             if (array != null)
             {

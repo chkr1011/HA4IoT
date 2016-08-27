@@ -5,6 +5,7 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
+using HA4IoT.Services.System;
 using HA4IoT.Settings;
 
 namespace HA4IoT.Services.Automations

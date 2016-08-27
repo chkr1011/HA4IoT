@@ -94,7 +94,7 @@ namespace HA4IoT.CloudTester
                 TimeSpan.FromSeconds(60));
 
             queueReceiver.MessageReceived += LogMessage;
-            queueReceiver.Start();
+            queueReceiver.Enable();
         }
 
         private void LogMessage(object sender, MessageReceivedEventArgs e)
@@ -133,7 +133,7 @@ namespace HA4IoT.CloudTester
                 TimeSpan.FromSeconds(60));
 
             queueReceiver.MessageReceived += LogMessage;
-            queueReceiver.Start();
+            queueReceiver.Enable();
         }
     }
 }

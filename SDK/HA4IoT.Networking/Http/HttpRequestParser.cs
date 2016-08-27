@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.Networking.Http;
 
 namespace HA4IoT.Networking.Http
@@ -22,7 +21,7 @@ namespace HA4IoT.Networking.Http
         public bool TryParse(byte[] buffer, int bufferLength, out HttpRequest request)
         {
             if (buffer == null) throw new ArgumentNullException(nameof(buffer));
-            
+
             try
             {
                 _request = Encoding.UTF8.GetString(buffer, 0, bufferLength);
@@ -79,7 +78,7 @@ namespace HA4IoT.Networking.Http
                 }
                 else
                 {
-                    var indexOfDelimiter = line.IndexOf(":");
+                    var indexOfDelimiter = line.IndexOf(":", StringComparison.OrdinalIgnoreCase);
                     var name = line.Substring(0, indexOfDelimiter).Trim();
                     var token = line.Substring(indexOfDelimiter + 1).Trim();
 
@@ -98,7 +97,7 @@ namespace HA4IoT.Networking.Http
                 return;
             }
 
-            _body = _request.Substring(bodyOffset + (Environment.NewLine.Length*2));
+            _body = _request.Substring(bodyOffset + (Environment.NewLine.Length * 2));
         }
 
         private void ParseQuery()
@@ -112,11 +111,11 @@ namespace HA4IoT.Networking.Http
 
             _query = _uri.Substring(indexOfQuestionMark + 1);
             _uri = _uri.Substring(0, indexOfQuestionMark);
-            
-            // This hack is requiered to allow sending data to the server which is blocked to avoid cross site scripting.
+
+            // Parse a special query parameter.
             if (_query.StartsWith("body="))
             {
-                _body = _query.Substring("body=".Length).Replace("%22", "\"").Replace("%20", " ");
+                _body = Uri.UnescapeDataString(_query.Substring("body=".Length));
                 _query = null;
             }
         }
@@ -129,7 +128,7 @@ namespace HA4IoT.Networking.Http
             }
 
             _lines.Clear();
-            _lines.AddRange(_request.Split(new[] {Environment.NewLine}, StringSplitOptions.None));
+            _lines.AddRange(_request.Split(new[] { Environment.NewLine }, StringSplitOptions.None));
             if (_lines.Count < 2)
             {
                 return false;
@@ -140,7 +139,7 @@ namespace HA4IoT.Networking.Http
 
         private bool TryParseRequestHeader()
         {
-            var requestParts = _lines.First().Split(new[] {' '}, StringSplitOptions.None);
+            var requestParts = _lines.First().Split(new[] { ' ' }, StringSplitOptions.None);
             if (requestParts.Length != 3)
             {
                 return false;

@@ -29,13 +29,13 @@ namespace HA4IoT.Controller.Main
 
         public void Run(IBackgroundTaskInstance taskInstance)
         {
-            var controller = new HA4IoTController(new ControllerOptions { StatusLedNumber = LedGpio, Configuration = new MainConfiguration() });
+            var controller = new Core.Controller(new ControllerOptions { StatusLedNumber = LedGpio, Configuration = new MainConfiguration() });
             controller.RunAsync(taskInstance);
         }
 
         private class MainConfiguration : IConfiguration
         {
-            public void RegisterServices(IContainerService containerService)
+            public void SetupContainer(IContainerService containerService)
             {
                 RegisterOpenWeatherMapService(containerService);
                 RegisterControllerSlaveService(containerService);

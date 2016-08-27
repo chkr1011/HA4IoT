@@ -31,7 +31,7 @@ namespace HA4IoT.Controller.Local
             _mainPage = mainPage;
         }
 
-        public void RegisterServices(IContainerService containerService)
+        public void SetupContainer(IContainerService containerService)
         {
             containerService.RegisterSingleton<OpenWeatherMapService>();
             containerService.RegisterSingleton<IOutdoorTemperatureProvider, OpenWeatherMapOutdoorTemperatureProvider>();

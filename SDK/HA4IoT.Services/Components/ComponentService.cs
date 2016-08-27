@@ -8,6 +8,7 @@ using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Networking.Http;
+using HA4IoT.Services.System;
 using HA4IoT.Settings;
 
 namespace HA4IoT.Services.Components

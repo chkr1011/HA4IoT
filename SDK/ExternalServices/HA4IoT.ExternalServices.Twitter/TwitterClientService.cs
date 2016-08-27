@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
-using Windows.Storage.Streams;
 using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Services;
 
@@ -82,14 +81,16 @@ namespace HA4IoT.ExternalServices.Twitter
 
         private string GetAuthorizationToken(string signature)
         {
-            var values = new List<string>();
-            values.Add($"oauth_consumer_key=\"{Uri.EscapeDataString(ConsumerKey)}\"");
-            values.Add($"oauth_nonce=\"{_nonce}\"");
-            values.Add($"oauth_signature=\"{Uri.EscapeDataString(signature)}\"");
-            values.Add("oauth_signature_method=\"HMAC-SHA1\"");
-            values.Add($"oauth_timestamp=\"{_timestamp}\"");
-            values.Add($"oauth_token=\"{Uri.EscapeDataString(AccessToken)}\"");
-            values.Add("oauth_version=\"1.0\"");
+            var values = new List<string>
+            {
+                $"oauth_consumer_key=\"{Uri.EscapeDataString(ConsumerKey)}\"",
+                $"oauth_nonce=\"{_nonce}\"",
+                $"oauth_signature=\"{Uri.EscapeDataString(signature)}\"",
+                "oauth_signature_method=\"HMAC-SHA1\"",
+                $"oauth_timestamp=\"{_timestamp}\"",
+                $"oauth_token=\"{Uri.EscapeDataString(AccessToken)}\"",
+                "oauth_version=\"1.0\""
+            };
 
             return "OAuth " + string.Join(", ", values);
         }
@@ -101,22 +102,22 @@ namespace HA4IoT.ExternalServices.Twitter
 
         private string GetTimeStamp()
         {
-            TimeSpan sinceEpoch = DateTime.UtcNow - new DateTime(1970, 1, 1);
+            var sinceEpoch = DateTime.UtcNow - new DateTime(1970, 1, 1);
             return Math.Round(sinceEpoch.TotalSeconds).ToString(CultureInfo.InvariantCulture);
         }
 
         private string GenerateSignature(string content)
         {
-            string key = Uri.EscapeDataString(CosumerSecret) + "&" + Uri.EscapeDataString(AccessTokenSecret);
+            var key = Uri.EscapeDataString(CosumerSecret) + "&" + Uri.EscapeDataString(AccessTokenSecret);
 
-            IBuffer keyMaterial = CryptographicBuffer.ConvertStringToBinary(key, BinaryStringEncoding.Utf8);
-            MacAlgorithmProvider macAlgorithm = MacAlgorithmProvider.OpenAlgorithm("HMAC_SHA1");
-            CryptographicKey macKey = macAlgorithm.CreateKey(keyMaterial);
+            var keyMaterial = CryptographicBuffer.ConvertStringToBinary(key, BinaryStringEncoding.Utf8);
+            var macAlgorithm = MacAlgorithmProvider.OpenAlgorithm("HMAC_SHA1");
+            var macKey = macAlgorithm.CreateKey(keyMaterial);
             
-            IBuffer buffer = CryptographicBuffer.ConvertStringToBinary(content, BinaryStringEncoding.Utf8);
+            var buffer = CryptographicBuffer.ConvertStringToBinary(content, BinaryStringEncoding.Utf8);
 
-            IBuffer signatureBuffer = CryptographicEngine.Sign(macKey, buffer);
-            string signature = CryptographicBuffer.EncodeToBase64String(signatureBuffer);
+            var signatureBuffer = CryptographicEngine.Sign(macKey, buffer);
+            var signature = CryptographicBuffer.EncodeToBase64String(signatureBuffer);
 
             return signature;
         }

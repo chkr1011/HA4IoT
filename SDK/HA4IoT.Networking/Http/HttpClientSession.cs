@@ -56,6 +56,14 @@ namespace HA4IoT.Networking.Http
             
             var context = new HttpContext(request, new HttpResponse());
             PrepareResponseHeaders(context);
+            
+            if (context.Request.HttpVersion != new Version(1, 1))
+            {
+                context.Response.StatusCode = HttpStatusCode.HttpVersionNotSupported;
+                SendResponse(context);
+                _cancellationTokenSource.Cancel();
+                return;
+            }
 
             bool isWebSocketRequest = request.Headers.ValueEquals(HttpHeaderNames.Upgrade, "websocket");
             if (isWebSocketRequest)
@@ -81,7 +89,7 @@ namespace HA4IoT.Networking.Http
 
         private HttpRequest ReceiveHttpRequest()
         {
-            int bufferLength = _inputStream.Read(_buffer, 0, _buffer.Length);
+            var bufferLength = _inputStream.Read(_buffer, 0, _buffer.Length);
             
             HttpRequest httpRequest;
             if (!_requestParser.TryParse(_buffer, bufferLength, out httpRequest))
@@ -119,7 +127,7 @@ namespace HA4IoT.Networking.Http
                 if (context != null)
                 {
                     context.Response.StatusCode = HttpStatusCode.InternalServerError;
-                    context.Response.Body = new JsonBody(exception.ToJsonObject());
+                    context.Response.Body = new JsonBody(JsonObjectSerializer.SerializeException(exception));
                 }
             }
         }

@@ -27,7 +27,6 @@ using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.Pi2;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Logger;
-using HA4IoT.Networking;
 using HA4IoT.Networking.Http;
 using HA4IoT.Notifications;
 using HA4IoT.PersonalAgent;
@@ -46,14 +45,14 @@ using SimpleInjector;
 
 namespace HA4IoT.Core
 {
-    public class HA4IoTController
+    public class Controller : IController
     {
         private readonly Container _container = new Container();
         private readonly ControllerOptions _options;
 
         private BackgroundTaskDeferral _deferral;
         
-        public HA4IoTController(ControllerOptions options)
+        public Controller(ControllerOptions options)
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
 
@@ -80,6 +79,10 @@ namespace HA4IoT.Core
             return task;
         }
 
+        public event EventHandler StartupCompleted;
+        public event EventHandler StartupFailed;
+        public event EventHandler Shutdown; 
+
         private void Startup()
         {
             try
@@ -101,24 +104,24 @@ namespace HA4IoT.Core
 
                 _container.GetInstance<HttpServer>().Bind(_options.HttpServerPort);
 
-                _container.GetInstance<SystemEventsService>().FireStartupCompleted();
+                StartupCompleted?.Invoke(this, EventArgs.Empty);
                 stopwatch.Stop();
 
                 Log.Info("Startup completed after " + stopwatch.Elapsed);
 
                 _container.GetInstance<ISystemInformationService>().Set("Health/StartupDuration", stopwatch.Elapsed);
-                _container.GetInstance<ISystemInformationService>()
-                    .Set("Health/StartupTimestamp", _container.GetInstance<IDateTimeService>().Now);
+                _container.GetInstance<ISystemInformationService>().Set("Health/StartupTimestamp", _container.GetInstance<IDateTimeService>().Now);
 
                 _container.GetInstance<ITimerService>().Run();
             }
             catch (Exception exception)
             {
                 Log.Error(exception, "Failed to initialize.");
+                StartupFailed?.Invoke(this, EventArgs.Empty);
             }
-
             finally
             {
+                Shutdown?.Invoke(this, EventArgs.Empty);
                 _deferral?.Complete();
             }
         }
@@ -171,6 +174,7 @@ namespace HA4IoT.Core
         {
             var containerService = new ContainerService(_container);
 
+            _container.RegisterSingleton<IController>(() => this);
             _container.RegisterSingleton(() => Log.Instance);
             _container.RegisterSingleton<ControllerSettings>();
 
@@ -187,7 +191,9 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<IDateTimeService, DateTimeService>();
             _container.RegisterSingleton<ISchedulerService, SchedulerService>();
             _container.RegisterSingleton<INotificationService, NotificationService>();
-            
+            _container.RegisterSingleton<ISettingsService, SettingsService>();
+            _container.RegisterInitializer<SettingsService>(s => s.Startup());
+
             _container.RegisterSingleton<II2CBusService, BuiltInI2CBusService>();
             _container.RegisterSingleton<IPi2GpioService, Pi2GpioService>();
             _container.RegisterSingleton<CCToolsBoardService>();
@@ -217,7 +223,7 @@ namespace HA4IoT.Core
             _container.Register<AzureCloudApiDispatcherEndpointConfigurator>();
             _container.Register<ComponentStateHistoryTrackerConfigurator>();
 
-            _options.Configuration?.RegisterServices(containerService);
+            _options.Configuration?.SetupContainer(containerService);
 
             _container.Verify();
         }
@@ -257,3 +263,4 @@ namespace HA4IoT.Core
         }
     }
 }
+

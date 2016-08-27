@@ -17,8 +17,6 @@ function AppController($scope, $http) {
 
     c.rooms = [];
 
-    c.status;
-
     c.sensors = [];
     c.rollerShutters = [];
     c.motionDetectors = [];

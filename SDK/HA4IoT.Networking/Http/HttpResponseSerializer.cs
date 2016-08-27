@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.Networking.Http;
 
 namespace HA4IoT.Networking.Http
@@ -17,21 +15,35 @@ namespace HA4IoT.Networking.Http
             if (context == null) throw new ArgumentNullException(nameof(context));
 
             var body = GetBody(context);
+
+            if (body.Length == 0 && context.Response.StatusCode == HttpStatusCode.OK)
+            {
+                context.Response.StatusCode = HttpStatusCode.NoContent;
+                return GeneratePrefix(context.Response);
+            }
+
             context.Response.Headers[HttpHeaderNames.ContentLength] = body.Length.ToString();
 
-            byte[] prefix = GeneratePrefix(context.Response);
+            var prefix = GeneratePrefix(context.Response);
+            var buffer = new byte[prefix.Length + body.Length];
+            Array.Copy(prefix, 0, buffer, 0, prefix.Length);
+            Array.Copy(body, 0, buffer, prefix.Length, body.Length);
 
-            using (var buffer = new MemoryStream(prefix.Length + body.Length))
-            {
-                buffer.Write(prefix, 0, prefix.Length);
+            return buffer;
 
-                if (body.Length > 0)
-                {
-                    buffer.Write(body, 0, body.Length);
-                }
+            // TODO: Delete if above code is working.
+            //var prefix = GeneratePrefix(context.Response);
+            ////using (var buffer = new MemoryStream(prefix.Length + body.Length))
+            ////{
+            ////    buffer.Write(prefix, 0, prefix.Length);
 
-                return buffer.ToArray();
-            }
+            ////    if (body.Length > 0)
+            ////    {
+            ////        buffer.Write(body, 0, body.Length);
+            ////    }
+
+            ////    return buffer.ToArray();
+            ////}
         }
 
         private byte[] GetBody(HttpContext context)
@@ -64,7 +76,7 @@ namespace HA4IoT.Networking.Http
             var buffer = new StringBuilder();
             buffer.AppendLine("HTTP/1.1 " + (int)response.StatusCode + " " + statusDescription);
 
-            foreach (KeyValuePair<string, string> header in response.Headers)
+            foreach (var header in response.Headers)
             {
                 buffer.AppendLine(header.Key + ":" + header.Value);
             }

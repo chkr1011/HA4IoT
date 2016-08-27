@@ -115,7 +115,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContainerExtensions.cs" />
-    <Compile Include="HA4IoTController.cs" />
+    <Compile Include="Controller.cs" />
     <Compile Include="ControllerOptions.cs" />
     <Compile Include="DiscoveryServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

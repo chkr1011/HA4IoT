@@ -55,7 +55,7 @@ namespace HA4IoT.Api.AzureCloud
                 return;
             }
 
-            JsonObject eventData = new JsonObject();
+            var eventData = new JsonObject();
             eventData.SetNamedValue("type", "StateChanged".ToJsonValue());
             eventData.SetNamedValue("componentId", component.Id.ToJsonValue());
             eventData.SetNamedValue("state", component.ExportStatusToJsonObject());
@@ -91,7 +91,7 @@ namespace HA4IoT.Api.AzureCloud
                 TimeSpan.FromSeconds(60));
 
             _inboundQueue.MessageReceived += DistpachMessage;
-            _inboundQueue.Start();
+            _inboundQueue.Enable();
         }
 
         private void DistpachMessage(object sender, MessageReceivedEventArgs e)

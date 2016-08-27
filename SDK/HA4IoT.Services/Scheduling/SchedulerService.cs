@@ -9,7 +9,6 @@ using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Networking;
 using HA4IoT.Networking.Json;
 
 namespace HA4IoT.Services.Scheduling

@@ -13,7 +13,7 @@ namespace HA4IoT.Controller.Local
 {
     public sealed partial class MainPage
     {
-        private readonly HA4IoTController _controller;
+        private readonly Core.Controller _controller;
 
         public MainPage()
         {
@@ -27,7 +27,7 @@ namespace HA4IoT.Controller.Local
                 HttpServerPort = 1025
             };
 
-            _controller = new HA4IoTController(options);
+            _controller = new Core.Controller(options);
             
             // The app is only available from other machines. https://msdn.microsoft.com/en-us/library/windows/apps/Hh780593.aspx
             StoragePathTextBox.Text = StoragePath.Root;

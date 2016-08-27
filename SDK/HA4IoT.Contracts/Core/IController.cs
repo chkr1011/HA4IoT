@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace HA4IoT.Contracts.Services.System
+namespace HA4IoT.Contracts.Core
 {
-    public interface ISystemEventsService : IService
+    public interface IController
     {
         event EventHandler StartupCompleted;
         event EventHandler StartupFailed;

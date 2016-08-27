@@ -8,8 +8,6 @@ using Windows.Data.Json;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.PersonalAgent;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Contracts.Services.System;
-using HA4IoT.Networking;
 using HA4IoT.Networking.Json;
 using HA4IoT.PersonalAgent;
 using HttpClient = System.Net.Http.HttpClient;
@@ -51,11 +49,6 @@ namespace HA4IoT.ExternalServices.TelegramBot
         }
 
         public override void Startup()
-        {
-            Enable();
-        }
-
-        public void Enable()
         {
             Task.Factory.StartNew(
                 async () => await ProcessPendingMessagesAsync(),
@@ -117,8 +110,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
             {
                 try
                 {
-                    TelegramOutboundMessage message = _pendingMessages.Take();
-                    await SendMessageAsync(message);
+                    await SendMessageAsync(_pendingMessages.Take());
                 }
                 catch (Exception exception)
                 {
@@ -149,8 +141,8 @@ namespace HA4IoT.ExternalServices.TelegramBot
         {
             using (var httpClient = new HttpClient())
             {
-                string uri = $"{BaseUri}{_options.AuthenticationToken}/getUpdates?timeout=60&offset={_latestUpdateId + 1}";
-                HttpResponseMessage response = await httpClient.GetAsync(uri);
+                var uri = $"{BaseUri}{_options.AuthenticationToken}/getUpdates?timeout=60&offset={_latestUpdateId + 1}";
+                var response = await httpClient.GetAsync(uri);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -186,7 +178,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
         private void ProcessMessage(JsonObject message)
         {
-            TelegramInboundMessage inboundMessage = ConvertJsonMessageToInboundMessage(message);
+            var inboundMessage = ConvertJsonMessageToInboundMessage(message);
 
             if (!_options.AllowAllClients && !_options.ChatWhitelist.Contains(inboundMessage.ChatId))
             {
@@ -205,11 +197,11 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
         private TelegramInboundMessage ConvertJsonMessageToInboundMessage(JsonObject message)
         {
-            string text = message.GetNamedString("text");
-            DateTime timestamp = UnixTimeStampToDateTime(message.GetNamedNumber("date"));
+            var text = message.GetNamedString("text");
+            var timestamp = UnixTimeStampToDateTime(message.GetNamedNumber("date"));
 
-            JsonObject chat = message.GetNamedObject("chat");
-            int chatId = (int)chat.GetNamedNumber("id");
+            var chat = message.GetNamedObject("chat");
+            var chatId = (int)chat.GetNamedNumber("id");
 
             return new TelegramInboundMessage(timestamp, chatId, text);
         }

@@ -14,7 +14,7 @@ namespace HA4IoT.Api.AzureCloud
         private readonly Uri _uri;
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
-        private bool _wasStarted;
+        private bool _isEnabled;
 
         public QueueReceiver(string namespaceName, string queueName, string authorization, TimeSpan timeout)
         {
@@ -29,14 +29,14 @@ namespace HA4IoT.Api.AzureCloud
 
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
-        public void Start()
+        public void Enable()
         {
-            if (_wasStarted)
+            if (_isEnabled)
             {
                 throw new InvalidOperationException("Starting multiple times is not allowed.");    
             }
 
-            _wasStarted = true;
+            _isEnabled = true;
 
             var task = Task.Factory.StartNew(
                 WaitForMessages,
@@ -47,9 +47,10 @@ namespace HA4IoT.Api.AzureCloud
             task.ConfigureAwait(false);
         }
 
-        public void Stop()
+        public void Diable()
         {
             _cancellationTokenSource.Cancel();
+            _isEnabled = false;
         }
 
         private void WaitForMessages()
@@ -72,7 +73,7 @@ namespace HA4IoT.Api.AzureCloud
         {
             // DELETE will force a "Receive & Delete".
             // POST will force a "Peek-Lock"
-            HttpResponseMessage result = _httpClient.DeleteAsync(_uri).AsTask().Result;
+            var result = _httpClient.DeleteAsync(_uri).AsTask().Result;
             if (result.StatusCode == HttpStatusCode.NoContent)
             {
                 Log.Verbose("Azure queue timeout reached. Reconnecting...");
@@ -104,7 +105,7 @@ namespace HA4IoT.Api.AzureCloud
                 return;
             }
             
-            string bodySource = await content.ReadAsStringAsync();
+            var bodySource = await content.ReadAsStringAsync();
             if (string.IsNullOrEmpty(bodySource))
             {
                 Log.Warning("Received Azure queue message with empty body.");

@@ -130,6 +130,7 @@
     <Compile Include="Conditions\ICondition.cs" />
     <Compile Include="Core\IConfiguration.cs" />
     <Compile Include="Core\IConfigurator.cs" />
+    <Compile Include="Core\IController.cs" />
     <Compile Include="Networking\WebSockets\IWebSocketClientSession.cs" />
     <Compile Include="Networking\WebSockets\WebSocketBinaryMessage.cs" />
     <Compile Include="Networking\WebSockets\WebSocketMessage.cs" />
@@ -142,7 +143,7 @@
     <Compile Include="Services\Notifications\Notification.cs" />
     <Compile Include="Services\Notifications\NotificationType.cs" />
     <Compile Include="Services\System\IHealthService.cs" />
-    <Compile Include="Services\System\ISystemEventsService.cs" />
+    <Compile Include="Services\System\ISettingsService.cs" />
     <Compile Include="Core\Settings\SettingValueChangedEventArgs.cs" />
     <Compile Include="Hardware\ForceUpdateStateParameter.cs" />
     <Compile Include="Hardware\HardwareParameter.cs" />
@@ -200,6 +201,7 @@
     <Compile Include="Core\IdBase.cs" />
     <Compile Include="Services\System\IDeviceService.cs" />
     <Compile Include="Services\System\IContainerService.cs" />
+    <Compile Include="Services\System\ISystemEventsService.cs" />
     <Compile Include="Services\System\ITimerService.cs" />
     <Compile Include="Core\Settings\ISettingsContainer.cs" />
     <Compile Include="Core\StoragePath.cs" />

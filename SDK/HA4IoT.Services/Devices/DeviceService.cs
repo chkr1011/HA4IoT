@@ -4,6 +4,7 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
+using HA4IoT.Services.System;
 
 namespace HA4IoT.Services.Devices
 {
