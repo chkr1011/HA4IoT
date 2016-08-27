@@ -34,6 +34,10 @@ function AppController($scope, $http) {
         $scope.$broadcast("configurationLoaded", { language: configuration.controller.Language });
     };
 
+    c.deleteNotification = function(uid) {
+        postController("Service/INotificationService/Delete", { "Uid": uid });
+    }
+
     c.generateRooms = function () {
 
         $http.get("/api/configuration").success(function (data) {
@@ -318,6 +322,25 @@ function updateOnStateCounters(areas) {
         });
 
         area.onStateCount = count;
+    });
+}
+
+
+function postController(uri, body, successCallback) {
+    // This hack is required for Safari because only one Ajax request at the same time is allowed.
+    var url = "/api/" + uri + "?body=" + JSON.stringify(body);
+
+    $.ajax({
+        method: "POST",
+        url: url,
+        contentType: "application/json; charset=utf-8",
+        timeout: 2500
+    }).done(function () {
+        if (successCallback != null) {
+            successCallback();
+        }
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        alert(textStatus);
     });
 }
 

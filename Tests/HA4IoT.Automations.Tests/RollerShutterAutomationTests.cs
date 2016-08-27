@@ -92,6 +92,7 @@ namespace HA4IoT.Automations.Tests
 
             _automation = new RollerShutterAutomation(
                 AutomationIdFactory.EmptyId,
+                _controller.NotificationService,
                 _controller.SchedulerService,
                 _controller.DateTimeService,
                 _controller.DaylightService,
