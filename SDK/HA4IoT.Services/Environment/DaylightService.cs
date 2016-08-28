@@ -28,9 +28,9 @@ namespace HA4IoT.Services.Environment
         }
 
         [JsonMember]
-        public TimeSpan Sunrise { get; private set; }
+        public TimeSpan Sunrise { get; private set; } = TimeSpan.Parse("06:45");
         [JsonMember]
-        public TimeSpan Sunset { get; private set; }
+        public TimeSpan Sunset { get; private set; } = TimeSpan.Parse("20:30");
         public DateTime? Timestamp { get; private set; }
 
         [ApiMethod(ApiCallType.Request)]

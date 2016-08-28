@@ -23,6 +23,11 @@ body {
     margin-right: 10px;
 }
 
+.iconDefault {
+    height: 1.5em;
+    width: 1.5em;
+}
+
 .icon_mini {
     height: 0.9em;
     width: 0.9em;
