@@ -116,6 +116,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ByteExtensions.cs" />
     <Compile Include="ClientSession.cs" />
     <Compile Include="Http\BadRequestException.cs" />
     <Compile Include="Http\BinaryBody.cs" />

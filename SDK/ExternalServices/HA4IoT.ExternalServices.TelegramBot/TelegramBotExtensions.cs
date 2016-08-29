@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts.Services.ExternalServices.TelegramBot;
 
 namespace HA4IoT.ExternalServices.TelegramBot
 {

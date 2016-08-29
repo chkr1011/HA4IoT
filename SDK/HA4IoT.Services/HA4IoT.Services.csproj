@@ -107,9 +107,8 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Areas\AreaSettingsWrapper.cs" />
     <Compile Include="ControllerSlave\ControllerSlaveService.cs" />
-    <Compile Include="ControllerSlave\ControllerSlaveServiceOptions.cs" />
+    <Compile Include="ControllerSlave\ControllerSlaveServiceSettings.cs" />
     <Compile Include="Areas\Area.cs" />
     <Compile Include="Areas\AreaCollection.cs" />
     <Compile Include="Automations\AutomationCollection.cs" />

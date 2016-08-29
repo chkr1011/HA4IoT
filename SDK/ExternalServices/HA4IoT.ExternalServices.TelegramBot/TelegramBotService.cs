@@ -8,27 +8,31 @@ using Windows.Data.Json;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.PersonalAgent;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.ExternalServices.TelegramBot;
+using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Networking.Json;
 using HA4IoT.PersonalAgent;
 using HttpClient = System.Net.Http.HttpClient;
 
 namespace HA4IoT.ExternalServices.TelegramBot
 {
-    public class TelegramBotService : ServiceBase
+    public class TelegramBotService : ServiceBase, ITelegramBotService
     {
-        private readonly TelegramBotServiceOptions _options;
-        private readonly PersonalAgentService _personalAgentService;
         private const string BaseUri = "https://api.telegram.org/bot";
 
         private readonly BlockingCollection<TelegramOutboundMessage> _pendingMessages = new BlockingCollection<TelegramOutboundMessage>();
+        private readonly IPersonalAgentService _personalAgentService;
+        private readonly TelegramBotServiceSettings _settings;
+
         private int _latestUpdateId;
 
-        public TelegramBotService(TelegramBotServiceOptions options, PersonalAgentService personalAgentService)
+        public TelegramBotService(ISettingsService settingsService, IPersonalAgentService personalAgentService)
         {
-            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             if (personalAgentService == null) throw new ArgumentNullException(nameof(personalAgentService));
 
-            _options = options;
+            _settings = settingsService.GetSettings<TelegramBotServiceSettings>();
+
             _personalAgentService = personalAgentService;
 
             Log.WarningLogged += (s, e) =>
@@ -50,6 +54,12 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
         public override void Startup()
         {
+            if (!_settings.IsEnabled)
+            {
+                Log.Verbose("Telegram Bot Service is disabled.");
+                return;
+            }
+
             Task.Factory.StartNew(
                 async () => await ProcessPendingMessagesAsync(),
                 CancellationToken.None,
@@ -69,6 +79,11 @@ namespace HA4IoT.ExternalServices.TelegramBot
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
+            if (!_settings.IsEnabled)
+            {
+                return;
+            }
+
             _pendingMessages.Add(message);
         }
 
@@ -76,7 +91,12 @@ namespace HA4IoT.ExternalServices.TelegramBot
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
-            foreach (var chatId in _options.Administrators)
+            if (!_settings.IsEnabled)
+            {
+                return;
+            }
+
+            foreach (var chatId in _settings.Administrators)
             {
                 EnqueueMessage(new TelegramOutboundMessage(chatId, text, format));
             }
@@ -88,7 +108,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
             using (var httpClient = new HttpClient())
             {
-                string uri = $"{BaseUri}{_options.AuthenticationToken}/sendMessage";
+                string uri = $"{BaseUri}{_settings.AuthenticationToken}/sendMessage";
                 StringContent body = ConvertOutboundMessageToJsonMessage(message);
                 HttpResponseMessage response = await httpClient.PostAsync(uri, body);
 
@@ -141,7 +161,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
         {
             using (var httpClient = new HttpClient())
             {
-                var uri = $"{BaseUri}{_options.AuthenticationToken}/getUpdates?timeout=60&offset={_latestUpdateId + 1}";
+                var uri = $"{BaseUri}{_settings.AuthenticationToken}/getUpdates?timeout=60&offset={_latestUpdateId + 1}";
                 var response = await httpClient.GetAsync(uri);
 
                 if (!response.IsSuccessStatusCode)
@@ -180,7 +200,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
         {
             var inboundMessage = ConvertJsonMessageToInboundMessage(message);
 
-            if (!_options.AllowAllClients && !_options.ChatWhitelist.Contains(inboundMessage.ChatId))
+            if (!_settings.AllowAllClients && !_settings.ChatWhitelist.Contains(inboundMessage.ChatId))
             {
                 EnqueueMessage(inboundMessage.CreateResponse("Not authorized!"));
 

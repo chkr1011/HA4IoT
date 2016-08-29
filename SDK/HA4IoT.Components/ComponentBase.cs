@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Windows.Data.Json;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Networking;
 using HA4IoT.Networking.Json;
-using HA4IoT.Settings;
 
 namespace HA4IoT.Components
 {
@@ -22,55 +17,34 @@ namespace HA4IoT.Components
             if (id == null) throw new ArgumentNullException(nameof(id));
 
             Id = id;
-
-            Settings = new SettingsContainer(StoragePath.WithFilename("Components", id.Value, "Settings.json"));
-            GeneralSettingsWrapper = new ComponentSettingsWrapper(Settings);
         }
 
         public event EventHandler<ComponentStateChangedEventArgs> StateChanged;
 
         public ComponentId Id { get; }
-
-        public ISettingsContainer Settings { get; }
-
-        public IActuatorSettingsWrapper GeneralSettingsWrapper { get; }
-
+        
         public abstract IComponentState GetState();
 
         public abstract IList<IComponentState> GetSupportedStates();
 
-        public virtual JsonObject ExportConfigurationToJsonObject()
+        public virtual void HandleApiCall(IApiContext apiContext)
+        {
+        }
+
+        public virtual JsonObject ExportConfiguration()
         {
             var configuration = new JsonObject();
-            configuration.SetValue(ComponentConfigurationKey.Type, GetType().Name);
-            configuration.SetValue(ComponentConfigurationKey.Settings, Settings.Export());
+            configuration.SetValue("Type", GetType().Name);
 
-            var supportedStates = GetSupportedStates();
-            if (supportedStates != null)
-            {
-                var supportedStatesJson = new JsonArray();
-                foreach (var supportedState in supportedStates)
-                {
-                    supportedStatesJson.Add(supportedState.ToJsonValue());
-                }
-
-                configuration.SetValue(ComponentConfigurationKey.SupportedStates, supportedStatesJson);
-            }
-            
             return configuration;
         }
 
-        public virtual JsonObject ExportStatusToJsonObject()
+        public virtual JsonObject ExportStatus()
         {
             var status = new JsonObject();
-            status.SetValue(ComponentConfigurationKey.Settings, Settings.Export());
             status.SetNamedValue(ActuatorStatusKey.State, GetState().ToJsonValue());
             status.SetValue(ActuatorStatusKey.StateLastChanged, _stateLastChanged);
             return status;
-        }
-
-        public virtual void HandleApiCall(IApiContext apiContext)
-        {
         }
 
         protected void OnActiveStateChanged(IComponentState oldState, IComponentState newState)

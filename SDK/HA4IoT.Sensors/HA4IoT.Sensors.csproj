@@ -109,11 +109,12 @@
   <ItemGroup>
     <Compile Include="Buttons\Button.cs" />
     <Compile Include="Buttons\ButtonExtensions.cs" />
-    <Compile Include="Buttons\ButtonSettingsWrapper.cs" />
+    <Compile Include="Buttons\ButtonSettings.cs" />
     <Compile Include="Buttons\EmptyButtonEndpoint.cs" />
     <Compile Include="Buttons\PortBasedButtonEndpoint.cs" />
     <Compile Include="HumiditySensors\HumiditySensor.cs" />
     <Compile Include="HumiditySensors\HumiditySensorExtensions.cs" />
+    <Compile Include="MotionDetectors\MotionDetectorSettings.cs" />
     <Compile Include="MotionDetectors\MotionDetector.cs" />
     <Compile Include="MotionDetectors\MotionDetectorExtensions.cs" />
     <Compile Include="MotionDetectors\PortBasedMotionDetectorEndpoint.cs" />

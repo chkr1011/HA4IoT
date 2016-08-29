@@ -4,21 +4,15 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.Services;
-using HA4IoT.Contracts.Services.Daylight;
-using HA4IoT.Contracts.Services.OutdoorHumidity;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Contracts.Services.Weather;
 using HA4IoT.Controller.Main.Rooms;
 using HA4IoT.Core;
-using HA4IoT.ExternalServices.OpenWeatherMap;
-using HA4IoT.ExternalServices.TelegramBot;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
 using HA4IoT.PersonalAgent;
-using HA4IoT.Services.ControllerSlave;
 
 namespace HA4IoT.Controller.Main
 {
@@ -37,9 +31,6 @@ namespace HA4IoT.Controller.Main
         {
             public void SetupContainer(IContainerService containerService)
             {
-                RegisterOpenWeatherMapService(containerService);
-                RegisterControllerSlaveService(containerService);
-                RegisterTelegramBotService(containerService);
             }
 
             public Task Configure(IContainerService containerService)
@@ -87,44 +78,6 @@ namespace HA4IoT.Controller.Main
                 ioBoardsInterruptMonitor.Start();
 
                 return Task.FromResult(0);
-            }
-
-            private void RegisterOpenWeatherMapService(IContainerService containerService)
-            {
-                containerService.RegisterSingleton<OpenWeatherMapService>();
-                //containerService.RegisterSingleton<IOutdoorTemperatureProvider, OpenWeatherMapOutdoorTemperatureProvider>();
-                containerService.RegisterSingleton<IOutdoorHumidityProvider, OpenWeatherMapOutdoorHumidityProvider>();
-                containerService.RegisterSingleton<IDaylightProvider, OpenWeatherMapDaylightProvider>();
-                containerService.RegisterSingleton<IWeatherProvider, OpenWeatherMapWeatherProvider>();
-            }
-
-            private void RegisterControllerSlaveService(IContainerService containerService)
-            {
-                var options = new ControllerSlaveServiceOptions
-                {
-                    MasterControllerAddress = "127.0.0.1"
-                };
-
-                containerService.RegisterSingleton(() => options);
-                containerService.RegisterSingleton<ControllerSlaveService>();
-                ////containerService.RegisterSingleton<IOutdoorTemperatureProvider,ControllerSlaveOutdoorTemperatureProvider>();
-                ////containerService.RegisterSingleton<IOutdoorHumidityProvider, ControllerSlaveOutdoorHumidityProvider>();
-                ////containerService.RegisterSingleton<IDaylightProvider, ControllerSlaveDaylightProvider>();
-                ////containerService.RegisterSingleton<IWeatherProvider, ControllerSlaveMapWeatherProvider>();
-
-                // TODO: Create providers for controller slave service like open weather map...
-            }
-
-            private void RegisterTelegramBotService(IContainerService containerService)
-            {
-                TelegramBotServiceOptions options;
-                if (!TelegramBotServiceOptionsFactory.TryCreateFromDefaultConfigurationFile(out options))
-                {
-                    return;
-                }
-
-                containerService.RegisterSingleton(() => options);
-                containerService.RegisterSingleton<TelegramBotService>();
             }
         }
     }

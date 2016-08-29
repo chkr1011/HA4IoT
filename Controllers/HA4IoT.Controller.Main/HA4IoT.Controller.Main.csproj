@@ -177,6 +177,10 @@
       <Project>{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF}</Project>
       <Name>HA4IoT.Services</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Settings\HA4IoT.Settings.csproj">
+      <Project>{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879}</Project>
+      <Name>HA4IoT.Settings</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.Knx\HA4IoT.Hardware.Knx.csproj">
       <Project>{1EC3A5D0-65C8-4396-BD56-9179A8BD00D4}</Project>
       <Name>HA4IoT.Hardware.Knx</Name>

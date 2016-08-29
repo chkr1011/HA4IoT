@@ -12,14 +12,11 @@ namespace HA4IoT.Services.Environment
     {
         private readonly IDateTimeService _dateTimeService;
 
-        public WeatherService(IWeatherProvider provider, IDateTimeService dateTimeService, IApiService apiService)
+        public WeatherService(IDateTimeService dateTimeService, IApiService apiService)
         {
-            if (provider == null) throw new ArgumentNullException(nameof(provider));
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
 
             _dateTimeService = dateTimeService;
-
-            provider.WeatherFetched += Update;
 
             apiService.StatusRequested += (s, e) =>
             {
@@ -38,9 +35,9 @@ namespace HA4IoT.Services.Environment
             apiContext.Response = this.ToJsonObject();
         }
 
-        private void Update(object sender, WeatherFetchedEventArgs e)
+        public void Update(Weather weather)
         {
-            Weather = e.Weather;
+            Weather = weather;
             Timestamp = _dateTimeService.Now;
         }
     }

@@ -1,6 +1,6 @@
 ﻿using System;
 using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Tests.Mockups
@@ -9,14 +9,16 @@ namespace HA4IoT.Tests.Mockups
     {
         private readonly ITimerService _timerService;
         private readonly ISchedulerService _schedulerService;
+        private readonly ISettingsService _settingsService;
 
-        public TestRollerShutterFactory(ITimerService timerService, ISchedulerService schedulerService)
+        public TestRollerShutterFactory(ITimerService timerService, ISchedulerService schedulerService, ISettingsService settingsService)
         {
             if (timerService == null) throw new ArgumentNullException(nameof(timerService));
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
 
             _timerService = timerService;
             _schedulerService = schedulerService;
+            _settingsService = settingsService;
         }
 
         public TestRollerShutter CreateTestRollerShutter()
@@ -25,7 +27,8 @@ namespace HA4IoT.Tests.Mockups
                 ComponentIdFactory.EmptyId,
                 new TestRollerShutterEndpoint(), 
                 _timerService, 
-                _schedulerService);
+                _schedulerService,
+                _settingsService);
         }
     }
 }

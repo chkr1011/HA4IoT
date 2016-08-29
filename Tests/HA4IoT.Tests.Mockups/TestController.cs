@@ -14,6 +14,7 @@ using HA4IoT.Services.Automations;
 using HA4IoT.Services.Components;
 using HA4IoT.Services.Scheduling;
 using HA4IoT.Services.System;
+using HA4IoT.Settings;
 
 namespace HA4IoT.Tests.Mockups
 {
@@ -30,9 +31,10 @@ namespace HA4IoT.Tests.Mockups
 
             SchedulerService = new SchedulerService(TimerService);
             var systemEventsService = new SystemEventsService(this);
+            var settingsService = new SettingsService();
             AutomationService = new AutomationService(systemEventsService, systemInformationService, apiService);
             ComponentService = new ComponentService(systemEventsService, systemInformationService, apiService);
-            AreaService = new AreaService(ComponentService, AutomationService, systemEventsService, systemInformationService, apiService);
+            AreaService = new AreaService(ComponentService, AutomationService, systemEventsService, systemInformationService, apiService, settingsService);
             NotificationService = new NotificationService(DateTimeService, new ApiService(), SchedulerService, systemEventsService);
         }
 

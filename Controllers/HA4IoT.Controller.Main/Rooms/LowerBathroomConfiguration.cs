@@ -3,7 +3,6 @@ using HA4IoT.Actuators;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Automations;
-using HA4IoT.Components;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Services.System;
@@ -121,7 +120,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
         private void StartBathode(IArea bathroom)
         {
-            bathroom.GetMotionDetector().Disable();
+            bathroom.GetMotionDetector().Settings.IsEnabled = false;
 
             bathroom.GetLamp(LowerBathroom.LightCeilingDoor).TryTurnOn();
             bathroom.GetLamp(LowerBathroom.LightCeilingMiddle).TryTurnOff();
@@ -129,7 +128,7 @@ namespace HA4IoT.Controller.Main.Rooms
             bathroom.GetLamp(LowerBathroom.LampMirror).TryTurnOff();
 
             _bathmodeResetTimer?.Cancel();
-            _bathmodeResetTimer = _schedulerService.In(TimeSpan.FromHours(1)).Execute(() => bathroom.GetMotionDetector().Enable());
+            _bathmodeResetTimer = _schedulerService.In(TimeSpan.FromHours(1)).Execute(() => bathroom.GetMotionDetector().Settings.IsEnabled = true);
         }
     }
 }

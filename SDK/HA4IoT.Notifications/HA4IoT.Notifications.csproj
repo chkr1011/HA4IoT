@@ -108,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="NotificationService.cs" />
+    <Compile Include="NotificationServiceSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.Notifications.rd.xml" />
   </ItemGroup>

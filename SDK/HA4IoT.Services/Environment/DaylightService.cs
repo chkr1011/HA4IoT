@@ -12,14 +12,11 @@ namespace HA4IoT.Services.Environment
     {
         private readonly IDateTimeService _dateTimeService;
 
-        public DaylightService(IDaylightProvider provider, IDateTimeService dateTimeService, IApiService apiService)
+        public DaylightService(IDateTimeService dateTimeService, IApiService apiService)
         {
-            if (provider == null) throw new ArgumentNullException(nameof(provider));
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
 
             _dateTimeService = dateTimeService;
-
-            provider.DaylightFetched += Update;
 
             apiService.StatusRequested += (s, e) =>
             {
@@ -39,10 +36,10 @@ namespace HA4IoT.Services.Environment
             apiContext.Response = this.ToJsonObject();
         }
 
-        private void Update(object sender, DaylightFetchedEventArgs e)
+        public void Update(TimeSpan sunrise, TimeSpan sunset)
         {
-            Sunrise = e.Sunrise;
-            Sunset = e.Sunset;
+            Sunrise = sunrise;
+            Sunset = sunset;
             Timestamp = _dateTimeService.Now;
         }
     }

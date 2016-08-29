@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Services.ExternalServices;
+using HA4IoT.Contracts.Services.ExternalServices.Twitter;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.ExternalServices.Twitter;
 using HA4IoT.Services.System;
@@ -12,6 +14,7 @@ namespace HA4IoT.Controller.Main
 {
     internal class CatLitterBoxTwitterSender
     {
+        private readonly ITwitterClientService _twitterClientService;
         private const string Suffix = "\r\nTime in litter box: {0}s\r\nNr. this day: {1}\r\n@chkratky";
 
         private readonly Timeout _timeout = new Timeout(TimeSpan.FromSeconds(30));
@@ -38,9 +41,12 @@ namespace HA4IoT.Controller.Main
                 "Hey, this one looks like you :-)"         
             };
 
-        public CatLitterBoxTwitterSender(ITimerService timerService)
+        public CatLitterBoxTwitterSender(ITimerService timerService, ITwitterClientService twitterClientService)
         {
             if (timerService == null) throw new ArgumentNullException(nameof(timerService));
+            if (twitterClientService == null) throw new ArgumentNullException(nameof(twitterClientService));
+
+            _twitterClientService = twitterClientService;
 
             timerService.Tick += Tick;
         }
@@ -99,14 +105,8 @@ namespace HA4IoT.Controller.Main
 
             try
             {
-                TwitterClientService twitterService;
-                if (!TwitterClientServiceFactory.TryCreateFromDefaultConfigurationFile(out twitterService))
-                {
-                    Log.Verbose("Twitter API is disabled.");
-                    return;
-                }
                 
-                await twitterService.Tweet(message);
+                await _twitterClientService.Tweet(message);
 
                 _lastTweetTimestamp = DateTime.Now;
                 Log.Info("Successfully tweeted: " + message);

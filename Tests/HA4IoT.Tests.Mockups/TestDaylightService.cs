@@ -15,5 +15,8 @@ namespace HA4IoT.Tests.Mockups
         public TimeSpan Sunrise { get; set; }
         public TimeSpan Sunset { get; set; }
         public DateTime? Timestamp { get; set; }
+        public void Update(TimeSpan sunrise, TimeSpan sunset)
+        {
+        }
     }
 }

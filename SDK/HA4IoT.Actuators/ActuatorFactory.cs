@@ -8,6 +8,7 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Actuators
@@ -16,14 +17,17 @@ namespace HA4IoT.Actuators
     {
         private readonly ITimerService _timerService;
         private readonly ISchedulerService _schedulerService;
-        
-        public ActuatorFactory(ITimerService timerService, ISchedulerService schedulerService)
+        private readonly ISettingsService _settingsService;
+
+        public ActuatorFactory(ITimerService timerService, ISchedulerService schedulerService, ISettingsService settingsService)
         {
             if (timerService == null) throw new ArgumentNullException(nameof(timerService));
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
             _timerService = timerService;
             _schedulerService = schedulerService;
+            _settingsService = settingsService;
         }
 
         public IStateMachine RegisterStateMachine(IArea area, Enum id, Action<StateMachine, IArea> initializer)
@@ -50,7 +54,8 @@ namespace HA4IoT.Actuators
                 ComponentIdFactory.Create(area.Id, id),
                 new PortBasedRollerShutterEndpoint(powerOutput, directionOutput),
                 _timerService,
-                _schedulerService);
+                _schedulerService,
+                _settingsService);
 
             area.AddComponent(rollerShutter);
 

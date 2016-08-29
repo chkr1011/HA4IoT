@@ -5,6 +5,7 @@ using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.Notifications;
 using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.System;
+using HA4IoT.Settings;
 
 namespace HA4IoT.Automations
 {
@@ -67,7 +68,8 @@ namespace HA4IoT.Automations
                 _dateTimeService,
                 _daylightService,
                 _outdoorTemperatureService,
-                _componentService);
+                _componentService,
+                new SettingsService());
             
             area.AddAutomation(automation);
 
@@ -82,7 +84,8 @@ namespace HA4IoT.Automations
                 new TurnOnAndOffAutomation(
                     AutomationIdFactory.CreateIdFrom<TurnOnAndOffAutomation>(area),
                     _dateTimeService,
-                    _schedulerService);
+                    _schedulerService,
+                    new SettingsService());
 
             area.AddAutomation(automation);
 

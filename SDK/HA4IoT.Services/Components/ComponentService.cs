@@ -8,8 +8,6 @@ using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Networking.Http;
-using HA4IoT.Services.System;
-using HA4IoT.Settings;
 
 namespace HA4IoT.Services.Components
 {
@@ -58,8 +56,6 @@ namespace HA4IoT.Services.Components
 
             _components.AddUnique(component.Id, component);
 
-            _apiService.Route($"component/{component.Id}/status", component.HandleApiCall);
-            new SettingsContainerApiDispatcher(component.Settings, $"component/{component.Id}", _apiService).ExposeToApi();
             component.StateChanged += (s, e) => _apiService.NotifyStateChanged(component);
         }
 
@@ -136,10 +132,10 @@ namespace HA4IoT.Services.Components
             var components = new JsonObject();
             foreach (var component in _components.GetAll())
             {
-                components.SetNamedValue(component.Id.Value, component.ExportStatusToJsonObject());
+                components.SetNamedValue(component.Id.Value, component.ExportStatus());
             }
 
-            e.Context.Response.SetNamedValue("components", components);
+            e.Context.Response.SetNamedValue("Components", components);
         }
     }
 }

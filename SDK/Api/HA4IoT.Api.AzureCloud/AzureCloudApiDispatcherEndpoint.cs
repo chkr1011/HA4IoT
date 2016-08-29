@@ -6,7 +6,6 @@ using Windows.Data.Json;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Networking;
 using HA4IoT.Networking.Json;
 
 namespace HA4IoT.Api.AzureCloud
@@ -58,7 +57,7 @@ namespace HA4IoT.Api.AzureCloud
             var eventData = new JsonObject();
             eventData.SetNamedValue("type", "StateChanged".ToJsonValue());
             eventData.SetNamedValue("componentId", component.Id.ToJsonValue());
-            eventData.SetNamedValue("state", component.ExportStatusToJsonObject());
+            eventData.SetNamedValue("state", component.ExportStatus());
 
             _eventHubSender?.EnqueueEvent(eventData);
         }

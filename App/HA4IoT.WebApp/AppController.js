@@ -31,7 +31,7 @@ function AppController($scope, $http) {
     });
 
     c.notifyConfigurationLoaded = function (configuration) {
-        $scope.$broadcast("configurationLoaded", { language: configuration.controller.Language });
+        $scope.$broadcast("configurationLoaded", { language: configuration.Controller.Language });
     };
 
     c.deleteNotification = function(uid) {
@@ -40,12 +40,12 @@ function AppController($scope, $http) {
 
     c.generateRooms = function () {
 
-        $http.get("/api/configuration").success(function (data) {
+        $http.get("/api/Configuration").success(function (data) {
 
             c.notifyConfigurationLoaded(data);
 
-            $.each(data.areas, function (areaId, area) {
-                if (area.settings.appSettings.Hide) {
+            $.each(data.Areas, function (areaId, area) {
+                if (getConfigurationValue(area, "Hide", false)) {
                     return true;
                 }
 
@@ -58,7 +58,7 @@ function AppController($scope, $http) {
                     onStateCount: 0
                 };
 
-                $.each(area.components, function (componentId, component) {
+                $.each(area.Components, function (componentId, component) {
                     component.id = componentId;
                     configureActuator(area, component);
 
@@ -133,7 +133,7 @@ function AppController($scope, $http) {
             c.status = data;
             console.log("Updating UI due to state changes");
 
-            $.each(data.components, function (id, state) {
+            $.each(data.Components, function (id, state) {
                 c.updateStatus(id, state);
             });
 
@@ -207,7 +207,7 @@ function configureActuator(room, actuator) {
 
     actuator.state = {};
 
-    switch (actuator.type) {
+    switch (actuator.Type) {
         case "Lamp":
             {
                 actuator.template = "Views/ToggleTemplate.html";
@@ -236,14 +236,14 @@ function configureActuator(room, actuator) {
                 actuator.template = "Views/StateMachineTemplate.html";
 
                 var extendedStates = [];
-                $.each(actuator.supportedStates, function (i, state) {
+                $.each(actuator.SupportedStates, function (i, state) {
                     var key = "Caption." + state;
                     var stateCaption = getConfigurationValue(actuator, key, key);
 
                     extendedStates.push({ value: state, caption: stateCaption });
                 });
 
-                actuator.supportedStates = extendedStates;
+                actuator.SupportedStates = extendedStates;
                 break;
             }
 
@@ -298,15 +298,19 @@ function configureActuator(room, actuator) {
 }
 
 function getConfigurationValue(component, name, defaultValue) {
-    if (component.settings.appSettings === undefined) {
+    if (component.Settings === undefined) {
         return defaultValue;
     }
 
-    if (component.settings.appSettings[name] === undefined) {
+    if (component.Settings.AppSettings === undefined) {
         return defaultValue;
     }
 
-    return component.settings.appSettings[name];
+    if (component.Settings.AppSettings[name] === undefined) {
+        return defaultValue;
+    }
+
+    return component.Settings.AppSettings[name];
 }
 
 function updateOnStateCounters(areas) {
@@ -346,7 +350,9 @@ function postController(uri, body, successCallback) {
 
 function invokeActuator(id, request, successCallback) {
     // This hack is required for Safari because only one Ajax request at the same time is allowed.
-    var url = "/api/component/" + id + "/status?body=" + JSON.stringify(request);
+    request.ComponentId = id;
+
+    var url = "/api/Service/IComponentService/Update?body=" + JSON.stringify(request);
 
     $.ajax({
         method: "POST",

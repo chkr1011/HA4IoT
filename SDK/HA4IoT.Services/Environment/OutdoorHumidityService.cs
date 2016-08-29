@@ -12,14 +12,11 @@ namespace HA4IoT.Services.Environment
     {
         private readonly IDateTimeService _dateTimeService;
 
-        public OutdoorHumidityService(IOutdoorHumidityProvider provider, IDateTimeService dateTimeService, IApiService apiService)
+        public OutdoorHumidityService(IDateTimeService dateTimeService, IApiService apiService)
         {
-            if (provider == null) throw new ArgumentNullException(nameof(provider));
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
 
             _dateTimeService = dateTimeService;
-
-            provider.OutdoorHumidityFetched += Update;
 
             apiService.StatusRequested += (s, e) =>
             {
@@ -38,10 +35,10 @@ namespace HA4IoT.Services.Environment
             apiContext.Response = this.ToJsonObject();
         }
 
-        private void Update(object sender, OutdoorHumidityFetchedEventArgs e)
+        public void Update(float outdoorHumidity)
         {
             // TODO: Check for significant changes and round value.
-            OutdoorHumidity = e.OutdoorHumidity;
+            OutdoorHumidity = outdoorHumidity;
             Timestamp = _dateTimeService.Now;
         }
     }

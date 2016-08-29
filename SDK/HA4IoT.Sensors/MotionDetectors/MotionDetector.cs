@@ -7,7 +7,7 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
-using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Triggers;
 
@@ -21,13 +21,15 @@ namespace HA4IoT.Sensors.MotionDetectors
 
         private TimedAction _autoEnableAction;
 
-        public MotionDetector(ComponentId id, IMotionDetectorEndpoint endpoint, ISchedulerService schedulerService)
+        public MotionDetector(ComponentId id, IMotionDetectorEndpoint endpoint, ISchedulerService schedulerService, ISettingsService settingsService)
             : base(id)
         {
+            _schedulerService = schedulerService;
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
-            _schedulerService = schedulerService;
+            Settings = settingsService.GetSettings<MotionDetectorSettings>(Id);
 
             SetState(MotionDetectorStateId.Idle);
 
@@ -36,12 +38,14 @@ namespace HA4IoT.Sensors.MotionDetectors
 
             Settings.ValueChanged += (s, e) =>
             {
-                if (e.SettingName == "IsEnabled")
+                if (e.SettingName == nameof(Settings.IsEnabled))
                 {
                     HandleIsEnabledStateChanged();
                 }
             };
         }
+
+        public IMotionDetectorSettings Settings { get; }
 
         public ITrigger GetMotionDetectedTrigger()
         {
@@ -88,14 +92,14 @@ namespace HA4IoT.Sensors.MotionDetectors
 
         private void UpdateState(NamedComponentState newState)
         {
-            if (!this.IsEnabled())
+            if (!Settings.IsEnabled)
             {
                 return;
             }
 
             SetState(newState);
 
-            if (newState == MotionDetectorStateId.MotionDetected)
+            if (newState.Equals(MotionDetectorStateId.MotionDetected))
             {
                 OnMotionDetected();
             }
@@ -107,10 +111,11 @@ namespace HA4IoT.Sensors.MotionDetectors
 
         private void HandleIsEnabledStateChanged()
         {
-            if (!this.IsEnabled())
+            if (!Settings.IsEnabled)
             {
                 Log.Info(Id + ": Disabled for 1 hour");
-                _autoEnableAction = _schedulerService.In(TimeSpan.FromHours(1)).Execute(this.Enable);
+
+                _autoEnableAction = _schedulerService.In(Settings.AutoEnableAfter).Execute(() => Settings.IsEnabled = true);
             }
             else
             {

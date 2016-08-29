@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Networking;
@@ -39,9 +40,27 @@ namespace HA4IoT.Networking.Json
                 return value;
             }
 
+            if (targetType == typeof(HashSet<int>))
+            {
+                var sourceList = value.GetArray();
+
+                var result = new HashSet<int>();
+                foreach (var sourceItem in sourceList)
+                {
+                    result.Add((int)sourceItem.GetNumber());
+                }
+
+                return result;
+            }
+
             if (targetType == typeof(string))
             {
                 return value.GetString();
+            }
+
+            if (targetType == typeof(Guid))
+            {
+                return Guid.Parse(value.GetString());
             }
 
             if (targetType == typeof(int) || targetType == typeof(int?))

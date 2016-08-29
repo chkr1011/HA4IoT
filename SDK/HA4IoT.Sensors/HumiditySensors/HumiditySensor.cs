@@ -2,17 +2,21 @@
 using System.Collections.Generic;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Services.Settings;
 
 namespace HA4IoT.Sensors.HumiditySensors
 {
     public class HumiditySensor : SensorBase, IHumiditySensor
     {
-        public HumiditySensor(ComponentId id, INumericValueSensorEndpoint endpoint)
+        private readonly ISettingsService _settingsService;
+
+        public HumiditySensor(ComponentId id, ISettingsService settingsService, INumericValueSensorEndpoint endpoint)
             : base(id)
         {
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
 
-            Settings.SetValue(SingleValueSensorSettings.MinDelta, 0.15F);
+            _settingsService = settingsService;
 
             SetState(new NumericSensorValue(0));
 
@@ -39,7 +43,9 @@ namespace HA4IoT.Sensors.HumiditySensors
 
         private bool GetDifferenceIsLargeEnough(float value)
         {
-            return Math.Abs(GetCurrentNumericValue() - value) >= Settings.GetFloat(SingleValueSensorSettings.MinDelta);
+            var settings = _settingsService.GetSettings<SingleValueSensorSettings>(Id);
+
+            return Math.Abs(GetCurrentNumericValue() - value) >= settings.MinDelta;
         }
     }
 }

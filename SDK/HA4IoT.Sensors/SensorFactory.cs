@@ -3,6 +3,7 @@ using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.HumiditySensors;
@@ -16,14 +17,17 @@ namespace HA4IoT.Sensors
     {
         private readonly ITimerService _timerService;
         private readonly ISchedulerService _schedulerService;
+        private readonly ISettingsService _settingsService;
 
-        public SensorFactory(ITimerService timerService, ISchedulerService schedulerService)
+        public SensorFactory(ITimerService timerService, ISchedulerService schedulerService, ISettingsService settingsService)
         {
             if (timerService == null) throw new ArgumentNullException(nameof(timerService));
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
             _timerService = timerService;
             _schedulerService = schedulerService;
+            _settingsService = settingsService;
         }
 
         public ITemperatureSensor RegisterTemperatureSensor(IArea area, Enum id, INumericValueSensorEndpoint endpoint)
@@ -31,7 +35,7 @@ namespace HA4IoT.Sensors
             if (area == null) throw new ArgumentNullException(nameof(area));
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
 
-            var temperatureSensor = new TemperatureSensor(ComponentIdFactory.Create(area.Id, id), endpoint);
+            var temperatureSensor = new TemperatureSensor(ComponentIdFactory.Create(area.Id, id), _settingsService, endpoint);
             area.AddComponent(temperatureSensor);
             
             return temperatureSensor;
@@ -42,7 +46,7 @@ namespace HA4IoT.Sensors
             if (area == null) throw new ArgumentNullException(nameof(area));
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
 
-            var humditySensor = new HumiditySensor(ComponentIdFactory.Create(area.Id, id), endpoint);
+            var humditySensor = new HumiditySensor(ComponentIdFactory.Create(area.Id, id), _settingsService, endpoint);
             area.AddComponent(humditySensor);
 
             return humditySensor;
@@ -52,7 +56,7 @@ namespace HA4IoT.Sensors
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
 
-            var virtualButton = new Button(ComponentIdFactory.Create(area.Id, id), new EmptyButtonEndpoint(), _timerService);
+            var virtualButton = new Button(ComponentIdFactory.Create(area.Id, id), new EmptyButtonEndpoint(), _timerService, _settingsService);
             initializer?.Invoke(virtualButton);
 
             area.AddComponent(virtualButton);
@@ -67,7 +71,8 @@ namespace HA4IoT.Sensors
             var button = new Button(
                 ComponentIdFactory.Create(area.Id, id),
                 new PortBasedButtonEndpoint(input),
-                _timerService);
+                _timerService,
+                _settingsService);
 
             initializer?.Invoke(button);
 
@@ -89,14 +94,16 @@ namespace HA4IoT.Sensors
             var upButton = new Button(
                 ComponentIdFactory.Create(area.Id, upId),
                 new PortBasedButtonEndpoint(upInput),
-                _timerService);
+                _timerService,
+                _settingsService);
 
             area.AddComponent(upButton);
 
             var downButton = new Button(
                 ComponentIdFactory.Create(area.Id, downId),
                 new PortBasedButtonEndpoint(downInput),
-                _timerService);
+                _timerService,
+                _settingsService);
 
             area.AddComponent(downButton);
 
@@ -111,7 +118,8 @@ namespace HA4IoT.Sensors
             var motionDetector = new MotionDetector(
                 ComponentIdFactory.Create(area.Id, id),
                 new PortBasedMotionDetectorEndpoint(input),
-                _schedulerService);
+                _schedulerService,
+                _settingsService);
 
             area.AddComponent(motionDetector);
 
@@ -123,7 +131,7 @@ namespace HA4IoT.Sensors
             if (area == null) throw new ArgumentNullException(nameof(area));
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
 
-            var window = new Window(ComponentIdFactory.Create(area.Id, id));
+            var window = new Window(ComponentIdFactory.Create(area.Id, id), _settingsService);
             initializer(window);
 
             area.AddComponent(window);

@@ -8,8 +8,8 @@ namespace HA4IoT.Automations
         {
             if (automation == null) throw new ArgumentNullException(nameof(automation));
 
-            automation.SpecialSettingsWrapper.SkipBeforeTimestampIsEnabled = true;
-            automation.SpecialSettingsWrapper.SkipBeforeTimestamp = minTime;
+            automation.Settings.SkipBeforeTimestampIsEnabled = true;
+            automation.Settings.SkipBeforeTimestamp = minTime;
 
             return automation;
         }
@@ -18,8 +18,8 @@ namespace HA4IoT.Automations
         {
             if (automation == null) throw new ArgumentNullException(nameof(automation));
 
-            automation.SpecialSettingsWrapper.SkipIfFrozenIsEnabled = true;
-            automation.SpecialSettingsWrapper.SkipIfFrozenTemperature = minOutsideTemperature;
+            automation.Settings.SkipIfFrozenIsEnabled = true;
+            automation.Settings.SkipIfFrozenTemperature = minOutsideTemperature;
 
             return automation;
         }
@@ -28,8 +28,8 @@ namespace HA4IoT.Automations
         {
             if (automation == null) throw new ArgumentNullException(nameof(automation));
 
-            automation.SpecialSettingsWrapper.AutoCloseIfTooHotIsEnabled = true;
-            automation.SpecialSettingsWrapper.AutoCloseIfTooHotTemperaure = maxOutsideTemperature;
+            automation.Settings.AutoCloseIfTooHotIsEnabled = true;
+            automation.Settings.AutoCloseIfTooHotTemperaure = maxOutsideTemperature;
 
             return automation;
         }

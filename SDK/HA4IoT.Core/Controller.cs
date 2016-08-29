@@ -17,23 +17,31 @@ using HA4IoT.Contracts.Hardware.Services;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Daylight;
+using HA4IoT.Contracts.Services.ExternalServices.TelegramBot;
+using HA4IoT.Contracts.Services.ExternalServices.Twitter;
 using HA4IoT.Contracts.Services.Notifications;
 using HA4IoT.Contracts.Services.OutdoorHumidity;
 using HA4IoT.Contracts.Services.OutdoorTemperature;
+using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Services.Weather;
+using HA4IoT.ExternalServices.OpenWeatherMap;
+using HA4IoT.ExternalServices.TelegramBot;
+using HA4IoT.ExternalServices.Twitter;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.Pi2;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Logger;
 using HA4IoT.Networking.Http;
+using HA4IoT.Networking.Json;
 using HA4IoT.Notifications;
 using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors;
 using HA4IoT.Services.Areas;
 using HA4IoT.Services.Automations;
 using HA4IoT.Services.Components;
+using HA4IoT.Services.ControllerSlave;
 using HA4IoT.Services.Devices;
 using HA4IoT.Services.Environment;
 using HA4IoT.Services.Health;
@@ -96,8 +104,6 @@ namespace HA4IoT.Core
                 RegisterServices();
                 TryConfigure();
 
-                LoadNonControllerSettings(); // TODO: Remove!
-
                 StartupServices();
                 ExecuteConfigurators();
                 ExposeRegistrationsToApi();
@@ -158,15 +164,17 @@ namespace HA4IoT.Core
         private void ExposeRegistrationsToApi()
         {
             var apiService = _container.GetInstance<IApiService>();
+            var settingsService = _container.GetInstance<ISettingsService>();
+
             foreach (var registration in _container.GetCurrentRegistrations())
             {
                 apiService.Expose(registration.GetInstance());
             }
 
-            // TODO: Remove!
-            _container.GetInstance<IApiService>().ConfigurationRequested += (s, e) =>
+            apiService.ConfigurationRequested += (s, e) =>
             {
-                e.Context.Response.SetNamedValue("controller", _container.GetInstance<ControllerSettings>().Export());
+                var controllerSettings = settingsService.GetSettings<ControllerSettings>();
+                e.Context.Response.SetNamedValue("Controller", controllerSettings.ToJsonObject());
             };
         }
 
@@ -191,8 +199,9 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<IDateTimeService, DateTimeService>();
             _container.RegisterSingleton<ISchedulerService, SchedulerService>();
             _container.RegisterSingleton<INotificationService, NotificationService>();
+            _container.RegisterInitializer<NotificationService>(s => s.Initialize());
             _container.RegisterSingleton<ISettingsService, SettingsService>();
-            _container.RegisterInitializer<SettingsService>(s => s.Startup());
+            _container.RegisterInitializer<SettingsService>(s => s.Initialize());
 
             _container.RegisterSingleton<II2CBusService, BuiltInI2CBusService>();
             _container.RegisterSingleton<IPi2GpioService, Pi2GpioService>();
@@ -217,6 +226,11 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<IOutdoorHumidityService, OutdoorHumidityService>();
             _container.RegisterSingleton<IDaylightService, DaylightService>();
             _container.RegisterSingleton<IWeatherService, WeatherService>();
+            _container.RegisterSingleton<OpenWeatherMapService>();
+            _container.RegisterSingleton<ControllerSlaveService>();
+
+            _container.RegisterSingleton<ITwitterClientService, TwitterClientService>();
+            _container.RegisterSingleton<ITelegramBotService, TelegramBotService>();
 
             _container.Register<AppFolderConfigurator>();
             _container.Register<LocalHttpServerApiDispatcherEndpointConfigurator>();
@@ -240,25 +254,6 @@ namespace HA4IoT.Core
                 Log.Error(exception, "Error while configuring");
 
                 _container.GetInstance<INotificationService>().CreateError("Configuration is invalid");
-            }
-        }
-
-        private void LoadNonControllerSettings()
-        {
-            // TODO: Remove!
-            foreach (var area in _container.GetInstance<IAreaService>().GetAreas())
-            {
-                area.Settings.Load();
-            }
-
-            foreach (var component in _container.GetInstance<IComponentService>().GetComponents())
-            {
-                component.Settings.Load();
-            }
-
-            foreach (var automation in _container.GetInstance<IAutomationService>().GetAutomations())
-            {
-                automation.Settings.Load();
             }
         }
     }

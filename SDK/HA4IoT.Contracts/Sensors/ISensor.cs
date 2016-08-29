@@ -3,6 +3,7 @@
 namespace HA4IoT.Contracts.Sensors
 {
     public interface ISensor : IComponent
-    {       
+    {
+               
     }
 }

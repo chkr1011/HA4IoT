@@ -10,12 +10,8 @@ using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Sensors;
-using HA4IoT.Contracts.Services.Daylight;
-using HA4IoT.Contracts.Services.OutdoorHumidity;
-using HA4IoT.Contracts.Services.OutdoorTemperature;
+using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Contracts.Services.Weather;
-using HA4IoT.ExternalServices.OpenWeatherMap;
 using HA4IoT.Hardware.Knx;
 
 namespace HA4IoT.Controller.Local
@@ -33,18 +29,14 @@ namespace HA4IoT.Controller.Local
 
         public void SetupContainer(IContainerService containerService)
         {
-            containerService.RegisterSingleton<OpenWeatherMapService>();
-            containerService.RegisterSingleton<IOutdoorTemperatureProvider, OpenWeatherMapOutdoorTemperatureProvider>();
-            containerService.RegisterSingleton<IOutdoorHumidityProvider, OpenWeatherMapOutdoorHumidityProvider>();
-            containerService.RegisterSingleton<IDaylightProvider, OpenWeatherMapDaylightProvider>();
-            containerService.RegisterSingleton<IWeatherProvider, OpenWeatherMapWeatherProvider>();
         }
 
         public async Task Configure(IContainerService containerService)
         {
             var areaService = containerService.GetInstance<IAreaService>();
             var timerService = containerService.GetInstance<ITimerService>();
-            
+            var settingsService = containerService.GetInstance<ISettingsService>();
+
             var area = areaService.CreateArea(new AreaId("TestArea"));
             area.AddComponent(new Lamp(new ComponentId("Lamp1"), await _mainPage.CreateDemoBinaryComponent("Lamp 1")));
             area.AddComponent(new Lamp(new ComponentId("Lamp2"), await _mainPage.CreateDemoBinaryComponent("Lamp 2")));
@@ -57,11 +49,11 @@ namespace HA4IoT.Controller.Local
             area.AddComponent(new Socket(new ComponentId("Socket2"), knxController.CreateDigitalJoinEndpoint("d2")));
             area.AddComponent(new Socket(new ComponentId("Socket3"), knxController.CreateDigitalJoinEndpoint("d30")));
 
-            area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button1"), await _mainPage.CreateDemoButton("Button 1"), timerService));
-            area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button2"), await _mainPage.CreateDemoButton("Button 2"), timerService));
-            area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button3"), await _mainPage.CreateDemoButton("Button 3"), timerService));
-            area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button4"), await _mainPage.CreateDemoButton("Button 4"), timerService));
-            area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button5"), await _mainPage.CreateDemoButton("Button 5"), timerService));
+            area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button1"), await _mainPage.CreateDemoButton("Button 1"), timerService, settingsService));
+            area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button2"), await _mainPage.CreateDemoButton("Button 2"), timerService, settingsService));
+            area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button3"), await _mainPage.CreateDemoButton("Button 3"), timerService, settingsService));
+            area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button4"), await _mainPage.CreateDemoButton("Button 4"), timerService, settingsService));
+            area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button5"), await _mainPage.CreateDemoButton("Button 5"), timerService, settingsService));
 
             area.GetComponent<IButton>(new ComponentId("Button1")).GetPressedShortlyTrigger().Attach(area.GetComponent<ILamp>(new ComponentId("Lamp1")).GetSetNextStateAction());
             area.GetComponent<IButton>(new ComponentId("Button1")).GetPressedLongTrigger().Attach(area.GetComponent<ILamp>(new ComponentId("Lamp2")).GetSetNextStateAction());

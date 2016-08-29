@@ -2,8 +2,8 @@
 {
     public static class ComponentConfigurationKey
     {
-        public const string Type = "type";
-        public const string Settings = "settings";
-        public const string SupportedStates = "supportedStates";
+        public const string Type = "Type";
+        public const string Settings = "Settings";
+        public const string SupportedStates = "SupportedStates";
     }
 }

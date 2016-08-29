@@ -14,6 +14,7 @@ using HA4IoT.Sensors;
 using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Services.Areas;
 using HA4IoT.Services.Devices;
+using HA4IoT.Settings;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
@@ -110,10 +111,8 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTarget(combinedLights)
                 .WithOnDuration(TimeSpan.FromMinutes(8));
             
-            new BathroomFanAutomation(AutomationIdFactory.CreateIdFrom<BathroomFanAutomation>(room), _schedulerService)
+            new BathroomFanAutomation(AutomationIdFactory.CreateIdFrom<BathroomFanAutomation>(room), _schedulerService, new SettingsService())
                 .WithTrigger(room.GetMotionDetector(UpperBathroom.MotionDetector))
-                .WithSlowDuration(TimeSpan.FromMinutes(8))
-                .WithFastDuration(TimeSpan.FromMinutes(12))
                 .WithActuator(room.GetStateMachine(UpperBathroom.Fan));
 
             _synonymService.AddSynonymsForArea(Room.UpperBathroom, "BadOben", "UpperBathroom");

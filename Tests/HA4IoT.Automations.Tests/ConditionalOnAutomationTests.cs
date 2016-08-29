@@ -1,8 +1,6 @@
 ﻿using FluentAssertions;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Services;
-using HA4IoT.Contracts.Services.Daylight;
-using HA4IoT.Contracts.Services.System;
+using HA4IoT.Settings;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -20,7 +18,7 @@ namespace HA4IoT.Automations.Tests
                 testController.DateTimeService,
                 testController.DaylightService);
 
-            var testButtonFactory = new TestButtonFactory(testController.TimerService);
+            var testButtonFactory = new TestButtonFactory(testController.TimerService, new SettingsService());
             var testStateMachineFactory = new TestStateMachineFactory();
 
             var testButton = testButtonFactory.CreateTestButton();

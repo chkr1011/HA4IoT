@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using HA4IoT.Actuators.Triggers;
-using HA4IoT.Components;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Triggers;
 
@@ -18,23 +18,26 @@ namespace HA4IoT.Sensors.Buttons
         private readonly Stopwatch _stopwatch = new Stopwatch();
         private readonly Trigger _pressedShortlyTrigger = new Trigger();
         private readonly Trigger _pressedLongTrigger = new Trigger();
-        private readonly ButtonSettingsWrapper _settings;
 
-        public Button(ComponentId id, IButtonEndpoint endpoint, ITimerService timerService)
+        public Button(ComponentId id, IButtonEndpoint endpoint, ITimerService timerService, ISettingsService settingsService)
             : base(id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
-            _settings = new ButtonSettingsWrapper(Settings);
-
+            Settings = settingsService.GetSettings<ButtonSettings>(Id);
+            
             SetState(ButtonStateId.Released);
 
             timerService.Tick += CheckForTimeout;
+
             endpoint.Pressed += (s, e) => HandleInputStateChanged(ButtonStateId.Pressed);
             endpoint.Released += (s, e) => HandleInputStateChanged(ButtonStateId.Released);
         }
         
+        public IButtonSettings Settings { get; }
+
         public ITrigger GetPressedShortlyTrigger()
         {
             return _pressedShortlyTrigger;
@@ -68,7 +71,7 @@ namespace HA4IoT.Sensors.Buttons
 
         private void HandleInputStateChanged(NamedComponentState state)
         {
-            if (!this.IsEnabled())
+            if (!Settings.IsEnabled)
             {
                 return;
             }
@@ -98,7 +101,8 @@ namespace HA4IoT.Sensors.Buttons
                 }
 
                 _stopwatch.Stop();
-                if (_stopwatch.Elapsed >= _settings.PressedLongDuration)
+                
+                if (_stopwatch.Elapsed >= Settings.PressedLongDuration)
                 {
                     OnPressedLong();
                 }
@@ -116,7 +120,7 @@ namespace HA4IoT.Sensors.Buttons
                 return;
             }
 
-            if (_stopwatch.Elapsed > _settings.PressedLongDuration)
+            if (_stopwatch.Elapsed > Settings.PressedLongDuration)
             {
                 _stopwatch.Stop();
                 OnPressedLong();

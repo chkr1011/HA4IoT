@@ -7,6 +7,7 @@ using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Notifications;
+using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Networking.Http;
 using HA4IoT.Networking.Json;
@@ -20,20 +21,24 @@ namespace HA4IoT.Notifications
         private readonly List<Notification> _notifications = new List<Notification>();
         private readonly IDateTimeService _dateTimeService;
 
-        public NotificationService(IDateTimeService dateTimeService, IApiService apiService, ISchedulerService schedulerService, ISystemEventsService systemEventsService)
+        public NotificationService(IDateTimeService dateTimeService, IApiService apiService, ISchedulerService schedulerService, ISystemEventsService systemEventsService, ISettingsService settingsService)
         {
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
             if (apiService == null) throw new ArgumentNullException(nameof(apiService));
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
             _dateTimeService = dateTimeService;
+            Settings = settingsService.GetSettings<NotificationServiceSettings>();
 
             apiService.StatusRequested += HandleApiStatusRequest;
             systemEventsService.StartupCompleted += (s, e) => CreateInformation("System started.");
             schedulerService.RegisterSchedule("NotificationCleanup", TimeSpan.FromMinutes(15), Cleanup);
         }
 
-        public override void Startup()
+        public NotificationServiceSettings Settings { get; }
+
+        public void Initialize()
         {
             lock (_syncRoot)
             {
@@ -47,27 +52,34 @@ namespace HA4IoT.Notifications
 
             lock (_syncRoot)
             {
-                _notifications.Add(new Notification(Guid.NewGuid(), type, _dateTimeService.Now, message, timeToLive));
+                var notification = new Notification
+                {
+                    Uid = Guid.NewGuid(),
+                    Timestamp = _dateTimeService.Now,
+                    Message = message,
+                    TimeToLive = timeToLive,
+                    Type = type
+                };
+
+                _notifications.Add(notification);
+
                 SaveNotifications();
             }
         }
 
         public void CreateInformation(string text)
         {
-            // TODO: TTL from settings service.
-            Create(NotificationType.Information, text, TimeSpan.FromHours(1));
+            Create(NotificationType.Information, text, Settings.InformationTimeToLive);
         }
 
         public void CreateWarning(string text)
         {
-            // TODO: TTL from settings service.
-            Create(NotificationType.Warning, text, TimeSpan.FromHours(24));
+            Create(NotificationType.Warning, text, Settings.WarningTimeToLive);
         }
 
         public void CreateError(string text)
         {
-            // TODO: TTL from settings service.
-            Create(NotificationType.Error, text, TimeSpan.FromHours(96));
+            Create(NotificationType.Error, text, Settings.ErrorTimeToLive);
         }
 
         [ApiMethod(ApiCallType.Request)]
@@ -128,8 +140,10 @@ namespace HA4IoT.Notifications
 
         private void SaveNotifications()
         {
-            var jsonArray = SerializeNotifications();
-            File.WriteAllText(StoragePath.WithFilename("NotificationService.json"), jsonArray.ToString());
+            var jsonObject = new JsonObject();
+            jsonObject.SetNamedValue("Notifications", SerializeNotifications());
+
+            File.WriteAllText(StoragePath.WithFilename("NotificationService.json"), jsonObject.ToString());
         }
 
         private JsonArray SerializeNotifications()
@@ -168,11 +182,12 @@ namespace HA4IoT.Notifications
                 var notifications = jsonObject.GetNamedArray("Notifications", new JsonArray());
                 foreach (var notification in notifications)
                 {
-                    _notifications.Add(notification.ToObject<Notification>());
+                    _notifications.Add(notification.GetObject().DeserializeTo<Notification>());
                 }
             }
             catch (Exception exception)
             {
+                Fix error
                 Log.Warning(exception, "Unable to load notifications.");
             }
         }

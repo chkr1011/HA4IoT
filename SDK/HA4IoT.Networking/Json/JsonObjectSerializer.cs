@@ -33,7 +33,7 @@ namespace HA4IoT.Networking.Json
             return jsonObject;
         }
 
-        public static JsonObject ToIndexedJsonObject<TKey, TValue>(this Dictionary<TKey, TValue> entries)
+        public static JsonObject ToJsonObject<TKey, TValue>(this Dictionary<TKey, TValue> entries)
         {
             if (entries == null) throw new ArgumentNullException(nameof(entries));
 
@@ -78,7 +78,17 @@ namespace HA4IoT.Networking.Json
 
             return result;
         }
-        
+
+        public static TResult DeserializeTo<TResult>(this JsonObject jsonObject)
+        {
+            if (jsonObject == null) throw new ArgumentNullException(nameof(jsonObject));
+
+            var result = Activator.CreateInstance<TResult>();
+            jsonObject.DeserializeTo(result);
+
+            return result;
+        }
+
         public static void DeserializeTo(this JsonObject jsonObject, object target)
         {
             if (target == null) throw new ArgumentNullException(nameof(target));

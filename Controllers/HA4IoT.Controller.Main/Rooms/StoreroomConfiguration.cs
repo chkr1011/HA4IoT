@@ -6,6 +6,8 @@ using HA4IoT.Automations;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services.Daylight;
+using HA4IoT.Contracts.Services.ExternalServices;
+using HA4IoT.Contracts.Services.ExternalServices.Twitter;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.PersonalAgent;
@@ -24,6 +26,7 @@ namespace HA4IoT.Controller.Main.Rooms
         private readonly CCToolsBoardService _ccToolsBoardService;
         private readonly ITimerService _timerService;
         private readonly IDaylightService _daylightService;
+        private readonly ITwitterClientService _twitterClientService;
         private readonly AutomationFactory _automationFactory;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
@@ -46,6 +49,7 @@ namespace HA4IoT.Controller.Main.Rooms
             CCToolsBoardService ccToolsBoardService,
             ITimerService timerService,
             IDaylightService daylightService,
+            ITwitterClientService twitterClientService,
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)
@@ -56,6 +60,7 @@ namespace HA4IoT.Controller.Main.Rooms
             if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
             if (timerService == null) throw new ArgumentNullException(nameof(timerService));
             if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
+            if (twitterClientService == null) throw new ArgumentNullException(nameof(twitterClientService));
             if (automationFactory == null) throw new ArgumentNullException(nameof(automationFactory));
             if (actuatorFactory == null) throw new ArgumentNullException(nameof(actuatorFactory));
             if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
@@ -66,6 +71,7 @@ namespace HA4IoT.Controller.Main.Rooms
             _ccToolsBoardService = ccToolsBoardService;
             _timerService = timerService;
             _daylightService = daylightService;
+            _twitterClientService = twitterClientService;
             _automationFactory = automationFactory;
             _actuatorFactory = actuatorFactory;
             _sensorFactory = sensorFactory;
@@ -113,7 +119,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithEnabledAtDay(_daylightService);
 
             _catLitterBoxTwitterSender =
-                new CatLitterBoxTwitterSender(_timerService).WithTrigger(
+                new CatLitterBoxTwitterSender(_timerService, _twitterClientService).WithTrigger(
                     room.GetMotionDetector(Storeroom.MotionDetectorCatLitterBox));
 
             _synonymService.AddSynonymsForArea(Room.Storeroom, "Abstellkammer", "Storeroom");

@@ -6,24 +6,37 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
-using HA4IoT.Contracts.Actions;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.ExternalServices.Twitter;
+using HA4IoT.Contracts.Services.Settings;
 
 namespace HA4IoT.ExternalServices.Twitter
 {
-    public class TwitterClientService : ServiceBase
+    public class TwitterClientService : ServiceBase, ITwitterClientService
     {
         private string _nonce;
         private string _timestamp;
 
-        // TODO: Create "TwitterClientServiceOptions"
-        public string AccessTokenSecret { get; set; }
-        public string AccessToken { get; set; }
-        public string CosumerSecret { get; set; }
-        public string ConsumerKey { get; set; }
+        public TwitterClientService(ISettingsService settingsService)
+        {
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
+
+            Settings = settingsService.GetSettings<TwitterClientServiceSettings>();
+        }
+
+        public TwitterClientServiceSettings Settings { get; }
 
         public async Task Tweet(string message)
         {
+            if (message == null) throw new ArgumentNullException(nameof(message));
+            
+            if (!Settings.IsEnabled)
+            {
+                Log.Verbose("Twitter client service is disabled.");
+                return;
+            }
+            
             _nonce = GetNonce();
             _timestamp = GetTimeStamp();
 
@@ -46,24 +59,14 @@ namespace HA4IoT.ExternalServices.Twitter
             }
         }
 
-        public IAction GetTweetAction(string message)
-        {
-            return new TweetAction(message, this);
-        }
-
-        public IAction GetTweetAction(Func<string> messageProvider)
-        {
-            return new TweetAction(messageProvider, this);
-        }
-
         private string GetSignatureForRequest(string message)
         {
             var parameters = new List<string>();
-            parameters.Add($"oauth_consumer_key={Uri.EscapeDataString(ConsumerKey)}");
+            parameters.Add($"oauth_consumer_key={Uri.EscapeDataString(Settings.ConsumerKey)}");
             parameters.Add($"oauth_nonce={_nonce}");
             parameters.Add("oauth_signature_method=HMAC-SHA1");
             parameters.Add($"oauth_timestamp={_timestamp}");
-            parameters.Add($"oauth_token={Uri.EscapeDataString(AccessToken)}");
+            parameters.Add($"oauth_token={Uri.EscapeDataString(Settings.AccessToken)}");
             parameters.Add("oauth_version=1.0");
             parameters.Add($"status={Uri.EscapeDataString(message)}");
 
@@ -83,12 +86,12 @@ namespace HA4IoT.ExternalServices.Twitter
         {
             var values = new List<string>
             {
-                $"oauth_consumer_key=\"{Uri.EscapeDataString(ConsumerKey)}\"",
+                $"oauth_consumer_key=\"{Uri.EscapeDataString(Settings.ConsumerKey)}\"",
                 $"oauth_nonce=\"{_nonce}\"",
                 $"oauth_signature=\"{Uri.EscapeDataString(signature)}\"",
                 "oauth_signature_method=\"HMAC-SHA1\"",
                 $"oauth_timestamp=\"{_timestamp}\"",
-                $"oauth_token=\"{Uri.EscapeDataString(AccessToken)}\"",
+                $"oauth_token=\"{Uri.EscapeDataString(Settings.AccessToken)}\"",
                 "oauth_version=\"1.0\""
             };
 
@@ -108,7 +111,7 @@ namespace HA4IoT.ExternalServices.Twitter
 
         private string GenerateSignature(string content)
         {
-            var key = Uri.EscapeDataString(CosumerSecret) + "&" + Uri.EscapeDataString(AccessTokenSecret);
+            var key = Uri.EscapeDataString(Settings.CosumerSecret) + "&" + Uri.EscapeDataString(Settings.AccessTokenSecret);
 
             var keyMaterial = CryptographicBuffer.ConvertStringToBinary(key, BinaryStringEncoding.Utf8);
             var macAlgorithm = MacAlgorithmProvider.OpenAlgorithm("HMAC_SHA1");
