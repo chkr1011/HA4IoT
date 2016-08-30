@@ -45,10 +45,10 @@ namespace HA4IoT.Automations
             _dateTimeService = dateTimeService;
             _schedulerService = schedulerService;
 
-            Settings = settingsService.GetSettings<TurnOnAndOffAutomationSettings>(Id);
+            settingsService.CreateSettingsMonitor<TurnOnAndOffAutomationSettings>(Id, s => Settings = s);
         }
 
-        public TurnOnAndOffAutomationSettings Settings { get; }
+        public TurnOnAndOffAutomationSettings Settings { get; private set; }
 
         public TurnOnAndOffAutomation WithTrigger(IMotionDetector motionDetector)
         {

@@ -22,10 +22,10 @@ namespace HA4IoT.ExternalServices.Twitter
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
-            Settings = settingsService.GetSettings<TwitterClientServiceSettings>();
+            settingsService.CreateSettingsMonitor<TwitterClientServiceSettings>(s => Settings = s);
         }
 
-        public TwitterClientServiceSettings Settings { get; }
+        public TwitterClientServiceSettings Settings { get; private set; }
 
         public async Task Tweet(string message)
         {

@@ -150,7 +150,6 @@
     <Compile Include="Services\Notifications\INotificationService.cs" />
     <Compile Include="Services\Notifications\Notification.cs" />
     <Compile Include="Services\Notifications\NotificationType.cs" />
-    <Compile Include="Services\Settings\ISettingsContainer.cs" />
     <Compile Include="Services\Settings\SettingsServiceExtensions.cs" />
     <Compile Include="Services\Settings\SettingsUriAttribute.cs" />
     <Compile Include="Services\Settings\SettingsUriGenerator.cs" />

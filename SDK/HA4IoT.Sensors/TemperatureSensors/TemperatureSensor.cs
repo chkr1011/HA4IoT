@@ -8,15 +8,13 @@ namespace HA4IoT.Sensors.TemperatureSensors
 {
     public class TemperatureSensor : SensorBase, ITemperatureSensor
     {
-        private readonly ISettingsService _settingsService;
-
         public TemperatureSensor(ComponentId id, ISettingsService settingsService, INumericValueSensorEndpoint endpoint)
             : base(id)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
 
-            _settingsService = settingsService;
+            settingsService.CreateSettingsMonitor<SingleValueSensorSettings>(Id, s => Settings = s);
 
             SetState(new NumericSensorValue(0));
 
@@ -32,6 +30,8 @@ namespace HA4IoT.Sensors.TemperatureSensors
             };
         }
 
+        public SingleValueSensorSettings Settings { get; private set; }
+
         public float GetCurrentNumericValue()
         {
             return ((NumericSensorValue) GetState()).Value;
@@ -44,9 +44,7 @@ namespace HA4IoT.Sensors.TemperatureSensors
 
         private bool GetDifferenceIsLargeEnough(float value)
         {
-            var settings = _settingsService.GetSettings<SingleValueSensorSettings>(Id);
-
-            return Math.Abs(GetCurrentNumericValue() - value) >= settings.MinDelta;
+            return Math.Abs(GetCurrentNumericValue() - value) >= Settings.MinDelta;
         }
     }
 }

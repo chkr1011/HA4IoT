@@ -49,12 +49,12 @@ namespace HA4IoT.Services.ControllerSlave
             _daylightService = daylightService;
             _weatherService = weatherService;
 
-            Settings = settingsService.GetSettings<ControllerSlaveServiceSettings>();
+            settingsService.CreateSettingsMonitor<ControllerSlaveServiceSettings>(s => Settings = s);
 
             scheduler.RegisterSchedule("ControllerSlavePolling", TimeSpan.FromMinutes(5), PullValues);
         }
 
-        public ControllerSlaveServiceSettings Settings { get; }
+        public ControllerSlaveServiceSettings Settings { get; private set; }
 
         [ApiMethod(ApiCallType.Request)]
         public void Status(IApiContext apiContext)

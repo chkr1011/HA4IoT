@@ -53,13 +53,13 @@ namespace HA4IoT.Automations
             _componentService = componentService;
             _componentService = componentService;
 
-            Settings = settingsService.GetSettings<RollerShutterAutomationSettings>(Id);
+            settingsService.CreateSettingsMonitor<RollerShutterAutomationSettings>(Id, s => Settings = s);
 
             // TODO: Consider timer service here.
             schedulerService.RegisterSchedule("RollerShutterAutomation-" + Guid.NewGuid(), TimeSpan.FromSeconds(10), PerformPendingActions);
         }
 
-        public RollerShutterAutomationSettings Settings { get; }
+        public RollerShutterAutomationSettings Settings { get; private set; }
 
         public RollerShutterAutomation WithRollerShutters(params IRollerShutter[] rollerShutters)
         {

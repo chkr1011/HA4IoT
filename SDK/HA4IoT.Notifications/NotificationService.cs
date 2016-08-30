@@ -11,6 +11,7 @@ using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Networking.Http;
 using HA4IoT.Networking.Json;
+using Newtonsoft.Json;
 
 namespace HA4IoT.Notifications
 {
@@ -29,14 +30,15 @@ namespace HA4IoT.Notifications
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
             _dateTimeService = dateTimeService;
-            Settings = settingsService.GetSettings<NotificationServiceSettings>();
+            settingsService.CreateSettingsMonitor<NotificationServiceSettings>(s => Settings = s);
 
             apiService.StatusRequested += HandleApiStatusRequest;
             systemEventsService.StartupCompleted += (s, e) => CreateInformation("System started.");
+
             schedulerService.RegisterSchedule("NotificationCleanup", TimeSpan.FromMinutes(15), Cleanup);
         }
 
-        public NotificationServiceSettings Settings { get; }
+        public NotificationServiceSettings Settings { get; private set; }
 
         public void Initialize()
         {
@@ -52,15 +54,7 @@ namespace HA4IoT.Notifications
 
             lock (_syncRoot)
             {
-                var notification = new Notification
-                {
-                    Uid = Guid.NewGuid(),
-                    Timestamp = _dateTimeService.Now,
-                    Message = message,
-                    TimeToLive = timeToLive,
-                    Type = type
-                };
-
+                var notification = new Notification(Guid.NewGuid(), type, _dateTimeService.Now, message, timeToLive);
                 _notifications.Add(notification);
 
                 SaveNotifications();
@@ -80,15 +74,6 @@ namespace HA4IoT.Notifications
         public void CreateError(string text)
         {
             Create(NotificationType.Error, text, Settings.ErrorTimeToLive);
-        }
-
-        [ApiMethod(ApiCallType.Request)]
-        public void Notifications(IApiContext apiContext)
-        {
-            lock (_syncRoot)
-            {
-                apiContext.Response.SetNamedValue("Notifications", SerializeNotifications());
-            }
         }
 
         [ApiMethod(ApiCallType.Command)]
@@ -134,29 +119,18 @@ namespace HA4IoT.Notifications
         {
             lock (_syncRoot)
             {
-                e.Context.Response.SetValue("Notifications", SerializeNotifications());
+                e.Context.Response.SetValue("Notifications", JsonArray.Parse(JsonConvert.SerializeObject(_notifications)));
             }
         }
 
         private void SaveNotifications()
         {
-            var jsonObject = new JsonObject();
-            jsonObject.SetNamedValue("Notifications", SerializeNotifications());
+            var filename = StoragePath.WithFilename("NotificationService.json");
+            var content = JsonConvert.SerializeObject(_notifications);
 
-            File.WriteAllText(StoragePath.WithFilename("NotificationService.json"), jsonObject.ToString());
+            File.WriteAllText(filename, content);
         }
-
-        private JsonArray SerializeNotifications()
-        {
-            var jsonArray = new JsonArray();
-            foreach (var notification in _notifications)
-            {
-                jsonArray.Add(notification.ToJsonObject());
-            }
-
-            return jsonArray;
-        }
-
+        
         private void TryLoadNotifications()
         {
             try
@@ -173,21 +147,11 @@ namespace HA4IoT.Notifications
                     return;
                 }
 
-                JsonObject jsonObject;
-                if (!JsonObject.TryParse(fileContent, out jsonObject))
-                {
-                    return;
-                }
-
-                var notifications = jsonObject.GetNamedArray("Notifications", new JsonArray());
-                foreach (var notification in notifications)
-                {
-                    _notifications.Add(notification.GetObject().DeserializeTo<Notification>());
-                }
+                var notifications = JsonConvert.DeserializeObject<List<Notification>>(fileContent);
+                _notifications.AddRange(notifications);
             }
             catch (Exception exception)
             {
-                Fix error
                 Log.Warning(exception, "Unable to load notifications.");
             }
         }

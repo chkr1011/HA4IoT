@@ -47,7 +47,7 @@ namespace HA4IoT.Actuators.RollerShutters
             _endpoint = endpoint;
             _schedulerService = schedulerService;
 
-            Settings = settingsService.GetSettings<RollerShutterSettings>(Id);
+            settingsService.CreateSettingsMonitor<RollerShutterSettings>(Id, s => Settings = s);
 
             timerService.Tick += (s, e) => UpdatePosition(e);
 
@@ -58,7 +58,7 @@ namespace HA4IoT.Actuators.RollerShutters
             endpoint.Stop(HardwareParameter.ForceUpdateState);
         }
 
-        public RollerShutterSettings Settings { get; }
+        public RollerShutterSettings Settings { get; private set; }
 
         public bool IsClosed => _position == Settings.MaxPosition;
         

@@ -26,7 +26,7 @@ namespace HA4IoT.Sensors.Buttons
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
-            Settings = settingsService.GetSettings<ButtonSettings>(Id);
+            settingsService.CreateSettingsMonitor<ButtonSettings>(Id, s => Settings = s);
             
             SetState(ButtonStateId.Released);
 
@@ -36,7 +36,7 @@ namespace HA4IoT.Sensors.Buttons
             endpoint.Released += (s, e) => HandleInputStateChanged(ButtonStateId.Released);
         }
         
-        public IButtonSettings Settings { get; }
+        public IButtonSettings Settings { get; private set; }
 
         public ITrigger GetPressedShortlyTrigger()
         {

@@ -35,7 +35,7 @@ namespace HA4IoT.Tests.Mockups
             AutomationService = new AutomationService(systemEventsService, systemInformationService, apiService);
             ComponentService = new ComponentService(systemEventsService, systemInformationService, apiService);
             AreaService = new AreaService(ComponentService, AutomationService, systemEventsService, systemInformationService, apiService, settingsService);
-            NotificationService = new NotificationService(DateTimeService, new ApiService(), SchedulerService, systemEventsService);
+            NotificationService = new NotificationService(DateTimeService, new ApiService(), SchedulerService, systemEventsService, new SettingsService());
         }
 
         public ITimerService TimerService { get; } = new TestTimerService();

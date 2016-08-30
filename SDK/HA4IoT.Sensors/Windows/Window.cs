@@ -14,7 +14,6 @@ namespace HA4IoT.Sensors.Windows
 {
     public class Window : SensorBase, IWindow
     {
-        private readonly ISettingsService _settingsService;
         private readonly Trigger _openedTrigger = new Trigger();
         private readonly Trigger _closedTrigger = new Trigger();
 
@@ -23,8 +22,10 @@ namespace HA4IoT.Sensors.Windows
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
-            _settingsService = settingsService;
+            settingsService.CreateSettingsMonitor<ComponentSettings>(Id, s => Settings = s);
         }
+
+        public ComponentSettings Settings { get; private set; }
 
         public IList<ICasement> Casements { get; } = new List<ICasement>();
 
@@ -110,10 +111,8 @@ namespace HA4IoT.Sensors.Windows
             {
                 return;
             }
-
-            var settings = _settingsService.GetSettings<ComponentSettings>(Id);
-
-            if (!settings.IsEnabled)
+            
+            if (!Settings.IsEnabled)
             {
                 return;
             }

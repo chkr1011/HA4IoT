@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Api;
@@ -6,7 +7,8 @@ using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Settings;
-using HA4IoT.Networking.Json;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Settings
 {
@@ -14,7 +16,7 @@ namespace HA4IoT.Settings
     public class SettingsService : ServiceBase, ISettingsService
     {
         private readonly object _syncRoot = new object();
-        private JsonObject _settings = new JsonObject();
+        private readonly Dictionary<string, JObject> _settings = new Dictionary<string, JObject>(StringComparer.OrdinalIgnoreCase);
         
         public void Initialize()
         {
@@ -26,95 +28,90 @@ namespace HA4IoT.Settings
 
         public event EventHandler<SettingsChangedEventArgs> SettingsChanged;
 
+        public void CreateSettingsMonitor<TSettings>(string uri, Action<TSettings> callback)
+        {
+            if (uri == null) throw new ArgumentNullException(nameof(uri));
+            if (callback == null) throw new ArgumentNullException(nameof(callback));
+
+            var initialSettings = GetSettings<TSettings>(uri);
+            callback(initialSettings);
+
+            SettingsChanged += (s, e) =>
+            {
+                if (e.Uri.Equals(uri))
+                {
+                    var updateSettings = GetSettings<TSettings>(uri);
+                    callback(updateSettings);
+                }
+            };
+        }
+
         public TSettings GetSettings<TSettings>(string uri)
         {
             if (uri == null) throw new ArgumentNullException(nameof(uri));
 
             lock (_syncRoot)
             {
-                var settings = Activator.CreateInstance<TSettings>();
-
-                IJsonValue value;
-                if (!_settings.TryGetValue(uri, out value))
+                JObject settings;
+                if (_settings.TryGetValue(uri, out settings))
                 {
-                    SetSettings(uri, settings);
-                }
-                else
-                {
-                    if (value.ValueType != JsonValueType.Object)
-                    {
-                        throw new InvalidOperationException("Settings must be a JSON object.");
-                    }
-
-                    value.GetObject().DeserializeTo(settings);
+                    return settings.ToObject<TSettings>();
                 }
 
-                SettingsChanged += (s, e) =>
-                {
-                    if (e.Uri.Equals(uri))
-                    {
-                        GetSettings(uri).DeserializeTo(settings);
-                    }
-                };
-                
-                return settings;
-            }
-            
-        }
+                var settingsInstance = Activator.CreateInstance<TSettings>();
+                _settings[uri] = JObject.FromObject(settingsInstance);
 
-        public JsonObject GetSettings(string uri)
-        {
-            lock (_syncRoot)
-            {
-                IJsonValue value;
-                if (!_settings.TryGetValue(uri, out value))
-                {
-                    value = new JsonObject();
-                }
+                Save();
 
-                if (value.ValueType != JsonValueType.Object)
-                {
-                    throw new InvalidOperationException("Settings must be a JSON object.");
-                }
-
-                return value.GetObject();
+                return settingsInstance;
             }
         }
 
-        public void SetSettings(string uri, object settings)
+        public JsonObject GetRawSettings(string uri)
         {
             if (uri == null) throw new ArgumentNullException(nameof(uri));
-            if (settings == null) throw new ArgumentNullException(nameof(settings));
 
-            var rawSettings = settings.ToJsonObject();
-            SetSettings(uri, rawSettings);
+            lock (_syncRoot)
+            {
+                JObject settings;
+                if (!_settings.TryGetValue(uri, out settings))
+                {
+                    settings = new JObject();
+                }
+
+                return JsonObject.Parse(settings.ToString());
+            }
         }
 
-        public void SetSettings(string uri, JsonObject settings)
+        private void SetSettings(string uri, JObject settings)
         {
             lock (_syncRoot)
             {
                 _settings[uri] = settings;
+
                 Save();
 
                 SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(uri));
             }
         }
 
-        public void ImportSettings(string uri, object settings)
-        {
-            ImportSettings(uri, settings.ToJsonObject());
-        }
-
-        public void ImportSettings(string uri, JsonObject settings)
+        public void ImportSettings(string uri, JObject settings)
         {
             lock (_syncRoot)
             {
-                var existingSettings = GetSettings(uri);
-                existingSettings.Import(settings);
+                JObject existingSettings;
+                if (_settings.TryGetValue(uri, out existingSettings))
+                {
+                    existingSettings.Merge(settings, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Union });
+                }
+                else
+                {
+                    _settings[uri] = settings;
+                }
 
-                _settings[uri] = existingSettings;
                 Save();
+
+                SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(uri));
             }
         }
 
@@ -124,7 +121,7 @@ namespace HA4IoT.Settings
             var uri = apiContext.Request.GetNamedString("Uri");
             var settings = apiContext.Request.GetNamedObject("Settings");
 
-            SetSettings(uri, settings);
+            SetSettings(uri, JObject.Parse(settings.ToString()));
         }
 
         [ApiMethod(ApiCallType.Command)]
@@ -133,7 +130,7 @@ namespace HA4IoT.Settings
             var uri = apiContext.Request.GetNamedString("Uri");
             var settings = apiContext.Request.GetNamedObject("Settings");
 
-            ImportSettings(uri, settings);
+            ImportSettings(uri, JObject.Parse(settings.ToString()));
         }
 
         [ApiMethod(ApiCallType.Request)]
@@ -141,7 +138,7 @@ namespace HA4IoT.Settings
         {
             var uri = apiContext.Request.GetNamedString("Uri");
 
-            apiContext.Response = GetSettings(uri);
+            apiContext.Response = GetRawSettings(uri);
         }
 
         [ApiMethod(ApiCallType.Request)]
@@ -149,16 +146,16 @@ namespace HA4IoT.Settings
         {
             lock (_syncRoot)
             {
-                apiContext.Response = JsonObject.Parse(_settings.ToString());
+                apiContext.Response = JsonObject.Parse(JsonConvert.SerializeObject(_settings));
             }
         }
 
         private void Save()
         {
             var filename = StoragePath.WithFilename("SettingsService.json");
-            var buffer = _settings.ToString();
-
-            File.WriteAllText(filename, buffer);
+            var content = JsonConvert.SerializeObject(_settings);
+            
+            File.WriteAllText(filename, content);
         }
 
         private void TryLoadSettings()
@@ -177,13 +174,11 @@ namespace HA4IoT.Settings
                     return;
                 }
 
-                JsonObject jsonObject;
-                if (!JsonObject.TryParse(fileContent, out jsonObject))
+                var settings = JsonConvert.DeserializeObject<Dictionary<string, JObject>>(fileContent);
+                foreach (var setting in settings)
                 {
-                    return;
+                    _settings[setting.Key] = setting.Value;
                 }
-
-                _settings = jsonObject;
             }
             catch (Exception exception)
             {

@@ -25,10 +25,10 @@ namespace HA4IoT.Automations
 
             _schedulerService = schedulerService;
 
-            Settings = settingsService.GetSettings<BathroomFanAutomationSettings>(Id);
+            settingsService.CreateSettingsMonitor<BathroomFanAutomationSettings>(Id, s => Settings = s);
         }
 
-        public BathroomFanAutomationSettings Settings { get; }
+        public BathroomFanAutomationSettings Settings { get; private set; }
 
         public BathroomFanAutomation WithTrigger(IMotionDetector motionDetector)
         {

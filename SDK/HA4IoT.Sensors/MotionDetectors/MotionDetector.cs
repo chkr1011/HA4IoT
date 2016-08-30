@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using HA4IoT.Actuators.Triggers;
-using HA4IoT.Components;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
@@ -24,12 +23,13 @@ namespace HA4IoT.Sensors.MotionDetectors
         public MotionDetector(ComponentId id, IMotionDetectorEndpoint endpoint, ISchedulerService schedulerService, ISettingsService settingsService)
             : base(id)
         {
-            _schedulerService = schedulerService;
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
-            Settings = settingsService.GetSettings<MotionDetectorSettings>(Id);
+            _schedulerService = schedulerService;
+
+            settingsService.CreateSettingsMonitor<MotionDetectorSettings>(Id, s => Settings = s);
 
             SetState(MotionDetectorStateId.Idle);
 
@@ -45,7 +45,7 @@ namespace HA4IoT.Sensors.MotionDetectors
             };
         }
 
-        public IMotionDetectorSettings Settings { get; }
+        public IMotionDetectorSettings Settings { get; private set; }
 
         public ITrigger GetMotionDetectedTrigger()
         {

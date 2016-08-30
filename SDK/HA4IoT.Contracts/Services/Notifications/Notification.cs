@@ -4,14 +4,23 @@ namespace HA4IoT.Contracts.Services.Notifications
 {
     public class Notification
     {
-        public Guid Uid { get; set; }
+        public Notification(Guid uid, NotificationType type, DateTime timestamp, string message, TimeSpan timeToLive)
+        {
+            Uid = uid;
+            Type = type;
+            Timestamp = timestamp;
+            Message = message;
+            TimeToLive = timeToLive;
+        }
 
-        public NotificationType Type { get; set; }
+        public Guid Uid { get; }
 
-        public DateTime Timestamp { get; set; }
+        public NotificationType Type { get; }
 
-        public string Message { get; set; }
+        public DateTime Timestamp { get; }
 
-        public TimeSpan TimeToLive { get; set; }
+        public string Message { get; }
+
+        public TimeSpan TimeToLive { get; }
     }
 }

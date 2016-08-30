@@ -66,14 +66,14 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             _dateTimeService = dateTimeService;
             _systemInformationService = systemInformationService;
             
-            Settings = settingsService.GetSettings<OpenWeatherMapServiceSettings>();
+            settingsService.CreateSettingsMonitor<OpenWeatherMapServiceSettings>(s => Settings = s);
 
             LoadPersistedValues();
             
             schedulerService.RegisterSchedule("OpenWeatherMapServiceUpdater", TimeSpan.FromMinutes(5), Refresh);
         }
 
-        public OpenWeatherMapServiceSettings Settings { get; }
+        public OpenWeatherMapServiceSettings Settings { get; private set; }
 
         [ApiMethod(ApiCallType.Command)]
         public void Status(IApiContext apiContext)
