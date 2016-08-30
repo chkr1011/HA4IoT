@@ -6,6 +6,7 @@ using HA4IoT.Automations;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
@@ -24,6 +25,7 @@ namespace HA4IoT.Controller.Main.Rooms
         private readonly IDeviceService _deviceService;
         private readonly ISchedulerService _schedulerService;
         private readonly IAreaService _areaService;
+        private readonly ISettingsService _settingsService;
         private readonly SynonymService _synonymService;
         private readonly AutomationFactory _automationFactory;
         private readonly ActuatorFactory _actuatorFactory;
@@ -50,6 +52,7 @@ namespace HA4IoT.Controller.Main.Rooms
             IDeviceService deviceService,
             ISchedulerService schedulerService,
             IAreaService areaService,
+            ISettingsService settingsService,
             SynonymService synonymService,
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
@@ -59,6 +62,7 @@ namespace HA4IoT.Controller.Main.Rooms
             if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
             if (areaService == null) throw new ArgumentNullException(nameof(areaService));
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
             if (automationFactory == null) throw new ArgumentNullException(nameof(automationFactory));
             if (actuatorFactory == null) throw new ArgumentNullException(nameof(actuatorFactory));
@@ -68,6 +72,7 @@ namespace HA4IoT.Controller.Main.Rooms
             _deviceService = deviceService;
             _schedulerService = schedulerService;
             _areaService = areaService;
+            _settingsService = settingsService;
             _synonymService = synonymService;
             _automationFactory = automationFactory;
             _actuatorFactory = actuatorFactory;
@@ -111,7 +116,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTarget(combinedLights)
                 .WithOnDuration(TimeSpan.FromMinutes(8));
             
-            new BathroomFanAutomation(AutomationIdFactory.CreateIdFrom<BathroomFanAutomation>(room), _schedulerService, new SettingsService())
+            new BathroomFanAutomation(AutomationIdFactory.CreateIdFrom<BathroomFanAutomation>(room), _schedulerService, _settingsService)
                 .WithTrigger(room.GetMotionDetector(UpperBathroom.MotionDetector))
                 .WithActuator(room.GetStateMachine(UpperBathroom.Fan));
 

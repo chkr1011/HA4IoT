@@ -260,11 +260,6 @@
     <Compile Include="Services\Weather\Weather.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.Contracts.rd.xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="SimpleInjector">
-      <HintPath>..\..\..\..\..\.nuget\packages\SimpleInjector\3.2.0\lib\portable-net4+sl4+wp8+win8+wpa81\SimpleInjector.dll</HintPath>
-    </Reference>
-  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

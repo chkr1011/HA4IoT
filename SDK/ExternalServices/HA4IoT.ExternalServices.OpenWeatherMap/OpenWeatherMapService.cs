@@ -106,8 +106,11 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
 
             if (!string.Equals(response, _previousResponse))
             {
-                PersistData(response);
-                ParseData(response);
+                if (TryParseData(response))
+                {
+                    PersistData(response);
+                }
+
                 PushData();
 
                 _previousResponse = response;
@@ -162,7 +165,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             }
         }
 
-        private void ParseData(string weatherData)
+        private bool TryParseData(string weatherData)
         {
             try
             {
@@ -175,10 +178,14 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
 
                 Sunrise = parser.Sunrise;
                 Sunset = parser.Sunset;
+
+                return true;
             }
             catch (Exception exception)
             {
                 Log.Warning(exception, $"Error while parsing Open Weather Map response ({weatherData}).");
+
+                return false;
             }
         }
 
@@ -191,7 +198,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
 
             try
             {
-                ParseData(File.ReadAllText(_cacheFilename));
+                TryParseData(File.ReadAllText(_cacheFilename));
             }
             catch (Exception exception)
             {

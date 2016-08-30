@@ -153,7 +153,7 @@ namespace HA4IoT.Settings
         private void Save()
         {
             var filename = StoragePath.WithFilename("SettingsService.json");
-            var content = JsonConvert.SerializeObject(_settings);
+            var content = JsonConvert.SerializeObject(_settings, Formatting.Indented);
             
             File.WriteAllText(filename, content);
         }

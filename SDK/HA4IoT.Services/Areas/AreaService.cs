@@ -110,7 +110,7 @@ namespace HA4IoT.Services.Areas
                         supportedStatesJson.Add(supportedState.ToJsonValue());
                     }
 
-                    configuration.SetValue(ComponentConfigurationKey.SupportedStates, supportedStatesJson);
+                    componentConfiguration.SetValue(ComponentConfigurationKey.SupportedStates, supportedStatesJson);
                 }
                 
                 components.SetNamedValue(component.Id.Value, componentConfiguration);

@@ -1,4 +1,6 @@
 ﻿using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace HA4IoT.Contracts.Services.Notifications
 {
@@ -15,6 +17,7 @@ namespace HA4IoT.Contracts.Services.Notifications
 
         public Guid Uid { get; }
 
+        [JsonConverter(typeof(StringEnumConverter))]
         public NotificationType Type { get; }
 
         public DateTime Timestamp { get; }

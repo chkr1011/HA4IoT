@@ -105,8 +105,6 @@ namespace HA4IoT.Controller.Main.Rooms
             _sensorFactory.RegisterWindow(room, Office.WindowRight,
                 w => w.WithLeftCasement(input4.GetInput(8)).WithRightCasement(input4.GetInput(9), input5.GetInput(8)));
 
-            _actuatorFactory.RegisterStateMachine(room, Office.CombinedCeilingLights, (s, a) => SetupLight(s, hsrel8, hspe8, a));
-
             _sensorFactory.RegisterTemperatureSensor(room, Office.TemperatureSensor,
                 i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
 
@@ -128,6 +126,8 @@ namespace HA4IoT.Controller.Main.Rooms
             _sensorFactory.RegisterButton(room, Office.ButtonLowerLeft, input5.GetInput(1));
             _sensorFactory.RegisterButton(room, Office.ButtonLowerRight, input4.GetInput(14));
             _sensorFactory.RegisterButton(room, Office.ButtonUpperRight, input4.GetInput(15));
+
+            _actuatorFactory.RegisterStateMachine(room, Office.CombinedCeilingLights, (s, a) => SetupLight(s, hsrel8, hspe8, a));
 
             room.GetButton(Office.ButtonUpperLeft).GetPressedLongTrigger().Attach(() =>
             {
