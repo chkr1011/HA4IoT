@@ -30,7 +30,10 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Controllers\MainController.js" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Index.html" />
+    <Content Include="Module.js" />
     <Content Include="packages.config" />
     <Content Include="Scripts\angular-mocks.js" />
     <Content Include="Scripts\angular.js" />
@@ -47,6 +50,8 @@
     <None Include="Scripts\jquery-3.1.0.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\Chart.js" />
+    <Content Include="Scripts\Chart.min.js" />
     <Content Include="Scripts\jquery-3.1.0.js" />
     <Content Include="Scripts\jquery-3.1.0.min.js" />
     <Content Include="Scripts\jquery-3.1.0.slim.js" />
@@ -66,13 +71,27 @@
     <Content Include="Scripts\angular-ui\ui-bootstrap-tpls.min.js" />
     <Content Include="Scripts\angular-ui\ui-bootstrap.js" />
     <Content Include="Scripts\angular-ui\ui-bootstrap.min.js" />
+    <Content Include="Services\ControllerProxyService.js" />
+    <Content Include="Services\TranslationService.js" />
+    <Content Include="Settings\Components\ControllerSettings.component.html" />
+    <Content Include="Settings\Components\ControllerSettings.component.js" />
+    <Content Include="Settings\Components\OpenWeatherMapSettings.component.html" />
+    <Content Include="Settings\Components\OpenWeatherMapSettings.component.js" />
+    <Content Include="Settings\Components\SlaveServiceSettings.component.html" />
+    <Content Include="Settings\Components\SlaveServiceSettings.component.js" />
+    <Content Include="Settings\Components\TelegramBotSettings.component.html" />
+    <Content Include="Settings\Components\TelegramBotSettings.component.js" />
+    <Content Include="Settings\Components\TwitterClientSettings.component.html" />
+    <Content Include="Settings\Components\TwitterClientSettings.component.js" />
+    <Content Include="Views\SettingsView.html" />
+    <Content Include="Views\TelegramBotSettingsView.html" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Views\" />
+    <Folder Include="Configuration\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
