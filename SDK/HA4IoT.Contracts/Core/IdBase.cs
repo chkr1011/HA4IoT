@@ -1,10 +1,8 @@
 ﻿using System;
-using Windows.Data.Json;
-using HA4IoT.Contracts.Networking;
 
 namespace HA4IoT.Contracts.Core
 {
-    public abstract class IdBase : IExportToJsonValue
+    public abstract class IdBase
     {
         private readonly string _value;
 
@@ -21,12 +19,7 @@ namespace HA4IoT.Contracts.Core
         {
             return _value;
         }
-
-        public IJsonValue ExportToJsonObject()
-        {
-            return JsonValue.CreateStringValue(_value);
-        }
-
+        
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(this, obj))

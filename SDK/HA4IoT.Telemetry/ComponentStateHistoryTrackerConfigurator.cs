@@ -24,7 +24,6 @@ namespace HA4IoT.Telemetry
             foreach (var component in _componentService.GetComponents())
             {
                 var history = new ComponentStateHistoryTracker(component);
-                history.ExposeToApi(_apiService);
             }
         }
     }

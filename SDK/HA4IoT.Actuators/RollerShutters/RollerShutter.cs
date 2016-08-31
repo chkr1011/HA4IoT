@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Windows.Data.Json;
 using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
@@ -10,7 +9,7 @@ using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Networking.Json;
+using Newtonsoft.Json.Linq;
 using Action = HA4IoT.Actuators.Actions.Action;
 
 namespace HA4IoT.Actuators.RollerShutters
@@ -77,10 +76,10 @@ namespace HA4IoT.Actuators.RollerShutters
             return _startMoveDownAction;
         }
 
-        public override JsonObject ExportStatus()
+        public override JToken ExportStatus()
         {
             var status = base.ExportStatus();
-            status.SetValue("Position", _position);
+            status["Position"] = _position;
             return status;
         }
 
@@ -128,7 +127,7 @@ namespace HA4IoT.Actuators.RollerShutters
         {
             if (apiContext.CallType == ApiCallType.Command)
             {
-                var state = new NamedComponentState(apiContext.Request.GetNamedString("state"));
+                var state = new NamedComponentState((string)apiContext.Request["state"]);
                 SetState(state);
             }
         }

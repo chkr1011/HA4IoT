@@ -52,8 +52,8 @@ namespace HA4IoT.Sensors.Buttons
         {
             if (apiContext.CallType == ApiCallType.Command)
             {
-                string action = apiContext.Request.GetNamedString("duration", string.Empty);
-                if (action.Equals(ButtonPressedDuration.Long.ToString(), StringComparison.OrdinalIgnoreCase))
+                var action = (string)apiContext.Request["Duration"];
+                if (!string.IsNullOrEmpty(action) && action.Equals(ButtonPressedDuration.Long.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
                     OnPressedLong();
                 }

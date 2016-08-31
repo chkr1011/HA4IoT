@@ -1,42 +1,40 @@
 ﻿using System;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text;
 using System.Threading.Tasks;
 using Windows.Networking;
 using Windows.Networking.Sockets;
 using HA4IoT.Contracts.Core.Discovery;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Settings;
-using HA4IoT.Contracts.Services.System;
-using HA4IoT.Networking.Json;
 using HA4IoT.Settings;
+using Newtonsoft.Json;
 
-namespace HA4IoT.Core
+namespace HA4IoT.Services.System
 {
-    public sealed class DiscoveryServer : IDisposable
+    public sealed class DiscoveryServerService : ServiceBase, IDisposable
     {
         private int DEFAULT_PORT = 19228;
 
         private readonly ISettingsService _settingsService;
-        
-        private DatagramSocket _socket;
+        private readonly DatagramSocket _socket = new DatagramSocket();
 
-        public DiscoveryServer(ISettingsService settingsService, ISystemEventsService systemEventsService)
+        public DiscoveryServerService(ISettingsService settingsService)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-            if (systemEventsService == null) throw new ArgumentNullException(nameof(systemEventsService));
-
+            
             _settingsService = settingsService;
-            systemEventsService.StartupCompleted += (s, e) => Bind();
+
+            _socket.MessageReceived += SendResponse;
+        }
+
+        public override void Startup()
+        {
+            Bind();
         }
 
         public void Bind()
         {
-            if (_socket != null)
-            {
-                throw new InvalidOperationException("The discovery server is already started.");
-            }
-
-            _socket = new DatagramSocket();
-            _socket.MessageReceived += SendResponse;
             _socket.BindServiceNameAsync(DEFAULT_PORT.ToString()).AsTask().Wait();
         }
 
@@ -50,7 +48,7 @@ namespace HA4IoT.Core
 
         private async Task SendResponseAsync(HostName target, DiscoveryResponse response)
         {
-            var buffer = response.ToJsonObject().ToByteArray();
+            var buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response));
 
             using (var socket = new DatagramSocket())
             {
@@ -62,7 +60,7 @@ namespace HA4IoT.Core
 
         public void Dispose()
         {
-            _socket?.Dispose();
+            _socket.Dispose();
         }
     }
 }

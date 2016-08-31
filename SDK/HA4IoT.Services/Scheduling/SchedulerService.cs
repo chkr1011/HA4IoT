@@ -1,30 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Data.Json;
+using Windows.System.Threading;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Networking.Json;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Services.Scheduling
 {
     public class SchedulerService : ServiceBase, ISchedulerService
     {
         private readonly object _syncRoot = new object();
-        private readonly Dictionary<string, Schedule> _schedules = new Dictionary<string, Schedule>();
-        private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        private readonly List<Schedule> _schedules = new List<Schedule>();
+        private readonly Timer _timer;
         private readonly ITimerService _timerService;
+        private readonly IDateTimeService _dateTimeService;
 
-        public SchedulerService(ITimerService timerService)
+        public SchedulerService(ITimerService timerService, IDateTimeService dateTimeService)
         {
             if (timerService == null) throw new ArgumentNullException(nameof(timerService));
+            if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
 
             _timerService = timerService;
+            _dateTimeService = dateTimeService;
+
+            _timer = new Timer(e => ExecuteSchedules(), null, -1, Timeout.Infinite);
+        }
+
+        public override void Startup()
+        {
+            _timer.Change(100, 0);
         }
 
         public TimedAction In(TimeSpan dueTime)
@@ -32,20 +43,18 @@ namespace HA4IoT.Services.Scheduling
             return new TimedAction(dueTime, TimeSpan.Zero, _timerService);
         }
 
+        public void In(TimeSpan dueTime, Action action)
+        {
+            if (action == null) throw new ArgumentNullException(nameof(action));
+
+            ThreadPoolTimer.CreateTimer(p => action(), dueTime);
+        }
+
         public void HandleApiCall(IApiContext apiContext)
         {
             lock (_syncRoot)
             {
-                foreach (var schedule in _schedules)
-                {
-                    var scheduleObject = new JsonObject();
-                    scheduleObject.SetValue("LastExecutionTimestamp", schedule.Value.LastExecutionTimestamp);
-                    scheduleObject.SetValue("LastExecutionDuration", schedule.Value.LastExecutionDuration);
-                    scheduleObject.SetValue("Interval", schedule.Value.Interval);
-                    scheduleObject.SetValue("LastErrorMessage", schedule.Value.LastErrorMessage);
-
-                    apiContext.Response.SetValue(schedule.Key, scheduleObject);
-                }
+                apiContext.Response = JObject.FromObject(_schedules);
             }
         }
 
@@ -56,52 +65,73 @@ namespace HA4IoT.Services.Scheduling
 
             lock (_syncRoot)
             {
-                if (_schedules.ContainsKey(name))
+                if (_schedules.Any(s => s.Name.Equals(name)))
                 {
                     throw new InvalidOperationException($"Schedule with name '{name}' is already registered.");
                 }
 
-                var schedule = new Schedule(name, interval, action);
-                _schedules.Add(name, schedule);
-
-                var task = Task.Factory.StartNew(
-                    () => ExecuteSchedule(schedule),
-                    _cancellationTokenSource.Token,
-                    TaskCreationOptions.LongRunning,
-                    TaskScheduler.Default);
-
-                task.ConfigureAwait(false);
+                var schedule = new Schedule(name, interval, action) { NextExecution = _dateTimeService.Now };
+                _schedules.Add(schedule);
 
                 Log.Info($"Registerd schedule '{name}' with interval of {interval}.");
+            }
+        }
+
+        private void ExecuteSchedules()
+        {
+            lock (_syncRoot)
+            {
+                var deletedSchedules = new List<Schedule>();
+
+                var now = _dateTimeService.Now;
+                foreach (var schedule in _schedules)
+                {
+                    if (schedule.Status == ScheduleStatus.Running || now < schedule.NextExecution)
+                    {
+                        continue;
+                    }
+
+                    if (schedule.IsOneTimeSchedule)
+                    {
+                        deletedSchedules.Add(schedule);
+                    }
+
+                    schedule.Status = ScheduleStatus.Running;
+                    Task.Run(() => ExecuteSchedule(schedule));
+                }
+
+                foreach (var deletedSchedule in deletedSchedules)
+                {
+                    _schedules.Remove(deletedSchedule);
+                }
+
+                _timer.Change(100, 0);
             }
         }
 
         private void ExecuteSchedule(Schedule schedule)
         {
             var stopwatch = Stopwatch.StartNew();
-            while (!_cancellationTokenSource.Token.IsCancellationRequested)
+            try
             {
-                stopwatch.Restart();
-                try
-                {
-                    Log.Verbose($"Executing schedule '{schedule.Name}'.");
-                    schedule.Action();
-                    schedule.LastErrorMessage = null;
-                }
-                catch (Exception exception)
-                {
-                    Log.Error(exception, $"Error while executing schedule '{schedule.Name}'.");
-                    schedule.LastErrorMessage = exception.Message;
-                }
-                finally
-                {
-                    stopwatch.Stop();
+                Log.Verbose($"Executing schedule '{schedule.Name}'.");
 
-                    schedule.LastExecutionDuration = stopwatch.Elapsed;
-                    schedule.LastExecutionTimestamp = DateTime.Now;
+                schedule.Action();
+                schedule.LastErrorMessage = null;
+                schedule.Status = ScheduleStatus.Idle;
+            }
+            catch (Exception exception)
+            {
+                Log.Error(exception, $"Error while executing schedule '{schedule.Name}'.");
 
-                    Task.Delay(schedule.Interval).Wait();
-                }
+                schedule.Status = ScheduleStatus.Faulted;
+                schedule.LastErrorMessage = exception.Message;
+            }
+            finally
+            {
+                schedule.LastExecutionDuration = stopwatch.Elapsed;
+                schedule.LastExecution = _dateTimeService.Now;
+                schedule.NextExecution = _dateTimeService.Now + schedule.Interval;
             }
         }
     }

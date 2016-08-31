@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Windows.Data.Json;
-using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Networking;
-using HA4IoT.Networking.Json;
 
 namespace HA4IoT.Hardware.CCTools
 {
@@ -35,6 +32,7 @@ namespace HA4IoT.Hardware.CCTools
         }
 
         public event EventHandler<IOBoardStateChangedEventArgs> StateChanged;
+
         public DeviceId Id { get; }
 
         public byte[] GetState()
@@ -140,34 +138,6 @@ namespace HA4IoT.Hardware.CCTools
                                              ByteExtensions.ToString(newState) + ").");
 
                 StateChanged?.Invoke(this, new IOBoardStateChangedEventArgs(oldState, newState));
-            }
-        }
-
-        public void HandleApiCall(IApiContext apiContext)
-        {
-            if (apiContext.CallType == ApiCallType.Command)
-            {
-                JsonArray state = apiContext.Request.GetNamedArray("state", null);
-                if (state != null)
-                {
-                    byte[] buffer = JsonValueToByteArray(state);
-                    SetState(buffer);
-                }
-
-                var commit = apiContext.Request.GetNamedBoolean("commit", true);
-                if (commit)
-                {
-                    CommitChanges();
-                }
-            }
-
-            if (apiContext.CallType == ApiCallType.Request)
-            {
-                var result = new JsonObject();
-                result.SetNamedValue("state", GetState().ToJsonValue());
-                result.SetNamedValue("committed-state", GetCommittedState().ToJsonValue());
-
-                apiContext.Response = result;
             }
         }
 

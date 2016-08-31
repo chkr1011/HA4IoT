@@ -1,12 +1,12 @@
 ﻿using System;
-using Windows.Data.Json;
 using HA4IoT.Contracts.Api;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Api
 {
     public class ApiContext : IApiContext
     {
-        public ApiContext(ApiCallType callType, string uri, JsonObject request, JsonObject response)
+        public ApiContext(ApiCallType callType, string uri, JObject request, JObject response)
         {
             if (uri == null) throw new ArgumentNullException(nameof(uri));
             if (request == null) throw new ArgumentNullException(nameof(request));
@@ -23,7 +23,7 @@ namespace HA4IoT.Api
         public ApiCallType CallType { get; }
         public string Uri { get; }
         public ApiResultCode ResultCode { get; set; }
-        public JsonObject Request { get; }
-        public JsonObject Response { get; set; }
+        public JObject Request { get; }
+        public JObject Response { get; set; }
     }
 }

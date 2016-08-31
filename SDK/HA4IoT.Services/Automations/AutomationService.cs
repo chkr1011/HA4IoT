@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Windows.Data.Json;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Services.Automations
 {
@@ -56,13 +56,13 @@ namespace HA4IoT.Services.Automations
 
         private void HandleApiStatusRequest(object sender, ApiRequestReceivedEventArgs e)
         {
-            var automations = new JsonObject();
+            var automations = new JObject();
             foreach (var automation in _automations.GetAll())
             {
-                automations.SetNamedValue(automation.Id.Value, automation.ExportStatusToJsonObject());
+                automations[automation.Id.Value] = automation.ExportStatusToJsonObject();
             }
 
-            e.Context.Response.SetNamedValue("automations", automations);
+            e.Context.Response["Automations"] = automations;
         }
     }
 }

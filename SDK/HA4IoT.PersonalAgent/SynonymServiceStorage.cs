@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Windows.Data.Json;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Networking;
-using HA4IoT.Networking.Json;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.PersonalAgent
 {
@@ -33,17 +31,17 @@ namespace HA4IoT.PersonalAgent
         {
             if (synonyms == null) throw new ArgumentNullException(nameof(synonyms));
 
-            File.WriteAllText(_areaSynonymsFilename, ConvertAreaSynonymsToJsonObject(synonyms).Stringify());
+            File.WriteAllText(_areaSynonymsFilename, ConvertAreaSynonymsToJsonObject(synonyms).ToString());
         }
 
-        public JsonObject ConvertAreaSynonymsToJsonObject(Dictionary<AreaId, HashSet<string>> synonyms)
+        public JObject ConvertAreaSynonymsToJsonObject(Dictionary<AreaId, HashSet<string>> synonyms)
         {
             if (synonyms == null) throw new ArgumentNullException(nameof(synonyms));
 
-            var result = new JsonObject();
+            var result = new JObject();
             foreach (var synonym in synonyms)
             {
-                result.SetValue(synonym.Key.Value, ConvertSynonymsToJsonArray(synonym.Value));
+                result[synonym.Key.Value] = ConvertSynonymsToJsonArray(synonym.Value);
             }
 
             return result;
@@ -53,17 +51,17 @@ namespace HA4IoT.PersonalAgent
         {
             if (synonyms == null) throw new ArgumentNullException(nameof(synonyms));
             
-            File.WriteAllText(_componentSynonymsFilename, ConvertComponentSynonymsToJsonObject(synonyms).Stringify());
+            File.WriteAllText(_componentSynonymsFilename, ConvertComponentSynonymsToJsonObject(synonyms).ToString());
         }
 
-        public JsonObject ConvertComponentSynonymsToJsonObject(Dictionary<ComponentId, HashSet<string>> synonyms)
+        public JObject ConvertComponentSynonymsToJsonObject(Dictionary<ComponentId, HashSet<string>> synonyms)
         {
             if (synonyms == null) throw new ArgumentNullException(nameof(synonyms));
             
-            var result = new JsonObject();
+            var result = new JObject();
             foreach (var synonym in synonyms)
             {
-                result.SetValue(synonym.Key.Value, ConvertSynonymsToJsonArray(synonym.Value));
+                result[synonym.Key.Value] = ConvertSynonymsToJsonArray(synonym.Value);
             }
 
             return result;
@@ -73,19 +71,21 @@ namespace HA4IoT.PersonalAgent
         {
             if (synonyms == null) throw new ArgumentNullException(nameof(synonyms));
             
-            File.WriteAllText(_componentStateSynonymsFilename, ConvertComponentStateSynonymsToJsonArray(synonyms).Stringify());
+            File.WriteAllText(_componentStateSynonymsFilename, ConvertComponentStateSynonymsToJsonArray(synonyms).ToString());
         }
 
-        public JsonArray ConvertComponentStateSynonymsToJsonArray(Dictionary<IComponentState, HashSet<string>> synonyms)
+        public JArray ConvertComponentStateSynonymsToJsonArray(Dictionary<IComponentState, HashSet<string>> synonyms)
         {
             if (synonyms == null) throw new ArgumentNullException(nameof(synonyms));
 
-            var result = new JsonArray();
+            var result = new JArray();
             foreach (var synonym in synonyms)
             {
-                var item = new JsonObject();
-                item.SetValue("ComponentState", synonym.Key.ToJsonObject());
-                item.SetNamedValue("Synonyms", ConvertSynonymsToJsonArray(synonym.Value));
+                var item = new JObject
+                {
+                    ["ComponentState"] = synonym.Key.ToJsonValue(),
+                    ["Synonyms"] = ConvertSynonymsToJsonArray(synonym.Value)
+                };
 
                 result.Add(item);
             }
@@ -103,12 +103,12 @@ namespace HA4IoT.PersonalAgent
             }
 
             var fileContent = File.ReadAllText(_areaSynonymsFilename);
-            var source = JsonObject.Parse(fileContent);
+            var source = JObject.Parse(fileContent);
 
-            foreach (var key in source.Keys)
+            foreach (var property in source.Properties())
             {
-                var areaId = new AreaId(key);
-                HashSet<string> synonyms = ConvertJsonArrayToSynonyms(source.GetNamedArray(key));
+                var areaId = new AreaId(property.Name);
+                var synonyms = ConvertJsonArrayToSynonyms(property.Value.ToObject<JArray>());
 
                 target[areaId] = synonyms;
             }
@@ -124,34 +124,34 @@ namespace HA4IoT.PersonalAgent
             }
 
             var fileContent = File.ReadAllText(_componentSynonymsFilename);
-            var source = JsonObject.Parse(fileContent);
+            var source = JObject.Parse(fileContent);
 
-            foreach (var key in source.Keys)
+            foreach (var property in source.Properties())
             {
-                var componentId = new ComponentId(key);
-                HashSet<string> synonyms = ConvertJsonArrayToSynonyms(source.GetNamedArray(key));
+                var componentId = new ComponentId(property.Name);
+                var synonyms = ConvertJsonArrayToSynonyms(property.Value.ToObject<JArray>());
 
                 target[componentId] = synonyms;
             }
         }
 
-        private HashSet<string> ConvertJsonArrayToSynonyms(JsonArray source)
+        private HashSet<string> ConvertJsonArrayToSynonyms(JArray source)
         {
             var result = new HashSet<string>();
             foreach (var synonym in source)
             {
-                result.Add(synonym.GetString());
+                result.Add(synonym.ToObject<string>());
             }
 
             return result;
         }
 
-        private JsonArray ConvertSynonymsToJsonArray(HashSet<string> synonyms)
+        private JArray ConvertSynonymsToJsonArray(HashSet<string> synonyms)
         {
-            var result = new JsonArray();
+            var result = new JArray();
             foreach (var synonym in synonyms)
             {
-                result.Add(JsonValue.CreateStringValue(synonym));
+                result.Add(JToken.FromObject(synonym));
             }
 
             return result;

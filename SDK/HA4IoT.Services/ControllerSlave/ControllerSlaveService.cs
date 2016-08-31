@@ -3,14 +3,13 @@ using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Weather;
 using System.Net.Http;
-using Windows.Data.Json;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.OutdoorHumidity;
 using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Networking.Json;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Services.ControllerSlave
 {
@@ -59,8 +58,8 @@ namespace HA4IoT.Services.ControllerSlave
         [ApiMethod(ApiCallType.Request)]
         public void Status(IApiContext apiContext)
         {
-            apiContext.Response.SetValue("LastPull", _lastPull);
-            apiContext.Response.SetValue("LastSuccessfulPull", _lastSuccessfulPull);
+            apiContext.Response["LastPull"] = _lastPull;
+            apiContext.Response["LastSuccessfulPull"] = _lastSuccessfulPull;
         }
 
         private void PullValues()
@@ -92,7 +91,7 @@ namespace HA4IoT.Services.ControllerSlave
         private void PullWeather()
         {
             var response = PullValue(nameof(IWeatherService));
-            var value = response.GetNamedString("Weather");
+            var value = (string)response["Weather"];
             var weather = (Weather)Enum.Parse(typeof(Weather), value);
 
             if (Settings.UseWeather)
@@ -104,8 +103,8 @@ namespace HA4IoT.Services.ControllerSlave
         private void PullDaylight()
         {
             var response = PullValue(nameof(IDaylightService));
-            var sunrise = response.GetTimeSpan("Sunrise").Value;
-            var sunset = response.GetTimeSpan("Sunset").Value;
+            var sunrise = (TimeSpan)response["Sunrise"];
+            var sunset = (TimeSpan)response["Sunset"];
 
             if (Settings.UseSunriseSunset)
             {
@@ -116,7 +115,7 @@ namespace HA4IoT.Services.ControllerSlave
         private void PullOutsideTemperature()
         {
             var response = PullValue(nameof(IOutdoorTemperatureService));
-            var outdoorTemperature = (float)response.GetNamedNumber("OutdoorTemperature");
+            var outdoorTemperature = (float)response["OutdoorTemperature"];
 
             if (Settings.UseTemperature)
             {
@@ -128,26 +127,25 @@ namespace HA4IoT.Services.ControllerSlave
         {
             var response = PullValue(nameof(IOutdoorHumidityService));
 
-            var outdoorHumidity = (float)response.GetNamedNumber("OutdoorHumidity");
+            var outdoorHumidity = (float)response["OutdoorHumidity"];
             if (Settings.UseHumidity)
             {
                 _outdoorHumidityService.Update(outdoorHumidity);
             }
         }
 
-        private JsonObject PullValue(string serviceName)
+        private JObject PullValue(string serviceName)
         {
             var uri = new Uri($"http://{Settings.MasterAddress}:80/api/Service/{serviceName}");
             using (var webClient = new HttpClient())
             {
-                string body = webClient.GetStringAsync(uri).Result;
-
+                var body = webClient.GetStringAsync(uri).Result;
                 if (body == null)
                 {
                     throw new Exception($"Received no response from '{uri}'.");
                 }
 
-                return JsonObject.Parse(body);
+                return JObject.Parse(body);
             }
         }
     }

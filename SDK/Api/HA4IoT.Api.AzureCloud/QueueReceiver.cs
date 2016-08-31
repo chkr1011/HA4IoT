@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 using Windows.Web.Http;
 using Windows.Web.Http.Headers;
 using HA4IoT.Contracts.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Api.AzureCloud
 {
@@ -112,19 +112,8 @@ namespace HA4IoT.Api.AzureCloud
                 return;
             }
 
-            JsonObject brokerProperties;
-            if (!JsonObject.TryParse(brokerPropertiesSource, out brokerProperties))
-            {
-                Log.Warning("Received Azure queue message with invalid broker properties.");
-                return;
-            }
-
-            JsonObject body;
-            if (!JsonObject.TryParse(bodySource, out body))
-            {
-                Log.Warning("Received Azure queue message with not supported body (JSON expected).");
-                return;
-            }
+            var brokerProperties = JObject.Parse(brokerPropertiesSource);
+            var body = JObject.Parse(bodySource);
 
             Log.Verbose("Received valid Azure queue message.");
             MessageReceived?.Invoke(this, new MessageReceivedEventArgs(brokerProperties, body));

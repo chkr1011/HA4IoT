@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using Windows.Networking.Sockets;
-using HA4IoT.Contracts.Networking.WebSockets;
 using HA4IoT.Networking.Http;
 using HA4IoT.Networking.WebSockets;
 
@@ -21,9 +20,7 @@ namespace HA4IoT.Networking
 
             _clientSocket = clientSocket;
 
-            _httpClientSession = new HttpClientSession(clientSocket);
-            _httpClientSession.HttpRequestReceived += HandleHttpRequest;
-            _httpClientSession.UpgradedToWebSocketSession += UpgradeToWebSocketSession;
+            _httpClientSession = new HttpClientSession(clientSocket, _cancellationTokenSource, HandleHttpRequest, UpgradeToWebSocketSession);
         }
 
         public event EventHandler<HttpRequestReceivedEventArgs> HttpRequestReceived;
@@ -45,17 +42,17 @@ namespace HA4IoT.Networking
 
         public void Dispose()
         {
+            _cancellationTokenSource.Cancel();
             _clientSocket.Dispose();
         }
 
-        private void UpgradeToWebSocketSession(object sender, UpgradedToWebSocketSessionEventArgs eventArgs)
+        private void UpgradeToWebSocketSession(UpgradedToWebSocketSessionEventArgs eventArgs)
         {
-            _httpClientSession.HttpRequestReceived -= HandleHttpRequest;
-            _httpClientSession.UpgradedToWebSocketSession -= UpgradeToWebSocketSession;
             _httpClientSession = null;
 
             _webSocketClientSession = new WebSocketClientSession(_clientSocket);
             _webSocketClientSession.Closed += OnWebSocketClientSessionClosed;
+
             var webSocketConnectedEventArgs = new WebSocketConnectedEventArgs(eventArgs.HttpRequest, _webSocketClientSession);
 
             try
@@ -74,9 +71,10 @@ namespace HA4IoT.Networking
         private void OnWebSocketClientSessionClosed(object sender, EventArgs eventArgs)
         {
             _cancellationTokenSource.Cancel();
+            _webSocketClientSession.Closed -= OnWebSocketClientSessionClosed;
         }
 
-        private void HandleHttpRequest(object sender, HttpRequestReceivedEventArgs e)
+        private void HandleHttpRequest(HttpRequestReceivedEventArgs e)
         {
             try
             {

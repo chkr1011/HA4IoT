@@ -17,7 +17,7 @@ namespace HA4IoT.Core
                     services.Add(registration);
                 }
             }
-
+            
             return services;
         }
     }

@@ -4,11 +4,11 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Networking.WebSockets;
+using Newtonsoft.Json.Linq;
 using Buffer = Windows.Storage.Streams.Buffer;
 
 namespace HA4IoT.Networking.WebSockets
@@ -94,7 +94,7 @@ namespace HA4IoT.Networking.WebSockets
             Log.Verbose($"WebSocket session '{_sessionUid}' closed.");
         }
 
-        public async Task SendAsync(JsonObject json)
+        public async Task SendAsync(JObject json)
         {
             await SendAsync(json.ToString());
         }

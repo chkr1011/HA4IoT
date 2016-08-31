@@ -12,7 +12,7 @@ using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Services.Weather;
-using HA4IoT.Networking.Json;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.ExternalServices.OpenWeatherMap
 {
@@ -30,15 +30,10 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
         
         private string _previousResponse;
 
-        [JsonMember]
         public float Temperature { get; private set; }
-        [JsonMember]
         public float Humidity { get; private set; }
-        [JsonMember]
         public TimeSpan Sunrise { get; private set; }
-        [JsonMember]
         public TimeSpan Sunset { get; private set; }
-        [JsonMember]
         public Weather Weather { get; private set; }
         
         public OpenWeatherMapService(
@@ -78,7 +73,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
         [ApiMethod(ApiCallType.Command)]
         public void Status(IApiContext apiContext)
         {
-            apiContext.Response = this.ToJsonObject(ToJsonObjectMode.Explicit);
+            apiContext.Response = JObject.FromObject(this);
         }
 
         [ApiMethod(ApiCallType.Command)]
@@ -109,10 +104,9 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
                 if (TryParseData(response))
                 {
                     PersistData(response);
+                    PushData();
                 }
-
-                PushData();
-
+                
                 _previousResponse = response;
 
                 _systemInformationService.Set("OpenWeatherMapService/LastUpdatedTimestamp", _dateTimeService.Now);

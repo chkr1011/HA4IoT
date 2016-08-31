@@ -16,9 +16,12 @@ namespace HA4IoT.Services.Scheduling
 
         public string Name { get; }
         public TimeSpan Interval { get; }
+        public ScheduleStatus Status { get; set; }
         public Action Action { get; }
-        public DateTime? LastExecutionTimestamp { get; set; }
         public TimeSpan? LastExecutionDuration { get; set; }
+        public DateTime? LastExecution { get; set; }
+        public DateTime NextExecution { get; set; }
         public string LastErrorMessage { get; set; }
+        public bool IsOneTimeSchedule { get; set; }
     }
 }

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Windows.Data.Json;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Networking.Json;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Components
 {
@@ -22,7 +21,7 @@ namespace HA4IoT.Components
         public event EventHandler<ComponentStateChangedEventArgs> StateChanged;
 
         public ComponentId Id { get; }
-        
+
         public abstract IComponentState GetState();
 
         public abstract IList<IComponentState> GetSupportedStates();
@@ -31,19 +30,24 @@ namespace HA4IoT.Components
         {
         }
 
-        public virtual JsonObject ExportConfiguration()
+        public virtual JToken ExportConfiguration()
         {
-            var configuration = new JsonObject();
-            configuration.SetValue("Type", GetType().Name);
+            var configuration = new JObject
+            {
+                ["Type"] = GetType().Name
+            };
 
             return configuration;
         }
 
-        public virtual JsonObject ExportStatus()
+        public virtual JToken ExportStatus()
         {
-            var status = new JsonObject();
-            status.SetNamedValue(ActuatorStatusKey.State, GetState().ToJsonValue());
-            status.SetValue(ActuatorStatusKey.StateLastChanged, _stateLastChanged);
+            var status = new JObject
+            {
+                ["State"] = GetState().ToJsonValue(),
+                ["StateLastChanged"] = _stateLastChanged
+            };
+
             return status;
         }
 

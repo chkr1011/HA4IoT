@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Windows.Data.Json;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
@@ -10,8 +9,8 @@ using HA4IoT.Contracts.Services.Notifications;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Networking.Http;
-using HA4IoT.Networking.Json;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Notifications
 {
@@ -79,7 +78,7 @@ namespace HA4IoT.Notifications
         [ApiMethod(ApiCallType.Command)]
         public void Delete(IApiContext apiContext)
         {
-            var notificationUid = apiContext.Request.GetNamedString("Uid", string.Empty);
+            var notificationUid = (string)apiContext.Request["Uid"];
             if (string.IsNullOrEmpty(notificationUid))
             {
                 throw new BadRequestException("Parameter 'Uid' is not specified.");
@@ -119,7 +118,7 @@ namespace HA4IoT.Notifications
         {
             lock (_syncRoot)
             {
-                e.Context.Response.SetValue("Notifications", JsonArray.Parse(JsonConvert.SerializeObject(_notifications)));
+                e.Context.Response["Notifications"] = JArray.FromObject(_notifications);
             }
         }
 

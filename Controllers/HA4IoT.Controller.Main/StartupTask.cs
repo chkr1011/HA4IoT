@@ -23,11 +23,11 @@ namespace HA4IoT.Controller.Main
 
         public void Run(IBackgroundTaskInstance taskInstance)
         {
-            var controller = new Core.Controller(new ControllerOptions { StatusLedNumber = LedGpio, Configuration = new MainConfiguration() });
+            var controller = new Core.Controller(new ControllerOptions { StatusLedNumber = LedGpio, Configuration = new Configuration() });
             controller.RunAsync(taskInstance);
         }
 
-        private class MainConfiguration : IConfiguration
+        private class Configuration : IConfiguration
         {
             public void SetupContainer(IContainerService containerService)
             {

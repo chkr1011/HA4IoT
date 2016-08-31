@@ -1,19 +1,19 @@
 ﻿using System;
-using Windows.Data.Json;
 using HA4IoT.Contracts.Core;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Contracts.Components
 {
     public class NamedComponentState : IdBase, IEquatable<NamedComponentState>, IComponentState
     {
-        private readonly IJsonValue _jsonValue;
+        private readonly JToken _jsonValue;
 
         public NamedComponentState(string name) 
             : base(name)
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentException("Name is invalid.");
 
-            _jsonValue = JsonValue.CreateStringValue(name);
+            _jsonValue = JValue.CreateString(name);
         }
 
         public bool Equals(NamedComponentState otherState)
@@ -41,7 +41,7 @@ namespace HA4IoT.Contracts.Components
             return Equals(otherState as NamedComponentState);
         }
 
-        public IJsonValue ToJsonValue()
+        public JToken ToJsonValue()
         {
             return _jsonValue;
         }

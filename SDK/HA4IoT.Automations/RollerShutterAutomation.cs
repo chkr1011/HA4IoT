@@ -56,7 +56,7 @@ namespace HA4IoT.Automations
             settingsService.CreateSettingsMonitor<RollerShutterAutomationSettings>(Id, s => Settings = s);
 
             // TODO: Consider timer service here.
-            schedulerService.RegisterSchedule("RollerShutterAutomation-" + Guid.NewGuid(), TimeSpan.FromSeconds(10), PerformPendingActions);
+            schedulerService.RegisterSchedule("RollerShutterAutomation-" + Guid.NewGuid(), TimeSpan.FromMinutes(1), PerformPendingActions);
         }
 
         public RollerShutterAutomationSettings Settings { get; private set; }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Windows.Data.Json;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
@@ -8,7 +7,7 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Networking.Json;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Services.Areas
 {
@@ -80,54 +79,55 @@ namespace HA4IoT.Services.Areas
 
         private void HandleApiConfigurationRequest(object sender, ApiRequestReceivedEventArgs e)
         {
-            var areas = new JsonObject();
+            var areas = new JObject();
             foreach (var area in _areas.GetAll())
             {
-                areas.SetNamedValue(area.Id.Value, ExportAreaConfiguration(area));
+                areas[area.Id.Value] = ExportAreaConfiguration(area);
             }
 
-            e.Context.Response.SetNamedValue("Areas", areas);
+            e.Context.Response["Areas"] = areas;
         }
 
-        private IJsonValue ExportAreaConfiguration(IArea area)
+        private JObject ExportAreaConfiguration(IArea area)
         {
-            var configuration = new JsonObject();
-            configuration.SetNamedValue("Settings", _settingsService.GetRawSettings(area.Id));
-            
-            var components = new JsonObject();
+            var components = new JObject();
             foreach (var component in area.GetComponents())
             {
                 var componentConfiguration = component.ExportConfiguration();
-                //componentConfiguration.SetValue(ComponentConfigurationKey.Type, GetType().Name);
-                componentConfiguration.SetValue(ComponentConfigurationKey.Settings, _settingsService.GetRawSettings(component.Id));
+                componentConfiguration["Settings"] = _settingsService.GetRawSettings(component.Id);
                 
                 var supportedStates = component.GetSupportedStates();
                 if (supportedStates != null)
                 {
-                    var supportedStatesJson = new JsonArray();
+                    var supportedStatesJson = new JArray();
                     foreach (var supportedState in supportedStates)
                     {
                         supportedStatesJson.Add(supportedState.ToJsonValue());
                     }
 
-                    componentConfiguration.SetValue(ComponentConfigurationKey.SupportedStates, supportedStatesJson);
+                    componentConfiguration["SupportedStates"] = supportedStatesJson;
                 }
                 
-                components.SetNamedValue(component.Id.Value, componentConfiguration);
+                components[component.Id.Value] = componentConfiguration;
             }
-
-            configuration.SetNamedValue("Components", components);
-
-            var automations = new JsonObject();
+            
+            var automations = new JObject();
             foreach (var automation in area.GetAutomations())
             {
-                var automationSettings = new JsonObject();
-                automationSettings.SetValue("Settings", _settingsService.GetRawSettings(automation.Id));
+                var automationSettings = new JObject
+                {
+                    ["Settings"] = _settingsService.GetRawSettings(automation.Id)
+                };
 
-                automations.SetValue(automation.Id.Value, automationSettings);
+                automations[automation.Id.Value] = automationSettings;
             }
-
-            configuration.SetNamedValue("Automations", automations);
+            
+            var configuration = new JObject
+            {
+                ["Settings"] = _settingsService.GetRawSettings(area.Id),
+                ["Components"] = components,
+                ["Automations"] = automations
+            };
 
             return configuration;
         }

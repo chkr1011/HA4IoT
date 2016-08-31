@@ -113,8 +113,6 @@
     <Compile Include="Areas\AreaIdFactory.cs" />
     <Compile Include="Components\ComponentIdExtensions.cs" />
     <Compile Include="Components\ComponentSettings.cs" />
-    <Compile Include="Components\ComponentStatusKey.cs" />
-    <Compile Include="Components\ComponentConfigurationKey.cs" />
     <Compile Include="Actuators\BinaryStateId.cs" />
     <Compile Include="Components\ComponentId.cs" />
     <Compile Include="Actuators\StateChangedEventArgs.cs" />
@@ -229,11 +227,9 @@
     <Compile Include="Networking\Http\HttpRequest.cs" />
     <Compile Include="Networking\Http\HttpResponse.cs" />
     <Compile Include="Networking\Http\HttpStatusCode.cs" />
-    <Compile Include="Networking\IExportToJsonValue.cs" />
     <Compile Include="Networking\Http\IHttpBody.cs" />
     <Compile Include="Networking\Http\IHttpRequestController.cs" />
     <Compile Include="Networking\Http\IHttpRequestDispatcherAction.cs" />
-    <Compile Include="Networking\IImportFromJsonValue.cs" />
     <Compile Include="Services\Daylight\IDaylightService.cs" />
     <Compile Include="Services\System\ISchedulerService.cs" />
     <Compile Include="Services\System\IDateTimeService.cs" />

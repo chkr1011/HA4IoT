@@ -64,17 +64,15 @@ namespace HA4IoT.Sensors.MotionDetectors
 
         public override void HandleApiCall(IApiContext apiContext)
         {
-            if (apiContext.Request.ContainsKey("action"))
+            var action = (string)apiContext.Request["Action"];
+
+            if (action.Equals("detected", StringComparison.OrdinalIgnoreCase))
             {
-                string action = apiContext.Request.GetNamedString("action");
-                if (action.Equals("detected", StringComparison.OrdinalIgnoreCase))
-                {
-                    UpdateState(MotionDetectorStateId.MotionDetected);
-                }
-                else if (action.Equals("detectionCompleted", StringComparison.OrdinalIgnoreCase))
-                {
-                    UpdateState(MotionDetectorStateId.Idle);
-                }
+                UpdateState(MotionDetectorStateId.MotionDetected);
+            }
+            else if (action.Equals("detectionCompleted", StringComparison.OrdinalIgnoreCase))
+            {
+                UpdateState(MotionDetectorStateId.Idle);
             }
         }
 

@@ -34,7 +34,6 @@ using HA4IoT.Hardware.Pi2;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Logger;
 using HA4IoT.Networking.Http;
-using HA4IoT.Networking.Json;
 using HA4IoT.Notifications;
 using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors;
@@ -49,6 +48,7 @@ using HA4IoT.Services.Scheduling;
 using HA4IoT.Services.System;
 using HA4IoT.Settings;
 using HA4IoT.Telemetry;
+using Newtonsoft.Json.Linq;
 using SimpleInjector;
 
 namespace HA4IoT.Core
@@ -174,7 +174,7 @@ namespace HA4IoT.Core
             apiService.ConfigurationRequested += (s, e) =>
             {
                 var controllerSettings = settingsService.GetSettings<ControllerSettings>();
-                e.Context.Response.SetNamedValue("Controller", controllerSettings.ToJsonObject());
+                e.Context.Response["Controller"] = JObject.FromObject(controllerSettings);
             };
         }
 
@@ -188,7 +188,7 @@ namespace HA4IoT.Core
 
             _container.RegisterSingleton(() => new HealthServiceOptions { StatusLed = _options.StatusLedNumber });
             _container.RegisterSingleton<IHealthService, HealthService>();
-            _container.RegisterSingleton<DiscoveryServer>();
+            _container.RegisterSingleton<DiscoveryServerService>();
             _container.RegisterSingleton<HttpServer>();
 
             _container.RegisterSingleton<ITimerService, TimerService>();
@@ -198,8 +198,10 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<IApiService, ApiService>();
             _container.RegisterSingleton<IDateTimeService, DateTimeService>();
             _container.RegisterSingleton<ISchedulerService, SchedulerService>();
+
             _container.RegisterSingleton<INotificationService, NotificationService>();
             _container.RegisterInitializer<NotificationService>(s => s.Initialize());
+
             _container.RegisterSingleton<ISettingsService, SettingsService>();
             _container.RegisterInitializer<SettingsService>(s => s.Initialize());
 

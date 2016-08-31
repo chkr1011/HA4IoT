@@ -10,6 +10,8 @@ namespace HA4IoT.Contracts.Core
 
         public static string AppRoot { get; set; } = WithFilename("App");
 
+        public static string ManagementAppRoot { get; set; } = WithFilename("ManagementApp");
+
         public static string WithFilename(params string[] paths)
         {
             if (paths == null) throw new ArgumentNullException(nameof(paths));

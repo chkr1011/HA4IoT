@@ -116,6 +116,7 @@
     <Compile Include="Areas\AreaService.cs" />
     <Compile Include="Components\ComponentService.cs" />
     <Compile Include="Areas\AreaServiceExtensions.cs" />
+    <Compile Include="Scheduling\ScheduleStatus.cs" />
     <Compile Include="System\DateTimeService.cs" />
     <Compile Include="Devices\DeviceCollection.cs" />
     <Compile Include="Devices\DeviceService.cs" />
@@ -132,6 +133,7 @@
     <Compile Include="Health\HealthServiceOptions.cs" />
     <Compile Include="Scheduling\Schedule.cs" />
     <Compile Include="Scheduling\SchedulerService.cs" />
+    <Compile Include="System\DiscoveryServerService.cs" />
     <Compile Include="System\SystemEventsService.cs" />
     <Compile Include="System\SystemInformationService.cs" />
     <Compile Include="System\Timeout.cs" />

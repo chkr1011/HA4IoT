@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Windows.Data.Json;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
@@ -67,7 +66,7 @@ namespace HA4IoT.Settings
             }
         }
 
-        public JsonObject GetRawSettings(string uri)
+        public JObject GetRawSettings(string uri)
         {
             if (uri == null) throw new ArgumentNullException(nameof(uri));
 
@@ -79,7 +78,7 @@ namespace HA4IoT.Settings
                     settings = new JObject();
                 }
 
-                return JsonObject.Parse(settings.ToString());
+                return settings;
             }
         }
 
@@ -118,25 +117,25 @@ namespace HA4IoT.Settings
         [ApiMethod(ApiCallType.Command)]
         public void Replace(IApiContext apiContext)
         {
-            var uri = apiContext.Request.GetNamedString("Uri");
-            var settings = apiContext.Request.GetNamedObject("Settings");
+            var uri = (string)apiContext.Request["Uri"];
+            var settings = (JObject)apiContext.Request["Settings"];
 
-            SetSettings(uri, JObject.Parse(settings.ToString()));
+            SetSettings(uri, settings);
         }
 
         [ApiMethod(ApiCallType.Command)]
         public void Import(IApiContext apiContext)
         {
-            var uri = apiContext.Request.GetNamedString("Uri");
-            var settings = apiContext.Request.GetNamedObject("Settings");
+            var uri = (string)apiContext.Request["Uri"];
+            var settings = (JObject)apiContext.Request["Settings"];
 
-            ImportSettings(uri, JObject.Parse(settings.ToString()));
+            ImportSettings(uri, settings);
         }
 
         [ApiMethod(ApiCallType.Request)]
         public void Settings(IApiContext apiContext)
         {
-            var uri = apiContext.Request.GetNamedString("Uri");
+            var uri = (string)apiContext.Request["Uri"];
 
             apiContext.Response = GetRawSettings(uri);
         }
@@ -146,7 +145,7 @@ namespace HA4IoT.Settings
         {
             lock (_syncRoot)
             {
-                apiContext.Response = JsonObject.Parse(JsonConvert.SerializeObject(_settings));
+                apiContext.Response = JObject.FromObject(_settings);
             }
         }
 

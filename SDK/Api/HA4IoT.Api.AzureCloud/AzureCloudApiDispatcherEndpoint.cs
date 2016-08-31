@@ -6,7 +6,7 @@ using Windows.Data.Json;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Networking.Json;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Api.AzureCloud
 {
@@ -32,7 +32,7 @@ namespace HA4IoT.Api.AzureCloud
                 var settings = JsonObject.Parse(File.ReadAllText(filename));
                 var eventsSettings = settings.GetNamedObject("Events");
                 SetupEventHubSender(eventsSettings);
-                
+
                 var outboundQueueSettings = settings.GetNamedObject("OutboundQueue");
                 SetupOutboundQueueSender(outboundQueueSettings);
 
@@ -54,10 +54,12 @@ namespace HA4IoT.Api.AzureCloud
                 return;
             }
 
-            var eventData = new JsonObject();
-            eventData.SetNamedValue("type", "StateChanged".ToJsonValue());
-            eventData.SetNamedValue("componentId", component.Id.ToJsonValue());
-            eventData.SetNamedValue("state", component.ExportStatus());
+            var eventData = new JObject
+            {
+                ["type"] = "StateChanged",
+                ["componentId"] = component.Id.ToString(),
+                ["state"] = component.ExportStatus()
+            };
 
             _eventHubSender?.EnqueueEvent(eventData);
         }
@@ -95,16 +97,16 @@ namespace HA4IoT.Api.AzureCloud
 
         private void DistpachMessage(object sender, MessageReceivedEventArgs e)
         {
-            Stopwatch processingStopwatch = Stopwatch.StartNew();
+            var processingStopwatch = Stopwatch.StartNew();
 
-            string uri = e.Body.GetNamedString("Uri", string.Empty);
+            var uri = (string)e.Body["Uri"];
             if (string.IsNullOrEmpty(uri))
             {
                 Log.Warning("Received Azure queue message with missing or invalid URI property.");
                 return;
             }
 
-            string callTypeSource = e.Body.GetNamedString("CallType", string.Empty);
+            var callTypeSource = (string)e.Body["CallType"];
 
             ApiCallType callType;
             if (!Enum.TryParse(callTypeSource, true, out callType))
@@ -113,9 +115,9 @@ namespace HA4IoT.Api.AzureCloud
                 return;
             }
 
-            var request = e.Body.GetNamedObject("Content", new JsonObject());
+            var request = (JObject)e.Body["Content"];
 
-            var context = new QueueBasedApiContext(e.BrokerProperties, e.Body, processingStopwatch, callType, uri, request, new JsonObject());
+            var context = new QueueBasedApiContext(e.BrokerProperties, e.Body, processingStopwatch, callType, uri, request, new JObject());
             var eventArgs = new ApiRequestReceivedEventArgs(context);
             RequestReceived?.Invoke(this, eventArgs);
 
@@ -132,29 +134,33 @@ namespace HA4IoT.Api.AzureCloud
         {
             context.ProcessingStopwatch.Stop();
 
-            string correlationId = context.BrokerProperties.GetNamedString("CorrelationId", string.Empty);
-            string clientEtag = context.Request.GetNamedString("ETag", string.Empty);
-            
-            var brokerProperties = new JsonObject();
-            brokerProperties.SetValue("CorrelationId", correlationId);
+            var correlationId = (string)context.BrokerProperties["CorrelationId"];
+            var clientEtag = (string)context.Request["ETag"];
 
-            var message = new JsonObject();
-            message.SetValue("ResultCode", context.ResultCode.ToString());
-            message.SetValue("ProcessingDuration", context.ProcessingStopwatch.ElapsedMilliseconds);
+            var brokerProperties = new JObject
+            {
+                ["CorrelationId"] = correlationId
+            };
+
+            var message = new JObject
+            {
+                ["ResultCode"] = context.ResultCode.ToString(),
+                ["ProcessingDuration"] = context.ProcessingStopwatch.ElapsedMilliseconds
+            };
 
             if (context.CallType == ApiCallType.Request)
             {
-                string serverEtag = context.Response.GetNamedObject("Meta", new JsonObject()).GetNamedString("Hash", string.Empty);
-                message.SetValue("ETag", serverEtag);
+                var serverEtag = (string)context.Response["Meta"]["Hash"];
+                message["ETag"] = serverEtag;
 
                 if (!string.Equals(clientEtag, serverEtag))
                 {
-                    message.SetNamedValue("Content", context.Response);
+                    message["Content"] = context.Response;
                 }
             }
             else
             {
-                message.SetNamedValue("Content", context.Response);
+                message["Content"] = context.Response;
             }
 
             await _outboundQueue.SendAsync(brokerProperties, message);

@@ -29,11 +29,11 @@ namespace HA4IoT.Tests.Mockups
             var systemInformationService = new SystemInformationService();
             var apiService = new ApiService();
 
-            SchedulerService = new SchedulerService(TimerService);
+            SchedulerService = new SchedulerService(TimerService, new DateTimeService());
             var systemEventsService = new SystemEventsService(this);
             var settingsService = new SettingsService();
             AutomationService = new AutomationService(systemEventsService, systemInformationService, apiService);
-            ComponentService = new ComponentService(systemEventsService, systemInformationService, apiService);
+            ComponentService = new ComponentService(systemEventsService, systemInformationService, apiService, settingsService);
             AreaService = new AreaService(ComponentService, AutomationService, systemEventsService, systemInformationService, apiService, settingsService);
             NotificationService = new NotificationService(DateTimeService, new ApiService(), SchedulerService, systemEventsService, new SettingsService());
         }

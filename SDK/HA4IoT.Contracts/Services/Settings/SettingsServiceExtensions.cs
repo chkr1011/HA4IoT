@@ -3,12 +3,13 @@ using Windows.Data.Json;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Contracts.Services.Settings
 {
     public static class SettingsServiceExtensions
     {
-        public static JsonObject GetRawSettings(this ISettingsService settingsService, AreaId areaId)
+        public static JObject GetRawSettings(this ISettingsService settingsService, AreaId areaId)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             if (areaId == null) throw new ArgumentNullException(nameof(areaId));
@@ -17,7 +18,7 @@ namespace HA4IoT.Contracts.Services.Settings
             return settingsService.GetRawSettings(uri);
         }
 
-        public static JsonObject GetRawSettings(this ISettingsService settingsService, ComponentId componentId)
+        public static JObject GetRawSettings(this ISettingsService settingsService, ComponentId componentId)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             if (componentId == null) throw new ArgumentNullException(nameof(componentId));
@@ -26,7 +27,7 @@ namespace HA4IoT.Contracts.Services.Settings
             return settingsService.GetRawSettings(uri);
         }
 
-        public static JsonObject GetRawSettings(this ISettingsService settingsService, AutomationId automationId)
+        public static JObject GetRawSettings(this ISettingsService settingsService, AutomationId automationId)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             if (automationId == null) throw new ArgumentNullException(nameof(automationId));

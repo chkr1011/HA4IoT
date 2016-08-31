@@ -4,6 +4,7 @@ using Windows.Data.Json;
 using HA4IoT.Networking.Json;
 using HA4IoT.Networking.WebSockets;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Networking.Tests
 {
@@ -13,8 +14,12 @@ namespace HA4IoT.Networking.Tests
         [TestMethod]
         public void WebSocketFrame_Simple()
         {
-            var payload = new JsonObject().WithString("Hello", "World").ToString();
-            var payloadBuffer = Encoding.UTF8.GetBytes(payload);
+            var payload = new JObject
+            {
+                ["Hello"] = "World"
+            };
+
+            var payloadBuffer = Encoding.UTF8.GetBytes(payload.ToString());
             var webSocketFrame = WebSocketFrame.Create(payloadBuffer);
 
             var result = webSocketFrame.ToByteArray();
@@ -26,8 +31,13 @@ namespace HA4IoT.Networking.Tests
         [TestMethod]
         public void WebSocketFrame_LargePayload()
         {
-            var payload = new JsonObject().WithString("Hello12121212121212121212121212121212121212121212121212121AAAAAAAAAAAAAAA", "World56565656565656565656565656565656565656565656565BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBCCCCCCCCCC").ToString();
-            var payloadBuffer = Encoding.UTF8.GetBytes(payload);
+            var payload = new JObject
+            {
+                ["Hello12121212121212121212121212121212121212121212121212121AAAAAAAAAAAAAAA"] =
+                    "World56565656565656565656565656565656565656565656565BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBCCCCCCCCCC"
+            };
+
+            var payloadBuffer = Encoding.UTF8.GetBytes(payload.ToString());
             var webSocketFrame = WebSocketFrame.Create(payloadBuffer);
 
             var result = webSocketFrame.ToByteArray();
@@ -39,8 +49,12 @@ namespace HA4IoT.Networking.Tests
         [TestMethod]
         public void WebSocketFrame_Parse()
         {
-            var payload = new JsonObject().WithString("Hello", "World").ToString();
-            var payloadBuffer = Encoding.UTF8.GetBytes(payload);
+            var payload = new JObject
+            {
+                ["Hello"] = "World"
+            };
+
+            var payloadBuffer = Encoding.UTF8.GetBytes(payload.ToString());
             var sourceWebSocketFrame = WebSocketFrame.Create(payloadBuffer);
             sourceWebSocketFrame.Opcode = WebSocketOpcode.Ping;
 

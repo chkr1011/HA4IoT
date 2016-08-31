@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics;
-using System.Threading;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Networking.Sockets;
 using HA4IoT.Contracts.Logging;
@@ -38,27 +38,34 @@ namespace HA4IoT.Networking.Http
 
         private void HandleConnection(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
-            Task.Factory.StartNew(
-                () => HandleConnection(args.Socket),
-                CancellationToken.None,
-                TaskCreationOptions.LongRunning, 
-                TaskScheduler.Default).ConfigureAwait(false);
+            Task.Run(() => HandleConnection(args.Socket));
         }
 
         private void HandleConnection(StreamSocket clientSocket)
         {
             using (var clientSession = new ClientSession(clientSocket))
             {
+                clientSession.HttpRequestReceived += HandleHttpRequest;
+                clientSession.WebSocketConnected += HandleWebSocketConnected;
+
                 try
                 {
-                    clientSession.HttpRequestReceived += HandleHttpRequest;
-                    clientSession.WebSocketConnected += HandleWebSocketConnected;
-
                     clientSession.Run();
                 }
                 catch (Exception exception)
                 {
+                    var comException = exception as COMException;
+                    if (comException?.HResult == -2147014843)
+                    {
+                        return;
+                    }
+
                     Debug.WriteLine("ERROR: Error while handling HTTP client requests. " + exception);
+                }
+                finally
+                {
+                    clientSession.HttpRequestReceived -= HandleHttpRequest;
+                    clientSession.WebSocketConnected -= WebSocketConnected;
                 }
             }
         }

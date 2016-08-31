@@ -5,7 +5,6 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Networking.Json;
 
 namespace HA4IoT.Actuators.StateMachines
 {
@@ -148,10 +147,11 @@ namespace HA4IoT.Actuators.StateMachines
                 return;
             }
 
-            if (apiContext.Request.ContainsKey("action"))
+            var request = apiContext.Request.ToObject<ApiCallRequest>();
+
+            if (!string.IsNullOrEmpty(request.Action))
             {
-                string action = apiContext.Request.GetNamedString("action", "nextState");
-                if (action == "nextState")
+                if (request.Action == "nextState")
                 {
                     SetState(GetNextState(GetState()));
                 }
@@ -159,17 +159,24 @@ namespace HA4IoT.Actuators.StateMachines
                 return;
             }
 
-            if (apiContext.Request.ContainsKey("state"))
+            if (!string.IsNullOrEmpty(request.State))
             {
-                var stateId = new NamedComponentState(apiContext.Request.GetNamedString("state", string.Empty));
+                var stateId = new NamedComponentState(request.State);
                 if (!SupportsState(stateId))
                 {
                     apiContext.ResultCode = ApiResultCode.InvalidBody;
-                    apiContext.Response.SetValue("Message", "State ID not supported.");
+                    apiContext.Response["Message"] = "State ID not supported.";
                 }
 
                 SetState(stateId);
             }
+        }
+
+        private class ApiCallRequest
+        {
+            public string Action { get; set; }
+
+            public string State { get; set; }
         }
 
         public override IList<IComponentState> GetSupportedStates()

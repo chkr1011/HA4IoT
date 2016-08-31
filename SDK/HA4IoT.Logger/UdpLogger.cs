@@ -5,13 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using Windows.Data.Json;
 using Windows.Networking;
 using Windows.Networking.Sockets;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Networking;
-using HA4IoT.Networking.Json;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Logger
 {
@@ -84,7 +82,7 @@ namespace HA4IoT.Logger
 
             lock (_syncRoot)
             {
-                apiContext.Response = CreatePackage(_history);
+                apiContext.Response = JObject.FromObject(_history);
             }
         }
 
@@ -141,10 +139,10 @@ namespace HA4IoT.Logger
                 foreach (var traceItem in pendingItems)
                 {
                     var collection = new[] { traceItem };
-                    JsonObject package = CreatePackage(collection);
+                    var package = CreatePackage(collection);
 
-                    string data = package.Stringify();
-                    byte[] buffer = Encoding.UTF8.GetBytes(data);
+                    var data = package.ToString();
+                    var buffer = Encoding.UTF8.GetBytes(data);
 
                     _outputStream.Write(buffer, 0, buffer.Length);
                     _outputStream.Flush();
@@ -171,18 +169,20 @@ namespace HA4IoT.Logger
             }
         }
 
-        private JsonObject CreatePackage(IEnumerable<LogEntry> traceItems)
+        private JObject CreatePackage(IEnumerable<LogEntry> traceItems)
         {
-            var traceItemsCollection = new JsonArray();
+            var traceItemsCollection = new JArray();
             foreach (var traceItem in traceItems)
             {
-                traceItemsCollection.Add(traceItem.ExportToJsonObject());
+                traceItemsCollection.Add(JObject.FromObject(traceItem));
             }
-            
-            JsonObject package = new JsonObject();
-            package.SetNamedValue("Type", "HA4IoT.Trace".ToJsonValue());
-            package.SetNamedValue("Version", 1.ToJsonValue());
-            package.SetNamedValue("TraceItems", traceItemsCollection);
+
+            var package = new JObject
+            {
+                ["Type"] = "HA4IoT.Trace",
+                ["Version"] = 1,
+                ["TraceItems"] = traceItemsCollection
+            };
 
             return package;
         }

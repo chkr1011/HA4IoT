@@ -1,34 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
-using Windows.Data.Json;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Networking.Http;
+using HA4IoT.Settings;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Services.Components
 {
     [ApiServiceClass(typeof(IComponentService))]
     public class ComponentService : ServiceBase, IComponentService
     {
+        private readonly ComponentCollection _components = new ComponentCollection();
+
         private readonly ISystemInformationService _systemInformationService;
         private readonly IApiService _apiService;
-        private readonly ComponentCollection _components = new ComponentCollection();
+        private readonly ISettingsService _settingsService;
 
         public ComponentService(
             ISystemEventsService systemEventsService,
             ISystemInformationService systemInformationService,
-            IApiService apiService)
+            IApiService apiService,
+            ISettingsService settingsService)
         {
             if (systemEventsService == null) throw new ArgumentNullException(nameof(systemEventsService));
             if (systemInformationService == null) throw new ArgumentNullException(nameof(systemInformationService));
             if (apiService == null) throw new ArgumentNullException(nameof(apiService));
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
             _systemInformationService = systemInformationService;
             _apiService = apiService;
+            _settingsService = settingsService;
 
             apiService.StatusRequested += HandleApiStatusRequest;
         }
@@ -92,7 +99,7 @@ namespace HA4IoT.Services.Components
         public void Update(IApiContext apiContext)
         {
             // TODO: Consider creating classes as optional method parameters which are filled via reflection from Request JSON.
-            var componentId = apiContext.Request.GetNamedString("ComponentId", string.Empty);
+            var componentId = (string)apiContext.Request["ComponentId"];
             if (string.IsNullOrEmpty(componentId))
             {
                 throw new BadRequestException("Property 'ComponentId' is missing.");
@@ -111,7 +118,7 @@ namespace HA4IoT.Services.Components
         [ApiMethod(ApiCallType.Command)]
         public void Reset(IApiContext apiContext)
         {
-            var componentId = apiContext.Request.GetNamedString("ComponentId", string.Empty);
+            var componentId = (string)apiContext.Request["ComponentId"];
             if (string.IsNullOrEmpty(componentId))
             {
                 throw new BadRequestException("Property 'ComponentId' is missing.");
@@ -129,13 +136,16 @@ namespace HA4IoT.Services.Components
 
         private void HandleApiStatusRequest(object sender, ApiRequestReceivedEventArgs e)
         {
-            var components = new JsonObject();
+            var components = new JObject();
             foreach (var component in _components.GetAll())
             {
-                components.SetNamedValue(component.Id.Value, component.ExportStatus());
+                var status = component.ExportStatus();
+                status["Settings"] = _settingsService.GetRawSettings(component.Id);
+
+                components[component.Id.Value] = status;
             }
 
-            e.Context.Response.SetNamedValue("Components", components);
+            e.Context.Response["Components"] = components;
         }
     }
 }

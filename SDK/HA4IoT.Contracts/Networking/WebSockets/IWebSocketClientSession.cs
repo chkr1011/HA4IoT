@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Windows.Data.Json;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Contracts.Networking.WebSockets
 {
@@ -10,7 +10,7 @@ namespace HA4IoT.Contracts.Networking.WebSockets
 
         event EventHandler<WebSocketMessageReceivedEventArgs> MessageReceived;
 
-        Task SendAsync(JsonObject json);
+        Task SendAsync(JObject json);
 
         Task SendAsync(string text);
 

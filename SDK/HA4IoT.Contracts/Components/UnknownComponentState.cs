@@ -1,12 +1,19 @@
-﻿using Windows.Data.Json;
+﻿using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Contracts.Components
 {
     public class UnknownComponentState : IComponentState
     {
-        public IJsonValue ToJsonValue()
+        private readonly JToken _jsonValue;
+
+        public UnknownComponentState()
         {
-            return JsonValue.CreateNullValue();
+            _jsonValue = JValue.CreateNull();
+        }
+
+        public JToken ToJsonValue()
+        {
+            return _jsonValue;
         }
 
         public bool Equals(IComponentState otherState)

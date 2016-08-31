@@ -3,7 +3,8 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.OutdoorHumidity;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Networking.Json;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Services.Environment
 {
@@ -20,19 +21,19 @@ namespace HA4IoT.Services.Environment
 
             apiService.StatusRequested += (s, e) =>
             {
-                e.Context.Response.Import(this.ToJsonObject(ToJsonObjectMode.Explicit));
+                e.Context.Response.Merge(JObject.FromObject(this));
             };
         }
 
-        [JsonMember]
         public float OutdoorHumidity { get; private set; }
 
+        [JsonIgnore]
         public DateTime? Timestamp { get; private set; }
 
         [ApiMethod(ApiCallType.Request)]
         public void Status(IApiContext apiContext)
         {
-            apiContext.Response = this.ToJsonObject();
+            apiContext.Response = JObject.FromObject(this);
         }
 
         public void Update(float outdoorHumidity)

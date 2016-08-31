@@ -2,8 +2,7 @@
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Networking;
-using HA4IoT.Networking.Json;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Services.System
 {
@@ -19,7 +18,7 @@ namespace HA4IoT.Services.System
         [ApiMethod(ApiCallType.Request)]
         public void Status(IApiContext apiContext)
         {
-            apiContext.Response = this.ToJsonObject();
+            apiContext.Response = JObject.FromObject(this);
         }
     }
 }

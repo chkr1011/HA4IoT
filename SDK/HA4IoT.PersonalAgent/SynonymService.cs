@@ -8,8 +8,6 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Networking;
-using HA4IoT.Networking.Json;
 
 namespace HA4IoT.PersonalAgent
 {
@@ -124,13 +122,13 @@ namespace HA4IoT.PersonalAgent
 
         public void HandleApiCall(IApiContext apiContext)
         {
-            apiContext.Response.SetValue("AreaSynonyms", _storage.ConvertAreaSynonymsToJsonObject(_areaSynonyms));
+            ////apiContext.Response.SetValue("AreaSynonyms", _storage.ConvertAreaSynonymsToJsonObject(_areaSynonyms));
 
-            apiContext.Response.SetValue("ComponentSynonyms",
-                _storage.ConvertComponentSynonymsToJsonObject(_componentSynonyms));
+            ////apiContext.Response.SetValue("ComponentSynonyms",
+            ////    _storage.ConvertComponentSynonymsToJsonObject(_componentSynonyms));
 
-            apiContext.Response.SetValue("ComponentStateSynonyms",
-                _storage.ConvertComponentStateSynonymsToJsonArray(_componentStateSynonyms));
+            ////apiContext.Response.SetValue("ComponentStateSynonyms",
+            ////    _storage.ConvertComponentStateSynonymsToJsonArray(_componentStateSynonyms));
         }
 
         public void RegisterDefaultComponentStateSynonyms()

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using Windows.Data.Json;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using HA4IoT.Contracts.Api;
@@ -10,6 +9,7 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Networking.Json;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Api
 {
@@ -22,9 +22,8 @@ namespace HA4IoT.Api
 
         public ApiService()
         {
-            RouteRequest("requests", HandleRequestApiDescription);
-            RouteRequest("status", HandleStatusRequest);
-            RouteRequest("configuration", HandleConfigurationRequest);
+            RouteRequest("Status", HandleStatusRequest);
+            RouteRequest("Configuration", HandleConfigurationRequest);
         }
 
         public event EventHandler<ApiRequestReceivedEventArgs> StatusRequested;
@@ -120,18 +119,12 @@ namespace HA4IoT.Api
 
         private void HandleStatusRequest(IApiContext apiContext)
         {
-            apiContext.Response.SetValue("type", "HA4IoT.Status");
-            apiContext.Response.SetValue("version", 1D);
-
             var eventArgs = new ApiRequestReceivedEventArgs(apiContext);
             StatusRequested?.Invoke(this, eventArgs);
         }
 
         private void HandleConfigurationRequest(IApiContext apiContext)
         {
-            apiContext.Response.SetValue("type", "HA4IoT.Configuration");
-            apiContext.Response.SetValue("version", 1D);
-
             var eventArgs = new ApiRequestReceivedEventArgs(apiContext);
             ConfigurationRequested?.Invoke(this, eventArgs);
         }
@@ -173,24 +166,27 @@ namespace HA4IoT.Api
                 handler(apiContext);
                 stopwatch.Stop();
 
-                var metaInformation = new JsonObject();
-                metaInformation.SetValue("Hash");
-                metaInformation.SetValue("ProcessingDuration");
-                apiContext.Response.SetValue("Meta", metaInformation);
+                var metaInformation = new JObject
+                {
+                    ["Hash"] = null,
+                    ["ProcessingDuration"] = null
+                };
+
+                apiContext.Response["Meta"] = metaInformation;
 
                 string hash = null;
                 if (apiContext.CallType == ApiCallType.Request)
                 {
-                    hash = GenerateHash(apiContext.Response.Stringify());
+                    hash = GenerateHash(apiContext.Response.ToString());
                 }
 
-                metaInformation.SetValue("Hash", hash);
-                metaInformation.SetValue("ProcessingDuration", stopwatch.ElapsedMilliseconds);
+                metaInformation["Hash"] = hash;
+                metaInformation["ProcessingDuration"] = stopwatch.ElapsedMilliseconds;
             }
             catch (Exception exception)
             {
                 apiContext.ResultCode = ApiResultCode.InternalError;
-                apiContext.Response = JsonObjectSerializer.SerializeException(exception);
+                apiContext.Response = JsonSerializer.SerializeException(exception);
             }
         }
 
@@ -200,25 +196,6 @@ namespace HA4IoT.Api
             var hashBuffer = _hashAlgorithm.HashData(buffer);
 
             return CryptographicBuffer.EncodeToBase64String(hashBuffer);
-        }
-
-        private void HandleRequestApiDescription(IApiContext apiContext)
-        {
-            var requestRoutes = new JsonArray();
-            foreach (var requestRoute in _requestRoutes)
-            {
-                requestRoutes.Add(JsonValue.CreateStringValue(requestRoute.Key));
-            }
-
-            apiContext.Response.SetValue("Requests", requestRoutes);
-
-            var commandRoutes = new JsonArray();
-            foreach (var commandRoute in _commandRoutes)
-            {
-                commandRoutes.Add(JsonValue.CreateStringValue(commandRoute.Key));
-            }
-
-            apiContext.Response.SetValue("Commands", requestRoutes);
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
-using Windows.Data.Json;
 using HA4IoT.Contracts.Automations;
-using HA4IoT.Networking.Json;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Automations
 {
@@ -16,9 +15,9 @@ namespace HA4IoT.Automations
 
         public AutomationId Id { get; }
         
-        public virtual JsonObject ExportStatusToJsonObject()
+        public virtual JObject ExportStatusToJsonObject()
         {
-            return new JsonObject();
+            return new JObject();
         }
     }
 }

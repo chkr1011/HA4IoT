@@ -1,5 +1,5 @@
 ﻿using System;
-using Windows.Data.Json;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Contracts.Services.Settings
 {
@@ -9,6 +9,6 @@ namespace HA4IoT.Contracts.Services.Settings
 
         TSettings GetSettings<TSettings>(string uri);
 
-        JsonObject GetRawSettings(string uri);
+        JObject GetRawSettings(string uri);
     }
 }

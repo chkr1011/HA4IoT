@@ -1,6 +1,5 @@
 ﻿using System;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Networking;
 using HA4IoT.Networking.Http;
 
 namespace HA4IoT.Api.LocalHttpServer
@@ -20,6 +19,7 @@ namespace HA4IoT.Api.LocalHttpServer
         {
             var httpRequestDispatcher = new HttpRequestDispatcher(_httpServer);
             httpRequestDispatcher.MapFolder("App", StoragePath.AppRoot);
+            httpRequestDispatcher.MapFolder("ManagementApp", StoragePath.ManagementAppRoot);
             httpRequestDispatcher.MapFolder("Storage", StoragePath.Root);
         }
     }

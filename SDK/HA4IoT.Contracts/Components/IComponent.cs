@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Windows.Data.Json;
 using HA4IoT.Contracts.Api;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Contracts.Components
 {
@@ -18,8 +18,8 @@ namespace HA4IoT.Contracts.Components
 
         void HandleApiCall(IApiContext apiContext);
 
-        JsonObject ExportConfiguration();
+        JToken ExportConfiguration();
 
-        JsonObject ExportStatus();
+        JToken ExportStatus();
     }
 }

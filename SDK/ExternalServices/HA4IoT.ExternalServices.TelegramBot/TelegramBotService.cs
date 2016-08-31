@@ -4,13 +4,12 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.PersonalAgent;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.ExternalServices.TelegramBot;
 using HA4IoT.Contracts.Services.Settings;
-using HA4IoT.Networking.Json;
+using Newtonsoft.Json.Linq;
 using HttpClient = System.Net.Http.HttpClient;
 
 namespace HA4IoT.ExternalServices.TelegramBot
@@ -176,27 +175,32 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
         private void ProcessUpdates(string body)
         {
-            JsonObject response;
-            if (!JsonObject.TryParse(body, out response))
+            JObject response;
+            try
+            {
+                response = JObject.Parse(body);
+            }
+            catch (Exception exception)
+            {
+                Log.Warning(exception, "Unable to process updates.");
+                return;
+            }
+            
+            if (!(bool)response["ok"])
             {
                 return;
             }
 
-            if (!response.GetNamedBoolean("ok", false))
+            foreach (var updateItem in response["result"].ToObject<JArray>())
             {
-                return;
-            }
+                var update = updateItem.ToObject<JObject>();
 
-            foreach (var updateItem in response.GetNamedArray("result"))
-            {
-                JsonObject update = updateItem.GetObject();
-
-                _latestUpdateId = (int)update.GetNamedNumber("update_id");
-                ProcessMessage(update.GetNamedObject("message"));
+                _latestUpdateId = (int)update["update_id"];
+                ProcessMessage((JObject)update["message"]);
             }
         }
 
-        private void ProcessMessage(JsonObject message)
+        private void ProcessMessage(JObject message)
         {
             var inboundMessage = ConvertJsonMessageToInboundMessage(message);
 
@@ -215,13 +219,13 @@ namespace HA4IoT.ExternalServices.TelegramBot
             }
         }
 
-        private TelegramInboundMessage ConvertJsonMessageToInboundMessage(JsonObject message)
+        private TelegramInboundMessage ConvertJsonMessageToInboundMessage(JObject message)
         {
-            var text = message.GetNamedString("text");
-            var timestamp = UnixTimeStampToDateTime(message.GetNamedNumber("date"));
+            var text = (string)message["text"];
+            var timestamp = UnixTimeStampToDateTime((long)message["date"]);
 
-            var chat = message.GetNamedObject("chat");
-            var chatId = (int)chat.GetNamedNumber("id");
+            var chat = (JObject)message["chat"];
+            var chatId = (int)chat["id"];
 
             return new TelegramInboundMessage(timestamp, chatId, text);
         }
@@ -233,16 +237,18 @@ namespace HA4IoT.ExternalServices.TelegramBot
                 throw new InvalidOperationException("The Telegram outbound message is too long.");
             }
 
-            var json = new JsonObject();
-            json.SetValue("chat_id", message.ChatId);
-            json.SetValue("text", message.Text);
+            var json = new JObject
+            {
+                ["chat_id"] = message.ChatId,
+                ["text"] = message.Text
+            };
 
             if (message.Format == TelegramMessageFormat.HTML)
             {
-                json.SetValue("parse_mode", "HTML");
+                json["parse_mode"] = "HTML";
             }
 
-            return new StringContent(json.Stringify(), Encoding.UTF8, "application/json");
+            return new StringContent(json.ToString(), Encoding.UTF8, "application/json");
         }
 
         private DateTime UnixTimeStampToDateTime(double unixTimeStamp)

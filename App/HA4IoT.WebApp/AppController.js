@@ -149,11 +149,11 @@ function AppController($scope, $http) {
 
     $scope.toggleState = function (actuator) {
         var newState = "On";
-        if (actuator.state.state === "On") {
+        if (actuator.state.State === "On") {
             newState = "Off";
         }
 
-        invokeActuator(actuator.id, { state: newState }, function () { actuator.state.state = newState; });
+        invokeActuator(actuator.id, { state: newState }, function () { actuator.state.State = newState; });
     };
 
     $scope.invokeVirtualButton = function (actuator) {
@@ -162,12 +162,12 @@ function AppController($scope, $http) {
     }
 
     $scope.toggleIsEnabled = function (actuator) {
-        var newState = !actuator.settings.IsEnabled;
+        var newState = !actuator.Settings.IsEnabled;
 
         updateActuatorSettings(actuator.id, {
             IsEnabled: newState
         }, function () {
-            actuator.settings.IsEnabled = newState;
+            actuator.Settings.IsEnabled = newState;
         });
     };
 
@@ -175,7 +175,7 @@ function AppController($scope, $http) {
         invokeActuator(actuator.id, {
             state: newState
         }, function () {
-            actuator.state.state = newState;
+            actuator.state.State = newState;
         });
     };
 
