@@ -108,7 +108,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentBase.cs" />
-    <Compile Include="ComponentSettingsWrapper.cs" />
     <Compile Include="ComponentExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.Components.rd.xml" />
@@ -118,13 +117,13 @@
       <Project>{E1EDAC4B-83B9-46F4-9F6A-3BAE97D79F29}</Project>
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HA4IoT.Core\HA4IoT.Core.csproj">
-      <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
-      <Name>HA4IoT.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
       <Name>HA4IoT.Networking</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HA4IoT.Settings\HA4IoT.Settings.csproj">
+      <Project>{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879}</Project>
+      <Name>HA4IoT.Settings</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

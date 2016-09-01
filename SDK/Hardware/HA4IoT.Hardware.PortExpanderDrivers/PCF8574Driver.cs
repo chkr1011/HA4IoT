@@ -1,14 +1,15 @@
 ﻿using System;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Hardware.PortExpanderDrivers
 {
     public class PCF8574Driver : IPortExpanderDriver
     {
-        private readonly II2CBus _i2CBus;
+        private readonly II2CBusService _i2CBus;
         private readonly I2CSlaveAddress _address;
 
-        public PCF8574Driver(I2CSlaveAddress address, II2CBus i2CBus)
+        public PCF8574Driver(I2CSlaveAddress address, II2CBusService i2CBus)
         {
             if (address == null) throw new ArgumentNullException(nameof(address));
             if (i2CBus == null) throw new ArgumentNullException(nameof(i2CBus));

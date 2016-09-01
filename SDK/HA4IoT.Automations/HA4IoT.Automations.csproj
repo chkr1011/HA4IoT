@@ -107,21 +107,20 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AutomationSettingsWrapper.cs" />
-    <Compile Include="AutomationExtensions.cs" />
+    <Compile Include="AutomationFactory.cs" />
+    <Compile Include="AutomationSettings.cs" />
+    <Compile Include="BathroomFanAutomationSettings.cs" />
     <Compile Include="RollerShutterAutomationExtensions.cs" />
     <Compile Include="BathroomFanAutomation.cs" />
     <Compile Include="ConditionalOnAutomation.cs" />
-    <Compile Include="ConditionalOnAutomationExtensions.cs" />
     <Compile Include="RollerShutterAutomation.cs" />
-    <Compile Include="RollerShutterAutomationSettingsWrapper.cs" />
+    <Compile Include="RollerShutterAutomationSettings.cs" />
     <Compile Include="TurnOnAndOffAutomation.cs" />
-    <Compile Include="TurnOnAndOffAutomationExtensions.cs" />
     <Compile Include="Automation.cs" />
     <Compile Include="AutomationBase.cs" />
     <Compile Include="AutomationIdFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TurnOnAndOffAutomationSettingsWrapper.cs" />
+    <Compile Include="TurnOnAndOffAutomationSettings.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.Automations.rd.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -137,13 +136,13 @@
       <Project>{551337E7-D1EF-4145-92B4-F7086F7665A6}</Project>
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HA4IoT.Core\HA4IoT.Core.csproj">
-      <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
-      <Name>HA4IoT.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{d4e0a3f9-6521-4aee-815a-e2a60323fb63}</Project>
       <Name>HA4IoT.Networking</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HA4IoT.Settings\HA4IoT.Settings.csproj">
+      <Project>{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879}</Project>
+      <Name>HA4IoT.Settings</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

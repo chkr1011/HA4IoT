@@ -21,8 +21,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Main", "C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Cellar", "Controllers\HA4IoT.Controller.Cellar\HA4IoT.Controller.Cellar.csproj", "{2ECC3769-3EDB-4646-86EE-91FBDACBA972}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Demo", "Controllers\HA4IoT.Controller.Demo\HA4IoT.Controller.Demo.csproj", "{171A1B71-EC5A-42BC-A3D9-0252B157F70A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Actuators", "SDK\HA4IoT.Actuators\HA4IoT.Actuators.csproj", "{808ABECF-D9C2-4AB2-95D8-EAF228B44576}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Actuators.Tests", "Tests\HA4IoT.Actuators.Tests\HA4IoT.Actuators.Tests.csproj", "{22C0304B-1F66-4682-93A3-EBC7655708F7}"
@@ -81,7 +79,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Api", "SDK\Api\HA4Io
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Api.AzureCloud", "SDK\Api\HA4IoT.Api.AzureCloud\HA4IoT.Api.AzureCloud.csproj", "{B03D2D62-A682-44AD-9BB8-E88B53973AFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Api.LocalRestServer", "SDK\Api\HA4IoT.Api.LocalHttpServer\HA4IoT.Api.LocalRestServer.csproj", "{88CB819A-3CD6-4AC3-B767-1E5360F5124D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Api.LocalHttpServer", "SDK\Api\HA4IoT.Api.LocalHttpServer\HA4IoT.Api.LocalHttpServer.csproj", "{88CB819A-3CD6-4AC3-B767-1E5360F5124D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.SasTokenGenerator", "Tools\HA4IoT.SasTokenGenerator\HA4IoT.SasTokenGenerator.csproj", "{2B4A23E4-96DC-49A5-A364-CD922CFFD80A}"
 EndProject
@@ -131,6 +129,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Core.Tests", "Tests\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Services", "SDK\HA4IoT.Services\HA4IoT.Services.csproj", "{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Settings", "SDK\HA4IoT.Settings\HA4IoT.Settings.csproj", "{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Notifications", "SDK\HA4IoT.Notifications\HA4IoT.Notifications.csproj", "{8A3804D8-60D2-4C6F-B854-D4362A9BA9FA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM (For Raspberry Pi) = Debug|ARM (For Raspberry Pi)
@@ -141,6 +143,7 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{D3634558-2746-441F-BC09-454B1EC7DC1D}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
 		{D3634558-2746-441F-BC09-454B1EC7DC1D}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|ARM
+		{D3634558-2746-441F-BC09-454B1EC7DC1D}.Debug|ARM (For Raspberry Pi).Deploy.0 = Debug|ARM
 		{D3634558-2746-441F-BC09-454B1EC7DC1D}.Debug|x86 (For local).ActiveCfg = Debug|x86
 		{D3634558-2746-441F-BC09-454B1EC7DC1D}.Debug|x86 (For local).Build.0 = Debug|x86
 		{D3634558-2746-441F-BC09-454B1EC7DC1D}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|ARM
@@ -156,14 +159,6 @@ Global
 		{2ECC3769-3EDB-4646-86EE-91FBDACBA972}.Release|ARM (For Raspberry Pi).Build.0 = Release|ARM
 		{2ECC3769-3EDB-4646-86EE-91FBDACBA972}.Release|x86 (For local).ActiveCfg = Release|x86
 		{2ECC3769-3EDB-4646-86EE-91FBDACBA972}.Release|x86 (For local).Build.0 = Release|x86
-		{171A1B71-EC5A-42BC-A3D9-0252B157F70A}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
-		{171A1B71-EC5A-42BC-A3D9-0252B157F70A}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|ARM
-		{171A1B71-EC5A-42BC-A3D9-0252B157F70A}.Debug|x86 (For local).ActiveCfg = Debug|x86
-		{171A1B71-EC5A-42BC-A3D9-0252B157F70A}.Debug|x86 (For local).Build.0 = Debug|x86
-		{171A1B71-EC5A-42BC-A3D9-0252B157F70A}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|ARM
-		{171A1B71-EC5A-42BC-A3D9-0252B157F70A}.Release|ARM (For Raspberry Pi).Build.0 = Release|ARM
-		{171A1B71-EC5A-42BC-A3D9-0252B157F70A}.Release|x86 (For local).ActiveCfg = Release|x86
-		{171A1B71-EC5A-42BC-A3D9-0252B157F70A}.Release|x86 (For local).Build.0 = Release|x86
 		{808ABECF-D9C2-4AB2-95D8-EAF228B44576}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
 		{808ABECF-D9C2-4AB2-95D8-EAF228B44576}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|ARM
 		{808ABECF-D9C2-4AB2-95D8-EAF228B44576}.Debug|x86 (For local).ActiveCfg = Debug|x86
@@ -511,12 +506,28 @@ Global
 		{4BD2A0F3-4CFC-41EE-ACE3-BE41A4A75C48}.Release|x86 (For local).Build.0 = Release|x86
 		{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
 		{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|ARM
-		{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF}.Debug|x86 (For local).ActiveCfg = Debug|Any CPU
-		{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF}.Debug|x86 (For local).Build.0 = Debug|Any CPU
+		{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF}.Debug|x86 (For local).ActiveCfg = Debug|x86
+		{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF}.Debug|x86 (For local).Build.0 = Debug|x86
 		{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|Any CPU
 		{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF}.Release|ARM (For Raspberry Pi).Build.0 = Release|Any CPU
 		{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF}.Release|x86 (For local).ActiveCfg = Release|x86
 		{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF}.Release|x86 (For local).Build.0 = Release|x86
+		{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
+		{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|ARM
+		{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879}.Debug|x86 (For local).ActiveCfg = Debug|x86
+		{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879}.Debug|x86 (For local).Build.0 = Debug|x86
+		{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|Any CPU
+		{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879}.Release|ARM (For Raspberry Pi).Build.0 = Release|Any CPU
+		{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879}.Release|x86 (For local).ActiveCfg = Release|Any CPU
+		{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879}.Release|x86 (For local).Build.0 = Release|Any CPU
+		{8A3804D8-60D2-4C6F-B854-D4362A9BA9FA}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
+		{8A3804D8-60D2-4C6F-B854-D4362A9BA9FA}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|ARM
+		{8A3804D8-60D2-4C6F-B854-D4362A9BA9FA}.Debug|x86 (For local).ActiveCfg = Debug|x86
+		{8A3804D8-60D2-4C6F-B854-D4362A9BA9FA}.Debug|x86 (For local).Build.0 = Debug|x86
+		{8A3804D8-60D2-4C6F-B854-D4362A9BA9FA}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|Any CPU
+		{8A3804D8-60D2-4C6F-B854-D4362A9BA9FA}.Release|ARM (For Raspberry Pi).Build.0 = Release|Any CPU
+		{8A3804D8-60D2-4C6F-B854-D4362A9BA9FA}.Release|x86 (For local).ActiveCfg = Release|Any CPU
+		{8A3804D8-60D2-4C6F-B854-D4362A9BA9FA}.Release|x86 (For local).Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -525,7 +536,6 @@ Global
 		{A1F8CE2B-E00D-445B-9E31-A093BD676A1B} = {982ABB4E-A5DC-4C78-87A3-30BF49DD5764}
 		{D3634558-2746-441F-BC09-454B1EC7DC1D} = {CD5D2CCD-44D0-46E5-BE14-3B377048E0A2}
 		{2ECC3769-3EDB-4646-86EE-91FBDACBA972} = {CD5D2CCD-44D0-46E5-BE14-3B377048E0A2}
-		{171A1B71-EC5A-42BC-A3D9-0252B157F70A} = {CD5D2CCD-44D0-46E5-BE14-3B377048E0A2}
 		{808ABECF-D9C2-4AB2-95D8-EAF228B44576} = {982ABB4E-A5DC-4C78-87A3-30BF49DD5764}
 		{22C0304B-1F66-4682-93A3-EBC7655708F7} = {C66A0C8B-0AAA-40C0-8D27-BD5B7BF1EF46}
 		{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA} = {982ABB4E-A5DC-4C78-87A3-30BF49DD5764}
@@ -577,5 +587,7 @@ Global
 		{DF91A86C-235F-44E7-AA3C-72FA0B786250} = {C66A0C8B-0AAA-40C0-8D27-BD5B7BF1EF46}
 		{4BD2A0F3-4CFC-41EE-ACE3-BE41A4A75C48} = {C66A0C8B-0AAA-40C0-8D27-BD5B7BF1EF46}
 		{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF} = {982ABB4E-A5DC-4C78-87A3-30BF49DD5764}
+		{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879} = {982ABB4E-A5DC-4C78-87A3-30BF49DD5764}
+		{8A3804D8-60D2-4C6F-B854-D4362A9BA9FA} = {982ABB4E-A5DC-4C78-87A3-30BF49DD5764}
 	EndGlobalSection
 EndGlobal

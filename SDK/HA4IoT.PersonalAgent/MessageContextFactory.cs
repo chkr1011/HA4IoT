@@ -2,7 +2,6 @@
 using System.Linq;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.PersonalAgent;
 
 namespace HA4IoT.PersonalAgent
@@ -12,17 +11,17 @@ namespace HA4IoT.PersonalAgent
         private static readonly char[] WordSeparator = { ' ' };
 
         private readonly SynonymService _synonymService;
-        private readonly IController _controller;
+        private readonly IAreaService _areaService;
 
         private MessageContext _currentContext;
 
-        public MessageContextFactory(SynonymService synonymService, IController controller)
+        public MessageContextFactory(SynonymService synonymService, IAreaService areaService)
         {
             if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
-            if (controller == null) throw new ArgumentNullException(nameof(controller));
+            if (areaService == null) throw new ArgumentNullException(nameof(areaService));
 
             _synonymService = synonymService;
-            _controller = controller;
+            _areaService = areaService;
         }
 
         public MessageContext Create(IInboundMessage message)
@@ -105,9 +104,9 @@ namespace HA4IoT.PersonalAgent
             {
                 foreach (var areaId in _currentContext.IdentifiedAreaIds)
                 {
-                    var area = _controller.GetArea(areaId);
+                    var area = _areaService.GetArea(areaId);
 
-                    if (area.GetContainsComponent(componentId))
+                    if (area.ContainsComponent(componentId))
                     {
                         _currentContext.FilteredComponentIds.Add(componentId);
                         break;

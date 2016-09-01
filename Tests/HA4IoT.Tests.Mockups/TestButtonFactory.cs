@@ -1,23 +1,26 @@
 ﻿using System;
 using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Services.Settings;
+using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Tests.Mockups
 {
     public class TestButtonFactory
     {
-        private readonly IHomeAutomationTimer _timer;
+        private readonly ITimerService _timerService;
+        private readonly ISettingsService _settingsService;
 
-        public TestButtonFactory(IHomeAutomationTimer timer)
+        public TestButtonFactory(ITimerService timerService, ISettingsService settingsService)
         {
-            if (timer == null) throw new ArgumentNullException(nameof(timer));
+            if (timerService == null) throw new ArgumentNullException(nameof(timerService));
 
-            _timer = timer;
+            _timerService = timerService;
+            _settingsService = settingsService;
         }
 
         public TestButton CreateTestButton()
         {
-            return new TestButton(ComponentIdFactory.EmptyId, new TestButtonEndpoint(), _timer);
+            return new TestButton(ComponentIdFactory.EmptyId, new TestButtonEndpoint(), _timerService, _settingsService);
         }
     }
 }

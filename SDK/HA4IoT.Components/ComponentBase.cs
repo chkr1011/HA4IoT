@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Windows.Data.Json;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Core.Settings;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Core.Settings;
-using HA4IoT.Networking;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Components
 {
@@ -21,60 +16,39 @@ namespace HA4IoT.Components
             if (id == null) throw new ArgumentNullException(nameof(id));
 
             Id = id;
-
-            Settings = new SettingsContainer(StoragePath.WithFilename("Components", id.Value, "Settings.json"));
-            GeneralSettingsWrapper = new ComponentSettingsWrapper(Settings);
         }
 
         public event EventHandler<ComponentStateChangedEventArgs> StateChanged;
 
         public ComponentId Id { get; }
 
-        public ISettingsContainer Settings { get; }
-
-        public IActuatorSettingsWrapper GeneralSettingsWrapper { get; }
-
         public abstract IComponentState GetState();
 
         public abstract IList<IComponentState> GetSupportedStates();
 
-        public virtual JsonObject ExportConfigurationToJsonObject()
+        public virtual void HandleApiCall(IApiContext apiContext)
         {
-            var configuration = new JsonObject();
-            configuration.SetNamedString(ComponentConfigurationKey.Type, GetType().Name);
-            configuration.SetNamedObject(ComponentConfigurationKey.Settings, Settings.Export());
+        }
 
-            var supportedStates = GetSupportedStates();
-            if (supportedStates != null)
+        public virtual JToken ExportConfiguration()
+        {
+            var configuration = new JObject
             {
-                var supportedStatesJson = new JsonArray();
-                foreach (var supportedState in supportedStates)
-                {
-                    supportedStatesJson.Add(supportedState.ToJsonValue());
-                }
+                ["Type"] = GetType().Name
+            };
 
-                configuration.SetNamedArray(ComponentConfigurationKey.SupportedStates, supportedStatesJson);
-            }
-            
             return configuration;
         }
 
-        public virtual JsonObject ExportStatusToJsonObject()
+        public virtual JToken ExportStatus()
         {
-            var status = new JsonObject();
-            status.SetNamedObject(ComponentConfigurationKey.Settings, Settings.Export());
-            status.SetNamedValue(ActuatorStatusKey.State, GetState().ToJsonValue());
-            status.SetNamedDateTime(ActuatorStatusKey.StateLastChanged, _stateLastChanged);
+            var status = new JObject
+            {
+                ["State"] = GetState().ToJsonValue(),
+                ["StateLastChanged"] = _stateLastChanged
+            };
+
             return status;
-        }
-
-        public virtual void HandleApiCommand(IApiContext apiContext)
-        {
-        }
-
-        public virtual void HandleApiRequest(IApiContext apiContext)
-        {
-            apiContext.Response = ExportStatusToJsonObject();
         }
 
         protected void OnActiveStateChanged(IComponentState oldState, IComponentState newState)

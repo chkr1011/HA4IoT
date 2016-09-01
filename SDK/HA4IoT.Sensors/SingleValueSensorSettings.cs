@@ -1,7 +1,9 @@
-﻿namespace HA4IoT.Sensors
+﻿using HA4IoT.Contracts.Components;
+
+namespace HA4IoT.Sensors
 {
-    public static class SingleValueSensorSettings
+    public class SingleValueSensorSettings : ComponentSettings
     {
-        public const string MinDelta = "MinDelta";
+        public float MinDelta { get; set; } = 0.15F;
     }
 }

@@ -1,41 +1,45 @@
 ﻿using System;
-using Windows.Data.Json;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Services.Weather;
-using HA4IoT.Networking;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Services.Environment
 {
+    [ApiServiceClass(typeof(IWeatherService))]
     public class WeatherService : ServiceBase, IWeatherService
     {
         private readonly IDateTimeService _dateTimeService;
 
-        public WeatherService(IWeatherProvider provider, IDateTimeService dateTimeService)
+        public WeatherService(IDateTimeService dateTimeService, IApiService apiService)
         {
-            if (provider == null) throw new ArgumentNullException(nameof(provider));
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
 
             _dateTimeService = dateTimeService;
-            provider.WeatherFetched += Update;
+
+            apiService.StatusRequested += (s, e) =>
+            {
+                e.Context.Response.Merge(JObject.FromObject(this));
+            };
         }
 
-        public DateTime? Timestamp { get; private set; }
-
+        [JsonConverter(typeof(StringEnumConverter))]
         public Weather Weather { get; private set; }
 
-        public override JsonObject ExportStatusToJsonObject()
+        public DateTime? Timestamp { get; private set; }
+        
+        [ApiMethod]
+        public void Status(IApiContext apiContext)
         {
-            var status = base.ExportStatusToJsonObject();
-            status.SetNamedEnum("Weather", Weather);
-            status.SetNamedDateTime("Timestamp", Timestamp);
-
-            return status;
+            apiContext.Response = JObject.FromObject(this);
         }
 
-        private void Update(object sender, WeatherFetchedEventArgs e)
+        public void Update(Weather weather)
         {
-            Weather = e.Weather;
+            Weather = weather;
             Timestamp = _dateTimeService.Now;
         }
     }

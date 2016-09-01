@@ -4,6 +4,7 @@ using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Sensors.Triggers;
+using HA4IoT.Settings;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -34,7 +35,7 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void SensorValueReached_Trigger()
         {
-            var sensor = new TestTemperatureSensor(ComponentIdFactory.EmptyId, new TestNumericValueSensorEndpoint());
+            var sensor = new TestTemperatureSensor(ComponentIdFactory.EmptyId, new SettingsService(), new TestNumericValueSensorEndpoint());
             var trigger = new SensorValueReachedTrigger(sensor);
             trigger.Target = 10.2F;
             trigger.Delta = 3.0F;
@@ -67,7 +68,7 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void SensorValueUnderran_Trigger()
         {
-            var sensor = new TestTemperatureSensor(ComponentIdFactory.EmptyId, new TestNumericValueSensorEndpoint());
+            var sensor = new TestTemperatureSensor(ComponentIdFactory.EmptyId, new SettingsService(), new TestNumericValueSensorEndpoint());
             var trigger = new SensorValueUnderranTrigger(sensor);
             trigger.Target = 10F;
             trigger.Delta = 3F;
@@ -103,7 +104,7 @@ namespace HA4IoT.Actuators.Tests
         [TestMethod]
         public void Associate_TriggerWithActuatorAction()
         {
-            var buttonFactory = new TestButtonFactory(new TestHomeAutomationTimer());
+            var buttonFactory = new TestButtonFactory(new TestTimerService(), new SettingsService());
             var stateMachineFactory = new TestStateMachineFactory();
 
             var testButton = buttonFactory.CreateTestButton();

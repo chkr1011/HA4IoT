@@ -1,43 +1,46 @@
 ﻿using System;
-using Windows.Data.Json;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Networking;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Services.Environment
 {
+    [ApiServiceClass(typeof(IDaylightService))]
     public class DaylightService : ServiceBase, IDaylightService
     {
         private readonly IDateTimeService _dateTimeService;
 
-        public DaylightService(IDaylightProvider provider, IDateTimeService dateTimeService)
+        public DaylightService(IDateTimeService dateTimeService, IApiService apiService)
         {
-            if (provider == null) throw new ArgumentNullException(nameof(provider));
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
 
             _dateTimeService = dateTimeService;
-            provider.DaylightFetched += Update;
+
+            apiService.StatusRequested += (s, e) =>
+            {
+                e.Context.Response.Merge(JObject.FromObject(this));
+            };
         }
 
-        public TimeSpan Sunrise { get; private set; }
-        public TimeSpan Sunset { get; private set; }
+        public TimeSpan Sunrise { get; private set; } = TimeSpan.Parse("06:45");
+        public TimeSpan Sunset { get; private set; } = TimeSpan.Parse("20:30");
+
+        [JsonIgnore]
         public DateTime? Timestamp { get; private set; }
 
-        public override JsonObject ExportStatusToJsonObject()
+        [ApiMethod]
+        public void Status(IApiContext apiContext)
         {
-            var status = base.ExportStatusToJsonObject();
-            status.SetNamedTimeSpan("Sunrise", Sunrise);
-            status.SetNamedTimeSpan("Sunset", Sunset);
-            status.SetNamedDateTime("Timestamp", Timestamp);
-
-            return status;
+            apiContext.Response = JObject.FromObject(this);
         }
 
-        private void Update(object sender, DaylightFetchedEventArgs e)
+        public void Update(TimeSpan sunrise, TimeSpan sunset)
         {
-            Sunrise = e.Sunrise;
-            Sunset = e.Sunset;
+            Sunrise = sunrise;
+            Sunset = sunset;
             Timestamp = _dateTimeService.Now;
         }
     }

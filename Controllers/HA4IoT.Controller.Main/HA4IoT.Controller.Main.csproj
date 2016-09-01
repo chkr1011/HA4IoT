@@ -26,7 +26,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\ARM\Debug\</OutputPath>
-    <DefineConstants>NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS</DefineConstants>
+    <DefineConstants>DEBUG;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS;CODE_ANALYSIS;CODE_ANALYSIS</DefineConstants>
     <NoWarn>;2008</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>ARM</PlatformTarget>
@@ -34,7 +34,7 @@
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
     <OutputPath>bin\ARM\Release\</OutputPath>
@@ -101,7 +101,6 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controller.cs" />
     <Compile Include="InstalledDevice.cs" />
     <Compile Include="Rooms\BedroomConfiguration.cs" />
     <Compile Include="CatLitterBoxSender.cs" />
@@ -113,7 +112,6 @@
     <Compile Include="Rooms\ChildrensRoomConfiguration.cs" />
     <Compile Include="Rooms\ReadingRoomConfiguration.cs" />
     <Compile Include="Rooms\Room.cs" />
-    <Compile Include="Rooms\RoomConfiguration.cs" />
     <Compile Include="Rooms\StoreroomConfiguration.cs" />
     <Compile Include="Rooms\UpperBathroomConfiguration.cs" />
     <Compile Include="StartupTask.cs" />
@@ -178,6 +176,10 @@
     <ProjectReference Include="..\..\SDK\HA4IoT.Services\HA4IoT.Services.csproj">
       <Project>{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF}</Project>
       <Name>HA4IoT.Services</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Settings\HA4IoT.Settings.csproj">
+      <Project>{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879}</Project>
+      <Name>HA4IoT.Settings</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.Knx\HA4IoT.Hardware.Knx.csproj">
       <Project>{1EC3A5D0-65C8-4396-BD56-9179A8BD00D4}</Project>

@@ -1,22 +1,22 @@
 ﻿using System.Globalization;
-using Windows.Data.Json;
 using HA4IoT.Contracts.Components;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Contracts.Sensors
 {
     public class NumericSensorValue : IComponentState
     {
-        private readonly IJsonValue _jsonValue;
+        private readonly JToken _jsonValue;
 
         public NumericSensorValue(float value)
         {
             Value = value;
-            _jsonValue = JsonValue.CreateNumberValue(Value);
+            _jsonValue = JToken.FromObject(Value);
         }
 
         public float Value { get; }
 
-        public IJsonValue ToJsonValue()
+        public JToken ToJsonValue()
         {
             return _jsonValue;
         }

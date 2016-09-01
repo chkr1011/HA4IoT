@@ -12,6 +12,18 @@ namespace HA4IoT.Tests.Mockups
 
         DateTime? IWeatherService.Timestamp { get; }
 
+        void IOutdoorHumidityService.Update(float outdoorHumidity)
+        {
+        }
+
+        void IOutdoorTemperatureService.Update(float outdoorTemperature)
+        {
+        }
+
+        public void Update(Weather weather)
+        {
+        }
+
         public float OutdoorTemperature { get; set; }
 
         DateTime? IOutdoorTemperatureService.Timestamp { get; }

@@ -126,7 +126,7 @@
     <Compile Include="LPD433MHzSignalSender.cs" />
     <Compile Include="LPD433MHzCode.cs" />
     <Compile Include="RemoteSocketCommand.cs" />
-    <Compile Include="RemoteSocketController.cs" />
+    <Compile Include="RemoteSocketService.cs" />
     <Compile Include="RemoteSocketOutputPort.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.Hardware.RemoteSwitch.rd.xml" />
   </ItemGroup>
@@ -134,10 +134,6 @@
     <ProjectReference Include="..\..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{551337E7-D1EF-4145-92B4-F7086F7665A6}</Project>
       <Name>HA4IoT.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\HA4IoT.Core\HA4IoT.Core.csproj">
-      <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
-      <Name>HA4IoT.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>

@@ -1,54 +1,76 @@
 ﻿using System;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Weather;
+using System.Net.Http;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.OutdoorHumidity;
 using HA4IoT.Contracts.Services.OutdoorTemperature;
-using HA4IoT.Contracts.Services.Weather;
-using System.Net.Http;
-using Windows.Data.Json;
+using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Networking;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Services.ControllerSlave
 {
-    public class ControllerSlaveService : ServiceBase, IOutdoorTemperatureProvider, IOutdoorHumidityProvider, IDaylightProvider, IWeatherProvider
+    [ApiServiceClass(typeof(ControllerSlaveService))]
+    public class ControllerSlaveService : ServiceBase
     {
-        private readonly string _masterControllerAddress;
         private readonly IDateTimeService _dateTimeService;
-
-        public event EventHandler<OutdoorTemperatureFetchedEventArgs> OutdoorTemperatureFetched;
-        public event EventHandler<OutdoorHumidityFetchedEventArgs> OutdoorHumidityFetched;
-        public event EventHandler<DaylightFetchedEventArgs> DaylightFetched;
-        public event EventHandler<WeatherFetchedEventArgs> WeatherFetched;
+        private readonly IOutdoorTemperatureService _outdoorTemperatureService;
+        private readonly IOutdoorHumidityService _outdoorHumidityService;
+        private readonly IDaylightService _daylightService;
+        private readonly IWeatherService _weatherService;
 
         private DateTime? _lastPull;
         private DateTime? _lastSuccessfulPull;
 
-        public ControllerSlaveService(string masterControllerAddress, ISchedulerService scheduler, IDateTimeService dateTimeService)
+        public ControllerSlaveService(
+            ISettingsService settingsService,
+            ISchedulerService scheduler,
+            IDateTimeService dateTimeService,
+            IOutdoorTemperatureService outdoorTemperatureService,
+            IOutdoorHumidityService outdoorHumidityService,
+            IDaylightService daylightService,
+            IWeatherService weatherService)
         {
-            if (masterControllerAddress == null) throw new ArgumentNullException(nameof(masterControllerAddress));
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             if (scheduler == null) throw new ArgumentNullException(nameof(scheduler));
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
+            if (outdoorTemperatureService == null) throw new ArgumentNullException(nameof(outdoorTemperatureService));
+            if (outdoorHumidityService == null) throw new ArgumentNullException(nameof(outdoorHumidityService));
+            if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
+            if (weatherService == null) throw new ArgumentNullException(nameof(weatherService));
 
-            _masterControllerAddress = masterControllerAddress;
             _dateTimeService = dateTimeService;
+            _outdoorTemperatureService = outdoorTemperatureService;
+            _outdoorHumidityService = outdoorHumidityService;
+            _daylightService = daylightService;
+            _weatherService = weatherService;
+
+            settingsService.CreateSettingsMonitor<ControllerSlaveServiceSettings>(s => Settings = s);
 
             scheduler.RegisterSchedule("ControllerSlavePolling", TimeSpan.FromMinutes(5), PullValues);
         }
 
-        public override JsonObject ExportStatusToJsonObject()
-        {
-            var status = base.ExportStatusToJsonObject();
-            status.SetNamedDateTime("LastPull", _lastPull);
-            status.SetNamedDateTime("LastSuccessfulPull", _lastSuccessfulPull);
+        public ControllerSlaveServiceSettings Settings { get; private set; }
 
-            return status;
+        [ApiMethod]
+        public void Status(IApiContext apiContext)
+        {
+            apiContext.Response["LastPull"] = _lastPull;
+            apiContext.Response["LastSuccessfulPull"] = _lastSuccessfulPull;
         }
 
         private void PullValues()
         {
-            Log.Verbose($"Pulling values from master controller '{_masterControllerAddress}'.");
+            if (!Settings.IsEnabled)
+            {
+                Log.Verbose("Controller slave service is disabled.");
+                return;
+            }
+
+            Log.Verbose($"Pulling values from master controller '{Settings.MasterAddress}'.");
             _lastPull = _dateTimeService.Now;
 
             try
@@ -68,47 +90,62 @@ namespace HA4IoT.Services.ControllerSlave
 
         private void PullWeather()
         {
-            var response = PullValue("IWeatherService");
-            var value = response.GetNamedString("Weather");
+            var response = PullValue(nameof(IWeatherService));
+            var value = (string)response["Weather"];
             var weather = (Weather)Enum.Parse(typeof(Weather), value);
-            WeatherFetched?.Invoke(this, new WeatherFetchedEventArgs(weather));
+
+            if (Settings.UseWeather)
+            {
+                _weatherService.Update(weather);
+            }
         }
 
         private void PullDaylight()
         {
-            var response = PullValue("IDaylightService");
-            var sunrise = response.GetNamedTimeSpan("Sunrise").Value;
-            var sunset = response.GetNamedTimeSpan("Sunset").Value;
-            DaylightFetched?.Invoke(this, new DaylightFetchedEventArgs(sunrise, sunset));
+            var response = PullValue(nameof(IDaylightService));
+            var sunrise = (TimeSpan)response["Sunrise"];
+            var sunset = (TimeSpan)response["Sunset"];
+
+            if (Settings.UseSunriseSunset)
+            {
+                _daylightService.Update(sunrise, sunset);
+            }
         }
 
         private void PullOutsideTemperature()
         {
-            var response = PullValue("IOutdoorTemperatureService");
-            var outsideTemperature = (float)response.GetNamedNumber("OutdoorTemperature");
-            OutdoorTemperatureFetched?.Invoke(this, new OutdoorTemperatureFetchedEventArgs(outsideTemperature));
+            var response = PullValue(nameof(IOutdoorTemperatureService));
+            var outdoorTemperature = (float)response["OutdoorTemperature"];
+
+            if (Settings.UseTemperature)
+            {
+                _outdoorTemperatureService.Update(outdoorTemperature);
+            }
         }
 
         private void PullOutsideHumidity()
         {
-            var response = PullValue("IOutdoorHumidityService");
-            var outsideTemperature = (float)response.GetNamedNumber("OutdoorHumidity");
-            OutdoorHumidityFetched?.Invoke(this, new OutdoorHumidityFetchedEventArgs(outsideTemperature));
+            var response = PullValue(nameof(IOutdoorHumidityService));
+
+            var outdoorHumidity = (float)response["OutdoorHumidity"];
+            if (Settings.UseHumidity)
+            {
+                _outdoorHumidityService.Update(outdoorHumidity);
+            }
         }
 
-        private JsonObject PullValue(string serviceName)
+        private JObject PullValue(string serviceName)
         {
-            var uri = new Uri($"http://{_masterControllerAddress}:80/api/service/{serviceName}");
+            var uri = new Uri($"http://{Settings.MasterAddress}:80/api/Service/{serviceName}");
             using (var webClient = new HttpClient())
             {
-                string body = webClient.GetStringAsync(uri).Result;
-
+                var body = webClient.GetStringAsync(uri).Result;
                 if (body == null)
                 {
                     throw new Exception($"Received no response from '{uri}'.");
                 }
 
-                return JsonObject.Parse(body);
+                return JObject.Parse(body);
             }
         }
     }

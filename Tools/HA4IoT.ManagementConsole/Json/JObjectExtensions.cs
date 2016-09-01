@@ -39,7 +39,7 @@ namespace HA4IoT.ManagementConsole.Json
         {
             return jObject.GetNamedValue<string>(name);
         }
-
+        
         public static void SetNamedString(this JObject jObject, string name, string value)
         {
             jObject[name] = new JValue(value);

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 using Windows.Web.Http;
 using HA4IoT.Contracts.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Api.AzureCloud
 {
@@ -21,7 +21,7 @@ namespace HA4IoT.Api.AzureCloud
             _authorization = authorization;
         }
 
-        public async Task SendAsync(JsonObject brokerProperties, JsonObject body)
+        public async Task SendAsync(JObject brokerProperties, JObject body)
         {
             if (brokerProperties == null) throw new ArgumentNullException(nameof(brokerProperties));
             if (body == null) throw new ArgumentNullException(nameof(body));
@@ -29,14 +29,14 @@ namespace HA4IoT.Api.AzureCloud
             await SendToAzureQueueAsync(brokerProperties, body);
         }
 
-        private async Task SendToAzureQueueAsync(JsonObject brokerProperties, JsonObject body)
+        private async Task SendToAzureQueueAsync(JObject brokerProperties, JObject body)
         {
             try
             {
                 using (var httpClient = CreateHttpClient())
                 using (var content = CreateContent(body))
                 {
-                    httpClient.DefaultRequestHeaders.Add("BrokerProperties", brokerProperties.Stringify());
+                    httpClient.DefaultRequestHeaders.Add("BrokerProperties", brokerProperties.ToString());
 
                     HttpResponseMessage result = await httpClient.PostAsync(_uri, content);
                     if (result.IsSuccessStatusCode)
@@ -63,9 +63,9 @@ namespace HA4IoT.Api.AzureCloud
             return httpClient;
         }
 
-        private HttpStringContent CreateContent(JsonObject body)
+        private HttpStringContent CreateContent(JObject body)
         {
-            var content = new HttpStringContent(body.Stringify());
+            var content = new HttpStringContent(body.ToString());
             return content;
         }
     }

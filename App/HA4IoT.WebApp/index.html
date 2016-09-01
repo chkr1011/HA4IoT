@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
-<html manifest="cache.manifest">
+<!--<html manifest="cache.manifest">-->
+<html>
 <head>
     <meta charset="utf-8">
 
@@ -29,8 +30,9 @@
         </div>
 
         <div class="container-fluid" id="content" ng-show="haCtrl.isInitialized && localizationCtrl.isInitialized">
-            <div ng-include="'Views/RoomsOverviewTemplate.html'"></div>
+            <div ng-include="'Views/NotificationsBarTemplate.html'"></div>
             <div ng-show="haCtrl.appConfiguration.showWeatherStation" ng-include="'Views/WeatherStationTemplate.html'"></div>
+            <div ng-include="'Views/RoomsOverviewTemplate.html'"></div>
             <div ng-show="haCtrl.appConfiguration.showSensorsOverview" ng-include="'Views/SensorsOverviewTemplate.html'"></div>
             <div ng-show="haCtrl.appConfiguration.showRollerShuttersOverview" ng-include="'Views/RollerShuttersOverviewTemplate.html'"></div>
             <div ng-show="haCtrl.appConfiguration.showWindowsOverview" ng-include="'Views/WindowsOverviewTemplate.html'"></div>
@@ -43,7 +45,7 @@
         <link rel="stylesheet" href="Content/bootstrap-theme.min.css">
         <link rel="stylesheet" href="Style.css">
 
-        <script type="text/javascript" src="Scripts/jquery-2.2.2.min.js"></script>
+        <script type="text/javascript" src="Scripts/jquery-3.1.0.min.js"></script>
         <script type="text/javascript" src="Scripts/bootstrap.min.js"></script>
         <script type="text/javascript" src="Scripts/angular.min.js"></script>
         <script type="text/javascript" src="Scripts/Chart.min.js"></script>

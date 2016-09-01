@@ -1,39 +1,15 @@
 ﻿using System;
-using HA4IoT.Contracts.Areas;
-using HA4IoT.Contracts.Services;
-using HA4IoT.Contracts.Services.Daylight;
-using HA4IoT.Contracts.Services.OutdoorTemperature;
-using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Automations
 {
     public static class RollerShutterAutomationExtensions
     {
-        public static RollerShutterAutomation SetupRollerShutterAutomation(this IArea area)
-        {
-            if (area == null) throw new ArgumentNullException(nameof(area));
-
-            var automation = new RollerShutterAutomation(
-                AutomationIdFactory.CreateIdFrom<RollerShutterAutomation>(area),
-                area.Controller.ServiceLocator.GetService<ISchedulerService>(),
-                area.Controller.ServiceLocator.GetService<IDateTimeService>(),
-                area.Controller.ServiceLocator.GetService<IDaylightService>(),
-                area.Controller.ServiceLocator.GetService<IOutdoorTemperatureService>(),
-                area.Controller);
-
-            automation.Activate();
-
-            area.AddAutomation(automation);
-
-            return automation;
-        }
-        
         public static RollerShutterAutomation WithDoNotOpenBefore(this RollerShutterAutomation automation, TimeSpan minTime)
         {
             if (automation == null) throw new ArgumentNullException(nameof(automation));
 
-            automation.SpecialSettingsWrapper.SkipBeforeTimestampIsEnabled = true;
-            automation.SpecialSettingsWrapper.SkipBeforeTimestamp = minTime;
+            automation.Settings.SkipBeforeTimestampIsEnabled = true;
+            automation.Settings.SkipBeforeTimestamp = minTime;
 
             return automation;
         }
@@ -42,8 +18,8 @@ namespace HA4IoT.Automations
         {
             if (automation == null) throw new ArgumentNullException(nameof(automation));
 
-            automation.SpecialSettingsWrapper.SkipIfFrozenIsEnabled = true;
-            automation.SpecialSettingsWrapper.SkipIfFrozenTemperature = minOutsideTemperature;
+            automation.Settings.SkipIfFrozenIsEnabled = true;
+            automation.Settings.SkipIfFrozenTemperature = minOutsideTemperature;
 
             return automation;
         }
@@ -52,8 +28,8 @@ namespace HA4IoT.Automations
         {
             if (automation == null) throw new ArgumentNullException(nameof(automation));
 
-            automation.SpecialSettingsWrapper.AutoCloseIfTooHotIsEnabled = true;
-            automation.SpecialSettingsWrapper.AutoCloseIfTooHotTemperaure = maxOutsideTemperature;
+            automation.Settings.AutoCloseIfTooHotIsEnabled = true;
+            automation.Settings.AutoCloseIfTooHotTemperaure = maxOutsideTemperature;
 
             return automation;
         }

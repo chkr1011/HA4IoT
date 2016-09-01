@@ -96,7 +96,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="CheckboxBinaryStateEndpoint.cs" />
-    <Compile Include="Controller.cs" />
+    <Compile Include="Initializer.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -131,6 +131,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\SDK\ExternalServices\HA4IoT.ExternalServices.OpenWeatherMap\HA4IoT.ExternalServices.OpenWeatherMap.csproj">
+      <Project>{6788E4A8-580E-4C2E-9754-95229F24F217}</Project>
+      <Name>HA4IoT.ExternalServices.OpenWeatherMap</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Actuators\HA4IoT.Actuators.csproj">
       <Project>{808abecf-d9c2-4ab2-95d8-eaf228b44576}</Project>
       <Name>HA4IoT.Actuators</Name>
@@ -162,6 +166,10 @@
     <ProjectReference Include="..\..\SDK\HA4IoT.Sensors\HA4IoT.Sensors.csproj">
       <Project>{8892e736-cdd0-48eb-ad9e-a1c8aa230fd7}</Project>
       <Name>HA4IoT.Sensors</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Services\HA4IoT.Services.csproj">
+      <Project>{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF}</Project>
+      <Name>HA4IoT.Services</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.Knx\HA4IoT.Hardware.Knx.csproj">
       <Project>{1EC3A5D0-65C8-4396-BD56-9179A8BD00D4}</Project>

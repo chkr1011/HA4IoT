@@ -5,25 +5,30 @@ using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Sensors;
-using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Settings;
+using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Automations
 {
     public class BathroomFanAutomation : AutomationBase
     {
         private readonly ISchedulerService _schedulerService;
+        
         private IStateMachine _actuator;
-        private TimeSpan _fastDuration;
-        private TimeSpan _slowDuration;
         private TimedAction _timeout;
 
-        public BathroomFanAutomation(AutomationId id, ISchedulerService schedulerService)
+        public BathroomFanAutomation(AutomationId id, ISchedulerService schedulerService, ISettingsService settingsService)
             : base(id)
         {
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
             _schedulerService = schedulerService;
+
+            settingsService.CreateSettingsMonitor<BathroomFanAutomationSettings>(Id, s => Settings = s);
         }
+
+        public BathroomFanAutomationSettings Settings { get; private set; }
 
         public BathroomFanAutomation WithTrigger(IMotionDetector motionDetector)
         {
@@ -40,31 +45,19 @@ namespace HA4IoT.Automations
             _actuator = actuator;
             return this;
         }
-
-        public BathroomFanAutomation WithSlowDuration(TimeSpan duration)
-        {
-            _slowDuration = duration;
-            return this;
-        }
-
-        public BathroomFanAutomation WithFastDuration(TimeSpan duration)
-        {
-            _fastDuration = duration;
-            return this;
-        }
-
+        
         private void StartTimeout(object sender, EventArgs e)
         {
-            _timeout = _schedulerService.In(_slowDuration).Execute(() =>
+            _timeout = _schedulerService.In(Settings.SlowDuration).Execute(() =>
             {
                 _actuator.SetState(new NamedComponentState("2"));
-                _timeout = _schedulerService.In(_fastDuration).Execute(() => _actuator.TryTurnOff());
+                _timeout = _schedulerService.In(Settings.FastDuration).Execute(() => _actuator.TryTurnOff());
             });
         }
 
         private void TurnOn(object sender, EventArgs e)
         {
-            if (!this.IsEnabled())
+            if (!Settings.IsEnabled)
             {
                 return;
             }

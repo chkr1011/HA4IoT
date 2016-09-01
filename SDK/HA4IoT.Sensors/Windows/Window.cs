@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Windows.Data.Json;
 using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Triggers;
-using HA4IoT.Networking;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Sensors.Windows
 {
@@ -15,10 +16,15 @@ namespace HA4IoT.Sensors.Windows
         private readonly Trigger _openedTrigger = new Trigger();
         private readonly Trigger _closedTrigger = new Trigger();
 
-        public Window(ComponentId id) 
+        public Window(ComponentId id, ISettingsService settingsService) 
             : base(id)
         {
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
+
+            settingsService.CreateSettingsMonitor<ComponentSettings>(Id, s => Settings = s);
         }
+
+        public ComponentSettings Settings { get; private set; }
 
         public IList<ICasement> Casements { get; } = new List<ICasement>();
 
@@ -60,17 +66,17 @@ namespace HA4IoT.Sensors.Windows
             return WithCasement(new Casement(Casement.RightCasementId, fullOpenReedSwitch, tiltReedSwitch));
         }
 
-        public override JsonObject ExportStatusToJsonObject()
+        public override JToken ExportStatus()
         {
-            var status = base.ExportStatusToJsonObject();
+            var status = base.ExportStatus();
 
-            var state = new JsonObject();
+            var state = new JObject();
             foreach (var casement in Casements)
             {
-                state.SetNamedString(casement.Id, casement.GetState().Value);
+                state[casement.Id] = casement.GetState().Value;
             }
 
-            status.SetNamedValue("state", state);
+            status["State"] = state;
 
             return status;
         }
@@ -80,17 +86,17 @@ namespace HA4IoT.Sensors.Windows
             return new List<IComponentState> {CasementStateId.Closed, CasementStateId.Tilt, CasementStateId.Open};
         }
 
-        public override JsonObject ExportConfigurationToJsonObject()
+        public override JToken ExportConfiguration()
         {
-            JsonObject configuration = base.ExportConfigurationToJsonObject();
+            var configuration = base.ExportConfiguration();
 
-            JsonArray casements = new JsonArray();
+            var casements = new JArray();
             foreach (var casement in Casements)
             {
-                casements.Add(JsonValue.CreateStringValue(casement.Id));
+                casements.Add(casement.Id);
             }
 
-            configuration.SetNamedValue("casements", casements);
+            configuration["Casements"] = casements;
 
             return configuration;
         }
@@ -104,8 +110,8 @@ namespace HA4IoT.Sensors.Windows
             {
                 return;
             }
-
-            if (!GeneralSettingsWrapper.IsEnabled)
+            
+            if (!Settings.IsEnabled)
             {
                 return;
             }
@@ -115,12 +121,12 @@ namespace HA4IoT.Sensors.Windows
 
         private NamedComponentState GetStateInternal()
         {
-            if (Casements.Any(c => c.GetState() == CasementStateId.Open))
+            if (Casements.Any(c => c.GetState().Equals(CasementStateId.Open)))
             {
                 return CasementStateId.Open;
             }
 
-            if (Casements.Any(c => c.GetState() == CasementStateId.Tilt))
+            if (Casements.Any(c => c.GetState().Equals(CasementStateId.Tilt)))
             {
                 return CasementStateId.Tilt;
             }

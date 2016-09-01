@@ -1,10 +1,10 @@
-﻿using Windows.Data.Json;
+﻿using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Contracts.Components
 {
     public interface IComponentState
     {
-        IJsonValue ToJsonValue();
+        JToken ToJsonValue();
 
         bool Equals(IComponentState otherState);
 

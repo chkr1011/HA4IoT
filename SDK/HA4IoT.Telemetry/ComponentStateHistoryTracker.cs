@@ -1,12 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
-using Windows.Data.Json;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Networking;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Telemetry
 {
@@ -23,8 +20,8 @@ namespace HA4IoT.Telemetry
 
             _component = component;
 
-            _filename = StoragePath.WithFilename("Components", component.Id.Value, "History.csv");
-            StoragePath.EnsureDirectoryExists(_filename);
+            //_filename = StoragePath.WithFilename("Components", component.Id.Value, "History.csv");
+            //StoragePath.EnsureDirectoryExists(_filename);
 
             component.StateChanged += CreateDataPointAsync;
         }
@@ -42,17 +39,9 @@ namespace HA4IoT.Telemetry
             }
         }
 
-        public void ExposeToApi(IApiController apiController)
-        {
-            if (apiController == null) throw new ArgumentNullException(nameof(apiController));
-
-            apiController.RouteRequest($"component/{_component.Id}/history", HandleApiRequest);
-            apiController.RouteCommand($"component/{_component.Id}/history", HandleApiCommand);
-        }
-
         private void CreateDataPointAsync(object sender, ComponentStateChangedEventArgs e)
         {
-            Task.Run(() => AppendDataPoint(e));
+            //Task.Run(() => AppendDataPoint(e));
         }
 
         private void HandleApiCommand(IApiContext apiContext)
@@ -62,7 +51,7 @@ namespace HA4IoT.Telemetry
 
         private void HandleApiRequest(IApiContext apiContext)
         {
-            var dataPoints = new JsonArray();
+            var dataPoints = new JArray();
             long fileSize = 0;
 
             lock (_syncRoot)
@@ -84,17 +73,19 @@ namespace HA4IoT.Telemetry
                 }
             }
 
-            apiContext.Response.SetNamedValue("history", dataPoints);
-            apiContext.Response.SetNamedNumber("fileSize", fileSize);
+            ////apiContext.Response.SetNamedValue("history", dataPoints);
+            ////apiContext.Response.SetValue("fileSize", fileSize);
         }
 
-        private JsonObject ConvertCsvLineToJsonObject(string line)
+        private JObject ConvertCsvLineToJsonObject(string line)
         {
-            string[] columns = line.Split(CsvSeparator, StringSplitOptions.RemoveEmptyEntries);
+            var columns = line.Split(CsvSeparator, StringSplitOptions.RemoveEmptyEntries);
 
-            var dataPoint = new JsonObject();
-            dataPoint.SetNamedString("timestamp", columns[0]);
-            dataPoint.SetNamedString("state", columns[1]);
+            var dataPoint = new JObject
+            {
+                ["timestamp"] = columns[0],
+                ["state"] = columns[1]
+            };
 
             return dataPoint;
         }

@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Windows.Data.Json;
-using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Networking;
 
 namespace HA4IoT.Hardware.CCTools
 {
@@ -34,6 +32,7 @@ namespace HA4IoT.Hardware.CCTools
         }
 
         public event EventHandler<IOBoardStateChangedEventArgs> StateChanged;
+
         public DeviceId Id { get; }
 
         public byte[] GetState()
@@ -140,31 +139,6 @@ namespace HA4IoT.Hardware.CCTools
 
                 StateChanged?.Invoke(this, new IOBoardStateChangedEventArgs(oldState, newState));
             }
-        }
-
-        public void HandleApiCommand(IApiContext apiContext)
-        {
-            JsonArray state = apiContext.Request.GetNamedArray("state", null);
-            if (state != null)
-            {
-                byte[] buffer = JsonValueToByteArray(state);
-                SetState(buffer);
-            }
-
-            var commit = apiContext.Request.GetNamedBoolean("commit", true);
-            if (commit)
-            {
-                CommitChanges();
-            }
-        }
-
-        public void HandleApiRequest(IApiContext apiContext)
-        {
-            var result = new JsonObject();
-            result.SetNamedValue("state", GetState().ToJsonValue());
-            result.SetNamedValue("committed-state", GetCommittedState().ToJsonValue());
-
-            apiContext.Response = result;
         }
 
         internal BinaryState GetPortState(int pinNumber)

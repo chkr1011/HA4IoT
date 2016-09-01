@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using HA4IoT.Actuators.Triggers;
-using HA4IoT.Components;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
-using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Settings;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Sensors.MotionDetectors
@@ -20,13 +20,16 @@ namespace HA4IoT.Sensors.MotionDetectors
 
         private TimedAction _autoEnableAction;
 
-        public MotionDetector(ComponentId id, IMotionDetectorEndpoint endpoint, ISchedulerService schedulerService)
+        public MotionDetector(ComponentId id, IMotionDetectorEndpoint endpoint, ISchedulerService schedulerService, ISettingsService settingsService)
             : base(id)
         {
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
             _schedulerService = schedulerService;
+
+            settingsService.CreateSettingsMonitor<MotionDetectorSettings>(Id, s => Settings = s);
 
             SetState(MotionDetectorStateId.Idle);
 
@@ -35,12 +38,14 @@ namespace HA4IoT.Sensors.MotionDetectors
 
             Settings.ValueChanged += (s, e) =>
             {
-                if (e.SettingName == "IsEnabled")
+                if (e.SettingName == nameof(Settings.IsEnabled))
                 {
                     HandleIsEnabledStateChanged();
                 }
             };
         }
+
+        public IMotionDetectorSettings Settings { get; private set; }
 
         public ITrigger GetMotionDetectedTrigger()
         {
@@ -57,21 +62,17 @@ namespace HA4IoT.Sensors.MotionDetectors
             return new List<IComponentState> {MotionDetectorStateId.Idle, MotionDetectorStateId.MotionDetected};
         }
 
-        public override void HandleApiCommand(IApiContext apiContext)
+        public override void HandleApiCall(IApiContext apiContext)
         {
-            base.HandleApiCommand(apiContext);
-            
-            if (apiContext.Request.ContainsKey("action"))
+            var action = (string)apiContext.Request["Action"];
+
+            if (action.Equals("detected", StringComparison.OrdinalIgnoreCase))
             {
-                string action = apiContext.Request.GetNamedString("action");
-                if (action.Equals("detected", StringComparison.OrdinalIgnoreCase))
-                {
-                    UpdateState(MotionDetectorStateId.MotionDetected);
-                }
-                else if (action.Equals("detectionCompleted", StringComparison.OrdinalIgnoreCase))
-                {
-                    UpdateState(MotionDetectorStateId.Idle);
-                }
+                UpdateState(MotionDetectorStateId.MotionDetected);
+            }
+            else if (action.Equals("detectionCompleted", StringComparison.OrdinalIgnoreCase))
+            {
+                UpdateState(MotionDetectorStateId.Idle);
             }
         }
 
@@ -89,14 +90,14 @@ namespace HA4IoT.Sensors.MotionDetectors
 
         private void UpdateState(NamedComponentState newState)
         {
-            if (!this.IsEnabled())
+            if (!Settings.IsEnabled)
             {
                 return;
             }
 
             SetState(newState);
 
-            if (newState == MotionDetectorStateId.MotionDetected)
+            if (newState.Equals(MotionDetectorStateId.MotionDetected))
             {
                 OnMotionDetected();
             }
@@ -108,10 +109,11 @@ namespace HA4IoT.Sensors.MotionDetectors
 
         private void HandleIsEnabledStateChanged()
         {
-            if (!this.IsEnabled())
+            if (!Settings.IsEnabled)
             {
                 Log.Info(Id + ": Disabled for 1 hour");
-                _autoEnableAction = _schedulerService.In(TimeSpan.FromHours(1)).Execute(this.Enable);
+
+                _autoEnableAction = _schedulerService.In(Settings.AutoEnableAfter).Execute(() => Settings.IsEnabled = true);
             }
             else
             {

@@ -8,15 +8,15 @@ namespace HA4IoT.Tests.Mockups
     {
         public DateTime DateTime { get; set; }
 
-        public void SetTime(TimeSpan time)
-        {
-            DateTime = new DateTime(DateTime.Year, DateTime.Month, DateTime.Day, time.Hours, time.Minutes, time.Seconds);
-        }
-
         public DateTime Date => DateTime.Date;
     
         public TimeSpan Time => DateTime.TimeOfDay;
     
-        public DateTime Now => this.DateTime;
+        public DateTime Now => DateTime;
+
+        public void SetTime(TimeSpan time)
+        {
+            DateTime = new DateTime(DateTime.Year, DateTime.Month, DateTime.Day, time.Hours, time.Minutes, time.Seconds);
+        }
     }
 }

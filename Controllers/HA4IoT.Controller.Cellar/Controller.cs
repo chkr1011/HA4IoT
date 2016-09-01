@@ -59,12 +59,10 @@ namespace HA4IoT.Controller.Cellar
         {
         }
 
-        protected override async Task ConfigureAsync()
+        protected override async Task ConfigureAsync(IDeviceService deviceService)
         {
-            var pi2PortController = new Pi2PortController();
-
-            AddDevice(new BuiltInI2CBus());
-
+            var pi2PortController = new Pi2GpioService();
+            
             var openWeatherMapService = new OpenWeatherMapService(
                 ServiceLocator.GetService<IDateTimeService>(),
                 ServiceLocator.GetService<ISchedulerService>(),
@@ -76,7 +74,7 @@ namespace HA4IoT.Controller.Cellar
             ServiceLocator.RegisterService(typeof(IWeatherService), new WeatherService(openWeatherMapService, ServiceLocator.GetService<IDateTimeService>()));
             ServiceLocator.RegisterService(typeof(OpenWeatherMapService), openWeatherMapService);
 
-            var ccToolsFactory = new CCToolsBoardController(this, GetDevice<II2CBus>());
+            var ccToolsFactory = new CCToolsBoardService(this, GetDevice<II2CBusService>());
             var hsrt16 = ccToolsFactory.CreateHSRT16(Device.CellarHSRT16, new I2CSlaveAddress(32));
 
             var garden = this.CreateArea(RoomId.Garden)
@@ -98,7 +96,7 @@ namespace HA4IoT.Controller.Cellar
                 .WithOnAtNightRange()
                 .WithOffBetweenRange(TimeSpan.Parse("22:30:00"), TimeSpan.Parse("05:00:00"));
 
-            Timer.Tick += (s, e) => { pi2PortController.PollOpenInputPorts(); };
+            TimerService.Tick += (s, e) => { pi2PortController.PollOpenInputPorts(); };
 
             await base.ConfigureAsync();
         }

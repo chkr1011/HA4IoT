@@ -5,24 +5,25 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Core;
-using HA4IoT.Networking;
 
 namespace HA4IoT.PersonalAgent
 {
     public class SynonymService : ServiceBase
     {
+        private readonly IComponentService _componentService;
         private readonly Dictionary<AreaId, HashSet<string>> _areaSynonyms = new Dictionary<AreaId, HashSet<string>>();
         private readonly Dictionary<ComponentId, HashSet<string>> _componentSynonyms = new Dictionary<ComponentId, HashSet<string>>();
         private readonly Dictionary<IComponentState, HashSet<string>> _componentStateSynonyms = new Dictionary<IComponentState, HashSet<string>>();
         private readonly SynonymServiceStorage _storage;
 
-        public SynonymService()
+        public SynonymService(IComponentService componentService)
         {
+            if (componentService == null) throw new ArgumentNullException(nameof(componentService));
+
+            _componentService = componentService;
             _storage = new SynonymServiceStorage();
         }
 
@@ -119,38 +120,36 @@ namespace HA4IoT.PersonalAgent
             return _componentStateSynonyms.Where(i => i.Value.Any(s => s.Equals(synonym, StringComparison.CurrentCultureIgnoreCase))).Select(i => i.Key).ToList();
         }
 
-        public override void HandleApiRequest(IApiContext apiContext)
+        public void HandleApiCall(IApiContext apiContext)
         {
-            apiContext.Response.SetNamedObject("AreaSynonyms", _storage.ConvertAreaSynonymsToJsonObject(_areaSynonyms));
+            ////apiContext.Response.SetValue("AreaSynonyms", _storage.ConvertAreaSynonymsToJsonObject(_areaSynonyms));
 
-            apiContext.Response.SetNamedObject("ComponentSynonyms",
-                _storage.ConvertComponentSynonymsToJsonObject(_componentSynonyms));
+            ////apiContext.Response.SetValue("ComponentSynonyms",
+            ////    _storage.ConvertComponentSynonymsToJsonObject(_componentSynonyms));
 
-            apiContext.Response.SetNamedArray("ComponentStateSynonyms",
-                _storage.ConvertComponentStateSynonymsToJsonArray(_componentStateSynonyms));
+            ////apiContext.Response.SetValue("ComponentStateSynonyms",
+            ////    _storage.ConvertComponentStateSynonymsToJsonArray(_componentStateSynonyms));
         }
 
-        public void RegisterDefaultComponentStateSynonyms(IController controller)
+        public void RegisterDefaultComponentStateSynonyms()
         {
-            if (controller == null) throw new ArgumentNullException(nameof(controller));
-
             AddSynonymsForComponentState(BinaryStateId.Off, "aus", "ausschalten", "ab", "abschalten", "stop", "stoppe", "halt", "anhalten", "off");
             AddSynonymsForComponentState(BinaryStateId.On, "an", "anschalten", "ein", "einschalten", "on");
 
             AddSynonymsForComponentState(RollerShutterStateId.MovingUp, "rauf", "herauf", "hoch", "oben", "öffne", "öffnen", "up");
             AddSynonymsForComponentState(RollerShutterStateId.MovingDown, "runter", "herunter", "unten", "schließe", "schließen", "down");
 
-            foreach (var temperatureSensor in controller.GetComponents<ITemperatureSensor>())
+            foreach (var temperatureSensor in _componentService.GetComponents<ITemperatureSensor>())
             {
                 AddSynonymsForComponent(temperatureSensor.Id, "Temperatur", "warm", "kalt", "temperature");
             }
 
-            foreach (var humiditySensor in controller.GetComponents<IHumiditySensor>())
+            foreach (var humiditySensor in _componentService.GetComponents<IHumiditySensor>())
             {
                 AddSynonymsForComponent(humiditySensor.Id, "feucht", "Feuchtigkeit", "trocken", "humidity");
             }
 
-            foreach (var rollerShutter in controller.GetComponents<IRollerShutter>())
+            foreach (var rollerShutter in _componentService.GetComponents<IRollerShutter>())
             {
                 AddSynonymsForComponent(rollerShutter.Id, "Rollo", "Rollade", "trocken");
             }

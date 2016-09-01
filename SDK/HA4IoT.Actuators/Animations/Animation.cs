@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Core.Timer;
+using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Actuators.Animations
 {
     public class Animation
     {
-        private readonly IHomeAutomationTimer _timer;
+        private readonly ITimerService _timerService;
 
         private TimeSpan _position = TimeSpan.Zero;
 
-        public Animation(IHomeAutomationTimer timer)
+        public Animation(ITimerService timerService)
         {
-            if (timer == null) throw new ArgumentNullException(nameof(timer));
+            if (timerService == null) throw new ArgumentNullException(nameof(timerService));
 
-            _timer = timer;
+            _timerService = timerService;
         }
 
         public IList<Frame> Frames { get; } = new List<Frame>();
@@ -25,12 +24,12 @@ namespace HA4IoT.Actuators.Animations
         public virtual void Start()
         {
             ApplyFrame();
-            _timer.Tick += ApplyFrame;
+            _timerService.Tick += ApplyFrame;
         }
 
         public void Stop()
         {
-            _timer.Tick -= ApplyFrame;
+            _timerService.Tick -= ApplyFrame;
         }
 
         public Animation WithFrame(Frame frame)

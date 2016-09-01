@@ -109,16 +109,18 @@
   <ItemGroup>
     <Compile Include="Buttons\Button.cs" />
     <Compile Include="Buttons\ButtonExtensions.cs" />
-    <Compile Include="Buttons\ButtonSettingsWrapper.cs" />
+    <Compile Include="Buttons\ButtonSettings.cs" />
     <Compile Include="Buttons\EmptyButtonEndpoint.cs" />
     <Compile Include="Buttons\PortBasedButtonEndpoint.cs" />
     <Compile Include="HumiditySensors\HumiditySensor.cs" />
     <Compile Include="HumiditySensors\HumiditySensorExtensions.cs" />
+    <Compile Include="MotionDetectors\MotionDetectorSettings.cs" />
     <Compile Include="MotionDetectors\MotionDetector.cs" />
     <Compile Include="MotionDetectors\MotionDetectorExtensions.cs" />
     <Compile Include="MotionDetectors\PortBasedMotionDetectorEndpoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SensorBase.cs" />
+    <Compile Include="SensorFactory.cs" />
     <Compile Include="SingleValueSensorSettings.cs" />
     <Compile Include="TemperatureSensors\TemperatureSensor.cs" />
     <Compile Include="TemperatureSensors\TemperatureSensorExtensions.cs" />
@@ -142,10 +144,6 @@
     <ProjectReference Include="..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{E1EDAC4B-83B9-46F4-9F6A-3BAE97D79F29}</Project>
       <Name>HA4IoT.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\HA4IoT.Core\HA4IoT.Core.csproj">
-      <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
-      <Name>HA4IoT.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>

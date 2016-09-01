@@ -2,36 +2,36 @@
     <div class="panel-heading pointer" ng-click="haCtrl.setActivePanel('weatherStation')">
         <span class="panel-title">{{localizationCtrl.getUILocalization('UI.WeatherStation')}}</span>
     </div>
-    <table class="table table-striped" ng-show="haCtrl.activePanel==='weatherStation'">
-        <tr>
-            <td style="vertical-align: middle;">
-                <span><img class="icon" ng-src="Images/WeatherSituation.png"/>{{localizationCtrl.getUILocalization('UI.WeatherStation.Situation')}}</span>
-            </td>
-            <td style="text-align: right;"><h4>{{localizationCtrl.getUILocalization('UI.WeatherStation.Situation.' + haCtrl.weatherStation.situation)}}</h4></td>
-        </tr>
-        <tr>
-            <td style="vertical-align: middle;">
-                <span><img class="icon" ng-src="Images/Temperature.png" />{{localizationCtrl.getUILocalization('UI.WeatherStation.Temperature')}}</span>
-            </td>
-            <td style="text-align: right;"><h4>{{(haCtrl.weatherStation.temperature | number:1) + '°C' }}</h4></td>
-        </tr>
-        <tr>
-            <td style="vertical-align: middle;">
-                <span><img class="icon" ng-src="Images/Humidity.png" />{{localizationCtrl.getUILocalization('UI.WeatherStation.Humidity')}}</span>
-            </td>
-            <td style="text-align: right;"><h5>{{(haCtrl.weatherStation.humidity | number:1) + '%'}}</h5></td>
-        </tr>
-        <tr>
-            <td style="vertical-align: middle;">
-                <span><img class="icon" ng-src="Images/Sunrise.png" />{{localizationCtrl.getUILocalization('UI.WeatherStation.Sunrise')}}</span>
-            </td>
-            <td style="text-align: right;"><h5>{{haCtrl.weatherStation.sunrise}}</h5></td>
-        </tr>
-        <tr>
-            <td style="vertical-align: middle;">
-                <span><img class="icon" ng-src="Images/Sunset.png" />{{localizationCtrl.getUILocalization('UI.WeatherStation.Sunset')}}</span>
-            </td>
-            <td style="text-align: right;"><h5>{{haCtrl.weatherStation.sunset}}</h5></td>
-        </tr>
-    </table>
+
+    <div class="container" style="margin: 10px">
+        <div class="row">
+            <div class="col-xs-3 text-center">
+                <img class="iconDefault text-center" ng-src="Images/Temperature.png"/>
+                <br />
+                <span class="text-center">{{(haCtrl.status.OutdoorTemperature | number:1) + '°C' }}</span>
+            </div>
+            <div class="col-xs-3 text-center">
+                <img class="iconDefault text-center" ng-src="Images/Humidity.png"/>
+                <br />
+                <span class="text-center">{{(haCtrl.status.OutdoorHumidity | number:1) + '%'}}</span>
+            </div>
+            <div class="col-xs-3 text-center">
+                <img class="iconDefault" ng-src="Images/Sunrise.png" />
+                <br/>
+                <span class="text-center">{{haCtrl.status.Sunrise.substring(0, 5)}}</span>
+            </div>
+            <div class="col-xs-3 text-center">
+                <img class="iconDefault" ng-src="Images/Sunset.png" />
+                <br />
+                <span class="text-center">{{haCtrl.status.Sunset.substring(0, 5)}}</span>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 20px;">
+            <div class="col-xs-12 text-center">
+                <img class="iconDefault" ng-src="Images/WeatherSituation.png" />
+                <span>{{localizationCtrl.getUILocalization('UI.WeatherStation.Situation.' + haCtrl.status.Weather)}}</span>
+            </div>
+        </div>
+    </div>
 </div>

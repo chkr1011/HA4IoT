@@ -17,7 +17,6 @@ function AppController($scope, $http) {
 
     c.rooms = [];
 
-    c.weatherStation = {};
     c.sensors = [];
     c.rollerShutters = [];
     c.motionDetectors = [];
@@ -32,17 +31,21 @@ function AppController($scope, $http) {
     });
 
     c.notifyConfigurationLoaded = function (configuration) {
-        $scope.$broadcast("configurationLoaded", { language: configuration.controller.Language });
+        $scope.$broadcast("configurationLoaded", { language: configuration.Controller.Language });
     };
+
+    c.deleteNotification = function(uid) {
+        postController("Service/INotificationService/Delete", { "Uid": uid });
+    }
 
     c.generateRooms = function () {
 
-        $http.get("/api/configuration").success(function (data) {
+        $http.get("/api/Configuration").success(function (data) {
 
             c.notifyConfigurationLoaded(data);
 
-            $.each(data.areas, function (areaId, area) {
-                if (area.settings.appSettings.Hide) {
+            $.each(data.Areas, function (areaId, area) {
+                if (getConfigurationValue(area, "Hide", false)) {
                     return true;
                 }
 
@@ -55,7 +58,7 @@ function AppController($scope, $http) {
                     onStateCount: 0
                 };
 
-                $.each(area.components, function (componentId, component) {
+                $.each(area.Components, function (componentId, component) {
                     component.id = componentId;
                     configureActuator(area, component);
 
@@ -119,25 +122,22 @@ function AppController($scope, $http) {
         }, 100);
     }
 
-    c.previousHash = "";
     c.pollStatus = function () {
         $.ajax({ method: "GET", url: "/api/status", timeout: 2500 }).done(function (data) {
             c.errorMessage = null;
 
-            if (data.Meta.Hash === c.previousHash) {
+            if (c.status != null && data.Meta.Hash === c.status.Meta.Hash) {
                 return;
             }
 
-            c.previousHash = data.Meta.Hash;
+            c.status = data;
             console.log("Updating UI due to state changes");
 
-            $.each(data.components, function (id, state) {
+            $.each(data.Components, function (id, state) {
                 c.updateStatus(id, state);
             });
 
             updateOnStateCounters(c.rooms);
-
-            c.weatherStation = data.services.OpenWeatherMapService;
 
             $scope.$apply(function () { $scope.msgs = data; });
         }).fail(function (jqXHR, textStatus, errorThrown) {
@@ -149,11 +149,11 @@ function AppController($scope, $http) {
 
     $scope.toggleState = function (actuator) {
         var newState = "On";
-        if (actuator.state.state === "On") {
+        if (actuator.state.State === "On") {
             newState = "Off";
         }
 
-        invokeActuator(actuator.id, { state: newState }, function () { actuator.state.state = newState; });
+        invokeActuator(actuator.id, { state: newState }, function () { actuator.state.State = newState; });
     };
 
     $scope.invokeVirtualButton = function (actuator) {
@@ -162,12 +162,12 @@ function AppController($scope, $http) {
     }
 
     $scope.toggleIsEnabled = function (actuator) {
-        var newState = !actuator.settings.IsEnabled;
+        var newState = !actuator.Settings.IsEnabled;
 
         updateActuatorSettings(actuator.id, {
             IsEnabled: newState
         }, function () {
-            actuator.settings.IsEnabled = newState;
+            actuator.Settings.IsEnabled = newState;
         });
     };
 
@@ -175,7 +175,7 @@ function AppController($scope, $http) {
         invokeActuator(actuator.id, {
             state: newState
         }, function () {
-            actuator.state.state = newState;
+            actuator.state.State = newState;
         });
     };
 
@@ -207,7 +207,7 @@ function configureActuator(room, actuator) {
 
     actuator.state = {};
 
-    switch (actuator.type) {
+    switch (actuator.Type) {
         case "Lamp":
             {
                 actuator.template = "Views/ToggleTemplate.html";
@@ -236,14 +236,14 @@ function configureActuator(room, actuator) {
                 actuator.template = "Views/StateMachineTemplate.html";
 
                 var extendedStates = [];
-                $.each(actuator.supportedStates, function (i, state) {
+                $.each(actuator.SupportedStates, function (i, state) {
                     var key = "Caption." + state;
                     var stateCaption = getConfigurationValue(actuator, key, key);
 
                     extendedStates.push({ value: state, caption: stateCaption });
                 });
 
-                actuator.supportedStates = extendedStates;
+                actuator.SupportedStates = extendedStates;
                 break;
             }
 
@@ -298,15 +298,19 @@ function configureActuator(room, actuator) {
 }
 
 function getConfigurationValue(component, name, defaultValue) {
-    if (component.settings.appSettings === undefined) {
+    if (component.Settings === undefined) {
         return defaultValue;
     }
 
-    if (component.settings.appSettings[name] === undefined) {
+    if (component.Settings.AppSettings === undefined) {
         return defaultValue;
     }
 
-    return component.settings.appSettings[name];
+    if (component.Settings.AppSettings[name] === undefined) {
+        return defaultValue;
+    }
+
+    return component.Settings.AppSettings[name];
 }
 
 function updateOnStateCounters(areas) {
@@ -325,9 +329,30 @@ function updateOnStateCounters(areas) {
     });
 }
 
+
+function postController(uri, body, successCallback) {
+    // This hack is required for Safari because only one Ajax request at the same time is allowed.
+    var url = "/api/" + uri + "?body=" + JSON.stringify(body);
+
+    $.ajax({
+        method: "POST",
+        url: url,
+        contentType: "application/json; charset=utf-8",
+        timeout: 2500
+    }).done(function () {
+        if (successCallback != null) {
+            successCallback();
+        }
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        alert(textStatus);
+    });
+}
+
 function invokeActuator(id, request, successCallback) {
     // This hack is required for Safari because only one Ajax request at the same time is allowed.
-    var url = "/api/component/" + id + "/status?body=" + JSON.stringify(request);
+    request.ComponentId = id;
+
+    var url = "/api/Service/IComponentService/Update?body=" + JSON.stringify(request);
 
     $.ajax({
         method: "POST",

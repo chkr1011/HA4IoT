@@ -11,8 +11,10 @@ namespace HA4IoT.PersonalAgent.Tests
         [TestMethod]
         public void ParseWords()
         {
-            var synonymService = new SynonymService();
-            var messageContextFactory = new MessageContextFactory(synonymService, new TestController());
+            var testController = new TestController();
+
+            var synonymService = new SynonymService(testController.ComponentService);
+            var messageContextFactory = new MessageContextFactory(synonymService, testController.AreaService);
 
             MessageContext messageContext = messageContextFactory.Create(new TestInboundMessage("Hello World. Hello World."));
             messageContext.IdentifiedAreaIds.Count.ShouldBeEquivalentTo(0);
@@ -25,10 +27,12 @@ namespace HA4IoT.PersonalAgent.Tests
         [TestMethod]
         public void IdentifyAreaIds()
         {
-            var synonymService = new SynonymService();
+            var testController = new TestController();
+
+            var synonymService = new SynonymService(testController.ComponentService);
             synonymService.AddSynonymsForArea(new AreaId("Office"), "Büro");
 
-            var messageContextFactory = new MessageContextFactory(synonymService, new TestController());
+            var messageContextFactory = new MessageContextFactory(synonymService, testController.AreaService);
 
             MessageContext messageContext = messageContextFactory.Create(new TestInboundMessage("Hello World. Büro."));
             messageContext.IdentifiedAreaIds.Count.ShouldBeEquivalentTo(1);

@@ -1,14 +1,11 @@
-﻿using HA4IoT.Contracts.Api;
-using HA4IoT.Contracts.Automations;
-using HA4IoT.Contracts.Core.Settings;
+﻿using System;
 
 namespace HA4IoT.Contracts.Core
 {
-    public interface IController : IDeviceController, IComponentController, IAreaController, IAutomationController
+    public interface IController
     {
-        IApiController ApiController { get; }
-        IHomeAutomationTimer Timer { get; }    
-        ISettingsContainer Settings { get; }  
-        IServiceLocator ServiceLocator { get; }
+        event EventHandler StartupCompleted;
+        event EventHandler StartupFailed;
+        event EventHandler Shutdown;
     }
 }

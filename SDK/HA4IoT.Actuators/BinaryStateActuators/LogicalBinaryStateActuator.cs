@@ -6,21 +6,22 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Actuators.BinaryStateActuators
 {
     public class LogicalBinaryStateActuator : ActuatorBase, IStateMachine
     {
-        private readonly IHomeAutomationTimer _timer;
+        private readonly ITimerService _timerService;
 
         private IComponentState _state = new UnknownComponentState();
 
-        public LogicalBinaryStateActuator(ComponentId id, IHomeAutomationTimer timer) 
+        public LogicalBinaryStateActuator(ComponentId id, ITimerService timerService) 
             : base(id)
         {
-            if (timer == null) throw new ArgumentNullException(nameof(timer));
+            if (timerService == null) throw new ArgumentNullException(nameof(timerService));
 
-            _timer = timer;
+            _timerService = timerService;
         }
 
         public IList<IStateMachine> Actuators { get; } = new List<IStateMachine>();

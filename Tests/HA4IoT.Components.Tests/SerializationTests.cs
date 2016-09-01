@@ -3,6 +3,7 @@ using FluentAssertions;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Sensors;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Components.Tests
 {
@@ -12,30 +13,31 @@ namespace HA4IoT.Components.Tests
         [TestMethod]
         public void NumericValue_Serialize()
         {
-            IComponentState state = new NumericSensorValue(5);
-            IJsonValue jsonValue = state.ToJsonValue();
+            var state = new NumericSensorValue(5F);
+            var jsonValue = state.ToJsonValue();
 
-            jsonValue.ValueType.ShouldBeEquivalentTo(JsonValueType.Number);
-            jsonValue.GetNumber().ShouldBeEquivalentTo(5);
+            Assert.AreEqual(JTokenType.Float, jsonValue.Type);
+            Assert.AreEqual(5, jsonValue.ToObject<int>());
         }
 
         [TestMethod]
         public void StatefulState_Serialize()
         {
-            IComponentState state = new NamedComponentState("Off");
-            IJsonValue jsonValue = state.ToJsonValue();
+            var state = new NamedComponentState("Off");
+            var jsonValue = state.ToJsonValue();
 
-            jsonValue.ValueType.ShouldBeEquivalentTo(JsonValueType.String);
-            jsonValue.GetString().ShouldBeEquivalentTo("Off");
+            Assert.AreEqual(JTokenType.String, jsonValue.Type);
+            Assert.AreEqual("Off", jsonValue.ToObject<string>());
         }
 
         [TestMethod]
         public void UnknownState_Serialize()
         {
-            IComponentState state = new UnknownComponentState();
-            IJsonValue jsonValue = state.ToJsonValue();
+            var state = new UnknownComponentState();
+            var jsonValue = state.ToJsonValue();
 
-            jsonValue.ValueType.ShouldBeEquivalentTo(JsonValueType.Null);
+            Assert.AreEqual(JTokenType.Null, jsonValue.Type);
+            Assert.IsNull(jsonValue.ToObject<object>());
         }
     }
 }
