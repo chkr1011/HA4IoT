@@ -3,20 +3,29 @@
 
     function createController(controllerProxyService) {
 
-        this.Model = {
-            AccessTokenSecret: "123",
-            AccessToken: "456",
-            ConsumerSecret: "789",
-            ConsumerKey: "XYZ"
+        var ctrl = this;
+
+        ctrl.Model = {
+            IsEnabled: false,
+            AccessTokenSecret: "",
+            AccessToken: "",
+            ConsumerSecret: "",
+            ConsumerKey: ""
         }
 
-        this.save = function () {
+        ctrl.$onInit = function () {
+            controllerProxyService.get("Service/ISettingsService/Settings", { "Uri": "TwitterClientServiceSettings" }, function (response) {
+                ctrl.Model = response;
+            });
+        }
+
+        ctrl.save = function () {
             var payload = {
-                Uri: "Service/ITwitterClientService",
-                Settings: this.Model
+                Uri: "TwitterClientServiceSettings",
+                Settings: ctrl.Model
             }
 
-            controllerProxyService.invoke("Command", "Service/ISettingsService/Replace", payload)
+            controllerProxyService.execute("Service/ISettingsService/Replace", payload);
 
             alert("Saved Twitter client settings");
         }

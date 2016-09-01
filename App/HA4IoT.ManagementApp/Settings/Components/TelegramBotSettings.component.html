@@ -6,9 +6,19 @@
             the required fields.</div>
 
         <form class="form-horizontal">
+
+            <div class="form-group">
+                <label class="col-md-2 control-label">Enabled</label>
+                <div class="col-md-10">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" ng-model="owmsCtrl.Model.IsEnabled"><label></label>
+                    </label>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label class="col-md-2 control-label">Authentication token</label>
-                <div class=" col-md-10">
+                <div class="col-md-10">
                     <input type="text" class="form-control" ng-model="tbsCtrl.Model.AuthenticationToken">
                 </div>
             </div>

@@ -132,6 +132,7 @@
     <Compile Include="Animations\Frame.cs" />
     <Compile Include="RollerShutters\PortBasedRollerShutterEndpoint.cs" />
     <Compile Include="RollerShutters\RollerShutterSettings.cs" />
+    <Compile Include="StateMachines\StateMachineApiCallRequest.cs" />
     <Compile Include="StateMachines\StateMachineExtensions.cs" />
     <Compile Include="Triggers\ConditionalTrigger.cs" />
     <Compile Include="Triggers\IntervalTrigger.cs" />

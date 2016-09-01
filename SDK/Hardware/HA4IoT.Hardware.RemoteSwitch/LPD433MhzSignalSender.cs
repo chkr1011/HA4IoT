@@ -18,7 +18,7 @@ namespace HA4IoT.Hardware.RemoteSwitch
             _i2CHardwareBridge = i2CHardwareBridge;
             _pin = pin;
 
-            apiController.RouteCommand("433MHz", ApiPost);
+            apiController.Route("433MHz", ApiPost);
         }
 
         private void ApiPost(IApiContext apiContext)

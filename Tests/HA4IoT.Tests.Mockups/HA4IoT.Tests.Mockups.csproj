@@ -126,7 +126,6 @@
     <Compile Include="TestMotionDetectorFactory.cs" />
     <Compile Include="TestButtonFactory.cs" />
     <Compile Include="TestController.cs" />
-    <Compile Include="TestHttpRequestController.cs" />
     <Compile Include="TestHomeAutomationTimer.cs" />
     <Compile Include="TestHumiditySensor.cs" />
     <Compile Include="TestI2CBusService.cs" />

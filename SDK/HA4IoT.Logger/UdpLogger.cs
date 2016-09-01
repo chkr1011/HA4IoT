@@ -75,7 +75,7 @@ namespace HA4IoT.Logger
             Publish(LogEntrySeverity.Error, message + Environment.NewLine + exception);
         }
 
-        [ApiMethod(ApiCallType.Request)]
+        [ApiMethod]
         public void History(IApiContext apiContext)
         {
             if (apiContext == null) throw new ArgumentNullException(nameof(apiContext));

@@ -55,7 +55,7 @@ namespace HA4IoT.Services.ControllerSlave
 
         public ControllerSlaveServiceSettings Settings { get; private set; }
 
-        [ApiMethod(ApiCallType.Request)]
+        [ApiMethod]
         public void Status(IApiContext apiContext)
         {
             apiContext.Response["LastPull"] = _lastPull;

@@ -6,9 +6,9 @@
         var ctrl = this;
 
         ctrl.Model = {
-            Latitude: "123",
-            Longitude: "456",
-            AppId: "AppId",
+            Latitude: "",
+            Longitude: "",
+            AppId: "",
             UseTemperature: true,
             UseHumidity: true,
             UseSunriseSunset: true,

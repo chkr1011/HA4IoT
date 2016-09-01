@@ -70,13 +70,13 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
 
         public OpenWeatherMapServiceSettings Settings { get; private set; }
 
-        [ApiMethod(ApiCallType.Command)]
+        [ApiMethod]
         public void Status(IApiContext apiContext)
         {
             apiContext.Response = JObject.FromObject(this);
         }
 
-        [ApiMethod(ApiCallType.Command)]
+        [ApiMethod]
         public void Refresh(IApiContext apiContext)
         {
             Refresh();

@@ -75,7 +75,7 @@ namespace HA4IoT.Notifications
             Create(NotificationType.Error, text, Settings.ErrorTimeToLive);
         }
 
-        [ApiMethod(ApiCallType.Command)]
+        [ApiMethod]
         public void Delete(IApiContext apiContext)
         {
             var notificationUid = (string)apiContext.Request["Uid"];

@@ -95,7 +95,7 @@ namespace HA4IoT.Services.Components
             return _components.Get<TComponent>(id);
         }
 
-        [ApiMethod(ApiCallType.Command)]
+        [ApiMethod]
         public void Update(IApiContext apiContext)
         {
             // TODO: Consider creating classes as optional method parameters which are filled via reflection from Request JSON.
@@ -109,13 +109,13 @@ namespace HA4IoT.Services.Components
             component.HandleApiCall(apiContext);
         }
 
-        [ApiMethod(ApiCallType.Command)]
+        [ApiMethod]
         public void Status(IApiContext apiContext)
         {
             
         }
 
-        [ApiMethod(ApiCallType.Command)]
+        [ApiMethod]
         public void Reset(IApiContext apiContext)
         {
             var componentId = (string)apiContext.Request["ComponentId"];

@@ -142,11 +142,6 @@ namespace HA4IoT.Actuators.StateMachines
 
         public override void HandleApiCall(IApiContext apiContext)
         {
-            if (apiContext.CallType != ApiCallType.Command)
-            {
-                return;
-            }
-
             var request = apiContext.Request.ToObject<ApiCallRequest>();
 
             if (!string.IsNullOrEmpty(request.Action))
@@ -170,13 +165,6 @@ namespace HA4IoT.Actuators.StateMachines
 
                 SetState(stateId);
             }
-        }
-
-        private class ApiCallRequest
-        {
-            public string Action { get; set; }
-
-            public string State { get; set; }
         }
 
         public override IList<IComponentState> GetSupportedStates()

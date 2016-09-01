@@ -125,11 +125,7 @@ namespace HA4IoT.Actuators.RollerShutters
 
         public override void HandleApiCall(IApiContext apiContext)
         {
-            if (apiContext.CallType == ApiCallType.Command)
-            {
-                var state = new NamedComponentState((string)apiContext.Request["state"]);
-                SetState(state);
-            }
+            SetState(new NamedComponentState((string)apiContext.Request["state"]));
         }
 
         public override IList<IComponentState> GetSupportedStates()

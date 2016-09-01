@@ -16,14 +16,13 @@ namespace HA4IoT.Api
     public class ApiService : ServiceBase, IApiService
     {
         private readonly List<IApiDispatcherEndpoint> _endpoints = new List<IApiDispatcherEndpoint>();
-        private readonly Dictionary<string, Action<IApiContext>> _requestRoutes = new Dictionary<string, Action<IApiContext>>(StringComparer.OrdinalIgnoreCase);
-        private readonly Dictionary<string, Action<IApiContext>> _commandRoutes = new Dictionary<string, Action<IApiContext>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Action<IApiContext>> _routes = new Dictionary<string, Action<IApiContext>>(StringComparer.OrdinalIgnoreCase);
         private readonly HashAlgorithmProvider _hashAlgorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Md5);
 
         public ApiService()
         {
-            RouteRequest("Status", HandleStatusRequest);
-            RouteRequest("Configuration", HandleConfigurationRequest);
+            Route("Status", HandleStatusRequest);
+            Route("Configuration", HandleConfigurationRequest);
         }
 
         public event EventHandler<ApiRequestReceivedEventArgs> StatusRequested;
@@ -40,29 +39,12 @@ namespace HA4IoT.Api
             // TODO: Use information for optimized state generation, pushing to Azure, writing Csv etc.
         }
 
-        public void RouteRequest(string uri, Action<IApiContext> handler)
-        {
-            if (uri == null) throw new ArgumentNullException(nameof(uri));
-            if (handler == null) throw new ArgumentNullException(nameof(handler));
-
-            _requestRoutes.Add(GenerateUri(uri), handler);
-        }
-
-        public void RouteCommand(string uri, Action<IApiContext> handler)
-        {
-            if (uri == null) throw new ArgumentNullException(nameof(uri));
-            if (handler == null) throw new ArgumentNullException(nameof(handler));
-
-            _commandRoutes.Add(GenerateUri(uri), handler);
-        }
-
         public void Route(string uri, Action<IApiContext> handler)
         {
             if (uri == null) throw new ArgumentNullException(nameof(uri));
             if (handler == null) throw new ArgumentNullException(nameof(handler));
 
-            _requestRoutes.Add(GenerateUri(uri), handler);
-            _commandRoutes.Add(GenerateUri(uri), handler);
+            _routes.Add(GenerateUri(uri), handler);
         }
 
         public void Expose(object controller)
@@ -95,17 +77,9 @@ namespace HA4IoT.Api
 
                 string uri = $"{baseUri}/{method.Name}";
                 Action<IApiContext> handler = apiContext => method.Invoke(controller, new object[] { apiContext });
+                Route(uri, handler);
 
-                if (methodAttribute.CallType == ApiCallType.Command)
-                {
-                    RouteCommand(uri, handler);
-                }
-                else if (methodAttribute.CallType == ApiCallType.Request)
-                {
-                    RouteRequest(uri, handler);
-                }
-
-                Log.Verbose($"Exposed API method to URI '{methodAttribute.CallType}:{uri}'");
+                Log.Verbose($"Exposed API method to URI '{uri}'");
             }
         }
 
@@ -139,15 +113,7 @@ namespace HA4IoT.Api
             var uri = e.Context.Uri.Trim();
 
             Action<IApiContext> handler;
-            if (e.Context.CallType == ApiCallType.Request && _requestRoutes.TryGetValue(uri, out handler))
-            {
-                e.IsHandled = true;
-                HandleRequest(e.Context, handler);
-
-                return;
-            }
-
-            if (e.Context.CallType == ApiCallType.Command && _commandRoutes.TryGetValue(uri, out handler))
+            if (_routes.TryGetValue(uri, out handler))
             {
                 e.IsHandled = true;
                 HandleRequest(e.Context, handler);
@@ -174,11 +140,7 @@ namespace HA4IoT.Api
 
                 apiContext.Response["Meta"] = metaInformation;
 
-                string hash = null;
-                if (apiContext.CallType == ApiCallType.Request)
-                {
-                    hash = GenerateHash(apiContext.Response.ToString());
-                }
+                var hash =  GenerateHash(apiContext.Response.ToString());
 
                 metaInformation["Hash"] = hash;
                 metaInformation["ProcessingDuration"] = stopwatch.ElapsedMilliseconds;

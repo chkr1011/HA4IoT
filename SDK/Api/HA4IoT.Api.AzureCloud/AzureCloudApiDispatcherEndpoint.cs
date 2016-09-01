@@ -106,18 +106,9 @@ namespace HA4IoT.Api.AzureCloud
                 return;
             }
 
-            var callTypeSource = (string)e.Body["CallType"];
-
-            ApiCallType callType;
-            if (!Enum.TryParse(callTypeSource, true, out callType))
-            {
-                Log.Warning("Received Azure queue message with missing or invalid CallType property.");
-                return;
-            }
-
             var request = (JObject)e.Body["Content"];
 
-            var context = new QueueBasedApiContext(e.BrokerProperties, e.Body, processingStopwatch, callType, uri, request, new JObject());
+            var context = new QueueBasedApiContext(e.BrokerProperties, e.Body, processingStopwatch, uri, request, new JObject());
             var eventArgs = new ApiRequestReceivedEventArgs(context);
             RequestReceived?.Invoke(this, eventArgs);
 
@@ -148,17 +139,10 @@ namespace HA4IoT.Api.AzureCloud
                 ["ProcessingDuration"] = context.ProcessingStopwatch.ElapsedMilliseconds
             };
 
-            if (context.CallType == ApiCallType.Request)
-            {
-                var serverEtag = (string)context.Response["Meta"]["Hash"];
-                message["ETag"] = serverEtag;
+            var serverEtag = (string)context.Response["Meta"]["Hash"];
+            message["ETag"] = serverEtag;
 
-                if (!string.Equals(clientEtag, serverEtag))
-                {
-                    message["Content"] = context.Response;
-                }
-            }
-            else
+            if (!string.Equals(clientEtag, serverEtag))
             {
                 message["Content"] = context.Response;
             }

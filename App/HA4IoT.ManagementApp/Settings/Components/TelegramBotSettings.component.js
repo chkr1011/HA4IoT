@@ -3,17 +3,20 @@
 
     function createController(controllerProxyService) {
 
-        this.Model = {
-            AuthenticationToken: "ABC"
+        var ctrl = this;
+
+        ctrl.Model = {
+            IsEnabled: false,
+            AuthenticationToken: ""
         }
 
-        this.save = function () {
+        ctrl.save = function () {
             var payload = {
-                Uri: "Service/TelegramBotService",
-                Settings: this.Model
+                Uri: "TelegramBotServiceSettings",
+                Settings: ctrl.Model
             }
 
-            controllerProxyService.invoke("Command", "Service/ISettingsService/Replace", payload)
+            controllerProxyService.invoke("Command", "Service/ISettingsService/Replace", payload);
 
             alert("Saved Telegram Bot settings");
         }

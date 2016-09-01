@@ -11,17 +11,11 @@ namespace HA4IoT.Contracts.Api
         event EventHandler<ApiRequestReceivedEventArgs> ConfigurationRequested;  
 
         void RegisterEndpoint(IApiDispatcherEndpoint endpoint);
-
-        void RouteRequest(string uri, Action<IApiContext> handler);
-
-        void RouteCommand(string uri, Action<IApiContext> handler);
-
+        
         void Route(string uri, Action<IApiContext> handler);
 
         void Expose(object controller);
-
-        void Expose(string baseUri, object controller);
-
+        
         void NotifyStateChanged(IComponent component);
     }
 }

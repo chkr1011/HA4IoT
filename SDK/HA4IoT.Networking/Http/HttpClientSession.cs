@@ -100,7 +100,7 @@ namespace HA4IoT.Networking.Http
                 return null;
             }
 
-            if (httpRequest.Headers.GetRequiresContinue() && httpRequest.Headers.GetHasBodyContent())
+            if (httpRequest.GetRequiresContinue())
             {
                 bufferLength += _inputStream.Read(_buffer, bufferLength, _buffer.Length - bufferLength);
 

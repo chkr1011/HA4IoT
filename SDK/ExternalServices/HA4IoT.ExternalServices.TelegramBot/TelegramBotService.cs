@@ -53,12 +53,6 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
         public override void Startup()
         {
-            if (!Settings.IsEnabled)
-            {
-                Log.Verbose("Telegram Bot Service is disabled.");
-                return;
-            }
-
             Task.Factory.StartNew(
                 async () => await ProcessPendingMessagesAsync(),
                 CancellationToken.None,
@@ -70,8 +64,6 @@ namespace HA4IoT.ExternalServices.TelegramBot
                 CancellationToken.None,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);
-
-            EnqueueMessageForAdministrators($"{Emoji.Bell} Das System ist gestartet.");
         }
 
         public void EnqueueMessage(TelegramOutboundMessage message)
@@ -158,6 +150,12 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
         private async Task WaitForNextUpdates()
         {
+            if (!Settings.IsEnabled)
+            {
+                await Task.Delay(TimeSpan.FromMinutes(1));
+                return;
+            }
+
             using (var httpClient = new HttpClient())
             {
                 var uri = $"{BaseUri}{Settings.AuthenticationToken}/getUpdates?timeout=60&offset={_latestUpdateId + 1}";
@@ -168,7 +166,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
                     throw new InvalidOperationException($"Failed to fetch new updates of TelegramBot (StatusCode={response.StatusCode}).");
                 }
 
-                string body = await response.Content.ReadAsStringAsync();
+                var body = await response.Content.ReadAsStringAsync();
                 ProcessUpdates(body);
             }
         }

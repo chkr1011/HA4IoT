@@ -94,7 +94,7 @@ namespace HA4IoT.Settings
             }
         }
 
-        public void ImportSettings(string uri, JObject settings)
+        private void ImportSettings(string uri, JObject settings)
         {
             lock (_syncRoot)
             {
@@ -114,33 +114,28 @@ namespace HA4IoT.Settings
             }
         }
 
-        [ApiMethod(ApiCallType.Command)]
+        [ApiMethod]
         public void Replace(IApiContext apiContext)
         {
-            var uri = (string)apiContext.Request["Uri"];
-            var settings = (JObject)apiContext.Request["Settings"];
-
-            SetSettings(uri, settings);
+            var request = apiContext.Request.ToObject<SettingsServiceApiRequest>();
+            SetSettings(request.Uri, request.Settings);
         }
 
-        [ApiMethod(ApiCallType.Command)]
+        [ApiMethod]
         public void Import(IApiContext apiContext)
         {
-            var uri = (string)apiContext.Request["Uri"];
-            var settings = (JObject)apiContext.Request["Settings"];
-
-            ImportSettings(uri, settings);
+            var request = apiContext.Request.ToObject<SettingsServiceApiRequest>();
+            ImportSettings(request.Uri, request.Settings);
         }
 
-        [ApiMethod(ApiCallType.Request)]
+        [ApiMethod]
         public void Settings(IApiContext apiContext)
         {
-            var uri = (string)apiContext.Request["Uri"];
-
-            apiContext.Response = GetRawSettings(uri);
+            var request = apiContext.Request.ToObject<SettingsServiceApiRequest>();
+            apiContext.Response = GetRawSettings(request.Uri);
         }
 
-        [ApiMethod(ApiCallType.Request)]
+        [ApiMethod]
         public void Backup(IApiContext apiContext)
         {
             lock (_syncRoot)

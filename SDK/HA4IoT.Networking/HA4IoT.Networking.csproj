@@ -120,6 +120,7 @@
     <Compile Include="ClientSession.cs" />
     <Compile Include="Http\BadRequestException.cs" />
     <Compile Include="Http\BinaryBody.cs" />
+    <Compile Include="Http\HttpRequestExtensions.cs" />
     <Compile Include="Http\UpgradedToWebSocketSessionEventArgs.cs" />
     <Compile Include="WebSockets\WebSocketClientSession.cs" />
     <Compile Include="WebSockets\WebSocketConnectedEventArgs.cs" />

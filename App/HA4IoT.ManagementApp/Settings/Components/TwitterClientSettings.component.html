@@ -6,30 +6,40 @@
             the required fields.</div>
 
         <form class="form-horizontal">
+
+            <div class="form-group">
+                <label class="col-md-2 control-label">Enabled</label>
+                <div class="col-md-10">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" ng-model="tcsCtrl.Model.IsEnabled"><label></label>
+                    </label>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label class="col-md-2 control-label">Access Token Secret</label>
-                <div class=" col-md-10">
+                <div class="col-md-10">
                     <input type="text" class="form-control" ng-model="tcsCtrl.Model.AccessTokenSecret">
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="col-md-2 control-label">Access Token</label>
-                <div class=" col-md-10">
+                <div class="col-md-10">
                     <input type="text" class="form-control" ng-model="tcsCtrl.Model.AccessToken">
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="col-md-2 control-label">Consumer Secret</label>
-                <div class=" col-md-10">
+                <div class="col-md-10">
                     <input type="text" class="form-control" ng-model="tcsCtrl.Model.ConsumerSecret">
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="col-md-2 control-label">Consumer Key</label>
-                <div class=" col-md-10">
+                <div class="col-md-10">
                     <input type="text" class="form-control" ng-model="tcsCtrl.Model.ConsumerKey">
                 </div>
             </div>

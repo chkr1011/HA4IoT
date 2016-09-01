@@ -37,7 +37,7 @@ namespace HA4IoT.Services.Environment
             Timestamp = _dateTimeService.Now;
         }
 
-        [ApiMethod(ApiCallType.Request)]
+        [ApiMethod]
         public void Status(IApiContext apiContext)
         {
             apiContext.Response = JObject.FromObject(this);

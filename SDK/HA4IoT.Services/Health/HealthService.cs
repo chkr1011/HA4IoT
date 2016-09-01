@@ -47,7 +47,7 @@ namespace HA4IoT.Services.Health
             timerService.Tick += Tick;
         }
 
-        [ApiMethod(ApiCallType.Command)]
+        [ApiMethod]
         public void Reset(IApiContext apiContext)
         {
             ResetStatistics();

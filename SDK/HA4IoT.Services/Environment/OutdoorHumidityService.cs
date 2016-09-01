@@ -30,7 +30,7 @@ namespace HA4IoT.Services.Environment
         [JsonIgnore]
         public DateTime? Timestamp { get; private set; }
 
-        [ApiMethod(ApiCallType.Request)]
+        [ApiMethod]
         public void Status(IApiContext apiContext)
         {
             apiContext.Response = JObject.FromObject(this);

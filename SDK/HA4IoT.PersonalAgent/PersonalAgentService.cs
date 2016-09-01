@@ -76,7 +76,7 @@ namespace HA4IoT.PersonalAgent
             return answer;
         }
 
-        [ApiMethod(ApiCallType.Command)]
+        [ApiMethod]
         public void Ask(IApiContext apiContext)
         {
             var message = (string)apiContext.Request["Message"];

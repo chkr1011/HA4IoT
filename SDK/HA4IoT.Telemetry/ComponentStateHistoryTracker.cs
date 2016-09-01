@@ -1,9 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using Newtonsoft.Json.Linq;
 
@@ -22,8 +20,8 @@ namespace HA4IoT.Telemetry
 
             _component = component;
 
-            _filename = StoragePath.WithFilename("Components", component.Id.Value, "History.csv");
-            StoragePath.EnsureDirectoryExists(_filename);
+            //_filename = StoragePath.WithFilename("Components", component.Id.Value, "History.csv");
+            //StoragePath.EnsureDirectoryExists(_filename);
 
             component.StateChanged += CreateDataPointAsync;
         }
@@ -43,7 +41,7 @@ namespace HA4IoT.Telemetry
 
         private void CreateDataPointAsync(object sender, ComponentStateChangedEventArgs e)
         {
-            Task.Run(() => AppendDataPoint(e));
+            //Task.Run(() => AppendDataPoint(e));
         }
 
         private void HandleApiCommand(IApiContext apiContext)

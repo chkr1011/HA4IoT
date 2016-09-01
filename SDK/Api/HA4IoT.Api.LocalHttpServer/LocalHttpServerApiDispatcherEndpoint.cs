@@ -9,7 +9,6 @@ using HA4IoT.Networking.Http;
 using HA4IoT.Networking.Json;
 using HA4IoT.Networking.WebSockets;
 using Newtonsoft.Json.Linq;
-using HttpMethod = HA4IoT.Contracts.Networking.Http.HttpMethod;
 
 namespace HA4IoT.Api.LocalHttpServer
 {
@@ -66,24 +65,20 @@ namespace HA4IoT.Api.LocalHttpServer
 
             httpContext.Response.StatusCode = ConvertResultCode(eventArgs.Context.ResultCode);
 
-            if (apiContext.CallType == ApiCallType.Request)
+            var serverHash = (string)apiContext.Response["Meta"]["Hash"];
+            var serverHashWithQuotes = "\"" + serverHash + "\"";
+
+            string clientHash;
+            if (httpContext.Request.Headers.TryGetValue(HttpHeaderNames.IfNoneMatch, out clientHash))
             {
-                var serverHash = (string)apiContext.Response["Meta"]["Hash"];
-                var serverHashWithQuotes = "\"" + serverHash + "\"";
-
-                string clientHash;
-                if (httpContext.Request.Headers.TryGetValue(HttpHeaderNames.IfNoneMatch, out clientHash))
+                if (clientHash.Equals(serverHashWithQuotes))
                 {
-                    if (clientHash.Equals(serverHashWithQuotes))
-                    {
-                        httpContext.Response.StatusCode = HttpStatusCode.NotModified;
-                        return;
-                    }
+                    httpContext.Response.StatusCode = HttpStatusCode.NotModified;
+                    return;
                 }
-
-                httpContext.Response.Headers[HttpHeaderNames.ETag] = serverHashWithQuotes;
             }
 
+            httpContext.Response.Headers[HttpHeaderNames.ETag] = serverHashWithQuotes;
             httpContext.Response.Body = new JsonBody(eventArgs.Context.Response);
         }
 
@@ -122,16 +117,9 @@ namespace HA4IoT.Api.LocalHttpServer
 
                 var callTypeSource = (string)requestMessage["CallType"];
 
-                ApiCallType callType;
-                if (!Enum.TryParse(callTypeSource, true, out callType))
-                {
-                    Log.Warning("Received WebSocket message with missing or invalid CallType property.");
-                    return;
-                }
-
                 var request = (JObject)requestMessage["Content"];
 
-                var context = new ApiContext(callType, uri, request, new JObject());
+                var context = new ApiContext(uri, request, new JObject());
                 var eventArgs = new ApiRequestReceivedEventArgs(context);
                 RequestReceived?.Invoke(this, eventArgs);
 
@@ -153,17 +141,10 @@ namespace HA4IoT.Api.LocalHttpServer
                     ["ProcessingDuration"] = processingStopwatch.ElapsedMilliseconds
                 };
 
-                if (context.CallType == ApiCallType.Request)
-                {
-                    var serverEtag = (string)context.Response["Meta"]["Hash"];
-                    responseMessage["ETag"] = serverEtag;
+                var serverEtag = (string)context.Response["Meta"]["Hash"];
+                responseMessage["ETag"] = serverEtag;
 
-                    if (!string.Equals(clientEtag, serverEtag))
-                    {
-                        responseMessage["Content"] = context.Response;
-                    }
-                }
-                else
+                if (!string.Equals(clientEtag, serverEtag))
                 {
                     responseMessage["Content"] = context.Response;
                 }
@@ -192,33 +173,26 @@ namespace HA4IoT.Api.LocalHttpServer
 
         private ApiContext CreateApiContext(HttpContext httpContext)
         {
-            ApiCallType callType;
-            if (httpContext.Request.Method == HttpMethod.Get)
+            try
             {
-                callType = ApiCallType.Request;
+                JObject request;
+                if (string.IsNullOrEmpty(httpContext.Request.Body))
+                {
+                    request = new JObject();
+                }
+                else
+                {
+                    request = JObject.Parse(httpContext.Request.Body);
+                }
+                
+                return new ApiContext(httpContext.Request.Uri, request, new JObject());
             }
-            else if (httpContext.Request.Method == HttpMethod.Post)
+            catch (Exception)
             {
-                callType = ApiCallType.Command;
-            }
-            else
-            {
-                httpContext.Response.StatusCode = HttpStatusCode.BadRequest;
+                Log.Verbose("Received a request with no valid JSON request.");
+
                 return null;
             }
-
-            var body = ParseJson(httpContext.Request.Body);
-            return new ApiContext(callType, httpContext.Request.Uri, body, new JObject());
-        }
-
-        private JObject ParseJson(string source)
-        {
-            if (string.IsNullOrEmpty(source))
-            {
-                return new JObject();
-            }
-
-            return JObject.Parse(source);
         }
     }
 }

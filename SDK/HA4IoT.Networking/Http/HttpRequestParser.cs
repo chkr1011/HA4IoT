@@ -116,6 +116,8 @@ namespace HA4IoT.Networking.Http
             if (_query.StartsWith("body="))
             {
                 _body = Uri.UnescapeDataString(_query.Substring("body=".Length));
+                _headers[HttpHeaderNames.ContentLength] = _body.Length.ToString();
+
                 _query = null;
             }
         }
