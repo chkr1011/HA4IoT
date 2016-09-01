@@ -144,6 +144,27 @@ namespace HA4IoT.Settings
             }
         }
 
+        [ApiMethod]
+        public void Restore(IApiContext apiContext)
+        {
+            var settings = apiContext.Request.ToObject<Dictionary<string, JObject>>();
+
+            lock (_syncRoot)
+            {
+                foreach (var setting in settings)
+                {
+                    _settings[setting.Key] = setting.Value;
+                }
+
+                Save();
+            }
+
+            foreach (var setting in settings)
+            {
+                SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(setting.Key));
+            }
+        }
+
         private void Save()
         {
             var filename = StoragePath.WithFilename("SettingsService.json");

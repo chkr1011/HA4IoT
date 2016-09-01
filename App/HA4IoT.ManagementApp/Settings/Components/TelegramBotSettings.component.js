@@ -7,7 +7,14 @@
 
         ctrl.Model = {
             IsEnabled: false,
-            AuthenticationToken: ""
+            AuthenticationToken: "",
+            AllowAllClients: false
+        }
+
+        ctrl.$onInit = function () {
+            controllerProxyService.get("Service/ISettingsService/Settings", { "Uri": "TelegramBotServiceSettings" }, function (response) {
+                ctrl.Model = response;
+            });
         }
 
         ctrl.save = function () {
@@ -16,7 +23,7 @@
                 Settings: ctrl.Model
             }
 
-            controllerProxyService.invoke("Command", "Service/ISettingsService/Replace", payload);
+            controllerProxyService.execute("Service/ISettingsService/Replace", payload);
 
             alert("Saved Telegram Bot settings");
         }

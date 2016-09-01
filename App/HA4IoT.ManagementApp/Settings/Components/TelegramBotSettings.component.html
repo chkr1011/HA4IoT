@@ -11,7 +11,16 @@
                 <label class="col-md-2 control-label">Enabled</label>
                 <div class="col-md-10">
                     <label class="checkbox-inline">
-                        <input type="checkbox" ng-model="owmsCtrl.Model.IsEnabled"><label></label>
+                        <input type="checkbox" ng-model="tbsCtrl.Model.IsEnabled"><label></label>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-2 control-label">Allow all clients</label>
+                <div class="col-md-10">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" ng-model="tbsCtrl.Model.AllowAllClients"><label></label>
                     </label>
                 </div>
             </div>
@@ -23,7 +32,7 @@
                 </div>
             </div>
 
-            <button class="btn btn-default pull-right">Save</button>
+            <button class="btn btn-default pull-right" ng-click="tbsCtrl.save()">Save</button>
         </form>
     </div>
 </div>
