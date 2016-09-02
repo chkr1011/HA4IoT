@@ -239,7 +239,7 @@ namespace HA4IoT.Core
             _container.Register<AzureCloudApiDispatcherEndpointConfigurator>();
             _container.Register<ComponentStateHistoryTrackerConfigurator>();
 
-            _options.Configuration?.SetupContainer(containerService);
+            _options.ContainerConfigurator?.SetupContainer(containerService);
 
             _container.Verify();
         }
@@ -248,8 +248,15 @@ namespace HA4IoT.Core
         {
             try
             {
+                if (_options.ConfigurationType == null)
+                {
+                    return;
+                }
+
                 Log.Info("Starting configuration");
-                _options.Configuration?.Configure(_container.GetInstance<IContainerService>()).Wait();
+
+                var configuration = _container.GetInstance(_options.ConfigurationType);
+                (configuration as IConfiguration)?.ApplyAsync().Wait();
             }
             catch (Exception exception)
             {

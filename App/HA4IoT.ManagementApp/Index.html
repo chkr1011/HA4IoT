@@ -11,15 +11,17 @@
 
     <title>Management Console - HA4IoT</title>
 
-    <script type="text/javascript" src="Scripts/jquery-3.1.0.js"></script>
-    <script type="text/javascript" src="Scripts/angular.js"></script>
+    <script type="text/javascript" src="Scripts/jquery-3.1.0.min.js"></script>
+    <script type="text/javascript" src="Scripts/angular.min.js"></script>
 
     <script type="text/javascript" src="Services/ControllerProxyService.js"></script>
     <script type="text/javascript" src="Services/TranslationService.js"></script>
     <script type="text/javascript" src="Module.js"></script>
-    
-    <script type="text/javascript" src="Controllers/MainController.js"></script>
 
+    <script type="text/javascript" src="MainPage.component.js"></script>
+    <script type="text/javascript" src="Home/Components/Home.component.js"></script>
+    
+    <script type="text/javascript" src="Settings/Components/Settings.component.js"></script>
     <script type="text/javascript" src="Settings/Components/ControllerSettings.component.js"></script>
     <script type="text/javascript" src="Settings/Components/OpenWeatherMapSettings.component.js"></script>
     <script type="text/javascript" src="Settings/Components/TwitterClientSettings.component.js"></script>
@@ -27,24 +29,11 @@
     <script type="text/javascript" src="Settings/Components/TelegramBotSettings.component.js"></script>
 
     <link href="Content/bootstrap.min.css" rel="stylesheet">
+    <link href="Content/Style.css" rel="stylesheet">
 </head>
 
-<body ng-controller="MainController as mainCtrl" ng-app="app">
-
-    <div class="container-fluid">
-
-        <ul class="nav nav-tabs">
-            <li role="presentation" class="active"><a href="#">{{mainCtrl.getTranslationValue('Gogogo')}}</a></li>
-            <li role="presentation"><a href="#">Configuration</a></li>
-            <li role="presentation"><a href="#">Health</a></li>
-        </ul>
-
-        <!-- use angular view here -->
-        <div id="selectedTabContent" ng-include="'Views/SettingsView.html'">
-        </div>
-
-    </div>
-
+<body ng-app="app">
+    <main-page></main-page>
 </body>
 
 </html>

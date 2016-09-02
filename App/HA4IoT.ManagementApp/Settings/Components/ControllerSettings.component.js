@@ -3,18 +3,29 @@
 
     function createController(controllerProxyService) {
 
-        this.Model = {
-            Caption: "HA4IoT",
-            Description: "HA4IoT controller for my home.",
+        var ctrl = this;
+
+        ctrl.Model = {
+            Caption: "",
+            Description: "",
             Language: "EN"
         }
 
-        this.$onInit = function() {
-            
+        ctrl.$onInit = function () {
+            controllerProxyService.get("Service/ISettingsService/Settings", { "Uri": "ControllerSettings" }, function (response) {
+                ctrl.Model = response;
+            });
         }
 
-        this.save = function () {
-            alert("SAVE");
+        ctrl.save = function () {
+            var payload = {
+                Uri: "ControllerSettings",
+                Settings: ctrl.Model
+            }
+
+            controllerProxyService.execute("Service/ISettingsService/Replace", payload);
+
+            alert("Saved controller settings");
         }
     }
 

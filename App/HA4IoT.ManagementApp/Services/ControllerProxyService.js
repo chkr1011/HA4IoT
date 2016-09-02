@@ -3,13 +3,13 @@ function createControllerProxyService($http) {
         mode: "WebSocket",
         address: "192.168.1.15",
 
-        execute: function (uri, payload) {
+        execute: function (uri, payload, successCallback) {
             var fullUri = "http://" + this.address + "/api/" + uri;
 
             console.log("COMMAND@" + fullUri);
             console.log(payload);
 
-            $http.post(fullUri, payload);
+            $http.post(fullUri, payload).then(successCallback);
         },
 
         get: function (uri, payload, callback) {
