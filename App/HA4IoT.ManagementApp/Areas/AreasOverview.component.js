@@ -22,13 +22,13 @@
         ctrl.loadAreas = function (source) {
 
             var areas = [];
-            $.each(source.Areas, function (id, area) {
+            $.each(source, function (id, item) {
 
                 var row = {
                     Id: id,
-                    Caption: area.Settings.AppSettings.Caption,
-                    SortValue: area.Settings.AppSettings.SortValue,
-                    IsVisible: area.Settings.AppSettings.IsVisible
+                    Caption: item.Settings.AppSettings.Caption,
+                    SortValue: item.Settings.AppSettings.SortValue,
+                    IsVisible: item.Settings.AppSettings.IsVisible
                 };
 
                 areas.push(row);

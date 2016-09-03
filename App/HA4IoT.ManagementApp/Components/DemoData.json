@@ -1,30 +1,34 @@
 {
-    "Areas": {
-        "Bedroom": {
-            "Settings": {
-                "AppSettings": {
-                    "Image": "Air",
-                    "Caption": "Schlafzimmer",
-                    "SortValue": 2
-                }
+    "Bedroom.Socket1": {
+        "Type": "Socket",
+        "Settings": {
+            "AppSettings": {
+                "Image": "Socket",
+                "Caption": "Steckdose Ecke",
+                "SortValue": 2,
+                "IsVisible": true
             }
-        },
-        "Office": {
-            "Settings": {
-                "AppSettings": {
-                    "Image": "Air",
-                    "Caption": "Büro",
-                    "SortValue": 1
-                }
+        }
+    },
+    "Office.Lamp1": {
+        "Type": "Lamp",
+        "Settings": {
+            "AppSettings": {
+                "Image": "Lamp",
+                "Caption": "Deckenlampe",
+                "SortValue": 1,
+                "IsVisible": false
             }
-        },
-        "Kitchen": {
-            "Settings": {
-                "AppSettings": {
-                    "Image": "Air",
-                    "Caption": "Küche",
-                    "SortValue": 0
-                }
+        }
+    },
+    "Kitchen.RollerShutter": {
+        "Type": "RollerShutter",
+        "Settings": {
+            "AppSettings": {
+                "Image": "RollerShutter",
+                "Caption": "Rollo links",
+                "SortValue": 0,
+                "IsVisible": true
             }
         }
     }

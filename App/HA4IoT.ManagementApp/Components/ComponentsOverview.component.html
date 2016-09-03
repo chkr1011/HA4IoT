@@ -2,31 +2,51 @@
     <div class="panel-heading">Components</div>
     <div class="panel-body">
         <div class="alert alert-info">
-            This view shows all configured components from the HA4IoT controller. The components iteself must be configured using C# and deployed
-            manually to the device.
+            This view shows all configured components from the HA4IoT controller. The components iteself must be configured using C#
+            and deployed manually to the device.
         </div>
         <div class="alert alert-warning">
             The Smartphone/Tablet app must be restarted in order to apply the changed settings.
         </div>
+
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label class="col-md-2 control-label">Area</label>
+                <div class="col-md-10">
+                    <select class="form-control" ng-model="csCtrl.Area">
+                        <option>Area1</option>
+                        <option>Area2</option>
+                    </select>
+                </div>
+            </div>
+        </form>
     </div>
     <table class="table table-striped">
         <tr>
             <th></th>
             <th>ID</th>
+            <th>Visible</th>
             <th>Image</th>
             <th>Caption</th>
             <th></th>
         </tr>
 
-        <tr ng-repeat="area in coCtrl.Model">
+        <tr ng-repeat="component in coCtrl.Model">
             <td class="text-center vertical-middle" style="vertical-align: middle;">
                 <img class="medium-icon" ng-src="Content/Images/{{component.Image}}.png" />
             </td>
             <td class="vertical-middle">
-                <h5>{{area.Id}}</h5>
+                <h6><tt>{{component.Id}}</tt></h6>
+            </td>
+            <td class="vertical-middle">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="component.IsVisible">
+                    </label>
+                </div>
             </td>
             <td>
-                <select class="form-control" ng-model="area.Image"> 
+                <select class="form-control" ng-model="component.Image"> 
                 <option>Air</option>
                 <option>Car</option>
                 <option>Cat</option>
@@ -65,5 +85,8 @@
         </tr>
     </table>
     <div class="panel-footer clearfix">
-        <button class="btn btn-default pull-right" ng-click="coCtrl.save()">Save</button>
+        <div class="btn-group pull-right" role="group">
+            <button class="btn btn-default" ng-click="coCtrl.applyDefaults()">Apply defaults</button>
+            <button class="btn btn-default" ng-click="coCtrl.save()">Save</button>
+        </div>
     </div>

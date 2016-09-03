@@ -7,38 +7,39 @@
 
         ctrl.Model = [];
 
-        ctrl.moveArea = function (area, direction) {
-            var sourceIndex = ctrl.Model.indexOf(area);
+        ctrl.moveComponent = function (component, direction) {
+            var sourceIndex = ctrl.Model.indexOf(component);
             ctrl.Model.moveItem(sourceIndex, direction);
         }
 
         ctrl.loadDemoData = function () {
 
-            $http.get("Areas/DemoData.json").then(function (response) {
-                ctrl.loadAreas(response.data);
+            $http.get("Components/DemoData.json").then(function (response) {
+                ctrl.loadComponents(response.data);
             });
         }
 
-        ctrl.loadAreas = function (source) {
+        ctrl.loadComponents = function (source) {
 
-            var areas = [];
-            $.each(source.Areas, function (id, area) {
+            var components = [];
+            $.each(source, function (id, item) {
 
                 var row = {
                     Id: id,
-                    Caption: area.Settings.AppSettings.Caption,
-                    SortValue: area.Settings.AppSettings.SortValue,
-                    Image: area.Settings.AppSettings.Image
+                    Caption: item.Settings.AppSettings.Caption,
+                    SortValue: item.Settings.AppSettings.SortValue,
+                    Image: item.Settings.AppSettings.Image,
+                    IsVisible: item.Settings.AppSettings.IsVisible
                 };
 
-                areas.push(row);
+                components.push(row);
             });
 
-            areas = areas.sort(function (a, b) {
+            components = components.sort(function (a, b) {
                 return a.SortValue - b.SortValue;
             });
 
-            ctrl.Model = areas;
+            ctrl.Model = components;
         }
 
         ctrl.loadDemoData();
