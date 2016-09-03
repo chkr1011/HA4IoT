@@ -41,6 +41,17 @@
             ctrl.Model = areas;
         }
 
+        ctrl.save = function () {
+            var payload = {
+                Uri: "Area/XYZ",
+                Settings: ctrl.Model
+            }
+
+            controllerProxyService.invoke("Service/ISettingsService/ReplaceMultiple", payload)
+
+            alert("Saved Controller Slave settings");
+        }
+
         ctrl.loadDemoData();
     }
 
