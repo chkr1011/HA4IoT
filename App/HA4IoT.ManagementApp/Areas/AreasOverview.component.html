@@ -1,51 +1,31 @@
 <div class="panel panel-default">
     <div class="panel-heading">Areas</div>
-    <!--<div class="panel-body">
-
-
-
-    </div>-->
+    <div class="panel-body">
+        <div class="alert alert-info">
+            This view shows all configured areas from the HA4IoT controller. The areas iteself must be configured using C# and deployed manually to the device.
+        </div>
+        <div class="alert alert-warning">
+            The Smartphone/Tablet app must be restarted in order to apply the changed settings.
+        </div>
+    </div>
     <table class="table table-striped">
         <tr>
-            <th></th>
             <th>ID</th>
-            <th>Image</th>
+            <th>Visible</th>
             <th>Caption</th>
             <th></th>
         </tr>
 
         <tr ng-repeat="area in aoCtrl.Model">
-            <td class="text-center vertical-middle" style="vertical-align: middle;">
-                <img class="medium-icon" ng-src="Content/Images/{{area.Image}}.png" />
+            <td class="vertical-middle">
+                <h5><tt>{{area.Id}}</tt></h5>
             </td>
-            <td class="vertical-middle"><h5>{{area.Id}}</h5></td>
-            <td>
-                <select class="form-control" ng-model="area.Image"> 
-                <option>Air</option>
-                <option>Car</option>
-                <option>Cat</option>
-                <option>DefaultActuator</option>
-                <option>Fan</option>
-                <option>Favorites</option>
-                <option>Humidity</option>
-                <option>Lamp</option>
-                <option>Motion</option>
-                <option>NightLamp</option>
-                <option>Poison</option>
-                <option>Power</option>
-                <option>RollerShutter</option>
-                <option>Socket</option>
-                <option>Spotlight</option>
-                <option>StateMachine</option>
-                <option>Sunrise</option>
-                <option>Sunset</option>
-                <option>TableLamp</option>
-                <option>Temperature</option>
-                <option>VirtualButton</option>
-                <option>WaterPump</option>
-                <option>Wifi</option>
-                <option>Window</option>
-            </select>
+            <td class="vertical-middle">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="area.IsVisible">
+                    </label>
+                </div>
             </td>
             <td>
                 <input type="text" class="form-control" ng-model="area.Caption">

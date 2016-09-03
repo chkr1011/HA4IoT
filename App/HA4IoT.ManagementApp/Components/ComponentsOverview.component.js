@@ -28,7 +28,7 @@
                     Id: id,
                     Caption: area.Settings.AppSettings.Caption,
                     SortValue: area.Settings.AppSettings.SortValue,
-                    IsVisible: area.Settings.AppSettings.IsVisible
+                    Image: area.Settings.AppSettings.Image
                 };
 
                 areas.push(row);
@@ -44,9 +44,9 @@
         ctrl.loadDemoData();
     }
 
-    module.component("areas", {
-        templateUrl: "Areas/AreasOverview.component.html",
-        controllerAs: "aoCtrl",
+    module.component("components", {
+        templateUrl: "Components/ComponentsOverview.component.html",
+        controllerAs: "coCtrl",
         controller: ["controllerProxyService", "$http", createController]
     });
 

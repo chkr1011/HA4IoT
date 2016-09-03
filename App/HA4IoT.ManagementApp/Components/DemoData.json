@@ -3,27 +3,27 @@
         "Bedroom": {
             "Settings": {
                 "AppSettings": {
+                    "Image": "Air",
                     "Caption": "Schlafzimmer",
-                    "SortValue": 2,
-                    "IsVisible": false
+                    "SortValue": 2
                 }
             }
         },
         "Office": {
             "Settings": {
                 "AppSettings": {
+                    "Image": "Air",
                     "Caption": "Büro",
-                    "SortValue": 1,
-                    "IsVisible": true
+                    "SortValue": 1
                 }
             }
         },
         "Kitchen": {
             "Settings": {
                 "AppSettings": {
+                    "Image": "Air",
                     "Caption": "Küche",
-                    "SortValue": 0,
-                    "IsVisible": true
+                    "SortValue": 0
                 }
             }
         }
