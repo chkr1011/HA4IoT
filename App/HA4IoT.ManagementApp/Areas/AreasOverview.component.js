@@ -1,60 +1,53 @@
 (function () {
     var module = angular.module("app");
 
-    function createController(controllerProxyService) {
+    function createController(controllerProxyService, $http) {
 
         ctrl = this;
 
         ctrl.Model = [];
 
-        loadDemoData();
-    }
-
-    function moveArea(area, direction) {
-        if (area.SortValue == 0 && direction == 'up')
-        {
-            return;
+        ctrl.moveArea = function (area, direction) {
+            var sourceIndex = ctrl.Model.indexOf(area);
+            ctrl.Model.moveItem(sourceIndex, direction);
         }
 
-        if (area.SortValue == ctrl.Mode.length - 1 && direction == 'down')
-        {
-            return;
-        }
+        ctrl.loadDemoData = function () {
 
-        if (direction = "up") area.SortValue++;
-        if (direction = "down") area.SortValue--;
-    }
-
-    function loadDemoData() {
-
-        var demoData = {
-            Areas: {
-                Bedroom: {
-                    Settings: {
-                        AppSettings: {
-                            "Image": "Air",
-                            "Caption": "Schlafzimmer",
-                            "SortValue": 0
-                        }
-                    }
-                }
-            }
-        };
-
-        $.each(demoData.Areas, function (id, area) {
-            ctrl.Model.push({
-                Id: id,
-                Caption: area.Settings.AppSettings.Caption,
-                SortValue: area.Settings.AppSettings.SortValue,
-                Image: area.Settings.AppSettings.Image
+            $http.get("Areas/DemoData.json").then(function (response) {
+                ctrl.loadAreas(response.data);
             });
-        });
+        }
+
+        ctrl.loadAreas = function (source) {
+
+            var areas = [];
+            $.each(source.Areas, function (id, area) {
+
+                var row = {
+                    Id: id,
+                    Caption: area.Settings.AppSettings.Caption,
+                    SortValue: area.Settings.AppSettings.SortValue,
+                    Image: area.Settings.AppSettings.Image
+                };
+
+                areas.push(row);
+            });
+
+            areas = areas.sort(function (a, b) {
+                return a.SortValue - b.SortValue;
+            });
+
+            ctrl.Model = areas;
+        }
+
+        ctrl.loadDemoData();
     }
 
     module.component("areas", {
         templateUrl: "Areas/AreasOverview.component.html",
         controllerAs: "aoCtrl",
-        controller: ["controllerProxyService", createController]
+        controller: ["controllerProxyService", "$http", createController]
     });
 
 })();

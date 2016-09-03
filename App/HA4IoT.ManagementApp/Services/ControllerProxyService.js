@@ -25,5 +25,7 @@ function createControllerProxyService($http) {
                 callback(response.data);
             });
         }
+
+        // new Promise()
     };
 }

@@ -15,8 +15,8 @@
         </tr>
 
         <tr ng-repeat="area in aoCtrl.Model">
-            <td class="text-center vertical-middle">
-                <img class="small-icon" ng-src="Content/Images/{{area.Image}}.png" />
+            <td class="text-center vertical-middle" style="vertical-align: middle;">
+                <img class="medium-icon" ng-src="Content/Images/{{area.Image}}.png" />
             </td>
             <td class="vertical-middle"><h5>{{area.Id}}</h5></td>
             <td>
@@ -51,9 +51,9 @@
                 <input type="text" class="form-control" ng-model="area.Caption">
             </td>
             <td class="text-center">
-                <div class="btn-group" role="group">
-                    <a class="btn btn-default glyphicon glyphicon-arrow-up" ng-click="aoCtrl.moveArea(area)"></a>
-                    <a class="btn btn-default glyphicon glyphicon-arrow-down" ng-click="aoCtrl.moveArea(area)"></a>
+                <div class="btn-group pull-right" role="group">
+                    <a class="btn btn-default glyphicon glyphicon-arrow-up" ng-click="aoCtrl.moveArea(area, 'up')"></a>
+                    <a class="btn btn-default glyphicon glyphicon-arrow-down" ng-click="aoCtrl.moveArea(area, 'down')"></a>
                 </div>
             </td>
         </tr>
