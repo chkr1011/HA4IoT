@@ -14,11 +14,11 @@
             <th></th>
         </tr>
 
-        <tr ng-repeat="area in aoCtrl.Model | orderBy: 'SortValue'">
-            <td class="text-center">
+        <tr ng-repeat="area in aoCtrl.Model">
+            <td class="text-center vertical-middle">
                 <img class="small-icon" ng-src="Content/Images/{{area.Image}}.png" />
             </td>
-            <td>{{area.Id}}</td>
+            <td class="vertical-middle"><h5>{{area.Id}}</h5></td>
             <td>
                 <select class="form-control" ng-model="area.Image"> 
                 <option>Air</option>
