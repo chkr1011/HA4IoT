@@ -35,7 +35,7 @@
     }
 
     module.component("openWeatherMapSettings", {
-        templateUrl: "Settings/Components/OpenWeatherMapSettings.component.html",
+        templateUrl: "Settings/OpenWeatherMapSettings.component.html",
         controllerAs: "owmsCtrl",
         controller: ["controllerProxyService", createController]
     });

@@ -25,7 +25,7 @@
     }
 
     module.component("slaveServiceSettings", {
-        templateUrl: "Settings/Components/SlaveServiceSettings.component.html",
+        templateUrl: "Settings/SlaveServiceSettings.component.html",
         controllerAs: "sssCtrl",
         controller: ["controllerProxyService", createController]
     });

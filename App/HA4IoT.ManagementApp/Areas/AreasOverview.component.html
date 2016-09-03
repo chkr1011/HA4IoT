@@ -1,0 +1,55 @@
+<table class="table table-striped">
+    <tr>
+        <th></th>
+        <th>ID</th>
+        <th>Image</th>
+        <th>Caption</th>
+        <th></th>
+    </tr>
+
+    <tr ng-repeat="area in aoCtrl.Model | orderBy: 'SortValue'">
+        <td class="text-center">
+            <img class="small-icon" ng-src="Content/Images/{{area.Image}}.png" />
+        </td>
+        <td>{{area.Id}}</td>
+        <td>
+            <select>
+                <option>Air</option>
+                <option>Car</option>
+                <option>Cat</option>
+                <option>DefaultActuator</option>
+                <option>Fan</option>
+                <option>Favorites</option>
+                <option>Humidity</option>
+                <option>Lamp</option>
+                <option>Motion</option>
+                <option>NightLamp</option>
+                <option>Poison</option>
+                <option>Power</option>
+                <option>RollerShutter</option>
+                <option>Socket</option>
+                <option>Spotlight</option>
+                <option>StateMachine</option>
+                <option>Sunrise</option>
+                <option>Sunset</option>
+                <option>TableLamp</option>
+                <option>Temperature</option>
+                <option>VirtualButton</option>
+                <option>WaterPump</option>
+                <option>Wifi</option>
+                <option>Window</option>
+            </select>
+        </td>
+        <td>
+            <input type="text" ng-model="area.Caption">
+        </td>
+        <td>
+            <div class="btn-group" role="group">
+                <a class="btn btn-default glyphicon glyphicon-arrow-up" ng-click="aoCtrl.moveArea(area)"></a>
+                <a class="btn btn-default glyphicon glyphicon-arrow-down" ng-click="aoCtrl.moveArea(area)"></a>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<button class="btn btn-default pull-right" ng-click="aoCtrl.save()">Save</button>

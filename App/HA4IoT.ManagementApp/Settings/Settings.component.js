@@ -9,7 +9,7 @@
     }
 
     module.component("settings", {
-        templateUrl: "Settings/Components/Settings.component.html",
+        templateUrl: "Settings/Settings.component.html",
         controllerAs: "sCtrl",
         controller: ["controllerProxyService", createController]
     });

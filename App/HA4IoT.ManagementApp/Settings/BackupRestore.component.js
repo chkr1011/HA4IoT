@@ -15,7 +15,7 @@
     }
 
     module.component("backupRestoreSettings", {
-        templateUrl: "Settings/Components/BackupRestore.component.html",
+        templateUrl: "Settings/BackupRestore.component.html",
         controllerAs: "brCtrl",
         controller: ["controllerProxyService", createController]
     });

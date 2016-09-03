@@ -7,7 +7,7 @@
     }
 
     module.component("home", {
-        templateUrl: "Home/Components/Home.component.html",
+        templateUrl: "Home/Home.component.html",
         controllerAs: "hCtrl",
         controller: ["controllerProxyService", createController]
     });

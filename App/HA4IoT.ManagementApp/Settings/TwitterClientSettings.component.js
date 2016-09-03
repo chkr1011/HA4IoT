@@ -7,31 +7,33 @@
 
         ctrl.Model = {
             IsEnabled: false,
-            AuthenticationToken: "",
-            AllowAllClients: false
+            AccessTokenSecret: "",
+            AccessToken: "",
+            ConsumerSecret: "",
+            ConsumerKey: ""
         }
 
         ctrl.$onInit = function () {
-            controllerProxyService.get("Service/ISettingsService/Settings", { "Uri": "TelegramBotServiceSettings" }, function (response) {
+            controllerProxyService.get("Service/ISettingsService/Settings", { "Uri": "TwitterClientServiceSettings" }, function (response) {
                 ctrl.Model = response;
             });
         }
 
         ctrl.save = function () {
             var payload = {
-                Uri: "TelegramBotServiceSettings",
+                Uri: "TwitterClientServiceSettings",
                 Settings: ctrl.Model
             }
 
             controllerProxyService.execute("Service/ISettingsService/Replace", payload);
 
-            alert("Saved Telegram Bot settings");
+            alert("Saved Twitter client settings");
         }
     }
 
-    module.component("telegramBotSettings", {
-        templateUrl: "Settings/Components/TelegramBotSettings.component.html",
-        controllerAs: "tbsCtrl",
+    module.component("twitterClientSettings", {
+        templateUrl: "Settings/TwitterClientSettings.component.html",
+        controllerAs: "tcsCtrl",
         controller: ["controllerProxyService", createController]
     });
     

@@ -6,35 +6,33 @@
         var ctrl = this;
 
         ctrl.Model = {
-            IsEnabled: false,
-            AccessTokenSecret: "",
-            AccessToken: "",
-            ConsumerSecret: "",
-            ConsumerKey: ""
+            Caption: "",
+            Description: "",
+            Language: "EN"
         }
 
         ctrl.$onInit = function () {
-            controllerProxyService.get("Service/ISettingsService/Settings", { "Uri": "TwitterClientServiceSettings" }, function (response) {
+            controllerProxyService.get("Service/ISettingsService/Settings", { "Uri": "ControllerSettings" }, function (response) {
                 ctrl.Model = response;
             });
         }
 
         ctrl.save = function () {
             var payload = {
-                Uri: "TwitterClientServiceSettings",
+                Uri: "ControllerSettings",
                 Settings: ctrl.Model
             }
 
             controllerProxyService.execute("Service/ISettingsService/Replace", payload);
 
-            alert("Saved Twitter client settings");
+            alert("Saved controller settings");
         }
     }
 
-    module.component("twitterClientSettings", {
-        templateUrl: "Settings/Components/TwitterClientSettings.component.html",
-        controllerAs: "tcsCtrl",
+    module.component("controllerSettings", {
+        templateUrl: "Settings/ControllerSettings.component.html",
+        controllerAs: "csCtrl",
         controller: ["controllerProxyService", createController]
     });
-    
+
 })();

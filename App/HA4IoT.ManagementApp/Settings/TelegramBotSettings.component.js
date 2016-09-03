@@ -6,33 +6,33 @@
         var ctrl = this;
 
         ctrl.Model = {
-            Caption: "",
-            Description: "",
-            Language: "EN"
+            IsEnabled: false,
+            AuthenticationToken: "",
+            AllowAllClients: false
         }
 
         ctrl.$onInit = function () {
-            controllerProxyService.get("Service/ISettingsService/Settings", { "Uri": "ControllerSettings" }, function (response) {
+            controllerProxyService.get("Service/ISettingsService/Settings", { "Uri": "TelegramBotServiceSettings" }, function (response) {
                 ctrl.Model = response;
             });
         }
 
         ctrl.save = function () {
             var payload = {
-                Uri: "ControllerSettings",
+                Uri: "TelegramBotServiceSettings",
                 Settings: ctrl.Model
             }
 
             controllerProxyService.execute("Service/ISettingsService/Replace", payload);
 
-            alert("Saved controller settings");
+            alert("Saved Telegram Bot settings");
         }
     }
 
-    module.component("controllerSettings", {
-        templateUrl: "Settings/Components/ControllerSettings.component.html",
-        controllerAs: "csCtrl",
+    module.component("telegramBotSettings", {
+        templateUrl: "Settings/TelegramBotSettings.component.html",
+        controllerAs: "tbsCtrl",
         controller: ["controllerProxyService", createController]
     });
-
+    
 })();
