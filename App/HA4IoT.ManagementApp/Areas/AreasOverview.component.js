@@ -45,7 +45,8 @@
             ctrl.Model.push({
                 Id: id,
                 Caption: area.Settings.AppSettings.Caption,
-                SortValue: area.Settings.AppSettings.SortValue
+                SortValue: area.Settings.AppSettings.SortValue,
+                Image: area.Settings.AppSettings.Image
             });
         });
     }

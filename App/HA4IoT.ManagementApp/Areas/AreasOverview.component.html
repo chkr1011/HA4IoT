@@ -13,7 +13,7 @@
         </td>
         <td>{{area.Id}}</td>
         <td>
-            <select>
+            <select class="form-control" ng-model="area.Image"> 
                 <option>Air</option>
                 <option>Car</option>
                 <option>Cat</option>
@@ -41,9 +41,9 @@
             </select>
         </td>
         <td>
-            <input type="text" ng-model="area.Caption">
+            <input type="text" class="form-control" ng-model="area.Caption">
         </td>
-        <td>
+        <td class="text-center">
             <div class="btn-group" role="group">
                 <a class="btn btn-default glyphicon glyphicon-arrow-up" ng-click="aoCtrl.moveArea(area)"></a>
                 <a class="btn btn-default glyphicon glyphicon-arrow-down" ng-click="aoCtrl.moveArea(area)"></a>
