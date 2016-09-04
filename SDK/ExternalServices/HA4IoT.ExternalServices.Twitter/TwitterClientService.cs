@@ -113,7 +113,7 @@ namespace HA4IoT.ExternalServices.Twitter
 
         private string GenerateSignature(string content)
         {
-            var key = Uri.EscapeDataString(Settings.CosumerSecret) + "&" + Uri.EscapeDataString(Settings.AccessTokenSecret);
+            var key = Uri.EscapeDataString(Settings.ConsumerSecret) + "&" + Uri.EscapeDataString(Settings.AccessTokenSecret);
 
             var keyMaterial = CryptographicBuffer.ConvertStringToBinary(key, BinaryStringEncoding.Utf8);
             var macAlgorithm = MacAlgorithmProvider.OpenAlgorithm("HMAC_SHA1");
