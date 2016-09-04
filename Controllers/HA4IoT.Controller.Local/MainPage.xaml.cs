@@ -7,6 +7,7 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Core;
 
 namespace HA4IoT.Controller.Local
@@ -23,7 +24,8 @@ namespace HA4IoT.Controller.Local
 
             var options = new ControllerOptions
             {
-                Configuration = new Initializer(this),
+                ConfigurationType = typeof(Initializer),
+                ContainerConfigurator = new ContainerConfigurator(this),
                 HttpServerPort = 1025
             };
 
@@ -32,6 +34,25 @@ namespace HA4IoT.Controller.Local
             // The app is only available from other machines. https://msdn.microsoft.com/en-us/library/windows/apps/Hh780593.aspx
             StoragePathTextBox.Text = StoragePath.Root;
             AppPathTextBox.Text = StoragePath.AppRoot;
+        }
+
+        private class ContainerConfigurator : IContainerConfigurator
+        {
+            private readonly MainPage _mainPage;
+
+            public ContainerConfigurator(MainPage mainPage)
+            {
+                if (mainPage == null) throw new ArgumentNullException(nameof(mainPage));
+
+                _mainPage = mainPage;
+            }
+
+            public void ConfigureContainer(IContainerService containerService)
+            {
+                if (containerService == null) throw new ArgumentNullException(nameof(containerService));
+
+                containerService.RegisterSingleton(() => _mainPage);
+            }
         }
 
         public async Task<IBinaryStateEndpoint> CreateDemoBinaryComponent(string caption)

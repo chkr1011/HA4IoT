@@ -1,7 +1,4 @@
-﻿using System.Threading.Tasks;
-using Windows.ApplicationModel.Background;
-using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Services.System;
+﻿using Windows.ApplicationModel.Background;
 using HA4IoT.Core;
 
 namespace HA4IoT.Controller.Default
@@ -12,20 +9,13 @@ namespace HA4IoT.Controller.Default
 
         public void Run(IBackgroundTaskInstance taskInstance)
         {
-            var controller = new Core.Controller(new ControllerOptions { StatusLedNumber = LedGpio, Configuration = new Configuration() });
+            var options = new ControllerOptions
+            {
+                StatusLedNumber = LedGpio
+            };
+
+            var controller = new Core.Controller(options);
             controller.RunAsync(taskInstance);
-        }
-
-        private class Configuration : IConfiguration
-        {
-            public void SetupContainer(IContainerService containerService)
-            {
-            }
-
-            public Task Configure(IContainerService containerService)
-            {
-                return Task.FromResult(0);
-            }
         }
     }
 }

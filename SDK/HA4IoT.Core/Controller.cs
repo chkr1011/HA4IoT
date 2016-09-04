@@ -239,7 +239,7 @@ namespace HA4IoT.Core
             _container.Register<AzureCloudApiDispatcherEndpointConfigurator>();
             _container.Register<ComponentStateHistoryTrackerConfigurator>();
 
-            _options.ContainerConfigurator?.SetupContainer(containerService);
+            _options.ContainerConfigurator?.ConfigureContainer(containerService);
 
             _container.Verify();
         }
