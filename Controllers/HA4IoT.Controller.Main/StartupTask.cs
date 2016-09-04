@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
@@ -23,58 +24,93 @@ namespace HA4IoT.Controller.Main
 
         public void Run(IBackgroundTaskInstance taskInstance)
         {
-            var controller = new Core.Controller(new ControllerOptions { StatusLedNumber = LedGpio, Configuration = new Configuration() });
+            var options = new ControllerOptions
+            {
+                StatusLedNumber = LedGpio,
+                ConfigurationType = typeof(Configuration)
+            };
+
+            var controller = new Core.Controller(options);
             controller.RunAsync(taskInstance);
         }
 
         private class Configuration : IConfiguration
         {
-            public void SetupContainer(IContainerService containerService)
+            private readonly CCToolsBoardService _ccToolsBoardService;
+            private readonly IPi2GpioService _pi2GpioService;
+            private readonly SynonymService _synonymService;
+            private readonly IDeviceService _deviceService;
+            private readonly II2CBusService _i2CBusService;
+            private readonly ISchedulerService _schedulerService;
+            private readonly RemoteSocketService _remoteSocketService;
+            private readonly IApiService _apiService;
+            private readonly IContainerService _containerService;
+
+            public Configuration(
+                CCToolsBoardService ccToolsBoardService, 
+                IPi2GpioService pi2GpioService, 
+                SynonymService synonymService,
+                IDeviceService deviceService,
+                II2CBusService i2CBusService, 
+                ISchedulerService schedulerService, 
+                RemoteSocketService remoteSocketService, 
+                IApiService apiService,
+                IContainerService containerService)
             {
+                if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
+                if (pi2GpioService == null) throw new ArgumentNullException(nameof(pi2GpioService));
+                if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
+                if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
+                if (i2CBusService == null) throw new ArgumentNullException(nameof(i2CBusService));
+                if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
+                if (remoteSocketService == null) throw new ArgumentNullException(nameof(remoteSocketService));
+                if (apiService == null) throw new ArgumentNullException(nameof(apiService));
+                if (containerService == null) throw new ArgumentNullException(nameof(containerService));
+
+                _ccToolsBoardService = ccToolsBoardService;
+                _pi2GpioService = pi2GpioService;
+                _synonymService = synonymService;
+                _deviceService = deviceService;
+                _i2CBusService = i2CBusService;
+                _schedulerService = schedulerService;
+                _remoteSocketService = remoteSocketService;
+                _apiService = apiService;
+                _containerService = containerService;
             }
 
-            public Task Configure(IContainerService containerService)
+            public Task ApplyAsync()
             {
-                var ccToolsBoardService = containerService.GetInstance<CCToolsBoardService>();
-                var pi2GpioService = containerService.GetInstance<IPi2GpioService>();
-                var synonymService = containerService.GetInstance<SynonymService>();
-                var deviceService = containerService.GetInstance<IDeviceService>();
-                var i2CBusService = containerService.GetInstance<II2CBusService>();
-                var schedulerService = containerService.GetInstance<ISchedulerService>();
-                var remoteSocketService = containerService.GetInstance<RemoteSocketService>();
-                var apiService = containerService.GetInstance<IApiService>();
+                _synonymService.TryLoadPersistedSynonyms();
 
-                synonymService.TryLoadPersistedSynonyms();
+                _ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input0, new I2CSlaveAddress(42));
+                _ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input1, new I2CSlaveAddress(43));
+                _ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input2, new I2CSlaveAddress(47));
+                _ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input3, new I2CSlaveAddress(45));
+                _ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input4, new I2CSlaveAddress(46));
+                _ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input5, new I2CSlaveAddress(44));
 
-                ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input0, new I2CSlaveAddress(42));
-                ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input1, new I2CSlaveAddress(43));
-                ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input2, new I2CSlaveAddress(47));
-                ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input3, new I2CSlaveAddress(45));
-                ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input4, new I2CSlaveAddress(46));
-                ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input5, new I2CSlaveAddress(44));
+                var i2CHardwareBridge = new I2CHardwareBridge(new I2CSlaveAddress(50), _i2CBusService, _schedulerService);
+                _deviceService.AddDevice(i2CHardwareBridge);
 
-                var i2CHardwareBridge = new I2CHardwareBridge(new I2CSlaveAddress(50), i2CBusService, schedulerService);
-                deviceService.AddDevice(i2CHardwareBridge);
-
-                remoteSocketService.Sender = new LPD433MHzSignalSender(i2CHardwareBridge, LDP433MhzSenderPin, apiService);
+                _remoteSocketService.Sender = new LPD433MHzSignalSender(i2CHardwareBridge, LDP433MhzSenderPin, _apiService);
                 var brennenstuhl = new BrennenstuhlCodeSequenceProvider();
-                remoteSocketService.RegisterRemoteSocket(0, brennenstuhl.GetSequencePair(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A));
+                _remoteSocketService.RegisterRemoteSocket(0, brennenstuhl.GetSequencePair(BrennenstuhlSystemCode.AllOn, BrennenstuhlUnitCode.A));
 
-                containerService.GetInstance<BedroomConfiguration>().Apply();
-                containerService.GetInstance<OfficeConfiguration>().Apply();
-                containerService.GetInstance<UpperBathroomConfiguration>().Apply();
-                containerService.GetInstance<ReadingRoomConfiguration>().Apply();
-                containerService.GetInstance<ChildrensRoomRoomConfiguration>().Apply();
-                containerService.GetInstance<KitchenConfiguration>().Apply();
-                containerService.GetInstance<FloorConfiguration>().Apply();
-                containerService.GetInstance<LowerBathroomConfiguration>().Apply();
-                containerService.GetInstance<StoreroomConfiguration>().Apply();
-                containerService.GetInstance<LivingRoomConfiguration>().Apply();
+                _containerService.GetInstance<BedroomConfiguration>().Apply();
+                _containerService.GetInstance<OfficeConfiguration>().Apply();
+                _containerService.GetInstance<UpperBathroomConfiguration>().Apply();
+                _containerService.GetInstance<ReadingRoomConfiguration>().Apply();
+                _containerService.GetInstance<ChildrensRoomRoomConfiguration>().Apply();
+                _containerService.GetInstance<KitchenConfiguration>().Apply();
+                _containerService.GetInstance<FloorConfiguration>().Apply();
+                _containerService.GetInstance<LowerBathroomConfiguration>().Apply();
+                _containerService.GetInstance<StoreroomConfiguration>().Apply();
+                _containerService.GetInstance<LivingRoomConfiguration>().Apply();
 
-                synonymService.RegisterDefaultComponentStateSynonyms();
+                _synonymService.RegisterDefaultComponentStateSynonyms();
 
-                var ioBoardsInterruptMonitor = new InterruptMonitor(pi2GpioService.GetInput(4));
-                ioBoardsInterruptMonitor.InterruptDetected += (s, e) => ccToolsBoardService.PollInputBoardStates();
+                var ioBoardsInterruptMonitor = new InterruptMonitor(_pi2GpioService.GetInput(4));
+                ioBoardsInterruptMonitor.InterruptDetected += (s, e) => _ccToolsBoardService.PollInputBoardStates();
                 ioBoardsInterruptMonitor.Start();
 
                 return Task.FromResult(0);

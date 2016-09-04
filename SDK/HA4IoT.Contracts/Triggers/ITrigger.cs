@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts.Actions;
 
 namespace HA4IoT.Contracts.Triggers
 {
@@ -9,5 +10,7 @@ namespace HA4IoT.Contracts.Triggers
         bool IsAnyAttached { get; }
 
         void Attach(Action action);
+
+        void Attach(IAction action);
     }
 }

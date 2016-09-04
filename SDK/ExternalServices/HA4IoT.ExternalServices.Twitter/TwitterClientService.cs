@@ -61,14 +61,16 @@ namespace HA4IoT.ExternalServices.Twitter
 
         private string GetSignatureForRequest(string message)
         {
-            var parameters = new List<string>();
-            parameters.Add($"oauth_consumer_key={Uri.EscapeDataString(Settings.ConsumerKey)}");
-            parameters.Add($"oauth_nonce={_nonce}");
-            parameters.Add("oauth_signature_method=HMAC-SHA1");
-            parameters.Add($"oauth_timestamp={_timestamp}");
-            parameters.Add($"oauth_token={Uri.EscapeDataString(Settings.AccessToken)}");
-            parameters.Add("oauth_version=1.0");
-            parameters.Add($"status={Uri.EscapeDataString(message)}");
+            var parameters = new List<string>
+            {
+                $"oauth_consumer_key={Uri.EscapeDataString(Settings.ConsumerKey)}",
+                $"oauth_nonce={_nonce}",
+                "oauth_signature_method=HMAC-SHA1",
+                $"oauth_timestamp={_timestamp}",
+                $"oauth_token={Uri.EscapeDataString(Settings.AccessToken)}",
+                "oauth_version=1.0",
+                $"status={Uri.EscapeDataString(message)}"
+            };
 
             var parametersString = Uri.EscapeDataString(string.Join("&", parameters));
             var url = Uri.EscapeDataString("https://api.twitter.com/1.1/statuses/update.json");

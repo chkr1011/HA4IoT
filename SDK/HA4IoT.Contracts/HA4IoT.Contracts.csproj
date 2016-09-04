@@ -126,6 +126,7 @@
     <Compile Include="Components\UnknownComponentState.cs" />
     <Compile Include="Conditions\ConditionState.cs" />
     <Compile Include="Conditions\ICondition.cs" />
+    <Compile Include="Core\IContainerConfigurator.cs" />
     <Compile Include="Core\IConfiguration.cs" />
     <Compile Include="Core\IConfigurator.cs" />
     <Compile Include="Core\IController.cs" />
