@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using HA4IoT.Contracts.Hardware;
+﻿using HA4IoT.Contracts.Hardware;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -15,20 +14,21 @@ namespace HA4IoT.Hardware.CCTools.Tests
             var hsrel5 = new HSREL5(DeviceIdFactory.EmptyId, new I2CSlaveAddress(66), i2CBus);
             hsrel5[HSREL5Pin.Relay0].Write(BinaryState.High);
 
-            i2CBus.LastUsedI2CSlaveAddress.ShouldBeEquivalentTo(new I2CSlaveAddress(66));
-            i2CBus.I2CDevice.LastWrittenBytes.Length.ShouldBeEquivalentTo(1);
+            Assert.AreEqual(new I2CSlaveAddress(66), i2CBus.LastUsedI2CSlaveAddress);
+            Assert.AreEqual(1, i2CBus.I2CDevice.LastWrittenBytes.Length);
 
             // The bits are inverted using a hardware inverter. This requires checking
             // against inverted values too.
-            i2CBus.I2CDevice.LastWrittenBytes[0].ShouldBeEquivalentTo(254);
+            Assert.AreEqual(254, i2CBus.I2CDevice.LastWrittenBytes[0]);
 
             hsrel5[HSREL5Pin.Relay4].Write(BinaryState.High);
-            i2CBus.LastUsedI2CSlaveAddress.ShouldBeEquivalentTo(new I2CSlaveAddress(66));
-            i2CBus.I2CDevice.LastWrittenBytes.Length.ShouldBeEquivalentTo(1);
+
+            Assert.AreEqual(new I2CSlaveAddress(66), i2CBus.LastUsedI2CSlaveAddress);
+            Assert.AreEqual(1, i2CBus.I2CDevice.LastWrittenBytes.Length);
 
             // The bits are inverted using a hardware inverter. This requires checking
             // against inverted values too.
-            i2CBus.I2CDevice.LastWrittenBytes[0].ShouldBeEquivalentTo(238);
+            Assert.AreEqual(238, i2CBus.I2CDevice.LastWrittenBytes[0]);
         }
 
         [TestMethod]
@@ -42,19 +42,22 @@ namespace HA4IoT.Hardware.CCTools.Tests
             var hspe16 = new HSPE16InputOnly(DeviceIdFactory.EmptyId, new I2CSlaveAddress(32), i2CBus);
 
             hspe16.FetchState();
-            i2CBus.LastUsedI2CSlaveAddress.ShouldBeEquivalentTo(new I2CSlaveAddress(32));
-            hspe16[HSPE16Pin.GPIO0].Read().ShouldBeEquivalentTo(BinaryState.Low);
+
+            Assert.AreEqual(new I2CSlaveAddress(32), i2CBus.LastUsedI2CSlaveAddress);
+            Assert.AreEqual(BinaryState.Low, hspe16[HSPE16Pin.GPIO0].Read());
 
             i2CBus.I2CDevice.BufferForNextRead = new byte[] { 0, 255 };
             hspe16.FetchState();
-            i2CBus.LastUsedI2CSlaveAddress.ShouldBeEquivalentTo(new I2CSlaveAddress(32));
-            hspe16[HSPE16Pin.GPIO0].Read().ShouldBeEquivalentTo(BinaryState.High);
+
+            Assert.AreEqual(new I2CSlaveAddress(32), i2CBus.LastUsedI2CSlaveAddress);
+            Assert.AreEqual(BinaryState.High, hspe16[HSPE16Pin.GPIO0].Read());
 
             i2CBus.I2CDevice.BufferForNextRead = new byte[] { 255, 127 };
             hspe16.FetchState();
-            i2CBus.LastUsedI2CSlaveAddress.ShouldBeEquivalentTo(new I2CSlaveAddress(32));
-            hspe16[HSPE16Pin.GPIO0].Read().ShouldBeEquivalentTo(BinaryState.Low);
-            hspe16[HSPE16Pin.GPIO15].Read().ShouldBeEquivalentTo(BinaryState.High);
+
+            Assert.AreEqual(new I2CSlaveAddress(32), i2CBus.LastUsedI2CSlaveAddress);
+            Assert.AreEqual(BinaryState.Low, hspe16[HSPE16Pin.GPIO0].Read());
+            Assert.AreEqual(BinaryState.High, hspe16[HSPE16Pin.GPIO15].Read());
         }
     }
 }

@@ -11,7 +11,7 @@ namespace HA4IoT.Telemetry
     {
         private static readonly char[] CsvSeparator = {','};
         private readonly object _syncRoot = new object();
-        private readonly string _filename;
+        //private readonly string _filename;
         private readonly IComponent _component;
 
         public ComponentStateHistoryTracker(IComponent component)
@@ -28,15 +28,15 @@ namespace HA4IoT.Telemetry
 
         public void Reset()
         {
-            lock (_syncRoot)
-            {
-                if (!File.Exists(_filename))
-                {
-                    return;
-                }
+            ////lock (_syncRoot)
+            ////{
+            ////    if (!File.Exists(_filename))
+            ////    {
+            ////        return;
+            ////    }
 
-                File.Delete(_filename);
-            }
+            ////    File.Delete(_filename);
+            ////}
         }
 
         private void CreateDataPointAsync(object sender, ComponentStateChangedEventArgs e)
@@ -51,27 +51,27 @@ namespace HA4IoT.Telemetry
 
         private void HandleApiRequest(IApiContext apiContext)
         {
-            var dataPoints = new JArray();
-            long fileSize = 0;
+            ////var dataPoints = new JArray();
+            ////long fileSize = 0;
 
-            lock (_syncRoot)
-            {
-                var fileInfo = new FileInfo(_filename);
-                if (fileInfo.Exists)
-                {
-                    fileSize = fileInfo.Length;
+            ////lock (_syncRoot)
+            ////{
+            ////    var fileInfo = new FileInfo(_filename);
+            ////    if (fileInfo.Exists)
+            ////    {
+            ////        fileSize = fileInfo.Length;
                     
-                    using (var fileStream = fileInfo.OpenRead())
-                    using (var streamReader = new StreamReader(fileStream))
-                    {
-                        while (!streamReader.EndOfStream)
-                        {
-                            string line = streamReader.ReadLine();
-                            dataPoints.Add(ConvertCsvLineToJsonObject(line));
-                        }
-                    }
-                }
-            }
+            ////        using (var fileStream = fileInfo.OpenRead())
+            ////        using (var streamReader = new StreamReader(fileStream))
+            ////        {
+            ////            while (!streamReader.EndOfStream)
+            ////            {
+            ////                string line = streamReader.ReadLine();
+            ////                dataPoints.Add(ConvertCsvLineToJsonObject(line));
+            ////            }
+            ////        }
+            ////    }
+            ////}
 
             ////apiContext.Response.SetNamedValue("history", dataPoints);
             ////apiContext.Response.SetValue("fileSize", fileSize);
@@ -92,19 +92,19 @@ namespace HA4IoT.Telemetry
 
         private void AppendDataPoint(ComponentStateChangedEventArgs eventArgs)
         {
-            string line = DateTime.Now.ToString("O") + "," + eventArgs.NewState.ToString() + Environment.NewLine;
+            ////string line = DateTime.Now.ToString("O") + "," + eventArgs.NewState.ToString() + Environment.NewLine;
 
-            lock (_syncRoot)
-            {
-                try
-                {
-                    File.AppendAllText(_filename, line);
-                }
-                catch (Exception exception)
-                {
-                    Log.Error(exception, $"Error while adding data point for component {_component.Id}.");
-                }
-            }
+            ////lock (_syncRoot)
+            ////{
+            ////    try
+            ////    {
+            ////        File.AppendAllText(_filename, line);
+            ////    }
+            ////    catch (Exception exception)
+            ////    {
+            ////        Log.Error(exception, $"Error while adding data point for component {_component.Id}.");
+            ////    }
+            ////}
         }
     }
 }

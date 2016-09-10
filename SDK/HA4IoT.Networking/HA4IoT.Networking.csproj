@@ -131,12 +131,10 @@
     <Compile Include="Http\HttpHeaderCollectionExtensions.cs" />
     <Compile Include="Http\HttpHeaderNames.cs" />
     <Compile Include="Http\HttpResponseSerializer.cs" />
-    <Compile Include="Http\IHttpRequestDispatcher.cs" />
     <Compile Include="Http\StringBody.cs" />
     <Compile Include="Json\JsonSerializer.cs" />
     <Compile Include="Http\MappedFolderController.cs" />
     <Compile Include="Http\HttpRequestController.cs" />
-    <Compile Include="Http\HttpRequestDispatcher.cs" />
     <Compile Include="Http\HttpRequestDispatcherAction.cs" />
     <Compile Include="Http\HttpRequestParser.cs" />
     <Compile Include="Http\HttpServer.cs" />

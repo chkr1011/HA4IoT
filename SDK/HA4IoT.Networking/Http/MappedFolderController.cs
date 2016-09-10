@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using HA4IoT.Contracts.Networking;
 using HA4IoT.Contracts.Networking.Http;
 
 namespace HA4IoT.Networking.Http
@@ -12,19 +11,23 @@ namespace HA4IoT.Networking.Http
         private readonly string _name;
         private readonly string _rootFolder;
 
-        public MappedFolderController(string name, string rootFolder, HttpServer httpServer) : base(name, httpServer)
+        public MappedFolderController(string name, string rootFolder, HttpServer httpServer) 
+            : base(name, httpServer)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
             if (rootFolder == null) throw new ArgumentNullException(nameof(rootFolder));
 
             _name = name;
             _rootFolder = rootFolder;
-
-            Handle(HttpMethod.Get, string.Empty).WithAnySubUrl().Using(HandleGet);
-            Handle(HttpMethod.Post, string.Empty).WithAnySubUrl().Using(HandlePost);
         }
 
         public string DefaultFile { get; } = "index.html";
+
+        public void Enable()
+        {
+            HandleGet(string.Empty).WithAnySubUrl().Using(HandleGet);
+            HandlePost(string.Empty).WithAnySubUrl().Using(HandlePost);
+        }
 
         private void HandleGet(HttpContext httpContext)
         {

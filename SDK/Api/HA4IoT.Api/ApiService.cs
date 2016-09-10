@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
@@ -128,22 +127,16 @@ namespace HA4IoT.Api
         {
             try
             {
-                var stopwatch = Stopwatch.StartNew();
                 handler(apiContext);
-                stopwatch.Stop();
 
                 var metaInformation = new JObject
                 {
-                    ["Hash"] = null,
-                    ["ProcessingDuration"] = null
+                    ["Hash"] = null
                 };
 
                 apiContext.Response["Meta"] = metaInformation;
-
-                var hash =  GenerateHash(apiContext.Response.ToString());
-
+                var hash = GenerateHash(apiContext.Response.ToString());
                 metaInformation["Hash"] = hash;
-                metaInformation["ProcessingDuration"] = stopwatch.ElapsedMilliseconds;
             }
             catch (Exception exception)
             {

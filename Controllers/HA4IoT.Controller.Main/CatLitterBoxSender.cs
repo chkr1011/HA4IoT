@@ -7,7 +7,6 @@ using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services.ExternalServices;
 using HA4IoT.Contracts.Services.ExternalServices.Twitter;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.ExternalServices.Twitter;
 using HA4IoT.Services.System;
 
 namespace HA4IoT.Controller.Main

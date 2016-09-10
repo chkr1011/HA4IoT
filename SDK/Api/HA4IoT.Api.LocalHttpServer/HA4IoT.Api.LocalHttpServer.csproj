@@ -107,9 +107,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppFolderConfigurator.cs" />
-    <Compile Include="LocalHttpServerApiDispatcherEndpointConfigurator.cs" />
-    <Compile Include="LocalHttpServerApiDispatcherEndpoint.cs" />
+    <Compile Include="LocalHttpServerApiDispatcherEndpointService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.Api.LocalHttpServer.rd.xml" />
   </ItemGroup>

@@ -107,9 +107,8 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AzureCloudApiDispatcherEndpointConfigurator.cs" />
     <Compile Include="EventHubSender.cs" />
-    <Compile Include="AzureCloudApiDispatcherEndpoint.cs" />
+    <Compile Include="AzureCloudApiDispatcherEndpointService.cs" />
     <Compile Include="MessageReceivedEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueueBasedApiContext.cs" />

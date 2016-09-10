@@ -7,5 +7,21 @@ namespace HA4IoT.Sensors.Buttons
     {
         public event EventHandler Pressed;
         public event EventHandler Released;
+
+        public void Press()
+        {
+            Pressed?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void Release()
+        {
+            Released?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void PressAndRelease()
+        {
+            Press();
+            Release();
+        }
     }
 }

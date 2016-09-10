@@ -115,6 +115,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContainerExtensions.cs" />
+    <Compile Include="ContainerService.cs" />
     <Compile Include="Controller.cs" />
     <Compile Include="ControllerOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -15,7 +15,6 @@ using HA4IoT.Sensors;
 using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Services.Areas;
 using HA4IoT.Services.Devices;
-using HA4IoT.Settings;
 
 namespace HA4IoT.Controller.Main.Rooms
 {

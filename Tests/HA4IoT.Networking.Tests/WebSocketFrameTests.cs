@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Text;
-using Windows.Data.Json;
-using HA4IoT.Networking.Json;
 using HA4IoT.Networking.WebSockets;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using Newtonsoft.Json.Linq;
@@ -23,7 +21,7 @@ namespace HA4IoT.Networking.Tests
             var webSocketFrame = WebSocketFrame.Create(payloadBuffer);
 
             var result = webSocketFrame.ToByteArray();
-            var expected = Convert.FromBase64String("gRF7IkhlbGxvIjoiV29ybGQifQ==");
+            var expected = Convert.FromBase64String("ghh7DQogICJIZWxsbyI6ICJXb3JsZCINCn0=");
 
             CollectionAssert.AreEqual(expected, result);
         }
@@ -41,7 +39,7 @@ namespace HA4IoT.Networking.Tests
             var webSocketFrame = WebSocketFrame.Create(payloadBuffer);
 
             var result = webSocketFrame.ToByteArray();
-            var expected = Convert.FromBase64String("gX4ArHsiSGVsbG8xMjEyMTIxMjEyMTIxMjEyMTIxMjEyMTIxMjEyMTIxMjEyMTIxMjEyMTIxMjEyMTIxMjEyMUFBQUFBQUFBQUFBQUFBQSI6IldvcmxkNTY1NjU2NTY1NjU2NTY1NjU2NTY1NjU2NTY1NjU2NTY1NjU2NTY1NjU2NTY1NjVCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJDQ0NDQ0NDQ0NDIn0=");
+            var expected = Convert.FromBase64String("gn4As3sNCiAgIkhlbGxvMTIxMjEyMTIxMjEyMTIxMjEyMTIxMjEyMTIxMjEyMTIxMjEyMTIxMjEyMTIxMjEyMTIxMjFBQUFBQUFBQUFBQUFBQUEiOiAiV29ybGQ1NjU2NTY1NjU2NTY1NjU2NTY1NjU2NTY1NjU2NTY1NjU2NTY1NjU2NTY1NjU2NUJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkNDQ0NDQ0NDQ0MiDQp9");
 
             CollectionAssert.AreEqual(expected, result);
         }

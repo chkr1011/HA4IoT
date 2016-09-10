@@ -9,8 +9,15 @@ namespace HA4IoT.Hardware
         private readonly List<IBinaryOutput> _outputs = new List<IBinaryOutput>();
         private BinaryState _state;
 
-        public bool InvertValue { get; set; }
+        public LogicalBinaryOutput(params IBinaryOutput[] outputs)
+        {
+            if (outputs == null) throw new ArgumentNullException(nameof(outputs));
 
+            _outputs.AddRange(outputs);
+        }
+
+        public bool InvertValue { get; set; }
+        
         public void Write(BinaryState state, bool commit = true)
         {
             state = CoerceState(state);

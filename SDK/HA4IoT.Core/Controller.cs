@@ -47,7 +47,6 @@ using HA4IoT.Services.Health;
 using HA4IoT.Services.Scheduling;
 using HA4IoT.Services.System;
 using HA4IoT.Settings;
-using HA4IoT.Telemetry;
 using Newtonsoft.Json.Linq;
 using SimpleInjector;
 
@@ -105,10 +104,8 @@ namespace HA4IoT.Core
                 TryConfigure();
 
                 StartupServices();
-                ExecuteConfigurators();
                 ExposeRegistrationsToApi();
-
-                _container.GetInstance<HttpServer>().Bind(_options.HttpServerPort);
+                StartHttpServer();
 
                 StartupCompleted?.Invoke(this, EventArgs.Empty);
                 stopwatch.Stop();
@@ -132,6 +129,16 @@ namespace HA4IoT.Core
             }
         }
 
+        private void StartHttpServer()
+        {
+            var httpServer = _container.GetInstance<HttpServer>();
+            
+            new MappedFolderController("App", StoragePath.AppRoot, httpServer).Enable();
+            new MappedFolderController("ManagementApp", StoragePath.ManagementAppRoot, httpServer).Enable();
+
+            httpServer.Bind(_options.HttpServerPort);
+        }
+
         private void SetupLogger()
         {
             if (Log.Instance != null)
@@ -150,14 +157,6 @@ namespace HA4IoT.Core
             foreach (var registration in _container.GetRegistrationsOf<IService>())
             {
                 ((IService)registration.GetInstance()).Startup();
-            }
-        }
-
-        private void ExecuteConfigurators()
-        {
-            foreach (var registration in _container.GetRegistrationsOf<IConfigurator>())
-            {
-                ((IConfigurator)registration.GetInstance()).Execute();
             }
         }
 
@@ -195,7 +194,11 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<ISystemEventsService, SystemEventsService>();
             _container.RegisterSingleton<IContainerService>(() => containerService);
             _container.RegisterSingleton<ISystemInformationService, SystemInformationService>();
+
             _container.RegisterSingleton<IApiService, ApiService>();
+            _container.RegisterSingleton<AzureCloudApiDispatcherEndpointService>();
+            _container.RegisterSingleton<LocalHttpServerApiDispatcherEndpointService>();
+
             _container.RegisterSingleton<IDateTimeService, DateTimeService>();
             _container.RegisterSingleton<ISchedulerService, SchedulerService>();
 
@@ -233,12 +236,7 @@ namespace HA4IoT.Core
 
             _container.RegisterSingleton<ITwitterClientService, TwitterClientService>();
             _container.RegisterSingleton<ITelegramBotService, TelegramBotService>();
-
-            _container.Register<AppFolderConfigurator>();
-            _container.Register<LocalHttpServerApiDispatcherEndpointConfigurator>();
-            _container.Register<AzureCloudApiDispatcherEndpointConfigurator>();
-            _container.Register<ComponentStateHistoryTrackerConfigurator>();
-
+            
             _options.ContainerConfigurator?.ConfigureContainer(containerService);
 
             _container.Verify();
@@ -250,13 +248,19 @@ namespace HA4IoT.Core
             {
                 if (_options.ConfigurationType == null)
                 {
+                    Log.Warning("No configuration is set.");
                     return;
                 }
 
-                Log.Info("Starting configuration");
-
-                var configuration = _container.GetInstance(_options.ConfigurationType);
-                (configuration as IConfiguration)?.ApplyAsync().Wait();
+                var configuration = _container.GetInstance(_options.ConfigurationType) as IConfiguration;
+                if (configuration == null)
+                {
+                    Log.Warning("Configuration is set but does not implement 'IConfiguration'.");
+                    return;
+                }
+                
+                Log.Info("Applying configuration");
+                configuration.ApplyAsync().Wait();
             }
             catch (Exception exception)
             {
