@@ -42,7 +42,7 @@ namespace HA4IoT.Services.System
         {
             var controllerSettings = _settingsService.GetSettings<ControllerSettings>();
 
-            var response = new DiscoveryResponse(controllerSettings.Caption, controllerSettings.Description);
+            var response = new DiscoveryResponse(controllerSettings.Name, controllerSettings.Description);
             SendResponseAsync(args.RemoteAddress, response).Wait();
         }
 

@@ -1,4 +1,6 @@
 ﻿using System;
+using Windows.Security.Cryptography;
+using Windows.Security.Cryptography.Core;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
@@ -14,6 +16,7 @@ namespace HA4IoT.Api.LocalHttpServer
 {
     public class LocalHttpServerApiDispatcherEndpointService : ServiceBase, IApiDispatcherEndpoint
     {
+        private readonly HashAlgorithmProvider _hashAlgorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Md5);
         private readonly IApiService _apiService;
         private readonly HttpServer _httpServer;
 
@@ -77,7 +80,9 @@ namespace HA4IoT.Api.LocalHttpServer
 
             httpContext.Response.StatusCode = ConvertResultCode(eventArgs.Context.ResultCode);
 
-            var serverHash = (string)apiContext.Response["Meta"]["Hash"];
+            var serverHash = GenerateHash(apiContext.Response.ToString());
+            eventArgs.Context.Response["$Hash"] = serverHash;
+
             var serverHashWithQuotes = "\"" + serverHash + "\"";
 
             string clientHash;
@@ -125,23 +130,13 @@ namespace HA4IoT.Api.LocalHttpServer
                 context.ResultCode = ApiResultCode.UnknownUri;
             }
 
-            ////var clientEtag = (string) context.Request["ETag"];
-
             var responseMessage = new JObject
             {
                 ["CorrelationId"] = correlationId,
                 ["ResultCode"] = context.ResultCode.ToString(),
                 ["Content"] = context.Response
             };
-
-            ////var serverEtag = (string)context.Response["Meta"]["Hash"];
-            ////responseMessage["ETag"] = serverEtag;
-
-            ////if (!string.Equals(clientEtag, serverEtag))
-            ////{
-            ////    responseMessage["Content"] = context.Response;
-            ////}
-
+            
             e.WebSocketClientSession.SendAsync(responseMessage.ToString()).Wait();
         }
 
@@ -162,16 +157,7 @@ namespace HA4IoT.Api.LocalHttpServer
         {
             try
             {
-                JObject request;
-                if (string.IsNullOrEmpty(httpContext.Request.Body))
-                {
-                    request = new JObject();
-                }
-                else
-                {
-                    request = JObject.Parse(httpContext.Request.Body);
-                }
-                
+                var request = string.IsNullOrEmpty(httpContext.Request.Body) ? new JObject() : JObject.Parse(httpContext.Request.Body);
                 return new ApiContext(httpContext.Request.Uri, request, new JObject());
             }
             catch (Exception)
@@ -180,6 +166,14 @@ namespace HA4IoT.Api.LocalHttpServer
 
                 return null;
             }
+        }
+
+        private string GenerateHash(string input)
+        {
+            var buffer = CryptographicBuffer.ConvertStringToBinary(input, BinaryStringEncoding.Utf8);
+            var hashBuffer = _hashAlgorithm.HashData(buffer);
+
+            return CryptographicBuffer.EncodeToBase64String(hashBuffer);
         }
     }
 }

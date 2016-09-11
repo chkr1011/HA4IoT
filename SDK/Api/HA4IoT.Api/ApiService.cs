@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Windows.Security.Cryptography;
-using Windows.Security.Cryptography.Core;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Networking.Json;
-using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Api
 {
@@ -16,8 +13,7 @@ namespace HA4IoT.Api
     {
         private readonly List<IApiDispatcherEndpoint> _endpoints = new List<IApiDispatcherEndpoint>();
         private readonly Dictionary<string, Action<IApiContext>> _routes = new Dictionary<string, Action<IApiContext>>(StringComparer.OrdinalIgnoreCase);
-        private readonly HashAlgorithmProvider _hashAlgorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Md5);
-
+        
         public ApiService()
         {
             Route("Status", HandleStatusRequest);
@@ -25,6 +21,7 @@ namespace HA4IoT.Api
         }
 
         public event EventHandler<ApiRequestReceivedEventArgs> StatusRequested;
+        public event EventHandler<ApiRequestReceivedEventArgs> StatusRequestCompleted;
         public event EventHandler<ApiRequestReceivedEventArgs> ConfigurationRequested;
 
         public void NotifyStateChanged(IComponent component)
@@ -94,6 +91,7 @@ namespace HA4IoT.Api
         {
             var eventArgs = new ApiRequestReceivedEventArgs(apiContext);
             StatusRequested?.Invoke(this, eventArgs);
+            StatusRequestCompleted?.Invoke(this, eventArgs);
         }
 
         private void HandleConfigurationRequest(IApiContext apiContext)
@@ -123,34 +121,17 @@ namespace HA4IoT.Api
             e.Context.ResultCode = ApiResultCode.UnknownUri;
         }
 
-        private void HandleRequest(IApiContext apiContext, Action<IApiContext> handler)
+        private static void HandleRequest(IApiContext apiContext, Action<IApiContext> handler)
         {
             try
             {
                 handler(apiContext);
-
-                var metaInformation = new JObject
-                {
-                    ["Hash"] = null
-                };
-
-                apiContext.Response["Meta"] = metaInformation;
-                var hash = GenerateHash(apiContext.Response.ToString());
-                metaInformation["Hash"] = hash;
             }
             catch (Exception exception)
             {
                 apiContext.ResultCode = ApiResultCode.InternalError;
                 apiContext.Response = JsonSerializer.SerializeException(exception);
             }
-        }
-
-        private string GenerateHash(string input)
-        {
-            var buffer = CryptographicBuffer.ConvertStringToBinary(input, BinaryStringEncoding.Utf8);
-            var hashBuffer = _hashAlgorithm.HashData(buffer);
-
-            return CryptographicBuffer.EncodeToBase64String(hashBuffer);
         }
     }
 }

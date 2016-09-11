@@ -82,7 +82,7 @@ namespace HA4IoT.Settings
             }
         }
 
-        private void SetSettings(string uri, JObject settings)
+        public void SetRawSettings(string uri, JObject settings)
         {
             lock (_syncRoot)
             {
@@ -92,6 +92,11 @@ namespace HA4IoT.Settings
 
                 SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(uri));
             }
+        }
+
+        public void SetSettings(string uri, object settings)
+        {
+            SetRawSettings(uri, JObject.FromObject(settings));
         }
 
         private void ImportSettings(string uri, JObject settings)
@@ -113,12 +118,12 @@ namespace HA4IoT.Settings
                 SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(uri));
             }
         }
-
+        
         [ApiMethod]
         public void Replace(IApiContext apiContext)
         {
             var request = apiContext.Request.ToObject<SettingsServiceApiRequest>();
-            SetSettings(request.Uri, request.Settings);
+            SetRawSettings(request.Uri, request.Settings);
         }
 
         [ApiMethod]

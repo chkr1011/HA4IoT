@@ -98,8 +98,7 @@ namespace HA4IoT.Controller.Cellar
                 _sensorFactory = sensorFactory;
                 _automationFactory = automationFactory;
             }
-
-
+            
             public Task ApplyAsync()
             {
                 var hsrt16 = _ccToolsBoardService.RegisterHSRT16(InstalledDevice.CellarHSRT16, new I2CSlaveAddress(32));

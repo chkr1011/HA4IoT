@@ -16,6 +16,10 @@ namespace HA4IoT.Automations
 
         public float SkipIfFrozenTemperature { get; set; } = 2;
 
+        public bool SkipNextOpenOnSunrise { get; set; }
+
+        public bool SkipNextCloseOnSunset { get; set; }
+
         public TimeSpan OpenOnSunriseOffset { get; set; } = TimeSpan.FromMinutes(-30);
 
         public TimeSpan CloseOnSunsetOffset { get; set; } = TimeSpan.FromMinutes(30);

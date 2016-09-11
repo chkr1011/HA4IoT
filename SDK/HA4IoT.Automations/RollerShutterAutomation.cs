@@ -23,6 +23,7 @@ namespace HA4IoT.Automations
         private readonly IDaylightService _daylightService;
         private readonly IOutdoorTemperatureService _outdoorTemperatureService;
         private readonly IComponentService _componentService;
+        private readonly ISettingsService _settingsService;
 
         private bool _maxOutsideTemperatureApplied;
         private bool _autoOpenIsApplied;
@@ -51,6 +52,7 @@ namespace HA4IoT.Automations
             _daylightService = daylightService;
             _outdoorTemperatureService = outdoorTemperatureService;
             _componentService = componentService;
+            _settingsService = settingsService;
             _componentService = componentService;
 
             settingsService.CreateSettingsMonitor<RollerShutterAutomationSettings>(Id, s => Settings = s);
@@ -101,57 +103,86 @@ namespace HA4IoT.Automations
 
             if (!_autoOpenIsApplied && autoOpenIsInRange)
             {
-                if (DoNotOpenDueToTimeIsAffected())
-                {
-                    return;
-                }
+                PerformPendingSunriseActions();
+            }
+            else if (!_autoCloseIsApplied && autoCloseIsInRange)
+            {
+                PerformPendingSunsetActions();
+            }
+        }
 
-                if (TooColdIsAffected())
-                {
-                    _notificationService.CreateInformation($"Cancelling opening because outside temperature is lower than {Settings.SkipIfFrozenTemperature}°C.");
+        private void PerformPendingSunriseActions()
+        {
+            if (DoNotOpenDueToTimeIsAffected())
+            {
+                return;
+            }
 
-                    _autoOpenIsApplied = true;
-                    _autoCloseIsApplied = false;
-
-                    return;
-                }
-
-                if (TooHotIsAffected())
-                {
-                    _notificationService.CreateInformation($"Cancelling opening because outside temperature is higher than {Settings.AutoCloseIfTooHotTemperaure}°C.");
-
-                    _autoOpenIsApplied = true;
-                    _autoCloseIsApplied = false;
-                    _maxOutsideTemperatureApplied = true;
-
-                    return;
-                }
-                
-                SetStates(RollerShutterStateId.MovingUp);
+            if (TooColdIsAffected())
+            {
+                _notificationService.CreateInformation($"Cancelling opening because outside temperature is lower than {Settings.SkipIfFrozenTemperature}°C.");
 
                 _autoOpenIsApplied = true;
                 _autoCloseIsApplied = false;
 
-                _maxOutsideTemperatureApplied = false;
+                return;
+            }
 
+            if (TooHotIsAffected())
+            {
+                _notificationService.CreateInformation($"Cancelling opening because outside temperature is higher than {Settings.AutoCloseIfTooHotTemperaure}°C.");
+
+                _autoOpenIsApplied = true;
+                _autoCloseIsApplied = false;
+                _maxOutsideTemperatureApplied = true;
+
+                return;
+            }
+
+            if (Settings.SkipNextOpenOnSunrise)
+            {
+                Settings.SkipNextOpenOnSunrise = false;
+                _settingsService.SetSettings(Id, Settings);
+                _notificationService.CreateInformation("Skipped sunrise this time.");
+            }
+            else
+            {
+                SetStates(RollerShutterStateId.MovingUp);
                 _notificationService.CreateInformation("Applied sunrise");
             }
-            else if (!_autoCloseIsApplied && autoCloseIsInRange)
+
+            _autoOpenIsApplied = true;
+            _autoCloseIsApplied = false;
+
+            _maxOutsideTemperatureApplied = false;
+        }
+
+        private void PerformPendingSunsetActions()
+        {
+            if (TooColdIsAffected())
             {
-                if (TooColdIsAffected())
+                _notificationService.CreateInformation($"Cancelling closing because outside temperature is lower than {Settings.SkipIfFrozenTemperature}°C.");
+            }
+            else
+            {
+                if (Settings.SkipNextCloseOnSunset)
                 {
-                    _notificationService.CreateInformation($"Cancelling closing because outside temperature is lower than {Settings.SkipIfFrozenTemperature}°C.");
+                    Settings.SkipNextCloseOnSunset = false;
+                    _settingsService.SetSettings(Id, Settings);
+                    _notificationService.CreateInformation("Skipped sunset this time.");
                 }
                 else
                 {
                     SetStates(RollerShutterStateId.MovingDown);
+                    _notificationService.CreateInformation("Applied sunset");
                 }
-
-                _autoCloseIsApplied = true;
-                _autoOpenIsApplied = false;
-
-                _notificationService.CreateInformation("Applied sunset");
             }
+
+            _autoCloseIsApplied = true;
+            _autoOpenIsApplied = false;
+
+            _notificationService.CreateInformation("Applied sunset");
+
         }
 
         private bool DoNotOpenDueToTimeIsAffected()

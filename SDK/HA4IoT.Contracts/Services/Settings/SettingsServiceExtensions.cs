@@ -1,5 +1,4 @@
 ﻿using System;
-using Windows.Data.Json;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
@@ -39,9 +38,7 @@ namespace HA4IoT.Contracts.Services.Settings
         public static TSettings GetSettings<TSettings>(this ISettingsService settingsService)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-
-            // TODO: Search for attribute.
-
+            
             var uri = SettingsUriGenerator.From(typeof(TSettings));
             return settingsService.GetSettings<TSettings>(uri);
         }
@@ -50,8 +47,6 @@ namespace HA4IoT.Contracts.Services.Settings
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
-            // TODO: Search for attribute.
-
             var uri = SettingsUriGenerator.From(componentId);
             return settingsService.GetSettings<TSettings>(uri);
         }
@@ -59,19 +54,26 @@ namespace HA4IoT.Contracts.Services.Settings
         public static TSettings GetSettings<TSettings>(this ISettingsService settingsService, AutomationId automationId) where TSettings : IAutomationSettings
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-
-            // TODO: Search for attribute.
+            if (automationId == null) throw new ArgumentNullException(nameof(automationId));
 
             var uri = SettingsUriGenerator.From(automationId);
             return settingsService.GetSettings<TSettings>(uri);
         }
-        
+
+        public static void SetSettings<TSettings>(this ISettingsService settingsService, AutomationId automationId, TSettings settings) where TSettings : IAutomationSettings
+        {
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
+            if (automationId == null) throw new ArgumentNullException(nameof(automationId));
+
+            var uri = SettingsUriGenerator.From(automationId);
+
+            settingsService.SetSettings(uri, settings);
+        }
+
         public static void CreateSettingsMonitor<TSettings>(this ISettingsService settingsService, Action<TSettings> callback)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-
-            // TODO: Search for attribute.
-
+            
             var uri = SettingsUriGenerator.From(typeof(TSettings));
             settingsService.CreateSettingsMonitor(uri, callback);
         }
@@ -79,9 +81,7 @@ namespace HA4IoT.Contracts.Services.Settings
         public static void CreateSettingsMonitor<TSettings>(this ISettingsService settingsService, ComponentId componentId, Action<TSettings> callback) where TSettings : IComponentSettings
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-
-            // TODO: Search for attribute.
-
+            
             var uri = SettingsUriGenerator.From(componentId);
             settingsService.CreateSettingsMonitor(uri, callback);
         }
@@ -89,9 +89,7 @@ namespace HA4IoT.Contracts.Services.Settings
         public static void CreateSettingsMonitor<TSettings>(this ISettingsService settingsService, AutomationId automationId, Action<TSettings> callback) where TSettings : IAutomationSettings
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-
-            // TODO: Search for attribute.
-
+            
             var uri = SettingsUriGenerator.From(automationId);
             settingsService.CreateSettingsMonitor(uri, callback);
         }
