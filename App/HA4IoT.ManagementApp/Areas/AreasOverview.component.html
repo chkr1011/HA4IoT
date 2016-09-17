@@ -18,7 +18,7 @@
 
         <tr ng-repeat="area in aoCtrl.Model">
             <td class="vertical-middle">
-                <h6><tt>{{area.Id}}</tt></h6>
+                <span>{{area.Id}}</span>
             </td>
             <td class="vertical-middle">
                 <div class="checkbox">
@@ -38,6 +38,7 @@
             </td>
         </tr>
     </table>
+    
     <div class="panel-footer clearfix">
         <button class="btn btn-default pull-right" ng-click="aoCtrl.save()">Save</button>
     </div>

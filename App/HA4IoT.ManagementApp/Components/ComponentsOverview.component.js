@@ -26,6 +26,7 @@
 
                 var row = {
                     Id: id,
+                    Type: item.Type,
                     Caption: item.Settings.AppSettings.Caption,
                     SortValue: item.Settings.AppSettings.SortValue,
                     Image: item.Settings.AppSettings.Image,

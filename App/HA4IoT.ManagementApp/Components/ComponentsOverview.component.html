@@ -25,6 +25,7 @@
         <tr>
             <th></th>
             <th>ID</th>
+            <th>Type</th>
             <th>Visible</th>
             <th>Image</th>
             <th>Caption</th>
@@ -36,7 +37,10 @@
                 <img class="medium-icon" ng-src="Content/Images/{{component.Image}}.png" />
             </td>
             <td class="vertical-middle">
-                <h6><tt>{{component.Id}}</tt></h6>
+                <span>{{component.Id}}</span>
+            </td>
+            <td class="vertical-middle">
+                {{component.Type}}
             </td>
             <td class="vertical-middle">
                 <div class="checkbox">
