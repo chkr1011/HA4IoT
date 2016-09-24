@@ -21,7 +21,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="area in aoCtrl.Model" ng-click="aoCtrl.selectArea(area)">
+                    <tr ng-class="{active: aoCtrl.SelectedArea.Id == area.Id}" ng-repeat="area in aoCtrl.Model" ng-click="aoCtrl.selectArea(area)">
                         <td>
                             <span class="id-text">{{area.Id}}</span>
                         </td>

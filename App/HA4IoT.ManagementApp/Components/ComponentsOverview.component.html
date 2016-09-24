@@ -35,8 +35,7 @@
                     </tr>
                 </thead>
                 <tbody>
-
-                    <tr ng-repeat="component in coCtrl.Model" ng-click="coCtrl.selectComponent(component)">
+                    <tr ng-class="{active: coCtrl.SelectedComponent.Id == component.Id}" ng-repeat="component in coCtrl.Model" ng-click="coCtrl.selectComponent(component)">
                         <td class="text-center">
                             <img class="medium-icon" ng-src="Content/Images/{{component.Image}}.png" />
                         </td>
@@ -60,7 +59,6 @@
                             </div>
                         </td>
                     </tr>
-
                 </tbody>
             </table>
 
