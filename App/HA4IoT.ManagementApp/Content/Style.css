@@ -22,6 +22,19 @@ body {
     vertical-align: middle;
 }
 
-td {
+.table tbody>tr>td{
     vertical-align: middle;
+}
+
+.id-text {
+    font-family: Courier New, Courier, monospace;
+}
+
+.type-text {
+    font-family: Courier New, Courier, monospace;
+    font-size: 12px;
+}
+
+.grid-icon {
+    font-size: 20px;
 }

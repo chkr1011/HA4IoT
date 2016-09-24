@@ -1,44 +1,72 @@
-<div class="panel panel-default">
-    <div class="panel-heading">Areas</div>
-    <div class="panel-body">
-        <div class="alert alert-info">
-            This view shows all configured areas from the HA4IoT controller. The areas iteself must be configured using C# and deployed manually to the device.
-        </div>
-        <div class="alert alert-warning">
-            The Smartphone/Tablet app must be restarted in order to apply the changed settings.
-        </div>
-    </div>
-    <table class="table table-striped">
-        <tr>
-            <th>ID</th>
-            <th>Visible</th>
-            <th>Caption</th>
-            <th></th>
-        </tr>
+<div class="row">
+    <div class="col-md-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">Areas</div>
+            <div class="panel-body">
+                <div class="alert alert-info">
+                    This view shows all configured areas from the HA4IoT controller. The areas iteself must be configured using C# and deployed
+                    manually to the device.
+                </div>
+                <div class="alert alert-warning">
+                    The Smartphone/Tablet app must be restarted in order to apply the changed settings.
+                </div>
+            </div>
+            <table class="table table-condensed table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Visible</th>
+                        <th>Caption</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="area in aoCtrl.Model" ng-click="aoCtrl.selectArea(area)">
+                        <td>
+                            <span class="id-text">{{area.Id}}</span>
+                        </td>
+                        <td>
+                            <span class="fa fa-eye grid-icon" aria-hidden="true" ng-show="area.IsVisible"></span>
+                        </td>
+                        <td>
+                            <span>{{area.Caption}}</span>
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group pull-right" role="group">
+                                <a class="btn btn-default btn-xs glyphicon glyphicon-arrow-up" ng-click="aoCtrl.moveArea(area, 'up')"></a>
+                                <a class="btn btn-default btn-xs glyphicon glyphicon-arrow-down" ng-click="aoCtrl.moveArea(area, 'down')"></a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
-        <tr ng-repeat="area in aoCtrl.Model">
-            <td class="vertical-middle">
-                <span>{{area.Id}}</span>
-            </td>
-            <td class="vertical-middle">
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" ng-model="area.IsVisible">
-                    </label>
-                </div>
-            </td>
-            <td>
-                <input type="text" class="form-control" ng-model="area.Caption">
-            </td>
-            <td class="text-center">
-                <div class="btn-group pull-right" role="group">
-                    <a class="btn btn-default glyphicon glyphicon-arrow-up" ng-click="aoCtrl.moveArea(area, 'up')"></a>
-                    <a class="btn btn-default glyphicon glyphicon-arrow-down" ng-click="aoCtrl.moveArea(area, 'down')"></a>
-                </div>
-            </td>
-        </tr>
-    </table>
-    
-    <div class="panel-footer clearfix">
-        <button class="btn btn-default pull-right" ng-click="aoCtrl.save()">Save</button>
+            <div class="panel-footer clearfix">
+                <button class="btn btn-default pull-right" ng-click="aoCtrl.save()">Save</button>
+            </div>
+        </div>
     </div>
+
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">General</div>
+            <div class="panel-body">
+                <form>
+                    <div class="form-group">
+                        <label>ID</label>
+                        <div class="id-text">{{aoCtrl.SelectedArea.Id}}</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Caption</label>
+                        <input type="text" class="form-control" ng-model="aoCtrl.SelectedArea.Caption">
+                    </div>
+
+                    <div class="checkbox">
+                        <label><input type="checkbox" ng-model="aoCtrl.SelectedArea.IsVisible">Visible</label>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

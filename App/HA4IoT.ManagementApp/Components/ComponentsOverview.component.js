@@ -6,10 +6,15 @@
         ctrl = this;
 
         ctrl.Model = [];
+        ctrl.SelectedComponent = null;
 
         ctrl.moveComponent = function (component, direction) {
             var sourceIndex = ctrl.Model.indexOf(component);
             ctrl.Model.moveItem(sourceIndex, direction);
+        }
+
+        ctrl.selectComponent = function (component) {
+            ctrl.SelectedComponent = component;
         }
 
         ctrl.loadDemoData = function () {
@@ -28,9 +33,12 @@
                     Id: id,
                     Type: item.Type,
                     Caption: item.Settings.AppSettings.Caption,
+                    OverviewCaption: item.Settings.AppSettings.OverviewCaption,
                     SortValue: item.Settings.AppSettings.SortValue,
                     Image: item.Settings.AppSettings.Image,
-                    IsVisible: item.Settings.AppSettings.IsVisible
+                    IsEnabled: item.Settings.IsEnabled,
+                    IsVisible: item.Settings.AppSettings.IsVisible,
+                    SupportedStates: item.SupportedStates
                 };
 
                 components.push(row);

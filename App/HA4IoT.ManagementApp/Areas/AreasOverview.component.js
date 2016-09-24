@@ -6,10 +6,15 @@
         ctrl = this;
 
         ctrl.Model = [];
+        ctrl.SelectedArea = null;
 
         ctrl.moveArea = function (area, direction) {
             var sourceIndex = ctrl.Model.indexOf(area);
             ctrl.Model.moveItem(sourceIndex, direction);
+        }
+
+        ctrl.selectArea = function(area) {
+            ctrl.SelectedArea = area;
         }
 
         ctrl.loadDemoData = function () {
