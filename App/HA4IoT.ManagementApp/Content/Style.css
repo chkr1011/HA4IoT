@@ -38,3 +38,7 @@ body {
 .grid-icon {
     font-size: 20px;
 }
+
+.btn-home {
+    width: 150px;
+}
