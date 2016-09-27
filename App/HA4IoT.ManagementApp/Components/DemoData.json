@@ -1,29 +1,59 @@
 {
-    "Areas": {
-        "Bedroom": {
-            "Settings": {
-                "AppSettings": {
-                    "Image": "Air",
-                    "Caption": "Schlafzimmer",
-                    "SortValue": 2
-                }
+    "Bedroom.Socket1": {
+        "Type": "Socket",
+        "Settings": {
+            "IsEnabled": true,
+            "AppSettings": {
+                "Image": "Socket",
+                "Caption": "Steckdose Ecke",
+                "SortValue": 2,
+                "IsVisible": true
             }
-        },
-        "Office": {
-            "Settings": {
-                "AppSettings": {
-                    "Image": "Air",
-                    "Caption": "Büro",
-                    "SortValue": 1
-                }
+        }
+    },
+    "Office.Lamp1": {
+        "Type": "Lamp",
+        "Settings": {
+            "IsEnabled": false,
+            "AppSettings": {
+                "Image": "Lamp",
+                "Caption": "Deckenlampe",
+                "SortValue": 1,
+                "IsVisible": false
             }
-        },
-        "Kitchen": {
-            "Settings": {
-                "AppSettings": {
-                    "Image": "Air",
-                    "Caption": "Küche",
-                    "SortValue": 0
+        }
+    },
+    "Kitchen.RollerShutter": {
+        "Type": "RollerShutter",
+        "Settings": {
+            "IsEnabled": true,
+            "AppSettings": {
+                "Image": "RollerShutter",
+                "Caption": "Rollo links",
+                "SortValue": 0,
+                "IsVisible": true
+            }
+        }
+    },
+    "Office.Light": {
+        "Type": "StateMachine",
+        "SupportedStates": [
+            "State1",
+            "State2",
+            "State3"
+        ],
+        "Settings": {
+            "IsEnabled": true,
+            "AppSettings": {
+                "Image": "StateMachine",
+                "Caption": "Licht",
+                "OverviewCaption": "Büro",
+                "SortValue": 1,
+                "IsVisible": true,
+                "StateCaptions":{
+                    "State1": "On",
+                    "State2": "Off",
+                    "State3": "Partial on"
                 }
             }
         }

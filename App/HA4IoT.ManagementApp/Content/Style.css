@@ -14,14 +14,31 @@ body {
 }
 
 .medium-icon {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
 }
 
 .vertical-middle {
     vertical-align: middle;
 }
 
-th {
+.table tbody>tr>td{
     vertical-align: middle;
+}
+
+.id-text {
+    font-family: Courier New, Courier, monospace;
+}
+
+.type-text {
+    font-family: Courier New, Courier, monospace;
+    font-size: 12px;
+}
+
+.grid-icon {
+    font-size: 20px;
+}
+
+.btn-home {
+    width: 150px;
 }

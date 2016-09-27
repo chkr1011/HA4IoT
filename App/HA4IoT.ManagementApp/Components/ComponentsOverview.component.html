@@ -1,69 +1,78 @@
-<div class="panel panel-default">
-    <div class="panel-heading">Components</div>
-    <div class="panel-body">
-        <div class="alert alert-info">
-            This view shows all configured components from the HA4IoT controller. The components iteself must be configured using C# and deployed
-            manually to the device.
-        </div>
-        <div class="alert alert-warning">
-            The Smartphone/Tablet app must be restarted in order to apply the changed settings.
-        </div>
-    </div>
-    <table class="table table-striped">
-        <tr>
-            <th></th>
-            <th>ID</th>
-            <th>Image</th>
-            <th>Caption</th>
-            <th></th>
-        </tr>
-
-        <tr ng-repeat="area in coCtrl.Model">
-            <td class="text-center vertical-middle" style="vertical-align: middle;">
-                <img class="medium-icon" ng-src="Content/Images/{{component.Image}}.png" />
-            </td>
-            <td class="vertical-middle">
-                <h5>{{area.Id}}</h5>
-            </td>
-            <td>
-                <select class="form-control" ng-model="area.Image"> 
-                <option>Air</option>
-                <option>Car</option>
-                <option>Cat</option>
-                <option>DefaultActuator</option>
-                <option>Fan</option>
-                <option>Favorites</option>
-                <option>Humidity</option>
-                <option>Lamp</option>
-                <option>Motion</option>
-                <option>NightLamp</option>
-                <option>Poison</option>
-                <option>Power</option>
-                <option>RollerShutter</option>
-                <option>Socket</option>
-                <option>Spotlight</option>
-                <option>StateMachine</option>
-                <option>Sunrise</option>
-                <option>Sunset</option>
-                <option>TableLamp</option>
-                <option>Temperature</option>
-                <option>VirtualButton</option>
-                <option>WaterPump</option>
-                <option>Wifi</option>
-                <option>Window</option>
-            </select>
-            </td>
-            <td>
-                <input type="text" class="form-control" ng-model="component.Caption">
-            </td>
-            <td class="text-center">
-                <div class="btn-group pull-right" role="group">
-                    <a class="btn btn-default glyphicon glyphicon-arrow-up" ng-click="coCtrl.moveComponent(component, 'up')"></a>
-                    <a class="btn btn-default glyphicon glyphicon-arrow-down" ng-click="coCtrl.moveComponent(component, 'down')"></a>
+<div class="row">
+    <div class="col-md-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">Components</div>
+            <div class="panel-body">
+                <div class="alert alert-info">
+                    This view shows all configured components from the HA4IoT controller. The components iteself must be configured using C#
+                    and deployed manually to the device.
                 </div>
-            </td>
-        </tr>
-    </table>
-    <div class="panel-footer clearfix">
-        <button class="btn btn-default pull-right" ng-click="coCtrl.save()">Save</button>
+                <div class="alert alert-warning">
+                    The Smartphone/Tablet app must be restarted in order to apply the changed settings.
+                </div>
+
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">Area</label>
+                        <div class="col-md-10">
+                            <select class="form-control" ng-model="csCtrl.Area">
+                        <option>Area1</option>
+                        <option>Area2</option>
+                    </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <table class="table table-condensed table-hover">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>ID</th>
+                        <th>Enabled</th>
+                        <th>Visible</th>
+                        <th>Caption</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-class="{active: coCtrl.SelectedComponent.Id == component.Id}" ng-repeat="component in coCtrl.Model" ng-click="coCtrl.selectComponent(component)">
+                        <td class="text-center">
+                            <img class="medium-icon" ng-src="Content/Images/{{component.Image}}.png" />
+                        </td>
+                        <td>
+                            <div class="id-text">{{component.Id}}</div>
+                            <div class="type-text">[{{component.Type}}]</div>
+                        </td>
+                        <td>
+                            <span class="fa fa-check grid-icon" aria-hidden="true" ng-show="component.IsEnabled"></span>
+                        </td>
+                        <td>
+                            <span class="fa fa-eye grid-icon" aria-hidden="true" ng-show="component.IsVisible"></span>
+                        </td>
+                        <td>
+                            <span>{{component.Caption}}</span>
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group pull-right" role="group">
+                                <a class="btn btn-default btn-xs glyphicon glyphicon-arrow-up" ng-click="coCtrl.moveComponent(component, 'up')"></a>
+                                <a class="btn btn-default btn-xs glyphicon glyphicon-arrow-down" ng-click="coCtrl.moveComponent(component, 'down')"></a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="panel-footer clearfix">
+                <div class="btn-group pull-right" role="group">
+                    <button class="btn btn-default" ng-click="coCtrl.applyDefaults()">Apply defaults</button>
+                    <button class="btn btn-default" ng-click="coCtrl.save()">Save</button>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <div class="col-md-4">
+        <div ng-include="'Components/GeneralSettings.html'"></div>
+        <div ng-include="'Components/StateMachineSettings.html'"></div>
+    </div>
+</div>

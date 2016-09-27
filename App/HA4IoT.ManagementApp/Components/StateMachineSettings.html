@@ -1,0 +1,22 @@
+<div class="panel panel-default">
+    <div class="panel-heading">View</div>
+    <div class="panel-body">
+
+        <div class="checkbox">
+            <label><input type="checkbox">Display vertical</label>
+        </div>
+        
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">States</div>
+    <div class="panel-body">
+
+        <div class="form-group" ng-repeat="state in coCtrl.SelectedComponent.SupportedStates">
+            <label>{{state}}</label>
+            <input type="text" class="form-control">
+        </div>
+
+    </div>
+</div>

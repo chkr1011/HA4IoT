@@ -6,10 +6,15 @@
         ctrl = this;
 
         ctrl.Model = [];
+        ctrl.SelectedArea = null;
 
         ctrl.moveArea = function (area, direction) {
             var sourceIndex = ctrl.Model.indexOf(area);
             ctrl.Model.moveItem(sourceIndex, direction);
+        }
+
+        ctrl.selectArea = function(area) {
+            ctrl.SelectedArea = area;
         }
 
         ctrl.loadDemoData = function () {
@@ -22,13 +27,13 @@
         ctrl.loadAreas = function (source) {
 
             var areas = [];
-            $.each(source.Areas, function (id, area) {
+            $.each(source, function (id, item) {
 
                 var row = {
                     Id: id,
-                    Caption: area.Settings.AppSettings.Caption,
-                    SortValue: area.Settings.AppSettings.SortValue,
-                    IsVisible: area.Settings.AppSettings.IsVisible
+                    Caption: item.Settings.AppSettings.Caption,
+                    SortValue: item.Settings.AppSettings.SortValue,
+                    IsVisible: item.Settings.AppSettings.IsVisible
                 };
 
                 areas.push(row);
@@ -39,6 +44,17 @@
             });
 
             ctrl.Model = areas;
+        }
+
+        ctrl.save = function () {
+            var payload = {
+                Uri: "Area/XYZ",
+                Settings: ctrl.Model
+            }
+
+            controllerProxyService.invoke("Service/ISettingsService/ReplaceMultiple", payload)
+
+            alert("Saved Controller Slave settings");
         }
 
         ctrl.loadDemoData();

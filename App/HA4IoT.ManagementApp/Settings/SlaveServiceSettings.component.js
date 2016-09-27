@@ -3,7 +3,9 @@
 
     function createController(controllerProxyService) {
 
-        this.Model = {
+        var ctrl = this;
+
+        ctrl.Model = {
             MasterAddress: "127.0.0.1",
             UseTemperature: false,
             UseHumidity: false,
@@ -12,13 +14,13 @@
             IsEnabled: false
         }
 
-        this.save = function () {
+        ctrl.save = function () {
             var payload = {
-                Uri: "Service/ControllerSlaveService",
-                Settings: this.Model
+                Uri: "Service/ControllerSlaveServiceSettings",
+                Settings: ctrl.Model
             }
 
-            controllerProxyService.invoke("Command", "Service/ISettingsService/Replace", payload)
+            controllerProxyService.execute("Service/ISettingsService/Replace", payload)
 
             alert("Saved Controller Slave settings");
         }
