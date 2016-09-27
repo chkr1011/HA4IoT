@@ -3,31 +3,36 @@
 
     function createController(controllerProxyService, $http) {
 
-        ctrl = this;
+        var ctrl = this;
 
-        ctrl.Model = [];
+        ctrl.Areas = [];
         ctrl.SelectedArea = null;
 
         ctrl.moveArea = function (area, direction) {
-            var sourceIndex = ctrl.Model.indexOf(area);
-            ctrl.Model.moveItem(sourceIndex, direction);
+            var sourceIndex = ctrl.Areas.indexOf(area);
+            ctrl.Areas.moveItem(sourceIndex, direction);
         }
 
-        ctrl.selectArea = function(area) {
+        ctrl.selectArea = function (area) {
             ctrl.SelectedArea = area;
         }
 
-        ctrl.loadDemoData = function () {
+        ctrl.fetchAreas = function () {
 
-            $http.get("Areas/DemoData.json").then(function (response) {
-                ctrl.loadAreas(response.data);
-            });
+            controllerProxyService.get("configuration",
+                function (response) {
+                    ctrl.loadAreas(response);
+                });
         }
 
         ctrl.loadAreas = function (source) {
 
             var areas = [];
-            $.each(source, function (id, item) {
+            $.each(source.Areas, function (id, item) {
+
+                if (item.Settings.AppSettings === undefined) {
+                    item.Settings.AppSettings = {};
+                }
 
                 var row = {
                     Id: id,
@@ -43,21 +48,30 @@
                 return a.SortValue - b.SortValue;
             });
 
-            ctrl.Model = areas;
+            ctrl.Areas = areas;
         }
 
         ctrl.save = function () {
-            var payload = {
-                Uri: "Area/XYZ",
-                Settings: ctrl.Model
-            }
 
-            controllerProxyService.invoke("Service/ISettingsService/ReplaceMultiple", payload)
+            $.each(ctrl.Areas, function (id, item) {
+                var payload = {
+                    Uri: "Area/" + item.Id,
+                    Settings: {
+                        AppSettings: {
+                            Caption: item.Caption,
+                            IsVisible: item.IsVisible,
+                            SortValue: id
+                        }
+                    }
+                }
+
+                controllerProxyService.execute("Service/ISettingsService/Import", payload);
+            });
 
             alert("Saved Controller Slave settings");
         }
 
-        ctrl.loadDemoData();
+        ctrl.fetchAreas();
     }
 
     module.component("areas", {

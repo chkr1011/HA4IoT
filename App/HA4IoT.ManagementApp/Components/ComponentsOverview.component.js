@@ -3,9 +3,10 @@
 
     function createController(controllerProxyService, $http) {
 
-        ctrl = this;
+        var ctrl = this;
 
-        ctrl.Model = [];
+        ctrl.Areas = [];
+        ctrl.SelectedArea = null;
         ctrl.SelectedComponent = null;
 
         ctrl.moveComponent = function (component, direction) {
@@ -17,41 +18,56 @@
             ctrl.SelectedComponent = component;
         }
 
-        ctrl.loadDemoData = function () {
+        ctrl.fetchComponents = function () {
 
-            $http.get("Components/DemoData.json").then(function (response) {
-                ctrl.loadComponents(response.data);
+            controllerProxyService.get("configuration", function (response) {
+                ctrl.loadComponents(response);
             });
         }
 
         ctrl.loadComponents = function (source) {
 
-            var components = [];
-            $.each(source, function (id, item) {
+            var areas = [];
+            $.each(source.Areas, function (areaId, areaItem) {
 
-                var row = {
-                    Id: id,
-                    Type: item.Type,
-                    Caption: item.Settings.AppSettings.Caption,
-                    OverviewCaption: item.Settings.AppSettings.OverviewCaption,
-                    SortValue: item.Settings.AppSettings.SortValue,
-                    Image: item.Settings.AppSettings.Image,
-                    IsEnabled: item.Settings.IsEnabled,
-                    IsVisible: item.Settings.AppSettings.IsVisible,
-                    SupportedStates: item.SupportedStates
+                var area = {
+                    Id: areaId,
+                    Caption: areaItem.Settings.AppSettings.Caption,
+                    Components: []
                 };
 
-                components.push(row);
+                $.each(areaItem.Components,
+                    function (componentId, componentItem) {
+                        if (componentItem.Settings.AppSettings === undefined) {
+                            componentItem.Settings.AppSettings = {};
+                        }
+
+                        var component = {
+                            Id: componentId,
+                            Type: componentItem.Type,
+                            Caption: componentItem.Settings.AppSettings.Caption,
+                            OverviewCaption: componentItem.Settings.AppSettings.OverviewCaption,
+                            SortValue: componentItem.Settings.AppSettings.SortValue,
+                            Image: componentItem.Settings.AppSettings.Image,
+                            IsEnabled: componentItem.Settings.IsEnabled,
+                            IsVisible: componentItem.Settings.AppSettings.IsVisible,
+                            SupportedStates: componentItem.SupportedStates
+                        };
+
+                        area.Components.push(component);
+                    });
+
+                areas.push(area);
             });
 
-            components = components.sort(function (a, b) {
+            areas = areas.sort(function (a, b) {
                 return a.SortValue - b.SortValue;
             });
 
-            ctrl.Model = components;
+            ctrl.Areas = areas;
         }
 
-        ctrl.loadDemoData();
+        ctrl.fetchComponents();
     }
 
     module.component("components", {

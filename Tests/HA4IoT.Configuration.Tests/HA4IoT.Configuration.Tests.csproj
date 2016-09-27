@@ -163,14 +163,6 @@
       <Project>{238AD610-4F9B-4652-81DB-A8FC215F61A5}</Project>
       <Name>HA4IoT.Tests.Mockups</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.CCTools\HA4IoT.Hardware.CCTools.csproj">
-      <Project>{b0a7ef01-9382-422c-81af-c90dc5a7affd}</Project>
-      <Name>HA4IoT.Hardware.CCTools</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.I2CHardwareBridge\HA4IoT.Hardware.I2CHardwareBridge.csproj">
-      <Project>{8BF16E28-A01D-47E9-A5C4-CC93E347AAF4}</Project>
-      <Name>HA4IoT.Hardware.I2CHardwareBridge</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

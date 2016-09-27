@@ -30,11 +30,6 @@ namespace HA4IoT.Services.System
 
         public override void Startup()
         {
-            Bind();
-        }
-
-        public void Bind()
-        {
             _socket.BindServiceNameAsync(DEFAULT_PORT.ToString()).AsTask().Wait();
         }
 
@@ -42,7 +37,7 @@ namespace HA4IoT.Services.System
         {
             var controllerSettings = _settingsService.GetSettings<ControllerSettings>();
 
-            var response = new DiscoveryResponse(controllerSettings.Name, controllerSettings.Description);
+            var response = new DiscoveryResponse(controllerSettings.Caption, controllerSettings.Description);
             SendResponseAsync(args.RemoteAddress, response).Wait();
         }
 

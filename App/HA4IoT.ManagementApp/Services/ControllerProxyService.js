@@ -1,10 +1,8 @@
 function createControllerProxyService($http) {
     return {
-        mode: "WebSocket",
-        address: "192.168.1.15",
 
         execute: function (uri, payload, successCallback) {
-            var fullUri = "http://" + this.address + "/api/" + uri;
+            var fullUri = "/api/" + uri;
 
             console.log("COMMAND@" + fullUri);
             console.log(payload);
@@ -12,17 +10,18 @@ function createControllerProxyService($http) {
             $http.post(fullUri, payload).then(successCallback);
         },
 
-        get: function (uri, payload, callback) {
-            var fullUri = "http://" + this.address + "/api/" + uri + "?body=" + JSON.stringify(payload);
+        get: function (uri, callback) {
+            var fullUri = "/api/" + uri;
 
             console.log("GET@" + fullUri);
-            console.log(payload);
 
             $http.get(fullUri).then(function (response) {
                 console.log("Response data:");
                 console.log(response.data);
 
-                callback(response.data);
+                if (callback != null) {
+                    callback(response.data);
+                }
             });
         }
 

@@ -8,6 +8,8 @@ namespace HA4IoT.Contracts.Api
     {
         event EventHandler<ApiRequestReceivedEventArgs> StatusRequested;
 
+        event EventHandler<ApiRequestReceivedEventArgs> StatusRequestCompleted;
+
         event EventHandler<ApiRequestReceivedEventArgs> ConfigurationRequested;  
 
         void RegisterEndpoint(IApiDispatcherEndpoint endpoint);

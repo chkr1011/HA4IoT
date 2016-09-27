@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Services.Areas
 {
+    [ApiServiceClass(typeof(IAreaService))]
     public class AreaService : ServiceBase, IAreaService
     {
         private readonly AreaCollection _areas = new AreaCollection();

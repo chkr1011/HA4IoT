@@ -11,8 +11,8 @@
     <AssemblyName>HA4IoT.Hardware</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -116,21 +116,78 @@
   <ItemGroup>
     <Compile Include="ByteExtensions.cs" />
     <Compile Include="BuiltInI2CBusService.cs" />
+    <Compile Include="CCTools\CCToolsBoardBase.cs" />
+    <Compile Include="CCTools\CCToolsBoardPort.cs" />
+    <Compile Include="CCTools\CCToolsBoardService.cs" />
+    <Compile Include="CCTools\CCToolsBoardStateChangedEventArgs.cs" />
+    <Compile Include="CCTools\CCToolsInputBoardBase.cs" />
+    <Compile Include="CCTools\HSPE16InputOnly.cs" />
+    <Compile Include="CCTools\HSPE16OutputOnly.cs" />
+    <Compile Include="CCTools\HSPE16Pin.cs" />
+    <Compile Include="CCTools\HSPE8InputOnly.cs" />
+    <Compile Include="CCTools\HSPE8OutputOnly.cs" />
+    <Compile Include="CCTools\HSPE8Pin.cs" />
+    <Compile Include="CCTools\HSREL5.cs" />
+    <Compile Include="CCTools\HSREL5Pin.cs" />
+    <Compile Include="CCTools\HSREL8.cs" />
+    <Compile Include="CCTools\HSREL8Pin.cs" />
+    <Compile Include="CCTools\HSRT16.cs" />
+    <Compile Include="CCTools\HSRT16Pin.cs" />
     <Compile Include="DeviceIdFactory.cs" />
     <Compile Include="I2CDeviceWrapper.cs" />
+    <Compile Include="I2CHardwareBridge\DHT22Accessor.cs" />
+    <Compile Include="I2CHardwareBridge\DHT22HumiditySensor.cs" />
+    <Compile Include="I2CHardwareBridge\DHT22SensorBase.cs" />
+    <Compile Include="I2CHardwareBridge\DHT22TemperatureSensor.cs" />
+    <Compile Include="I2CHardwareBridge\I2CHardwareBridge.cs" />
+    <Compile Include="I2CHardwareBridge\I2CHardwareBridgeCommand.cs" />
+    <Compile Include="I2CHardwareBridge\ReadDHT22SensorCommand.cs" />
+    <Compile Include="I2CHardwareBridge\ReadDHT22SensorCommandResponse.cs" />
+    <Compile Include="I2CHardwareBridge\SendInfraredSignalCommand.cs" />
+    <Compile Include="I2CHardwareBridge\SendLDP433MHzSignalCommand.cs" />
     <Compile Include="InterruptMonitor.cs" />
+    <Compile Include="Knx\KnxClient.cs" />
+    <Compile Include="Knx\KnxController.cs" />
+    <Compile Include="Knx\KnxDigitalJoinEnpoint.cs" />
     <Compile Include="LogicalBinaryOutput.cs" />
+    <Compile Include="Pi2\Pi2Gpio.cs" />
+    <Compile Include="Pi2\Pi2GpioService.cs" />
+    <Compile Include="PortExpanderDrivers\AddressPinState.cs" />
+    <Compile Include="PortExpanderDrivers\MAX7311AddressGenerator.cs" />
+    <Compile Include="PortExpanderDrivers\MAX7311Driver.cs" />
+    <Compile Include="PortExpanderDrivers\PCA9555AAddressGenerator.cs" />
+    <Compile Include="PortExpanderDrivers\PCA9555AddressGenerator.cs" />
+    <Compile Include="PortExpanderDrivers\PCA9555ADriver.cs" />
+    <Compile Include="PortExpanderDrivers\PCA9555Driver.cs" />
+    <Compile Include="PortExpanderDrivers\PCF8574AAddressGenerator.cs" />
+    <Compile Include="PortExpanderDrivers\PCF8574AddressGenerator.cs" />
+    <Compile Include="PortExpanderDrivers\PCF8574ADriver.cs" />
+    <Compile Include="PortExpanderDrivers\PCF8574Driver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RemoteSwitch\Codes\BrennenstuhlCodeSequenceProvider.cs" />
+    <Compile Include="RemoteSwitch\Codes\BrennenstuhlSystemCode.cs" />
+    <Compile Include="RemoteSwitch\Codes\BrennenstuhlUnitCode.cs" />
+    <Compile Include="RemoteSwitch\Codes\IntertechnoCodeSequenceProvider.cs" />
+    <Compile Include="RemoteSwitch\Codes\IntertechnoSystemCode.cs" />
+    <Compile Include="RemoteSwitch\Codes\IntertechnoUnitCode.cs" />
+    <Compile Include="RemoteSwitch\ILPD433MhzSignalSender.cs" />
+    <Compile Include="RemoteSwitch\LPD433MhzCode.cs" />
+    <Compile Include="RemoteSwitch\LPD433MhzCodeSequence.cs" />
+    <Compile Include="RemoteSwitch\LPD433MHzCodeSequencePair.cs" />
+    <Compile Include="RemoteSwitch\LPD433MhzSignalSender.cs" />
+    <Compile Include="RemoteSwitch\RemoteSocketCommand.cs" />
+    <Compile Include="RemoteSwitch\RemoteSocketOutputPort.cs" />
+    <Compile Include="RemoteSwitch\RemoteSocketService.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.Hardware.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
+    <ProjectReference Include="..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{e1edac4b-83b9-46f4-9f6a-3bae97d79f29}</Project>
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <SDKReference Include="WindowsIoT, Version=10.0.10586.0">
+    <SDKReference Include="WindowsIoT, Version=10.0.14393.0">
       <Name>Windows IoT Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>

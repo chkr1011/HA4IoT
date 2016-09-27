@@ -21,15 +21,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-class="{active: aoCtrl.SelectedArea.Id == area.Id}" ng-repeat="area in aoCtrl.Model" ng-click="aoCtrl.selectArea(area)">
+                    <tr ng-class="{active: aoCtrl.SelectedArea.Id == area.Id}" ng-repeat="area in aoCtrl.Areas" ng-click="aoCtrl.selectArea(area)">
                         <td>
-                            <span class="id-text">{{area.Id}}</span>
+                            <div class="label label-primary">{{area.Id}}</div>
                         </td>
                         <td>
                             <span class="fa fa-eye grid-icon" aria-hidden="true" ng-show="area.IsVisible"></span>
                         </td>
                         <td>
-                            <span>{{area.Caption}}</span>
+                            <div>{{area.Caption}}</div>
                         </td>
                         <td class="text-center">
                             <div class="btn-group pull-right" role="group">
@@ -53,8 +53,8 @@
             <div class="panel-body">
                 <form>
                     <div class="form-group">
-                        <label>ID</label>
-                        <div class="id-text">{{aoCtrl.SelectedArea.Id}}</div>
+                        <div><label>ID</label></div>
+                        <div class="label label-primary">{{aoCtrl.SelectedArea.Id}}</div>
                     </div>
 
                     <div class="form-group">

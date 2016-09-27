@@ -147,17 +147,13 @@
       <Project>{2bbef090-4fee-4fb7-9cf1-f6597f2c53ea}</Project>
       <Name>HA4IoT.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
+      <Project>{287a9bd0-4037-4add-986f-54056f059eae}</Project>
+      <Name>HA4IoT.Hardware</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Sensors\HA4IoT.Sensors.csproj">
       <Project>{8892e736-cdd0-48eb-ad9e-a1c8aa230fd7}</Project>
       <Name>HA4IoT.Sensors</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.CCTools\HA4IoT.Hardware.CCTools.csproj">
-      <Project>{B0A7EF01-9382-422C-81AF-C90DC5A7AFFD}</Project>
-      <Name>HA4IoT.Hardware.CCTools</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
-      <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
-      <Name>HA4IoT.Hardware</Name>
     </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Tests.Mockups\HA4IoT.Tests.Mockups.csproj">
       <Project>{238AD610-4F9B-4652-81DB-A8FC215F61A5}</Project>

@@ -15,10 +15,7 @@
                     <div class="form-group">
                         <label class="col-md-2 control-label">Area</label>
                         <div class="col-md-10">
-                            <select class="form-control" ng-model="csCtrl.Area">
-                        <option>Area1</option>
-                        <option>Area2</option>
-                    </select>
+                            <select class="form-control" ng-model="csCtrl.Areas"></select>
                         </div>
                     </div>
                 </form>
@@ -40,8 +37,8 @@
                             <img class="medium-icon" ng-src="Content/Images/{{component.Image}}.png" />
                         </td>
                         <td>
-                            <div class="id-text">{{component.Id}}</div>
-                            <div class="type-text">[{{component.Type}}]</div>
+                            <div>{{component.Id}}</div>
+                            <div class="label label-success">[{{component.Type}}]</div>
                         </td>
                         <td>
                             <span class="fa fa-check grid-icon" aria-hidden="true" ng-show="component.IsEnabled"></span>

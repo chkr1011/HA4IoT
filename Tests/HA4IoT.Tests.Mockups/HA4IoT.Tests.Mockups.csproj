@@ -141,13 +141,13 @@
     <Content Include="Properties\HA4IoT.Tests.Mockups.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SDK\Api\HA4IoT.Api\HA4IoT.Api.csproj">
-      <Project>{ED4B4304-0E5D-459D-857D-622F790C1A32}</Project>
-      <Name>HA4IoT.Api</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Actuators\HA4IoT.Actuators.csproj">
       <Project>{808ABECF-D9C2-4AB2-95D8-EAF228B44576}</Project>
       <Name>HA4IoT.Actuators</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Api\HA4IoT.Api.csproj">
+      <Project>{ED4B4304-0E5D-459D-857D-622F790C1A32}</Project>
+      <Name>HA4IoT.Api</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Components\HA4IoT.Components.csproj">
       <Project>{60F9E539-3FF5-40DE-B0C4-BE99CAE57736}</Project>

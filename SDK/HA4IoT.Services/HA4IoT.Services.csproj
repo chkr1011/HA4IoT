@@ -11,8 +11,8 @@
     <AssemblyName>HA4IoT.Services</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -144,6 +144,10 @@
       <Project>{E1EDAC4B-83B9-46F4-9F6A-3BAE97D79F29}</Project>
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>
+    <ProjectReference Include="..\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
+      <Project>{287a9bd0-4037-4add-986f-54056f059eae}</Project>
+      <Name>HA4IoT.Hardware</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
       <Name>HA4IoT.Networking</Name>
@@ -151,14 +155,6 @@
     <ProjectReference Include="..\HA4IoT.Settings\HA4IoT.Settings.csproj">
       <Project>{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879}</Project>
       <Name>HA4IoT.Settings</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Hardware\HA4IoT.Hardware.Pi2\HA4IoT.Hardware.Pi2.csproj">
-      <Project>{39819B8F-40F8-418A-AD3A-92A8C8D63268}</Project>
-      <Name>HA4IoT.Hardware.Pi2</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Hardware\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
-      <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
-      <Name>HA4IoT.Hardware</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

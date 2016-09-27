@@ -45,14 +45,14 @@ function AppController($scope, $http) {
             c.notifyConfigurationLoaded(data);
 
             $.each(data.Areas, function (areaId, area) {
-                if (getConfigurationValue(area, "Hide", false)) {
+                if (!getConfigurationValue(area, "IsVisible", false)) {
                     return true;
                 }
 
                 var areaControl = {
-                    id: areaId,
-                    caption: getConfigurationValue(area, "Caption", areaId),
-                    sortValue: getConfigurationValue(area, "SortValue", 0),
+                    Id: areaId,
+                    Caption: getConfigurationValue(area, "Caption", areaId),
+                    SortValue: getConfigurationValue(area, "SortValue", 0),
                     actuators: [],
                     automations: [],
                     onStateCount: 0

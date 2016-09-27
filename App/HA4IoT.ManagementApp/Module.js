@@ -19,7 +19,7 @@ var app;
             return;
         }
 
-        if (targetIndex >= ctrl.Model.length) {
+        if (targetIndex >= this.length) {
             return;
         }
 

@@ -11,8 +11,8 @@
     <AssemblyName>HA4IoT.Controller.Main</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
@@ -173,6 +173,10 @@
       <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
       <Name>HA4IoT.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
+      <Project>{287a9bd0-4037-4add-986f-54056f059eae}</Project>
+      <Name>HA4IoT.Hardware</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Services\HA4IoT.Services.csproj">
       <Project>{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF}</Project>
       <Name>HA4IoT.Services</Name>
@@ -180,14 +184,6 @@
     <ProjectReference Include="..\..\SDK\HA4IoT.Settings\HA4IoT.Settings.csproj">
       <Project>{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879}</Project>
       <Name>HA4IoT.Settings</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.Knx\HA4IoT.Hardware.Knx.csproj">
-      <Project>{1EC3A5D0-65C8-4396-BD56-9179A8BD00D4}</Project>
-      <Name>HA4IoT.Hardware.Knx</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
-      <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
-      <Name>HA4IoT.Hardware</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
@@ -204,22 +200,6 @@
     <ProjectReference Include="..\..\SDK\HA4IoT.Telemetry\HA4IoT.Telemetry.csproj">
       <Project>{97F3345C-33B6-4779-9212-5FFBCEEF3F96}</Project>
       <Name>HA4IoT.Telemetry</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.CCTools\HA4IoT.Hardware.CCTools.csproj">
-      <Project>{B0A7EF01-9382-422C-81AF-C90DC5A7AFFD}</Project>
-      <Name>HA4IoT.Hardware.CCTools</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.I2CHardwareBridge\HA4IoT.Hardware.I2CHardwareBridge.csproj">
-      <Project>{8BF16E28-A01D-47E9-A5C4-CC93E347AAF4}</Project>
-      <Name>HA4IoT.Hardware.I2CHardwareBridge</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.Pi2\HA4IoT.Hardware.Pi2.csproj">
-      <Project>{39819B8F-40F8-418A-AD3A-92A8C8D63268}</Project>
-      <Name>HA4IoT.Hardware.Pi2</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.RemoteSwitch\HA4IoT.Hardware.RemoteSwitch.csproj">
-      <Project>{BADA2E47-5626-4E9E-92A7-8F712D084493}</Project>
-      <Name>HA4IoT.Hardware.RemoteSwitch</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
