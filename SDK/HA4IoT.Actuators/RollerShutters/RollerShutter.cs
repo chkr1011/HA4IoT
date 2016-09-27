@@ -97,12 +97,7 @@ namespace HA4IoT.Actuators.RollerShutters
         {
             if (state == null) throw new ArgumentNullException(nameof(state));
 
-            if (state.Equals(_state))
-            {
-                return;
-            }
-
-            if (state.Equals(RollerShutterStateId.Off))
+            if (state.Equals(RollerShutterStateId.Off) || _state.Equals(state))
             {
                 _endpoint.Stop(parameters);
             }

@@ -80,7 +80,7 @@ namespace HA4IoT.Sensors
             return button;
         }
 
-        public IArea RegisterRollerShutterButtons(
+        public void RegisterRollerShutterButtons(
             IArea area,
             Enum upId,
             IBinaryInput upInput,
@@ -106,8 +106,6 @@ namespace HA4IoT.Sensors
                 _settingsService);
 
             area.AddComponent(downButton);
-
-            return area;
         }
 
         public IMotionDetector RegisterMotionDetector(IArea area, Enum id, IBinaryInput input)
