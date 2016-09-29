@@ -122,18 +122,6 @@
     <EmbeddedResource Include="Properties\HA4IoT.Core.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ExternalServices\HA4IoT.ExternalServices.OpenWeatherMap\HA4IoT.ExternalServices.OpenWeatherMap.csproj">
-      <Project>{6788E4A8-580E-4C2E-9754-95229F24F217}</Project>
-      <Name>HA4IoT.ExternalServices.OpenWeatherMap</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ExternalServices\HA4IoT.ExternalServices.TelegramBot\HA4IoT.ExternalServices.TelegramBot.csproj">
-      <Project>{0F244152-1BF5-46E4-93DD-E769B38CE9DB}</Project>
-      <Name>HA4IoT.ExternalServices.TelegramBot</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ExternalServices\HA4IoT.ExternalServices.Twitter\HA4IoT.ExternalServices.Twitter.csproj">
-      <Project>{4BF90039-3B6A-450B-B942-09FAF600BD64}</Project>
-      <Name>HA4IoT.ExternalServices.Twitter</Name>
-    </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Actuators\HA4IoT.Actuators.csproj">
       <Project>{808ABECF-D9C2-4AB2-95D8-EAF228B44576}</Project>
       <Name>HA4IoT.Actuators</Name>
@@ -154,6 +142,10 @@
       <Project>{551337E7-D1EF-4145-92B4-F7086F7665A6}</Project>
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>
+    <ProjectReference Include="..\HA4IoT.ExternalServices\HA4IoT.ExternalServices.csproj">
+      <Project>{1792ccef-9f6c-4535-be20-baa777243980}</Project>
+      <Name>HA4IoT.ExternalServices</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
       <Project>{287a9bd0-4037-4add-986f-54056f059eae}</Project>
       <Name>HA4IoT.Hardware</Name>
@@ -165,14 +157,6 @@
     <ProjectReference Include="..\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
       <Name>HA4IoT.Networking</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\HA4IoT.Notifications\HA4IoT.Notifications.csproj">
-      <Project>{8A3804D8-60D2-4C6F-B854-D4362A9BA9FA}</Project>
-      <Name>HA4IoT.Notifications</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\HA4IoT.PersonalAgent\HA4IoT.PersonalAgent.csproj">
-      <Project>{A22FDA3A-B331-4399-863B-5F1B8D24BFE9}</Project>
-      <Name>HA4IoT.PersonalAgent</Name>
     </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Sensors\HA4IoT.Sensors.csproj">
       <Project>{8892E736-CDD0-48EB-AD9E-A1C8AA230FD7}</Project>
@@ -189,6 +173,10 @@
     <ProjectReference Include="..\HA4IoT.Telemetry\HA4IoT.Telemetry.csproj">
       <Project>{97F3345C-33B6-4779-9212-5FFBCEEF3F96}</Project>
       <Name>HA4IoT.Telemetry</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HA4IoT\HA4IoT.csproj">
+      <Project>{c034ec4d-46cc-490a-a045-e4d4d1f49c31}</Project>
+      <Name>HA4IoT</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

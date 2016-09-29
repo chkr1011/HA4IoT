@@ -3,7 +3,7 @@
 
     function createController(controllerProxyService) {
 
-        ctrl = this;
+        var ctrl = this;
 
         ctrl.ActiveTab = "";
     }

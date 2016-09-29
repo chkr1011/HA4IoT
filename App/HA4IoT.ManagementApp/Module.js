@@ -5,6 +5,7 @@ var app;
 
     app.factory("translationService", ['$http', createTranslationService]);
     app.factory("controllerProxyService", ['$http', createControllerProxyService]);
+    app.factory("modalService", [createModalService]);
 
 })();
 

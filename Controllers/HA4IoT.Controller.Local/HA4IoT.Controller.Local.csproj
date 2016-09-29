@@ -131,10 +131,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SDK\ExternalServices\HA4IoT.ExternalServices.OpenWeatherMap\HA4IoT.ExternalServices.OpenWeatherMap.csproj">
-      <Project>{6788E4A8-580E-4C2E-9754-95229F24F217}</Project>
-      <Name>HA4IoT.ExternalServices.OpenWeatherMap</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Actuators\HA4IoT.Actuators.csproj">
       <Project>{808abecf-d9c2-4ab2-95d8-eaf228b44576}</Project>
       <Name>HA4IoT.Actuators</Name>
@@ -150,10 +146,6 @@
     <ProjectReference Include="..\..\SDK\HA4IoT.Conditions\HA4IoT.Conditions.csproj">
       <Project>{3822e69d-fd79-4797-98e2-7c05973b6522}</Project>
       <Name>HA4IoT.Conditions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Configuration\HA4IoT.Configuration.csproj">
-      <Project>{f9d92ea6-3763-47f5-9efd-6d83804c95e6}</Project>
-      <Name>HA4IoT.Configuration</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{e1edac4b-83b9-46f4-9f6a-3bae97d79f29}</Project>

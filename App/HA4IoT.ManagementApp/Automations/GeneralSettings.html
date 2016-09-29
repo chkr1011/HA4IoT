@@ -1,0 +1,55 @@
+<h4>General</h4>
+<hr />
+
+<div class="form-group">
+    <div><label>ID</label></div>
+    <div class="label label-primary">{{aoCtrl.SelectedAutomation.Id}}</div>
+</div>
+<div class="form-group">
+    <div><label>Type</label></div>
+    <div class="label label-success">{{aoCtrl.SelectedAutomation.Type}}</div>
+</div>
+
+<div class="form-group">
+    <label>Caption</label>
+    <input type="text" class="form-control" ng-model="aoCtrl.SelectedAutomation.Settings.AppSettings.Caption">
+</div>
+
+<div class="form-group">
+    <label>Caption (overview)</label>
+    <input type="text" class="form-control" ng-model="aoCtrl.SelectedAutomation.Settings.AppSettings.OverviewCaption">
+</div>
+
+<div class="form-group">
+    <label>Image</label>
+    <select class="form-control" ng-model="aoCtrl.SelectedAutomation.Settings.AppSettings.Image">
+        <option>Air</option>
+        <option>Car</option>
+        <option>Cat</option>
+        <option>DefaultActuator</option>
+        <option>Fan</option>
+        <option>Favorites</option>
+        <option>Humidity</option>
+        <option>Lamp</option>
+        <option>Motion</option>
+        <option>NightLamp</option>
+        <option>Poison</option>
+        <option>Power</option>
+        <option>RollerShutter</option>
+        <option>Socket</option>
+        <option>Spotlight</option>
+        <option>StateMachine</option>
+        <option>Sunrise</option>
+        <option>Sunset</option>
+        <option>TableLamp</option>
+        <option>Temperature</option>
+        <option>VirtualButton</option>
+        <option>WaterPump</option>
+        <option>Wifi</option>
+        <option>Window</option>
+    </select>
+</div>
+
+<div class="checkbox">
+    <label><input type="checkbox" ng-model="aoCtrl.SelectedAutomation.Settings.IsEnabled">Enabled</label>
+</div>

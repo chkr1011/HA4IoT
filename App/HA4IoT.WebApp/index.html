@@ -20,10 +20,10 @@
             <div class="loadingIndicator">
                 <div class="loadingAnimation"></div>
                 <h3 class="loadingTitle">
-                    Home Automation
+                    HA4IoT
                     <br />
                     <br />
-                    <span class="loadingMessage">HA4IoT...</span>
+                    <span class="loadingMessage">Home Automation</span>
                 </h3>
             </div>
         </div>
@@ -31,7 +31,7 @@
         <div class="container-fluid" id="content" ng-show="haCtrl.isInitialized && localizationCtrl.isInitialized">
             <div ng-include="'Views/NotificationsBarTemplate.html'"></div>
             <div ng-show="haCtrl.appConfiguration.showWeatherStation" ng-include="'Views/WeatherStationTemplate.html'"></div>
-            <div ng-include="'Views/RoomsOverviewTemplate.html'"></div>
+            <div ng-include="'Views/AreasOverviewTemplate.html'"></div>
             <div ng-show="haCtrl.appConfiguration.showSensorsOverview" ng-include="'Views/SensorsOverviewTemplate.html'"></div>
             <div ng-show="haCtrl.appConfiguration.showRollerShuttersOverview" ng-include="'Views/RollerShuttersOverviewTemplate.html'"></div>
             <div ng-show="haCtrl.appConfiguration.showWindowsOverview" ng-include="'Views/WindowsOverviewTemplate.html'"></div>

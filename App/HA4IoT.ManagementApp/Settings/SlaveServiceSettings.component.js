@@ -1,7 +1,7 @@
 (function () {
     var module = angular.module("app");
 
-    function createController(controllerProxyService) {
+    function createController(controllerProxyService, modalService) {
 
         var ctrl = this;
 
@@ -20,16 +20,16 @@
                 Settings: ctrl.Model
             }
 
-            controllerProxyService.execute("Service/ISettingsService/Replace", payload)
+            controllerProxyService.get("Service/ISettingsService/Replace", payload);
 
-            alert("Saved Controller Slave settings");
+            modalService.show("Info", "Controller Slave settings successfully saved.");
         }
     }
 
     module.component("slaveServiceSettings", {
         templateUrl: "Settings/SlaveServiceSettings.component.html",
         controllerAs: "sssCtrl",
-        controller: ["controllerProxyService", createController]
+        controller: ["controllerProxyService", "modalService", createController]
     });
     
 })();

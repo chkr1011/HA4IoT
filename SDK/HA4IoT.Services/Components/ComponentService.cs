@@ -8,7 +8,6 @@ using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Networking.Http;
-using HA4IoT.Settings;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Services.Components
@@ -96,7 +95,7 @@ namespace HA4IoT.Services.Components
         }
 
         [ApiMethod]
-        public void Update(IApiContext apiContext)
+        public void Invoke(IApiContext apiContext)
         {
             // TODO: Consider creating classes as optional method parameters which are filled via reflection from Request JSON.
             var componentId = (string)apiContext.Request["ComponentId"];

@@ -1,7 +1,7 @@
 (function () {
     var module = angular.module("app");
 
-    function createController(controllerProxyService) {
+    function createController(controllerProxyService, modalService) {
 
         var ctrl = this;
 
@@ -27,14 +27,14 @@
 
             controllerProxyService.execute("Service/ISettingsService/Replace", payload);
 
-            alert("Saved Twitter client settings");
+            modalService.show("Info", "Twitter client settings successfully saved.");
         }
     }
 
     module.component("twitterClientSettings", {
         templateUrl: "Settings/TwitterClientSettings.component.html",
         controllerAs: "tcsCtrl",
-        controller: ["controllerProxyService", createController]
+        controller: ["controllerProxyService", "modalService", createController]
     });
     
 })();

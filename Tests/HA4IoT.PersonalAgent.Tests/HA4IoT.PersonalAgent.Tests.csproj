@@ -140,13 +140,13 @@
       <Project>{2bbef090-4fee-4fb7-9cf1-f6597f2c53ea}</Project>
       <Name>HA4IoT.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.PersonalAgent\HA4IoT.PersonalAgent.csproj">
-      <Project>{A22FDA3A-B331-4399-863B-5F1B8D24BFE9}</Project>
-      <Name>HA4IoT.PersonalAgent</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Sensors\HA4IoT.Sensors.csproj">
       <Project>{8892e736-cdd0-48eb-ad9e-a1c8aa230fd7}</Project>
       <Name>HA4IoT.Sensors</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT\HA4IoT.csproj">
+      <Project>{c034ec4d-46cc-490a-a045-e4d4d1f49c31}</Project>
+      <Name>HA4IoT</Name>
     </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Tests.Mockups\HA4IoT.Tests.Mockups.csproj">
       <Project>{238AD610-4F9B-4652-81DB-A8FC215F61A5}</Project>

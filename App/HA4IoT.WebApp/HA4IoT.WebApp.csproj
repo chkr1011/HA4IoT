@@ -129,7 +129,7 @@
     <Content Include="Views\NotificationsBarTemplate.html" />
     <Content Include="Views\RollerShuttersOverviewTemplate.html" />
     <Content Include="Views\RollerShutterTemplate.html" />
-    <Content Include="Views\RoomsOverviewTemplate.html" />
+    <Content Include="Views\AreasOverviewTemplate.html" />
     <Content Include="Views\VirtualButtonTemplate.html" />
     <Content Include="Views\WindowsOverviewTemplate.html" />
     <Content Include="Views\SensorsOverviewTemplate.html" />

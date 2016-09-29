@@ -120,10 +120,6 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SDK\ExternalServices\HA4IoT.ExternalServices.OpenWeatherMap\HA4IoT.ExternalServices.OpenWeatherMap.csproj">
-      <Project>{6788E4A8-580E-4C2E-9754-95229F24F217}</Project>
-      <Name>HA4IoT.ExternalServices.OpenWeatherMap</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Automations\HA4IoT.Automations.csproj">
       <Project>{1CA64C98-210A-4015-95C6-67D591115F7B}</Project>
       <Name>HA4IoT.Automations</Name>
@@ -148,10 +144,6 @@
       <Project>{287a9bd0-4037-4add-986f-54056f059eae}</Project>
       <Name>HA4IoT.Hardware</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.PersonalAgent\HA4IoT.PersonalAgent.csproj">
-      <Project>{A22FDA3A-B331-4399-863B-5F1B8D24BFE9}</Project>
-      <Name>HA4IoT.PersonalAgent</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Services\HA4IoT.Services.csproj">
       <Project>{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF}</Project>
       <Name>HA4IoT.Services</Name>
@@ -163,6 +155,10 @@
     <ProjectReference Include="..\..\SDK\HA4IoT.Sensors\HA4IoT.Sensors.csproj">
       <Project>{8892E736-CDD0-48EB-AD9E-A1C8AA230FD7}</Project>
       <Name>HA4IoT.Sensors</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT\HA4IoT.csproj">
+      <Project>{c034ec4d-46cc-490a-a045-e4d4d1f49c31}</Project>
+      <Name>HA4IoT</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

@@ -3,7 +3,7 @@
 
     function createController(controllerProxyService) {
 
-        ctrl = this;
+        var ctrl = this;
     }
 
     module.component("home", {

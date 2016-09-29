@@ -12,7 +12,7 @@ namespace HA4IoT.Networking.Http
 {
     public sealed class HttpClientSession : IDisposable
     {
-        private const int RequestBufferSize = 16 * 1024;
+        private const int RequestBufferSize = 1024 * 1024; // 1 MB
 
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly byte[] _buffer = new byte[RequestBufferSize];
@@ -25,7 +25,7 @@ namespace HA4IoT.Networking.Http
         private readonly Action<UpgradedToWebSocketSessionEventArgs> _upgradeToWebSocketSessionCallback;
 
         private readonly Stream _inputStream;
-        private readonly Stream _outputStream;
+        //private readonly Stream _outputStream;
         
         public HttpClientSession(
             StreamSocket client, 
@@ -44,7 +44,7 @@ namespace HA4IoT.Networking.Http
             _upgradeToWebSocketSessionCallback = upgradeToWebSocketSessionCallback;
 
             _inputStream = _client.InputStream.AsStreamForRead(_buffer.Length);
-            _outputStream = _client.OutputStream.AsStreamForWrite(RequestBufferSize);
+            //_outputStream = _client.OutputStream.AsStreamForWrite(RequestBufferSize);
         }
 
         public void WaitForRequest()
@@ -145,11 +145,15 @@ namespace HA4IoT.Networking.Http
             }
         }
 
-        private void SendResponse(HttpContext context)
+        private async void SendResponse(HttpContext context)
         {
             var response = _responseSerializer.SerializeResponse(context);
-            _outputStream.Write(response, 0, response.Length);
-            _outputStream.Flush();
+
+            await _client.OutputStream.WriteAsync(response.AsBuffer());
+            await _client.OutputStream.FlushAsync();
+
+            //_outputStream.Write(response, 0, response.Length);
+            //_outputStream.Flush();
         }
 
         private void UpgradeToWebSocket(HttpContext httpContext)
@@ -158,8 +162,7 @@ namespace HA4IoT.Networking.Http
             httpContext.Response.Headers[HttpHeaderNames.Connection] = "Upgrade";
             httpContext.Response.Headers[HttpHeaderNames.Upgrade] = "websocket";
             httpContext.Response.Headers[HttpHeaderNames.SecWebSocketAccept] = GenerateWebSocketAccept(httpContext);
-            //httpContext.Response.Headers[HttpHeaderNames.SecWebSocketProtocol] = string.Empty;
-
+            
             SendResponse(httpContext);
             _upgradeToWebSocketSessionCallback(new UpgradedToWebSocketSessionEventArgs(httpContext.Request));
         }
@@ -179,7 +182,7 @@ namespace HA4IoT.Networking.Http
         public void Dispose()
         {
             _inputStream.Dispose();
-            _outputStream.Dispose();
+            //_outputStream.Dispose();
             _client.Dispose();
         }
     }

@@ -1,7 +1,7 @@
 (function () {
     var module = angular.module("app");
 
-    function createController(controllerProxyService, $http) {
+    function createController(controllerProxyService, modalService) {
 
         var ctrl = this;
 
@@ -19,7 +19,7 @@
 
         ctrl.fetchAreas = function () {
 
-            controllerProxyService.get("configuration",
+            controllerProxyService.get("configuration", null,
                 function (response) {
                     ctrl.loadAreas(response);
                 });
@@ -52,15 +52,14 @@
         }
 
         ctrl.save = function () {
-
-            $.each(ctrl.Areas, function (id, item) {
+            $.each(ctrl.Areas, function (i, item) {
                 var payload = {
                     Uri: "Area/" + item.Id,
                     Settings: {
                         AppSettings: {
                             Caption: item.Caption,
                             IsVisible: item.IsVisible,
-                            SortValue: id
+                            SortValue: i
                         }
                     }
                 }
@@ -68,7 +67,7 @@
                 controllerProxyService.execute("Service/ISettingsService/Import", payload);
             });
 
-            alert("Saved Controller Slave settings");
+            modalService.show("Info", "Area settings successfully saved.");
         }
 
         ctrl.fetchAreas();
@@ -77,7 +76,7 @@
     module.component("areas", {
         templateUrl: "Areas/AreasOverview.component.html",
         controllerAs: "aoCtrl",
-        controller: ["controllerProxyService", "$http", createController]
+        controller: ["controllerProxyService", "modalService", createController]
     });
 
 })();

@@ -28,6 +28,11 @@
   <ItemGroup>
     <Content Include="Areas\AreasOverview.component.html" />
     <Content Include="Areas\AreasOverview.component.js" />
+    <Content Include="Automations\AutomationsOverview.component.html" />
+    <Content Include="Automations\AutomationsOverview.component.js" />
+    <Content Include="Automations\GeneralSettings.html" />
+    <Content Include="Automations\RollerShutterAutomationSettings.html" />
+    <Content Include="Automations\TurnOnAndOffAutomationSettings.html" />
     <Content Include="Components\ComponentsOverview.component.html" />
     <Content Include="Components\ComponentsOverview.component.js" />
     <Content Include="Components\GeneralSettings.html" />
@@ -88,7 +93,6 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
-    <Content Include="Components\DemoData.json" />
     <Content Include="fonts\fontawesome-webfont.eot" />
     <Content Include="fonts\fontawesome-webfont.ttf" />
     <Content Include="fonts\fontawesome-webfont.woff" />
@@ -119,9 +123,10 @@
     <Content Include="Scripts\angular-ui\ui-bootstrap.js" />
     <Content Include="Scripts\angular-ui\ui-bootstrap.min.js" />
     <Content Include="Services\ControllerProxyService.js" />
+    <Content Include="Services\ModalService.js" />
     <Content Include="Services\TranslationService.js" />
-    <Content Include="Settings\BackupRestore.component.html" />
-    <Content Include="Settings\BackupRestore.component.js" />
+    <Content Include="Backup\Backup.component.html" />
+    <Content Include="Backup\Backup.component.js" />
     <Content Include="Settings\ControllerSettings.component.html" />
     <Content Include="Settings\ControllerSettings.component.js" />
     <Content Include="Settings\OpenWeatherMapSettings.component.html" />
@@ -134,16 +139,13 @@
     <Content Include="Settings\TelegramBotSettings.component.js" />
     <Content Include="Settings\TwitterClientSettings.component.html" />
     <Content Include="Settings\TwitterClientSettings.component.js" />
-    <Content Include="Views\SettingsView.html" />
-    <Content Include="Views\TelegramBotSettingsView.html" />
+    <Content Include="Views\ModalTemplate.html" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Configuration\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

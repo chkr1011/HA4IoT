@@ -165,10 +165,6 @@
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
       <Name>HA4IoT.Networking</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Notifications\HA4IoT.Notifications.csproj">
-      <Project>{8A3804D8-60D2-4C6F-B854-D4362A9BA9FA}</Project>
-      <Name>HA4IoT.Notifications</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Sensors\HA4IoT.Sensors.csproj">
       <Project>{8892e736-cdd0-48eb-ad9e-a1c8aa230fd7}</Project>
       <Name>HA4IoT.Sensors</Name>
@@ -180,6 +176,10 @@
     <ProjectReference Include="..\..\SDK\HA4IoT.Settings\HA4IoT.Settings.csproj">
       <Project>{600BC3F2-2A09-4A8E-9126-1F9ACCD7D879}</Project>
       <Name>HA4IoT.Settings</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT\HA4IoT.csproj">
+      <Project>{c034ec4d-46cc-490a-a045-e4d4d1f49c31}</Project>
+      <Name>HA4IoT</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

@@ -117,6 +117,7 @@ namespace HA4IoT.Services.Areas
             {
                 var automationSettings = new JObject
                 {
+                    ["Type"] = automation.GetType().Name,
                     ["Settings"] = _settingsService.GetRawSettings(automation.Id)
                 };
 

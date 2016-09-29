@@ -89,6 +89,8 @@ namespace HA4IoT.Api
 
         private void HandleStatusRequest(IApiContext apiContext)
         {
+            apiContext.UseHash = true;
+
             var eventArgs = new ApiRequestReceivedEventArgs(apiContext);
             StatusRequested?.Invoke(this, eventArgs);
             StatusRequestCompleted?.Invoke(this, eventArgs);

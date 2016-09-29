@@ -3,11 +3,15 @@
 
     function createController(controllerProxyService, $compile, $scope) {
 
-        ctrl = this;
+        var ctrl = this;
+
+        ctrl.ActiveTab = "home";
 
         ctrl.switchTab = function (tab) {
             var content = $compile("<" + tab + "></" + tab + ">")($scope);
             $("#mainView").html(content);
+
+            ctrl.ActiveTab = tab;
         };
     }
 

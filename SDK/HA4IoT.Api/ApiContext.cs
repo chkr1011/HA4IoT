@@ -23,5 +23,6 @@ namespace HA4IoT.Api
         public ApiResultCode ResultCode { get; set; }
         public JObject Request { get; }
         public JObject Response { get; set; }
+        public bool UseHash { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 (function () {
     var module = angular.module("app");
 
-    function createController(controllerProxyService) {
+    function createController(controllerProxyService, modalService) {
 
         var ctrl = this;
 
@@ -25,14 +25,14 @@
 
             controllerProxyService.execute("Service/ISettingsService/Replace", payload);
 
-            alert("Saved Telegram Bot settings");
+            modalService.show("Info", "Telegram Bot settings successfully saved.");
         }
     }
 
     module.component("telegramBotSettings", {
         templateUrl: "Settings/TelegramBotSettings.component.html",
         controllerAs: "tbsCtrl",
-        controller: ["controllerProxyService", createController]
+        controller: ["controllerProxyService", "modalService", createController]
     });
     
 })();

@@ -1,7 +1,7 @@
 (function () {
     var module = angular.module("app");
 
-    function createController(controllerProxyService, $http) {
+    function createController(controllerProxyService, modalService) {
 
         var ctrl = this;
 
@@ -10,8 +10,8 @@
         ctrl.SelectedComponent = null;
 
         ctrl.moveComponent = function (component, direction) {
-            var sourceIndex = ctrl.Model.indexOf(component);
-            ctrl.Model.moveItem(sourceIndex, direction);
+            var sourceIndex = ctrl.SelectedArea.Components.indexOf(component);
+            ctrl.SelectedArea.Components.moveItem(sourceIndex, direction);
         }
 
         ctrl.selectComponent = function (component) {
@@ -20,7 +20,7 @@
 
         ctrl.fetchComponents = function () {
 
-            controllerProxyService.get("configuration", function (response) {
+            controllerProxyService.get("configuration", null, function (response) {
                 ctrl.loadComponents(response);
             });
         }
@@ -57,6 +57,10 @@
                         area.Components.push(component);
                     });
 
+                area.Components = area.Components.sort(function (a, b) {
+                    return a.SortValue - b.SortValue;
+                });
+
                 areas.push(area);
             });
 
@@ -67,13 +71,38 @@
             ctrl.Areas = areas;
         }
 
+        ctrl.save = function () {
+            $.each(ctrl.Areas, function (i, areaItem) {
+                $.each(areaItem.Components,
+                    function (j, componentItem) {
+                        var payload = {
+                            Uri: "Component/" + componentItem.Id,
+                            Settings: {
+                                IsEnabled: componentItem.IsEnabled,
+                                AppSettings: {
+                                    Caption: componentItem.Caption,
+                                    OverviewCaption: componentItem.OverviewCaption,
+                                    IsVisible: componentItem.IsVisible,
+                                    Image: componentItem.Image,
+                                    SortValue: j
+                                }
+                            }
+                        }
+
+                        controllerProxyService.execute("Service/ISettingsService/Import", payload);
+                    });
+            });
+
+            modalService.show("Info", "Component settings successfully saved.");
+        }
+
         ctrl.fetchComponents();
     }
 
     module.component("components", {
         templateUrl: "Components/ComponentsOverview.component.html",
         controllerAs: "coCtrl",
-        controller: ["controllerProxyService", "$http", createController]
+        controller: ["controllerProxyService", "modalService", createController]
     });
 
 })();

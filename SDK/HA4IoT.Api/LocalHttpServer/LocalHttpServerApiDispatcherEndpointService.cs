@@ -80,22 +80,26 @@ namespace HA4IoT.Api.LocalHttpServer
 
             httpContext.Response.StatusCode = ConvertResultCode(eventArgs.Context.ResultCode);
 
-            var serverHash = GenerateHash(apiContext.Response.ToString());
-            eventArgs.Context.Response["$Hash"] = serverHash;
-
-            var serverHashWithQuotes = "\"" + serverHash + "\"";
-
-            string clientHash;
-            if (httpContext.Request.Headers.TryGetValue(HttpHeaderNames.IfNoneMatch, out clientHash))
+            if (apiContext.UseHash)
             {
-                if (clientHash.Equals(serverHashWithQuotes))
+                var serverHash = GenerateHash(apiContext.Response.ToString());
+                eventArgs.Context.Response["$Hash"] = serverHash;
+
+                var serverHashWithQuotes = "\"" + serverHash + "\"";
+
+                string clientHash;
+                if (httpContext.Request.Headers.TryGetValue(HttpHeaderNames.IfNoneMatch, out clientHash))
                 {
-                    httpContext.Response.StatusCode = HttpStatusCode.NotModified;
-                    return;
+                    if (clientHash.Equals(serverHashWithQuotes))
+                    {
+                        httpContext.Response.StatusCode = HttpStatusCode.NotModified;
+                        return;
+                    }
                 }
+
+                httpContext.Response.Headers[HttpHeaderNames.ETag] = serverHashWithQuotes;
             }
 
-            httpContext.Response.Headers[HttpHeaderNames.ETag] = serverHashWithQuotes;
             httpContext.Response.Body = new JsonBody(eventArgs.Context.Response);
         }
 

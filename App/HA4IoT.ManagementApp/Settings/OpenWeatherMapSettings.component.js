@@ -1,7 +1,7 @@
 (function () {
     var module = angular.module("app");
 
-    function createController(controllerProxyService) {
+    function createController(controllerProxyService, modalService) {
 
         var ctrl = this;
 
@@ -17,7 +17,7 @@
         }
 
         ctrl.$onInit = function () {
-            controllerProxyService.get("Service/ISettingsService/Settings", { "Uri": "OpenWeatherMapServiceSettings" }, function(response) {
+            controllerProxyService.get("Service/ISettingsService/Settings", { "Uri": "OpenWeatherMapServiceSettings" }, function (response) {
                 ctrl.Model = response;
             });
         }
@@ -30,14 +30,14 @@
 
             controllerProxyService.execute("Service/ISettingsService/Replace", payload);
 
-            alert("Saved Open Weahter Map settings");
+            modalService.show("Info", "Open Weahter Map settings successfully saved.");
         }
     }
 
     module.component("openWeatherMapSettings", {
         templateUrl: "Settings/OpenWeatherMapSettings.component.html",
         controllerAs: "owmsCtrl",
-        controller: ["controllerProxyService", createController]
+        controller: ["controllerProxyService", "modalService", createController]
     });
     
 })();

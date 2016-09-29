@@ -1,6 +1,6 @@
 body {
     margin: 0px;
-    padding-top: 70px; 
+    padding-top: 70px;
 }
 
 .logo {
@@ -22,7 +22,7 @@ body {
     vertical-align: middle;
 }
 
-.table tbody>tr>td{
+.table tbody > tr > td {
     vertical-align: middle;
 }
 
@@ -42,3 +42,9 @@ body {
 .btn-home {
     width: 150px;
 }
+
+.box{
+  background: #F9F9F9; 
+  padding: 15px;
+}
+

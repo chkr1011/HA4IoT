@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Version 1.14.2
+# Version 1.14.32
 
 CACHE:
 
@@ -12,7 +12,7 @@ LocalizationController.js
 UILocalizations-EN.json
 UILocalizations-DE.json
 
-Scripts/jquery-2.2.2.min.js
+Scripts/jquery-3.1.0.min.js
 Scripts/bootstrap.min.js
 Scripts/angular.min.js
 
