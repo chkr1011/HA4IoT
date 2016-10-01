@@ -14,7 +14,7 @@ namespace HA4IoT.Networking.Http
                 return false;
             }
             
-            if (httpRequest.Headers[HttpHeaderNames.ContentLength] != httpRequest.Body.Length.ToString())
+            if (httpRequest.Headers[HttpHeaderNames.ContentLength] != httpRequest.BinaryBodyLength.ToString())
             {
                 return true;
             }

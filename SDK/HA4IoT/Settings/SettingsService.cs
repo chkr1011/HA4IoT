@@ -129,15 +129,46 @@ namespace HA4IoT.Settings
         [ApiMethod]
         public void Import(IApiContext apiContext)
         {
-            var request = apiContext.Request.ToObject<SettingsServiceApiRequest>();
-            ImportSettings(request.Uri, request.Settings);
+            if (apiContext.Request.Type == JTokenType.Object)
+            {
+                var request = apiContext.Request.ToObject<SettingsServiceApiRequest>();
+                ImportSettings(request.Uri, request.Settings);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        [ApiMethod]
+        public void ImportMultiple(IApiContext apiContext)
+        {
+            if (apiContext.Request.Type == JTokenType.Object)
+            {
+                var request = apiContext.Request.ToObject<Dictionary<string, JObject>>();
+                foreach (var item in request)
+                {
+                    ImportSettings(item.Key, item.Value);
+                }
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
 
         [ApiMethod]
         public void Settings(IApiContext apiContext)
         {
-            var request = apiContext.Request.ToObject<SettingsServiceApiRequest>();
-            apiContext.Response = GetRawSettings(request.Uri);
+            if (apiContext.Request.Type == JTokenType.Object)
+            {
+                var request = apiContext.Request.ToObject<SettingsServiceApiRequest>();
+                apiContext.Response = GetRawSettings(request.Uri);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
 
         [ApiMethod]
@@ -152,21 +183,28 @@ namespace HA4IoT.Settings
         [ApiMethod]
         public void Restore(IApiContext apiContext)
         {
-            var settings = apiContext.Request.ToObject<Dictionary<string, JObject>>();
-
-            lock (_syncRoot)
+            if (apiContext.Request.Type == JTokenType.Object)
             {
-                foreach (var setting in settings)
+                var settings = apiContext.Request.ToObject<Dictionary<string, JObject>>();
+
+                lock (_syncRoot)
                 {
-                    _settings[setting.Key] = setting.Value;
+                    foreach (var setting in settings)
+                    {
+                        _settings[setting.Key] = setting.Value;
+                    }
+
+                    Save();
                 }
 
-                Save();
+                foreach (var setting in settings)
+                {
+                    SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(setting.Key));
+                }
             }
-
-            foreach (var setting in settings)
+            else
             {
-                SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(setting.Key));
+                throw new NotSupportedException();
             }
         }
 

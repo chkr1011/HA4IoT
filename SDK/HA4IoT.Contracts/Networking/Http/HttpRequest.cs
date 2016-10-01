@@ -4,7 +4,7 @@ namespace HA4IoT.Contracts.Networking.Http
 {
     public class HttpRequest
     {
-        public HttpRequest(HttpMethod method, string uri, Version httpVersion, string query, HttpHeaderCollection headers, string body)
+        public HttpRequest(HttpMethod method, string uri, Version httpVersion, string query, HttpHeaderCollection headers, string body, int binaryBodyLength)
         {
             if (uri == null) throw new ArgumentNullException(nameof(uri));
             if (headers == null) throw new ArgumentNullException(nameof(headers));
@@ -17,6 +17,7 @@ namespace HA4IoT.Contracts.Networking.Http
 
             Headers = headers;
             Body = body;
+            BinaryBodyLength = binaryBodyLength;
         }
 
         public HttpMethod Method { get; }
@@ -24,6 +25,7 @@ namespace HA4IoT.Contracts.Networking.Http
         public Version HttpVersion { get; }
         public string Query { get; }
         public string Body { get; }
+        public int BinaryBodyLength { get; }
         public HttpHeaderCollection Headers { get; }
     }
 }

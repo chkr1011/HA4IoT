@@ -1,22 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using HA4IoT.Contracts.Networking.Http;
 
 namespace HA4IoT.Networking.Http
 {
     public class HttpRequestParser
     {
-        private readonly HttpHeaderCollection _headers = new HttpHeaderCollection();
-        private readonly List<string> _lines = new List<string>();
-        private string _body;
-        private string _httpVersion;
-        private HttpMethod _method;
-        private string _query;
-        private string _uri;
+        private const string MethodPattern = @"(?'method'GET|POST|PATCH|PUT|DELETE|TRACE)";
+        private const string UriPattern = @"(?'uri'/\S+?)";
+        private const string VersionPattern = @"HTTP/(?'version'1.1)";
+        private const string HeadersPattern = @"(?'headers'[\w\W]*?)";
+        private const string BodyPattern = @"(?'body'.*?)";
 
-        private string _request;
+        private readonly Regex _regex;
+
+        private readonly HttpHeaderCollection _headers = new HttpHeaderCollection();
+        
+        private HttpMethod _method;
+        private string _uri;
+        private string _httpVersion;
+        private string _body;
+        private string _query;
+
+        public HttpRequestParser()
+        {
+            var pattern = $@"^{MethodPattern} {UriPattern} {VersionPattern}((\r\n){HeadersPattern})?((\r\n\r\n){BodyPattern})?$";
+            _regex = new Regex(pattern, RegexOptions.Compiled);
+        }
 
         public bool TryParse(byte[] buffer, int bufferLength, out HttpRequest request)
         {
@@ -24,25 +35,24 @@ namespace HA4IoT.Networking.Http
 
             try
             {
-                _request = Encoding.UTF8.GetString(buffer, 0, bufferLength);
+                var content = Encoding.UTF8.GetString(buffer, 0, bufferLength);
+                var groups = _regex.Match(content).Groups;
 
-                request = null;
-
-                if (!TryParsePackage())
-                {
-                    return false;
-                }
-
-                if (!TryParseRequestHeader())
-                {
-                    return false;
-                }
-
-                ParseHeaders();
-                ParseBody();
+                _method = (HttpMethod)Enum.Parse(typeof(HttpMethod), groups["method"].Value, true);
+                _uri = groups["uri"].Value;
+                _httpVersion = groups["version"].Value;
+                ParseHeaders(groups["headers"].Value);
+                _body = groups["body"].Value;
+                
                 ParseQuery();
 
-                request = new HttpRequest(_method, _uri, Version.Parse(_httpVersion), _query, _headers, _body);
+                var binaryBodyLength = 0;
+                if (!string.IsNullOrEmpty(_body))
+                {
+                    binaryBodyLength = Encoding.UTF8.GetByteCount(_body);
+                }
+
+                request = new HttpRequest(_method, _uri, Version.Parse(_httpVersion), _query, _headers, _body, binaryBodyLength);
                 return true;
             }
             catch (Exception)
@@ -52,52 +62,32 @@ namespace HA4IoT.Networking.Http
             }
         }
 
-        private void ParseHeaders()
+        private void ParseHeaders(string source)
         {
             _headers.Clear();
 
-            for (var i = 0; i < _lines.Count; i++)
+            var headers = source.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+
+            foreach (var header in headers)
             {
-                var isRequestLine = i == 0;
-                if (isRequestLine)
-                {
-                    continue;
-                }
-
-                var line = _lines[i];
-
-                var isEmptyLine = string.IsNullOrEmpty(line);
-                if (isEmptyLine)
+                if (string.IsNullOrEmpty(header))
                 {
                     break;
                 }
 
-                if (!line.Contains(":"))
+                if (!header.Contains(":"))
                 {
-                    _headers[line] = string.Empty;
+                    _headers[header] = string.Empty;
                 }
                 else
                 {
-                    var indexOfDelimiter = line.IndexOf(":", StringComparison.OrdinalIgnoreCase);
-                    var name = line.Substring(0, indexOfDelimiter).Trim();
-                    var token = line.Substring(indexOfDelimiter + 1).Trim();
+                    var indexOfDelimiter = header.IndexOf(":", StringComparison.Ordinal);
+                    var name = header.Substring(0, indexOfDelimiter).Trim();
+                    var token = header.Substring(indexOfDelimiter + 1).Trim();
 
                     _headers[name] = token;
                 }
             }
-        }
-
-        private void ParseBody()
-        {
-            var bodyOffset = _request.IndexOf(Environment.NewLine + Environment.NewLine,
-                StringComparison.OrdinalIgnoreCase);
-
-            if (bodyOffset == -1)
-            {
-                return;
-            }
-
-            _body = _request.Substring(bodyOffset + (Environment.NewLine.Length * 2));
         }
 
         private void ParseQuery()
@@ -107,55 +97,21 @@ namespace HA4IoT.Networking.Http
                 return;
             }
 
-            int indexOfQuestionMark = _uri.IndexOf('?');
+            var indexOfQuestionMark = _uri.IndexOf('?');
 
             _query = _uri.Substring(indexOfQuestionMark + 1);
             _uri = _uri.Substring(0, indexOfQuestionMark);
 
             // Parse a special query parameter.
-            if (_query.StartsWith("body="))
+            if (!_query.StartsWith("body="))
             {
-                _body = Uri.UnescapeDataString(_query.Substring("body=".Length));
-                _headers[HttpHeaderNames.ContentLength] = _body.Length.ToString();
-
-                _query = null;
-            }
-        }
-
-        private bool TryParsePackage()
-        {
-            if (string.IsNullOrEmpty(_request))
-            {
-                return false;
+                return;
             }
 
-            _lines.Clear();
-            _lines.AddRange(_request.Split(new[] { Environment.NewLine }, StringSplitOptions.None));
-            if (_lines.Count < 2)
-            {
-                return false;
-            }
+            _body = Uri.UnescapeDataString(_query.Substring("body=".Length));
+            _headers[HttpHeaderNames.ContentLength] = _body.Length.ToString();
 
-            return true;
-        }
-
-        private bool TryParseRequestHeader()
-        {
-            var requestParts = _lines.First().Split(new[] { ' ' }, StringSplitOptions.None);
-            if (requestParts.Length != 3)
-            {
-                return false;
-            }
-
-            if (!Enum.TryParse(requestParts[0], true, out _method))
-            {
-                return false;
-            }
-
-            _uri = requestParts[1];
-            _httpVersion = requestParts[2].Substring(requestParts[2].IndexOf("/", StringComparison.OrdinalIgnoreCase) + 1);
-
-            return true;
+            _query = null;
         }
     }
 }

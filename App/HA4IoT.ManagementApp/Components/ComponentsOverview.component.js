@@ -72,28 +72,25 @@
         }
 
         ctrl.save = function () {
-            $.each(ctrl.Areas, function (i, areaItem) {
-                $.each(areaItem.Components,
-                    function (j, componentItem) {
-                        var payload = {
-                            Uri: "Component/" + componentItem.Id,
-                            Settings: {
-                                IsEnabled: componentItem.IsEnabled,
-                                AppSettings: {
-                                    Caption: componentItem.Caption,
-                                    OverviewCaption: componentItem.OverviewCaption,
-                                    IsVisible: componentItem.IsVisible,
-                                    Image: componentItem.Image,
-                                    SortValue: j
-                                }
-                            }
+            var settings = {};
+
+            $.each(ctrl.SelectedArea.Components,
+                function (j, componentItem) {
+                    settings["Component/" + componentItem.Id] = {
+                        IsEnabled: componentItem.IsEnabled,
+                        AppSettings: {
+                            Caption: componentItem.Caption,
+                            OverviewCaption: componentItem.OverviewCaption,
+                            IsVisible: componentItem.IsVisible,
+                            Image: componentItem.Image,
+                            SortValue: j
                         }
+                    };
+                });
 
-                        controllerProxyService.execute("Service/ISettingsService/Import", payload);
-                    });
+            controllerProxyService.execute("Service/ISettingsService/ImportMultiple", settings, function () {
+                modalService.show("Info", "Component settings successfully saved.");
             });
-
-            modalService.show("Info", "Component settings successfully saved.");
         }
 
         ctrl.fetchComponents();

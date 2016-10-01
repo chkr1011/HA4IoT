@@ -4,6 +4,7 @@
     function createController(controllerProxyService, modalService) {
 
         var ctrl = this;
+        ctrl.BackupContent = null;
 
         ctrl.downloadBackup = function () {
             controllerProxyService.get("Service/ISettingsService/Backup",
@@ -16,7 +17,7 @@
                 });
         }
 
-        ctrl.generateTimestamp = function() {
+        ctrl.generateTimestamp = function () {
             var today = new Date();
             var dd = today.getDate();
             var mm = today.getMonth() + 1;
@@ -35,7 +36,11 @@
         }
 
         ctrl.restoreBackup = function () {
-            //controllerProxyService.execute();
+            var payload = JSON.parse(ctrl.BackupContent);
+            controllerProxyService.execute("Service/ISettingsService/Restore", payload,
+                function () {
+                    modalService.show("Info", "Backup successfully restored.");
+                });
         }
     }
 

@@ -13,7 +13,7 @@ namespace HA4IoT.Networking.Tests
         [TestMethod]
         public void Serialize_HttpRequest()
         {
-            var request = new HttpRequest(HttpMethod.Get, "", new Version(1, 1), "", new HttpHeaderCollection(), "");
+            var request = new HttpRequest(HttpMethod.Get, "", new Version(1, 1), "", new HttpHeaderCollection(), "", 0);
 
             var response = new HttpResponse();
             response.StatusCode = HttpStatusCode.BadRequest;

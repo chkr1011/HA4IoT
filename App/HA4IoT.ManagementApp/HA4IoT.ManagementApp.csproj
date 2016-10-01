@@ -46,15 +46,19 @@
     <Content Include="Content\Images\Air.png" />
     <Content Include="Content\Images\Car.png" />
     <Content Include="Content\Images\Cat.png" />
+    <Content Include="Content\Images\Cow.png" />
     <Content Include="Content\Images\DefaultActuator.png" />
     <Content Include="Content\Images\Fan.png" />
     <Content Include="Content\Images\Favorites.png" />
+    <Content Include="Content\Images\Garage.png" />
+    <Content Include="Content\Images\House.png" />
     <Content Include="Content\Images\Humidity.png" />
     <Content Include="Content\Images\Lamp.png" />
     <Content Include="Content\Images\Logo.png" />
     <Content Include="Content\Images\Motion.png" />
     <Content Include="Content\Images\NightLamp.png" />
     <Content Include="Content\Images\Palette.png" />
+    <Content Include="Content\Images\Parking-Sign.png" />
     <Content Include="Content\Images\Poison.png" />
     <Content Include="Content\Images\Power.png" />
     <Content Include="Content\Images\RollerShutter.png" />
@@ -67,6 +71,7 @@
     <Content Include="Content\Images\TableLamp.png" />
     <Content Include="Content\Images\Temperature.png" />
     <Content Include="Content\Images\VirtualButton.png" />
+    <Content Include="Content\Images\Water-Tap.png" />
     <Content Include="Content\Images\WaterPump.png" />
     <Content Include="Content\Images\WeatherSituation.png" />
     <Content Include="Content\Images\Wifi.png" />

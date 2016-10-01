@@ -51,8 +51,12 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Images\Air.png" />
     <Content Include="Images\Car.png" />
+    <Content Include="Images\Cow.png" />
     <Content Include="Images\DefaultActuator.png" />
+    <Content Include="Images\Garage.png" />
+    <Content Include="Images\House.png" />
     <Content Include="Images\Palette.png" />
+    <Content Include="Images\ParkingSign.png" />
     <Content Include="Images\StateMachine.png" />
     <Content Include="Images\Swimming.png" />
     <Content Include="Images\VirtualButton.png" />
@@ -73,6 +77,7 @@
     <Content Include="Images\Temperature.png" />
     <Content Include="Images\TableLamp.png" />
     <Content Include="Images\WaterPump.png" />
+    <Content Include="Images\WaterTap.png" />
     <Content Include="Images\WeatherSituation.png" />
     <Content Include="Images\Wifi.png" />
     <Content Include="Images\Window.png" />

@@ -92,9 +92,10 @@
                 }
             }
 
-            controllerProxyService.execute("Service/ISettingsService/Import", payload);
-
-            modalService.show("Info", "Settings for automation '" + source.Id + "' successfully saved.");
+            controllerProxyService.execute("Service/ISettingsService/Import", payload, function() {
+                modalService.show("Info", "Settings for automation '" + source.Id + "' successfully saved.");
+            });
+            
             ctrl.close();
         }
 
