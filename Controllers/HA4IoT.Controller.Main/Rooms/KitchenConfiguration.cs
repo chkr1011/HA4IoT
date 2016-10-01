@@ -6,7 +6,6 @@ using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Automations;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
@@ -22,7 +21,6 @@ namespace HA4IoT.Controller.Main.Rooms
     internal class KitchenConfiguration
     {
         private readonly IAreaService _areaService;
-        private readonly IDaylightService _daylightService;
         private readonly IDeviceService _deviceService;
         private readonly CCToolsBoardService _ccToolsBoardService;
         private readonly SynonymService _synonymService;
@@ -59,7 +57,6 @@ namespace HA4IoT.Controller.Main.Rooms
 
         public KitchenConfiguration(
             IAreaService areaService,
-            IDaylightService daylightService,
             IDeviceService deviceService,
             CCToolsBoardService ccToolsBoardService,
             SynonymService synonymService,
@@ -68,7 +65,6 @@ namespace HA4IoT.Controller.Main.Rooms
             SensorFactory sensorFactory)
         {
             if (areaService == null) throw new ArgumentNullException(nameof(areaService));
-            if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
             if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
             if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
             if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
@@ -77,7 +73,6 @@ namespace HA4IoT.Controller.Main.Rooms
             if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
 
             _areaService = areaService;
-            _daylightService = daylightService;
             _deviceService = deviceService;
             _ccToolsBoardService = ccToolsBoardService;
             _synonymService = synonymService;
@@ -141,7 +136,7 @@ namespace HA4IoT.Controller.Main.Rooms
             _automationFactory.RegisterTurnOnAndOffAutomation(room)
                 .WithTrigger(room.GetMotionDetector(Kitchen.MotionDetector))
                 .WithTarget(room.GetActuator(Kitchen.CombinedAutomaticLights))
-                .WithEnabledAtNight(_daylightService);
+                .WithEnabledAtNight();
 
             _synonymService.AddSynonymsForArea(Room.Kitchen, "Küche", "Kitchen");
         }

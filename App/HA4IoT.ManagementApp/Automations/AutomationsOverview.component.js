@@ -72,7 +72,7 @@
                 Settings: source.Settings
             }
 
-            var timestampPattern = /^[-]?[0-9]*[:][0-9]*[:][0-9]*$/;
+            var timestampPattern = /^-?\d{1,2}[:][0-5]?\d[:][0-5]?\d$/;
 
             if (source.Type === "TurnOnAndOffAutomation") {
                 if (!timestampPattern.test(source.Settings.Duration)) {

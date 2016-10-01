@@ -1,11 +1,10 @@
-﻿using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Components;
+﻿using HA4IoT.Contracts.Components;
 
 namespace HA4IoT.Contracts.Sensors
 {
     public static class ButtonStateId
     {
-        public static readonly NamedComponentState Released = new NamedComponentState("Released");
-        public static readonly NamedComponentState Pressed = new NamedComponentState("Pressed");
+        public static readonly ComponentState Released = new ComponentState("Released");
+        public static readonly ComponentState Pressed = new ComponentState("Pressed");
     }
 }

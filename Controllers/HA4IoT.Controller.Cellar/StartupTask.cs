@@ -141,56 +141,56 @@ namespace HA4IoT.Controller.Cellar
                     .WithActuator(garden.GetLamp(Garden.SpotlightRoof), BinaryStateId.Off)
                     .WithActuator(garden.GetLamp(Garden.LampRearArea), BinaryStateId.Off);
 
-                stateMachine.AddState(new NamedComponentState("Te"))
+                stateMachine.AddState(new ComponentState("Te"))
                     .WithActuator(garden.GetLamp(Garden.LampTerrace), BinaryStateId.On)
                     .WithActuator(garden.GetLamp(Garden.LampGarage), BinaryStateId.Off)
                     .WithActuator(garden.GetLamp(Garden.LampTap), BinaryStateId.Off)
                     .WithActuator(garden.GetLamp(Garden.SpotlightRoof), BinaryStateId.Off)
                     .WithActuator(garden.GetLamp(Garden.LampRearArea), BinaryStateId.Off);
 
-                stateMachine.AddState(new NamedComponentState("G"))
+                stateMachine.AddState(new ComponentState("G"))
                     .WithActuator(garden.GetLamp(Garden.LampTerrace), BinaryStateId.Off)
                     .WithActuator(garden.GetLamp(Garden.LampGarage), BinaryStateId.On)
                     .WithActuator(garden.GetLamp(Garden.LampTap), BinaryStateId.Off)
                     .WithActuator(garden.GetLamp(Garden.SpotlightRoof), BinaryStateId.Off)
                     .WithActuator(garden.GetLamp(Garden.LampRearArea), BinaryStateId.Off);
 
-                stateMachine.AddState(new NamedComponentState("W"))
+                stateMachine.AddState(new ComponentState("W"))
                     .WithActuator(garden.GetLamp(Garden.LampTerrace), BinaryStateId.Off)
                     .WithActuator(garden.GetLamp(Garden.LampGarage), BinaryStateId.Off)
                     .WithActuator(garden.GetLamp(Garden.LampTap), BinaryStateId.On)
                     .WithActuator(garden.GetLamp(Garden.SpotlightRoof), BinaryStateId.Off)
                     .WithActuator(garden.GetLamp(Garden.LampRearArea), BinaryStateId.Off);
 
-                stateMachine.AddState(new NamedComponentState("D"))
+                stateMachine.AddState(new ComponentState("D"))
                     .WithActuator(garden.GetLamp(Garden.LampTerrace), BinaryStateId.Off)
                     .WithActuator(garden.GetLamp(Garden.LampGarage), BinaryStateId.Off)
                     .WithActuator(garden.GetLamp(Garden.LampTap), BinaryStateId.Off)
                     .WithActuator(garden.GetLamp(Garden.SpotlightRoof), BinaryStateId.On)
                     .WithActuator(garden.GetLamp(Garden.LampRearArea), BinaryStateId.Off);
 
-                stateMachine.AddState(new NamedComponentState("Ti"))
+                stateMachine.AddState(new ComponentState("Ti"))
                     .WithActuator(garden.GetLamp(Garden.LampTerrace), BinaryStateId.Off)
                     .WithActuator(garden.GetLamp(Garden.LampGarage), BinaryStateId.Off)
                     .WithActuator(garden.GetLamp(Garden.LampTap), BinaryStateId.Off)
                     .WithActuator(garden.GetLamp(Garden.SpotlightRoof), BinaryStateId.Off)
                     .WithActuator(garden.GetLamp(Garden.LampRearArea), BinaryStateId.On);
 
-                stateMachine.AddState(new NamedComponentState("G+W"))
+                stateMachine.AddState(new ComponentState("G+W"))
                     .WithActuator(garden.GetLamp(Garden.LampTerrace), BinaryStateId.Off)
                     .WithActuator(garden.GetLamp(Garden.LampGarage), BinaryStateId.On)
                     .WithActuator(garden.GetLamp(Garden.LampTap), BinaryStateId.On)
                     .WithActuator(garden.GetLamp(Garden.SpotlightRoof), BinaryStateId.Off)
                     .WithActuator(garden.GetLamp(Garden.LampRearArea), BinaryStateId.Off);
 
-                stateMachine.AddState(new NamedComponentState("Te+G+W"))
+                stateMachine.AddState(new ComponentState("Te+G+W"))
                     .WithActuator(garden.GetLamp(Garden.LampTerrace), BinaryStateId.On)
                     .WithActuator(garden.GetLamp(Garden.LampGarage), BinaryStateId.On)
                     .WithActuator(garden.GetLamp(Garden.LampTap), BinaryStateId.On)
                     .WithActuator(garden.GetLamp(Garden.SpotlightRoof), BinaryStateId.Off)
                     .WithActuator(garden.GetLamp(Garden.LampRearArea), BinaryStateId.Off);
 
-                stateMachine.AddState(new NamedComponentState("Te+G+W+D+Ti"))
+                stateMachine.AddState(new ComponentState("Te+G+W+D+Ti"))
                     .WithActuator(garden.GetLamp(Garden.LampTerrace), BinaryStateId.On)
                     .WithActuator(garden.GetLamp(Garden.LampGarage), BinaryStateId.On)
                     .WithActuator(garden.GetLamp(Garden.LampTap), BinaryStateId.On)

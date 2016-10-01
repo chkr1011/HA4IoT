@@ -39,7 +39,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
+    <OutputPath>..\bin\x86\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <NoWarn>;2008</NoWarn>
     <DebugType>full</DebugType>
@@ -61,7 +61,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <PlatformTarget>ARM</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <OutputPath>..\bin\ARM\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <NoWarn>;2008</NoWarn>
     <DebugType>full</DebugType>
@@ -107,6 +107,79 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actuators\Actions\ActionExtensions.cs" />
+    <Compile Include="Actuators\Actions\HomeAutomationAction.cs" />
+    <Compile Include="Actuators\ActuatorBase.cs" />
+    <Compile Include="Actuators\ActuatorExtensions.cs" />
+    <Compile Include="Actuators\ActuatorFactory.cs" />
+    <Compile Include="Actuators\Animations\AnimateParameter.cs" />
+    <Compile Include="Actuators\Animations\Animation.cs" />
+    <Compile Include="Actuators\Animations\DirectionAnimation.cs" />
+    <Compile Include="Actuators\Animations\Frame.cs" />
+    <Compile Include="Actuators\BinaryStateActuators\BinaryStateActuator.cs" />
+    <Compile Include="Actuators\BinaryStateActuators\BinaryStateActuatorExtensions.cs" />
+    <Compile Include="Actuators\BinaryStateActuators\CustomBinaryStateActuator.cs" />
+    <Compile Include="Actuators\BinaryStateActuators\LogicalBinaryStateActuator.cs" />
+    <Compile Include="Actuators\Connectors\BinaryStateActuatorWithButtonConnector.cs" />
+    <Compile Include="Actuators\Connectors\RollerShutterWithRollerShutterButtonsConnector.cs" />
+    <Compile Include="Actuators\Connectors\StateMachineWithButtonConnector.cs" />
+    <Compile Include="Actuators\Lamps\Lamp.cs" />
+    <Compile Include="Actuators\Lamps\LampExtensions.cs" />
+    <Compile Include="Actuators\PendingActuatorState.cs" />
+    <Compile Include="Actuators\PortBasedBinaryStateEndpoint.cs" />
+    <Compile Include="Actuators\RollerShutters\PortBasedRollerShutterEndpoint.cs" />
+    <Compile Include="Actuators\RollerShutters\RollerShutter.cs" />
+    <Compile Include="Actuators\RollerShutters\RollerShutterExtensions.cs" />
+    <Compile Include="Actuators\RollerShutters\RollerShutterSettings.cs" />
+    <Compile Include="Actuators\Sockets\Socket.cs" />
+    <Compile Include="Actuators\Sockets\SocketExtensions.cs" />
+    <Compile Include="Actuators\StateMachines\StateMachine.cs" />
+    <Compile Include="Actuators\StateMachines\StateMachineApiCallRequest.cs" />
+    <Compile Include="Actuators\StateMachines\StateMachineExtensions.cs" />
+    <Compile Include="Actuators\StateMachines\StateMachineState.cs" />
+    <Compile Include="Actuators\Triggers\ConditionalTrigger.cs" />
+    <Compile Include="Actuators\Triggers\IntervalTrigger.cs" />
+    <Compile Include="Actuators\Triggers\Trigger.cs" />
+    <Compile Include="Actuators\Triggers\TriggerBase.cs" />
+    <Compile Include="Actuators\Triggers\TriggerExtensions.cs" />
+    <Compile Include="Api\ApiService.cs" />
+    <Compile Include="Api\LocalHttpServerApiDispatcherEndpointService.cs" />
+    <Compile Include="Automations\Automation.cs" />
+    <Compile Include="Automations\AutomationBase.cs" />
+    <Compile Include="Automations\AutomationFactory.cs" />
+    <Compile Include="Automations\AutomationIdFactory.cs" />
+    <Compile Include="Automations\AutomationSettings.cs" />
+    <Compile Include="Automations\BathroomFanAutomation.cs" />
+    <Compile Include="Automations\BathroomFanAutomationSettings.cs" />
+    <Compile Include="Automations\ConditionalOnAutomation.cs" />
+    <Compile Include="Automations\RollerShutterAutomation.cs" />
+    <Compile Include="Automations\RollerShutterAutomationExtensions.cs" />
+    <Compile Include="Automations\RollerShutterAutomationSettings.cs" />
+    <Compile Include="Automations\TurnOnAndOffAutomation.cs" />
+    <Compile Include="Automations\TurnOnAndOffAutomationSettings.cs" />
+    <Compile Include="Components\ComponentBase.cs" />
+    <Compile Include="Components\ComponentExtensions.cs" />
+    <Compile Include="Conditions\ActionExtensions.cs" />
+    <Compile Include="Conditions\Condition.cs" />
+    <Compile Include="Conditions\ConditionalAction.cs" />
+    <Compile Include="Conditions\ConditionExtensions.cs" />
+    <Compile Include="Conditions\ConditionRelation.cs" />
+    <Compile Include="Conditions\ConditionsValidator.cs" />
+    <Compile Include="Conditions\RelatedCondition.cs" />
+    <Compile Include="Conditions\Specialized\ComponentIsInStateCondition.cs" />
+    <Compile Include="Conditions\Specialized\IsDayCondition.cs" />
+    <Compile Include="Conditions\Specialized\IsNightCondition.cs" />
+    <Compile Include="Conditions\Specialized\NumericValueSensorHasValueGreaterThanCondition.cs" />
+    <Compile Include="Conditions\Specialized\NumericValueSensorHasValueLowerThanCondition.cs" />
+    <Compile Include="Conditions\Specialized\TimeRangeCondition.cs" />
+    <Compile Include="Conditions\TimeRangeChecker.cs" />
+    <Compile Include="Core\ContainerExtensions.cs" />
+    <Compile Include="Core\ContainerService.cs" />
+    <Compile Include="Core\Controller.cs" />
+    <Compile Include="Core\ControllerOptions.cs" />
+    <Compile Include="Logger\LogEntry.cs" />
+    <Compile Include="Logger\LogEntrySeverity.cs" />
+    <Compile Include="Logger\UdpLogger.cs" />
     <Compile Include="Notifications\NotificationService.cs" />
     <Compile Include="Notifications\NotificationServiceSettings.cs" />
     <Compile Include="PersonalAgent\ApiInboundMessage.cs" />
@@ -116,16 +189,76 @@
     <Compile Include="PersonalAgent\SynonymService.cs" />
     <Compile Include="PersonalAgent\SynonymServiceStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sensors\Buttons\Button.cs" />
+    <Compile Include="Sensors\Buttons\ButtonExtensions.cs" />
+    <Compile Include="Sensors\Buttons\ButtonSettings.cs" />
+    <Compile Include="Sensors\Buttons\EmptyButtonEndpoint.cs" />
+    <Compile Include="Sensors\Buttons\PortBasedButtonEndpoint.cs" />
+    <Compile Include="Sensors\HumiditySensors\HumiditySensor.cs" />
+    <Compile Include="Sensors\HumiditySensors\HumiditySensorExtensions.cs" />
+    <Compile Include="Sensors\MotionDetectors\MotionDetector.cs" />
+    <Compile Include="Sensors\MotionDetectors\MotionDetectorExtensions.cs" />
+    <Compile Include="Sensors\MotionDetectors\MotionDetectorSettings.cs" />
+    <Compile Include="Sensors\MotionDetectors\PortBasedMotionDetectorEndpoint.cs" />
+    <Compile Include="Sensors\SensorBase.cs" />
+    <Compile Include="Sensors\SensorFactory.cs" />
+    <Compile Include="Sensors\SingleValueSensorSettings.cs" />
+    <Compile Include="Sensors\TemperatureSensors\TemperatureSensor.cs" />
+    <Compile Include="Sensors\TemperatureSensors\TemperatureSensorExtensions.cs" />
+    <Compile Include="Sensors\Triggers\SensorValueReachedTrigger.cs" />
+    <Compile Include="Sensors\Triggers\SensorValueUnderranTrigger.cs" />
+    <Compile Include="Sensors\Windows\Casement.cs" />
+    <Compile Include="Sensors\Windows\Window.cs" />
+    <Compile Include="Sensors\Windows\WindowExtensions.cs" />
+    <Compile Include="Services\Areas\Area.cs" />
+    <Compile Include="Services\Areas\AreaCollection.cs" />
+    <Compile Include="Services\Areas\AreaService.cs" />
+    <Compile Include="Services\Areas\AreaServiceExtensions.cs" />
+    <Compile Include="Services\Automations\AutomationCollection.cs" />
+    <Compile Include="Services\Automations\AutomationService.cs" />
+    <Compile Include="Services\Components\ComponentCollection.cs" />
+    <Compile Include="Services\Components\ComponentService.cs" />
+    <Compile Include="Services\ControllerSlave\ControllerSlaveService.cs" />
+    <Compile Include="Services\ControllerSlave\ControllerSlaveServiceSettings.cs" />
+    <Compile Include="Services\Devices\DeviceCollection.cs" />
+    <Compile Include="Services\Devices\DeviceService.cs" />
+    <Compile Include="Services\Devices\DeviceServiceExtensions.cs" />
+    <Compile Include="Services\Environment\DaylightService.cs" />
+    <Compile Include="Services\Environment\OutdoorHumidityService.cs" />
+    <Compile Include="Services\Environment\OutdoorTemperatureService.cs" />
+    <Compile Include="Services\Environment\WeatherService.cs" />
+    <Compile Include="Services\GenericControllerCollection.cs" />
+    <Compile Include="Services\Health\HealthService.cs" />
+    <Compile Include="Services\Health\HealthServiceOptions.cs" />
+    <Compile Include="Services\Scheduling\Schedule.cs" />
+    <Compile Include="Services\Scheduling\SchedulerService.cs" />
+    <Compile Include="Services\Scheduling\ScheduleStatus.cs" />
+    <Compile Include="Services\System\DateTimeService.cs" />
+    <Compile Include="Services\System\DiscoveryServerService.cs" />
+    <Compile Include="Services\System\SystemEventsService.cs" />
+    <Compile Include="Services\System\SystemInformationService.cs" />
+    <Compile Include="Services\System\Timeout.cs" />
+    <Compile Include="Services\System\TimerService.cs" />
+    <Compile Include="Settings\ControllerSettings.cs" />
+    <Compile Include="Settings\SettingsChangedEventArgs.cs" />
+    <Compile Include="Settings\SettingsService.cs" />
+    <Compile Include="Settings\SettingsServiceApiRequest.cs" />
+    <Compile Include="Telemetry\ActuatorMonitor.cs" />
+    <Compile Include="Telemetry\ComponentStateHistoryTracker.cs" />
     <EmbeddedResource Include="Properties\HA4IoT.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HA4IoT.Components\HA4IoT.Components.csproj">
-      <Project>{60f9e539-3ff5-40de-b0c4-be99cae57736}</Project>
-      <Name>HA4IoT.Components</Name>
-    </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{e1edac4b-83b9-46f4-9f6a-3bae97d79f29}</Project>
       <Name>HA4IoT.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HA4IoT.ExternalServices\HA4IoT.ExternalServices.csproj">
+      <Project>{1792ccef-9f6c-4535-be20-baa777243980}</Project>
+      <Name>HA4IoT.ExternalServices</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
+      <Project>{287a9bd0-4037-4add-986f-54056f059eae}</Project>
+      <Name>HA4IoT.Hardware</Name>
     </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{d4e0a3f9-6521-4aee-815a-e2a60323fb63}</Project>

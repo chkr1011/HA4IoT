@@ -18,6 +18,7 @@ using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Services.Areas;
 using HA4IoT.Services.Devices;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
@@ -25,7 +26,6 @@ namespace HA4IoT.Controller.Main.Rooms
     {
         private readonly IDeviceService _deviceService;
         private readonly IAreaService _areaService;
-        private readonly IDaylightService _daylightService;
         private readonly CCToolsBoardService _ccToolsBoardService;
         private readonly SynonymService _synonymService;
         private readonly ActuatorFactory _actuatorFactory;
@@ -79,7 +79,6 @@ namespace HA4IoT.Controller.Main.Rooms
         public BedroomConfiguration(
             IDeviceService deviceService,
             IAreaService areaService,
-            IDaylightService daylightService,
             CCToolsBoardService ccToolsBoardService,
             SynonymService synonymService,
             ActuatorFactory actuatorFactory,
@@ -88,7 +87,6 @@ namespace HA4IoT.Controller.Main.Rooms
         {
             if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
             if (areaService == null) throw new ArgumentNullException(nameof(areaService));
-            if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
             if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
             if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
             if (actuatorFactory == null) throw new ArgumentNullException(nameof(actuatorFactory));
@@ -97,7 +95,6 @@ namespace HA4IoT.Controller.Main.Rooms
 
             _deviceService = deviceService;
             _areaService = areaService;
-            _daylightService = daylightService;
             _ccToolsBoardService = ccToolsBoardService;
             _synonymService = synonymService;
             _actuatorFactory = actuatorFactory;
@@ -186,9 +183,8 @@ namespace HA4IoT.Controller.Main.Rooms
             _automationFactory.RegisterTurnOnAndOffAutomation(room)
                 .WithTrigger(room.GetMotionDetector(Bedroom.MotionDetector))
                 .WithTarget(room.GetStateMachine(Bedroom.LightCeiling))
-                .WithOnDuration(TimeSpan.FromSeconds(15))
                 .WithTurnOnIfAllRollerShuttersClosed(room.GetRollerShutter(Bedroom.RollerShutterLeft), room.GetRollerShutter(Bedroom.RollerShutterRight))
-                .WithEnabledAtNight(_daylightService)
+                .WithEnabledAtNight()
                 .WithSkipIfAnyActuatorIsAlreadyOn(room.GetLamp(Bedroom.LampBedLeft), room.GetLamp(Bedroom.LampBedRight));
 
             _actuatorFactory.RegisterStateMachine(room, Bedroom.Fan, (s, r) => SetupFan(s, r, hsrel8));
@@ -217,9 +213,9 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithLowOutput(fanRelay2)
                 .WithLowOutput(fanRelay3);
 
-            fan.AddState(new NamedComponentState("1")).WithHighOutput(fanRelay1).WithLowOutput(fanRelay2).WithHighOutput(fanRelay3);
-            fan.AddState(new NamedComponentState("2")).WithHighOutput(fanRelay1).WithHighOutput(fanRelay2).WithLowOutput(fanRelay3);
-            fan.AddState(new NamedComponentState("3")).WithHighOutput(fanRelay1).WithHighOutput(fanRelay2).WithHighOutput(fanRelay3);
+            fan.AddState(new ComponentState("1")).WithHighOutput(fanRelay1).WithLowOutput(fanRelay2).WithHighOutput(fanRelay3);
+            fan.AddState(new ComponentState("2")).WithHighOutput(fanRelay1).WithHighOutput(fanRelay2).WithLowOutput(fanRelay3);
+            fan.AddState(new ComponentState("3")).WithHighOutput(fanRelay1).WithHighOutput(fanRelay2).WithHighOutput(fanRelay3);
             fan.TryTurnOff();
 
             fan.ConnectMoveNextAndToggleOffWith(room.GetButton(Bedroom.ButtonWindowLower));

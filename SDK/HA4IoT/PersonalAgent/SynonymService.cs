@@ -8,6 +8,7 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.PersonalAgent
 {
@@ -16,7 +17,7 @@ namespace HA4IoT.PersonalAgent
         private readonly IComponentService _componentService;
         private readonly Dictionary<AreaId, HashSet<string>> _areaSynonyms = new Dictionary<AreaId, HashSet<string>>();
         private readonly Dictionary<ComponentId, HashSet<string>> _componentSynonyms = new Dictionary<ComponentId, HashSet<string>>();
-        private readonly Dictionary<IComponentState, HashSet<string>> _componentStateSynonyms = new Dictionary<IComponentState, HashSet<string>>();
+        private readonly Dictionary<ComponentState, HashSet<string>> _componentStateSynonyms = new Dictionary<ComponentState, HashSet<string>>();
         private readonly SynonymServiceStorage _storage;
 
         public SynonymService(IComponentService componentService)
@@ -72,7 +73,7 @@ namespace HA4IoT.PersonalAgent
             _storage.PersistComponentSynonyms(_componentSynonyms);
         }
 
-        public void AddSynonymsForComponentState(IComponentState componentState, params string[] synonyms)
+        public void AddSynonymsForComponentState(ComponentState componentState, params string[] synonyms)
         {
             if (componentState == null) throw new ArgumentNullException(nameof(componentState));
             if (synonyms == null) throw new ArgumentNullException(nameof(synonyms));
@@ -113,7 +114,7 @@ namespace HA4IoT.PersonalAgent
             return _componentSynonyms.Where(i => i.Value.Any(s => s.Equals(synonym, StringComparison.CurrentCultureIgnoreCase))).Select(i => i.Key).ToList();
         }
 
-        public IList<IComponentState> GetComponentStatesBySynonym(string synonym)
+        public IList<ComponentState> GetComponentStatesBySynonym(string synonym)
         {
             if (synonym == null) throw new ArgumentNullException(nameof(synonym));
 

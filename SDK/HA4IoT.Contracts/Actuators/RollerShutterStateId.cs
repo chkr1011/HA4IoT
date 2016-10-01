@@ -1,12 +1,11 @@
-﻿
-using HA4IoT.Contracts.Components;
+﻿using HA4IoT.Contracts.Components;
 
 namespace HA4IoT.Contracts.Actuators
 {
     public static class RollerShutterStateId
     {
-        public static readonly NamedComponentState Off = BinaryStateId.Off;
-        public static readonly NamedComponentState MovingUp = new NamedComponentState("MovingUp");
-        public static readonly NamedComponentState MovingDown = new NamedComponentState("MovingDown");
+        public static readonly ComponentState Off = BinaryStateId.Off;
+        public static readonly ComponentState MovingUp = new ComponentState("MovingUp");
+        public static readonly ComponentState MovingDown = new ComponentState("MovingDown");
     }
 }

@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Version 1.14.32
+# Version 1.14.34
 
 CACHE:
 
@@ -31,7 +31,7 @@ Views/HumiditySensorTemplate.html
 Views/WindowTemplate.html
 Views/ToggleTemplate.html
 Views/RollerShutterTemplate.html
-Views/RoomsOverviewTemplate.html
+Views/AreasOverviewTemplate.html
 Views/BottomBarTemplate.html
 Views/StateMachineTemplate.html
 

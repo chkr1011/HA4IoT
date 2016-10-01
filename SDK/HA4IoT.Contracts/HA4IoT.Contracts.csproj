@@ -109,6 +109,7 @@
   <ItemGroup>
     <Compile Include="Actions\IAction.cs" />
     <Compile Include="Api\ApiClassAttribute.cs" />
+    <Compile Include="Api\ApiContext.cs" />
     <Compile Include="Api\ApiMethodAttribute.cs" />
     <Compile Include="Areas\AreaIdFactory.cs" />
     <Compile Include="Components\ComponentIdExtensions.cs" />
@@ -119,11 +120,11 @@
     <Compile Include="Actuators\RollerShutterStateId.cs" />
     <Compile Include="Automations\IAutomationSettings.cs" />
     <Compile Include="Components\ComponentIdFactory.cs" />
+    <Compile Include="Components\ComponentState.cs" />
     <Compile Include="Components\ComponentStateChangedEventArgs.cs" />
     <Compile Include="Components\IComponentSettings.cs" />
     <Compile Include="Components\IComponent.cs" />
     <Compile Include="Components\StateNotSupportedException.cs" />
-    <Compile Include="Components\UnknownComponentState.cs" />
     <Compile Include="Conditions\ConditionState.cs" />
     <Compile Include="Conditions\ICondition.cs" />
     <Compile Include="Core\IContainerConfigurator.cs" />
@@ -168,7 +169,6 @@
     <Compile Include="Sensors\CasementStateID.cs" />
     <Compile Include="Actuators\LevelStateId.cs" />
     <Compile Include="Sensors\NumericValueSensorEndpointValueChangedEventArgs.cs" />
-    <Compile Include="Sensors\NumericSensorValue.cs" />
     <Compile Include="Sensors\IButtonEndpoint.cs" />
     <Compile Include="Sensors\ICasement.cs" />
     <Compile Include="Sensors\INumericValueSensorEndpoint.cs" />
@@ -180,9 +180,7 @@
     <Compile Include="Actuators\IStateMachineState.cs" />
     <Compile Include="Actuators\IStateMachineStateEndpoint.cs" />
     <Compile Include="Sensors\ISensor.cs" />
-    <Compile Include="Components\IComponentState.cs" />
     <Compile Include="Sensors\IWindow.cs" />
-    <Compile Include="Components\NamedComponentState.cs" />
     <Compile Include="Api\ApiRequestReceivedEventArgs.cs" />
     <Compile Include="Api\ApiResultCode.cs" />
     <Compile Include="Api\IApiContext.cs" />

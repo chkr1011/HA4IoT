@@ -11,10 +11,9 @@ namespace HA4IoT.Contracts.Components
 
         ComponentId Id { get; }
 
-        IComponentState GetState();
+        ComponentState GetState();
 
-        // TODO: ToIJsonValue
-        IList<IComponentState> GetSupportedStates();
+        IList<ComponentState> GetSupportedStates();
 
         void HandleApiCall(IApiContext apiContext);
 

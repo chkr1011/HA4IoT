@@ -67,14 +67,14 @@ namespace HA4IoT.PersonalAgent
             return result;
         }
 
-        public void PersistComponentStateSynonyms(Dictionary<IComponentState, HashSet<string>> synonyms)
+        public void PersistComponentStateSynonyms(Dictionary<ComponentState, HashSet<string>> synonyms)
         {
             if (synonyms == null) throw new ArgumentNullException(nameof(synonyms));
             
             File.WriteAllText(_componentStateSynonymsFilename, ConvertComponentStateSynonymsToJsonArray(synonyms).ToString());
         }
 
-        public JArray ConvertComponentStateSynonymsToJsonArray(Dictionary<IComponentState, HashSet<string>> synonyms)
+        public JArray ConvertComponentStateSynonymsToJsonArray(Dictionary<ComponentState, HashSet<string>> synonyms)
         {
             if (synonyms == null) throw new ArgumentNullException(nameof(synonyms));
 
@@ -83,7 +83,7 @@ namespace HA4IoT.PersonalAgent
             {
                 var item = new JObject
                 {
-                    ["ComponentState"] = synonym.Key.ToJsonValue(),
+                    ["ComponentState"] = synonym.Key.JToken,
                     ["Synonyms"] = ConvertSynonymsToJsonArray(synonym.Value)
                 };
 

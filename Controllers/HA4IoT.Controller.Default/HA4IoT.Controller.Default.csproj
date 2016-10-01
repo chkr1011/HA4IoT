@@ -116,25 +116,13 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Actuators\HA4IoT.Actuators.csproj">
-      <Project>{808ABECF-D9C2-4AB2-95D8-EAF228B44576}</Project>
-      <Name>HA4IoT.Actuators</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Components\HA4IoT.Components.csproj">
-      <Project>{60f9e539-3ff5-40de-b0c4-be99cae57736}</Project>
-      <Name>HA4IoT.Components</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{E1EDAC4B-83B9-46F4-9F6A-3BAE97D79F29}</Project>
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Core\HA4IoT.Core.csproj">
-      <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
-      <Name>HA4IoT.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Services\HA4IoT.Services.csproj">
-      <Project>{6FD41DDA-4369-43C1-807A-B1BC43ECBDBF}</Project>
-      <Name>HA4IoT.Services</Name>
+    <ProjectReference Include="..\..\SDK\HA4IoT\HA4IoT.csproj">
+      <Project>{c034ec4d-46cc-490a-a045-e4d4d1f49c31}</Project>
+      <Name>HA4IoT</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

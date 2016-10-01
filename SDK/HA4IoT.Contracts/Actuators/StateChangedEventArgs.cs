@@ -1,18 +1,18 @@
 ﻿using System;
-using HA4IoT.Contracts.Components;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Contracts.Actuators
 {
     public class StateChangedEventArgs : EventArgs
     {
-        public StateChangedEventArgs(NamedComponentState oldState, NamedComponentState newState)
+        public StateChangedEventArgs(JToken oldState, JToken newState)
         {
             OldState = oldState;
             NewState = newState;
         }
 
-        public NamedComponentState OldState { get; }
+        public JToken OldState { get; }
 
-        public NamedComponentState NewState { get; }
+        public JToken NewState { get; }
     }
 }

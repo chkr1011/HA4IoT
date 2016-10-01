@@ -34,7 +34,7 @@ function AppController($scope, $http) {
         $scope.$broadcast("configurationLoaded", { language: configuration.Controller.Language });
     };
 
-    c.deleteNotification = function(uid) {
+    c.deleteNotification = function (uid) {
         postController("Service/INotificationService/Delete", { "Uid": uid });
     }
 
@@ -164,8 +164,8 @@ function AppController($scope, $http) {
 
     $scope.toggleIsEnabled = function (component) {
         var isEnabled = !component.Settings.IsEnabled;
-        
-        updateActuatorSettings(component.Id, {
+
+        updateComponentSettings(component.Id, {
             IsEnabled: isEnabled
         }, function () {
             component.Settings.IsEnabled = isEnabled;
@@ -205,7 +205,7 @@ function configureComponent(area, component) {
 
     component.SortValue = getAppSetting(component, "SortValue", 0);
     component.IsVisible = getAppSetting(component, "IsVisible", false);
-    
+
     component.DisplayVertical = getAppSetting(component, "DisplayVertical", false);
     component.IsPartOfOnStateCounter = getAppSetting(component, "IsPartOfOnStateCounter", false);
     component.OnStateId = getAppSetting(component, "OnStateId", "On");
@@ -357,14 +357,14 @@ function invokeComponent(id, payload, successCallback) {
 
     payload.ComponentId = id;
 
-    var url = "/api/Service/IComponentService/Update?body=" + JSON.stringify(payload);
-
-    $.ajax({
+    var url = "/api/Service/IComponentService/Invoke?body=" + JSON.stringify(payload);
+    var options = {
         method: "POST",
         url: url,
-        //contentType: "application/json; charset=utf-8",
         timeout: 2500
-    }).done(function () {
+    };
+
+    $.ajax(options).done(function () {
         if (successCallback != null) {
             successCallback();
         }
@@ -373,16 +373,21 @@ function invokeComponent(id, payload, successCallback) {
     });
 }
 
-function updateActuatorSettings(id, request, successCallback) {
-    // This hack is required for Safari because only one Ajax request at the same time is allowed.
-    var url = "/api/component/" + id + "/settings?body=" + JSON.stringify(request);
+function updateComponentSettings(id, newSettings, successCallback) {
 
-    $.ajax({
+    var payload = {
+        Uri: id,
+        Settings: newSettings
+    };
+
+    var url = "/api/Service/ISettingsService/Import?body=" + JSON.stringify(payload);
+    var options = {
         method: "POST",
         url: url,
-        contentType: "application/json; charset=utf-8",
         timeout: 2500
-    }).done(function () {
+    };
+
+    $.ajax(options).done(function () {
         if (successCallback != null) {
             successCallback();
         }

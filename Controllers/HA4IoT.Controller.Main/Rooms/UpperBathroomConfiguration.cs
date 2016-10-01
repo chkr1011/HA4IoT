@@ -112,8 +112,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             _automationFactory.RegisterTurnOnAndOffAutomation(room)
                 .WithTrigger(room.GetMotionDetector(UpperBathroom.MotionDetector))
-                .WithTarget(combinedLights)
-                .WithOnDuration(TimeSpan.FromMinutes(8));
+                .WithTarget(combinedLights);
             
             new BathroomFanAutomation(AutomationIdFactory.CreateIdFrom<BathroomFanAutomation>(room), _schedulerService, _settingsService)
                 .WithTrigger(room.GetMotionDetector(UpperBathroom.MotionDetector))
@@ -128,8 +127,8 @@ namespace HA4IoT.Controller.Main.Rooms
             var fanPort1 = hsrel5.GetOutput(5);
 
             stateMachine.AddOffState().WithOutput(fanPort0, BinaryState.Low).WithOutput(fanPort1, BinaryState.Low);
-            stateMachine.AddState(new NamedComponentState("1")).WithOutput(fanPort0, BinaryState.High).WithOutput(fanPort1, BinaryState.Low);
-            stateMachine.AddState(new NamedComponentState("2")).WithOutput(fanPort0, BinaryState.High).WithOutput(fanPort1, BinaryState.High);
+            stateMachine.AddState(new ComponentState("1")).WithOutput(fanPort0, BinaryState.High).WithOutput(fanPort1, BinaryState.Low);
+            stateMachine.AddState(new ComponentState("2")).WithOutput(fanPort0, BinaryState.High).WithOutput(fanPort1, BinaryState.High);
             stateMachine.TryTurnOff();
         }
     }

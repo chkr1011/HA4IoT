@@ -80,7 +80,7 @@ namespace HA4IoT.PersonalAgent
         {
             foreach (string word in _currentContext.Words)
             {
-                foreach (IComponentState componentState in _synonymService.GetComponentStatesBySynonym(word))
+                foreach (ComponentState componentState in _synonymService.GetComponentStatesBySynonym(word))
                 {
                     _currentContext.IdentifiedComponentStates.Add(componentState);
                 }

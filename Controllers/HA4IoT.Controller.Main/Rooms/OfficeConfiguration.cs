@@ -17,6 +17,7 @@ using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Services.Areas;
 using HA4IoT.Services.Devices;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
@@ -175,7 +176,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithHighOutput(rl)
                 .WithHighOutput(rr);
 
-            var deskOnlyStateId = new NamedComponentState("DeskOnly");
+            var deskOnlyStateId = new ComponentState("DeskOnly");
             light.AddState(deskOnlyStateId)
                 .WithHighOutput(fl)
                 .WithHighOutput(fm)
@@ -186,7 +187,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithLowOutput(rl)
                 .WithLowOutput(rr);
 
-            var couchOnlyStateId = new NamedComponentState("CouchOnly");
+            var couchOnlyStateId = new ComponentState("CouchOnly");
             light.AddState(couchOnlyStateId)
                 .WithLowOutput(fl)
                 .WithLowOutput(fm)

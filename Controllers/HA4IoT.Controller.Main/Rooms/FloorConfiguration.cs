@@ -25,7 +25,6 @@ namespace HA4IoT.Controller.Main.Rooms
     internal class FloorConfiguration
     {
         private readonly IAreaService _areaService;
-        private readonly IDaylightService _daylightService;
         private readonly IDeviceService _deviceService;
         private readonly CCToolsBoardService _ccToolsBoardService;
         private readonly SynonymService _synonymService;
@@ -70,7 +69,6 @@ namespace HA4IoT.Controller.Main.Rooms
 
         public FloorConfiguration(
             IAreaService areaService,
-            IDaylightService daylightService,
             IDeviceService deviceService,
             CCToolsBoardService ccToolsBoardService,
             SynonymService synonymService,
@@ -79,7 +77,6 @@ namespace HA4IoT.Controller.Main.Rooms
             SensorFactory sensorFactory)
         {
             if (areaService == null) throw new ArgumentNullException(nameof(areaService));
-            if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
             if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
             if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
             if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
@@ -88,7 +85,6 @@ namespace HA4IoT.Controller.Main.Rooms
             if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
 
             _areaService = areaService;
-            _daylightService = daylightService;
             _deviceService = deviceService;
             _ccToolsBoardService = ccToolsBoardService;
             _synonymService = synonymService;
@@ -157,9 +153,8 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTrigger(room.GetButton(Floor.ButtonLowerFloorAtBathroom).GetPressedShortlyTrigger())
                 .WithTrigger(room.GetButton(Floor.ButtonLowerFloorAtKitchen).GetPressedShortlyTrigger())
                 .WithTarget(room.GetActuator(Floor.CombinedLamps))
-                .WithEnabledAtNight(_daylightService)
-                .WithTurnOffIfButtonPressedWhileAlreadyOn()
-                .WithOnDuration(TimeSpan.FromSeconds(20));
+                .WithEnabledAtNight()
+                .WithTurnOffIfButtonPressedWhileAlreadyOn();
 
             SetupStairsCeilingLamps(room, hspe8UpperFloor);
             SetupStairsLamps(room, hspe16FloorAndLowerBathroom);
@@ -176,8 +171,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTrigger(room.GetMotionDetector(Floor.StairwayMotionDetector))
                 .WithTrigger(room.GetButton(Floor.ButtonStairway).GetPressedShortlyTrigger())
                 .WithTarget(room.GetActuator(Floor.CombinedStairwayLamp))
-                .WithEnabledAtNight(_daylightService)
-                .WithOnDuration(TimeSpan.FromSeconds(30));
+                .WithEnabledAtNight();
         }
 
         private void SetupStairsCeilingLamps(IArea room, HSPE8OutputOnly hspe8UpperFloor)
@@ -195,8 +189,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTrigger(room.GetMotionDetector(Floor.StairsLowerMotionDetector))
                 .WithTrigger(room.GetMotionDetector(Floor.StairsUpperMotionDetector))
                 //.WithTrigger(floor.GetButton(Floor.ButtonStairsUpper).GetPressedShortlyTrigger())
-                .WithTarget(room.GetStateMachine(Floor.LampStairsCeiling))
-                .WithOnDuration(TimeSpan.FromSeconds(10));
+                .WithTarget(room.GetStateMachine(Floor.LampStairsCeiling));
 
             var lamp = room.GetLamp(Floor.LampStairsCeiling);
 
