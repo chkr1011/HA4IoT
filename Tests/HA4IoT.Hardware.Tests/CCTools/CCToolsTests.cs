@@ -1,8 +1,9 @@
 ﻿using HA4IoT.Contracts.Hardware;
+using HA4IoT.Hardware.CCTools;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
-namespace HA4IoT.Hardware.CCTools.Tests
+namespace HA4IoT.Hardware.Tests.CCTools
 {
     [TestClass]
     public class CCToolsTests
