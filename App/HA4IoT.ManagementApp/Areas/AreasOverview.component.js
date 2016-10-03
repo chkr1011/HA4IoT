@@ -29,16 +29,11 @@
 
             var areas = [];
             $.each(source.Areas, function (id, item) {
-
-                if (item.Settings.AppSettings === undefined) {
-                    item.Settings.AppSettings = {};
-                }
-
                 var row = {
                     Id: id,
-                    Caption: item.Settings.AppSettings.Caption,
-                    SortValue: item.Settings.AppSettings.SortValue,
-                    IsVisible: item.Settings.AppSettings.IsVisible
+                    Caption: item.Settings.Caption,
+                    SortValue: item.Settings.SortValue,
+                    IsVisible: item.Settings.IsVisible
                 };
 
                 areas.push(row);
@@ -56,11 +51,9 @@
                 var payload = {
                     Uri: "Area/" + item.Id,
                     Settings: {
-                        AppSettings: {
-                            Caption: item.Caption,
-                            IsVisible: item.IsVisible,
-                            SortValue: i
-                        }
+                        Caption: item.Caption,
+                        IsVisible: item.IsVisible,
+                        SortValue: i
                     }
                 }
 

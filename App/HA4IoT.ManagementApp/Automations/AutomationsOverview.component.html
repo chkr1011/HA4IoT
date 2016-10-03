@@ -33,13 +33,13 @@
             <tbody>
             <tr ng-class="{active: aoCtrl.SelectedAutomation.Id===automation.Id}" ng-repeat="automation in aoCtrl.SelectedArea.Automations" ng-click="aoCtrl.selectAutomation(automation)">
                 <td class="text-center">
-                    <img class="medium-icon" ng-src="Content/Images/{{automation.Settings.AppSettings.Image}}.png"/>
+                    <img class="medium-icon" ng-src="Content/Images/{{automation.Settings.Image}}.png"/>
                 </td>
                 <td>
                     <div class="label label-primary">{{automation.Id}}</div>
                 </td>
                 <td>
-                    <span>{{automation.Settings.AppSettings.Caption}}</span>
+                    <span>{{automation.Settings.Caption}}</span>
                 </td>
                 <td>
                     <span class="fa fa-check grid-icon" aria-hidden="true" ng-show="automation.Settings.IsEnabled"></span>

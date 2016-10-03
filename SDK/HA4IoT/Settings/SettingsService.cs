@@ -16,7 +16,7 @@ namespace HA4IoT.Settings
     {
         private readonly object _syncRoot = new object();
         private readonly Dictionary<string, JObject> _settings = new Dictionary<string, JObject>(StringComparer.OrdinalIgnoreCase);
-        
+
         public void Initialize()
         {
             lock (_syncRoot)
@@ -37,11 +37,13 @@ namespace HA4IoT.Settings
 
             SettingsChanged += (s, e) =>
             {
-                if (e.Uri.Equals(uri))
+                if (!e.Uri.Equals(uri))
                 {
-                    var updateSettings = GetSettings<TSettings>(uri);
-                    callback(updateSettings);
+                    return;
                 }
+
+                var updateSettings = GetSettings<TSettings>(uri);
+                callback(updateSettings);
             };
         }
 
@@ -66,7 +68,7 @@ namespace HA4IoT.Settings
             }
         }
 
-        public JObject GetRawSettings(string uri)
+        public JObject GetSettings(string uri)
         {
             if (uri == null) throw new ArgumentNullException(nameof(uri));
 
@@ -82,43 +84,14 @@ namespace HA4IoT.Settings
             }
         }
 
-        public void SetRawSettings(string uri, JObject settings)
+        public void ImportSettings(string uri, object settings)
         {
-            lock (_syncRoot)
-            {
-                _settings[uri] = settings;
+            if (uri == null) throw new ArgumentNullException(nameof(uri));
 
-                Save();
-
-                SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(uri));
-            }
+            var rawSettings = JObject.FromObject(settings);
+            ImportRawSettings(uri, rawSettings);
         }
 
-        public void SetSettings(string uri, object settings)
-        {
-            SetRawSettings(uri, JObject.FromObject(settings));
-        }
-
-        private void ImportSettings(string uri, JObject settings)
-        {
-            lock (_syncRoot)
-            {
-                JObject existingSettings;
-                if (_settings.TryGetValue(uri, out existingSettings))
-                {
-                    existingSettings.Merge(settings, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Union });
-                }
-                else
-                {
-                    _settings[uri] = settings;
-                }
-
-                Save();
-
-                SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(uri));
-            }
-        }
-        
         [ApiMethod]
         public void Replace(IApiContext apiContext)
         {
@@ -132,7 +105,7 @@ namespace HA4IoT.Settings
             if (apiContext.Request.Type == JTokenType.Object)
             {
                 var request = apiContext.Request.ToObject<SettingsServiceApiRequest>();
-                ImportSettings(request.Uri, request.Settings);
+                ImportRawSettings(request.Uri, request.Settings);
             }
             else
             {
@@ -158,12 +131,12 @@ namespace HA4IoT.Settings
         }
 
         [ApiMethod]
-        public void Settings(IApiContext apiContext)
+        public void GetSettings(IApiContext apiContext)
         {
             if (apiContext.Request.Type == JTokenType.Object)
             {
                 var request = apiContext.Request.ToObject<SettingsServiceApiRequest>();
-                apiContext.Response = GetRawSettings(request.Uri);
+                apiContext.Response = GetSettings(request.Uri);
             }
             else
             {
@@ -208,11 +181,43 @@ namespace HA4IoT.Settings
             }
         }
 
+        private void SetRawSettings(string uri, JObject settings)
+        {
+            lock (_syncRoot)
+            {
+                _settings[uri] = settings;
+
+                Save();
+
+                SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(uri));
+            }
+        }
+
+        private void ImportRawSettings(string uri, JObject settings)
+        {
+            lock (_syncRoot)
+            {
+                JObject existingSettings;
+                if (_settings.TryGetValue(uri, out existingSettings))
+                {
+                    var mergeSettings = new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Union };
+                    existingSettings.Merge(settings, mergeSettings);
+                }
+                else
+                {
+                    _settings[uri] = settings;
+                }
+
+                Save();
+                SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(uri));
+            }
+        }
+
         private void Save()
         {
             var filename = StoragePath.WithFilename("SettingsService.json");
             var content = JsonConvert.SerializeObject(_settings, Formatting.Indented);
-            
+
             File.WriteAllText(filename, content);
         }
 

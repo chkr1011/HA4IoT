@@ -307,15 +307,13 @@ function getAppSetting(component, name, defaultValue) {
         return defaultValue;
     }
 
-    if (component.Settings.AppSettings === undefined) {
+    var value = component.Settings[name];
+
+    if (value === undefined) {
         return defaultValue;
     }
 
-    if (component.Settings.AppSettings[name] === undefined) {
-        return defaultValue;
-    }
-
-    return component.Settings.AppSettings[name];
+    return value;
 }
 
 function updateOnStateCounters(areas) {

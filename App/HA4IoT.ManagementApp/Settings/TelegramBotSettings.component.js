@@ -12,7 +12,7 @@
         }
 
         ctrl.$onInit = function () {
-            controllerProxyService.get("Service/ISettingsService/Settings", { "Uri": "TelegramBotServiceSettings" }, function (response) {
+            controllerProxyService.get("Service/ISettingsService/GetSettings", { "Uri": "TelegramBotServiceSettings" }, function (response) {
                 ctrl.Model = response;
             });
         }

@@ -14,7 +14,7 @@
         }
 
         ctrl.$onInit = function () {
-            controllerProxyService.get("Service/ISettingsService/Settings", { "Uri": "TwitterClientServiceSettings" }, function (response) {
+            controllerProxyService.get("Service/ISettingsService/GetSettings", { "Uri": "TwitterClientServiceSettings" }, function (response) {
                 ctrl.Model = response;
             });
         }

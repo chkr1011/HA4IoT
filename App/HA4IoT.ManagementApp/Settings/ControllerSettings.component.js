@@ -12,7 +12,7 @@
         }
 
         ctrl.$onInit = function () {
-            controllerProxyService.get("Service/ISettingsService/Settings", { "Uri": "ControllerSettings" }, function (response) {
+            controllerProxyService.get("Service/ISettingsService/GetSettings", { "Uri": "ControllerSettings" }, function (response) {
                 ctrl.Model = response;
             });
         }

@@ -14,7 +14,7 @@ namespace HA4IoT.Contracts.Services.Settings
             if (areaId == null) throw new ArgumentNullException(nameof(areaId));
 
             var uri = SettingsUriGenerator.From(areaId);
-            return settingsService.GetRawSettings(uri);
+            return settingsService.GetSettings(uri);
         }
 
         public static JObject GetRawSettings(this ISettingsService settingsService, ComponentId componentId)
@@ -23,7 +23,7 @@ namespace HA4IoT.Contracts.Services.Settings
             if (componentId == null) throw new ArgumentNullException(nameof(componentId));
 
             var uri = SettingsUriGenerator.From(componentId);
-            return settingsService.GetRawSettings(uri);
+            return settingsService.GetSettings(uri);
         }
 
         public static JObject GetRawSettings(this ISettingsService settingsService, AutomationId automationId)
@@ -32,7 +32,7 @@ namespace HA4IoT.Contracts.Services.Settings
             if (automationId == null) throw new ArgumentNullException(nameof(automationId));
 
             var uri = SettingsUriGenerator.From(automationId);
-            return settingsService.GetRawSettings(uri);
+            return settingsService.GetSettings(uri);
         }
 
         public static TSettings GetSettings<TSettings>(this ISettingsService settingsService)
@@ -67,7 +67,7 @@ namespace HA4IoT.Contracts.Services.Settings
 
             var uri = SettingsUriGenerator.From(automationId);
 
-            settingsService.SetSettings(uri, settings);
+            settingsService.ImportSettings(uri, settings);
         }
 
         public static void CreateSettingsMonitor<TSettings>(this ISettingsService settingsService, Action<TSettings> callback)

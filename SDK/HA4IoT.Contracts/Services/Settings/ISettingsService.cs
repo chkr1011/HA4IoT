@@ -9,10 +9,8 @@ namespace HA4IoT.Contracts.Services.Settings
 
         TSettings GetSettings<TSettings>(string uri);
 
-        JObject GetRawSettings(string uri);
+        JObject GetSettings(string uri);
 
-        void SetSettings(string uri, object settings);
-
-        void SetRawSettings(string uri, JObject settings);
+        void ImportSettings(string uri, object settings);
     }
 }

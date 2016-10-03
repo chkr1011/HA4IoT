@@ -32,28 +32,13 @@
 
                 var area = {
                     Id: areaId,
-                    Caption: areaItem.Settings.AppSettings.Caption,
+                    Caption: areaItem.Settings.Caption,
                     Components: []
                 };
 
                 $.each(areaItem.Components,
                     function (componentId, componentItem) {
-                        if (componentItem.Settings.AppSettings === undefined) {
-                            componentItem.Settings.AppSettings = {};
-                        }
-
-                        var component = {
-                            Id: componentId,
-                            Type: componentItem.Type,
-                            Caption: componentItem.Settings.AppSettings.Caption,
-                            OverviewCaption: componentItem.Settings.AppSettings.OverviewCaption,
-                            SortValue: componentItem.Settings.AppSettings.SortValue,
-                            Image: componentItem.Settings.AppSettings.Image,
-                            IsEnabled: componentItem.Settings.IsEnabled,
-                            IsVisible: componentItem.Settings.AppSettings.IsVisible,
-                            SupportedStates: componentItem.SupportedStates
-                        };
-
+                        var component = ctrl.createComponent(componentId, componentItem);
                         area.Components.push(component);
                     });
 
@@ -71,21 +56,15 @@
             ctrl.Areas = areas;
         }
 
+        ctrl.close = function () {
+            ctrl.SelectedComponent = null;
+        }
+
         ctrl.save = function () {
             var settings = {};
-
             $.each(ctrl.SelectedArea.Components,
-                function (j, componentItem) {
-                    settings["Component/" + componentItem.Id] = {
-                        IsEnabled: componentItem.IsEnabled,
-                        AppSettings: {
-                            Caption: componentItem.Caption,
-                            OverviewCaption: componentItem.OverviewCaption,
-                            IsVisible: componentItem.IsVisible,
-                            Image: componentItem.Image,
-                            SortValue: j
-                        }
-                    };
+                function (j, component) {
+                    settings["Component/" + component.Id] = ctrl.createSettings(component, j);
                 });
 
             controllerProxyService.execute("Service/ISettingsService/ImportMultiple", settings, function () {
@@ -93,7 +72,55 @@
             });
         }
 
+        ctrl.createComponent = function(componentId, source) {
+            var component = {
+                Id: componentId,
+                Type: source.Type,
+                Caption: source.Settings.Caption,
+                OverviewCaption: source.Settings.OverviewCaption,
+                SortValue: source.Settings.SortValue,
+                Image: source.Settings.Image,
+                IsEnabled: source.Settings.IsEnabled,
+                IsVisible: source.Settings.IsVisible,
+                SupportedStates: source.SupportedStates
+            };
+
+            if (component.Type === "StateMachine") {
+                component.DisplayVertical = source.Settings.DisplayVertical;
+            }
+
+            if (component.Type === "RollerShutter") {
+                component.AutoOffTimeout = source.Settings.AutoOffTimeout;
+                component.MaxPosition = source.Settings.MaxPosition;
+            }
+
+            return component;
+        }
+
+        ctrl.createSettings = function (component, sortValue) {
+            var settings = {
+                IsEnabled: component.IsEnabled,
+                Caption: component.Caption,
+                OverviewCaption: component.OverviewCaption,
+                IsVisible: component.IsVisible,
+                Image: component.Image,
+                SortValue: sortValue
+            }
+
+            if (component.Type === "StateMachine") {
+                settings.DisplayVertical = component.DisplayVertical;
+            }
+
+            if (component.Type === "RollerShutter") {
+                settings.AutoOffTimeout = component.AutoOffTimeout;
+                settings.MaxPosition = component.MaxPosition;
+            }
+
+            return settings;
+        }
+
         ctrl.fetchComponents();
+
     }
 
     module.component("components", {

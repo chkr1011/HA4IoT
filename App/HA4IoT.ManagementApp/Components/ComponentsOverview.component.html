@@ -8,7 +8,7 @@
     </div>
 </div>
 
-<div class="row">
+<div class="row" ng-show="coCtrl.SelectedComponent===null">
     <div class="col-md-2">
         <h2>Area</h2>
         <hr />
@@ -19,42 +19,42 @@
         </ul>
     </div>
 
-    <div ng-class="coCtrl.SelectedComponent===null ? 'col-md-10' : 'col-md-7'" ng-show="coCtrl.SelectedArea!=null">
+    <div class="col-md-10" ng-show="coCtrl.SelectedArea!=null">
         <h2>Components</h2>
         <hr />
 
         <table class="table table-condensed table-hover">
             <thead>
-                <tr>
-                    <th></th>
-                    <th>ID</th>
-                    <th>Caption</th>
-                    <th>State</th>
-                    <th></th>
-                </tr>
+            <tr>
+                <th></th>
+                <th>ID</th>
+                <th>Caption</th>
+                <th>State</th>
+                <th></th>
+            </tr>
             </thead>
             <tbody>
-                <tr ng-class="{active: coCtrl.SelectedComponent.Id == component.Id}" ng-repeat="component in coCtrl.SelectedArea.Components" ng-click="coCtrl.selectComponent(component)">
-                    <td class="text-center">
-                        <img class="medium-icon" ng-src="Content/Images/{{component.Image}}.png" />
-                    </td>
-                    <td>
-                        <div class="label label-primary">{{component.Id}}</div>
-                    </td>
-                    <td>
-                        <span>{{component.Caption}}</span>
-                    </td>
-                    <td>
-                        <span class="fa fa-check grid-icon" aria-hidden="true" ng-show="component.IsEnabled"></span>
-                        <span class="fa fa-eye grid-icon" aria-hidden="true" ng-show="component.IsVisible"></span>
-                    </td>
-                    <td class="text-center">
-                        <div class="btn-group pull-right" role="group">
-                            <a class="btn btn-default btn-xs glyphicon glyphicon-arrow-up" ng-click="coCtrl.moveComponent(component, 'up')"></a>
-                            <a class="btn btn-default btn-xs glyphicon glyphicon-arrow-down" ng-click="coCtrl.moveComponent(component, 'down')"></a>
-                        </div>
-                    </td>
-                </tr>
+            <tr ng-class="{active: coCtrl.SelectedComponent.Id===component.Id}" ng-repeat="component in coCtrl.SelectedArea.Components" ng-click="coCtrl.selectComponent(component)">
+                <td class="text-center">
+                    <img class="medium-icon" ng-src="Content/Images/{{component.Image}}.png" />
+                </td>
+                <td>
+                    <div class="label label-primary">{{component.Id}}</div>
+                </td>
+                <td>
+                    <span>{{component.Caption}}</span>
+                </td>
+                <td>
+                    <span class="fa fa-check grid-icon" aria-hidden="true" ng-show="component.IsEnabled"></span>
+                    <span class="fa fa-eye grid-icon" aria-hidden="true" ng-show="component.IsVisible"></span>
+                </td>
+                <td class="text-center">
+                    <div class="btn-group pull-right" role="group">
+                        <a class="btn btn-default btn-xs glyphicon glyphicon-arrow-up" ng-click="coCtrl.moveComponent(component, 'up')"></a>
+                        <a class="btn btn-default btn-xs glyphicon glyphicon-arrow-down" ng-click="coCtrl.moveComponent(component, 'down')"></a>
+                    </div>
+                </td>
+            </tr>
             </tbody>
         </table>
 
@@ -62,14 +62,17 @@
             <button class="btn btn-default pull-right" ng-click="coCtrl.save()">Save</button>
         </div>
     </div>
+</div>
 
-    <div class="col-md-3" ng-show="coCtrl.SelectedComponent!=null">
-        <h2>Settings</h2>
+<div ng-show="coCtrl.SelectedComponent!=null">
+    <h2>Settings</h2>
+    <hr />
+    <div class="box">
+        <div ng-include="'Components/GeneralSettings.html'"></div>
+        <div ng-include="'Components/RollerShutterSettings.html'" ng-show="coCtrl.SelectedComponent.Type==='RollerShutter'"></div>
+        <div ng-include="'Components/StateMachineSettings.html'" ng-show="coCtrl.SelectedComponent.Type==='StateMachine'"></div>
         <hr />
-        <div class="box">
-            <div ng-include="'Components/GeneralSettings.html'"></div>
-            <div ng-include="'Components/StateMachineSettings.html'"></div>
-        </div>
+        <button class="btn btn-default" ng-click="coCtrl.close()">Close</button>
     </div>
 </div>
 

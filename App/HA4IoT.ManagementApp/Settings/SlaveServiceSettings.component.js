@@ -14,13 +14,19 @@
             IsEnabled: false
         }
 
+        ctrl.$onInit = function () {
+            controllerProxyService.get("Service/ISettingsService/GetSettings", { "Uri": "ControllerSlaveSettings" }, function (response) {
+                ctrl.Model = response;
+            });
+        }
+
         ctrl.save = function () {
             var payload = {
                 Uri: "Service/ControllerSlaveServiceSettings",
                 Settings: ctrl.Model
             }
 
-            controllerProxyService.get("Service/ISettingsService/Replace", payload);
+            controllerProxyService.execute("Service/ISettingsService/Replace", payload);
 
             modalService.show("Info", "Controller Slave settings successfully saved.");
         }
@@ -31,5 +37,5 @@
         controllerAs: "sssCtrl",
         controller: ["controllerProxyService", "modalService", createController]
     });
-    
+
 })();

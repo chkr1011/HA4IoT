@@ -17,7 +17,7 @@
         }
 
         ctrl.$onInit = function () {
-            controllerProxyService.get("Service/ISettingsService/Settings", { "Uri": "OpenWeatherMapServiceSettings" }, function (response) {
+            controllerProxyService.get("Service/ISettingsService/GetSettings", { "Uri": "OpenWeatherMapServiceSettings" }, function (response) {
                 ctrl.Model = response;
             });
         }

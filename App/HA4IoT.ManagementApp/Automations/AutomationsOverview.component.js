@@ -27,15 +27,12 @@
 
                 var area = {
                     Id: areaId,
-                    Caption: areaItem.Settings.AppSettings.Caption,
+                    Caption: areaItem.Settings.Caption,
                     Automations: []
                 };
 
                 $.each(areaItem.Automations,
                     function (automationId, automationItem) {
-                        if (automationItem.Settings.AppSettings === undefined) {
-                            automationItem.Settings.AppSettings = {};
-                        }
 
                         var automation = {
                             Id: automationId,
