@@ -9,7 +9,8 @@
         ctrl.SelectedArea = null;
         ctrl.SelectedComponent = null;
 
-        ctrl.moveComponent = function (component, direction) {
+        ctrl.moveComponent = function (component, direction, event) {
+            event.stopPropagation();
             var sourceIndex = ctrl.SelectedArea.Components.indexOf(component);
             ctrl.SelectedArea.Components.moveItem(sourceIndex, direction);
         }
