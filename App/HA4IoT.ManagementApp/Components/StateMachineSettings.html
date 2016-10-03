@@ -11,6 +11,6 @@
 <h4>States</h4>
 <hr/>
 <div class="form-group" ng-repeat="supportedState in coCtrl.SelectedComponent.SupportedStates">
-    <label>{{supportedState}}</label>
-    <input type="text" class="form-control">
+    <label>{{supportedState.Id}}</label>
+    <input type="text" class="form-control" ng-model="supportedState.Caption">
 </div>

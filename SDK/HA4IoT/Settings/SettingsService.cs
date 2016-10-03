@@ -200,7 +200,7 @@ namespace HA4IoT.Settings
                 JObject existingSettings;
                 if (_settings.TryGetValue(uri, out existingSettings))
                 {
-                    var mergeSettings = new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Union };
+                    var mergeSettings = new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace };
                     existingSettings.Merge(settings, mergeSettings);
                 }
                 else

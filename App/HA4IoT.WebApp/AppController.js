@@ -242,10 +242,23 @@ function configureComponent(area, component) {
 
                 var extendedSupportedStates = [];
                 component.SupportedStates.forEach(function (supportedState) {
-                    var key = "Caption." + supportedState;
-                    var stateCaption = getAppSetting(component, key, key);
 
-                    extendedSupportedStates.push({ Value: supportedState, Caption: stateCaption });
+                    if (component.Settings.SupportedStates === null || component.Settings.SupportedStates === undefined) {
+                        component.Settings.SupportedStates = [];
+                    }
+
+                    var stateSettings = component.Settings.SupportedStates.find(function(i) {
+                        return i.Id === supportedState;
+                    });
+
+                    if (stateSettings === null || stateSettings === undefined) {
+                        stateSettings = {
+                            Id: supportedState,
+                            Caption: supportedState
+                        }
+                    }
+
+                    extendedSupportedStates.push(stateSettings);
                 });
 
                 component.SupportedStates = extendedSupportedStates;

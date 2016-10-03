@@ -72,7 +72,7 @@
             });
         }
 
-        ctrl.createComponent = function(componentId, source) {
+        ctrl.createComponent = function (componentId, source) {
             var component = {
                 Id: componentId,
                 Type: source.Type,
@@ -81,17 +81,46 @@
                 SortValue: source.Settings.SortValue,
                 Image: source.Settings.Image,
                 IsEnabled: source.Settings.IsEnabled,
-                IsVisible: source.Settings.IsVisible,
-                SupportedStates: source.SupportedStates
+                IsVisible: source.Settings.IsVisible
             };
 
             if (component.Type === "StateMachine") {
                 component.DisplayVertical = source.Settings.DisplayVertical;
+                component.SupportedStates = [];
+
+                if (source.Settings.SupportedStates === undefined || source.Settings.SupportedStates === null) {
+                    source.Settings.SupportedStates = [];
+                }
+
+                source.SupportedStates.forEach(function (supportedState) {
+
+                    var settings = source.Settings.SupportedStates.find(function (i) {
+                        return i.Id === supportedState;
+                    });
+
+                    if (settings === undefined || settings === null) {
+                        settings = {
+                            Caption: ""
+                        }
+                    }
+
+                    var vm = {
+                        Id: supportedState,
+                        Caption: settings.Caption
+                    }
+
+                    component.SupportedStates.push(vm);
+                });
             }
 
             if (component.Type === "RollerShutter") {
                 component.AutoOffTimeout = source.Settings.AutoOffTimeout;
                 component.MaxPosition = source.Settings.MaxPosition;
+            }
+
+            if (component.Type === "HumiditySensor") {
+                component.DangerValue = source.Settings.DangerValue;
+                component.WarningValue = source.Settings.WarningValue;
             }
 
             return component;
@@ -109,11 +138,21 @@
 
             if (component.Type === "StateMachine") {
                 settings.DisplayVertical = component.DisplayVertical;
+                settings.SupportedStates = [];
+
+                component.SupportedStates.forEach(function (supportedState) {
+                    settings.SupportedStates.push(supportedState);
+                });
             }
 
             if (component.Type === "RollerShutter") {
                 settings.AutoOffTimeout = component.AutoOffTimeout;
                 settings.MaxPosition = component.MaxPosition;
+            }
+
+            if (component.Type === "HumiditySensor") {
+                settings.DangerValue = component.DangerValue;
+                settings.WarningValue = component.WarningValue;
             }
 
             return settings;

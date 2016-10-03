@@ -37,6 +37,7 @@
     <Content Include="Components\ComponentsOverview.component.js" />
     <Content Include="Components\GeneralSettings.html" />
     <Content Include="Components\RollerShutterSettings.html" />
+    <Content Include="Components\HumiditySensorSettings.html" />
     <Content Include="Components\StateMachineSettings.html" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />

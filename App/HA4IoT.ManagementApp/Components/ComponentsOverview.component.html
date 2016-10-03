@@ -71,6 +71,7 @@
         <div ng-include="'Components/GeneralSettings.html'"></div>
         <div ng-include="'Components/RollerShutterSettings.html'" ng-show="coCtrl.SelectedComponent.Type==='RollerShutter'"></div>
         <div ng-include="'Components/StateMachineSettings.html'" ng-show="coCtrl.SelectedComponent.Type==='StateMachine'"></div>
+        <div ng-include="'Components/HumiditySensorSettings.html'" ng-show="coCtrl.SelectedComponent.Type==='HumiditySensor'"></div>
         <hr />
         <button class="btn btn-default" ng-click="coCtrl.close()">Close</button>
     </div>
