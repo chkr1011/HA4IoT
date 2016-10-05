@@ -1,5 +1,6 @@
 ﻿using System;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 
 namespace HA4IoT.Sensors.Windows
@@ -10,7 +11,7 @@ namespace HA4IoT.Sensors.Windows
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
 
-            return area.GetComponent<Window>(ComponentIdFactory.Create(area.Id, id));
+            return area.GetComponent<Window>(ComponentIdGenerator.Generate(area.Id, id));
         }
     }
 }

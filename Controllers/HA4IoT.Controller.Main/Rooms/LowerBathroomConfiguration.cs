@@ -38,6 +38,7 @@ namespace HA4IoT.Controller.Main.Rooms
             LightCeilingWindow,
             // Another light is available!
             CombinedLights,
+            CombinedLightsAutomation,
 
             StartBathmodeButton,
             LampMirror,
@@ -111,7 +112,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithActuator(room.GetLamp(LowerBathroom.LightCeilingWindow))
                 .WithActuator(room.GetLamp(LowerBathroom.LampMirror));
 
-            _automationFactory.RegisterTurnOnAndOffAutomation(room)
+            _automationFactory.RegisterTurnOnAndOffAutomation(room, LowerBathroom.CombinedLightsAutomation)
                 .WithTrigger(room.GetMotionDetector(LowerBathroom.MotionDetector))
                 .WithTarget(room.GetActuator(LowerBathroom.CombinedLights));
 

@@ -1,6 +1,8 @@
 ﻿using System;
 using FluentAssertions;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Automations;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Settings;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -92,7 +94,7 @@ namespace HA4IoT.Automations.Tests
             _controller.ComponentService.AddComponent(_rollerShutter);
 
             _automation = new RollerShutterAutomation(
-                AutomationIdFactory.EmptyId,
+                AutomationIdGenerator.EmptyId,
                 _controller.NotificationService,
                 _controller.SchedulerService,
                 _controller.DateTimeService,

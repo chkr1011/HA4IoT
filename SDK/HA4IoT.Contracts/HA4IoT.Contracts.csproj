@@ -111,7 +111,8 @@
     <Compile Include="Api\ApiClassAttribute.cs" />
     <Compile Include="Api\ApiContext.cs" />
     <Compile Include="Api\ApiMethodAttribute.cs" />
-    <Compile Include="Areas\AreaIdFactory.cs" />
+    <Compile Include="Areas\AreaIdGenerator.cs" />
+    <Compile Include="Automations\AutomationIdGenerator.cs" />
     <Compile Include="Components\ComponentIdExtensions.cs" />
     <Compile Include="Components\ComponentSettings.cs" />
     <Compile Include="Actuators\BinaryStateId.cs" />
@@ -119,7 +120,7 @@
     <Compile Include="Actuators\StateChangedEventArgs.cs" />
     <Compile Include="Actuators\RollerShutterStateId.cs" />
     <Compile Include="Automations\IAutomationSettings.cs" />
-    <Compile Include="Components\ComponentIdFactory.cs" />
+    <Compile Include="Components\ComponentIdGenerator.cs" />
     <Compile Include="Components\ComponentState.cs" />
     <Compile Include="Components\ComponentStateChangedEventArgs.cs" />
     <Compile Include="Components\IComponentSettings.cs" />

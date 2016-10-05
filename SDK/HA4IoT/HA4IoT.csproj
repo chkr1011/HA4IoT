@@ -147,7 +147,6 @@
     <Compile Include="Automations\Automation.cs" />
     <Compile Include="Automations\AutomationBase.cs" />
     <Compile Include="Automations\AutomationFactory.cs" />
-    <Compile Include="Automations\AutomationIdFactory.cs" />
     <Compile Include="Automations\AutomationSettings.cs" />
     <Compile Include="Automations\BathroomFanAutomation.cs" />
     <Compile Include="Automations\BathroomFanAutomationSettings.cs" />

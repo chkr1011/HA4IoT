@@ -41,10 +41,12 @@ namespace HA4IoT.Controller.Main.Rooms
             LightCeilingPassageOuter,
             LightCeilingPassageInner,
             CombinedAutomaticLights,
+            CombinedAutomaticLightsAutomation,
 
             RollerShutter,
             RollerShutterButtonUp,
             RollerShutterButtonDown,
+            RollerShutterAutomation,
 
             ButtonPassage,
             ButtonKitchenette,
@@ -122,7 +124,7 @@ namespace HA4IoT.Controller.Main.Rooms
             room.GetLamp(Kitchen.LightCeilingMiddle).ConnectToggleActionWith(room.GetButton(Kitchen.ButtonKitchenette));
             room.GetLamp(Kitchen.LightCeilingMiddle).ConnectToggleActionWith(room.GetButton(Kitchen.ButtonPassage));
 
-            _automationFactory.RegisterRollerShutterAutomation(room)
+            _automationFactory.RegisterRollerShutterAutomation(room, Kitchen.RollerShutterAutomation)
                 .WithRollerShutters(room.GetRollerShutter(Kitchen.RollerShutter));
 
             room.GetRollerShutter(Kitchen.RollerShutter).ConnectWith(
@@ -133,7 +135,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithActuator(room.GetLamp(Kitchen.LightCeilingDoor))
                 .WithActuator(room.GetLamp(Kitchen.LightCeilingWindow));
 
-            _automationFactory.RegisterTurnOnAndOffAutomation(room)
+            _automationFactory.RegisterTurnOnAndOffAutomation(room, Kitchen.CombinedAutomaticLightsAutomation)
                 .WithTrigger(room.GetMotionDetector(Kitchen.MotionDetector))
                 .WithTarget(room.GetActuator(Kitchen.CombinedAutomaticLights))
                 .WithEnabledAtNight();

@@ -4,6 +4,8 @@ using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Automations;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Settings;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -47,7 +49,7 @@ namespace HA4IoT.Automations.Tests
             var testButton = testButtonFactory.CreateTestButton();
             var testOutput = testStateMachineFactory.CreateTestStateMachineWithOnOffStates();
 
-            new Automation(AutomationIdFactory.EmptyId)
+            new Automation(AutomationIdGenerator.EmptyId)
                 .WithTrigger(testButton.GetPressedShortlyTrigger())
                 .WithCondition(ConditionRelation.And, new TimeRangeCondition(testController.DateTimeService).WithStart(TimeSpan.FromHours(1)).WithEnd(TimeSpan.FromHours(2)))
                 .WithActionIfConditionsFulfilled(testOutput.GetSetNextStateAction());
@@ -64,7 +66,7 @@ namespace HA4IoT.Automations.Tests
 
         private Automation CreateAutomation()
         {
-            return new Automation(AutomationIdFactory.EmptyId);
+            return new Automation(AutomationIdGenerator.EmptyId);
         }
     }
 }

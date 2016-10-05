@@ -1,5 +1,4 @@
 ﻿using System;
-using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.System;
 

@@ -20,7 +20,14 @@ namespace HA4IoT.Conditions
 
         public ConditionState Validate()
         {
-            ConditionState thisState = Expression();
+            var thisState = Expression();
+
+            if (IsInverted)
+            {
+                thisState = thisState == ConditionState.Fulfilled
+                    ? ConditionState.NotFulfilled
+                    : ConditionState.Fulfilled;
+            }
 
             if (RelatedConditions.Any())
             {
@@ -30,6 +37,8 @@ namespace HA4IoT.Conditions
 
             return thisState;
         }
+
+        public bool IsInverted { get; set; }
 
         public Condition WithRelatedCondition(ConditionRelation relation, Condition condition)
         {

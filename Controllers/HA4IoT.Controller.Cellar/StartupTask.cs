@@ -68,6 +68,7 @@ namespace HA4IoT.Controller.Cellar
                 SpotlightRoof,
                 LampRearArea,
                 LampParkingLot,
+                LampParkingLotAutomation,
 
                 SocketPavillion,
 
@@ -120,7 +121,7 @@ namespace HA4IoT.Controller.Cellar
 
                 garden.GetStateMachine(Garden.StateMachine).ConnectMoveNextAndToggleOffWith(garden.GetButton(Garden.Button));
 
-                _automationFactory.RegisterConditionalOnAutomation(garden)
+                _automationFactory.RegisterConditionalOnAutomation(garden, Garden.LampParkingLotAutomation)
                     .WithActuator(garden.GetLamp(Garden.LampParkingLot))
                     .WithOnAtNightRange()
                     .WithOffBetweenRange(TimeSpan.Parse("22:30:00"), TimeSpan.Parse("05:00:00"));

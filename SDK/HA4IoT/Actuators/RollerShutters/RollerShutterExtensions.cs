@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services;
@@ -22,7 +23,7 @@ namespace HA4IoT.Actuators.RollerShutters
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
 
-            return area.GetComponent<RollerShutter>(ComponentIdFactory.Create(area.Id, id));
+            return area.GetComponent<RollerShutter>(ComponentIdGenerator.Generate(area.Id, id));
         }
     }
 }

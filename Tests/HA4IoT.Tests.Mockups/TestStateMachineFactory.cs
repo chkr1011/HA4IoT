@@ -1,5 +1,6 @@
 ﻿using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 
 namespace HA4IoT.Tests.Mockups
@@ -8,12 +9,12 @@ namespace HA4IoT.Tests.Mockups
     {
         public TestStateMachine CreateTestStateMachine()
         {
-            return new TestStateMachine(ComponentIdFactory.EmptyId);
+            return new TestStateMachine(ComponentIdGenerator.EmptyId);
         }
 
         public TestStateMachine CreateTestStateMachineWithActiveState(ComponentState id)
         {
-            var stateMachine = new TestStateMachine(ComponentIdFactory.EmptyId);
+            var stateMachine = new TestStateMachine(ComponentIdGenerator.EmptyId);
             stateMachine.AddState(new StateMachineState(id));
             stateMachine.SetState(id);
 
@@ -27,7 +28,7 @@ namespace HA4IoT.Tests.Mockups
 
         public TestStateMachine CreateTestStateMachineWithOnOffStates(ComponentState activeState)
         {
-            var stateMachine = new TestStateMachine(ComponentIdFactory.EmptyId);
+            var stateMachine = new TestStateMachine(ComponentIdGenerator.EmptyId);
             stateMachine.AddState(new StateMachineState(BinaryStateId.Off));
             stateMachine.AddState(new StateMachineState(BinaryStateId.On));
             stateMachine.SetState(activeState);

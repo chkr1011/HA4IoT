@@ -1,12 +1,12 @@
 ﻿using System;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.Notifications;
 using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Settings;
 
 namespace HA4IoT.Automations
 {
@@ -21,12 +21,12 @@ namespace HA4IoT.Automations
         private readonly ISettingsService _settingsService;
 
         public AutomationFactory(
-            ISchedulerService schedulerService, 
+            ISchedulerService schedulerService,
             INotificationService notificationService,
-            IDateTimeService dateTimeService, 
-            IDaylightService daylightService, 
+            IDateTimeService dateTimeService,
+            IDaylightService daylightService,
             IOutdoorTemperatureService outdoorTemperatureService,
-            IComponentService componentService, 
+            IComponentService componentService,
             ISettingsService settingsService)
         {
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
@@ -46,13 +46,13 @@ namespace HA4IoT.Automations
             _settingsService = settingsService;
         }
 
-        public ConditionalOnAutomation RegisterConditionalOnAutomation(IArea area)
+        public ConditionalOnAutomation RegisterConditionalOnAutomation(IArea area, Enum id)
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
 
             var automation =
                 new ConditionalOnAutomation(
-                    AutomationIdFactory.CreateIdFrom<ConditionalOnAutomation>(area),
+                    AutomationIdGenerator.Generate(area, id),
                     _schedulerService,
                     _dateTimeService,
                     _daylightService);
@@ -62,12 +62,12 @@ namespace HA4IoT.Automations
             return automation;
         }
 
-        public RollerShutterAutomation RegisterRollerShutterAutomation(IArea area)
+        public RollerShutterAutomation RegisterRollerShutterAutomation(IArea area, Enum id)
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
 
             var automation = new RollerShutterAutomation(
-                AutomationIdFactory.CreateIdFrom<RollerShutterAutomation>(area),
+                AutomationIdGenerator.Generate(area, id),
                 _notificationService,
                 _schedulerService,
                 _dateTimeService,
@@ -75,19 +75,19 @@ namespace HA4IoT.Automations
                 _outdoorTemperatureService,
                 _componentService,
                 _settingsService);
-            
+
             area.AddAutomation(automation);
 
             return automation;
         }
 
-        public TurnOnAndOffAutomation RegisterTurnOnAndOffAutomation(IArea area)
+        public TurnOnAndOffAutomation RegisterTurnOnAndOffAutomation(IArea area, Enum id)
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
 
             var automation =
                 new TurnOnAndOffAutomation(
-                    AutomationIdFactory.CreateIdFrom<TurnOnAndOffAutomation>(area),
+                    AutomationIdGenerator.Generate(area, id),
                     _dateTimeService,
                     _schedulerService,
                     _settingsService,

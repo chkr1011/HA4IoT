@@ -6,6 +6,7 @@ using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services.Settings;
@@ -35,7 +36,7 @@ namespace HA4IoT.Actuators
             if (area == null) throw new ArgumentNullException(nameof(area));
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
 
-            var stateMachine = new StateMachine(ComponentIdFactory.Create(area.Id, id));
+            var stateMachine = new StateMachine(ComponentIdGenerator.Generate(area.Id, id));
 
             initializer(stateMachine, area);
             stateMachine.SetInitialState(BinaryStateId.Off);
@@ -51,7 +52,7 @@ namespace HA4IoT.Actuators
             if (directionOutput == null) throw new ArgumentNullException(nameof(directionOutput));
 
             var rollerShutter = new RollerShutter(
-                ComponentIdFactory.Create(area.Id, id),
+                ComponentIdGenerator.Generate(area.Id, id),
                 new PortBasedRollerShutterEndpoint(powerOutput, directionOutput),
                 _timerService,
                 _schedulerService,
@@ -67,7 +68,7 @@ namespace HA4IoT.Actuators
             if (area == null) throw new ArgumentNullException(nameof(area));
             if (output == null) throw new ArgumentNullException(nameof(output));
 
-            var socket = new Socket(ComponentIdFactory.Create(area.Id, id), new PortBasedBinaryStateEndpoint(output));
+            var socket = new Socket(ComponentIdGenerator.Generate(area.Id, id), new PortBasedBinaryStateEndpoint(output));
             area.AddComponent(socket);
 
             return socket;
@@ -78,7 +79,7 @@ namespace HA4IoT.Actuators
             if (area == null) throw new ArgumentNullException(nameof(area));
             if (output == null) throw new ArgumentNullException(nameof(output));
 
-            var lamp = new Lamp(ComponentIdFactory.Create(area.Id, id), new PortBasedBinaryStateEndpoint(output));
+            var lamp = new Lamp(ComponentIdGenerator.Generate(area.Id, id), new PortBasedBinaryStateEndpoint(output));
             area.AddComponent(lamp);
 
             return lamp;
@@ -88,7 +89,7 @@ namespace HA4IoT.Actuators
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
 
-            var actuator = new LogicalBinaryStateActuator(ComponentIdFactory.Create(area.Id, id), _timerService);
+            var actuator = new LogicalBinaryStateActuator(ComponentIdGenerator.Generate(area.Id, id), _timerService);
             area.AddComponent(actuator);
 
             return actuator;

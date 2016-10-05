@@ -39,8 +39,10 @@ namespace HA4IoT.Controller.Main.Rooms
             StairwayLampWall,
             StairwayLampCeiling,
             CombinedStairwayLamp,
+            CombinedStairwayLampAutomation,
 
             StairwayRollerShutter,
+            StairwayRollerShutterAutomation,
 
             LowerFloorTemperatureSensor,
             LowerFloorHumiditySensor,
@@ -62,9 +64,12 @@ namespace HA4IoT.Controller.Main.Rooms
             Lamp2,
             Lamp3,
             CombinedLamps,
+            CombinedLampsAutomation,
 
             LampStairsCeiling,
-            LampStairs
+            LampStairsCeilingAutomation,
+            LampStairs,
+            LampStairsAutomation
         }
 
         public FloorConfiguration(
@@ -147,7 +152,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithActuator(room.GetLamp(Floor.Lamp2))
                 .WithActuator(room.GetLamp(Floor.Lamp3));
 
-            _automationFactory.RegisterTurnOnAndOffAutomation(room)
+            _automationFactory.RegisterTurnOnAndOffAutomation(room, Floor.CombinedLampsAutomation)
                 .WithTrigger(room.GetMotionDetector(Floor.LowerFloorMotionDetector))
                 .WithTrigger(room.GetButton(Floor.ButtonLowerFloorUpper).GetPressedShortlyTrigger())
                 .WithTrigger(room.GetButton(Floor.ButtonLowerFloorAtBathroom).GetPressedShortlyTrigger())
@@ -159,7 +164,7 @@ namespace HA4IoT.Controller.Main.Rooms
             SetupStairsCeilingLamps(room, hspe8UpperFloor);
             SetupStairsLamps(room, hspe16FloorAndLowerBathroom);
 
-            _automationFactory.RegisterRollerShutterAutomation(room)
+            _automationFactory.RegisterRollerShutterAutomation(room, Floor.StairwayRollerShutterAutomation)
                 .WithRollerShutters(room.GetRollerShutter(Floor.StairwayRollerShutter));
 
             _synonymService.AddSynonymsForArea(Room.Floor, "Flur", "Floor");
@@ -167,7 +172,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
         private void SetupStairwayLamps(IArea room)
         {
-            _automationFactory.RegisterTurnOnAndOffAutomation(room)
+            _automationFactory.RegisterTurnOnAndOffAutomation(room, Floor.CombinedStairwayLampAutomation)
                 .WithTrigger(room.GetMotionDetector(Floor.StairwayMotionDetector))
                 .WithTrigger(room.GetButton(Floor.ButtonStairway).GetPressedShortlyTrigger())
                 .WithTarget(room.GetActuator(Floor.CombinedStairwayLamp))
@@ -185,7 +190,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             _actuatorFactory.RegisterLamp(room, Floor.LampStairsCeiling, output);
 
-            _automationFactory.RegisterTurnOnAndOffAutomation(room)
+            _automationFactory.RegisterTurnOnAndOffAutomation(room, Floor.LampStairsCeilingAutomation)
                 .WithTrigger(room.GetMotionDetector(Floor.StairsLowerMotionDetector))
                 .WithTrigger(room.GetMotionDetector(Floor.StairsUpperMotionDetector))
                 //.WithTrigger(floor.GetButton(Floor.ButtonStairsUpper).GetPressedShortlyTrigger())
@@ -231,7 +236,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             _actuatorFactory.RegisterLamp(room, Floor.LampStairs, output);
 
-            _automationFactory.RegisterConditionalOnAutomation(room)
+            _automationFactory.RegisterConditionalOnAutomation(room, Floor.LampStairsAutomation)
                 .WithActuator(room.GetLamp(Floor.LampStairs))
                 .WithOnAtNightRange()
                 .WithOffBetweenRange(TimeSpan.FromHours(23), TimeSpan.FromHours(4));

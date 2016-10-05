@@ -34,9 +34,12 @@ namespace HA4IoT.Controller.Main.Rooms
             MotionDetector,
             MotionDetectorCatLitterBox,
             LightCeiling,
+            LightCeilingAutomation,
 
             CatLitterBoxFan,
-            CirculatingPump
+            CatLitterBoxFanAutomation,
+            CirculatingPump,
+            CirculatingPumpAutomation,
         }
 
         public StoreroomConfiguration(
@@ -89,11 +92,11 @@ namespace HA4IoT.Controller.Main.Rooms
             _actuatorFactory.RegisterSocket(room, Storeroom.CatLitterBoxFan, hsrel5Stairway[HSREL5Pin.GPIO2]);
             _actuatorFactory.RegisterSocket(room, Storeroom.CirculatingPump, hsrel5UpperHeatingValves[HSREL5Pin.Relay3]);
 
-            _automationFactory.RegisterTurnOnAndOffAutomation(room)
+            _automationFactory.RegisterTurnOnAndOffAutomation(room, Storeroom.LightCeilingAutomation)
                 .WithTrigger(room.GetMotionDetector(Storeroom.MotionDetector))
                 .WithTarget(room.GetLamp(Storeroom.LightCeiling));
 
-            _automationFactory.RegisterTurnOnAndOffAutomation(room)
+            _automationFactory.RegisterTurnOnAndOffAutomation(room, Storeroom.CatLitterBoxFan)
                 .WithTrigger(room.GetMotionDetector(Storeroom.MotionDetectorCatLitterBox))
                 .WithTarget(room.GetSocket(Storeroom.CatLitterBoxFan));
 
@@ -102,7 +105,7 @@ namespace HA4IoT.Controller.Main.Rooms
             hsrel5UpperHeatingValves[HSREL5Pin.GPIO0].Write(BinaryState.Low);
             hsrel5UpperHeatingValves[HSREL5Pin.GPIO1].Write(BinaryState.Low);
 
-            _automationFactory.RegisterTurnOnAndOffAutomation(room)
+            _automationFactory.RegisterTurnOnAndOffAutomation(room, Storeroom.CirculatingPumpAutomation)
                 .WithTrigger(_areaService.GetArea(Room.Kitchen).GetMotionDetector(KitchenConfiguration.Kitchen.MotionDetector))
                 .WithTrigger(_areaService.GetArea(Room.LowerBathroom).GetMotionDetector(LowerBathroomConfiguration.LowerBathroom.MotionDetector))
                 .WithTarget(room.GetSocket(Storeroom.CirculatingPump))

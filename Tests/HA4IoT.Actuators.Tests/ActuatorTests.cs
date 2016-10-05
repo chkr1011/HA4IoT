@@ -3,6 +3,7 @@ using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -16,7 +17,7 @@ namespace HA4IoT.Actuators.Tests
         public void TurnOnAndTurnOff_Socket()
         {
             var endpoint = new TestBinaryStateEndpoint();
-            var socket = new Socket(ComponentIdFactory.EmptyId, endpoint);
+            var socket = new Socket(ComponentIdGenerator.EmptyId, endpoint);
             socket.ResetState();
             
             endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(0);
@@ -53,7 +54,7 @@ namespace HA4IoT.Actuators.Tests
         public void Toggle_Lamp()
         {
             var endpoint = new TestBinaryStateEndpoint();
-            var lamp = new Lamp(ComponentIdFactory.EmptyId, endpoint);
+            var lamp = new Lamp(ComponentIdGenerator.EmptyId, endpoint);
             lamp.ResetState();
 
             endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(0);
@@ -75,7 +76,7 @@ namespace HA4IoT.Actuators.Tests
         public void StateAlias_Lamp()
         {
             var endpoint = new TestBinaryStateEndpoint();
-            var lamp = new Lamp(ComponentIdFactory.EmptyId, endpoint);
+            var lamp = new Lamp(ComponentIdGenerator.EmptyId, endpoint);
             lamp.ResetState();
 
             lamp.SetStateIdAlias(BinaryStateId.On, LevelStateId.Level1);

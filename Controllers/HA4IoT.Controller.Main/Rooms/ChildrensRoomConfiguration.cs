@@ -37,6 +37,7 @@ namespace HA4IoT.Controller.Main.Rooms
             RollerShutter,
             RollerShutterButtonUp,
             RollerShutterButtonDown,
+            RollerShutterAutomation,
 
             Button,
 
@@ -104,7 +105,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             room.GetLamp(ChildrensRoom.LightCeilingMiddle).ConnectToggleActionWith(room.GetButton(ChildrensRoom.Button));
 
-            _automationFactory.RegisterRollerShutterAutomation(room)
+            _automationFactory.RegisterRollerShutterAutomation(room, ChildrensRoom.RollerShutterAutomation)
                 .WithRollerShutters(room.GetRollerShutter(ChildrensRoom.RollerShutter));
 
             room.GetRollerShutter(ChildrensRoom.RollerShutter)

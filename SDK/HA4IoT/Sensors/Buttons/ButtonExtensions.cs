@@ -1,5 +1,6 @@
 ﻿using System;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Sensors;
 
@@ -29,7 +30,7 @@ namespace HA4IoT.Sensors.Buttons
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
 
-            return area.GetComponent<IButton>(ComponentIdFactory.Create(area.Id, id));
+            return area.GetComponent<IButton>(ComponentIdGenerator.Generate(area.Id, id));
         }
     }
 }

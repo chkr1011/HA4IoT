@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
@@ -20,7 +21,7 @@ namespace HA4IoT.Tests.Mockups
 
         public TestButton CreateTestButton()
         {
-            return new TestButton(ComponentIdFactory.EmptyId, new TestButtonEndpoint(), _timerService, _settingsService);
+            return new TestButton(ComponentIdGenerator.EmptyId, new TestButtonEndpoint(), _timerService, _settingsService);
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using FluentAssertions;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Automations;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Settings;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -13,7 +15,7 @@ namespace HA4IoT.Automations.Tests
         public void Empty_ConditionalOnAutomation()
         {
             var testController = new TestController();
-            var automation = new ConditionalOnAutomation(AutomationIdFactory.EmptyId,
+            var automation = new ConditionalOnAutomation(AutomationIdGenerator.EmptyId,
                 testController.SchedulerService,
                 testController.DateTimeService,
                 testController.DaylightService);

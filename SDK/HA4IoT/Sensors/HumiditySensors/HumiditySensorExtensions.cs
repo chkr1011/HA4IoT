@@ -1,5 +1,6 @@
 ﻿using System;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Triggers;
@@ -27,7 +28,7 @@ namespace HA4IoT.Sensors.HumiditySensors
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
 
-            return area.GetComponent<IHumiditySensor>(ComponentIdFactory.Create(area.Id, id));
+            return area.GetComponent<IHumiditySensor>(ComponentIdGenerator.Generate(area.Id, id));
         }
     }
 }

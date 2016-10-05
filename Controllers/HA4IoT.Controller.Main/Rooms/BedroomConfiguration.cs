@@ -39,6 +39,7 @@ namespace HA4IoT.Controller.Main.Rooms
             MotionDetector,
 
             LightCeiling,
+            LightCeilingAutomation,
             LightCeilingWindow,
             LightCeilingWall,
 
@@ -65,8 +66,10 @@ namespace HA4IoT.Controller.Main.Rooms
             RollerShutterButtonsUpperDown,
             RollerShutterButtonsLowerUp,
             RollerShutterButtonsLowerDown,
+
             RollerShutterLeft,
             RollerShutterRight,
+            RollerShuttersAutomation,
 
             Fan,
 
@@ -174,13 +177,13 @@ namespace HA4IoT.Controller.Main.Rooms
                 room.GetStateMachine(Bedroom.CombinedCeilingLights).TryTurnOff();
             });
 
-            _automationFactory.RegisterRollerShutterAutomation(room)
+            _automationFactory.RegisterRollerShutterAutomation(room, Bedroom.RollerShuttersAutomation)
                 .WithRollerShutters(room.GetRollerShutters())
                 .WithDoNotOpenBefore(TimeSpan.FromHours(7).Add(TimeSpan.FromMinutes(15)))
                 .WithCloseIfOutsideTemperatureIsGreaterThan(24)
                 .WithDoNotOpenIfOutsideTemperatureIsBelowThan(3);
 
-            _automationFactory.RegisterTurnOnAndOffAutomation(room)
+            _automationFactory.RegisterTurnOnAndOffAutomation(room, Bedroom.LightCeilingAutomation)
                 .WithTrigger(room.GetMotionDetector(Bedroom.MotionDetector))
                 .WithTarget(room.GetStateMachine(Bedroom.LightCeiling))
                 .WithTurnOnIfAllRollerShuttersClosed(room.GetRollerShutter(Bedroom.RollerShutterLeft), room.GetRollerShutter(Bedroom.RollerShutterRight))

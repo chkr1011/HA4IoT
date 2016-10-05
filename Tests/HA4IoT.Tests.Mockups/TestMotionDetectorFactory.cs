@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
@@ -21,7 +22,7 @@ namespace HA4IoT.Tests.Mockups
 
         public TestMotionDetector CreateTestMotionDetector()
         {
-            return new TestMotionDetector(ComponentIdFactory.EmptyId, new TestMotionDetectorEndpoint(),
+            return new TestMotionDetector(ComponentIdGenerator.EmptyId, new TestMotionDetectorEndpoint(),
                 _schedulerService, _settingsService);
         }
     }

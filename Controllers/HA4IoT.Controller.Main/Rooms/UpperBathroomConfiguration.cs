@@ -4,6 +4,7 @@ using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Automations;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services.Settings;
@@ -42,8 +43,10 @@ namespace HA4IoT.Controller.Main.Rooms
             LampMirrorCabinet,
 
             Fan,
+            FanAutomation,
 
-            CombinedCeilingLights
+            CombinedCeilingLights,
+            CombinedCeilingLightsAutomation
         }
 
         public UpperBathroomConfiguration(
@@ -110,11 +113,11 @@ namespace HA4IoT.Controller.Main.Rooms
                     .WithActuator(room.GetLamp(UpperBathroom.LightCeilingMirrorCabinet))
                     .WithActuator(room.GetLamp(UpperBathroom.LampMirrorCabinet));
 
-            _automationFactory.RegisterTurnOnAndOffAutomation(room)
+            _automationFactory.RegisterTurnOnAndOffAutomation(room, UpperBathroom.CombinedCeilingLightsAutomation)
                 .WithTrigger(room.GetMotionDetector(UpperBathroom.MotionDetector))
                 .WithTarget(combinedLights);
             
-            new BathroomFanAutomation(AutomationIdFactory.CreateIdFrom<BathroomFanAutomation>(room), _schedulerService, _settingsService)
+            new BathroomFanAutomation(AutomationIdGenerator.Generate(room, UpperBathroom.FanAutomation), _schedulerService, _settingsService)
                 .WithTrigger(room.GetMotionDetector(UpperBathroom.MotionDetector))
                 .WithActuator(room.GetStateMachine(UpperBathroom.Fan));
 

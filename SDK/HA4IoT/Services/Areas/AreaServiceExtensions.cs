@@ -8,14 +8,14 @@ namespace HA4IoT.Services.Areas
         public static IArea CreateArea(this IAreaService areaService, Enum id)
         {
             if (areaService == null) throw new ArgumentNullException(nameof(areaService));
-            return areaService.CreateArea(AreaIdFactory.Create(id));
+            return areaService.CreateArea(AreaIdGenerator.Generate(id));
         }
 
         public static IArea GetArea(this IAreaService areaService, Enum id)
         {
             if (areaService == null) throw new ArgumentNullException(nameof(areaService));
 
-            return areaService.GetArea(AreaIdFactory.Create(id));
+            return areaService.GetArea(AreaIdGenerator.Generate(id));
         }
     }
 }
