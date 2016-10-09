@@ -14,13 +14,16 @@ using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware.Services;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Backup;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.ExternalServices.TelegramBot;
 using HA4IoT.Contracts.Services.ExternalServices.Twitter;
 using HA4IoT.Contracts.Services.Notifications;
 using HA4IoT.Contracts.Services.OutdoorHumidity;
 using HA4IoT.Contracts.Services.OutdoorTemperature;
+using HA4IoT.Contracts.Services.Resources;
 using HA4IoT.Contracts.Services.Settings;
+using HA4IoT.Contracts.Services.Storage;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Services.Weather;
 using HA4IoT.ExternalServices.AzureCloud;
@@ -43,7 +46,9 @@ using HA4IoT.Services.ControllerSlave;
 using HA4IoT.Services.Devices;
 using HA4IoT.Services.Environment;
 using HA4IoT.Services.Health;
+using HA4IoT.Services.Resources;
 using HA4IoT.Services.Scheduling;
+using HA4IoT.Services.StorageService;
 using HA4IoT.Services.System;
 using HA4IoT.Settings;
 using Newtonsoft.Json.Linq;
@@ -189,10 +194,15 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<DiscoveryServerService>();
             _container.RegisterSingleton<HttpServer>();
 
+            _container.RegisterSingleton<IStorageService, StorageService>();
             _container.RegisterSingleton<ITimerService, TimerService>();
             _container.RegisterSingleton<ISystemEventsService, SystemEventsService>();
             _container.RegisterSingleton<IContainerService>(() => containerService);
             _container.RegisterSingleton<ISystemInformationService, SystemInformationService>();
+            _container.RegisterSingleton<IBackupService, IBackupService>();
+
+            _container.RegisterSingleton<IResourceService, ResourceService>();
+            _container.RegisterInitializer<ResourceService>(s => s.Initialize());
 
             _container.RegisterSingleton<IApiService, ApiService>();
             _container.RegisterSingleton<AzureCloudApiDispatcherEndpointService>();

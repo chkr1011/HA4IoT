@@ -6,6 +6,8 @@ using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Services.Backup;
+using HA4IoT.Services.StorageService;
 using HA4IoT.Settings;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -19,7 +21,7 @@ namespace HA4IoT.Automations.Tests
         public void Automation_Toggle()
         {
             var timer = new TestTimerService();
-            var testButtonFactory = new TestButtonFactory(timer, new SettingsService());
+            var testButtonFactory = new TestButtonFactory(timer, new SettingsService(new BackupService(), new StorageService()));
             var testStateMachineFactory = new TestStateMachineFactory();
 
             var testButton = testButtonFactory.CreateTestButton();
@@ -43,7 +45,7 @@ namespace HA4IoT.Automations.Tests
         {
             var testController = new TestController();
             
-            var testButtonFactory = new TestButtonFactory(testController.TimerService, new SettingsService());
+            var testButtonFactory = new TestButtonFactory(testController.TimerService, new SettingsService(new BackupService(), new StorageService()));
             var testStateMachineFactory = new TestStateMachineFactory();
 
             var testButton = testButtonFactory.CreateTestButton();

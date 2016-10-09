@@ -18,16 +18,5 @@ namespace HA4IoT.Contracts.Core
 
             return Path.Combine(Root, Path.Combine(paths));
         }
-
-        public static void EnsureDirectoryExists(string filename)
-        {
-            if (filename == null) throw new ArgumentNullException(nameof(filename));
-
-            string path = Path.GetDirectoryName(filename);
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-        }
     }
 }

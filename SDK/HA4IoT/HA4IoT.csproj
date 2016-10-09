@@ -215,6 +215,7 @@
     <Compile Include="Services\Areas\AreaServiceExtensions.cs" />
     <Compile Include="Services\Automations\AutomationCollection.cs" />
     <Compile Include="Services\Automations\AutomationService.cs" />
+    <Compile Include="Services\Backup\BackupService.cs" />
     <Compile Include="Services\Components\ComponentCollection.cs" />
     <Compile Include="Services\Components\ComponentService.cs" />
     <Compile Include="Services\ControllerSlave\ControllerSlaveService.cs" />
@@ -229,9 +230,13 @@
     <Compile Include="Services\GenericControllerCollection.cs" />
     <Compile Include="Services\Health\HealthService.cs" />
     <Compile Include="Services\Health\HealthServiceOptions.cs" />
+    <Compile Include="Services\Resources\GetTextsRequest.cs" />
+    <Compile Include="Services\Resources\ResourceService.cs" />
+    <Compile Include="Services\Resources\SetTextsRequest.cs" />
     <Compile Include="Services\Scheduling\Schedule.cs" />
     <Compile Include="Services\Scheduling\SchedulerService.cs" />
     <Compile Include="Services\Scheduling\ScheduleStatus.cs" />
+    <Compile Include="Services\StorageService\StorageService.cs" />
     <Compile Include="Services\System\DateTimeService.cs" />
     <Compile Include="Services\System\DiscoveryServerService.cs" />
     <Compile Include="Services\System\SystemEventsService.cs" />

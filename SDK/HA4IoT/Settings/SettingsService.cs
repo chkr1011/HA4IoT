@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using HA4IoT.Contracts.Api;
-using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Backup;
 using HA4IoT.Contracts.Services.Settings;
-using Newtonsoft.Json;
+using HA4IoT.Contracts.Services.Storage;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Settings
@@ -14,8 +12,23 @@ namespace HA4IoT.Settings
     [ApiServiceClass(typeof(ISettingsService))]
     public class SettingsService : ServiceBase, ISettingsService
     {
+        private const string StorageFilename = "SettingsService.json";
+        private const string BackupKeyName = "Settings";
+
         private readonly object _syncRoot = new object();
         private readonly Dictionary<string, JObject> _settings = new Dictionary<string, JObject>(StringComparer.OrdinalIgnoreCase);
+        private readonly IStorageService _storageService;
+
+        public SettingsService(IBackupService backupService, IStorageService storageService)
+        {
+            if (backupService == null) throw new ArgumentNullException(nameof(backupService));
+            if (storageService == null) throw new ArgumentNullException(nameof(storageService));
+
+            _storageService = storageService;
+
+            backupService.CreatingBackup += (s, e) => CreateBackup(e);
+            backupService.RestoringBackup += (s, e) => RestoreBackupNEW(e);
+        }
 
         public void Initialize()
         {
@@ -62,7 +75,7 @@ namespace HA4IoT.Settings
                 var settingsInstance = Activator.CreateInstance<TSettings>();
                 _settings[uri] = JObject.FromObject(settingsInstance);
 
-                Save();
+                SaveSettings();
 
                 return settingsInstance;
             }
@@ -88,7 +101,12 @@ namespace HA4IoT.Settings
         {
             if (uri == null) throw new ArgumentNullException(nameof(uri));
 
-            var rawSettings = JObject.FromObject(settings);
+            var rawSettings = settings as JObject;
+            if (rawSettings == null)
+            {
+                rawSettings = JObject.FromObject(settings);
+            }
+
             ImportRawSettings(uri, rawSettings);
         }
 
@@ -144,17 +162,41 @@ namespace HA4IoT.Settings
             }
         }
 
-        [ApiMethod]
-        public void Backup(IApiContext apiContext)
+        private void CreateBackup(BackupEventArgs backupEventArgs)
         {
             lock (_syncRoot)
             {
-                apiContext.Response = JObject.FromObject(_settings);
+                backupEventArgs.Backup[BackupKeyName] = JObject.FromObject(_settings);
+            }
+        }
+
+        private void RestoreBackupNEW(BackupEventArgs backupEventArgs)
+        {
+            if (backupEventArgs.Backup.Property(BackupKeyName) == null)
+            {
+                return;
+            }
+
+            var settings = backupEventArgs.Backup[BackupKeyName].Value<Dictionary<string, JObject>>();
+
+            lock (_syncRoot)
+            {
+                foreach (var setting in settings)
+                {
+                    _settings[setting.Key] = setting.Value;
+                }
+
+                SaveSettings();
+            }
+
+            foreach (var setting in settings)
+            {
+                SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(setting.Key));
             }
         }
 
         [ApiMethod]
-        public void Restore(IApiContext apiContext)
+        public void RestoreBackup(IApiContext apiContext)
         {
             if (apiContext.Request.Type == JTokenType.Object)
             {
@@ -167,7 +209,7 @@ namespace HA4IoT.Settings
                         _settings[setting.Key] = setting.Value;
                     }
 
-                    Save();
+                    SaveSettings();
                 }
 
                 foreach (var setting in settings)
@@ -187,7 +229,7 @@ namespace HA4IoT.Settings
             {
                 _settings[uri] = settings;
 
-                Save();
+                SaveSettings();
 
                 SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(uri));
             }
@@ -208,44 +250,25 @@ namespace HA4IoT.Settings
                     _settings[uri] = settings;
                 }
 
-                Save();
+                SaveSettings();
                 SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(uri));
             }
         }
 
-        private void Save()
+        private void SaveSettings()
         {
-            var filename = StoragePath.WithFilename("SettingsService.json");
-            var content = JsonConvert.SerializeObject(_settings, Formatting.Indented);
-
-            File.WriteAllText(filename, content);
+            _storageService.Write(StorageFilename, _settings);
         }
 
         private void TryLoadSettings()
         {
-            try
+            Dictionary<string, JObject> persistedSettings;
+            if (_storageService.TryRead(StorageFilename, out persistedSettings))
             {
-                var filename = StoragePath.WithFilename("SettingsService.json");
-                if (!File.Exists(filename))
-                {
-                    return;
-                }
-
-                var fileContent = File.ReadAllText(filename);
-                if (string.IsNullOrEmpty(fileContent))
-                {
-                    return;
-                }
-
-                var settings = JsonConvert.DeserializeObject<Dictionary<string, JObject>>(fileContent);
-                foreach (var setting in settings)
+                foreach (var setting in persistedSettings)
                 {
                     _settings[setting.Key] = setting.Value;
                 }
-            }
-            catch (Exception exception)
-            {
-                Log.Warning(exception, "Unable to load settings.");
             }
         }
     }

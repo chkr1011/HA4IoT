@@ -5,11 +5,8 @@ RCSwitch rcs = RCSwitch();
 void setup() {
 	Serial.begin(9600);
 
-	rcs.enableReceive(INT1); 
-	rcs.enableTransmit(PD4);
-	
-	Serial.println("Connect sender with PD4");
-	Serial.println("Connect receiver with INT1 (PD3)");
+	rcs.enableReceive(INT0); 
+	Serial.println("Connect receiver with INT0");
 
 	Serial.println("Started");
 }

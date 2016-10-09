@@ -3,8 +3,9 @@ using FluentAssertions;
 using HA4IoT.Automations;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
-using HA4IoT.Contracts.Components;
+using HA4IoT.Services.Backup;
 using HA4IoT.Services.Scheduling;
+using HA4IoT.Services.StorageService;
 using HA4IoT.Services.System;
 using HA4IoT.Settings;
 using HA4IoT.Tests.Mockups;
@@ -19,10 +20,10 @@ namespace HA4IoT.Actuators.Tests
         public void Should_TurnOn_IfMotionDetected()
         {
             var schedulerService = new SchedulerService(new TestTimerService(), new DateTimeService());
-            var motionDetectorFactory = new TestMotionDetectorFactory(schedulerService, new SettingsService());
+            var motionDetectorFactory = new TestMotionDetectorFactory(schedulerService, new SettingsService(new BackupService(), new StorageService()));
             var stateMachineFactory = new TestStateMachineFactory();
 
-            var automation = new TurnOnAndOffAutomation(AutomationIdGenerator.EmptyId, new TestDateTimeService(), schedulerService, new SettingsService(), new TestDaylightService());
+            var automation = new TurnOnAndOffAutomation(AutomationIdGenerator.EmptyId, new TestDateTimeService(), schedulerService, new SettingsService(new BackupService(), new StorageService()), new TestDaylightService());
             var motionDetector = motionDetectorFactory.CreateTestMotionDetector();
             var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
             output.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
@@ -39,10 +40,10 @@ namespace HA4IoT.Actuators.Tests
         public void Should_TurnOn_IfButtonPressedShort()
         {
             var timer = new TestTimerService();
-            var buttonFactory = new TestButtonFactory(timer, new SettingsService());
+            var buttonFactory = new TestButtonFactory(timer, new SettingsService(new BackupService(), new StorageService()));
             var stateMachineFactory = new TestStateMachineFactory();
 
-            var automation = new TurnOnAndOffAutomation(AutomationIdGenerator.EmptyId, new TestDateTimeService(), new SchedulerService(new TestTimerService(), new DateTimeService()), new SettingsService(), new TestDaylightService());
+            var automation = new TurnOnAndOffAutomation(AutomationIdGenerator.EmptyId, new TestDateTimeService(), new SchedulerService(new TestTimerService(), new DateTimeService()), new SettingsService(new BackupService(), new StorageService()), new TestDaylightService());
             var button = buttonFactory.CreateTestButton();
             var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
             output.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
@@ -62,10 +63,10 @@ namespace HA4IoT.Actuators.Tests
             var dateTimeService = new TestDateTimeService();
             dateTimeService.SetTime(TimeSpan.Parse("18:00:00"));
 
-            var motionDetectorFactory = new TestMotionDetectorFactory(new SchedulerService(timer, dateTimeService), new SettingsService());
+            var motionDetectorFactory = new TestMotionDetectorFactory(new SchedulerService(timer, dateTimeService), new SettingsService(new BackupService(), new StorageService()));
             var stateMachineFactory = new TestStateMachineFactory();
 
-            var automation = new TurnOnAndOffAutomation(AutomationIdGenerator.EmptyId, dateTimeService, new SchedulerService(timer, dateTimeService), new SettingsService(), new TestDaylightService());
+            var automation = new TurnOnAndOffAutomation(AutomationIdGenerator.EmptyId, dateTimeService, new SchedulerService(timer, dateTimeService), new SettingsService(new BackupService(), new StorageService()), new TestDaylightService());
             var motionDetector = motionDetectorFactory.CreateTestMotionDetector();
             var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
             output.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
@@ -86,10 +87,10 @@ namespace HA4IoT.Actuators.Tests
             var dateTimeService = new TestDateTimeService();
             dateTimeService.SetTime(TimeSpan.Parse("18:00:00"));
 
-            var buttonFactory = new TestButtonFactory(timer, new SettingsService());
+            var buttonFactory = new TestButtonFactory(timer, new SettingsService(new BackupService(), new StorageService()));
             var stateMachineFactory = new TestStateMachineFactory();
 
-            var automation = new TurnOnAndOffAutomation(AutomationIdGenerator.EmptyId, dateTimeService, new SchedulerService(timer, dateTimeService), new SettingsService(), new TestDaylightService());
+            var automation = new TurnOnAndOffAutomation(AutomationIdGenerator.EmptyId, dateTimeService, new SchedulerService(timer, dateTimeService), new SettingsService(new BackupService(), new StorageService()), new TestDaylightService());
             var button = buttonFactory.CreateTestButton();
             var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
             output.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
@@ -110,10 +111,10 @@ namespace HA4IoT.Actuators.Tests
             var dateTimeService = new TestDateTimeService();
             dateTimeService.SetTime(TimeSpan.Parse("14:00:00"));
 
-            var motionDetectorFactory = new TestMotionDetectorFactory(new SchedulerService(timer, dateTimeService), new SettingsService());
+            var motionDetectorFactory = new TestMotionDetectorFactory(new SchedulerService(timer, dateTimeService), new SettingsService(new BackupService(), new StorageService()));
             var stateMachineFactory = new TestStateMachineFactory();
 
-            var automation = new TurnOnAndOffAutomation(AutomationIdGenerator.EmptyId, dateTimeService, new SchedulerService(timer, dateTimeService), new SettingsService(), new TestDaylightService());
+            var automation = new TurnOnAndOffAutomation(AutomationIdGenerator.EmptyId, dateTimeService, new SchedulerService(timer, dateTimeService), new SettingsService(new BackupService(), new StorageService()), new TestDaylightService());
             var motionDetector = motionDetectorFactory.CreateTestMotionDetector();
 
             var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
@@ -142,10 +143,10 @@ namespace HA4IoT.Actuators.Tests
             var dateTimeService = new TestDateTimeService();
             dateTimeService.SetTime(TimeSpan.Parse("14:00:00"));
 
-            var motionDetectorFactory = new TestMotionDetectorFactory(new SchedulerService(timer, dateTimeService), new SettingsService());
+            var motionDetectorFactory = new TestMotionDetectorFactory(new SchedulerService(timer, dateTimeService), new SettingsService(new BackupService(), new StorageService()));
             var stateMachineFactory = new TestStateMachineFactory();
 
-            var automation = new TurnOnAndOffAutomation(AutomationIdGenerator.EmptyId, dateTimeService, new SchedulerService(timer, dateTimeService), new SettingsService(), new TestDaylightService());
+            var automation = new TurnOnAndOffAutomation(AutomationIdGenerator.EmptyId, dateTimeService, new SchedulerService(timer, dateTimeService), new SettingsService(new BackupService(), new StorageService()), new TestDaylightService());
             var motionDetector = motionDetectorFactory.CreateTestMotionDetector();
 
             var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
@@ -174,10 +175,10 @@ namespace HA4IoT.Actuators.Tests
             var dateTimeService = new TestDateTimeService();
             dateTimeService.SetTime(TimeSpan.Parse("14:00:00"));
 
-            var buttonFactory = new TestButtonFactory(timer, new SettingsService());
+            var buttonFactory = new TestButtonFactory(timer, new SettingsService(new BackupService(), new StorageService()));
             var stateMachineFactory = new TestStateMachineFactory();
             
-            var automation = new TurnOnAndOffAutomation(AutomationIdGenerator.EmptyId, dateTimeService, new SchedulerService(timer, dateTimeService), new SettingsService(), new TestDaylightService());
+            var automation = new TurnOnAndOffAutomation(AutomationIdGenerator.EmptyId, dateTimeService, new SchedulerService(timer, dateTimeService), new SettingsService(new BackupService(), new StorageService()), new TestDaylightService());
             var button = buttonFactory.CreateTestButton();
 
             var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();

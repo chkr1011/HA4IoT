@@ -140,6 +140,8 @@
     <Compile Include="Sensors\IButtonSettings.cs" />
     <Compile Include="Sensors\IMotionDetectorSettings.cs" />
     <Compile Include="Services\ApiServiceClassAttribute.cs" />
+    <Compile Include="Services\Backup\BackupEventArgs.cs" />
+    <Compile Include="Services\Backup\IBackupService.cs" />
     <Compile Include="Services\ExternalServices\TelegramBot\ITelegramBotService.cs" />
     <Compile Include="Services\ExternalServices\TelegramBot\MessageBase.cs" />
     <Compile Include="Services\ExternalServices\TelegramBot\TelegramInboundMessage.cs" />
@@ -151,10 +153,14 @@
     <Compile Include="Services\Notifications\INotificationService.cs" />
     <Compile Include="Services\Notifications\Notification.cs" />
     <Compile Include="Services\Notifications\NotificationType.cs" />
+    <Compile Include="Services\Resources\IResourceService.cs" />
+    <Compile Include="Services\Resources\Resource.cs" />
+    <Compile Include="Services\Resources\ResourceValue.cs" />
     <Compile Include="Services\Settings\SettingsServiceExtensions.cs" />
     <Compile Include="Services\Settings\SettingsUriAttribute.cs" />
     <Compile Include="Services\Settings\SettingsUriGenerator.cs" />
     <Compile Include="Services\Settings\SettingValueChangedEventArgs.cs" />
+    <Compile Include="Services\Storage\IStorageService.cs" />
     <Compile Include="Services\System\IHealthService.cs" />
     <Compile Include="Services\Settings\ISettingsService.cs" />
     <Compile Include="Hardware\ForceUpdateStateParameter.cs" />
