@@ -4,12 +4,10 @@ using System.Linq;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
-using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services;
-using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.PersonalAgent
 {

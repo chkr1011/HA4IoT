@@ -16,7 +16,7 @@ namespace HA4IoT.PersonalAgent
 
         public SynonymServiceStorage()
         {
-            var rootPath = StoragePath.WithFilename("Services", "SynonymService");
+            var rootPath = Path.Combine(StoragePath.Root, "Services", "SynonymService");
             if (!Directory.Exists(rootPath))
             {
                 Directory.CreateDirectory(rootPath);

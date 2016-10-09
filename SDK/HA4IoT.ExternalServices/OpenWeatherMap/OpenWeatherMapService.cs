@@ -1,15 +1,14 @@
 using System;
 using System.Diagnostics;
-using System.IO;
 using Windows.Web.Http;
 using HA4IoT.Contracts.Api;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.OutdoorHumidity;
 using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.Settings;
+using HA4IoT.Contracts.Services.Storage;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Services.Weather;
 using Newtonsoft.Json.Linq;
@@ -19,7 +18,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
     [ApiServiceClass(typeof(OpenWeatherMapService))]
     public class OpenWeatherMapService : ServiceBase
     {
-        private readonly string _cacheFilename = StoragePath.WithFilename("OpenWeatherMapCache.json");
+        private const string StorageFilename = "OpenWeatherMapCache.json";
 
         private readonly IOutdoorTemperatureService _outdoorTemperatureService;
         private readonly IOutdoorHumidityService _outdoorHumidityService;
@@ -27,7 +26,8 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
         private readonly IWeatherService _weatherService;
         private readonly IDateTimeService _dateTimeService;
         private readonly ISystemInformationService _systemInformationService;
-        
+        private readonly IStorageService _storageService;
+
         private string _previousResponse;
 
         public float Temperature { get; private set; }
@@ -44,7 +44,8 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             IDateTimeService dateTimeService, 
             ISchedulerService schedulerService, 
             ISystemInformationService systemInformationService,
-            ISettingsService settingsService)
+            ISettingsService settingsService, 
+            IStorageService storageService)
         {
             if (outdoorTemperatureService == null) throw new ArgumentNullException(nameof(outdoorTemperatureService));
             if (outdoorHumidityService == null) throw new ArgumentNullException(nameof(outdoorHumidityService));
@@ -53,17 +54,19 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
             if (systemInformationService == null) throw new ArgumentNullException(nameof(systemInformationService));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-
+            if (storageService == null) throw new ArgumentNullException(nameof(storageService));
+            
             _outdoorTemperatureService = outdoorTemperatureService;
             _outdoorHumidityService = outdoorHumidityService;
             _daylightService = daylightService;
             _weatherService = weatherService;
             _dateTimeService = dateTimeService;
             _systemInformationService = systemInformationService;
-            
+            _storageService = storageService;
+
             settingsService.CreateSettingsMonitor<OpenWeatherMapServiceSettings>(s => Settings = s);
 
-            LoadPersistedValues();
+            LoadPersistedData();
             
             schedulerService.RegisterSchedule("OpenWeatherMapServiceUpdater", TimeSpan.FromMinutes(5), Refresh);
         }
@@ -82,11 +85,6 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             Refresh();
         }
 
-        private void PersistData(string weatherData)
-        {
-            File.WriteAllText(_cacheFilename, weatherData);
-        }
-
         private void Refresh()
         {
             if (!Settings.IsEnabled)
@@ -103,7 +101,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             {
                 if (TryParseData(response))
                 {
-                    PersistData(response);
+                    _storageService.Write(StorageFilename, response);
                     PushData();
                 }
                 
@@ -183,21 +181,12 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             }
         }
 
-        private void LoadPersistedValues()
+        private void LoadPersistedData()
         {
-            if (!File.Exists(_cacheFilename))
+            JObject cachedResponse;
+            if (_storageService.TryRead(StorageFilename, out cachedResponse))
             {
-                return;
-            }
-
-            try
-            {
-                TryParseData(File.ReadAllText(_cacheFilename));
-            }
-            catch (Exception exception)
-            {
-                Log.Warning(exception, "Unable to load cached weather data.");
-                File.Delete(_cacheFilename);
+                TryParseData(cachedResponse.ToString());
             }
         }
     }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Windows.Storage;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Storage;
@@ -10,7 +10,7 @@ namespace HA4IoT.Services.StorageService
 {
     public class StorageService : ServiceBase, IStorageService
     {
-        private readonly string _rootPath = ApplicationData.Current.LocalFolder.Path;
+        private readonly string _rootPath = StoragePath.Root;
 
         public bool TryRead<TData>(string filename, out TData data)
         {
