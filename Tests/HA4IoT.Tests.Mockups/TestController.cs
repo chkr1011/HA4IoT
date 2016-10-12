@@ -13,6 +13,7 @@ using HA4IoT.Services.Areas;
 using HA4IoT.Services.Automations;
 using HA4IoT.Services.Backup;
 using HA4IoT.Services.Components;
+using HA4IoT.Services.Resources;
 using HA4IoT.Services.Scheduling;
 using HA4IoT.Services.StorageService;
 using HA4IoT.Services.System;
@@ -37,7 +38,8 @@ namespace HA4IoT.Tests.Mockups
             AutomationService = new AutomationService(systemEventsService, systemInformationService, apiService);
             ComponentService = new ComponentService(systemEventsService, systemInformationService, apiService, settingsService);
             AreaService = new AreaService(ComponentService, AutomationService, systemEventsService, systemInformationService, apiService, settingsService);
-            NotificationService = new NotificationService(DateTimeService, new ApiService(), SchedulerService, systemEventsService, new SettingsService(new BackupService(), new StorageService()), new StorageService());
+            NotificationService = new NotificationService(
+                DateTimeService, new ApiService(), SchedulerService, systemEventsService, new SettingsService(new BackupService(), new StorageService()), new StorageService(), new ResourceService(new BackupService(), new StorageService(), new SettingsService(new BackupService(), new StorageService())));
         }
 
         public ITimerService TimerService { get; } = new TestTimerService();

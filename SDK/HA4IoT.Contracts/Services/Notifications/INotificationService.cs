@@ -8,6 +8,8 @@ namespace HA4IoT.Contracts.Services.Notifications
 
         void CreateInformation(string text);
 
+        void CreateInformation(Enum resourceId, params object[] formatParameterObjects);
+
         void CreateWarning(string text);
 
         void CreateError(string text);

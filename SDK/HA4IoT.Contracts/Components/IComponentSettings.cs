@@ -8,5 +8,7 @@ namespace HA4IoT.Contracts.Components
         event EventHandler<SettingValueChangedEventArgs> ValueChanged;
 
         bool IsEnabled { get; set; }
+
+        string Caption { get; set; }
     }
 }

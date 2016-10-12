@@ -9,6 +9,7 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.Notifications;
 using HA4IoT.Contracts.Services.OutdoorTemperature;
+using HA4IoT.Contracts.Services.Resources;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 
@@ -37,7 +38,8 @@ namespace HA4IoT.Automations
             IDaylightService daylightService,
             IOutdoorTemperatureService outdoorTemperatureService,
             IComponentService componentService,
-            ISettingsService settingsService)
+            ISettingsService settingsService,
+            IResourceService resourceService)
             : base(id)
         {
             if (notificationService == null) throw new ArgumentNullException(nameof(notificationService));
@@ -46,6 +48,7 @@ namespace HA4IoT.Automations
             if (outdoorTemperatureService == null) throw new ArgumentNullException(nameof(outdoorTemperatureService));
             if (componentService == null) throw new ArgumentNullException(nameof(componentService));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
+            if (resourceService == null) throw new ArgumentNullException(nameof(resourceService));
 
             _notificationService = notificationService;
             _dateTimeService = dateTimeService;
@@ -54,6 +57,10 @@ namespace HA4IoT.Automations
             _componentService = componentService;
             _settingsService = settingsService;
             _componentService = componentService;
+
+            resourceService.RegisterText(
+                RollerShutterAutomationNotification.AutoClosingDueToHighOutsideTemperature, 
+                "Closing roller shutter because outside temperature reaches {AutoCloseIfTooHotTemperaure}°C.");
 
             settingsService.CreateSettingsMonitor<RollerShutterAutomationSettings>(Id, s => Settings = s);
 
@@ -89,8 +96,7 @@ namespace HA4IoT.Automations
             if (!_maxOutsideTemperatureApplied && TooHotIsAffected())
             {
                 _maxOutsideTemperatureApplied = true;
-
-                _notificationService.CreateInformation($"Closing roller shutter because outside temperature reaches {Settings.AutoCloseIfTooHotTemperaure}°C.");
+                _notificationService.CreateInformation(RollerShutterAutomationNotification.AutoClosingDueToHighOutsideTemperature, Settings);
                 SetStates(RollerShutterStateId.MovingDown);
 
                 return;
@@ -98,8 +104,8 @@ namespace HA4IoT.Automations
 
             // TODO: Add check for heavy hailing
 
-            bool autoOpenIsInRange = GetIsDayCondition().IsFulfilled();
-            bool autoCloseIsInRange = !autoOpenIsInRange;
+            var autoOpenIsInRange = GetIsDayCondition().IsFulfilled();
+            var autoCloseIsInRange = !autoOpenIsInRange;
 
             if (!_autoOpenIsApplied && autoOpenIsInRange)
             {

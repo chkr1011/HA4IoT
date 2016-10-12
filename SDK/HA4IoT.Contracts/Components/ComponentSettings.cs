@@ -6,6 +6,7 @@ namespace HA4IoT.Contracts.Components
     public class ComponentSettings : IComponentSettings
     {
         private bool _isEnabled = true;
+        private string _caption;
 
         public event EventHandler<SettingValueChangedEventArgs> ValueChanged;
 
@@ -16,6 +17,16 @@ namespace HA4IoT.Contracts.Components
             {
                 _isEnabled = value;
                 OnValueChanged(nameof(IsEnabled));
+            }
+        }
+
+        public string Caption
+        {
+            get { return _caption; }
+            set
+            {
+                _caption = value;
+                OnValueChanged(nameof(Caption));
             }
         }
 

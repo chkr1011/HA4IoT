@@ -23,6 +23,7 @@ namespace HA4IoT.Api
         public event EventHandler<ApiRequestReceivedEventArgs> StatusRequested;
         public event EventHandler<ApiRequestReceivedEventArgs> StatusRequestCompleted;
         public event EventHandler<ApiRequestReceivedEventArgs> ConfigurationRequested;
+        public event EventHandler<ApiRequestReceivedEventArgs> ConfigurationRequestCompleted;
 
         public void NotifyStateChanged(IComponent component)
         {
@@ -100,6 +101,7 @@ namespace HA4IoT.Api
         {
             var eventArgs = new ApiRequestReceivedEventArgs(apiContext);
             ConfigurationRequested?.Invoke(this, eventArgs);
+            ConfigurationRequestCompleted?.Invoke(this, eventArgs);
         }
 
         private string GenerateUri(string relativePath)

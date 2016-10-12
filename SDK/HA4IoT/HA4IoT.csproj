@@ -153,6 +153,7 @@
     <Compile Include="Automations\ConditionalOnAutomation.cs" />
     <Compile Include="Automations\RollerShutterAutomation.cs" />
     <Compile Include="Automations\RollerShutterAutomationExtensions.cs" />
+    <Compile Include="Automations\RollerShutterAutomationNotification.cs" />
     <Compile Include="Automations\RollerShutterAutomationSettings.cs" />
     <Compile Include="Automations\TurnOnAndOffAutomation.cs" />
     <Compile Include="Automations\TurnOnAndOffAutomationSettings.cs" />
@@ -236,6 +237,10 @@
     <Compile Include="Services\Scheduling\Schedule.cs" />
     <Compile Include="Services\Scheduling\SchedulerService.cs" />
     <Compile Include="Services\Scheduling\ScheduleStatus.cs" />
+    <Compile Include="Services\Status\ActuatorStatus.cs" />
+    <Compile Include="Services\Status\Status.cs" />
+    <Compile Include="Services\Status\StatusService.cs" />
+    <Compile Include="Services\Status\WindowStatus.cs" />
     <Compile Include="Services\StorageService\StorageService.cs" />
     <Compile Include="Services\System\DateTimeService.cs" />
     <Compile Include="Services\System\DiscoveryServerService.cs" />
@@ -268,6 +273,11 @@
       <Project>{d4e0a3f9-6521-4aee-815a-e2a60323fb63}</Project>
       <Name>HA4IoT.Networking</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <SDKReference Include="SQLite.UWP.2015, Version=3.14.2">
+      <Name>SQLite for Universal Windows Platform</Name>
+    </SDKReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

@@ -42,9 +42,14 @@ namespace HA4IoT.Services.Resources
         public void Initialize()
         {
             _controllerSettings = _settingsService.GetSettings<ControllerSettings>();
+
+            lock (_syncRoot)
+            {
+                TryLoadResources();
+            }
         }
 
-        public void RegisterDefaultText(Enum id, string value)
+        public void RegisterText(Enum id, string value)
         {
             var uri = GenerateUri(id);
 
@@ -60,14 +65,6 @@ namespace HA4IoT.Services.Resources
                 _resources.Add(resource);
                 
                 SaveResources();
-            }
-        }
-
-        public override void Startup()
-        {
-            lock (_syncRoot)
-            {
-                TryLoadResources();
             }
         }
 

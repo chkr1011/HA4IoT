@@ -10,6 +10,7 @@ namespace HA4IoT.Actuators
         protected ActuatorBase(ComponentId id) 
             : base(id)
         {
+            
         }
 
         public abstract void SetState(ComponentState state, params IHardwareParameter[] parameters);

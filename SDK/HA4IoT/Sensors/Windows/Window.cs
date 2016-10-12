@@ -24,7 +24,7 @@ namespace HA4IoT.Sensors.Windows
             settingsService.CreateSettingsMonitor<ComponentSettings>(Id, s => Settings = s);
         }
 
-        public ComponentSettings Settings { get; private set; }
+        public IComponentSettings Settings { get; private set; }
 
         public IList<ICasement> Casements { get; } = new List<ICasement>();
 
@@ -44,11 +44,6 @@ namespace HA4IoT.Sensors.Windows
             casement.StateChanged += (s, e) => OnCasementStateChanged();
 
             return this;
-        }
-
-        public Window WithCasement(string id, IBinaryInput fullOpenReedSwitch, IBinaryInput tiltReedSwitch = null)
-        {
-            return WithCasement(new Casement(id, fullOpenReedSwitch, tiltReedSwitch));
         }
 
         public Window WithLeftCasement(IBinaryInput fullOpenReedSwitch, IBinaryInput tiltReedSwitch = null)

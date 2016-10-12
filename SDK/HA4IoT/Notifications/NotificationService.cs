@@ -4,6 +4,7 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Notifications;
+using HA4IoT.Contracts.Services.Resources;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.Storage;
 using HA4IoT.Contracts.Services.System;
@@ -21,6 +22,7 @@ namespace HA4IoT.Notifications
         private readonly List<Notification> _notifications = new List<Notification>();
         private readonly IDateTimeService _dateTimeService;
         private readonly IStorageService _storageService;
+        private readonly IResourceService _resourceService;
 
         public NotificationService(
             IDateTimeService dateTimeService, 
@@ -28,16 +30,20 @@ namespace HA4IoT.Notifications
             ISchedulerService schedulerService, 
             ISystemEventsService systemEventsService, 
             ISettingsService settingsService,
-            IStorageService storageService)
+            IStorageService storageService,
+            IResourceService resourceService)
         {
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
             if (apiService == null) throw new ArgumentNullException(nameof(apiService));
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             if (storageService == null) throw new ArgumentNullException(nameof(storageService));
+            if (resourceService == null) throw new ArgumentNullException(nameof(resourceService));
 
             _dateTimeService = dateTimeService;
             _storageService = storageService;
+            _resourceService = resourceService;
+
             settingsService.CreateSettingsMonitor<NotificationServiceSettings>(s => Settings = s);
 
             apiService.StatusRequested += HandleApiStatusRequest;
@@ -72,6 +78,11 @@ namespace HA4IoT.Notifications
         public void CreateInformation(string text)
         {
             Create(NotificationType.Information, text, Settings.InformationTimeToLive);
+        }
+
+        public void CreateInformation(Enum resourceId, params object[] formatParameterObjects)
+        {
+            CreateInformation(_resourceService.GetText(resourceId, formatParameterObjects));
         }
 
         public void CreateWarning(string text)
