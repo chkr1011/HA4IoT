@@ -4,6 +4,6 @@ namespace HA4IoT.Contracts.Core
 {
     public interface IContainerConfigurator
     {
-        void ConfigureContainer(IContainerService containerService);
+        void ConfigureContainer(IContainer container);
     }
 }

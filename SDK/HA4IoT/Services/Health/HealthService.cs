@@ -7,6 +7,7 @@ using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.Services;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
+using HA4IoT.Core;
 using HA4IoT.Services.System;
 
 namespace HA4IoT.Services.Health
@@ -27,20 +28,20 @@ namespace HA4IoT.Services.Health
         private float? _minTimerDuration;
 
         public HealthService(
-            HealthServiceOptions options, 
+            ControllerOptions controllerOptions, 
             IPi2GpioService pi2GpioService,
             ITimerService timerService, 
             ISystemInformationService systemInformationService)
         {
-            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (controllerOptions == null) throw new ArgumentNullException(nameof(controllerOptions));
             if (timerService == null) throw new ArgumentNullException(nameof(timerService));
             if (systemInformationService == null) throw new ArgumentNullException(nameof(systemInformationService));
 
             _systemInformationService = systemInformationService;
 
-            if (options.StatusLed.HasValue)
+            if (controllerOptions.StatusLedNumber.HasValue)
             {
-                _led = pi2GpioService.GetOutput(options.StatusLed.Value);
+                _led = pi2GpioService.GetOutput(controllerOptions.StatusLedNumber.Value);
                 _ledTimeout.Start(TimeSpan.FromMilliseconds(1));
             }
             

@@ -142,6 +142,10 @@
       <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
       <Name>HA4IoT.Hardware</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT\HA4IoT.csproj">
+      <Project>{c034ec4d-46cc-490a-a045-e4d4d1f49c31}</Project>
+      <Name>HA4IoT</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Tests.Mockups\HA4IoT.Tests.Mockups.csproj">
       <Project>{238ad610-4f9b-4652-81db-a8fc215f61a5}</Project>
       <Name>HA4IoT.Tests.Mockups</Name>

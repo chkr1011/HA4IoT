@@ -214,7 +214,7 @@
     <Compile Include="Areas\AreaId.cs" />
     <Compile Include="Core\IdBase.cs" />
     <Compile Include="Services\System\IDeviceService.cs" />
-    <Compile Include="Services\System\IContainerService.cs" />
+    <Compile Include="IContainer.cs" />
     <Compile Include="Services\System\ISystemEventsService.cs" />
     <Compile Include="Services\System\ITimerService.cs" />
     <Compile Include="Core\StoragePath.cs" />

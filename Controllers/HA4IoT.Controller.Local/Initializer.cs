@@ -4,6 +4,7 @@ using Windows.Networking;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
@@ -18,9 +19,9 @@ namespace HA4IoT.Controller.Local
     public class Initializer : IConfiguration
     {
         private readonly MainPage _mainPage;
-        private readonly IContainerService _containerService;
+        private readonly IContainer _containerService;
 
-        public Initializer(MainPage mainPage, IContainerService containerService)
+        public Initializer(MainPage mainPage, IContainer containerService)
         {
             if (mainPage == null) throw new ArgumentNullException(nameof(mainPage));
             if (containerService == null) throw new ArgumentNullException(nameof(containerService));

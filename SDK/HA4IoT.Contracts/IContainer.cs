@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace HA4IoT.Contracts.Services.System
+namespace HA4IoT.Contracts
 {
-    public interface IContainerService : IService
+    public interface IContainer
     {
         TService GetInstance<TService>() where TService : class;
         

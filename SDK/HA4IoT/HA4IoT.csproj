@@ -173,8 +173,8 @@
     <Compile Include="Conditions\Specialized\NumericValueSensorHasValueLowerThanCondition.cs" />
     <Compile Include="Conditions\Specialized\TimeRangeCondition.cs" />
     <Compile Include="Conditions\TimeRangeChecker.cs" />
+    <Compile Include="Core\Container.cs" />
     <Compile Include="Core\ContainerExtensions.cs" />
-    <Compile Include="Core\ContainerService.cs" />
     <Compile Include="Core\Controller.cs" />
     <Compile Include="Core\ControllerOptions.cs" />
     <Compile Include="Logger\LogEntry.cs" />
@@ -230,7 +230,6 @@
     <Compile Include="Services\Environment\WeatherService.cs" />
     <Compile Include="Services\GenericControllerCollection.cs" />
     <Compile Include="Services\Health\HealthService.cs" />
-    <Compile Include="Services\Health\HealthServiceOptions.cs" />
     <Compile Include="Services\Resources\GetTextsRequest.cs" />
     <Compile Include="Services\Resources\ResourceService.cs" />
     <Compile Include="Services\Resources\SetTextsRequest.cs" />
@@ -273,11 +272,6 @@
       <Project>{d4e0a3f9-6521-4aee-815a-e2a60323fb63}</Project>
       <Name>HA4IoT.Networking</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <SDKReference Include="SQLite.UWP.2015, Version=3.14.2">
-      <Name>SQLite for Universal Windows Platform</Name>
-    </SDKReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

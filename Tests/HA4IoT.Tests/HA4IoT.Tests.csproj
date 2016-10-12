@@ -144,7 +144,7 @@
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT\HA4IoT.csproj">
-      <Project>{C034EC4D-46CC-490A-A045-E4D4D1F49C31}</Project>
+      <Project>{c034ec4d-46cc-490a-a045-e4d4d1f49c31}</Project>
       <Name>HA4IoT</Name>
     </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Tests.Mockups\HA4IoT.Tests.Mockups.csproj">
@@ -153,9 +153,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FluentAssertions">
-      <HintPath>..\..\..\..\..\.nuget\packages\FluentAssertions\4.13.0\lib\uap10.0\FluentAssertions.dll</HintPath>
-    </Reference>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

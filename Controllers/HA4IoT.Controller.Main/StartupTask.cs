@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
@@ -44,7 +45,7 @@ namespace HA4IoT.Controller.Main
             private readonly ISchedulerService _schedulerService;
             private readonly RemoteSocketService _remoteSocketService;
             private readonly IApiService _apiService;
-            private readonly IContainerService _containerService;
+            private readonly IContainer _containerService;
 
             public Configuration(
                 CCToolsBoardService ccToolsBoardService, 
@@ -55,7 +56,7 @@ namespace HA4IoT.Controller.Main
                 ISchedulerService schedulerService, 
                 RemoteSocketService remoteSocketService, 
                 IApiService apiService,
-                IContainerService containerService)
+                IContainer containerService)
             {
                 if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
                 if (pi2GpioService == null) throw new ArgumentNullException(nameof(pi2GpioService));

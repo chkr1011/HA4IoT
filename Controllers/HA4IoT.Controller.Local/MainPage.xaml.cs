@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
@@ -47,7 +48,7 @@ namespace HA4IoT.Controller.Local
                 _mainPage = mainPage;
             }
 
-            public void ConfigureContainer(IContainerService containerService)
+            public void ConfigureContainer(IContainer containerService)
             {
                 if (containerService == null) throw new ArgumentNullException(nameof(containerService));
 
