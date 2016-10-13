@@ -17,6 +17,7 @@ namespace HA4IoT.Services.Backup
         {
             var backup = new JObject
             {
+                ["Type"] = "HA4IoT.Backup",
                 ["Timestamp"] = DateTime.Now.ToString("O"),
                 ["Version"] = 1
             };

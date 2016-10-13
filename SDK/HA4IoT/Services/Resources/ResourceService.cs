@@ -191,7 +191,7 @@ namespace HA4IoT.Services.Resources
         {
             lock (_syncRoot)
             {
-                backupEventArgs.Backup[BackupKeyName] = JObject.FromObject(_resources);
+                backupEventArgs.Backup[BackupKeyName] = JToken.FromObject(_resources);
             }
         }
 
