@@ -241,6 +241,7 @@
     <Compile Include="Services\System\ISystemInformationService.cs" />
     <Compile Include="Services\OutdoorHumidity\IOutdoorHumidityService.cs" />
     <Compile Include="Services\OutdoorTemperature\IOutdoorTemperatureService.cs" />
+    <Compile Include="Services\System\SystemEventNotification.cs" />
     <Compile Include="Services\Weather\IWeatherService.cs" />
     <Compile Include="Services\ServiceBase.cs" />
     <Compile Include="Triggers\ITrigger.cs" />

@@ -159,7 +159,7 @@ namespace HA4IoT.Services.Resources
                     matchingResources = _resources.Where(r => r.Uri.StartsWith(request.Category + ".")).ToList();
                 }
 
-                apiContext.Response = JObject.FromObject(matchingResources);
+                apiContext.Response["Resources"] = JToken.FromObject(matchingResources);
             }
         }
 

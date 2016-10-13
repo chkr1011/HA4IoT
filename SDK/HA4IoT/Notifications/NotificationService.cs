@@ -28,7 +28,6 @@ namespace HA4IoT.Notifications
             IDateTimeService dateTimeService, 
             IApiService apiService, 
             ISchedulerService schedulerService, 
-            ISystemEventsService systemEventsService, 
             ISettingsService settingsService,
             IStorageService storageService,
             IResourceService resourceService)
@@ -47,7 +46,6 @@ namespace HA4IoT.Notifications
             settingsService.CreateSettingsMonitor<NotificationServiceSettings>(s => Settings = s);
 
             apiService.StatusRequested += HandleApiStatusRequest;
-            systemEventsService.StartupCompleted += (s, e) => CreateInformation("System started.");
 
             schedulerService.RegisterSchedule("NotificationCleanup", TimeSpan.FromMinutes(15), Cleanup);
         }
