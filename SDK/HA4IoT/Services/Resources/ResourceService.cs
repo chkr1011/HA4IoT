@@ -97,7 +97,7 @@ namespace HA4IoT.Services.Resources
             var text = GetText(id);
             foreach (var formatParameter in formatParameterObjects)
             {
-                foreach (var property in formatParameterObjects.GetType().GetProperties())
+                foreach (var property in formatParameter.GetType().GetProperties())
                 {
                     text = ReplaceFormatParameter(text, property.Name, property.GetValue(formatParameter));
                 }

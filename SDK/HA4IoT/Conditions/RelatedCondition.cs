@@ -7,9 +7,9 @@ namespace HA4IoT.Conditions
     {
         public ConditionRelation Relation { get; private set; } = ConditionRelation.And;
 
-        public Condition Condition { get; private set; }
+        public ICondition Condition { get; private set; }
 
-        public RelatedCondition WithCondition(Condition condition)
+        public RelatedCondition WithCondition(ICondition condition)
         {
             if (condition == null) throw new ArgumentNullException(nameof(condition));
 

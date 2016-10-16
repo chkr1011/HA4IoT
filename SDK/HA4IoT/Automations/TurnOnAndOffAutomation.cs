@@ -108,17 +108,11 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public TurnOnAndOffAutomation WithTurnOnIfAllRollerShuttersClosed(params IRollerShutter[] rollerShutters)
+        public TurnOnAndOffAutomation WithEnablingCondition(ConditionRelation relation, ICondition condition)
         {
-            if (rollerShutters == null) throw new ArgumentNullException(nameof(rollerShutters));
+            if (condition == null) throw new ArgumentNullException(nameof(condition));
 
-            var condition = new Condition().WithExpression(() => rollerShutters.First().IsClosed);
-            foreach (var otherRollerShutter in rollerShutters.Skip(1))
-            {
-                condition.WithRelatedCondition(ConditionRelation.And, new Condition().WithExpression(() => otherRollerShutter.IsClosed));
-            }
-
-            _enablingConditionsValidator.WithCondition(ConditionRelation.Or, condition);
+            _enablingConditionsValidator.WithCondition(relation, condition);
             return this;
         }
 

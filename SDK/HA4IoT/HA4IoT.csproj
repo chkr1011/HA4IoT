@@ -156,6 +156,7 @@
     <Compile Include="Automations\RollerShutterAutomationNotification.cs" />
     <Compile Include="Automations\RollerShutterAutomationSettings.cs" />
     <Compile Include="Automations\TurnOnAndOffAutomation.cs" />
+    <Compile Include="Automations\TurnOnAndOffAutomationExtensions.cs" />
     <Compile Include="Automations\TurnOnAndOffAutomationSettings.cs" />
     <Compile Include="Components\ComponentBase.cs" />
     <Compile Include="Components\ComponentExtensions.cs" />

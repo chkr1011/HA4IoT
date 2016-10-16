@@ -1,12 +1,17 @@
 ﻿using System;
 using HA4IoT.Api;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Services.Backup;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.Notifications;
+using HA4IoT.Contracts.Services.Resources;
+using HA4IoT.Contracts.Services.Settings;
+using HA4IoT.Contracts.Services.Storage;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Notifications;
 using HA4IoT.Services.Areas;
@@ -23,33 +28,44 @@ namespace HA4IoT.Tests.Mockups
 {
     public class TestController : IController
     {
-        private readonly TestDateTimeService _dateTimeService = new TestDateTimeService();
-
         public TestController()
         {
             Log.Instance = new TestLogger();
 
+            // Create root services first.
             var systemInformationService = new SystemInformationService();
             var apiService = new ApiService();
+            ApiService = new ApiService();
+            BackupService = new BackupService();
+            StorageService = new StorageService();
+            TimerService = new TestTimerService();
+            DaylightService = new TestDaylightService();
+            DateTimeService = new TestDateTimeService();
 
-            SchedulerService = new SchedulerService(TimerService, new DateTimeService());
-            var systemEventsService = new SystemEventsService(this);
-            var settingsService = new SettingsService(new BackupService(), new StorageService());
-            AutomationService = new AutomationService(systemEventsService, systemInformationService, apiService);
-            ComponentService = new ComponentService(systemEventsService, systemInformationService, apiService, settingsService);
-            AreaService = new AreaService(ComponentService, AutomationService, systemEventsService, systemInformationService, apiService, settingsService);
-            NotificationService = new NotificationService(
-                DateTimeService, new ApiService(), SchedulerService, systemEventsService, new SettingsService(new BackupService(), new StorageService()), new StorageService(), new ResourceService(new BackupService(), new StorageService(), new SettingsService(new BackupService(), new StorageService())));
+            SettingsService = new SettingsService(BackupService, StorageService);
+            ResourceService = new ResourceService(BackupService, StorageService, SettingsService);
+            SchedulerService = new SchedulerService(TimerService, DateTimeService);
+            NotificationService = new NotificationService(DateTimeService, ApiService, SchedulerService, SettingsService, StorageService, ResourceService);
+            SystemEventsService = new SystemEventsService(this, NotificationService, ResourceService);
+            AutomationService = new AutomationService(SystemEventsService, systemInformationService, apiService);
+            ComponentService = new ComponentService(SystemEventsService, systemInformationService, apiService, SettingsService);
+            AreaService = new AreaService(ComponentService, AutomationService, SystemEventsService, systemInformationService, apiService, SettingsService);
         }
 
-        public ITimerService TimerService { get; } = new TestTimerService();
+        public ISettingsService SettingsService { get; }
+        public IStorageService StorageService { get; }
+        public IBackupService BackupService { get; }
+        public IResourceService ResourceService { get; }
+        public ISystemEventsService SystemEventsService { get; }
+        public ITimerService TimerService { get; }
         public ISchedulerService SchedulerService { get; }
-        public IDateTimeService DateTimeService => _dateTimeService;
-        public IDaylightService DaylightService { get; } = new TestDaylightService();
+        public IDateTimeService DateTimeService { get; }
+        public IDaylightService DaylightService { get; }
         public IComponentService ComponentService { get; }
         public IAutomationService AutomationService { get; }
         public INotificationService NotificationService { get; }
         public IAreaService AreaService { get; }
+        public IApiService ApiService { get; }
 
         public event EventHandler StartupCompleted;
         public event EventHandler StartupFailed;
@@ -57,7 +73,7 @@ namespace HA4IoT.Tests.Mockups
 
         public void SetTime(TimeSpan value)
         {
-            _dateTimeService.SetTime(value);
+            ((TestDateTimeService)DateTimeService).SetTime(value);
         }
     }
 }

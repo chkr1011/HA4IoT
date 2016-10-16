@@ -23,7 +23,7 @@ namespace HA4IoT.Conditions
 
         public IList<RelatedCondition> Conditions { get; }
 
-        public ConditionsValidator WithCondition(ConditionRelation relation, Condition condition)
+        public ConditionsValidator WithCondition(ConditionRelation relation, ICondition condition)
         {
             Conditions.Add(new RelatedCondition().WithRelation(relation).WithCondition(condition));
             return this;

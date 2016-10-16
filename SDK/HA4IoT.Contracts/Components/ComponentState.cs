@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Contracts.Components
 {
@@ -48,6 +49,11 @@ namespace HA4IoT.Contracts.Components
             }
 
             return JToken.DeepEquals(JToken, componentState.JToken);
+        }
+
+        public override string ToString()
+        {
+            return Convert.ToString(JToken);
         }
     }
 }

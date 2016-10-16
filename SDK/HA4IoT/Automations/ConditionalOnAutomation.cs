@@ -5,7 +5,6 @@ using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
-using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.System;
 
@@ -38,7 +37,7 @@ namespace HA4IoT.Automations
 
         public ConditionalOnAutomation WithOffBetweenRange(TimeSpan from, TimeSpan until)
         {
-            WithCondition(ConditionRelation.AndNot, new TimeRangeCondition(_dateTimeService).WithStart(() => from).WithEnd(() => until));
+            WithCondition(ConditionRelation.And, new TimeRangeCondition(_dateTimeService).WithStart(() => from).WithEnd(() => until).WithInversion());
 
             return this;
         }

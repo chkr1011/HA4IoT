@@ -63,5 +63,11 @@ namespace HA4IoT.Conditions
             Expression = () => expression() ? ConditionState.Fulfilled : ConditionState.NotFulfilled;
             return this;
         }
+
+        public Condition WithInversion()
+        {
+            IsInverted = true;
+            return this;
+        }
     }
 }
