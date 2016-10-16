@@ -1,4 +1,4 @@
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.13.0/SplashScreen.png?raw=true" width="100%">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.14.0B1/SplashScreen.png?raw=true" width="100%">
 <img style="margin:25px" src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/Overview_4to3.png?raw=true" width="100%">
 
 HA4IoT (Home Automation for IoT) is the first SDK for Home Automation using Windows 10 IoT Core and a Raspberry Pi 2. It is a private real life award-winning project which covers many Home Automation purposes.
@@ -6,6 +6,9 @@ HA4IoT (Home Automation for IoT) is the first SDK for Home Automation using Wind
 > This brilliant project explores uncharted home-automation territory; it even includes a cat litterbox controller, which detects the cat and channels the air into an outdoor flue! Be sure to check out the whole hack; it's an incredible embedded system with extensive wiring built right into the house.
 >
 hackster.io (https://www.hackster.io/blog/win-10-winners)
+
+# Contributors
+If you are interested in supporting this project in any way feel free to contact me. We are a growing community which needs your support.
 
 # Key features
 * Virtual actuators like push buttons, motion motion detectors, lamps, sockets, roller shutters which can be interconnected using a fluent API
@@ -93,14 +96,12 @@ Every actuator can be controlled using the web app which is hosted at the Raspbe
 <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/WA_WeatherStation.PNG?raw=true" width="256">
 <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/WA_Info.PNG?raw=true" width="256">
 
-# Management Console
-The configuration of each actuator and automation can be updated using the Management Console. This application is a WPF application which runs at the local computer. It sends a discovery signal through the local area network and shows all available HA4IoT controller instances.   
+# Management App
+The management app is an HTML/JavaScript application based on AngularJS and Bootstrap which is used the configure all areas, components, automations etc. It is deployed to the controller (Raspberry Pi 2 i.e.) and can be also used to create backups from the configuration.
 
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/MC_Home.png?raw=true" width="100%">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/MC_Controller.png?raw=true" width="100%">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/MC_Component.png?raw=true" width="100%">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/MC_Automation.png?raw=true" width="100%">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/MC_Log.png?raw=true" width="100%">
-
-# Contributors
-If you are interested in supporting this project in any way feel free to contact me.
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.14.0B1/MA_1.png?raw=true" width="100%">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.14.0B1/MA_2.png?raw=true" width="100%">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.14.0B1/MA_3.png?raw=true" width="100%">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.14.0B1/MA_4.png?raw=true" width="100%">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.14.0B1/MA_5.png?raw=true" width="100%">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.14.0B1/MA_6.png?raw=true" width="100%">
