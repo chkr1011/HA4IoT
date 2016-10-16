@@ -1,5 +1,6 @@
 ﻿using System;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Daylight;
 
 namespace HA4IoT.Tests.Mockups
 {
@@ -13,15 +14,9 @@ namespace HA4IoT.Tests.Mockups
 
         public TimeSpan Sunrise { get; set; }
         public TimeSpan Sunset { get; set; }
-
-        public TimeSpan GetSunrise()
+        public DateTime? Timestamp { get; set; }
+        public void Update(TimeSpan sunrise, TimeSpan sunset)
         {
-            return Sunrise;
-        }
-
-        public TimeSpan GetSunset()
-        {
-            return Sunset;
         }
     }
 }

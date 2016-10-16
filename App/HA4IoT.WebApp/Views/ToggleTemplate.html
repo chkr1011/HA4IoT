@@ -1,7 +1,7 @@
 ﻿<div class="btn-group">
 
-    <button class="btn btn-default" style="min-width: 60px;" ng-class="{'btn-danger': actuator.state.state=='On'}" ng-click="toggleState(actuator)">
-        <span ng-if="actuator.state.state=='On'">{{ localizationCtrl.getUILocalization('UI.On') }}</span>
-        <span ng-if="actuator.state.state=='Off'">{{ localizationCtrl.getUILocalization('UI.Off') }}</span>
+    <button class="btn btn-default" style="min-width: 60px;" ng-class="{'btn-danger': component.state.State==='On'}" ng-click="toggleState(component)">
+        <span ng-if="component.state.State=='On'">{{ localizationCtrl.getUILocalization('UI.On') }}</span>
+        <span ng-if="component.state.State=='Off'">{{ localizationCtrl.getUILocalization('UI.Off') }}</span>
     </button>
 </div>

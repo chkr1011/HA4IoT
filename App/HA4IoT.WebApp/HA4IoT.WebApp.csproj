@@ -51,8 +51,12 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Images\Air.png" />
     <Content Include="Images\Car.png" />
+    <Content Include="Images\Cow.png" />
     <Content Include="Images\DefaultActuator.png" />
+    <Content Include="Images\Garage.png" />
+    <Content Include="Images\House.png" />
     <Content Include="Images\Palette.png" />
+    <Content Include="Images\ParkingSign.png" />
     <Content Include="Images\StateMachine.png" />
     <Content Include="Images\Swimming.png" />
     <Content Include="Images\VirtualButton.png" />
@@ -73,6 +77,7 @@
     <Content Include="Images\Temperature.png" />
     <Content Include="Images\TableLamp.png" />
     <Content Include="Images\WaterPump.png" />
+    <Content Include="Images\WaterTap.png" />
     <Content Include="Images\WeatherSituation.png" />
     <Content Include="Images\Wifi.png" />
     <Content Include="Images\Window.png" />
@@ -89,6 +94,8 @@
     <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\Chart.js" />
+    <Content Include="Scripts\Chart.min.js" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
@@ -97,15 +104,16 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
-    <Content Include="Scripts\angular.min.js.map" />
-    <None Include="Scripts\jquery-2.2.2.intellisense.js" />
-    <Content Include="Scripts\Chart.js" />
-    <Content Include="Scripts\Chart.min.js" />
-    <Content Include="Scripts\jquery-2.2.2.js" />
-    <Content Include="Scripts\jquery-2.2.2.min.js" />
-    <Content Include="Scripts\jquery-2.2.2.min.map" />
+    <None Include="Scripts\jquery-3.1.0.intellisense.js" />
+    <Content Include="Scripts\jquery-3.1.0.js" />
+    <Content Include="Scripts\jquery-3.1.0.min.js" />
+    <Content Include="Scripts\jquery-3.1.0.slim.js" />
+    <Content Include="Scripts\jquery-3.1.0.slim.min.js" />
     <Content Include="UILocalizations-DE.json" />
     <Content Include="UILocalizations-EN.json" />
+    <Content Include="Scripts\angular.min.js.map" />
+    <Content Include="Scripts\jquery-3.1.0.slim.min.map" />
+    <Content Include="Scripts\jquery-3.1.0.min.map" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -123,9 +131,10 @@
     <Content Include="Views\HumiditySensorTemplate.html" />
     <Content Include="Views\MotionDetectorsOverviewTemplate.html" />
     <Content Include="Views\MotionDetectorTemplate.html" />
+    <Content Include="Views\NotificationsBarTemplate.html" />
     <Content Include="Views\RollerShuttersOverviewTemplate.html" />
     <Content Include="Views\RollerShutterTemplate.html" />
-    <Content Include="Views\RoomsOverviewTemplate.html" />
+    <Content Include="Views\AreasOverviewTemplate.html" />
     <Content Include="Views\VirtualButtonTemplate.html" />
     <Content Include="Views\WindowsOverviewTemplate.html" />
     <Content Include="Views\SensorsOverviewTemplate.html" />

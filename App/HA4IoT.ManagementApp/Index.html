@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <title>Management Console - HA4IoT</title>
+
+    <script type="text/javascript" src="Scripts/jquery-3.1.0.min.js"></script>
+    <script type="text/javascript" src="Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript" src="Scripts/angular.min.js"></script>
+
+    <script type="text/javascript" src="Services/ControllerProxyService.js"></script>
+    <script type="text/javascript" src="Services/TranslationService.js"></script>
+    <script type="text/javascript" src="Services/ModalService.js"></script>
+    <script type="text/javascript" src="Module.js"></script>
+
+    <script type="text/javascript" src="MainPage.component.js"></script>
+    <script type="text/javascript" src="Home/Home.component.js"></script>
+    <script type="text/javascript" src="Areas/AreasOverview.component.js"></script>
+    <script type="text/javascript" src="Components/ComponentsOverview.component.js"></script>
+    <script type="text/javascript" src="Automations/AutomationsOverview.component.js"></script>
+    <script type="text/javascript" src="Backup/Backup.component.js"></script>
+
+    <script type="text/javascript" src="Settings/Settings.component.js"></script>
+    <script type="text/javascript" src="Settings/ControllerSettings.component.js"></script>
+    <script type="text/javascript" src="Settings/OpenWeatherMapSettings.component.js"></script>
+    <script type="text/javascript" src="Settings/TwitterClientSettings.component.js"></script>
+    <script type="text/javascript" src="Settings/SlaveServiceSettings.component.js"></script>
+    <script type="text/javascript" src="Settings/TelegramBotSettings.component.js"></script>
+
+    <link href="Content/font-awesome.min.css" rel="stylesheet">
+    <link href="Content/bootstrap.min.css" rel="stylesheet">
+    <link href="Content/Style.css" rel="stylesheet">
+</head>
+
+<body ng-app="app">
+<div ng-include="'Views/ModalTemplate.html'"></div>
+<main-page></main-page>
+</body>
+
+</html>

@@ -11,8 +11,8 @@
     <AssemblyName>HA4IoT.Controller.Local</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -96,7 +96,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="CheckboxBinaryStateEndpoint.cs" />
-    <Compile Include="Controller.cs" />
+    <Compile Include="Initializer.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -131,41 +131,17 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Actuators\HA4IoT.Actuators.csproj">
-      <Project>{808abecf-d9c2-4ab2-95d8-eaf228b44576}</Project>
-      <Name>HA4IoT.Actuators</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Automations\HA4IoT.Automations.csproj">
-      <Project>{1ca64c98-210a-4015-95c6-67d591115f7b}</Project>
-      <Name>HA4IoT.Automations</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Components\HA4IoT.Components.csproj">
-      <Project>{60f9e539-3ff5-40de-b0c4-be99cae57736}</Project>
-      <Name>HA4IoT.Components</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Conditions\HA4IoT.Conditions.csproj">
-      <Project>{3822e69d-fd79-4797-98e2-7c05973b6522}</Project>
-      <Name>HA4IoT.Conditions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Configuration\HA4IoT.Configuration.csproj">
-      <Project>{f9d92ea6-3763-47f5-9efd-6d83804c95e6}</Project>
-      <Name>HA4IoT.Configuration</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{e1edac4b-83b9-46f4-9f6a-3bae97d79f29}</Project>
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Core\HA4IoT.Core.csproj">
-      <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
-      <Name>HA4IoT.Core</Name>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
+      <Project>{287a9bd0-4037-4add-986f-54056f059eae}</Project>
+      <Name>HA4IoT.Hardware</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Sensors\HA4IoT.Sensors.csproj">
-      <Project>{8892e736-cdd0-48eb-ad9e-a1c8aa230fd7}</Project>
-      <Name>HA4IoT.Sensors</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.Knx\HA4IoT.Hardware.Knx.csproj">
-      <Project>{1EC3A5D0-65C8-4396-BD56-9179A8BD00D4}</Project>
-      <Name>HA4IoT.Hardware.Knx</Name>
+    <ProjectReference Include="..\..\SDK\HA4IoT\HA4IoT.csproj">
+      <Project>{c034ec4d-46cc-490a-a045-e4d4d1f49c31}</Project>
+      <Name>HA4IoT</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

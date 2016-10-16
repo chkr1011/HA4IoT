@@ -1,0 +1,25 @@
+﻿<div class="row panel panel-default" ng-class="{'panel-primary': haCtrl.activePanel==area.Id}" id="{{area.Id}}" ng-repeat="area in haCtrl.Areas | orderBy:['SortValue']">
+    <div class="panel-heading pointer" ng-click="haCtrl.setActivePanel(area.Id)">
+
+        <table style="width: 100%">
+            <tr>
+                <td style="vertical-align: middle;width:100%">
+                    <span class="panel-title">{{area.Caption}}</span>
+                </td>
+                <td style="vertical-align: middle;">
+                    <span style="margin-left: 10px;" ng-show="area.OnStateCount > 0" class="label label-warning">
+                        <span class="glyphicon glyphicon-flash"></span><span ng-bind="area.OnStateCount"></span>
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table class="table table-striped" ng-show="haCtrl.activePanel==area.Id">
+        <tr ng-repeat="component in area.Components | orderBy:['SortValue']">
+            <td style="vertical-align: middle;">
+                <span><img class="icon" ng-src="Images/{{component.Image}}.png" />{{component.Caption}}</span>
+            </td>
+            <td style="text-align: right;" ng-include="component.Template"></td>
+        </tr>
+    </table>
+</div>

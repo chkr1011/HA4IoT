@@ -26,13 +26,71 @@
     </NuGetPackageImportStamp>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Areas\AreasOverview.component.html" />
+    <Content Include="Areas\AreasOverview.component.js" />
+    <Content Include="Automations\AutomationsOverview.component.html" />
+    <Content Include="Automations\AutomationsOverview.component.js" />
+    <Content Include="Automations\GeneralSettings.html" />
+    <Content Include="Automations\RollerShutterAutomationSettings.html" />
+    <Content Include="Automations\TurnOnAndOffAutomationSettings.html" />
+    <Content Include="Components\ComponentsOverview.component.html" />
+    <Content Include="Components\ComponentsOverview.component.js" />
+    <Content Include="Components\GeneralSettings.html" />
+    <Content Include="Components\RollerShutterSettings.html" />
+    <Content Include="Components\HumiditySensorSettings.html" />
+    <Content Include="Components\StateMachineSettings.html" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
-    <Content Include="Content\ui-bootstrap-csp.css" />
+    <Content Include="Content\font-awesome.min.css" />
+    <Content Include="Content\Images\Air.png" />
+    <Content Include="Content\Images\Car.png" />
+    <Content Include="Content\Images\Cat.png" />
+    <Content Include="Content\Images\Cow.png" />
+    <Content Include="Content\Images\DefaultActuator.png" />
+    <Content Include="Content\Images\Fan.png" />
+    <Content Include="Content\Images\Favorites.png" />
+    <Content Include="Content\Images\Garage.png" />
+    <Content Include="Content\Images\House.png" />
+    <Content Include="Content\Images\Humidity.png" />
+    <Content Include="Content\Images\Lamp.png" />
+    <Content Include="Content\Images\Logo.png" />
+    <Content Include="Content\Images\Motion.png" />
+    <Content Include="Content\Images\NightLamp.png" />
+    <Content Include="Content\Images\Palette.png" />
+    <Content Include="Content\Images\Parking-Sign.png" />
+    <Content Include="Content\Images\Poison.png" />
+    <Content Include="Content\Images\Power.png" />
+    <Content Include="Content\Images\RollerShutter.png" />
+    <Content Include="Content\Images\Socket.png" />
+    <Content Include="Content\Images\Spotlight.png" />
+    <Content Include="Content\Images\StateMachine.png" />
+    <Content Include="Content\Images\Sunrise.png" />
+    <Content Include="Content\Images\Sunset.png" />
+    <Content Include="Content\Images\Swimming.png" />
+    <Content Include="Content\Images\TableLamp.png" />
+    <Content Include="Content\Images\Temperature.png" />
+    <Content Include="Content\Images\VirtualButton.png" />
+    <Content Include="Content\Images\Water-Tap.png" />
+    <Content Include="Content\Images\WaterPump.png" />
+    <Content Include="Content\Images\WeatherSituation.png" />
+    <Content Include="Content\Images\Wifi.png" />
+    <Content Include="Content\Images\Window.png" />
+    <Content Include="Content\Style.css" />
+    <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Home\Home.component.html" />
+    <Content Include="Home\Home.component.js" />
+    <Content Include="Index.html" />
+    <Content Include="MainPage.component.html" />
+    <Content Include="MainPage.component.js" />
+    <Content Include="Module.js" />
     <Content Include="packages.config" />
+    <Content Include="Scripts\angular-mocks.js" />
+    <Content Include="Scripts\angular.js" />
+    <Content Include="Scripts\angular.min.js" />
+    <Content Include="Scripts\angular.min.js.map" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
@@ -41,20 +99,22 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
-    <Content Include="Scripts\angular-mocks.js" />
-    <Content Include="Scripts\angular.js" />
-    <Content Include="Scripts\angular.min.js" />
-    <Content Include="Scripts\angular.min.js.map" />
-    <None Include="Scripts\jquery-2.2.2.intellisense.js" />
-    <Content Include="Scripts\angular-ui\ui-bootstrap-tpls.js" />
-    <Content Include="Scripts\angular-ui\ui-bootstrap-tpls.min.js" />
-    <Content Include="Scripts\angular-ui\ui-bootstrap.js" />
-    <Content Include="Scripts\angular-ui\ui-bootstrap.min.js" />
+    <Content Include="fonts\fontawesome-webfont.eot" />
+    <Content Include="fonts\fontawesome-webfont.ttf" />
+    <Content Include="fonts\fontawesome-webfont.woff" />
+    <Content Include="fonts\fontawesome-webfont.woff2" />
+    <Content Include="fonts\FontAwesome.otf" />
+    <None Include="Scripts\jquery-3.1.0.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
-    <Content Include="Scripts\jquery-2.2.2.js" />
-    <Content Include="Scripts\jquery-2.2.2.min.js" />
-    <Content Include="Scripts\jquery-2.2.2.min.map" />
+    <Content Include="Scripts\Chart.js" />
+    <Content Include="Scripts\Chart.min.js" />
+    <Content Include="Scripts\jquery-3.1.0.js" />
+    <Content Include="Scripts\jquery-3.1.0.min.js" />
+    <Content Include="Scripts\jquery-3.1.0.slim.js" />
+    <Content Include="Scripts\jquery-3.1.0.slim.min.js" />
+    <Content Include="Scripts\jquery-3.1.0.slim.min.map" />
+    <Content Include="Scripts\jquery-3.1.0.min.map" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -63,14 +123,35 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\ui-bootstrap-csp.css" />
+    <Content Include="Scripts\angular-ui\ui-bootstrap-tpls.js" />
+    <Content Include="Scripts\angular-ui\ui-bootstrap-tpls.min.js" />
+    <Content Include="Scripts\angular-ui\ui-bootstrap.js" />
+    <Content Include="Scripts\angular-ui\ui-bootstrap.min.js" />
+    <Content Include="Services\ControllerProxyService.js" />
+    <Content Include="Services\ModalService.js" />
+    <Content Include="Services\TranslationService.js" />
+    <Content Include="Backup\Backup.component.html" />
+    <Content Include="Backup\Backup.component.js" />
+    <Content Include="Settings\ControllerSettings.component.html" />
+    <Content Include="Settings\ControllerSettings.component.js" />
+    <Content Include="Settings\OpenWeatherMapSettings.component.html" />
+    <Content Include="Settings\OpenWeatherMapSettings.component.js" />
+    <Content Include="Settings\Settings.component.html" />
+    <Content Include="Settings\Settings.component.js" />
+    <Content Include="Settings\SlaveServiceSettings.component.html" />
+    <Content Include="Settings\SlaveServiceSettings.component.js" />
+    <Content Include="Settings\TelegramBotSettings.component.html" />
+    <Content Include="Settings\TelegramBotSettings.component.js" />
+    <Content Include="Settings\TwitterClientSettings.component.html" />
+    <Content Include="Settings\TwitterClientSettings.component.js" />
+    <Content Include="Views\ModalTemplate.html" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

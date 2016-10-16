@@ -4,6 +4,7 @@ namespace HA4IoT.Contracts.Sensors
 {
     public interface IMotionDetector : ISensor
     {
+        IMotionDetectorSettings Settings { get; }
         ITrigger GetMotionDetectedTrigger();
         ITrigger GetDetectionCompletedTrigger();
     }

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Linq;
 using FluentAssertions;
-using HA4IoT.Contracts.Networking;
+using HA4IoT.Contracts.Networking.Http;
+using HA4IoT.Networking.Http;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace HA4IoT.Networking.Tests
@@ -12,7 +13,7 @@ namespace HA4IoT.Networking.Tests
         [TestMethod]
         public void Serialize_HttpRequest()
         {
-            var request = new HttpRequest(HttpMethod.Get, "", new Version(1, 1), "", new HttpHeaderCollection(), "");
+            var request = new HttpRequest(HttpMethod.Get, "", new Version(1, 1), "", new HttpHeaderCollection(), "", 0);
 
             var response = new HttpResponse();
             response.StatusCode = HttpStatusCode.BadRequest;

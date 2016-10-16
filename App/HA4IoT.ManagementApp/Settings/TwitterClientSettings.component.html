@@ -1,0 +1,51 @@
+<div class="panel panel-default">
+    <div class="panel-heading">Twitter client settings</div> 
+    <div class="panel-body">
+        <div class="alert alert-info" role="alert">In order to send tweets you must create a free account at <a href="https://twitter.com/signup">Twitter</a> and fill
+            the required fields.</div>
+
+        <form class="form-horizontal">
+
+            <div class="form-group">
+                <label class="col-md-2 control-label">Enabled</label>
+                <div class="col-md-10">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" ng-model="tcsCtrl.Model.IsEnabled"><label></label>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-2 control-label">Access Token Secret</label>
+                <div class="col-md-10">
+                    <input type="text" class="form-control" ng-model="tcsCtrl.Model.AccessTokenSecret">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-2 control-label">Access Token</label>
+                <div class="col-md-10">
+                    <input type="text" class="form-control" ng-model="tcsCtrl.Model.AccessToken">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-2 control-label">Consumer Secret</label>
+                <div class="col-md-10">
+                    <input type="text" class="form-control" ng-model="tcsCtrl.Model.ConsumerSecret">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-2 control-label">Consumer Key</label>
+                <div class="col-md-10">
+                    <input type="text" class="form-control" ng-model="tcsCtrl.Model.ConsumerKey">
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <div class="panel-footer clearfix">
+        <button class="btn btn-default pull-right" ng-click="tcsCtrl.save()">Save</button>
+    </div>
+</div>

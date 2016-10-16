@@ -1,6 +1,6 @@
 ﻿namespace HA4IoT.Contracts.Hardware
 {
-    public interface IBinaryOutputController : IDevice
+    public interface IBinaryOutputController
     {
         IBinaryOutput GetOutput(int number);
     }

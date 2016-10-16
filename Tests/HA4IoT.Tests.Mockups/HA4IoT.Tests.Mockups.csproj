@@ -126,10 +126,9 @@
     <Compile Include="TestMotionDetectorFactory.cs" />
     <Compile Include="TestButtonFactory.cs" />
     <Compile Include="TestController.cs" />
-    <Compile Include="TestHttpRequestController.cs" />
     <Compile Include="TestHomeAutomationTimer.cs" />
     <Compile Include="TestHumiditySensor.cs" />
-    <Compile Include="TestI2CBus.cs" />
+    <Compile Include="TestI2CBusService.cs" />
     <Compile Include="TestMotionDetector.cs" />
     <Compile Include="TestLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -142,33 +141,17 @@
     <Content Include="Properties\HA4IoT.Tests.Mockups.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Actuators\HA4IoT.Actuators.csproj">
-      <Project>{808ABECF-D9C2-4AB2-95D8-EAF228B44576}</Project>
-      <Name>HA4IoT.Actuators</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Components\HA4IoT.Components.csproj">
-      <Project>{60F9E539-3FF5-40DE-B0C4-BE99CAE57736}</Project>
-      <Name>HA4IoT.Components</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{e1edac4b-83b9-46f4-9f6a-3bae97d79f29}</Project>
       <Name>HA4IoT.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Core\HA4IoT.Core.csproj">
-      <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
-      <Name>HA4IoT.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Logger\HA4IoT.Logger.csproj">
-      <Project>{15DB669D-AF71-4E89-9748-0290A2E5D291}</Project>
-      <Name>HA4IoT.Logger</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
       <Name>HA4IoT.Networking</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Sensors\HA4IoT.Sensors.csproj">
-      <Project>{8892e736-cdd0-48eb-ad9e-a1c8aa230fd7}</Project>
-      <Name>HA4IoT.Sensors</Name>
+    <ProjectReference Include="..\..\SDK\HA4IoT\HA4IoT.csproj">
+      <Project>{c034ec4d-46cc-490a-a045-e4d4d1f49c31}</Project>
+      <Name>HA4IoT</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

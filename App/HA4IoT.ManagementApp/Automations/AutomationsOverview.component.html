@@ -1,0 +1,68 @@
+<div class="row">
+    <div class="alert alert-info">
+        This view shows all configured automations from the HA4IoT controller. The automations iteself must be configured using C#
+        and deployed manually to the device.
+    </div>
+</div>
+
+<div class="row" ng-show="aoCtrl.SelectedAutomation===null">
+    
+    <div ng-class="aoCtrl.SelectedArea===null ? 'col-md-12' : 'col-md-3'">
+        <h2>Area</h2>
+        <hr/>
+        <ul class="list-group">
+            <li class="list-group-item" ng-class="{active: aoCtrl.SelectedArea.Id===area.Id}" ng-repeat="area in aoCtrl.Areas" ng-click="aoCtrl.SelectedArea=area">
+                <span>{{area.Caption}}</span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="col-md-9" ng-show="aoCtrl.SelectedArea!=null">
+        <h2>Automations</h2>
+        <hr/>
+
+        <table class="table table-condensed table-hover">
+            <thead>
+            <tr>
+                <th></th>
+                <th>ID</th>
+                <th>Caption</th>
+                <th>State</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-class="{active: aoCtrl.SelectedAutomation.Id===automation.Id}" ng-repeat="automation in aoCtrl.SelectedArea.Automations" ng-click="aoCtrl.selectAutomation(automation)">
+                <td class="text-center">
+                    <img class="medium-icon" ng-src="Content/Images/{{automation.Settings.Image}}.png"/>
+                </td>
+                <td>
+                    <div class="label label-primary">{{automation.Id}}</div>
+                </td>
+                <td>
+                    <span>{{automation.Settings.Caption}}</span>
+                </td>
+                <td>
+                    <span class="fa fa-check grid-icon" aria-hidden="true" ng-show="automation.Settings.IsEnabled"></span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+<div ng-show="aoCtrl.SelectedAutomation!=null">
+    <h2>Settings</h2>
+    <hr />
+    <div class="box">
+        <div ng-include="'Automations/GeneralSettings.html'"></div>
+        <div ng-include="'Automations/TurnOnAndOffAutomationSettings.html'" ng-show="aoCtrl.SelectedAutomation.Type==='TurnOnAndOffAutomation'"></div>
+        <div ng-include="'Automations/RollerShutterAutomationSettings.html'" ng-show="aoCtrl.SelectedAutomation.Type==='RollerShutterAutomation'"></div>
+        <hr />
+        <button class="btn btn-default" ng-click="aoCtrl.save()">Save</button>
+        <button class="btn btn-default" ng-click="aoCtrl.close()">Close</button>
+    </div>
+</div>
+
+<br />

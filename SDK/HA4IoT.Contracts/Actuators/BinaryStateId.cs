@@ -4,7 +4,7 @@ namespace HA4IoT.Contracts.Actuators
 {
     public static class BinaryStateId
     {
-        public static readonly NamedComponentState Off = new NamedComponentState("Off");
-        public static readonly NamedComponentState On = new NamedComponentState("On");
+        public static readonly ComponentState Off = new ComponentState("Off");
+        public static readonly ComponentState On = new ComponentState("On");
     }
 }

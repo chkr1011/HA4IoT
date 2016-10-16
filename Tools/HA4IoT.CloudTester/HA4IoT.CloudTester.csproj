@@ -11,8 +11,8 @@
     <AssemblyName>HA4IoT.CloudTester</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -131,17 +131,13 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SDK\Api\HA4IoT.Api.AzureCloud\HA4IoT.Api.AzureCloud.csproj">
-      <Project>{b03d2d62-a682-44ad-9bb8-e88b53973afa}</Project>
-      <Name>HA4IoT.Api.AzureCloud</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Api\HA4IoT.Api\HA4IoT.Api.csproj">
-      <Project>{ed4b4304-0e5d-459d-857d-622f790c1a32}</Project>
-      <Name>HA4IoT.Api</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{551337E7-D1EF-4145-92B4-F7086F7665A6}</Project>
       <Name>HA4IoT.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SDK\HA4IoT.ExternalServices\HA4IoT.ExternalServices.csproj">
+      <Project>{1792CCEF-9F6C-4535-BE20-BAA777243980}</Project>
+      <Name>HA4IoT.ExternalServices</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

@@ -1,8 +1,8 @@
-﻿<div ng-class="{'btn-group-vertical': actuator.displayVertical===true,'btn-group': actuator.displayVertical===false}">
+﻿<div ng-class="{'btn-group-vertical': component.DisplayVertical===true,'btn-group': component.DisplayVertical===false}">
     <button class="btn btn-default"
-            ng-repeat="state in actuator.supportedStates"
-            ng-class="{'btn-danger': actuator.state.state==state.value}" 
-            ng-click="setState(actuator, state.value)">
-        {{state.caption}}
+            ng-repeat="supportedState in component.SupportedStates"
+            ng-class="{'btn-danger': component.state.State===supportedState.Id}" 
+            ng-click="setState(component, supportedState.Id)">
+        {{supportedState.Caption}}
     </button>
 </div>

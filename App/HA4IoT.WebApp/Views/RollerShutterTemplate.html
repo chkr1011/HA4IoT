@@ -2,18 +2,18 @@
 
     <div class="progress" style="height: 12px; margin-bottom: 6px;">
         <div class="progress-bar progress-bar-default"
-             ng-class="{'active progress-bar-striped' : actuator.state.state!='Off', 'progress-bar-success' : actuator.state.position > (15467-3000)}" 
-             ng-style="{width: ((actuator.state.position / (actuator.settings.MaxPosition))*100) + '%'}">
+             ng-class="{'active progress-bar-striped' : component.state.State!='Off', 'progress-bar-success' : component.State.Position > (15467-3000)}"
+             ng-style="{width: ((component.state.Position / (component.Settings.MaxPosition))*100) + '%'}">
         </div>
     </div>
 
-    <button class="btn btn-default" ng-class="{'btn-danger': actuator.state.state=='MovingUp'}" ng-click="setState(actuator, 'MovingUp')">
+    <button class="btn btn-default" ng-class="{'btn-danger': component.state.State==='MovingUp'}" ng-click="setState(component, 'MovingUp')">
         <span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span>
     </button>
-    <button class="btn btn-default" ng-class="{'btn-success': actuator.state.state=='Stopped'}" ng-click="setState(actuator, 'Off')">
+    <button class="btn btn-default" ng-class="{'btn-success': component.state.State==='Stopped'}" ng-click="setState(component, 'Off')">
         <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
     </button>
-    <button class="btn btn-default" ng-class="{'btn-danger': actuator.state.state=='MovingDown'}" ng-click="setState(actuator, 'MovingDown')">
+    <button class="btn btn-default" ng-class="{'btn-danger': component.state.State==='MovingDown'}" ng-click="setState(component, 'MovingDown')">
         <span class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></span>
     </button>
 </div>

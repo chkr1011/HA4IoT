@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 using Windows.UI.Xaml;
-using HA4IoT.Api.AzureCloud;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.ExternalServices.AzureCloud;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.CloudTester
 {
@@ -69,7 +69,7 @@ namespace HA4IoT.CloudTester
                 EventHubSasTokenTextBox.Text);
 
             eventHubSender.Enable();
-            eventHubSender.EnqueueEvent(new JsonObject());
+            eventHubSender.EnqueueEvent(new JObject());
         }
 
         private void SendTestMessageToOutboundQueue(object sender, RoutedEventArgs e)
@@ -79,8 +79,8 @@ namespace HA4IoT.CloudTester
                 OutboundQueueNameTextBox.Text,
                 OutboundQueueSendSasTokenTextBox.Text);
 
-           var properties = new JsonObject();
-           var body = new JsonObject();
+           var properties = new JObject();
+           var body = new JObject();
 
             Task.Run(async () => await queueSender.SendAsync(properties, body));
         }
@@ -94,12 +94,12 @@ namespace HA4IoT.CloudTester
                 TimeSpan.FromSeconds(60));
 
             queueReceiver.MessageReceived += LogMessage;
-            queueReceiver.Start();
+            queueReceiver.Enable();
         }
 
         private void LogMessage(object sender, MessageReceivedEventArgs e)
         {
-            new TextBoxLogger(LogTextBox).Info("MESSAGE: " + e.BrokerProperties.Stringify() + " " + e.Body.Stringify());
+            new TextBoxLogger(LogTextBox).Info("MESSAGE: " + e.BrokerProperties + " " + e.Body);
         }
 
         private void SendTestMessageToInboundQueue(object sender, RoutedEventArgs e)
@@ -109,17 +109,23 @@ namespace HA4IoT.CloudTester
                 InboundQueueNameTextBox.Text,
                 InboundQueueSendSasTokenTextBox.Text);
 
-            var systemProperties = new JsonObject();
-            systemProperties.SetNamedValue("CorrelationId", JsonValue.CreateStringValue(Guid.NewGuid().ToString()));
-            
-            var body = new JsonObject();
-            body.SetNamedValue("CallType", JsonValue.CreateStringValue("Command"));
-            body.SetNamedValue("Uri", JsonValue.CreateStringValue("/api/component/Office.CombinedCeilingLights/status"));
+            var systemProperties = new JObject
+            {
+                ["CorrelationId"] = Guid.NewGuid().ToString()
+            };
 
-            var content = new JsonObject();
-            content.SetNamedValue("action", JsonValue.CreateStringValue("nextState"));
-            
-            body.SetNamedValue("Content", content);
+            var body = new JObject
+            {
+                ["CallType"] = "Command",
+                ["Uri"] = "/api/component/Office.CombinedCeilingLights/status"
+            };
+
+            var content = new JObject
+            {
+                ["action"] = "nextState"
+            };
+
+            body["Content"] = content;
 
             Task.Run(async () => await queueSender.SendAsync(systemProperties, body));
         }
@@ -133,7 +139,7 @@ namespace HA4IoT.CloudTester
                 TimeSpan.FromSeconds(60));
 
             queueReceiver.MessageReceived += LogMessage;
-            queueReceiver.Start();
+            queueReceiver.Enable();
         }
     }
 }

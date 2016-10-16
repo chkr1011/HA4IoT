@@ -1,0 +1,16 @@
+<br />
+
+<h4>View</h4>
+<hr/>
+<div class="checkbox">
+    <label><input type="checkbox" ng-model="coCtrl.SelectedComponent.DisplayVertical">Display vertical</label>
+</div>
+
+<br/>
+
+<h4>States</h4>
+<hr/>
+<div class="form-group" ng-repeat="supportedState in coCtrl.SelectedComponent.SupportedStates">
+    <label>{{supportedState.Id}}</label>
+    <input type="text" class="form-control" ng-model="supportedState.Caption">
+</div>

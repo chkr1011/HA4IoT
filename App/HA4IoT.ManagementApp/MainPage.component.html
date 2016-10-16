@@ -1,0 +1,21 @@
+<div class="container">
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <ul class="nav navbar-nav">
+                <li ng-class="{active: mpCtrl.ActiveTab==='home'}"><a href="#" ng-click="mpCtrl.switchTab('home')">Home</a></li>
+                <li ng-class="{active: mpCtrl.ActiveTab==='areas'}"><a href="#" ng-click="mpCtrl.switchTab('areas')">Areas</a></li>
+                <li ng-class="{active: mpCtrl.ActiveTab==='components'}"><a href="#" ng-click="mpCtrl.switchTab('components')">Components</a></li>
+                <li ng-class="{active: mpCtrl.ActiveTab==='automations'}"><a href="#" ng-click="mpCtrl.switchTab('automations')">Automations</a></li>
+                <li ng-class="{active: mpCtrl.ActiveTab==='settings'}"><a href="#" ng-click="mpCtrl.switchTab('settings')">Configuration</a></li>
+                <li ng-class="{active: mpCtrl.ActiveTab==='backup'}"><a href="#" ng-click="mpCtrl.switchTab('backup')">Backup</a></li>
+                <li ng-class="{active: mpCtrl.ActiveTab==='log'}"><a href="#" ng-click="mpCtrl.switchTab('log')">Log</a></li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div class="container">
+    <div id="mainView">
+        <home></home>
+    </div>
+</div>

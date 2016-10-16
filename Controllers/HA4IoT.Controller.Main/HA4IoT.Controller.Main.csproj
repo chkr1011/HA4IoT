@@ -11,8 +11,8 @@
     <AssemblyName>HA4IoT.Controller.Main</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
@@ -26,7 +26,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\ARM\Debug\</OutputPath>
-    <DefineConstants>NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS</DefineConstants>
+    <DefineConstants>DEBUG;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS;CODE_ANALYSIS;CODE_ANALYSIS</DefineConstants>
     <NoWarn>;2008</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>ARM</PlatformTarget>
@@ -34,7 +34,7 @@
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
     <OutputPath>bin\ARM\Release\</OutputPath>
@@ -101,7 +101,6 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controller.cs" />
     <Compile Include="InstalledDevice.cs" />
     <Compile Include="Rooms\BedroomConfiguration.cs" />
     <Compile Include="CatLitterBoxSender.cs" />
@@ -113,7 +112,6 @@
     <Compile Include="Rooms\ChildrensRoomConfiguration.cs" />
     <Compile Include="Rooms\ReadingRoomConfiguration.cs" />
     <Compile Include="Rooms\Room.cs" />
-    <Compile Include="Rooms\RoomConfiguration.cs" />
     <Compile Include="Rooms\StoreroomConfiguration.cs" />
     <Compile Include="Rooms\UpperBathroomConfiguration.cs" />
     <Compile Include="StartupTask.cs" />
@@ -125,7 +123,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Properties\Default.rd.xml" />
+    <EmbeddedResource Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
     <Content Include="Assets\Square150x150Logo.scale-200.png" />
@@ -135,85 +133,25 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SDK\ExternalServices\HA4IoT.ExternalServices.OpenWeatherMap\HA4IoT.ExternalServices.OpenWeatherMap.csproj">
-      <Project>{6788E4A8-580E-4C2E-9754-95229F24F217}</Project>
-      <Name>HA4IoT.ExternalServices.OpenWeatherMap</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\ExternalServices\HA4IoT.ExternalServices.TelegramBot\HA4IoT.ExternalServices.TelegramBot.csproj">
-      <Project>{0F244152-1BF5-46E4-93DD-E769B38CE9DB}</Project>
-      <Name>HA4IoT.ExternalServices.TelegramBot</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\ExternalServices\HA4IoT.ExternalServices.Twitter\HA4IoT.ExternalServices.Twitter.csproj">
-      <Project>{4BF90039-3B6A-450B-B942-09FAF600BD64}</Project>
-      <Name>HA4IoT.ExternalServices.Twitter</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Automations\HA4IoT.Automations.csproj">
-      <Project>{1CA64C98-210A-4015-95C6-67D591115F7B}</Project>
-      <Name>HA4IoT.Automations</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Components\HA4IoT.Components.csproj">
-      <Project>{60F9E539-3FF5-40DE-B0C4-BE99CAE57736}</Project>
-      <Name>HA4IoT.Components</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Conditions\HA4IoT.Conditions.csproj">
-      <Project>{3822E69D-FD79-4797-98E2-7C05973B6522}</Project>
-      <Name>HA4IoT.Conditions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Configuration\HA4IoT.Configuration.csproj">
-      <Project>{F9D92EA6-3763-47F5-9EFD-6D83804C95E6}</Project>
-      <Name>HA4IoT.Configuration</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{551337E7-D1EF-4145-92B4-F7086F7665A6}</Project>
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Actuators\HA4IoT.Actuators.csproj">
-      <Project>{808ABECF-D9C2-4AB2-95D8-EAF228B44576}</Project>
-      <Name>HA4IoT.Actuators</Name>
+    <ProjectReference Include="..\..\SDK\HA4IoT.ExternalServices\HA4IoT.ExternalServices.csproj">
+      <Project>{1792ccef-9f6c-4535-be20-baa777243980}</Project>
+      <Name>HA4IoT.ExternalServices</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Core\HA4IoT.Core.csproj">
-      <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
-      <Name>HA4IoT.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.Knx\HA4IoT.Hardware.Knx.csproj">
-      <Project>{1EC3A5D0-65C8-4396-BD56-9179A8BD00D4}</Project>
-      <Name>HA4IoT.Hardware.Knx</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
-      <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
+      <Project>{287a9bd0-4037-4add-986f-54056f059eae}</Project>
       <Name>HA4IoT.Hardware</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
       <Name>HA4IoT.Networking</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.PersonalAgent\HA4IoT.PersonalAgent.csproj">
-      <Project>{A22FDA3A-B331-4399-863B-5F1B8D24BFE9}</Project>
-      <Name>HA4IoT.PersonalAgent</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Sensors\HA4IoT.Sensors.csproj">
-      <Project>{8892E736-CDD0-48EB-AD9E-A1C8AA230FD7}</Project>
-      <Name>HA4IoT.Sensors</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Telemetry\HA4IoT.Telemetry.csproj">
-      <Project>{97F3345C-33B6-4779-9212-5FFBCEEF3F96}</Project>
-      <Name>HA4IoT.Telemetry</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.CCTools\HA4IoT.Hardware.CCTools.csproj">
-      <Project>{B0A7EF01-9382-422C-81AF-C90DC5A7AFFD}</Project>
-      <Name>HA4IoT.Hardware.CCTools</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.I2CHardwareBridge\HA4IoT.Hardware.I2CHardwareBridge.csproj">
-      <Project>{8BF16E28-A01D-47E9-A5C4-CC93E347AAF4}</Project>
-      <Name>HA4IoT.Hardware.I2CHardwareBridge</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.Pi2\HA4IoT.Hardware.Pi2.csproj">
-      <Project>{39819B8F-40F8-418A-AD3A-92A8C8D63268}</Project>
-      <Name>HA4IoT.Hardware.Pi2</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.RemoteSwitch\HA4IoT.Hardware.RemoteSwitch.csproj">
-      <Project>{BADA2E47-5626-4E9E-92A7-8F712D084493}</Project>
-      <Name>HA4IoT.Hardware.RemoteSwitch</Name>
+    <ProjectReference Include="..\..\SDK\HA4IoT\HA4IoT.csproj">
+      <Project>{c034ec4d-46cc-490a-a045-e4d4d1f49c31}</Project>
+      <Name>HA4IoT</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

@@ -1,21 +1,22 @@
 ﻿using System;
+using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Contracts.Core
 {
     public class TimedAction
     {
         private readonly TimeSpan _interval;
-        private readonly IHomeAutomationTimer _timer;
+        private readonly ITimerService _timerService;
         private Action _action;
         private TimeSpan _timeout;
 
-        public TimedAction(TimeSpan dueTime, TimeSpan interval, IHomeAutomationTimer timer)
+        public TimedAction(TimeSpan dueTime, TimeSpan interval, ITimerService timerService)
         {
             _timeout = dueTime;
             _interval = interval;
 
-            _timer = timer;
-            _timer.Tick += CheckForTimeout;
+            _timerService = timerService;
+            _timerService.Tick += CheckForTimeout;
         }
 
         public TimedAction Execute(Action action)
@@ -62,7 +63,7 @@ namespace HA4IoT.Contracts.Core
             _timeout = TimeSpan.Zero;
             _action = null;
 
-            _timer.Tick -= CheckForTimeout;
+            _timerService.Tick -= CheckForTimeout;
         }
     }
 }

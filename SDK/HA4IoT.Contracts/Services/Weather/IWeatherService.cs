@@ -1,7 +1,11 @@
-﻿namespace HA4IoT.Contracts.Services.Weather
+﻿using System;
+
+namespace HA4IoT.Contracts.Services.Weather
 {
     public interface IWeatherService : IService
     {
-        WeatherSituation GetWeather();
+        Weather Weather { get; }
+        DateTime? Timestamp { get; }
+        void Update(Weather weather);
     }
 }

@@ -1,0 +1,80 @@
+<div class="row">
+    <div class="alert alert-info">
+        This view shows all configured components from the HA4IoT controller. The components iteself must be configured using C#
+        and deployed manually to the device.
+    </div>
+    <div class="alert alert-warning">
+        The Smartphone/Tablet app must be restarted in order to apply the changed settings.
+    </div>
+</div>
+
+<div class="row" ng-show="coCtrl.SelectedComponent===null">
+    <div class="col-md-2">
+        <h2>Area</h2>
+        <hr />
+        <ul class="list-group">
+            <li class="list-group-item" ng-class="{active: coCtrl.SelectedArea.Id===area.Id}" ng-repeat="area in coCtrl.Areas" ng-click="coCtrl.SelectedArea=area">
+                <span>{{area.Caption}}</span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="col-md-10" ng-show="coCtrl.SelectedArea!=null">
+        <h2>Components</h2>
+        <hr />
+
+        <table class="table table-condensed table-hover">
+            <thead>
+            <tr>
+                <th></th>
+                <th>ID</th>
+                <th>Caption</th>
+                <th>State</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-class="{active: coCtrl.SelectedComponent.Id===component.Id}" ng-repeat="component in coCtrl.SelectedArea.Components" ng-click="coCtrl.selectComponent(component)">
+                <td class="text-center">
+                    <img class="medium-icon" ng-src="Content/Images/{{component.Image}}.png" />
+                </td>
+                <td>
+                    <div class="label label-primary">{{component.Id}}</div>
+                </td>
+                <td>
+                    <span>{{component.Caption}}</span>
+                </td>
+                <td>
+                    <span class="fa fa-check grid-icon" aria-hidden="true" ng-show="component.IsEnabled"></span>
+                    <span class="fa fa-eye grid-icon" aria-hidden="true" ng-show="component.IsVisible"></span>
+                </td>
+                <td class="text-center">
+                    <div class="btn-group pull-right" role="group">
+                        <a class="btn btn-default btn-xs glyphicon glyphicon-arrow-up" ng-click="coCtrl.moveComponent(component, 'up', $event)"></a>
+                        <a class="btn btn-default btn-xs glyphicon glyphicon-arrow-down" ng-click="coCtrl.moveComponent(component, 'down', $event)"></a>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div>
+            <button class="btn btn-default pull-right" ng-click="coCtrl.save()">Save</button>
+        </div>
+    </div>
+</div>
+
+<div ng-show="coCtrl.SelectedComponent!=null">
+    <h2>Settings</h2>
+    <hr />
+    <div class="box">
+        <div ng-include="'Components/GeneralSettings.html'"></div>
+        <div ng-include="'Components/RollerShutterSettings.html'" ng-show="coCtrl.SelectedComponent.Type==='RollerShutter'"></div>
+        <div ng-include="'Components/StateMachineSettings.html'" ng-show="coCtrl.SelectedComponent.Type==='StateMachine'"></div>
+        <div ng-include="'Components/HumiditySensorSettings.html'" ng-show="coCtrl.SelectedComponent.Type==='HumiditySensor'"></div>
+        <hr />
+        <button class="btn btn-default" ng-click="coCtrl.close()">Close</button>
+    </div>
+</div>
+
+<br />

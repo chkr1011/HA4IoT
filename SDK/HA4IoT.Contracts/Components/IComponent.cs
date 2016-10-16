@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Windows.Data.Json;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
-using HA4IoT.Contracts.Core.Settings;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Contracts.Components
 {
@@ -13,20 +11,14 @@ namespace HA4IoT.Contracts.Components
 
         ComponentId Id { get; }
 
-        ISettingsContainer Settings { get; }
+        ComponentState GetState();
 
-        IActuatorSettingsWrapper GeneralSettingsWrapper { get; }
+        IList<ComponentState> GetSupportedStates();
 
-        IComponentState GetState();
+        void HandleApiCall(IApiContext apiContext);
 
-        IList<IComponentState> GetSupportedStates();
+        JToken ExportConfiguration();
 
-        void HandleApiCommand(IApiContext apiContext);
-
-        void HandleApiRequest(IApiContext apiContext);
-
-        JsonObject ExportConfigurationToJsonObject();
-
-        JsonObject ExportStatusToJsonObject();
+        JToken ExportStatus();
     }
 }

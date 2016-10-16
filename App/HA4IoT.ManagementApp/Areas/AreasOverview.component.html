@@ -1,0 +1,77 @@
+<div class="row">
+    <div class="alert alert-info">
+        This view shows all configured areas from the HA4IoT controller. The areas iteself must be configured using C# and deployed
+        manually to the device.
+    </div>
+    <div class="alert alert-warning">
+        The Smartphone/Tablet app must be restarted in order to apply the changed settings.
+    </div>
+</div>
+
+<div class="row">
+
+    <div ng-class="aoCtrl.SelectedArea===null ? 'col-md-12' : 'col-md-8'">
+        <h2>Area</h2>
+        <hr />
+        <table class="table table-condensed table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Visible</th>
+                    <th>Caption</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-class="{active: aoCtrl.SelectedArea.Id === area.Id}" ng-repeat="area in aoCtrl.Areas" ng-click="aoCtrl.selectArea(area)">
+                    <td>
+                        <div class="label label-primary">{{area.Id}}</div>
+                    </td>
+                    <td>
+                        <span class="fa fa-eye grid-icon" aria-hidden="true" ng-show="area.IsVisible"></span>
+                    </td>
+                    <td>
+                        <div>{{area.Caption}}</div>
+                    </td>
+                    <td class="text-center">
+                        <div class="btn-group pull-right" role="group">
+                            <a class="btn btn-default btn-xs glyphicon glyphicon-arrow-up" ng-click="aoCtrl.moveArea(area, 'up')"></a>
+                            <a class="btn btn-default btn-xs glyphicon glyphicon-arrow-down" ng-click="aoCtrl.moveArea(area, 'down')"></a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div>
+            <button class="btn btn-default pull-right" ng-click="aoCtrl.save()">Save</button>
+        </div>
+    </div>
+
+    <div class="col-md-4" ng-show="aoCtrl.SelectedArea!=null">
+        <h2>Settings</h2>
+        <hr />
+
+        <div class="box">
+            <form>
+                <div class="form-group">
+                    <div>
+                        <label>ID</label>
+                    </div>
+                    <div class="label label-primary">{{aoCtrl.SelectedArea.Id}}</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Caption</label>
+                    <input type="text" class="form-control" ng-model="aoCtrl.SelectedArea.Caption">
+                </div>
+
+                <div class="checkbox">
+                    <label><input type="checkbox" ng-model="aoCtrl.SelectedArea.IsVisible">Visible</label>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<br />

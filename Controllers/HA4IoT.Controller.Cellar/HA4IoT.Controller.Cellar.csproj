@@ -11,8 +11,8 @@
     <AssemblyName>HA4IoT.Controller.Cellar</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
@@ -101,7 +101,6 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controller.cs" />
     <Compile Include="StartupTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -111,7 +110,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Properties\Default.rd.xml" />
+    <EmbeddedResource Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
     <Content Include="Assets\Square150x150Logo.scale-200.png" />
@@ -121,49 +120,21 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SDK\ExternalServices\HA4IoT.ExternalServices.OpenWeatherMap\HA4IoT.ExternalServices.OpenWeatherMap.csproj">
-      <Project>{6788E4A8-580E-4C2E-9754-95229F24F217}</Project>
-      <Name>HA4IoT.ExternalServices.OpenWeatherMap</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Automations\HA4IoT.Automations.csproj">
-      <Project>{1CA64C98-210A-4015-95C6-67D591115F7B}</Project>
-      <Name>HA4IoT.Automations</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Components\HA4IoT.Components.csproj">
-      <Project>{60f9e539-3ff5-40de-b0c4-be99cae57736}</Project>
-      <Name>HA4IoT.Components</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{551337E7-D1EF-4145-92B4-F7086F7665A6}</Project>
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Actuators\HA4IoT.Actuators.csproj">
-      <Project>{808ABECF-D9C2-4AB2-95D8-EAF228B44576}</Project>
-      <Name>HA4IoT.Actuators</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Core\HA4IoT.Core.csproj">
-      <Project>{2BBEF090-4FEE-4FB7-9CF1-F6597F2C53EA}</Project>
-      <Name>HA4IoT.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
-      <Project>{287A9BD0-4037-4ADD-986F-54056F059EAE}</Project>
+    <ProjectReference Include="..\..\SDK\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
+      <Project>{287a9bd0-4037-4add-986f-54056f059eae}</Project>
       <Name>HA4IoT.Hardware</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
       <Name>HA4IoT.Networking</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Sensors\HA4IoT.Sensors.csproj">
-      <Project>{8892E736-CDD0-48EB-AD9E-A1C8AA230FD7}</Project>
-      <Name>HA4IoT.Sensors</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.CCTools\HA4IoT.Hardware.CCTools.csproj">
-      <Project>{B0A7EF01-9382-422C-81AF-C90DC5A7AFFD}</Project>
-      <Name>HA4IoT.Hardware.CCTools</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\Hardware\HA4IoT.Hardware.Pi2\HA4IoT.Hardware.Pi2.csproj">
-      <Project>{39819B8F-40F8-418A-AD3A-92A8C8D63268}</Project>
-      <Name>HA4IoT.Hardware.Pi2</Name>
+    <ProjectReference Include="..\..\SDK\HA4IoT\HA4IoT.csproj">
+      <Project>{c034ec4d-46cc-490a-a045-e4d4d1f49c31}</Project>
+      <Name>HA4IoT</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

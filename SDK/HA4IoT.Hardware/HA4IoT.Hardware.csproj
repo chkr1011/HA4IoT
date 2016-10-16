@@ -1,0 +1,205 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{287A9BD0-4037-4ADD-986F-54056F059EAE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HA4IoT.Hardware</RootNamespace>
+    <AssemblyName>HA4IoT.Hardware</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\bin\ARM\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\bin\x86\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <None Include="project.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ByteExtensions.cs" />
+    <Compile Include="BuiltInI2CBusService.cs" />
+    <Compile Include="CCTools\CCToolsBoardBase.cs" />
+    <Compile Include="CCTools\CCToolsBoardPort.cs" />
+    <Compile Include="CCTools\CCToolsBoardService.cs" />
+    <Compile Include="CCTools\CCToolsBoardStateChangedEventArgs.cs" />
+    <Compile Include="CCTools\CCToolsInputBoardBase.cs" />
+    <Compile Include="CCTools\HSPE16InputOnly.cs" />
+    <Compile Include="CCTools\HSPE16OutputOnly.cs" />
+    <Compile Include="CCTools\HSPE16Pin.cs" />
+    <Compile Include="CCTools\HSPE8InputOnly.cs" />
+    <Compile Include="CCTools\HSPE8OutputOnly.cs" />
+    <Compile Include="CCTools\HSPE8Pin.cs" />
+    <Compile Include="CCTools\HSREL5.cs" />
+    <Compile Include="CCTools\HSREL5Pin.cs" />
+    <Compile Include="CCTools\HSREL8.cs" />
+    <Compile Include="CCTools\HSREL8Pin.cs" />
+    <Compile Include="CCTools\HSRT16.cs" />
+    <Compile Include="CCTools\HSRT16Pin.cs" />
+    <Compile Include="DeviceIdFactory.cs" />
+    <Compile Include="I2CDeviceWrapper.cs" />
+    <Compile Include="I2CHardwareBridge\DHT22Accessor.cs" />
+    <Compile Include="I2CHardwareBridge\DHT22HumiditySensor.cs" />
+    <Compile Include="I2CHardwareBridge\DHT22SensorBase.cs" />
+    <Compile Include="I2CHardwareBridge\DHT22TemperatureSensor.cs" />
+    <Compile Include="I2CHardwareBridge\I2CHardwareBridge.cs" />
+    <Compile Include="I2CHardwareBridge\I2CHardwareBridgeCommand.cs" />
+    <Compile Include="I2CHardwareBridge\ReadDHT22SensorCommand.cs" />
+    <Compile Include="I2CHardwareBridge\ReadDHT22SensorCommandResponse.cs" />
+    <Compile Include="I2CHardwareBridge\SendInfraredSignalCommand.cs" />
+    <Compile Include="I2CHardwareBridge\SendLDP433MHzSignalCommand.cs" />
+    <Compile Include="InterruptMonitor.cs" />
+    <Compile Include="Knx\KnxClient.cs" />
+    <Compile Include="Knx\KnxController.cs" />
+    <Compile Include="Knx\KnxDigitalJoinEnpoint.cs" />
+    <Compile Include="LogicalBinaryOutput.cs" />
+    <Compile Include="Pi2\Pi2Gpio.cs" />
+    <Compile Include="Pi2\Pi2GpioService.cs" />
+    <Compile Include="PortExpanderDrivers\AddressPinState.cs" />
+    <Compile Include="PortExpanderDrivers\MAX7311AddressGenerator.cs" />
+    <Compile Include="PortExpanderDrivers\MAX7311Driver.cs" />
+    <Compile Include="PortExpanderDrivers\PCA9555AAddressGenerator.cs" />
+    <Compile Include="PortExpanderDrivers\PCA9555AddressGenerator.cs" />
+    <Compile Include="PortExpanderDrivers\PCA9555ADriver.cs" />
+    <Compile Include="PortExpanderDrivers\PCA9555Driver.cs" />
+    <Compile Include="PortExpanderDrivers\PCF8574AAddressGenerator.cs" />
+    <Compile Include="PortExpanderDrivers\PCF8574AddressGenerator.cs" />
+    <Compile Include="PortExpanderDrivers\PCF8574ADriver.cs" />
+    <Compile Include="PortExpanderDrivers\PCF8574Driver.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RemoteSwitch\Codes\BrennenstuhlCodeSequenceProvider.cs" />
+    <Compile Include="RemoteSwitch\Codes\BrennenstuhlSystemCode.cs" />
+    <Compile Include="RemoteSwitch\Codes\BrennenstuhlUnitCode.cs" />
+    <Compile Include="RemoteSwitch\Codes\IntertechnoCodeSequenceProvider.cs" />
+    <Compile Include="RemoteSwitch\Codes\IntertechnoSystemCode.cs" />
+    <Compile Include="RemoteSwitch\Codes\IntertechnoUnitCode.cs" />
+    <Compile Include="RemoteSwitch\ILPD433MhzSignalSender.cs" />
+    <Compile Include="RemoteSwitch\LPD433MhzCode.cs" />
+    <Compile Include="RemoteSwitch\LPD433MhzCodeSequence.cs" />
+    <Compile Include="RemoteSwitch\LPD433MHzCodeSequencePair.cs" />
+    <Compile Include="RemoteSwitch\LPD433MhzSignalSender.cs" />
+    <Compile Include="RemoteSwitch\RemoteSocketCommand.cs" />
+    <Compile Include="RemoteSwitch\RemoteSocketOutputPort.cs" />
+    <Compile Include="RemoteSwitch\RemoteSocketService.cs" />
+    <EmbeddedResource Include="Properties\HA4IoT.Hardware.rd.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
+      <Project>{e1edac4b-83b9-46f4-9f6a-3bae97d79f29}</Project>
+      <Name>HA4IoT.Contracts</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <SDKReference Include="WindowsIoT, Version=10.0.14393.0">
+      <Name>Windows IoT Extensions for the UWP</Name>
+    </SDKReference>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
+    <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

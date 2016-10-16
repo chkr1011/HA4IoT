@@ -120,6 +120,7 @@ while($repeat)
 	
 	$clearRemoteDirectory = Confirm("Clear remote directory (y/n)?")
 	
+	# Deploy regular app.
 	$sourceDir = ".\HA4IoT.WebApp"
 	$remoteDir = "$package\LocalState\App"
 
@@ -128,9 +129,18 @@ while($repeat)
 		$remoteDir = "$remoteDir\STAGING";
 	}
 
-	#IncreaseVersion -Package "$remoteDir"
-
 	Deploy -Source ".\HA4IoT.WebApp" -Target "$remoteDir" -Clear $clearRemoteDirectory
+
+	# Deploy management app.
+	$sourceDir = ".\HA4IoT.ManagementApp"
+	$remoteDir = "$package\LocalState\ManagementApp"
+
+	if ($isStaging)
+	{
+		$remoteDir = "$remoteDir\STAGING";
+	}
+
+	Deploy -Source ".\HA4IoT.ManagementApp" -Target "$remoteDir" -Clear $clearRemoteDirectory
 
 	if (-Not (Confirm("Deployment completed. Repeat deploy? (y/n)")))
 	{

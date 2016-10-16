@@ -1,5 +1,5 @@
-﻿<span ng-repeat="casement in actuator.casements">
-    <span class="label label-success" ng-show="actuator.state.state.{{casement}}=='Closed'">{{ localizationCtrl.getUILocalization('UI.WindowClosed') }}</span>
-    <span class="label label-warning" ng-show="actuator.state.state.{{casement}}=='Tilt'">{{ localizationCtrl.getUILocalization('UI.WindowTilt') }}</span>
-    <span class="label label-danger" ng-show="actuator.state.state.{{casement}}=='Open'">{{ localizationCtrl.getUILocalization('UI.WindowOpen') }}</span>
+﻿<span ng-repeat="casement in component.Casements">
+    <span class="label label-success" ng-show="component.state.State.{{casement}}==='Closed'">{{ localizationCtrl.getUILocalization('UI.WindowClosed') }}</span>
+    <span class="label label-warning" ng-show="component.state.State.{{casement}}==='Tilt'">{{ localizationCtrl.getUILocalization('UI.WindowTilt') }}</span>
+    <span class="label label-danger" ng-show="component.state.State.{{casement}}==='Open'">{{ localizationCtrl.getUILocalization('UI.WindowOpen') }}</span>
 </span>

@@ -1,42 +1,35 @@
-﻿using HA4IoT.Contracts.Services;
+﻿using System;
+using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.OutdoorHumidity;
+using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.Weather;
 
 namespace HA4IoT.Tests.Mockups
 {
     public class TestWeatherStation : ServiceBase, IWeatherService, IOutdoorTemperatureService, IOutdoorHumidityService
     {
-        private float _temperature;
-        private float _humidity;
-        private WeatherSituation _weather;
+        public Weather Weather { get; set; }
 
-        public void SetTemperature(float value)
+        DateTime? IWeatherService.Timestamp { get; }
+
+        void IOutdoorHumidityService.Update(float outdoorHumidity)
         {
-            _temperature = value;
         }
 
-        public void SetHumidity(float value)
+        void IOutdoorTemperatureService.Update(float outdoorTemperature)
         {
-            _humidity = value;
         }
 
-        public void SetWeather(WeatherSituation weather)
+        public void Update(Weather weather)
         {
-            _weather = weather;
         }
 
-        public WeatherSituation GetWeather()
-        {
-            return _weather;
-        }
+        public float OutdoorTemperature { get; set; }
 
-        public float GetOutdoorTemperature()
-        {
-            return _temperature;
-        }
+        DateTime? IOutdoorTemperatureService.Timestamp { get; }
 
-        public float GetOutdoorHumidity()
-        {
-            return _humidity;
-        }
+        public float OutdoorHumidity { get; set; }
+
+        DateTime? IOutdoorHumidityService.Timestamp { get; }
     }
 }

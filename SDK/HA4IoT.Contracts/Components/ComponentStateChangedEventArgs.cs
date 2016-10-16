@@ -4,14 +4,14 @@ namespace HA4IoT.Contracts.Components
 {
     public class ComponentStateChangedEventArgs : EventArgs
     {
-        public ComponentStateChangedEventArgs(IComponentState oldState, IComponentState newState)
+        public ComponentStateChangedEventArgs(ComponentState oldState, ComponentState newState)
         {
             OldState = oldState;
             NewState = newState;
         }
 
-        public IComponentState OldState { get; }
+        public ComponentState OldState { get; }
 
-        public IComponentState NewState { get; }
+        public ComponentState NewState { get; }
     }
 }

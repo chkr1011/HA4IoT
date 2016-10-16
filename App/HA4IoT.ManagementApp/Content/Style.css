@@ -1,0 +1,50 @@
+body {
+    margin: 0px;
+    padding-top: 70px;
+}
+
+.logo {
+    width: 64px;
+    height: 64px;
+}
+
+.small-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.medium-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.vertical-middle {
+    vertical-align: middle;
+}
+
+.table tbody > tr > td {
+    vertical-align: middle;
+}
+
+.id-text {
+    font-family: Courier New, Courier, monospace;
+}
+
+.type-text {
+    font-family: Courier New, Courier, monospace;
+    font-size: 12px;
+}
+
+.grid-icon {
+    font-size: 20px;
+}
+
+.btn-home {
+    width: 150px;
+}
+
+.box{
+  background: #F9F9F9; 
+  padding: 15px;
+}
+

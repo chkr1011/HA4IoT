@@ -1,0 +1,38 @@
+<div class="panel panel-default">
+    <div class="panel-heading">Telegram bot settings</div>
+    <div class="panel-body">
+
+        <div class="alert alert-info" role="alert">In order to chat with the personal agent you must create a free account at <a href="https://core.telegram.org/bots#3-how-do-i-create-a-bot">Telegram Bots</a>            and fill the required fields.</div>
+
+        <form class="form-horizontal">
+
+            <div class="form-group">
+                <label class="col-md-2 control-label">Enabled</label>
+                <div class="col-md-10">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" ng-model="tbsCtrl.Model.IsEnabled"><label></label>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-2 control-label">Allow all clients</label>
+                <div class="col-md-10">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" ng-model="tbsCtrl.Model.AllowAllClients"><label></label>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-2 control-label">Authentication token</label>
+                <div class="col-md-10">
+                    <input type="text" class="form-control" ng-model="tbsCtrl.Model.AuthenticationToken">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="panel-footer clearfix">
+        <button class="btn btn-default pull-right" ng-click="tbsCtrl.save()">Save</button>
+    </div>
+</div>

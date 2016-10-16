@@ -1,0 +1,34 @@
+<div class="panel panel-default">
+    <div class="panel-heading">Controller settings</div>
+    <div class="panel-body">
+
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label class="col-md-2 control-label">Caption</label>
+                <div class="col-md-10">
+                    <input type="text" class="form-control" ng-model="csCtrl.Model.Caption">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-2 control-label">Description</label>
+                <div class="col-md-10">
+                    <input type="text" class="form-control" ng-model="csCtrl.Model.Description">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-2 control-label">Language</label>
+                <div class="col-md-10">
+                    <select class="form-control" ng-model="csCtrl.Model.Language">
+                        <option>EN</option>
+                        <option>DE</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="panel-footer clearfix">
+        <button class="btn btn-default pull-right" ng-click="csCtrl.save()">Save</button>
+    </div>
+</div>

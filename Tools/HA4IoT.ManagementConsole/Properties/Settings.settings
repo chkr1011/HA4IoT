@@ -1,9 +1,0 @@
-﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="HA4IoT.ManagementConsole.Properties" GeneratedClassName="Settings">
-  <Profiles />
-  <Settings>
-    <Setting Name="ControllerAddress" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">192.168.1.15</Value>
-    </Setting>
-  </Settings>
-</SettingsFile>

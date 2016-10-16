@@ -1,0 +1,16 @@
+<h2>
+    Backup
+</h2>
+<hr />
+<button class="btn btn-default" ng-click="bCtrl.downloadBackup()">Download backup</button>
+
+<h2>
+    Restore
+</h2>
+<hr />
+<div class="form-group">
+    <label>Backup content</label>
+    <textarea class="form-control" ng-model="bCtrl.BackupContent"></textarea>
+</div>
+
+<button class="btn btn-default" ng-click="bCtrl.restoreBackup()">Restore backup</button>
