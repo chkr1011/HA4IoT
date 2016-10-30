@@ -67,14 +67,14 @@ function AppController($scope, $http) {
                         return;
                     }
 
-                    if (component.type === "TemperatureSensor" ||
-                        component.type === "HumiditySensor") {
+                    if (component.Type === "TemperatureSensor" ||
+                        component.Type === "HumiditySensor") {
                         c.sensors.push(component);
-                    } else if (component.type === "RollerShutter") {
+                    } else if (component.Type === "RollerShutter") {
                         c.rollerShutters.push(component);
-                    } else if (component.type === "MotionDetector") {
+                    } else if (component.Type === "MotionDetector") {
                         c.motionDetectors.push(component);
-                    } else if (component.type === "Window") {
+                    } else if (component.Type === "Window") {
                         c.windows.push(component);
                     }
 

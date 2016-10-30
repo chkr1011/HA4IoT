@@ -158,8 +158,11 @@
     <Compile Include="Automations\TurnOnAndOffAutomation.cs" />
     <Compile Include="Automations\TurnOnAndOffAutomationExtensions.cs" />
     <Compile Include="Automations\TurnOnAndOffAutomationSettings.cs" />
+    <Compile Include="Components\Component.cs" />
     <Compile Include="Components\ComponentBase.cs" />
+    <Compile Include="Components\ComponentClass.cs" />
     <Compile Include="Components\ComponentExtensions.cs" />
+    <Compile Include="Components\ComponentSettings.cs" />
     <Compile Include="Conditions\ActionExtensions.cs" />
     <Compile Include="Conditions\Condition.cs" />
     <Compile Include="Conditions\ConditionalAction.cs" />
@@ -178,6 +181,12 @@
     <Compile Include="Core\ContainerExtensions.cs" />
     <Compile Include="Core\Controller.cs" />
     <Compile Include="Core\ControllerOptions.cs" />
+    <Compile Include="Features\FeatureCollection.cs" />
+    <Compile Include="Features\IFeature.cs" />
+    <Compile Include="Features\Proxies\ITurnOnFeatureProxy.cs" />
+    <Compile Include="Features\Proxies\ITurnOffFeatureProxy.cs" />
+    <Compile Include="Features\TurnOffFeature.cs" />
+    <Compile Include="Features\TurnOnFeature.cs" />
     <Compile Include="Logger\LogEntry.cs" />
     <Compile Include="Logger\LogEntrySeverity.cs" />
     <Compile Include="Logger\UdpLogger.cs" />

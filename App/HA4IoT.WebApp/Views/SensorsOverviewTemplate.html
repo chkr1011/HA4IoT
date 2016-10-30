@@ -2,16 +2,16 @@
     <div class="panel-heading pointer" ng-click="haCtrl.setActivePanel('sensorsOverview')">
         <div>
             <span class="glyphicon glyphicon-th-list"></span>
-            <span class="panel-title">{{localizationCtrl.getUILocalization('UI.Sensors')}}</span>
+            <span class="panel-title">{{ localizationCtrl.getUILocalization('UI.Sensors') }}</span>
         </div>
     </div>
-    <table class="table table-striped" ng-show="haCtrl.activePanel=='sensorsOverview'">
+    <table class="table table-striped" ng-show="haCtrl.activePanel==='sensorsOverview'">
         <tbody>
-            <tr ng-repeat="actuator in haCtrl.sensors | orderBy:['overviewCaption']">
+            <tr ng-repeat="component in haCtrl.sensors | orderBy:['OverviewCaption']">
                 <td style="vertical-align: middle;">
-                    <span><img class="icon" ng-src="Images/{{actuator.image}}.png" />{{actuator.overviewCaption}}</span>
+                    <span><img class="icon" ng-src="Images/{{component.Image}}.png" />{{component.OverviewCaption}}</span>
                 </td>
-                <td class="rightTextAligned" ng-include="actuator.template"></td>
+                <td class="rightTextAligned" ng-include="component.Template"></td>
             </tr>
         </tbody>
     </table>
