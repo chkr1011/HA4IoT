@@ -14,4 +14,4 @@ HA4IoT.sdf
 *.VC.opendb
 HA4IoT.VC.db
 *.user
-Homepage/Properties/PublishProfiles/HA4IoTHomepage - Web Deploy.pubxml
+*.pubxml

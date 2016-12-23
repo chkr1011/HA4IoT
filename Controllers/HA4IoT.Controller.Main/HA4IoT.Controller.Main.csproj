@@ -134,16 +134,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SDK\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
-      <Project>{551337E7-D1EF-4145-92B4-F7086F7665A6}</Project>
+      <Project>{b10b2e2a-85cd-4289-8649-fc0c1c98921d}</Project>
       <Name>HA4IoT.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.ExternalServices\HA4IoT.ExternalServices.csproj">
-      <Project>{1792ccef-9f6c-4535-be20-baa777243980}</Project>
-      <Name>HA4IoT.ExternalServices</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
-      <Project>{287a9bd0-4037-4add-986f-54056f059eae}</Project>
-      <Name>HA4IoT.Hardware</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SDK\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>

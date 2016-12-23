@@ -115,7 +115,7 @@ namespace HA4IoT.Core
             _container.RegisterInitializer<ResourceService>(s => s.Initialize());
 
             _container.RegisterSingleton<IApiService, ApiService>();
-            _container.RegisterSingleton<AzureCloudApiDispatcherEndpointService>();
+            _container.RegisterSingleton<AzureCloudService>();
             _container.RegisterSingleton<LocalHttpServerApiDispatcherEndpointService>();
 
             _container.RegisterSingleton<IDateTimeService, DateTimeService>();

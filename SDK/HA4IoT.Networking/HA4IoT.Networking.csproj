@@ -148,11 +148,10 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
-      <Project>{551337E7-D1EF-4145-92B4-F7086F7665A6}</Project>
+      <Project>{b10b2e2a-85cd-4289-8649-fc0c1c98921d}</Project>
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Windows.Storage;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
@@ -16,7 +17,7 @@ namespace HA4IoT.PersonalAgent
 
         public SynonymServiceStorage()
         {
-            var rootPath = Path.Combine(StoragePath.Root, "Services", "SynonymService");
+            var rootPath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Services", "SynonymService");
             if (!Directory.Exists(rootPath))
             {
                 Directory.CreateDirectory(rootPath);

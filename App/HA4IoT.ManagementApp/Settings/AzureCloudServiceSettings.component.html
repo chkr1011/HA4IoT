@@ -1,0 +1,43 @@
+<div class="panel panel-default">
+    <div class="panel-heading">Azure Cloud Service settings</div> 
+    <div class="panel-body">
+        <div class="alert alert-info" role="alert">Required to use several features like external access or Amazon Echo.</div>
+
+        <form class="form-horizontal">
+
+            <div class="form-group">
+                <label class="col-md-2 control-label">Enabled</label>
+                <div class="col-md-10">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" ng-model="acsCtrl.Model.IsEnabled"><label></label>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-2 control-label">Account ID</label>
+                <div class="col-md-10">
+                    <input type="text" class="form-control" ng-model="acsCtrl.Model.AccountId">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-2 control-label">Outbound Queue Authorization</label>
+                <div class="col-md-10">
+                    <input type="text" class="form-control" ng-model="acsCtrl.Model.OutboundQueueAuthorization">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-2 control-label">Inbound Queue Authorization</label>
+                <div class="col-md-10">
+                    <input type="text" class="form-control" ng-model="acsCtrl.Model.InboundQueueAuthorization">
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <div class="panel-footer clearfix">
+        <button class="btn btn-default pull-right" ng-click="acsCtrl.save()">Save</button>
+    </div>
+</div>

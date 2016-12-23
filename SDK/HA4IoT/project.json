@@ -2,7 +2,7 @@
   "dependencies": {
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
     "Newtonsoft.Json": "9.0.1",
-    "SimpleInjector": "3.2.2"
+    "SimpleInjector": "3.3.2"
   },
   "frameworks": {
     "uap10.0": {}

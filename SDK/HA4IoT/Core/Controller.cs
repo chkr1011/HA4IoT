@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
+using Windows.Storage;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
@@ -29,6 +30,8 @@ namespace HA4IoT.Core
             if (options == null) throw new ArgumentNullException(nameof(options));
 
             _options = options;
+
+            StoragePath.Root = ApplicationData.Current.LocalFolder.Path;
         }
 
         public Task RunAsync(IBackgroundTaskInstance taskInstance)

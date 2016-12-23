@@ -12,7 +12,7 @@ namespace HA4IoT.CloudTester
         public MainPage()
         {
             InitializeComponent();
-            
+
             Log.Instance = new TextBoxLogger(LogTextBox);
 
             var applicationData = Windows.Storage.ApplicationData.Current;
@@ -74,25 +74,31 @@ namespace HA4IoT.CloudTester
 
         private void SendTestMessageToOutboundQueue(object sender, RoutedEventArgs e)
         {
-            var queueSender = new QueueSender(
-                NamespaceTextBox.Text, 
-                OutboundQueueNameTextBox.Text,
-                OutboundQueueSendSasTokenTextBox.Text);
+            var options = new QueueSenderOptions
+            {
+                NamespaceName = NamespaceTextBox.Text,
+                QueueName = OutboundQueueNameTextBox.Text,
+                Authorization = OutboundQueueSendSasTokenTextBox.Text
+            };
 
-           var properties = new JObject();
-           var body = new JObject();
+            var queueSender = new QueueSender(options);
+
+            var properties = new JObject();
+            var body = new JObject();
 
             Task.Run(async () => await queueSender.SendAsync(properties, body));
         }
 
         private void StartWaitForMessages(object sender, RoutedEventArgs e)
         {
-            var queueReceiver = new QueueReceiver(
-                NamespaceTextBox.Text,
-                InboundQueueNameTextBox.Text,
-                InboundQueueListenSasTokenTextBox.Text,
-                TimeSpan.FromSeconds(60));
-
+            var options = new QueueReceiverOptions
+            {
+                NamespaceName = NamespaceTextBox.Text,
+                QueueName = InboundQueueNameTextBox.Text,
+                Authorization = InboundQueueListenSasTokenTextBox.Text
+            };
+            
+            var queueReceiver = new QueueReceiver(options);
             queueReceiver.MessageReceived += LogMessage;
             queueReceiver.Enable();
         }
@@ -104,10 +110,14 @@ namespace HA4IoT.CloudTester
 
         private void SendTestMessageToInboundQueue(object sender, RoutedEventArgs e)
         {
-            var queueSender = new QueueSender(
-                NamespaceTextBox.Text, 
-                InboundQueueNameTextBox.Text,
-                InboundQueueSendSasTokenTextBox.Text);
+            var options = new QueueSenderOptions
+            {
+                NamespaceName = NamespaceTextBox.Text,
+                QueueName = OutboundQueueNameTextBox.Text,
+                Authorization = OutboundQueueSendSasTokenTextBox.Text
+            };
+
+            var queueSender = new QueueSender(options);
 
             var systemProperties = new JObject
             {
@@ -132,11 +142,14 @@ namespace HA4IoT.CloudTester
 
         private void StartWaitForOutboundMessages(object sender, RoutedEventArgs e)
         {
-            var queueReceiver = new QueueReceiver(
-                NamespaceTextBox.Text,
-                OutboundQueueNameTextBox.Text,
-                OutboundQueueListenSasTokenTextBox.Text,
-                TimeSpan.FromSeconds(60));
+            var options = new QueueReceiverOptions
+            {
+                NamespaceName = NamespaceTextBox.Text,
+                QueueName = InboundQueueNameTextBox.Text,
+                Authorization = InboundQueueListenSasTokenTextBox.Text
+            };
+
+            var queueReceiver = new QueueReceiver(options);
 
             queueReceiver.MessageReceived += LogMessage;
             queueReceiver.Enable();

@@ -17,7 +17,7 @@ using HA4IoT.Contracts.Services.Weather;
 
 namespace HA4IoT.PersonalAgent
 {
-    [ApiServiceClass(typeof(PersonalAgentService))]
+    [ApiServiceClass(typeof(IPersonalAgentService))]
     public class PersonalAgentService : ServiceBase, IPersonalAgentService
     {
         private readonly SynonymService _synonymService;
@@ -90,6 +90,11 @@ namespace HA4IoT.PersonalAgent
             var answer = ProcessMessage(inboundMessage);
 
             apiContext.Response["Answer"] = answer;
+        }
+
+        public void ExecuteIntent()
+        {
+            
         }
 
         private string GenerateDebugOutput(MessageContext messageContext)
@@ -177,13 +182,13 @@ namespace HA4IoT.PersonalAgent
             {
                 var component = _componentService.GetComponent<IComponent>(messageContext.IdentifiedComponentIds.First());
 
-                IActuator actuator = component as IActuator;
+                var actuator = component as IActuator;
                 if (actuator != null)
                 {
                     return UpdateActuatorState(actuator, messageContext);
                 }
 
-                ISensor sensor = component as ISensor;
+                var sensor = component as ISensor;
                 if (sensor != null)
                 {
                     return GetSensorStatus(sensor);

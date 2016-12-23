@@ -181,12 +181,96 @@
     <Compile Include="Core\ContainerExtensions.cs" />
     <Compile Include="Core\Controller.cs" />
     <Compile Include="Core\ControllerOptions.cs" />
+    <Compile Include="ExternalServices\AzureCloud\AzureCloudService.cs" />
+    <Compile Include="ExternalServices\AzureCloud\AzureCloudServiceSettings.cs" />
+    <Compile Include="ExternalServices\AzureCloud\EventHubSender.cs" />
+    <Compile Include="ExternalServices\AzureCloud\MessageReceivedEventArgs.cs" />
+    <Compile Include="ExternalServices\AzureCloud\QueueBasedApiContext.cs" />
+    <Compile Include="ExternalServices\AzureCloud\QueueReceiver.cs" />
+    <Compile Include="ExternalServices\AzureCloud\QueueReceiverOptions.cs" />
+    <Compile Include="ExternalServices\AzureCloud\QueueSender.cs" />
+    <Compile Include="ExternalServices\AzureCloud\QueueSenderOptions.cs" />
+    <Compile Include="ExternalServices\OpenWeatherMap\OpenWeatherMapResponseParser.cs" />
+    <Compile Include="ExternalServices\OpenWeatherMap\OpenWeatherMapService.cs" />
+    <Compile Include="ExternalServices\OpenWeatherMap\OpenWeatherMapServiceSettings.cs" />
+    <Compile Include="ExternalServices\OpenWeatherMap\OpenWeatherMapWeatherSituationParser.cs" />
+    <Compile Include="ExternalServices\TelegramBot\TelegramBotExtensions.cs" />
+    <Compile Include="ExternalServices\TelegramBot\TelegramBotMessageReceivedEventArgs.cs" />
+    <Compile Include="ExternalServices\TelegramBot\TelegramBotService.cs" />
+    <Compile Include="ExternalServices\TelegramBot\TelegramBotServiceSettings.cs" />
+    <Compile Include="ExternalServices\Twitter\TweetAction.cs" />
+    <Compile Include="ExternalServices\Twitter\TwitterClientService.cs" />
+    <Compile Include="ExternalServices\Twitter\TwitterClientServiceExtensions.cs" />
+    <Compile Include="ExternalServices\Twitter\TwitterClientServiceSettings.cs" />
     <Compile Include="Features\FeatureCollection.cs" />
     <Compile Include="Features\IFeature.cs" />
     <Compile Include="Features\Proxies\ITurnOnFeatureProxy.cs" />
     <Compile Include="Features\Proxies\ITurnOffFeatureProxy.cs" />
     <Compile Include="Features\TurnOffFeature.cs" />
     <Compile Include="Features\TurnOnFeature.cs" />
+    <Compile Include="Hardware\BuiltInI2CBusService.cs" />
+    <Compile Include="Hardware\ByteExtensions.cs" />
+    <Compile Include="Hardware\CCTools\CCToolsBoardBase.cs" />
+    <Compile Include="Hardware\CCTools\CCToolsBoardPort.cs" />
+    <Compile Include="Hardware\CCTools\CCToolsBoardService.cs" />
+    <Compile Include="Hardware\CCTools\CCToolsBoardStateChangedEventArgs.cs" />
+    <Compile Include="Hardware\CCTools\CCToolsInputBoardBase.cs" />
+    <Compile Include="Hardware\CCTools\HSPE16InputOnly.cs" />
+    <Compile Include="Hardware\CCTools\HSPE16OutputOnly.cs" />
+    <Compile Include="Hardware\CCTools\HSPE16Pin.cs" />
+    <Compile Include="Hardware\CCTools\HSPE8InputOnly.cs" />
+    <Compile Include="Hardware\CCTools\HSPE8OutputOnly.cs" />
+    <Compile Include="Hardware\CCTools\HSPE8Pin.cs" />
+    <Compile Include="Hardware\CCTools\HSREL5.cs" />
+    <Compile Include="Hardware\CCTools\HSREL5Pin.cs" />
+    <Compile Include="Hardware\CCTools\HSREL8.cs" />
+    <Compile Include="Hardware\CCTools\HSREL8Pin.cs" />
+    <Compile Include="Hardware\CCTools\HSRT16.cs" />
+    <Compile Include="Hardware\CCTools\HSRT16Pin.cs" />
+    <Compile Include="Hardware\DeviceIdFactory.cs" />
+    <Compile Include="Hardware\I2CDeviceWrapper.cs" />
+    <Compile Include="Hardware\I2CHardwareBridge\DHT22Accessor.cs" />
+    <Compile Include="Hardware\I2CHardwareBridge\DHT22HumiditySensor.cs" />
+    <Compile Include="Hardware\I2CHardwareBridge\DHT22SensorBase.cs" />
+    <Compile Include="Hardware\I2CHardwareBridge\DHT22TemperatureSensor.cs" />
+    <Compile Include="Hardware\I2CHardwareBridge\I2CHardwareBridge.cs" />
+    <Compile Include="Hardware\I2CHardwareBridge\I2CHardwareBridgeCommand.cs" />
+    <Compile Include="Hardware\I2CHardwareBridge\ReadDHT22SensorCommand.cs" />
+    <Compile Include="Hardware\I2CHardwareBridge\ReadDHT22SensorCommandResponse.cs" />
+    <Compile Include="Hardware\I2CHardwareBridge\SendInfraredSignalCommand.cs" />
+    <Compile Include="Hardware\I2CHardwareBridge\SendLDP433MHzSignalCommand.cs" />
+    <Compile Include="Hardware\InterruptMonitor.cs" />
+    <Compile Include="Hardware\Knx\KnxClient.cs" />
+    <Compile Include="Hardware\Knx\KnxController.cs" />
+    <Compile Include="Hardware\Knx\KnxDigitalJoinEnpoint.cs" />
+    <Compile Include="Hardware\LogicalBinaryOutput.cs" />
+    <Compile Include="Hardware\Pi2\Pi2Gpio.cs" />
+    <Compile Include="Hardware\Pi2\Pi2GpioService.cs" />
+    <Compile Include="Hardware\PortExpanderDrivers\AddressPinState.cs" />
+    <Compile Include="Hardware\PortExpanderDrivers\MAX7311AddressGenerator.cs" />
+    <Compile Include="Hardware\PortExpanderDrivers\MAX7311Driver.cs" />
+    <Compile Include="Hardware\PortExpanderDrivers\PCA9555AAddressGenerator.cs" />
+    <Compile Include="Hardware\PortExpanderDrivers\PCA9555AddressGenerator.cs" />
+    <Compile Include="Hardware\PortExpanderDrivers\PCA9555ADriver.cs" />
+    <Compile Include="Hardware\PortExpanderDrivers\PCA9555Driver.cs" />
+    <Compile Include="Hardware\PortExpanderDrivers\PCF8574AAddressGenerator.cs" />
+    <Compile Include="Hardware\PortExpanderDrivers\PCF8574AddressGenerator.cs" />
+    <Compile Include="Hardware\PortExpanderDrivers\PCF8574ADriver.cs" />
+    <Compile Include="Hardware\PortExpanderDrivers\PCF8574Driver.cs" />
+    <Compile Include="Hardware\RemoteSwitch\Codes\BrennenstuhlCodeSequenceProvider.cs" />
+    <Compile Include="Hardware\RemoteSwitch\Codes\BrennenstuhlSystemCode.cs" />
+    <Compile Include="Hardware\RemoteSwitch\Codes\BrennenstuhlUnitCode.cs" />
+    <Compile Include="Hardware\RemoteSwitch\Codes\IntertechnoCodeSequenceProvider.cs" />
+    <Compile Include="Hardware\RemoteSwitch\Codes\IntertechnoSystemCode.cs" />
+    <Compile Include="Hardware\RemoteSwitch\Codes\IntertechnoUnitCode.cs" />
+    <Compile Include="Hardware\RemoteSwitch\ILPD433MhzSignalSender.cs" />
+    <Compile Include="Hardware\RemoteSwitch\LPD433MhzCode.cs" />
+    <Compile Include="Hardware\RemoteSwitch\LPD433MhzCodeSequence.cs" />
+    <Compile Include="Hardware\RemoteSwitch\LPD433MHzCodeSequencePair.cs" />
+    <Compile Include="Hardware\RemoteSwitch\LPD433MhzSignalSender.cs" />
+    <Compile Include="Hardware\RemoteSwitch\RemoteSocketCommand.cs" />
+    <Compile Include="Hardware\RemoteSwitch\RemoteSocketOutputPort.cs" />
+    <Compile Include="Hardware\RemoteSwitch\RemoteSocketService.cs" />
     <Compile Include="Logger\LogEntry.cs" />
     <Compile Include="Logger\LogEntrySeverity.cs" />
     <Compile Include="Logger\UdpLogger.cs" />
@@ -267,16 +351,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
-      <Project>{e1edac4b-83b9-46f4-9f6a-3bae97d79f29}</Project>
+      <Project>{b10b2e2a-85cd-4289-8649-fc0c1c98921d}</Project>
       <Name>HA4IoT.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\HA4IoT.ExternalServices\HA4IoT.ExternalServices.csproj">
-      <Project>{1792ccef-9f6c-4535-be20-baa777243980}</Project>
-      <Name>HA4IoT.ExternalServices</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\HA4IoT.Hardware\HA4IoT.Hardware.csproj">
-      <Project>{287a9bd0-4037-4add-986f-54056f059eae}</Project>
-      <Name>HA4IoT.Hardware</Name>
     </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{d4e0a3f9-6521-4aee-815a-e2a60323fb63}</Project>
