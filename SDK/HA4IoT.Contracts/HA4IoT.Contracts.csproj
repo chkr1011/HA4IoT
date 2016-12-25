@@ -34,6 +34,14 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <None Include="project.json" />
     <!-- A reference to the entire .NET Framework is automatically included -->
@@ -58,9 +66,13 @@
     <Compile Include="Api\ApiMethodAttribute.cs" />
     <Compile Include="Api\ApiRequestReceivedEventArgs.cs" />
     <Compile Include="Api\ApiResultCode.cs" />
+    <Compile Include="Api\Cloud\ApiRequest.cs" />
+    <Compile Include="Api\Cloud\ApiResponse.cs" />
+    <Compile Include="Api\Cloud\CloudConnectorHeaders.cs" />
+    <Compile Include="Api\Cloud\CloudResponseMessage.cs" />
     <Compile Include="Api\IApiContext.cs" />
-    <Compile Include="Api\IApiDispatcherEndpoint.cs" />
-    <Compile Include="Api\IApiService.cs" />
+    <Compile Include="Api\IApiAdapter.cs" />
+    <Compile Include="Api\IApiDispatcherService.cs" />
     <Compile Include="Areas\AreaId.cs" />
     <Compile Include="Areas\AreaIdGenerator.cs" />
     <Compile Include="Areas\IArea.cs" />
@@ -70,6 +82,8 @@
     <Compile Include="Automations\IAutomation.cs" />
     <Compile Include="Automations\IAutomationService.cs" />
     <Compile Include="Automations\IAutomationSettings.cs" />
+    <Compile Include="Api\Cloud\CloudRequestMessage.cs" />
+    <Compile Include="Api\Cloud\CloudMessageHeader.cs" />
     <Compile Include="Components\ComponentId.cs" />
     <Compile Include="Components\ComponentIdExtensions.cs" />
     <Compile Include="Components\ComponentIdGenerator.cs" />

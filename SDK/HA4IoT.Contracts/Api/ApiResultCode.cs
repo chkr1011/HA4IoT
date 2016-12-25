@@ -4,7 +4,7 @@
     {
         Success,
 
-        UnknownUri,
+        NotSupported,
 
         InvalidBody,
 

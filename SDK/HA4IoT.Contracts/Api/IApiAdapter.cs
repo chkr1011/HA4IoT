@@ -3,7 +3,7 @@ using HA4IoT.Contracts.Components;
 
 namespace HA4IoT.Contracts.Api
 {
-    public interface IApiDispatcherEndpoint
+    public interface IApiAdapter
     {
         event EventHandler<ApiRequestReceivedEventArgs> RequestReceived;
 

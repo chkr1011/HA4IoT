@@ -2,7 +2,7 @@
 using HA4IoT.Contracts.Api;
 using Newtonsoft.Json.Linq;
 
-namespace HA4IoT.ExternalServices.AzureCloud
+namespace HA4IoT.Api.Cloud.Azure
 {
     public class QueueBasedApiContext : ApiContext
     {

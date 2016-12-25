@@ -5,15 +5,15 @@ namespace HA4IoT.Contracts.Api
     [AttributeUsage(AttributeTargets.Class)]
     public class ApiClassAttribute : Attribute
     {
-        public ApiClassAttribute(string uri)
+        public ApiClassAttribute(string @namespace)
         {
-            Uri = uri;
+            Namespace = @namespace;
         }
 
         protected ApiClassAttribute()
         {
         }
 
-        public string Uri { get; protected set; }
+        public string Namespace { get; protected set; }
     }
 }

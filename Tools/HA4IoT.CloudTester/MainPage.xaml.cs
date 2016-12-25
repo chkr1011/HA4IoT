@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
+using HA4IoT.Api.Cloud.Azure;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.ExternalServices.AzureCloud;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.CloudTester

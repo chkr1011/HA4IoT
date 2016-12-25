@@ -18,7 +18,7 @@ namespace HA4IoT.Services.Areas
 
         private readonly IComponentService _componentService;
         private readonly IAutomationService _automationService;
-        private readonly IApiService _apiService;
+        private readonly IApiDispatcherService _apiService;
         private readonly ISettingsService _settingsService;
 
         public AreaService(
@@ -26,7 +26,7 @@ namespace HA4IoT.Services.Areas
             IAutomationService automationService,
             ISystemEventsService systemEventsService,
             ISystemInformationService systemInformationService,
-            IApiService apiService,
+            IApiDispatcherService apiService,
             ISettingsService settingsService)
         {
             if (componentService == null) throw new ArgumentNullException(nameof(componentService));

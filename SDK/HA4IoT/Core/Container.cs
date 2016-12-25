@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using HA4IoT.Actuators;
 using HA4IoT.Api;
+using HA4IoT.Api.Cloud.Azure;
+using HA4IoT.Api.Cloud.CloudConnector;
 using HA4IoT.Automations;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Api;
@@ -24,7 +26,6 @@ using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.Storage;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Services.Weather;
-using HA4IoT.ExternalServices.AzureCloud;
 using HA4IoT.ExternalServices.OpenWeatherMap;
 using HA4IoT.ExternalServices.TelegramBot;
 using HA4IoT.ExternalServices.Twitter;
@@ -102,9 +103,10 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<ControllerSettings>();
 
             _container.RegisterSingleton<IHealthService, HealthService>();
+            _container.RegisterSingleton<IDateTimeService, DateTimeService>();
+            _container.RegisterSingleton<ISchedulerService, SchedulerService>();
             _container.RegisterSingleton<DiscoveryServerService>();
-            _container.RegisterSingleton<HttpServer>();
-
+            
             _container.RegisterSingleton<IStorageService, StorageService>();
             _container.RegisterSingleton<ITimerService, TimerService>();
             _container.RegisterSingleton<ISystemEventsService, SystemEventsService>();
@@ -114,12 +116,11 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<IResourceService, ResourceService>();
             _container.RegisterInitializer<ResourceService>(s => s.Initialize());
 
-            _container.RegisterSingleton<IApiService, ApiService>();
+            _container.RegisterSingleton<IApiDispatcherService, ApiDispatcherService>();
+            _container.RegisterSingleton<HttpServer>();
+            _container.RegisterSingleton<LocalHttpServerService>();
             _container.RegisterSingleton<AzureCloudService>();
-            _container.RegisterSingleton<LocalHttpServerApiDispatcherEndpointService>();
-
-            _container.RegisterSingleton<IDateTimeService, DateTimeService>();
-            _container.RegisterSingleton<ISchedulerService, SchedulerService>();
+            _container.RegisterSingleton<CloudConnectorService>();
 
             _container.RegisterSingleton<INotificationService, NotificationService>();
             _container.RegisterInitializer<NotificationService>(s => s.Initialize());

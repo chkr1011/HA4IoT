@@ -4,7 +4,7 @@ using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Contracts.Api
 {
-    public interface IApiService : IService
+    public interface IApiDispatcherService : IService
     {
         event EventHandler<ApiRequestReceivedEventArgs> StatusRequested;
 
@@ -12,7 +12,7 @@ namespace HA4IoT.Contracts.Api
 
         event EventHandler<ApiRequestReceivedEventArgs> ConfigurationRequested;  
 
-        void RegisterEndpoint(IApiDispatcherEndpoint endpoint);
+        void RegisterAdapter(IApiAdapter endpoint);
         
         void Route(string uri, Action<IApiContext> handler);
 

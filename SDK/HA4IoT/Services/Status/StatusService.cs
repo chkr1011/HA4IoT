@@ -17,7 +17,7 @@ namespace HA4IoT.Services.Status
         private readonly IComponentService _componentService;
         private readonly ISettingsService _settingsService;
 
-        public StatusService(IComponentService componentService, IApiService apiService, ISettingsService settingsService)
+        public StatusService(IComponentService componentService, IApiDispatcherService apiService, ISettingsService settingsService)
         {
             if (componentService == null) throw new ArgumentNullException(nameof(componentService));
             if (apiService == null) throw new ArgumentNullException(nameof(apiService));

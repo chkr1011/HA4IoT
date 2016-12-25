@@ -18,13 +18,13 @@ namespace HA4IoT.Services.Components
         private readonly ComponentCollection _components = new ComponentCollection();
 
         private readonly ISystemInformationService _systemInformationService;
-        private readonly IApiService _apiService;
+        private readonly IApiDispatcherService _apiService;
         private readonly ISettingsService _settingsService;
 
         public ComponentService(
             ISystemEventsService systemEventsService,
             ISystemInformationService systemInformationService,
-            IApiService apiService,
+            IApiDispatcherService apiService,
             ISettingsService settingsService)
         {
             if (systemEventsService == null) throw new ArgumentNullException(nameof(systemEventsService));

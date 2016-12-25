@@ -1,4 +1,4 @@
-﻿namespace HA4IoT.ExternalServices.AzureCloud
+﻿namespace HA4IoT.Api.Cloud.Azure
 {
     public class AzureCloudServiceSettings
     {

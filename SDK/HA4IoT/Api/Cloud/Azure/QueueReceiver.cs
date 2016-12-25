@@ -6,7 +6,7 @@ using Windows.Web.Http.Headers;
 using HA4IoT.Contracts.Logging;
 using Newtonsoft.Json.Linq;
 
-namespace HA4IoT.ExternalServices.AzureCloud
+namespace HA4IoT.Api.Cloud.Azure
 {
     public class QueueReceiver
     {
@@ -44,7 +44,7 @@ namespace HA4IoT.ExternalServices.AzureCloud
             task.ConfigureAwait(false);
         }
 
-        public void Diable()
+        public void Disable()
         {
             _cancellationTokenSource.Cancel();
             _isEnabled = false;

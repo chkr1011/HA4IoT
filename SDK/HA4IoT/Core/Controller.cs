@@ -31,7 +31,7 @@ namespace HA4IoT.Core
 
             _options = options;
 
-            StoragePath.Root = ApplicationData.Current.LocalFolder.Path;
+            StoragePath.Initialize(ApplicationData.Current.LocalFolder.Path);
         }
 
         public Task RunAsync(IBackgroundTaskInstance taskInstance)
@@ -130,7 +130,7 @@ namespace HA4IoT.Core
 
         private void ExposeRegistrationsToApi()
         {
-            var apiService = _container.GetInstance<IApiService>();
+            var apiService = _container.GetInstance<IApiDispatcherService>();
             var settingsService = _container.GetInstance<ISettingsService>();
 
             foreach (var registration in _container.GetCurrentRegistrations())

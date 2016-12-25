@@ -34,8 +34,8 @@ namespace HA4IoT.Tests.Mockups
 
             // Create root services first.
             var systemInformationService = new SystemInformationService();
-            var apiService = new ApiService();
-            ApiService = new ApiService();
+            var apiService = new ApiDispatcherService();
+            ApiService = new ApiDispatcherService();
             BackupService = new BackupService();
             StorageService = new StorageService();
             TimerService = new TestTimerService();
@@ -65,7 +65,7 @@ namespace HA4IoT.Tests.Mockups
         public IAutomationService AutomationService { get; }
         public INotificationService NotificationService { get; }
         public IAreaService AreaService { get; }
-        public IApiService ApiService { get; }
+        public IApiDispatcherService ApiService { get; }
 
         public event EventHandler StartupCompleted;
         public event EventHandler StartupFailed;

@@ -26,7 +26,7 @@ namespace HA4IoT.Notifications
 
         public NotificationService(
             IDateTimeService dateTimeService, 
-            IApiService apiService, 
+            IApiDispatcherService apiService, 
             ISchedulerService schedulerService, 
             ISettingsService settingsService,
             IStorageService storageService,

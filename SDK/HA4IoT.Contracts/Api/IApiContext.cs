@@ -4,7 +4,7 @@ namespace HA4IoT.Contracts.Api
 {
     public interface IApiContext
     {
-        string Uri { get; }
+        string Action { get; }
         JObject Request { get; }
         ApiResultCode ResultCode { get; set; }
         JObject Response { get; set; }

@@ -14,7 +14,7 @@ namespace HA4IoT.Services.Environment
     {
         private readonly IDateTimeService _dateTimeService;
 
-        public WeatherService(IDateTimeService dateTimeService, IApiService apiService)
+        public WeatherService(IDateTimeService dateTimeService, IApiDispatcherService apiService)
         {
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
 

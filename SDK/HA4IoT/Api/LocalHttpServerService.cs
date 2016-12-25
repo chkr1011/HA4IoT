@@ -14,18 +14,18 @@ using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Api
 {
-    public class LocalHttpServerApiDispatcherEndpointService : ServiceBase, IApiDispatcherEndpoint
+    public class LocalHttpServerService : ServiceBase, IApiAdapter
     {
         private readonly HashAlgorithmProvider _hashAlgorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Md5);
-        private readonly IApiService _apiService;
+        private readonly IApiDispatcherService _apiDispatcherService;
         private readonly HttpServer _httpServer;
 
-        public LocalHttpServerApiDispatcherEndpointService(IApiService apiService, HttpServer httpServer)
+        public LocalHttpServerService(IApiDispatcherService apiDispatcherService, HttpServer httpServer)
         {
-            if (apiService == null) throw new ArgumentNullException(nameof(apiService));
+            if (apiDispatcherService == null) throw new ArgumentNullException(nameof(apiDispatcherService));
             if (httpServer == null) throw new ArgumentNullException(nameof(httpServer));
 
-            _apiService = apiService;
+            _apiDispatcherService = apiDispatcherService;
             _httpServer = httpServer;
         }
 
@@ -36,7 +36,7 @@ namespace HA4IoT.Api
             _httpServer.RequestReceived += DispatchHttpRequest;
             _httpServer.WebSocketConnected += AttachWebSocket;
 
-            _apiService.RegisterEndpoint(this);
+            _apiDispatcherService.RegisterAdapter(this);
         }
 
         public void NotifyStateChanged(IComponent component)
@@ -50,7 +50,7 @@ namespace HA4IoT.Api
             {
                 return;
             }
-
+            
             eventArgs.IsHandled = true;
             DispatchHttpRequest(eventArgs.Context);
         }
@@ -131,7 +131,7 @@ namespace HA4IoT.Api
 
             if (!eventArgs.IsHandled)
             {
-                context.ResultCode = ApiResultCode.UnknownUri;
+                context.ResultCode = ApiResultCode.NotSupported;
             }
 
             var responseMessage = new JObject
@@ -150,7 +150,7 @@ namespace HA4IoT.Api
             {
                 case ApiResultCode.Success: return HttpStatusCode.OK;
                 case ApiResultCode.InternalError: return HttpStatusCode.InternalServerError;
-                case ApiResultCode.UnknownUri: return HttpStatusCode.NotFound;
+                case ApiResultCode.NotSupported: return HttpStatusCode.NotFound;
                 case ApiResultCode.InvalidBody: return HttpStatusCode.BadRequest;
             }
 
@@ -161,8 +161,21 @@ namespace HA4IoT.Api
         {
             try
             {
-                var request = string.IsNullOrEmpty(httpContext.Request.Body) ? new JObject() : JObject.Parse(httpContext.Request.Body);
-                return new ApiContext(httpContext.Request.Uri, request, new JObject());
+                JObject request;
+                if (string.IsNullOrEmpty(httpContext.Request.Body))
+                {
+                    request = new JObject();
+                }
+                else
+                {
+                    request = JObject.Parse(httpContext.Request.Body);
+                }
+
+
+                var uri = httpContext.Request.Uri;
+                uri = uri.Substring("/api".Length);
+
+                return new ApiContext(uri, request, new JObject());
             }
             catch (Exception)
             {

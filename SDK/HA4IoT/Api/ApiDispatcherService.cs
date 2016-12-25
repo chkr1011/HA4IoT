@@ -9,12 +9,12 @@ using HA4IoT.Networking.Json;
 
 namespace HA4IoT.Api
 {
-    public class ApiService : ServiceBase, IApiService
+    public class ApiDispatcherService : ServiceBase, IApiDispatcherService
     {
-        private readonly List<IApiDispatcherEndpoint> _endpoints = new List<IApiDispatcherEndpoint>();
+        private readonly List<IApiAdapter> _adapters = new List<IApiAdapter>();
         private readonly Dictionary<string, Action<IApiContext>> _routes = new Dictionary<string, Action<IApiContext>>(StringComparer.OrdinalIgnoreCase);
         
-        public ApiService()
+        public ApiDispatcherService()
         {
             Route("Status", HandleStatusRequest);
             Route("Configuration", HandleConfigurationRequest);
@@ -29,19 +29,19 @@ namespace HA4IoT.Api
         {
             if (component == null) throw new ArgumentNullException(nameof(component));
  
-            foreach (var endpoint in _endpoints)
+            foreach (var adapter in _adapters)
             {
-                endpoint.NotifyStateChanged(component);
+                adapter.NotifyStateChanged(component);
             }
             // TODO: Use information for optimized state generation, pushing to Azure, writing Csv etc.
         }
 
-        public void Route(string uri, Action<IApiContext> handler)
+        public void Route(string action, Action<IApiContext> handler)
         {
-            if (uri == null) throw new ArgumentNullException(nameof(uri));
+            if (action == null) throw new ArgumentNullException(nameof(action));
             if (handler == null) throw new ArgumentNullException(nameof(handler));
 
-            _routes.Add(GenerateUri(uri), handler);
+            _routes.Add(action.Trim(), handler);
         }
 
         public void Expose(object controller)
@@ -56,12 +56,12 @@ namespace HA4IoT.Api
                 return;
             }
 
-            Expose(classAttribute.Uri, controller);
+            Expose(classAttribute.Namespace, controller);
         }
 
-        public void Expose(string baseUri, object controller)
+        public void Expose(string @namespace, object controller)
         {
-            if (baseUri == null) throw new ArgumentNullException(nameof(baseUri));
+            if (@namespace == null) throw new ArgumentNullException(nameof(@namespace));
             if (controller == null) throw new ArgumentNullException(nameof(controller));
 
             foreach (var method in controller.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance))
@@ -72,20 +72,20 @@ namespace HA4IoT.Api
                     continue;
                 }
 
-                string uri = $"{baseUri}/{method.Name}";
+                var action = $"{@namespace}/{method.Name}";
                 Action<IApiContext> handler = apiContext => method.Invoke(controller, new object[] { apiContext });
-                Route(uri, handler);
+                Route(action, handler);
 
-                Log.Verbose($"Exposed API method to URI '{uri}'");
+                Log.Verbose($"Exposed API method to action '{action}'.");
             }
         }
 
-        public void RegisterEndpoint(IApiDispatcherEndpoint endpoint)
+        public void RegisterAdapter(IApiAdapter adapter)
         {
-            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
+            if (adapter == null) throw new ArgumentNullException(nameof(adapter));
 
-            _endpoints.Add(endpoint);
-            endpoint.RequestReceived += RouteRequest;
+            _adapters.Add(adapter);
+            adapter.RequestReceived += RouteRequest;
         }
 
         private void HandleStatusRequest(IApiContext apiContext)
@@ -104,17 +104,10 @@ namespace HA4IoT.Api
             ConfigurationRequestCompleted?.Invoke(this, eventArgs);
         }
 
-        private string GenerateUri(string relativePath)
-        {
-            return $"/api/{relativePath}".Trim();
-        }
-
         private void RouteRequest(object sender, ApiRequestReceivedEventArgs e)
         {
-            var uri = e.Context.Uri.Trim();
-
             Action<IApiContext> handler;
-            if (_routes.TryGetValue(uri, out handler))
+            if (_routes.TryGetValue(e.Context.Action, out handler))
             {
                 e.IsHandled = true;
                 HandleRequest(e.Context, handler);
@@ -122,7 +115,7 @@ namespace HA4IoT.Api
                 return;
             }
 
-            e.Context.ResultCode = ApiResultCode.UnknownUri;
+            e.Context.ResultCode = ApiResultCode.NotSupported;
         }
 
         private static void HandleRequest(IApiContext apiContext, Action<IApiContext> handler)

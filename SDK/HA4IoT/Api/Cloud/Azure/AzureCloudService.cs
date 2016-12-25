@@ -6,19 +6,19 @@ using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Settings;
 using Newtonsoft.Json.Linq;
 
-namespace HA4IoT.ExternalServices.AzureCloud
+namespace HA4IoT.Api.Cloud.Azure
 {
-    public class AzureCloudService : ServiceBase, IApiDispatcherEndpoint
+    public class AzureCloudService : ServiceBase, IApiAdapter
     {
         private const string NamespaceName = "ha4iot";
 
-        private readonly IApiService _apiService;
+        private readonly IApiDispatcherService _apiService;
         private readonly ISettingsService _settingsService;
 
         private QueueSender _outboundQueue;
         private QueueReceiver _inboundQueue;
 
-        public AzureCloudService(IApiService apiService, ISettingsService settingsService)
+        public AzureCloudService(IApiDispatcherService apiService, ISettingsService settingsService)
         {
             if (apiService == null) throw new ArgumentNullException(nameof(apiService));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
@@ -31,10 +31,10 @@ namespace HA4IoT.ExternalServices.AzureCloud
 
         public override void Startup()
         {
-            _apiService.RegisterEndpoint(this);
+            _apiService.RegisterAdapter(this);
 
             var settings = _settingsService.GetSettings<AzureCloudServiceSettings>();
-            if (!settings.IsEnabled && !string.IsNullOrEmpty(settings.AccountId))
+            if (!settings.IsEnabled || !string.IsNullOrEmpty(settings.AccountId))
             {
                 return;
             }
@@ -85,7 +85,7 @@ namespace HA4IoT.ExternalServices.AzureCloud
 
             if (!eventArgs.IsHandled)
             {
-                context.ResultCode = ApiResultCode.UnknownUri;
+                context.ResultCode = ApiResultCode.NotSupported;
             }
 
             SendResponseMessage(context).Wait();

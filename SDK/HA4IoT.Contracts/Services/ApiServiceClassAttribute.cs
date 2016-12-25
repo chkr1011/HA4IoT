@@ -15,7 +15,7 @@ namespace HA4IoT.Contracts.Services
                 throw new ArgumentException($"Type {interfaceType.FullName} is not implementing IService.");
             }
             
-            Uri = "Service/" + interfaceType.Name;
+            Namespace = "Service/" + interfaceType.Name;
         }
     }
 }

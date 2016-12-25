@@ -44,7 +44,7 @@ namespace HA4IoT.Controller.Main
             private readonly II2CBusService _i2CBusService;
             private readonly ISchedulerService _schedulerService;
             private readonly RemoteSocketService _remoteSocketService;
-            private readonly IApiService _apiService;
+            private readonly IApiDispatcherService _apiService;
             private readonly IContainer _containerService;
 
             public Configuration(
@@ -55,7 +55,7 @@ namespace HA4IoT.Controller.Main
                 II2CBusService i2CBusService, 
                 ISchedulerService schedulerService, 
                 RemoteSocketService remoteSocketService, 
-                IApiService apiService,
+                IApiDispatcherService apiService,
                 IContainer containerService)
             {
                 if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
