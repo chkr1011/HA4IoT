@@ -26,25 +26,22 @@ namespace HA4IoT.CloudApi.Controllers
 
         public async Task<ApiResponse> SendRequest([FromBody] ApiRequest request)
         {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+            
             try
             {
-                if (request == null) throw new ArgumentNullException(nameof(request));
-
                 ValidateControllerSecurity();
 
-                var messageContext = _messageDispatcher.EnqueueRequest(_controllerId, request);
-
-                if (await Task.WhenAny(messageContext.Task, Task.Delay(_timeout)) != messageContext.Task)
-                {
-                    throw new HttpResponseException(HttpStatusCode.GatewayTimeout);
-                }
-
-                return messageContext.ResponseMessage.Response;
+                return await _messageDispatcher.SendRequestAsync(_controllerId, request, _timeout);
+            }
+            catch (TimeoutException)
+            {
+                throw new HttpResponseException(HttpStatusCode.BadGateway);
             }
             catch (Exception exception)
             {
                 Trace.WriteLine("EXCEPTION:" + exception);
-                throw;
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
             }
         }
 
@@ -58,6 +55,8 @@ namespace HA4IoT.CloudApi.Controllers
 
         public void SendResponse([FromBody] CloudResponseMessage response)
         {
+            if (response == null) throw new ArgumentNullException(nameof(response));
+
             ValidateControllerSecurity();
             _messageDispatcher.EnqueueResponse(_controllerId, response);
         }

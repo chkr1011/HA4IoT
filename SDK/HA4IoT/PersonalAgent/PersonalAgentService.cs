@@ -9,11 +9,13 @@ using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.PersonalAgent;
+using HA4IoT.Contracts.PersonalAgent.AmazonEcho;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.OutdoorHumidity;
 using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.Weather;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.PersonalAgent
 {
@@ -50,6 +52,34 @@ namespace HA4IoT.PersonalAgent
             _outdoorHumidityService = outdoorHumidityService;
         }
 
+        [ApiMethod]
+        public void ProcessSkillServiceRequest(IApiContext apiContext)
+        {
+            var request = apiContext.Request.ToObject<SkillServiceRequest>();
+
+            var response = new SkillServiceResponse();
+            response.Response.OutputSpeech.Text =
+                "Ich habe leider keine Ahnung was ich tun soll. Christian hat mir leider nicht genug beigebracht.";
+
+            apiContext.Response = JObject.FromObject(response);
+        }
+
+        [ApiMethod]
+        public void Ask(IApiContext apiContext)
+        {
+            var message = (string)apiContext.Request["Message"];
+            if (string.IsNullOrEmpty(message))
+            {
+                apiContext.ResultCode = ApiResultCode.InvalidBody;
+                return;
+            }
+
+            var inboundMessage = new ApiInboundMessage(DateTime.Now, message);
+            var answer = ProcessMessage(inboundMessage);
+
+            apiContext.Response["Answer"] = answer;
+        }
+
         public string ProcessMessage(IInboundMessage message)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
@@ -74,27 +104,6 @@ namespace HA4IoT.PersonalAgent
             }
 
             return answer;
-        }
-
-        [ApiMethod]
-        public void Ask(IApiContext apiContext)
-        {
-            var message = (string)apiContext.Request["Message"];
-            if (string.IsNullOrEmpty(message))
-            {
-                apiContext.ResultCode = ApiResultCode.InvalidBody;
-                return;
-            }
-
-            var inboundMessage = new ApiInboundMessage(DateTime.Now, message);
-            var answer = ProcessMessage(inboundMessage);
-
-            apiContext.Response["Answer"] = answer;
-        }
-
-        public void ExecuteIntent()
-        {
-            
         }
 
         private string GenerateDebugOutput(MessageContext messageContext)

@@ -142,6 +142,16 @@
     <Compile Include="Networking\WebSockets\WebSocketMessage.cs" />
     <Compile Include="Networking\WebSockets\WebSocketMessageReceivedEventArgs.cs" />
     <Compile Include="Networking\WebSockets\WebSocketTextMessage.cs" />
+    <Compile Include="PersonalAgent\AmazonEcho\SkillServiceRequest.cs" />
+    <Compile Include="PersonalAgent\AmazonEcho\SkillServiceRequestRequest.cs" />
+    <Compile Include="PersonalAgent\AmazonEcho\SkillServiceRequestRequestIntentSlot.cs" />
+    <Compile Include="PersonalAgent\AmazonEcho\SkillServiceRequestRequestIntent.cs" />
+    <Compile Include="PersonalAgent\AmazonEcho\SkillServiceRequestSession.cs" />
+    <Compile Include="PersonalAgent\AmazonEcho\SkillServiceRequestSessionApplication.cs" />
+    <Compile Include="PersonalAgent\AmazonEcho\SkillServiceRequestSessionUser.cs" />
+    <Compile Include="PersonalAgent\AmazonEcho\SkillServiceResponseResponseOutputSpeech.cs" />
+    <Compile Include="PersonalAgent\AmazonEcho\SkillServiceResponseResponse.cs" />
+    <Compile Include="PersonalAgent\AmazonEcho\SkillServiceResponse.cs" />
     <Compile Include="PersonalAgent\Emoji.cs" />
     <Compile Include="PersonalAgent\IInboundMessage.cs" />
     <Compile Include="PersonalAgent\IOutboundMessage.cs" />

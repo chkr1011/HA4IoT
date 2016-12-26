@@ -9,34 +9,39 @@ using HA4IoT.Contracts.Api.Cloud;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Settings;
 using Newtonsoft.Json;
 
 namespace HA4IoT.Api.Cloud.CloudConnector
 {
     public class CloudConnectorService : ServiceBase, IApiAdapter
     {
-        private const string _baseUri = "https://ha4iot-cloudapi.azurewebsites.net/api/ControllerProxy";
-
-        private readonly IApiDispatcherService _apiDispatcherService;
-        private readonly HttpClient _receivingHttpClient = new HttpClient();
-        private readonly Uri _receiveRequestsUri;
-        private readonly Uri _sendResponseUri;
+        private const string BaseUri = "https://ha4iot-cloudapi.azurewebsites.net/api/ControllerProxy";
 
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
-
-        // TODO: To Settings
-        private readonly Guid _controllerId = Guid.Parse("0f39add9-bc56-4d6d-b69b-9b8b1c1ac890");
-
-        public CloudConnectorService(IApiDispatcherService apiDispatcherService)
+        private readonly IApiDispatcherService _apiDispatcherService;
+        private readonly CloudConnectorServiceSettings _settings;
+        private readonly HttpClient _receivingHttpClient = new HttpClient();
+        private readonly HttpClient _sendingHttpClient = new HttpClient();
+        private readonly Uri _receiveRequestsUri;
+        private readonly Uri _sendResponseUri;
+        
+        public CloudConnectorService(IApiDispatcherService apiDispatcherService, ISettingsService settingsService)
         {
             if (apiDispatcherService == null) throw new ArgumentNullException(nameof(apiDispatcherService));
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
             _apiDispatcherService = apiDispatcherService;
-            _receiveRequestsUri = new Uri($"{_baseUri}/ReceiveRequests");
-            _sendResponseUri = new Uri($"{_baseUri}/SendResponse");
+            _receiveRequestsUri = new Uri($"{BaseUri}/ReceiveRequests");
+            _sendResponseUri = new Uri($"{BaseUri}/SendResponse");
 
-            _receivingHttpClient.DefaultRequestHeaders.TryAppendWithoutValidation(CloudConnectorHeaders.ControllerId, _controllerId.ToString());
-            _receivingHttpClient.DefaultRequestHeaders.TryAppendWithoutValidation(CloudConnectorHeaders.ApiKey, "123456 TODO");
+            _settings = settingsService.GetSettings<CloudConnectorServiceSettings>();
+
+            _receivingHttpClient.DefaultRequestHeaders.TryAppendWithoutValidation(CloudConnectorHeaders.ControllerId, _settings.ControllerId);
+            _receivingHttpClient.DefaultRequestHeaders.TryAppendWithoutValidation(CloudConnectorHeaders.ApiKey, _settings.ApiKey);
+
+            _sendingHttpClient.DefaultRequestHeaders.TryAppendWithoutValidation(CloudConnectorHeaders.ControllerId, _settings.ControllerId);
+            _sendingHttpClient.DefaultRequestHeaders.TryAppendWithoutValidation(CloudConnectorHeaders.ApiKey, _settings.ApiKey);
         }
 
         public event EventHandler<ApiRequestReceivedEventArgs> RequestReceived;
@@ -47,9 +52,15 @@ namespace HA4IoT.Api.Cloud.CloudConnector
 
         public override void Startup()
         {
-            // TODO: Check settings here and skip startup if required.
+            if (!_settings.IsEnabled)
+            {
+                Log.Info("Cloud Connector service is not enabled.");
+                return;
+            }
+            
+            Log.Info($"Starting Cloud Connector service.");
 
-            Log.Info($"Starting {nameof(CloudConnectorService)}.");
+            _apiDispatcherService.RegisterAdapter(this);
 
             var task = Task.Factory.StartNew(
                 async () => await ReceivePendingMessages(),
@@ -57,9 +68,7 @@ namespace HA4IoT.Api.Cloud.CloudConnector
                 TaskCreationOptions.LongRunning, 
                 TaskScheduler.Default);
 
-            task.ConfigureAwait(false);
-
-            _apiDispatcherService.RegisterAdapter(this);
+            task.ConfigureAwait(false);           
         }
 
         private async Task ReceivePendingMessages()
@@ -130,10 +139,9 @@ namespace HA4IoT.Api.Cloud.CloudConnector
         {
             try
             {
-                using (var httpClient = CreateHttpClient())
                 using (var content = CreateContent(apiContext))
                 {
-                    var result = await httpClient.PostAsync(_sendResponseUri, content);
+                    var result = await _sendingHttpClient.PostAsync(_sendResponseUri, content);
                     if (result.IsSuccessStatusCode)
                     {
                         Log.Verbose("Sent response message to Cloud.");
@@ -163,15 +171,6 @@ namespace HA4IoT.Api.Cloud.CloudConnector
             }
 
             return apiContext;
-        }
-
-        private HttpClient CreateHttpClient()
-        {
-            var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.TryAppendWithoutValidation(CloudConnectorHeaders.ControllerId, _controllerId.ToString());
-            httpClient.DefaultRequestHeaders.TryAppendWithoutValidation(CloudConnectorHeaders.ApiKey, "1234 TODO");
-
-            return httpClient;
         }
 
         private HttpStringContent CreateContent(CloudConnectorApiContext apiContext)

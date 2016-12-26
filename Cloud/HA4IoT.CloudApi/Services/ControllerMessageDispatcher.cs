@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
 using HA4IoT.Contracts.Api.Cloud;
 
 namespace HA4IoT.CloudApi.Services
@@ -20,15 +22,18 @@ namespace HA4IoT.CloudApi.Services
             return controllerContext.GetPendingRequests();
         }
 
-        public MessageContext EnqueueRequest(Guid controllerId, ApiRequest request)
+        public async Task<ApiResponse> SendRequestAsync(Guid controllerId, ApiRequest request, TimeSpan timeout)
         {
-            ControllerContext controllerContext;
-            lock (_pendingMessages)
+            if (request == null) throw new ArgumentNullException(nameof(request));
+
+            var messageContext = EnqueueRequest(controllerId, request);
+
+            if (await Task.WhenAny(messageContext.Task, Task.Delay(timeout)) != messageContext.Task)
             {
-                controllerContext = GetOrCreateControllerContext(controllerId);
+                throw new TimeoutException();
             }
 
-            return controllerContext.EnqueueRequest(request);
+            return messageContext.ResponseMessage.Response;
         }
 
         public void EnqueueResponse(Guid controllerId, CloudResponseMessage response)
@@ -40,6 +45,17 @@ namespace HA4IoT.CloudApi.Services
             }
 
             controllerContext.EnqueueResponse(response);
+        }
+
+        private MessageContext EnqueueRequest(Guid controllerId, ApiRequest request)
+        {
+            ControllerContext controllerContext;
+            lock (_pendingMessages)
+            {
+                controllerContext = GetOrCreateControllerContext(controllerId);
+            }
+
+            return controllerContext.EnqueueRequest(request);
         }
 
         private ControllerContext GetOrCreateControllerContext(Guid controllerId)
