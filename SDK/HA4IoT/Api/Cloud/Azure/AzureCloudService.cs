@@ -34,7 +34,7 @@ namespace HA4IoT.Api.Cloud.Azure
             _apiService.RegisterAdapter(this);
 
             var settings = _settingsService.GetSettings<AzureCloudServiceSettings>();
-            if (!settings.IsEnabled || !string.IsNullOrEmpty(settings.AccountId))
+            if (!settings.IsEnabled || !string.IsNullOrEmpty(settings.ControllerId))
             {
                 return;
             }
@@ -48,7 +48,7 @@ namespace HA4IoT.Api.Cloud.Azure
             var options = new QueueSenderOptions
             {
                 NamespaceName = NamespaceName,
-                QueueName = "outbound-" + settings.AccountId,
+                QueueName = "outbound-" + settings.ControllerId,
                 Authorization = settings.OutboundQueueAuthorization
             };
 
@@ -60,7 +60,7 @@ namespace HA4IoT.Api.Cloud.Azure
             var options = new QueueReceiverOptions
             {
                 NamespaceName = NamespaceName,
-                QueueName = "inbound-" + settings.AccountId,
+                QueueName = "inbound-" + settings.ControllerId,
                 Authorization = settings.InboundQueueAuthorization
             };
 

@@ -44,14 +44,16 @@ namespace HA4IoT.Hardware.Pi2
         private Pi2Gpio OpenPort(int number, GpioPinDriveMode mode)
         {
             Pi2Gpio port;
-            if (!_openPorts.TryGetValue(number, out port))
+            if (_openPorts.TryGetValue(number, out port))
             {
-                GpioPin pin = _gpioController.OpenPin(number, GpioSharingMode.Exclusive);
-                pin.SetDriveMode(mode);
-
-                port = new Pi2Gpio(pin);
-                _openPorts.Add(number, port);
+                return port;
             }
+
+            var pin = _gpioController.OpenPin(number, GpioSharingMode.Exclusive);
+            pin.SetDriveMode(mode);
+            
+            port = new Pi2Gpio(pin);
+            _openPorts.Add(number, port);
 
             return port;
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Windows.Web.Http;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
@@ -15,6 +16,7 @@ using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.OutdoorHumidity;
 using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.Weather;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.PersonalAgent
@@ -56,10 +58,41 @@ namespace HA4IoT.PersonalAgent
         public void ProcessSkillServiceRequest(IApiContext apiContext)
         {
             var request = apiContext.Request.ToObject<SkillServiceRequest>();
-
             var response = new SkillServiceResponse();
-            response.Response.OutputSpeech.Text =
-                "Ich habe leider keine Ahnung was ich tun soll. Christian hat mir leider nicht genug beigebracht.";
+
+            if (request.Request.Intent.Name == "TurnOn")
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    var parameter = new
+                    {
+                        ComponentId = "LivingRoom.LampDiningTable",
+                        State = "On"
+                    };
+
+                    httpClient.PostAsync(new Uri("http://192.168.1.15/api/Service/IComponentService/Invoke?body=" + JsonConvert.SerializeObject(parameter)), new HttpStringContent(string.Empty)).AsTask().Wait();
+                    response.Response.OutputSpeech.Text = "OK";
+                }
+            }
+            else if (request.Request.Intent.Name == "TurnOff")
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    var parameter = new
+                    {
+                        ComponentId = "LivingRoom.LampDiningTable",
+                        State = "Off"
+                    };
+
+                    httpClient.PostAsync(new Uri("http://192.168.1.15/api/Service/IComponentService/Invoke?body=" + JsonConvert.SerializeObject(parameter)), new HttpStringContent(string.Empty)).AsTask().Wait();
+                    response.Response.OutputSpeech.Text = "OK";
+                }
+            }
+            else
+            {
+                response.Response.OutputSpeech.Text =
+                    "Ich habe leider keine Ahnung was ich tun soll. Christian hat mir leider nicht genug beigebracht.";
+            }
 
             apiContext.Response = JObject.FromObject(response);
         }

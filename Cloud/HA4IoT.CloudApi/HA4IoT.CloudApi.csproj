@@ -219,6 +219,8 @@
     <Compile Include="Services\ControllerMessageDispatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\MessageContext.cs" />
+    <Compile Include="Services\SecurityService.cs" />
+    <Compile Include="Services\WaitForRequestsResult.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>

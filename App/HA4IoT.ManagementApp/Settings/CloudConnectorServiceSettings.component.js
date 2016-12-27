@@ -8,31 +8,30 @@
         ctrl.Model = {
             IsEnabled: false,
             ControllerId: "",
-            OutboundQueueAuthorization: "",
-            InboundQueueAuthorization: ""
+            ApiKey: ""
         }
 
         ctrl.$onInit = function () {
-            controllerProxyService.get("Service/ISettingsService/GetSettings", { "Uri": "AzureCloudServiceSettings" }, function (response) {
+            controllerProxyService.get("Service/ISettingsService/GetSettings", { "Uri": "CloudConnectorServiceSettings" }, function (response) {
                 ctrl.Model = response;
             });
         }
 
         ctrl.save = function () {
             var payload = {
-                Uri: "AzureCloudServiceSettings",
+                Uri: "CloudConnectorServiceSettings",
                 Settings: ctrl.Model
             }
 
             controllerProxyService.execute("Service/ISettingsService/Replace", payload);
 
-            modalService.show("Info", "Azure Cloud service settings successfully saved.");
+            modalService.show("Info", "Cloud Connector service settings successfully saved.");
         }
     }
 
-    module.component("azureCloudServiceSettings", {
-        templateUrl: "Settings/AzureCloudServiceSettings.component.html",
-        controllerAs: "acsCtrl",
+    module.component("cloudConnectorServiceSettings", {
+        templateUrl: "Settings/CloudConnectorServiceSettings.component.html",
+        controllerAs: "ccsCtrl",
         controller: ["controllerProxyService", "modalService", createController]
     });
     

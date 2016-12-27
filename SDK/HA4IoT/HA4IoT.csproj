@@ -146,6 +146,8 @@
     <Compile Include="Api\Cloud\CloudConnector\CloudConnectorApiContext.cs" />
     <Compile Include="Api\Cloud\CloudConnector\CloudConnectorService.cs" />
     <Compile Include="Api\Cloud\CloudConnector\CloudConnectorServiceSettings.cs" />
+    <Compile Include="Api\Cloud\CloudConnector\ReceivePendingMessagesAsyncResult.cs" />
+    <Compile Include="Api\Cloud\CloudConnector\TaskExtensions.cs" />
     <Compile Include="Api\LocalHttpServerService.cs" />
     <Compile Include="Automations\Automation.cs" />
     <Compile Include="Automations\AutomationBase.cs" />

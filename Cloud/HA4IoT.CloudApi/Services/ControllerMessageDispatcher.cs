@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
 using HA4IoT.Contracts.Api.Cloud;
@@ -18,7 +19,11 @@ namespace HA4IoT.CloudApi.Services
                 controllerContext = GetOrCreateControllerContext(controllerUid);
             }
 
-            controllerContext.WaitForRequests();
+            if (controllerContext.WaitForRequests(TimeSpan.FromMinutes(1)) == WaitForRequestsResult.NoRequestsAvailable)
+            {
+                return null;
+            }
+
             return controllerContext.GetPendingRequests();
         }
 
@@ -63,6 +68,7 @@ namespace HA4IoT.CloudApi.Services
             ControllerContext result;
             if (!_pendingMessages.TryGetValue(controllerId, out result))
             {
+                Trace.WriteLine($"Created new context for controller '{controllerId}'.");
                 result = new ControllerContext(controllerId);
                 _pendingMessages.Add(controllerId, result);
             }

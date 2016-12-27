@@ -204,7 +204,7 @@ function configureComponent(area, component) {
     component.OverviewCaption = getAppSetting(component, "OverviewCaption", component.id);
 
     component.SortValue = getAppSetting(component, "SortValue", 0);
-    component.IsVisible = getAppSetting(component, "IsVisible", false);
+    component.IsVisible = getAppSetting(component, "IsVisible", true);
 
     component.DisplayVertical = getAppSetting(component, "DisplayVertical", false);
     component.IsPartOfOnStateCounter = getAppSetting(component, "IsPartOfOnStateCounter", false);

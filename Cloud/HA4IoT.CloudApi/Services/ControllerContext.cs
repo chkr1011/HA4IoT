@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using HA4IoT.Contracts.Api.Cloud;
@@ -18,17 +19,9 @@ namespace HA4IoT.CloudApi.Services
             _controllerId = controllerId;
         }
 
-        public void WaitForRequests()
+        public WaitForRequestsResult WaitForRequests(TimeSpan timeout)
         {
-            lock (_pendingRequests)
-            {
-                if (_pendingRequests.Values.Count(pr => !pr.IsDelivered) > 0)
-                {
-                    return;
-                }
-            }
-
-            _pendingRequestsAutoResetEvent.WaitOne();
+            return _pendingRequestsAutoResetEvent.WaitOne(timeout) ? WaitForRequestsResult.RequestsAvailable : WaitForRequestsResult.NoRequestsAvailable;
         }
 
         public List<CloudRequestMessage> GetPendingRequests()
@@ -47,21 +40,20 @@ namespace HA4IoT.CloudApi.Services
 
         public MessageContext EnqueueRequest(ApiRequest request)
         {
+            var requestMessage = new CloudRequestMessage();
+            requestMessage.Header.ControllerId = _controllerId;
+            requestMessage.Header.CorrelationId = Guid.NewGuid();
+            requestMessage.Request.Action = request.Action;
+            requestMessage.Request.Parameter = request.Parameter;
+
+            var messageContext = new MessageContext(requestMessage);
+
             lock (_pendingRequests)
             {
                 CleanupRequests();
 
-                var requestMessage = new CloudRequestMessage();
-                requestMessage.Header.ControllerId = _controllerId;
-                requestMessage.Header.CorrelationId = Guid.NewGuid();
-                requestMessage.Request.Action = request.Action;
-                requestMessage.Request.Parameter = request.Parameter;
-
-                var messageContext = new MessageContext(requestMessage);
                 _pendingRequests.Add(requestMessage.Header.CorrelationId, messageContext);
-
                 _pendingRequestsAutoResetEvent.Set();
-
                 return messageContext;
             }
         }
@@ -73,6 +65,7 @@ namespace HA4IoT.CloudApi.Services
                 MessageContext pendingMessage;
                 if (!_pendingRequests.TryGetValue(response.Header.CorrelationId, out pendingMessage))
                 {
+                    Trace.WriteLine($"Found no pending request for response with correlation ID '{response.Header.CorrelationId}'.");
                     return;
                 }
 
@@ -83,7 +76,7 @@ namespace HA4IoT.CloudApi.Services
 
         private void CleanupRequests()
         {
-            var obsoleteRequests = _pendingRequests.Where(i => i.Value.Duration > _requestTimeToLive).Select(i => i.Key);
+            var obsoleteRequests = _pendingRequests.Where(i => i.Value.Duration > _requestTimeToLive).Select(i => i.Key).ToList();
             foreach (var obsoleteRequest in obsoleteRequests)
             {
                 _pendingRequests.Remove(obsoleteRequest);

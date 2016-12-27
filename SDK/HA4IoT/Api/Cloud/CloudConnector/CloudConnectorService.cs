@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Web.Http;
-using Windows.Web.Http.Headers;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Api.Cloud;
 using HA4IoT.Contracts.Components;
@@ -23,9 +24,10 @@ namespace HA4IoT.Api.Cloud.CloudConnector
         private readonly CloudConnectorServiceSettings _settings;
         private readonly HttpClient _receivingHttpClient = new HttpClient();
         private readonly HttpClient _sendingHttpClient = new HttpClient();
+        private readonly StringContent _emptyContent = new StringContent(string.Empty);
         private readonly Uri _receiveRequestsUri;
         private readonly Uri _sendResponseUri;
-        
+
         public CloudConnectorService(IApiDispatcherService apiDispatcherService, ISettingsService settingsService)
         {
             if (apiDispatcherService == null) throw new ArgumentNullException(nameof(apiDispatcherService));
@@ -37,11 +39,12 @@ namespace HA4IoT.Api.Cloud.CloudConnector
 
             _settings = settingsService.GetSettings<CloudConnectorServiceSettings>();
 
-            _receivingHttpClient.DefaultRequestHeaders.TryAppendWithoutValidation(CloudConnectorHeaders.ControllerId, _settings.ControllerId);
-            _receivingHttpClient.DefaultRequestHeaders.TryAppendWithoutValidation(CloudConnectorHeaders.ApiKey, _settings.ApiKey);
+            _receivingHttpClient.DefaultRequestHeaders.Add(CloudConnectorHeaders.ControllerId, _settings.ControllerId);
+            _receivingHttpClient.DefaultRequestHeaders.Add(CloudConnectorHeaders.ApiKey, _settings.ApiKey);
+            _receivingHttpClient.Timeout = TimeSpan.FromMinutes(1.25);
 
-            _sendingHttpClient.DefaultRequestHeaders.TryAppendWithoutValidation(CloudConnectorHeaders.ControllerId, _settings.ControllerId);
-            _sendingHttpClient.DefaultRequestHeaders.TryAppendWithoutValidation(CloudConnectorHeaders.ApiKey, _settings.ApiKey);
+            _sendingHttpClient.DefaultRequestHeaders.Add(CloudConnectorHeaders.ControllerId, _settings.ControllerId);
+            _sendingHttpClient.DefaultRequestHeaders.Add(CloudConnectorHeaders.ApiKey, _settings.ApiKey);
         }
 
         public event EventHandler<ApiRequestReceivedEventArgs> RequestReceived;
@@ -57,28 +60,30 @@ namespace HA4IoT.Api.Cloud.CloudConnector
                 Log.Info("Cloud Connector service is not enabled.");
                 return;
             }
-            
-            Log.Info($"Starting Cloud Connector service.");
+
+            Log.Info("Starting Cloud Connector service.");
 
             _apiDispatcherService.RegisterAdapter(this);
 
-            var task = Task.Factory.StartNew(
-                async () => await ReceivePendingMessages(),
+            Task.Factory.StartNew(
+                async () => await ReceivePendingMessagesAsyncLoop(),
                 _cancellationTokenSource.Token,
-                TaskCreationOptions.LongRunning, 
+                TaskCreationOptions.LongRunning,
                 TaskScheduler.Default);
-
-            task.ConfigureAwait(false);           
         }
 
-        private async Task ReceivePendingMessages()
+        private async Task ReceivePendingMessagesAsyncLoop()
         {
             Log.Verbose("Started receiving pending Cloud messages.");
             while (!_cancellationTokenSource.IsCancellationRequested)
             {
                 try
                 {
-                    await WaitForMessage();
+                    var response = await ReceivePendingMessagesAsync();
+                    if (response.Succeeded)
+                    {
+                        Task.Run(() => HandleCloudMessages(response.Response)).Forget();
+                    }
                 }
                 catch (Exception exception)
                 {
@@ -88,44 +93,55 @@ namespace HA4IoT.Api.Cloud.CloudConnector
             }
         }
 
-        private async Task WaitForMessage()
+        private async Task<ReceivePendingMessagesAsyncResult> ReceivePendingMessagesAsync()
         {
-            var result = await _receivingHttpClient.PostAsync(_receiveRequestsUri, new HttpStringContent(string.Empty));
-
+            HttpResponseMessage result;
+            try
+            {
+                result = await _receivingHttpClient.PostAsync(_receiveRequestsUri, _emptyContent);
+            }
+            catch (TaskCanceledException)
+            {
+                return new ReceivePendingMessagesAsyncResult();
+            }
+            
             if (result.IsSuccessStatusCode)
             {
-                var task = Task.Factory.StartNew(
-                    async () => await HandleCloudMessage(result.Content),
-                    _cancellationTokenSource.Token);
+                var content = await result.Content.ReadAsStringAsync();
+                if (string.IsNullOrEmpty(content))
+                {
+                    return new ReceivePendingMessagesAsyncResult();
+                }
 
-                await task.ConfigureAwait(false);
+                return new ReceivePendingMessagesAsyncResult
+                {
+                    Succeeded = true,
+                    Response = content
+                };
+            }
+
+            if (result.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                Log.Warning("Credentials for Cloud access are invalid.");
+                await Task.Delay(TimeSpan.FromMinutes(1));
+            }
+            else if (result.StatusCode == HttpStatusCode.InternalServerError)
+            {
+                Log.Warning("Cloud access is not working properly.");
+                await Task.Delay(TimeSpan.FromSeconds(10));
             }
             else
             {
-                if (result.StatusCode == HttpStatusCode.RequestTimeout || result.StatusCode == HttpStatusCode.NoContent)
-                {
-                    return;
-                }
-
-                if (result.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    Log.Warning("Credentials for Cloud access are invalid.");
-                    await Task.Delay(TimeSpan.FromMinutes(1));
-                }
-
-                if (result.StatusCode == HttpStatusCode.InternalServerError)
-                {
-                    Log.Warning("Cloud access is not working properly.");
-                    await Task.Delay(TimeSpan.FromSeconds(10));
-                }
-
                 Log.Warning($"Failed to receive pending Cloud message (Error code: {result.StatusCode}).");
             }
+            
+            return new ReceivePendingMessagesAsyncResult();
         }
 
-        private async Task HandleCloudMessage(IHttpContent content)
+        private async Task HandleCloudMessages(string content)
         {
-            var pendingCloudMessages = JsonConvert.DeserializeObject<List<CloudRequestMessage>>(await content.ReadAsStringAsync());
+            var pendingCloudMessages = JsonConvert.DeserializeObject<List<CloudRequestMessage>>(content);
+
             foreach (var cloudMessage in pendingCloudMessages)
             {
                 var eventArgs = ProcessCloudMessage(cloudMessage);
@@ -173,7 +189,7 @@ namespace HA4IoT.Api.Cloud.CloudConnector
             return apiContext;
         }
 
-        private HttpStringContent CreateContent(CloudConnectorApiContext apiContext)
+        private StringContent CreateContent(CloudConnectorApiContext apiContext)
         {
             var cloudMessage = new CloudResponseMessage();
             cloudMessage.Header.CorrelationId = apiContext.RequestMessage.Header.CorrelationId;
@@ -182,8 +198,8 @@ namespace HA4IoT.Api.Cloud.CloudConnector
             cloudMessage.Response.ResultCode = apiContext.ResultCode;
             cloudMessage.Response.InternalProcessingDuration = (int)(cloudMessage.Header.Created - apiContext.RequestMessage.Header.Created).TotalMilliseconds;
             
-            var stringContent = new HttpStringContent(JsonConvert.SerializeObject(cloudMessage));
-            stringContent.Headers.ContentType = HttpMediaTypeHeaderValue.Parse("application/json");
+            var stringContent = new StringContent(JsonConvert.SerializeObject(cloudMessage));
+            stringContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
 
             return stringContent;
         }

@@ -28,33 +28,45 @@ namespace HA4IoT.CloudApi.Controllers
 
         public async Task<HttpResponseMessage> ExecuteIntent()
         {
-            var body = await Request.Content.ReadAsStringAsync();
-            var parameter = JObject.Parse(body);
-
-            var request = parameter.ToObject<SkillServiceRequest>();
-            var controllerId = ResolveControllerId(request.Session.User.UserId);
-
-            Trace.WriteLine($"{nameof(AmazonEchoController)}:ExecuteIntent\r\n{body}");
-
-            var apiRequest = new ApiRequest
-            {
-                Action = "Service/IPersonalAgentService/ProcessSkillServiceRequest",
-                Parameter = parameter
-            };
-
             try
             {
-                var apiResponse = await _messageDispatcher.SendRequestAsync(controllerId, apiRequest, TimeSpan.FromSeconds(5));
+                var body = await Request.Content.ReadAsStringAsync();
+                var parameter = JObject.Parse(body);
+
+                var request = parameter.ToObject<SkillServiceRequest>();
+                var controllerId = ResolveControllerId(request.Session.User.UserId);
+
+                Trace.WriteLine($"{nameof(AmazonEchoController)}:ExecuteIntent\r\n{body}");
+
+                var apiRequest = new ApiRequest
+                {
+                    Action = "Service/IPersonalAgentService/ProcessSkillServiceRequest",
+                    Parameter = parameter
+                };
+
+                var apiResponse =
+                    await _messageDispatcher.SendRequestAsync(controllerId, apiRequest, TimeSpan.FromSeconds(5));
                 if (apiResponse.ResultCode == ApiResultCode.Success)
                 {
                     return CreateJsonResponse(apiResponse.Result.ToObject<SkillServiceResponse>());
                 }
 
-                return CreateJsonResponse(CreateResponseWithText("Ich konnte deine Wohnung erreichen, jedoch ist ein Fehler aufgetreten. Du kannst dich gerne bei Christian beschweren."));
+                return
+                    CreateJsonResponse(
+                        CreateResponseWithText(
+                            "Ich konnte deine Wohnung erreichen, jedoch ist ein Fehler aufgetreten. Du kannst dich gerne bei Christian beschweren."));
             }
             catch (TimeoutException)
             {
-                return CreateJsonResponse(CreateResponseWithText("Ich konnte deine Wohnung leider nicht erreichen. Versuche es später noch einmal."));
+                return
+                    CreateJsonResponse(
+                        CreateResponseWithText(
+                            "Ich konnte deine Wohnung leider nicht erreichen. Versuche es später noch einmal."));
+            }
+            catch (Exception exception)
+            {
+                Trace.TraceError("EXCEPTION:" + exception);
+                throw;
             }
         }
 

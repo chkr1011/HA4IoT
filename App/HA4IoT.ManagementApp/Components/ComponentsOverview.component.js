@@ -79,6 +79,7 @@
                 Type: source.Type,
                 Caption: source.Settings.Caption,
                 OverviewCaption: source.Settings.OverviewCaption,
+                Keywords: source.Settings.Keywords,
                 SortValue: source.Settings.SortValue,
                 Image: source.Settings.Image,
                 IsEnabled: source.Settings.IsEnabled,
@@ -132,6 +133,7 @@
                 IsEnabled: component.IsEnabled,
                 Caption: component.Caption,
                 OverviewCaption: component.OverviewCaption,
+                Keywords: source.Keywords,
                 IsVisible: component.IsVisible,
                 Image: component.Image,
                 SortValue: sortValue

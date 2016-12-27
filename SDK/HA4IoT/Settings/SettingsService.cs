@@ -101,12 +101,7 @@ namespace HA4IoT.Settings
         {
             if (uri == null) throw new ArgumentNullException(nameof(uri));
 
-            var rawSettings = settings as JObject;
-            if (rawSettings == null)
-            {
-                rawSettings = JObject.FromObject(settings);
-            }
-
+            var rawSettings = settings as JObject ?? JObject.FromObject(settings);
             ImportRawSettings(uri, rawSettings);
         }
 

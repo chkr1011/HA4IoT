@@ -153,7 +153,7 @@ Global
 		{C9683C4E-1A20-4C29-961D-7D5C89D13678}.Release|Any CPU (For Cloud Components).ActiveCfg = Release|Any CPU
 		{C9683C4E-1A20-4C29-961D-7D5C89D13678}.Release|Any CPU (For Cloud Components).Build.0 = Release|Any CPU
 		{C9683C4E-1A20-4C29-961D-7D5C89D13678}.Release|Any CPU (For Cloud Components).Deploy.0 = Release|Any CPU
-		{C9683C4E-1A20-4C29-961D-7D5C89D13678}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|ARM
+		{C9683C4E-1A20-4C29-961D-7D5C89D13678}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|Any CPU
 		{C9683C4E-1A20-4C29-961D-7D5C89D13678}.Release|x86 (For local).ActiveCfg = Release|x86
 		{C9683C4E-1A20-4C29-961D-7D5C89D13678}.Release|x86 (For local).Build.0 = Release|x86
 		{25C33CC4-07E7-41AA-B2DC-299AFBB9DE25}.Debug|Any CPU (For Cloud Components).ActiveCfg = Debug|Any CPU
@@ -235,8 +235,8 @@ Global
 		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Debug|x86 (For local).Build.0 = Debug|x86
 		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Release|Any CPU (For Cloud Components).ActiveCfg = Release|Any CPU
 		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Release|Any CPU (For Cloud Components).Build.0 = Release|Any CPU
-		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|Any CPU
-		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Release|ARM (For Raspberry Pi).Build.0 = Release|Any CPU
+		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|ARM
+		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Release|ARM (For Raspberry Pi).Build.0 = Release|ARM
 		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Release|x86 (For local).ActiveCfg = Release|Any CPU
 		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Release|x86 (For local).Build.0 = Release|Any CPU
 		{1D5441C2-B934-4563-A11C-A617475564AE}.Debug|Any CPU (For Cloud Components).ActiveCfg = Debug|Any CPU

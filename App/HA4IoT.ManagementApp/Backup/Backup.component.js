@@ -7,7 +7,7 @@
         ctrl.BackupContent = null;
 
         ctrl.downloadBackup = function () {
-            controllerProxyService.get("Service/ISettingsService/Backup",
+            controllerProxyService.get("Service/IBackupService/CreateBackup",
                 null,
                 function (response) {
                     var link = document.createElement("a");
@@ -37,7 +37,7 @@
 
         ctrl.restoreBackup = function () {
             var payload = JSON.parse(ctrl.BackupContent);
-            controllerProxyService.execute("Service/ISettingsService/Restore", payload,
+            controllerProxyService.execute("Service/ISettingsService/RestoreBackup", payload,
                 function () {
                     modalService.show("Info", "Backup successfully restored.");
                 });

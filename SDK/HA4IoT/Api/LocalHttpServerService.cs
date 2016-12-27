@@ -173,7 +173,7 @@ namespace HA4IoT.Api
 
 
                 var uri = httpContext.Request.Uri;
-                uri = uri.Substring("/api".Length);
+                uri = uri.Substring("/api/".Length);
 
                 return new ApiContext(uri, request, new JObject());
             }

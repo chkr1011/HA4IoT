@@ -52,10 +52,10 @@
     <Content Include="Content\Images\Fan.png" />
     <Content Include="Content\Images\Favorites.png" />
     <Content Include="Content\Images\Garage.png" />
+    <Content Include="Content\Images\HA4IoT-512.png" />
     <Content Include="Content\Images\House.png" />
     <Content Include="Content\Images\Humidity.png" />
     <Content Include="Content\Images\Lamp.png" />
-    <Content Include="Content\Images\Logo.png" />
     <Content Include="Content\Images\Motion.png" />
     <Content Include="Content\Images\NightLamp.png" />
     <Content Include="Content\Images\Palette.png" />
@@ -133,6 +133,8 @@
     <Content Include="Services\TranslationService.js" />
     <Content Include="Backup\Backup.component.html" />
     <Content Include="Backup\Backup.component.js" />
+    <Content Include="Settings\CloudConnectorServiceSettings.component.html" />
+    <Content Include="Settings\CloudConnectorServiceSettings.component.js" />
     <Content Include="Settings\ControllerSettings.component.html" />
     <Content Include="Settings\ControllerSettings.component.js" />
     <Content Include="Settings\OpenWeatherMapSettings.component.html" />

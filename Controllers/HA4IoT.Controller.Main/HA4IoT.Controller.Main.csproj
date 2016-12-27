@@ -21,7 +21,7 @@
     <PackageCertificateKeyFile>HA4IoT.Controller.Main_TemporaryKey.pfx</PackageCertificateKeyFile>
     <AppxPackage>true</AppxPackage>
     <ContainsStartupTask>true</ContainsStartupTask>
-    <PackageCertificateThumbprint>247AA81B01DA3012184CDA692B6EC1F1CAD140BC</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>57449EC8F4031FBD4E9B0B8889E565CC8092779E</PackageCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
