@@ -131,7 +131,7 @@ namespace HA4IoT.Api
 
             if (!eventArgs.IsHandled)
             {
-                context.ResultCode = ApiResultCode.NotSupported;
+                context.ResultCode = ApiResultCode.ActionNotSupported;
             }
 
             var responseMessage = new JObject
@@ -149,9 +149,9 @@ namespace HA4IoT.Api
             switch (resultCode)
             {
                 case ApiResultCode.Success: return HttpStatusCode.OK;
-                case ApiResultCode.InternalError: return HttpStatusCode.InternalServerError;
-                case ApiResultCode.NotSupported: return HttpStatusCode.NotFound;
-                case ApiResultCode.InvalidBody: return HttpStatusCode.BadRequest;
+                case ApiResultCode.UnhandledException: return HttpStatusCode.InternalServerError;
+                case ApiResultCode.ActionNotSupported: return HttpStatusCode.NotFound;
+                case ApiResultCode.InvalidParameter: return HttpStatusCode.BadRequest;
             }
 
             throw new NotSupportedException();

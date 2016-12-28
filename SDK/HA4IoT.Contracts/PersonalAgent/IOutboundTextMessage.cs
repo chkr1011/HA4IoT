@@ -1,6 +1,6 @@
 ﻿namespace HA4IoT.Contracts.PersonalAgent
 {
-    public interface IOutboundMessage
+    public interface IOutboundTextMessage
     {
         string Text { get; }
     }

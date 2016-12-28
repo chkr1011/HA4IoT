@@ -32,6 +32,7 @@
                 var row = {
                     Id: id,
                     Caption: item.Settings.Caption,
+                    Keywords: item.Settings.Keywords,
                     SortValue: item.Settings.SortValue,
                     IsVisible: item.Settings.IsVisible
                 };
@@ -52,6 +53,7 @@
                     Uri: "Area/" + item.Id,
                     Settings: {
                         Caption: item.Caption,
+                        Keywords: item.Keywords,
                         IsVisible: item.IsVisible,
                         SortValue: i
                     }

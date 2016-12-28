@@ -8,7 +8,6 @@ using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services.ExternalServices.Twitter;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
-using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Services.Areas;
@@ -19,7 +18,6 @@ namespace HA4IoT.Controller.Main.Rooms
     internal class StoreroomConfiguration
     {
         private readonly IAreaService _areaService;
-        private readonly SynonymService _synonymService;
         private readonly IDeviceService _deviceService;
         private readonly CCToolsBoardService _ccToolsBoardService;
         private readonly ITimerService _timerService;
@@ -44,7 +42,6 @@ namespace HA4IoT.Controller.Main.Rooms
 
         public StoreroomConfiguration(
             IAreaService areaService,
-            SynonymService synonymService,
             IDeviceService deviceService,
             CCToolsBoardService ccToolsBoardService,
             ITimerService timerService,
@@ -54,7 +51,6 @@ namespace HA4IoT.Controller.Main.Rooms
             SensorFactory sensorFactory)
         {
             if (areaService == null) throw new ArgumentNullException(nameof(areaService));
-            if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
             if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
             if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
             if (timerService == null) throw new ArgumentNullException(nameof(timerService));
@@ -64,7 +60,6 @@ namespace HA4IoT.Controller.Main.Rooms
             if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
 
             _areaService = areaService;
-            _synonymService = synonymService;
             _deviceService = deviceService;
             _ccToolsBoardService = ccToolsBoardService;
             _timerService = timerService;
@@ -115,8 +110,6 @@ namespace HA4IoT.Controller.Main.Rooms
             _catLitterBoxTwitterSender =
                 new CatLitterBoxTwitterSender(_timerService, _twitterClientService).WithTrigger(
                     room.GetMotionDetector(Storeroom.MotionDetectorCatLitterBox));
-
-            _synonymService.AddSynonymsForArea(Room.Storeroom, "Abstellkammer", "Storeroom");
         }
     }
 }

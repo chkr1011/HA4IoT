@@ -44,8 +44,7 @@ namespace HA4IoT.CloudApi.Controllers
                     Parameter = parameter
                 };
 
-                var apiResponse =
-                    await _messageDispatcher.SendRequestAsync(controllerId, apiRequest, TimeSpan.FromSeconds(5));
+                var apiResponse = await _messageDispatcher.SendRequestAsync(controllerId, apiRequest, TimeSpan.FromSeconds(5));
                 if (apiResponse.ResultCode == ApiResultCode.Success)
                 {
                     return CreateJsonResponse(apiResponse.Result.ToObject<SkillServiceResponse>());

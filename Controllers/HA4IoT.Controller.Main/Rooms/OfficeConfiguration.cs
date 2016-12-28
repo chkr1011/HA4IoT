@@ -2,7 +2,6 @@
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
-using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
@@ -12,12 +11,10 @@ using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.Hardware.RemoteSwitch;
-using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Services.Areas;
 using HA4IoT.Services.Devices;
-using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
@@ -27,7 +24,6 @@ namespace HA4IoT.Controller.Main.Rooms
         private readonly IAreaService _areaService;
         private readonly IDaylightService _daylightService;
         private readonly CCToolsBoardService _ccToolsBoardService;
-        private readonly SynonymService _synonymService;
         private readonly RemoteSocketService _remoteSocketService;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
@@ -64,7 +60,6 @@ namespace HA4IoT.Controller.Main.Rooms
             IAreaService areaService,
             IDaylightService daylightService,
             CCToolsBoardService ccToolsBoardService,
-            SynonymService synonymService,
             RemoteSocketService remoteSocketService,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)
@@ -73,7 +68,6 @@ namespace HA4IoT.Controller.Main.Rooms
             if (areaService == null) throw new ArgumentNullException(nameof(areaService));
             if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
             if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
-            if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
             if (remoteSocketService == null) throw new ArgumentNullException(nameof(remoteSocketService));
             if (actuatorFactory == null) throw new ArgumentNullException(nameof(actuatorFactory));
             if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
@@ -82,7 +76,6 @@ namespace HA4IoT.Controller.Main.Rooms
             _areaService = areaService;
             _daylightService = daylightService;
             _ccToolsBoardService = ccToolsBoardService;
-            _synonymService = synonymService;
             _remoteSocketService = remoteSocketService;
             _actuatorFactory = actuatorFactory;
             _sensorFactory = sensorFactory;
@@ -98,44 +91,44 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 2;
 
-            var room = _areaService.CreateArea(Room.Office);
+            var area = _areaService.CreateArea(Room.Office);
 
-            _sensorFactory.RegisterWindow(room, Office.WindowLeft,
+            _sensorFactory.RegisterWindow(area, Office.WindowLeft,
                 w => w.WithLeftCasement(input4.GetInput(11)).WithRightCasement(input4.GetInput(12), input4.GetInput(10)));
 
-            _sensorFactory.RegisterWindow(room, Office.WindowRight,
+            _sensorFactory.RegisterWindow(area, Office.WindowRight,
                 w => w.WithLeftCasement(input4.GetInput(8)).WithRightCasement(input4.GetInput(9), input5.GetInput(8)));
 
-            _sensorFactory.RegisterTemperatureSensor(room, Office.TemperatureSensor,
+            _sensorFactory.RegisterTemperatureSensor(area, Office.TemperatureSensor,
                 i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
 
-            _sensorFactory.RegisterHumiditySensor(room, Office.HumiditySensor,
+            _sensorFactory.RegisterHumiditySensor(area, Office.HumiditySensor,
                 i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
 
-            _sensorFactory.RegisterMotionDetector(room, Office.MotionDetector, input4.GetInput(13));
+            _sensorFactory.RegisterMotionDetector(area, Office.MotionDetector, input4.GetInput(13));
 
-            _actuatorFactory.RegisterSocket(room, Office.SocketFrontLeft, hsrel8.GetOutput(0));
-            _actuatorFactory.RegisterSocket(room, Office.SocketFrontRight, hsrel8.GetOutput(6));
-            _actuatorFactory.RegisterSocket(room, Office.SocketWindowLeft, hsrel8.GetOutput(10).WithInvertedState());
-            _actuatorFactory.RegisterSocket(room, Office.SocketWindowRight, hsrel8.GetOutput(11).WithInvertedState());
-            _actuatorFactory.RegisterSocket(room, Office.SocketRearLeftEdge, hsrel8.GetOutput(7));
-            _actuatorFactory.RegisterSocket(room, Office.SocketRearLeft, hsrel8.GetOutput(2));
-            _actuatorFactory.RegisterSocket(room, Office.SocketRearRight, hsrel8.GetOutput(1));
-            _actuatorFactory.RegisterSocket(room, Office.RemoteSocketDesk, _remoteSocketService.GetOutput(0));
+            _actuatorFactory.RegisterSocket(area, Office.SocketFrontLeft, hsrel8.GetOutput(0));
+            _actuatorFactory.RegisterSocket(area, Office.SocketFrontRight, hsrel8.GetOutput(6));
+            _actuatorFactory.RegisterSocket(area, Office.SocketWindowLeft, hsrel8.GetOutput(10).WithInvertedState());
+            _actuatorFactory.RegisterSocket(area, Office.SocketWindowRight, hsrel8.GetOutput(11).WithInvertedState());
+            _actuatorFactory.RegisterSocket(area, Office.SocketRearLeftEdge, hsrel8.GetOutput(7));
+            _actuatorFactory.RegisterSocket(area, Office.SocketRearLeft, hsrel8.GetOutput(2));
+            _actuatorFactory.RegisterSocket(area, Office.SocketRearRight, hsrel8.GetOutput(1));
+            _actuatorFactory.RegisterSocket(area, Office.RemoteSocketDesk, _remoteSocketService.GetOutput(0));
 
-            _sensorFactory.RegisterButton(room, Office.ButtonUpperLeft, input5.GetInput(0));
-            _sensorFactory.RegisterButton(room, Office.ButtonLowerLeft, input5.GetInput(1));
-            _sensorFactory.RegisterButton(room, Office.ButtonLowerRight, input4.GetInput(14));
-            _sensorFactory.RegisterButton(room, Office.ButtonUpperRight, input4.GetInput(15));
+            _sensorFactory.RegisterButton(area, Office.ButtonUpperLeft, input5.GetInput(0));
+            _sensorFactory.RegisterButton(area, Office.ButtonLowerLeft, input5.GetInput(1));
+            _sensorFactory.RegisterButton(area, Office.ButtonLowerRight, input4.GetInput(14));
+            _sensorFactory.RegisterButton(area, Office.ButtonUpperRight, input4.GetInput(15));
 
-            _actuatorFactory.RegisterStateMachine(room, Office.CombinedCeilingLights, (s, a) => SetupLight(s, hsrel8, hspe8, a));
+            _actuatorFactory.RegisterStateMachine(area, Office.CombinedCeilingLights, (s, a) => SetupLight(s, hsrel8, hspe8, a));
 
-            room.GetButton(Office.ButtonUpperLeft).GetPressedLongTrigger().Attach(() =>
+            area.GetButton(Office.ButtonUpperLeft).GetPressedLongTrigger().Attach(() =>
             {
-                room.GetStateMachine(Office.CombinedCeilingLights).TryTurnOff();
-                room.GetSocket(Office.SocketRearLeftEdge).TryTurnOff();
-                room.GetSocket(Office.SocketRearLeft).TryTurnOff();
-                room.GetSocket(Office.SocketFrontLeft).TryTurnOff();
+                area.GetStateMachine(Office.CombinedCeilingLights).TryTurnOff();
+                area.GetSocket(Office.SocketRearLeftEdge).TryTurnOff();
+                area.GetSocket(Office.SocketRearLeft).TryTurnOff();
+                area.GetSocket(Office.SocketFrontLeft).TryTurnOff();
             });
         }
 
@@ -211,14 +204,6 @@ namespace HA4IoT.Controller.Main.Rooms
             room.GetButton(Office.ButtonUpperLeft)
                 .GetPressedShortlyTrigger()
                 .Attach(light.GetSetStateAction(BinaryStateId.On));
-
-            _synonymService.AddSynonymsForArea(Room.Office, "Büro", "Arbeitszimmer");
-
-            _synonymService.AddSynonymsForComponent(Room.Office, Office.CombinedCeilingLights, "Licht");
-            _synonymService.AddSynonymsForComponent(Room.Office, Office.SocketRearLeftEdge, "Rotlicht", "Pufflicht", "Rot");
-
-            _synonymService.AddSynonymsForComponentState(deskOnlyStateId, "Schreibtisch");
-            _synonymService.AddSynonymsForComponentState(couchOnlyStateId, "Couch");
         }
     }
 }

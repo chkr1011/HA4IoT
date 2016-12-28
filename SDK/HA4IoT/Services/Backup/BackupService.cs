@@ -31,12 +31,12 @@ namespace HA4IoT.Services.Backup
         [ApiMethod]
         public void RestoreBackup(IApiContext apiContext)
         {
-            if (apiContext.Request.Type != JTokenType.Object)
+            if (apiContext.Parameter.Type != JTokenType.Object)
             {
                 throw new NotSupportedException();
             }
 
-            var eventArgs = new BackupEventArgs(apiContext.Request);
+            var eventArgs = new BackupEventArgs(apiContext.Parameter);
             RestoringBackup?.Invoke(this, eventArgs);
         }
     }

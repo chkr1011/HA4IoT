@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.PersonalAgent;
+using HA4IoT.Contracts.PersonalAgent.AmazonEcho;
+using HA4IoT.Contracts.Services.Settings;
 
 namespace HA4IoT.PersonalAgent
 {
@@ -10,79 +13,153 @@ namespace HA4IoT.PersonalAgent
     {
         private static readonly char[] WordSeparator = { ' ' };
 
-        private readonly SynonymService _synonymService;
+        // TODO: Move to settings and add UI.
+        private readonly Dictionary<string, ComponentState> _stateSynonyms = new Dictionary<string, ComponentState>
+        {
+            { "ein", BinaryStateId.On },
+            { "an", BinaryStateId.On },
+            { "ab", BinaryStateId.Off },
+            { "aus", BinaryStateId.Off },
+            { "öffne", RollerShutterStateId.MovingUp },
+            { "auf", RollerShutterStateId.MovingUp },
+            { "hoch", RollerShutterStateId.MovingUp },
+            { "rauf", RollerShutterStateId.MovingUp },
+            { "runter", RollerShutterStateId.MovingDown },
+            { "herunter", RollerShutterStateId.MovingDown },
+            { "zu", RollerShutterStateId.MovingDown },
+            { "schließe", RollerShutterStateId.MovingDown }
+        };
+
         private readonly IAreaService _areaService;
+        private readonly IComponentService _componentService;
+        private readonly ISettingsService _settingsService;
 
         private MessageContext _currentContext;
 
-        public MessageContextFactory(SynonymService synonymService, IAreaService areaService)
+        public MessageContextFactory(IAreaService areaService, IComponentService componentService, ISettingsService settingsService)
         {
-            if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
             if (areaService == null) throw new ArgumentNullException(nameof(areaService));
+            if (componentService == null) throw new ArgumentNullException(nameof(componentService));
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
-            _synonymService = synonymService;
             _areaService = areaService;
+            _componentService = componentService;
+            _settingsService = settingsService;
         }
 
-        public MessageContext Create(IInboundMessage message)
+        public MessageContext Create(string text)
         {
-            if (message == null) throw new ArgumentNullException(nameof(message));
+            if (text == null) throw new ArgumentNullException(nameof(text));
 
-            _currentContext = new MessageContext(message);
+            _currentContext = new MessageContext { Text = text };
 
-            IdentifyWords();
-
-            IdentifyAreas();
-            IdentifyComponents();
-            IdentifyComponentStates();
+            IdentifyWords(text);
+            IdentifyAreas(text);
+            IdentifyComponents(text);
+            IdentifyComponentStates(text);
             FilterComponentIds();
 
             return _currentContext;
         }
 
-        private void IdentifyWords()
+        public MessageContext Create(SkillServiceRequest skillServiceRequest)
         {
-            string phrase = _currentContext.OriginalMessage.Text;
-            phrase = phrase.Replace("?", string.Empty);
-            phrase = phrase.Replace("!", string.Empty);
-            phrase = phrase.Replace(".", string.Empty);
-            
-            string[] words = phrase.Split(WordSeparator, StringSplitOptions.RemoveEmptyEntries);
+            if (skillServiceRequest == null) throw new ArgumentNullException(nameof(skillServiceRequest));
+
+            _currentContext = new MessageContext
+            {
+                Text = GetText(skillServiceRequest)
+            };
+
+            if (skillServiceRequest.Request.Intent.Name == "ChangeState")
+            {
+                var mentionedArea = GetSlotValue(skillServiceRequest, "Area");
+                var mentionedComponent = GetSlotValue(skillServiceRequest, "Component");
+                var mentionedState = GetSlotValue(skillServiceRequest, "State");
+
+                IdentifyAreas(mentionedArea);
+                IdentifyComponents(mentionedComponent);
+                IdentifyComponentStates(mentionedState);
+
+                var areaFound = !string.IsNullOrEmpty(mentionedArea) && _currentContext.IdentifiedAreaIds.Any();
+                if (!areaFound)
+                {
+                    // TODO: Extend logic and check which component identification leads to a precise value (Count == 1).
+                }
+
+                FilterComponentIds();
+            }
+
+            return _currentContext;
+        }
+
+        private string GetText(SkillServiceRequest skillServiceRequest)
+        {
+            var result = string.Empty;
+            foreach (var slot in skillServiceRequest.Request.Intent.Slots)
+            {
+                result += slot.Value.Value + " ";
+            }
+
+            return result.Trim();
+        }
+
+        private string GetSlotValue(SkillServiceRequest skillServiceRequest, string slotName)
+        {
+            SkillServiceRequestRequestIntentSlot slot;
+            if (!skillServiceRequest.Request.Intent.Slots.TryGetValue(slotName, out slot))
+            {
+                return null;
+            }
+
+            return slot.Value;
+        }
+
+        private void IdentifyWords(string input)
+        {
+            input = input.Replace("?", string.Empty);
+            input = input.Replace("!", string.Empty);
+            input = input.Replace(".", string.Empty);
+
+            var words = input.Split(WordSeparator, StringSplitOptions.RemoveEmptyEntries);
             foreach (var word in words)
             {
                 _currentContext.Words.Add(word);
             }
         }
 
-        private void IdentifyAreas()
+        private void IdentifyAreas(string input)
         {
-            foreach (string word in _currentContext.Words)
+            foreach (var area in _areaService.GetAreas())
             {
-                foreach (AreaId areaId in _synonymService.GetAreaIdsBySynonym(word))
+                if (IsCaptionOrKeywordMatch(input, area.Settings.Caption, area.Settings.Keywords))
                 {
-                    _currentContext.IdentifiedAreaIds.Add(areaId);
+                    _currentContext.IdentifiedAreaIds.Add(area.Id);
                 }
             }
         }
 
-        private void IdentifyComponents()
+        private void IdentifyComponents(string input)
         {
-            foreach (string word in _currentContext.Words)
+            foreach (var component in _componentService.GetComponents())
             {
-                foreach (ComponentId componentId in _synonymService.GetComponentIdsBySynonym(word))
+                var componentSettings = _settingsService.GetSettings<ComponentSettings>(component.Id);
+
+                if (IsCaptionOrKeywordMatch(input, componentSettings.Caption, componentSettings.Keywords))
                 {
-                    _currentContext.IdentifiedComponentIds.Add(componentId);
+                    _currentContext.IdentifiedComponentIds.Add(component.Id);
                 }
             }
         }
 
-        private void IdentifyComponentStates()
+        private void IdentifyComponentStates(string input)
         {
-            foreach (string word in _currentContext.Words)
+            foreach (var stateSynonym in _stateSynonyms)
             {
-                foreach (ComponentState componentState in _synonymService.GetComponentStatesBySynonym(word))
+                if (input.IndexOf(stateSynonym.Key, StringComparison.CurrentCultureIgnoreCase) > -1)
                 {
-                    _currentContext.IdentifiedComponentStates.Add(componentState);
+                    // TODO: Ensure that the match is not part of a word. Check EOL etc.
+                    _currentContext.IdentifiedComponentStates.Add(stateSynonym.Value);
                 }
             }
         }
@@ -113,6 +190,33 @@ namespace HA4IoT.PersonalAgent
                     }
                 }
             }
+        }
+
+        private bool IsCaptionOrKeywordMatch(string input, string caption, string keywords)
+        {
+            if (string.IsNullOrEmpty(input))
+            {
+                return false;
+            }
+
+            if (!string.IsNullOrEmpty(caption))
+            {
+                if (input.IndexOf(caption, StringComparison.CurrentCultureIgnoreCase) > -1)
+                {
+                    return true;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(keywords))
+            {
+                var keywordsList = keywords.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                if (keywordsList.Any(k => input.IndexOf(k, StringComparison.CurrentCultureIgnoreCase) > -1))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

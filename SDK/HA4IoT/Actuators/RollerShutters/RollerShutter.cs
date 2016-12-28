@@ -121,13 +121,13 @@ namespace HA4IoT.Actuators.RollerShutters
 
         public override void HandleApiCall(IApiContext apiContext)
         {
-            if (apiContext.Request.Property("State") == null)
+            if (apiContext.Parameter.Property("State") == null)
             {
-                apiContext.ResultCode = ApiResultCode.InvalidBody;
+                apiContext.ResultCode = ApiResultCode.InvalidParameter;
                 return;
             }
 
-            var newState = new ComponentState((string) apiContext.Request["State"]);
+            var newState = new ComponentState((string) apiContext.Parameter["State"]);
             SetState(newState);
         }
 

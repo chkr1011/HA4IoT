@@ -64,7 +64,7 @@ namespace HA4IoT.Sensors.MotionDetectors
 
         public override void HandleApiCall(IApiContext apiContext)
         {
-            var action = (string)apiContext.Request["Action"];
+            var action = (string)apiContext.Parameter["Action"];
 
             if (action.Equals("detected", StringComparison.OrdinalIgnoreCase))
             {

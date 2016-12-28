@@ -145,7 +145,6 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<AutomationFactory>();
 
             _container.RegisterSingleton<IPersonalAgentService, PersonalAgentService>();
-            _container.RegisterSingleton<SynonymService>();
 
             _container.RegisterSingleton<IOutdoorTemperatureService, OutdoorTemperatureService>();
             _container.RegisterSingleton<IOutdoorHumidityService, OutdoorHumidityService>();

@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using HA4IoT.Contracts.Areas;
 using HA4IoT.PersonalAgent;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -14,8 +13,7 @@ namespace HA4IoT.Tests.PersonalAgent
         {
             var testController = new TestController();
 
-            var synonymService = new SynonymService(testController.ComponentService);
-            var messageContextFactory = new MessageContextFactory(synonymService, testController.AreaService);
+            var messageContextFactory = new MessageContextFactory(testController.AreaService, testController.ComponentService, testController.SettingsService);
 
             MessageContext messageContext = messageContextFactory.Create(new TestInboundMessage("Hello World. Hello World."));
             messageContext.IdentifiedAreaIds.Count.ShouldBeEquivalentTo(0);
@@ -29,11 +27,8 @@ namespace HA4IoT.Tests.PersonalAgent
         public void IdentifyAreaIds()
         {
             var testController = new TestController();
-
-            var synonymService = new SynonymService(testController.ComponentService);
-            synonymService.AddSynonymsForArea(new AreaId("Office"), "Büro");
-
-            var messageContextFactory = new MessageContextFactory(synonymService, testController.AreaService);
+            
+            var messageContextFactory = new MessageContextFactory(testController.AreaService, testController.ComponentService, testController.SettingsService);
 
             MessageContext messageContext = messageContextFactory.Create(new TestInboundMessage("Hello World. Büro."));
             messageContext.IdentifiedAreaIds.Count.ShouldBeEquivalentTo(1);

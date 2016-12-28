@@ -14,7 +14,6 @@ using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
-using HA4IoT.PersonalAgent;
 
 namespace HA4IoT.Controller.Main
 {
@@ -39,7 +38,6 @@ namespace HA4IoT.Controller.Main
         {
             private readonly CCToolsBoardService _ccToolsBoardService;
             private readonly IPi2GpioService _pi2GpioService;
-            private readonly SynonymService _synonymService;
             private readonly IDeviceService _deviceService;
             private readonly II2CBusService _i2CBusService;
             private readonly ISchedulerService _schedulerService;
@@ -49,8 +47,7 @@ namespace HA4IoT.Controller.Main
 
             public Configuration(
                 CCToolsBoardService ccToolsBoardService, 
-                IPi2GpioService pi2GpioService, 
-                SynonymService synonymService,
+                IPi2GpioService pi2GpioService,
                 IDeviceService deviceService,
                 II2CBusService i2CBusService, 
                 ISchedulerService schedulerService, 
@@ -60,7 +57,6 @@ namespace HA4IoT.Controller.Main
             {
                 if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
                 if (pi2GpioService == null) throw new ArgumentNullException(nameof(pi2GpioService));
-                if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
                 if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
                 if (i2CBusService == null) throw new ArgumentNullException(nameof(i2CBusService));
                 if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
@@ -70,7 +66,6 @@ namespace HA4IoT.Controller.Main
 
                 _ccToolsBoardService = ccToolsBoardService;
                 _pi2GpioService = pi2GpioService;
-                _synonymService = synonymService;
                 _deviceService = deviceService;
                 _i2CBusService = i2CBusService;
                 _schedulerService = schedulerService;
@@ -81,8 +76,6 @@ namespace HA4IoT.Controller.Main
 
             public Task ApplyAsync()
             {
-                _synonymService.TryLoadPersistedSynonyms();
-
                 _ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input0, new I2CSlaveAddress(42));
                 _ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input1, new I2CSlaveAddress(43));
                 _ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input2, new I2CSlaveAddress(47));
@@ -107,8 +100,6 @@ namespace HA4IoT.Controller.Main
                 _containerService.GetInstance<LowerBathroomConfiguration>().Apply();
                 _containerService.GetInstance<StoreroomConfiguration>().Apply();
                 _containerService.GetInstance<LivingRoomConfiguration>().Apply();
-
-                _synonymService.RegisterDefaultComponentStateSynonyms();
 
                 var ioBoardsInterruptMonitor = new InterruptMonitor(_pi2GpioService.GetInput(4));
                 ioBoardsInterruptMonitor.InterruptDetected += (s, e) => _ccToolsBoardService.PollInputBoardStates();

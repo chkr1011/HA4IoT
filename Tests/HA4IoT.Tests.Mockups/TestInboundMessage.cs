@@ -3,7 +3,7 @@ using HA4IoT.Contracts.PersonalAgent;
 
 namespace HA4IoT.Tests.Mockups
 {
-    public class TestInboundMessage : IInboundMessage
+    public class TestInboundMessage : IInboundTextMessage
     {
         public TestInboundMessage(string text)
         {

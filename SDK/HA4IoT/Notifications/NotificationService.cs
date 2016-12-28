@@ -96,7 +96,7 @@ namespace HA4IoT.Notifications
         [ApiMethod]
         public void Delete(IApiContext apiContext)
         {
-            var notificationUid = (string)apiContext.Request["Uid"];
+            var notificationUid = (string)apiContext.Parameter["Uid"];
             if (string.IsNullOrEmpty(notificationUid))
             {
                 throw new BadRequestException("Parameter 'Uid' is not specified.");

@@ -78,6 +78,14 @@ namespace HA4IoT.Contracts.Services.Settings
             settingsService.CreateSettingsMonitor(uri, callback);
         }
 
+        public static void CreateSettingsMonitor(this ISettingsService settingsService, AreaId areaId, Action<AreaSettings> callback)
+        {
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
+
+            var uri = SettingsUriGenerator.From(areaId);
+            settingsService.CreateSettingsMonitor(uri, callback);
+        }
+
         public static void CreateSettingsMonitor<TSettings>(this ISettingsService settingsService, ComponentId componentId, Action<TSettings> callback) where TSettings : IComponentSettings
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));

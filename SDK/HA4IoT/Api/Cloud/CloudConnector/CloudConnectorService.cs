@@ -183,7 +183,7 @@ namespace HA4IoT.Api.Cloud.CloudConnector
 
             if (!eventArgs.IsHandled)
             {
-                apiContext.ResultCode = ApiResultCode.NotSupported;
+                apiContext.ResultCode = ApiResultCode.ActionNotSupported;
             }
 
             return apiContext;
@@ -200,6 +200,7 @@ namespace HA4IoT.Api.Cloud.CloudConnector
             
             var stringContent = new StringContent(JsonConvert.SerializeObject(cloudMessage));
             stringContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+            stringContent.Headers.ContentEncoding.Add("utf-8");
 
             return stringContent;
         }

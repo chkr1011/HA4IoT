@@ -75,6 +75,7 @@
     <Compile Include="Api\IApiDispatcherService.cs" />
     <Compile Include="Areas\AreaId.cs" />
     <Compile Include="Areas\AreaIdGenerator.cs" />
+    <Compile Include="Areas\AreaSettings.cs" />
     <Compile Include="Areas\IArea.cs" />
     <Compile Include="Areas\IAreaService.cs" />
     <Compile Include="Automations\AutomationId.cs" />
@@ -153,8 +154,8 @@
     <Compile Include="PersonalAgent\AmazonEcho\SkillServiceResponseResponse.cs" />
     <Compile Include="PersonalAgent\AmazonEcho\SkillServiceResponse.cs" />
     <Compile Include="PersonalAgent\Emoji.cs" />
-    <Compile Include="PersonalAgent\IInboundMessage.cs" />
-    <Compile Include="PersonalAgent\IOutboundMessage.cs" />
+    <Compile Include="PersonalAgent\IInboundTextMessage.cs" />
+    <Compile Include="PersonalAgent\IOutboundTextMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sensors\ButtonPressedDuration.cs" />
     <Compile Include="Sensors\ButtonStateID.cs" />

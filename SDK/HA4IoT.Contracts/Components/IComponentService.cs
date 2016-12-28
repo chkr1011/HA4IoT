@@ -7,6 +7,8 @@ namespace HA4IoT.Contracts.Components
     {
         void AddComponent(IComponent component);
 
+        IComponent GetComponent(ComponentId id);
+
         TComponent GetComponent<TComponent>(ComponentId id) where TComponent : IComponent;
 
         TComponent GetComponent<TComponent>() where TComponent : IComponent;

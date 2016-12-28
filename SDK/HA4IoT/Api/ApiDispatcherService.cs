@@ -6,6 +6,7 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Networking.Json;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Api
 {
@@ -16,8 +17,9 @@ namespace HA4IoT.Api
         
         public ApiDispatcherService()
         {
-            Route("Status", HandleStatusRequest);
-            Route("Configuration", HandleConfigurationRequest);
+            Route("Status", HandleGetStatusRequest);
+            Route("Configuration", HandleGetConfigurationRequest);
+            Route("Routes", HandleGetRoutesRequest);
         }
 
         public event EventHandler<ApiRequestReceivedEventArgs> StatusRequested;
@@ -33,7 +35,6 @@ namespace HA4IoT.Api
             {
                 adapter.NotifyStateChanged(component);
             }
-            // TODO: Use information for optimized state generation, pushing to Azure, writing Csv etc.
         }
 
         public void Route(string action, Action<IApiContext> handler)
@@ -41,7 +42,10 @@ namespace HA4IoT.Api
             if (action == null) throw new ArgumentNullException(nameof(action));
             if (handler == null) throw new ArgumentNullException(nameof(handler));
 
-            _routes.Add(action.Trim(), handler);
+            lock (_routes)
+            {
+                _routes.Add(action.Trim(), handler);
+            }
         }
 
         public void Expose(object controller)
@@ -59,7 +63,15 @@ namespace HA4IoT.Api
             Expose(classAttribute.Namespace, controller);
         }
 
-        public void Expose(string @namespace, object controller)
+        public void RegisterAdapter(IApiAdapter adapter)
+        {
+            if (adapter == null) throw new ArgumentNullException(nameof(adapter));
+
+            _adapters.Add(adapter);
+            adapter.RequestReceived += RouteRequest;
+        }
+
+        private void Expose(string @namespace, object controller)
         {
             if (@namespace == null) throw new ArgumentNullException(nameof(@namespace));
             if (controller == null) throw new ArgumentNullException(nameof(controller));
@@ -72,7 +84,7 @@ namespace HA4IoT.Api
                     continue;
                 }
 
-                var action = $"{@namespace}/{method.Name}";
+                var action = @namespace + "/" + method.Name;
                 Action<IApiContext> handler = apiContext => method.Invoke(controller, new object[] { apiContext });
                 Route(action, handler);
 
@@ -80,15 +92,22 @@ namespace HA4IoT.Api
             }
         }
 
-        public void RegisterAdapter(IApiAdapter adapter)
+        private void HandleGetRoutesRequest(IApiContext apiContext)
         {
-            if (adapter == null) throw new ArgumentNullException(nameof(adapter));
+            var routes = new JArray();
 
-            _adapters.Add(adapter);
-            adapter.RequestReceived += RouteRequest;
+            lock (_routes)
+            {
+                foreach (var route in _routes)
+                {
+                    routes.Add(route.Key);
+                }
+            }
+
+            apiContext.Response.Add("Routes", routes);
         }
 
-        private void HandleStatusRequest(IApiContext apiContext)
+        private void HandleGetStatusRequest(IApiContext apiContext)
         {
             apiContext.UseHash = true;
 
@@ -97,7 +116,7 @@ namespace HA4IoT.Api
             StatusRequestCompleted?.Invoke(this, eventArgs);
         }
 
-        private void HandleConfigurationRequest(IApiContext apiContext)
+        private void HandleGetConfigurationRequest(IApiContext apiContext)
         {
             var eventArgs = new ApiRequestReceivedEventArgs(apiContext);
             ConfigurationRequested?.Invoke(this, eventArgs);
@@ -106,27 +125,29 @@ namespace HA4IoT.Api
 
         private void RouteRequest(object sender, ApiRequestReceivedEventArgs e)
         {
-            Action<IApiContext> handler;
-            if (_routes.TryGetValue(e.Context.Action, out handler))
+            Action<IApiContext> action;
+            lock (_routes)
             {
-                e.IsHandled = true;
-                HandleRequest(e.Context, handler);
-
-                return;
+                if (!_routes.TryGetValue(e.Context.Action, out action))
+                {
+                    e.Context.ResultCode = ApiResultCode.ActionNotSupported;
+                    return;
+                }
             }
 
-            e.Context.ResultCode = ApiResultCode.NotSupported;
+            e.IsHandled = true;
+            TryHandleRequest(e.Context, action);
         }
 
-        private static void HandleRequest(IApiContext apiContext, Action<IApiContext> handler)
+        private static void TryHandleRequest(IApiContext apiContext, Action<IApiContext> action)
         {
             try
             {
-                handler(apiContext);
+                action(apiContext);
             }
             catch (Exception exception)
             {
-                apiContext.ResultCode = ApiResultCode.InternalError;
+                apiContext.ResultCode = ApiResultCode.UnhandledException;
                 apiContext.Response = JsonSerializer.SerializeException(exception);
             }
         }

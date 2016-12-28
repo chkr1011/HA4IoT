@@ -133,7 +133,7 @@
                 IsEnabled: component.IsEnabled,
                 Caption: component.Caption,
                 OverviewCaption: component.OverviewCaption,
-                Keywords: source.Keywords,
+                Keywords: component.Keywords,
                 IsVisible: component.IsVisible,
                 Image: component.Image,
                 SortValue: sortValue

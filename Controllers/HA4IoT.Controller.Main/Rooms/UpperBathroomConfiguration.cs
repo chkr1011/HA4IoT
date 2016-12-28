@@ -11,7 +11,6 @@ using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
-using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Services.Areas;
@@ -26,7 +25,6 @@ namespace HA4IoT.Controller.Main.Rooms
         private readonly ISchedulerService _schedulerService;
         private readonly IAreaService _areaService;
         private readonly ISettingsService _settingsService;
-        private readonly SynonymService _synonymService;
         private readonly AutomationFactory _automationFactory;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
@@ -55,7 +53,6 @@ namespace HA4IoT.Controller.Main.Rooms
             ISchedulerService schedulerService,
             IAreaService areaService,
             ISettingsService settingsService,
-            SynonymService synonymService,
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)
@@ -65,7 +62,6 @@ namespace HA4IoT.Controller.Main.Rooms
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
             if (areaService == null) throw new ArgumentNullException(nameof(areaService));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-            if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
             if (automationFactory == null) throw new ArgumentNullException(nameof(automationFactory));
             if (actuatorFactory == null) throw new ArgumentNullException(nameof(actuatorFactory));
             if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
@@ -75,7 +71,6 @@ namespace HA4IoT.Controller.Main.Rooms
             _schedulerService = schedulerService;
             _areaService = areaService;
             _settingsService = settingsService;
-            _synonymService = synonymService;
             _automationFactory = automationFactory;
             _actuatorFactory = actuatorFactory;
             _sensorFactory = sensorFactory;
@@ -89,39 +84,37 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 4;
 
-            var room = _areaService.CreateArea(Room.UpperBathroom);
+            var area = _areaService.CreateArea(Room.UpperBathroom);
 
-            _actuatorFactory.RegisterStateMachine(room, UpperBathroom.Fan, (s, r) => SetupFan(s, hsrel5));
+            _actuatorFactory.RegisterStateMachine(area, UpperBathroom.Fan, (s, r) => SetupFan(s, hsrel5));
 
-            _sensorFactory.RegisterTemperatureSensor(room, UpperBathroom.TemperatureSensor,
+            _sensorFactory.RegisterTemperatureSensor(area, UpperBathroom.TemperatureSensor,
                 i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
 
-            _sensorFactory.RegisterHumiditySensor(room, UpperBathroom.HumiditySensor,
+            _sensorFactory.RegisterHumiditySensor(area, UpperBathroom.HumiditySensor,
                 i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
 
-            _sensorFactory.RegisterMotionDetector(room, UpperBathroom.MotionDetector, input5.GetInput(15));
+            _sensorFactory.RegisterMotionDetector(area, UpperBathroom.MotionDetector, input5.GetInput(15));
 
-            _actuatorFactory.RegisterLamp(room, UpperBathroom.LightCeilingDoor, hsrel5.GetOutput(0));
-            _actuatorFactory.RegisterLamp(room, UpperBathroom.LightCeilingEdge, hsrel5.GetOutput(1));
-            _actuatorFactory.RegisterLamp(room, UpperBathroom.LightCeilingMirrorCabinet, hsrel5.GetOutput(2));
-            _actuatorFactory.RegisterLamp(room, UpperBathroom.LampMirrorCabinet, hsrel5.GetOutput(3));
+            _actuatorFactory.RegisterLamp(area, UpperBathroom.LightCeilingDoor, hsrel5.GetOutput(0));
+            _actuatorFactory.RegisterLamp(area, UpperBathroom.LightCeilingEdge, hsrel5.GetOutput(1));
+            _actuatorFactory.RegisterLamp(area, UpperBathroom.LightCeilingMirrorCabinet, hsrel5.GetOutput(2));
+            _actuatorFactory.RegisterLamp(area, UpperBathroom.LampMirrorCabinet, hsrel5.GetOutput(3));
 
             var combinedLights =
-                _actuatorFactory.RegisterLogicalActuator(room, UpperBathroom.CombinedCeilingLights)
-                    .WithActuator(room.GetLamp(UpperBathroom.LightCeilingDoor))
-                    .WithActuator(room.GetLamp(UpperBathroom.LightCeilingEdge))
-                    .WithActuator(room.GetLamp(UpperBathroom.LightCeilingMirrorCabinet))
-                    .WithActuator(room.GetLamp(UpperBathroom.LampMirrorCabinet));
+                _actuatorFactory.RegisterLogicalActuator(area, UpperBathroom.CombinedCeilingLights)
+                    .WithActuator(area.GetLamp(UpperBathroom.LightCeilingDoor))
+                    .WithActuator(area.GetLamp(UpperBathroom.LightCeilingEdge))
+                    .WithActuator(area.GetLamp(UpperBathroom.LightCeilingMirrorCabinet))
+                    .WithActuator(area.GetLamp(UpperBathroom.LampMirrorCabinet));
 
-            _automationFactory.RegisterTurnOnAndOffAutomation(room, UpperBathroom.CombinedCeilingLightsAutomation)
-                .WithTrigger(room.GetMotionDetector(UpperBathroom.MotionDetector))
+            _automationFactory.RegisterTurnOnAndOffAutomation(area, UpperBathroom.CombinedCeilingLightsAutomation)
+                .WithTrigger(area.GetMotionDetector(UpperBathroom.MotionDetector))
                 .WithTarget(combinedLights);
             
-            new BathroomFanAutomation(AutomationIdGenerator.Generate(room, UpperBathroom.FanAutomation), _schedulerService, _settingsService)
-                .WithTrigger(room.GetMotionDetector(UpperBathroom.MotionDetector))
-                .WithActuator(room.GetStateMachine(UpperBathroom.Fan));
-
-            _synonymService.AddSynonymsForArea(Room.UpperBathroom, "BadOben", "UpperBathroom");
+            new BathroomFanAutomation(AutomationIdGenerator.Generate(area, UpperBathroom.FanAutomation), _schedulerService, _settingsService)
+                .WithTrigger(area.GetMotionDetector(UpperBathroom.MotionDetector))
+                .WithActuator(area.GetStateMachine(UpperBathroom.Fan));      
         }
 
         private void SetupFan(StateMachine stateMachine, HSREL5 hsrel5)

@@ -85,7 +85,7 @@ namespace HA4IoT.Api.Cloud.Azure
 
             if (!eventArgs.IsHandled)
             {
-                context.ResultCode = ApiResultCode.NotSupported;
+                context.ResultCode = ApiResultCode.ActionNotSupported;
             }
 
             SendResponseMessage(context).Wait();
@@ -93,7 +93,7 @@ namespace HA4IoT.Api.Cloud.Azure
 
         private async Task SendResponseMessage(QueueBasedApiContext context)
         {
-            var clientEtag = (string)context.Request["ETag"];
+            var clientEtag = (string)context.Parameter["ETag"];
 
             var brokerProperties = new JObject
             {

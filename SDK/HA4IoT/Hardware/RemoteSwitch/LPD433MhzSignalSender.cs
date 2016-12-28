@@ -23,7 +23,7 @@ namespace HA4IoT.Hardware.RemoteSwitch
 
         private void ApiPost(IApiContext apiContext)
         {
-            var sequence = apiContext.Request["sequence"].ToObject<JArray>();
+            var sequence = apiContext.Parameter["sequence"].ToObject<JArray>();
             if (sequence.Count == 0)
             {
                 return;

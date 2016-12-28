@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Services.Automations;
 using HA4IoT.Services.Components;
 
@@ -15,19 +16,24 @@ namespace HA4IoT.Services.Areas
 
         private readonly IComponentService _componentService;
         private readonly IAutomationService _automationService;
-
-        public Area(AreaId id, IComponentService componentService, IAutomationService automationService)
+        
+        public Area(AreaId id, IComponentService componentService, IAutomationService automationService, ISettingsService settingsService)
         {
             if (componentService == null) throw new ArgumentNullException(nameof(componentService));
             if (automationService == null) throw new ArgumentNullException(nameof(automationService));
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
             _componentService = componentService;
             _automationService = automationService;
 
             Id = id;
+
+            settingsService.CreateSettingsMonitor(Id, s => Settings = s);
         }
 
         public AreaId Id { get; }
+
+        public AreaSettings Settings { get; private set; }
 
         public void AddComponent(IComponent component)
         {

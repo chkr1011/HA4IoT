@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Contracts.PersonalAgent
 {
-    public interface IInboundMessage
+    public interface IInboundTextMessage
     {
         DateTime Timestamp { get; }
 

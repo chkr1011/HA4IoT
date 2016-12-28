@@ -8,12 +8,10 @@ using HA4IoT.Automations;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
-using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.MotionDetectors;
@@ -27,7 +25,6 @@ namespace HA4IoT.Controller.Main.Rooms
         private readonly IAreaService _areaService;
         private readonly IDeviceService _deviceService;
         private readonly CCToolsBoardService _ccToolsBoardService;
-        private readonly SynonymService _synonymService;
         private readonly AutomationFactory _automationFactory;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
@@ -76,7 +73,6 @@ namespace HA4IoT.Controller.Main.Rooms
             IAreaService areaService,
             IDeviceService deviceService,
             CCToolsBoardService ccToolsBoardService,
-            SynonymService synonymService,
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)
@@ -84,7 +80,6 @@ namespace HA4IoT.Controller.Main.Rooms
             if (areaService == null) throw new ArgumentNullException(nameof(areaService));
             if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
             if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
-            if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
             if (automationFactory == null) throw new ArgumentNullException(nameof(automationFactory));
             if (actuatorFactory == null) throw new ArgumentNullException(nameof(actuatorFactory));
             if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
@@ -92,7 +87,6 @@ namespace HA4IoT.Controller.Main.Rooms
             _areaService = areaService;
             _deviceService = deviceService;
             _ccToolsBoardService = ccToolsBoardService;
-            _synonymService = synonymService;
             _automationFactory = automationFactory;
             _actuatorFactory = actuatorFactory;
             _sensorFactory = sensorFactory;
@@ -111,63 +105,61 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 5;
 
-            var room = _areaService.CreateArea(Room.Floor);
+            var area = _areaService.CreateArea(Room.Floor);
 
-            _sensorFactory.RegisterTemperatureSensor(room, Floor.LowerFloorTemperatureSensor,
+            _sensorFactory.RegisterTemperatureSensor(area, Floor.LowerFloorTemperatureSensor,
                 i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
 
-            _sensorFactory.RegisterHumiditySensor(room, Floor.LowerFloorHumiditySensor,
+            _sensorFactory.RegisterHumiditySensor(area, Floor.LowerFloorHumiditySensor,
                 i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
 
-            _sensorFactory.RegisterMotionDetector(room, Floor.StairwayMotionDetector, input2.GetInput(1));
-            _sensorFactory.RegisterMotionDetector(room, Floor.StairsLowerMotionDetector, input4.GetInput(7));
-            _sensorFactory.RegisterMotionDetector(room, Floor.StairsUpperMotionDetector, input4.GetInput(6));
-            _sensorFactory.RegisterMotionDetector(room, Floor.LowerFloorMotionDetector, input1.GetInput(4));
+            _sensorFactory.RegisterMotionDetector(area, Floor.StairwayMotionDetector, input2.GetInput(1));
+            _sensorFactory.RegisterMotionDetector(area, Floor.StairsLowerMotionDetector, input4.GetInput(7));
+            _sensorFactory.RegisterMotionDetector(area, Floor.StairsUpperMotionDetector, input4.GetInput(6));
+            _sensorFactory.RegisterMotionDetector(area, Floor.LowerFloorMotionDetector, input1.GetInput(4));
 
-            _actuatorFactory.RegisterRollerShutter(room, Floor.StairwayRollerShutter, hsrel5Stairway.GetOutput(4), hsrel5Stairway.GetOutput(3));
+            _actuatorFactory.RegisterRollerShutter(area, Floor.StairwayRollerShutter, hsrel5Stairway.GetOutput(4), hsrel5Stairway.GetOutput(3));
 
-            _sensorFactory.RegisterButton(room, Floor.ButtonLowerFloorUpper, input1.GetInput(0));
-            _sensorFactory.RegisterButton(room, Floor.ButtonLowerFloorLower, input1.GetInput(5));
-            _sensorFactory.RegisterButton(room, Floor.ButtonLowerFloorAtBathroom, input1.GetInput(1));
-            _sensorFactory.RegisterButton(room, Floor.ButtonLowerFloorAtKitchen, input1.GetInput(3));
-            _sensorFactory.RegisterButton(room, Floor.ButtonStairsLowerUpper, input4.GetInput(5));
-            _sensorFactory.RegisterButton(room, Floor.ButtonStairsLowerLower, input1.GetInput(2));
-            _sensorFactory.RegisterButton(room, Floor.ButtonStairsUpper, input4.GetInput(4));
-            _sensorFactory.RegisterButton(room, Floor.ButtonStairway, input1.GetInput(6));
+            _sensorFactory.RegisterButton(area, Floor.ButtonLowerFloorUpper, input1.GetInput(0));
+            _sensorFactory.RegisterButton(area, Floor.ButtonLowerFloorLower, input1.GetInput(5));
+            _sensorFactory.RegisterButton(area, Floor.ButtonLowerFloorAtBathroom, input1.GetInput(1));
+            _sensorFactory.RegisterButton(area, Floor.ButtonLowerFloorAtKitchen, input1.GetInput(3));
+            _sensorFactory.RegisterButton(area, Floor.ButtonStairsLowerUpper, input4.GetInput(5));
+            _sensorFactory.RegisterButton(area, Floor.ButtonStairsLowerLower, input1.GetInput(2));
+            _sensorFactory.RegisterButton(area, Floor.ButtonStairsUpper, input4.GetInput(4));
+            _sensorFactory.RegisterButton(area, Floor.ButtonStairway, input1.GetInput(6));
 
-            _actuatorFactory.RegisterLamp(room, Floor.Lamp1, hspe16FloorAndLowerBathroom.GetOutput(5).WithInvertedState());
-            _actuatorFactory.RegisterLamp(room, Floor.Lamp2, hspe16FloorAndLowerBathroom.GetOutput(6).WithInvertedState());
-            _actuatorFactory.RegisterLamp(room, Floor.Lamp3, hspe16FloorAndLowerBathroom.GetOutput(7).WithInvertedState());
-            _actuatorFactory.RegisterLamp(room, Floor.StairwayLampCeiling, hsrel5Stairway.GetOutput(0));
-            _actuatorFactory.RegisterLamp(room, Floor.StairwayLampWall, hsrel5Stairway.GetOutput(1));
+            _actuatorFactory.RegisterLamp(area, Floor.Lamp1, hspe16FloorAndLowerBathroom.GetOutput(5).WithInvertedState());
+            _actuatorFactory.RegisterLamp(area, Floor.Lamp2, hspe16FloorAndLowerBathroom.GetOutput(6).WithInvertedState());
+            _actuatorFactory.RegisterLamp(area, Floor.Lamp3, hspe16FloorAndLowerBathroom.GetOutput(7).WithInvertedState());
+            _actuatorFactory.RegisterLamp(area, Floor.StairwayLampCeiling, hsrel5Stairway.GetOutput(0));
+            _actuatorFactory.RegisterLamp(area, Floor.StairwayLampWall, hsrel5Stairway.GetOutput(1));
 
-            _actuatorFactory.RegisterLogicalActuator(room, Floor.CombinedStairwayLamp)
-                .WithActuator(room.GetLamp(Floor.StairwayLampCeiling))
-                .WithActuator(room.GetLamp(Floor.StairwayLampWall));
+            _actuatorFactory.RegisterLogicalActuator(area, Floor.CombinedStairwayLamp)
+                .WithActuator(area.GetLamp(Floor.StairwayLampCeiling))
+                .WithActuator(area.GetLamp(Floor.StairwayLampWall));
 
-            SetupStairwayLamps(room);
+            SetupStairwayLamps(area);
 
-            _actuatorFactory.RegisterLogicalActuator(room, Floor.CombinedLamps)
-                .WithActuator(room.GetLamp(Floor.Lamp1))
-                .WithActuator(room.GetLamp(Floor.Lamp2))
-                .WithActuator(room.GetLamp(Floor.Lamp3));
+            _actuatorFactory.RegisterLogicalActuator(area, Floor.CombinedLamps)
+                .WithActuator(area.GetLamp(Floor.Lamp1))
+                .WithActuator(area.GetLamp(Floor.Lamp2))
+                .WithActuator(area.GetLamp(Floor.Lamp3));
 
-            _automationFactory.RegisterTurnOnAndOffAutomation(room, Floor.CombinedLampsAutomation)
-                .WithTrigger(room.GetMotionDetector(Floor.LowerFloorMotionDetector))
-                .WithTrigger(room.GetButton(Floor.ButtonLowerFloorUpper).GetPressedShortlyTrigger())
-                .WithTrigger(room.GetButton(Floor.ButtonLowerFloorAtBathroom).GetPressedShortlyTrigger())
-                .WithTrigger(room.GetButton(Floor.ButtonLowerFloorAtKitchen).GetPressedShortlyTrigger())
-                .WithTarget(room.GetActuator(Floor.CombinedLamps))
+            _automationFactory.RegisterTurnOnAndOffAutomation(area, Floor.CombinedLampsAutomation)
+                .WithTrigger(area.GetMotionDetector(Floor.LowerFloorMotionDetector))
+                .WithTrigger(area.GetButton(Floor.ButtonLowerFloorUpper).GetPressedShortlyTrigger())
+                .WithTrigger(area.GetButton(Floor.ButtonLowerFloorAtBathroom).GetPressedShortlyTrigger())
+                .WithTrigger(area.GetButton(Floor.ButtonLowerFloorAtKitchen).GetPressedShortlyTrigger())
+                .WithTarget(area.GetActuator(Floor.CombinedLamps))
                 .WithEnabledAtNight()
                 .WithTurnOffIfButtonPressedWhileAlreadyOn();
 
-            SetupStairsCeilingLamps(room, hspe8UpperFloor);
-            SetupStairsLamps(room, hspe16FloorAndLowerBathroom);
+            SetupStairsCeilingLamps(area, hspe8UpperFloor);
+            SetupStairsLamps(area, hspe16FloorAndLowerBathroom);
 
-            _automationFactory.RegisterRollerShutterAutomation(room, Floor.StairwayRollerShutterAutomation)
-                .WithRollerShutters(room.GetRollerShutter(Floor.StairwayRollerShutter));
-
-            _synonymService.AddSynonymsForArea(Room.Floor, "Flur", "Floor");
+            _automationFactory.RegisterRollerShutterAutomation(area, Floor.StairwayRollerShutterAutomation)
+                .WithRollerShutters(area.GetRollerShutter(Floor.StairwayRollerShutter));
         }
 
         private void SetupStairwayLamps(IArea room)

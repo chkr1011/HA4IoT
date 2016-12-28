@@ -14,13 +14,13 @@ namespace HA4IoT.Contracts.Api
             ResultCode = ApiResultCode.Success;
 
             Action = action;
-            Request = request;
+            Parameter = request;
             Response = response;
         }
 
         public string Action { get; }
         public ApiResultCode ResultCode { get; set; }
-        public JObject Request { get; }
+        public JObject Parameter { get; }
         public JObject Response { get; set; }
         public bool UseHash { get; set; }
     }

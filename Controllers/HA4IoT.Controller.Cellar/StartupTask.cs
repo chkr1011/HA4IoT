@@ -15,7 +15,6 @@ using HA4IoT.Contracts.Hardware.Services;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
-using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Services.Areas;
@@ -42,7 +41,6 @@ namespace HA4IoT.Controller.Cellar
         {
             private readonly CCToolsBoardService _ccToolsBoardService;
             private readonly IPi2GpioService _pi2GpioService;
-            private readonly SynonymService _synonymService;
             private readonly IAreaService _areaService;
             private readonly ActuatorFactory _actuatorFactory;
             private readonly SensorFactory _sensorFactory;
@@ -77,8 +75,7 @@ namespace HA4IoT.Controller.Cellar
 
             public Configuration(
                 CCToolsBoardService ccToolsBoardService, 
-                IPi2GpioService pi2GpioService, 
-                SynonymService synonymService, 
+                IPi2GpioService pi2GpioService,
                 IAreaService areaService,
                 ActuatorFactory actuatorFactory,
                 SensorFactory sensorFactory,
@@ -86,14 +83,12 @@ namespace HA4IoT.Controller.Cellar
             {
                 if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
                 if (pi2GpioService == null) throw new ArgumentNullException(nameof(pi2GpioService));
-                if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
                 if (actuatorFactory == null) throw new ArgumentNullException(nameof(actuatorFactory));
                 if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
                 if (automationFactory == null) throw new ArgumentNullException(nameof(automationFactory));
 
                 _ccToolsBoardService = ccToolsBoardService;
                 _pi2GpioService = pi2GpioService;
-                _synonymService = synonymService;
                 _areaService = areaService;
                 _actuatorFactory = actuatorFactory;
                 _sensorFactory = sensorFactory;

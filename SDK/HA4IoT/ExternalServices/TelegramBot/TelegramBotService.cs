@@ -211,7 +211,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
             }
             else
             {
-                var answer = _personalAgentService.ProcessMessage(inboundMessage);
+                var answer = _personalAgentService.ProcessTextMessage(inboundMessage.Text);
                 var response = inboundMessage.CreateResponse(answer);
                 EnqueueMessage(response);
             }

@@ -3,9 +3,7 @@ using HA4IoT.Components;
 using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
-using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
-using Newtonsoft.Json.Linq;
 using Action = HA4IoT.Actuators.Actions.Action;
 
 namespace HA4IoT.Actuators.StateMachines

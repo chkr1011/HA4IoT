@@ -124,10 +124,10 @@ namespace HA4IoT.Services.Resources
         {
             lock (_syncRoot)
             {
-                var request = apiContext.Request.ToObject<SetTextsRequest>();
+                var request = apiContext.Parameter.ToObject<SetTextsRequest>();
                 if (request?.Resources == null || !request.Resources.Any())
                 {
-                    apiContext.ResultCode = ApiResultCode.InvalidBody;
+                    apiContext.ResultCode = ApiResultCode.InvalidParameter;
                     return;
                 }
 
@@ -151,7 +151,7 @@ namespace HA4IoT.Services.Resources
         {
             lock (_syncRoot)
             {
-                var request = apiContext.Request.ToObject<GetTextsRequest>();
+                var request = apiContext.Parameter.ToObject<GetTextsRequest>();
 
                 var matchingResources = _resources;
                 if (!string.IsNullOrEmpty(request.Category))

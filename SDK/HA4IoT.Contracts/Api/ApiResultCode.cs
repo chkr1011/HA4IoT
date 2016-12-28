@@ -4,10 +4,10 @@
     {
         Success,
 
-        NotSupported,
+        ActionNotSupported,
 
-        InvalidBody,
+        InvalidParameter,
 
-        InternalError,
+        UnhandledException,
     }
 }

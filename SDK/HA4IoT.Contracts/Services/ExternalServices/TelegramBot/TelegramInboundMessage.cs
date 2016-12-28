@@ -3,7 +3,7 @@ using HA4IoT.Contracts.PersonalAgent;
 
 namespace HA4IoT.Contracts.Services.ExternalServices.TelegramBot
 {
-    public class TelegramInboundMessage : MessageBase, IInboundMessage
+    public class TelegramInboundMessage : MessageBase, IInboundTextMessage
     {
         public TelegramInboundMessage(DateTime timestamp, int chatId, string text)
             : base(chatId, text)

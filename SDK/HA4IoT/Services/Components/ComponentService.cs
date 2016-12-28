@@ -65,6 +65,11 @@ namespace HA4IoT.Services.Components
             component.StateChanged += (s, e) => _apiService.NotifyStateChanged(component);
         }
 
+        public IComponent GetComponent(ComponentId id)
+        {
+            return _components.Get(id);
+        }
+
         public TComponent GetComponent<TComponent>() where TComponent : IComponent
         {
             return _components.Get<TComponent>();
@@ -98,7 +103,7 @@ namespace HA4IoT.Services.Components
         public void Invoke(IApiContext apiContext)
         {
             // TODO: Consider creating classes as optional method parameters which are filled via reflection from Request JSON.
-            var componentId = (string)apiContext.Request["ComponentId"];
+            var componentId = (string)apiContext.Parameter["ComponentId"];
             if (string.IsNullOrEmpty(componentId))
             {
                 throw new BadRequestException("Property 'ComponentId' is missing.");
@@ -117,7 +122,7 @@ namespace HA4IoT.Services.Components
         [ApiMethod]
         public void Reset(IApiContext apiContext)
         {
-            var componentId = (string)apiContext.Request["ComponentId"];
+            var componentId = (string)apiContext.Parameter["ComponentId"];
             if (string.IsNullOrEmpty(componentId))
             {
                 throw new BadRequestException("Property 'ComponentId' is missing.");

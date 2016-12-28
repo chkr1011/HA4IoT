@@ -53,7 +53,7 @@ namespace HA4IoT.Services.Areas
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
-            var area = new Area(id, _componentService, _automationService);
+            var area = new Area(id, _componentService, _automationService, _settingsService);
             AddArea(area);
 
             return area;

@@ -50,7 +50,7 @@ namespace HA4IoT.Sensors.Buttons
 
         public override void HandleApiCall(IApiContext apiContext)
         {
-            var action = (string)apiContext.Request["Duration"];
+            var action = (string)apiContext.Parameter["Duration"];
             if (!string.IsNullOrEmpty(action) && action.Equals(ButtonPressedDuration.Long.ToString(), StringComparison.OrdinalIgnoreCase))
             {
                 OnPressedLong();

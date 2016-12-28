@@ -108,16 +108,16 @@ namespace HA4IoT.Settings
         [ApiMethod]
         public void Replace(IApiContext apiContext)
         {
-            var request = apiContext.Request.ToObject<SettingsServiceApiRequest>();
+            var request = apiContext.Parameter.ToObject<SettingsServiceApiRequest>();
             SetRawSettings(request.Uri, request.Settings);
         }
 
         [ApiMethod]
         public void Import(IApiContext apiContext)
         {
-            if (apiContext.Request.Type == JTokenType.Object)
+            if (apiContext.Parameter.Type == JTokenType.Object)
             {
-                var request = apiContext.Request.ToObject<SettingsServiceApiRequest>();
+                var request = apiContext.Parameter.ToObject<SettingsServiceApiRequest>();
                 ImportRawSettings(request.Uri, request.Settings);
             }
             else
@@ -129,9 +129,9 @@ namespace HA4IoT.Settings
         [ApiMethod]
         public void ImportMultiple(IApiContext apiContext)
         {
-            if (apiContext.Request.Type == JTokenType.Object)
+            if (apiContext.Parameter.Type == JTokenType.Object)
             {
-                var request = apiContext.Request.ToObject<Dictionary<string, JObject>>();
+                var request = apiContext.Parameter.ToObject<Dictionary<string, JObject>>();
                 foreach (var item in request)
                 {
                     ImportSettings(item.Key, item.Value);
@@ -146,9 +146,9 @@ namespace HA4IoT.Settings
         [ApiMethod]
         public void GetSettings(IApiContext apiContext)
         {
-            if (apiContext.Request.Type == JTokenType.Object)
+            if (apiContext.Parameter.Type == JTokenType.Object)
             {
-                var request = apiContext.Request.ToObject<SettingsServiceApiRequest>();
+                var request = apiContext.Parameter.ToObject<SettingsServiceApiRequest>();
                 apiContext.Response = GetSettings(request.Uri);
             }
             else
@@ -193,9 +193,9 @@ namespace HA4IoT.Settings
         [ApiMethod]
         public void RestoreBackup(IApiContext apiContext)
         {
-            if (apiContext.Request.Type == JTokenType.Object)
+            if (apiContext.Parameter.Type == JTokenType.Object)
             {
-                var settings = apiContext.Request.ToObject<Dictionary<string, JObject>>();
+                var settings = apiContext.Parameter.ToObject<Dictionary<string, JObject>>();
 
                 lock (_syncRoot)
                 {

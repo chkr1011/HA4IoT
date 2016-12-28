@@ -9,7 +9,6 @@ using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
-using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Services.Areas;
@@ -20,7 +19,6 @@ namespace HA4IoT.Controller.Main.Rooms
     internal class ReadingRoomConfiguration
     {
         private readonly IAreaService _areaService;
-        private readonly SynonymService _synonymService;
         private readonly IDeviceService _deviceService;
         private readonly CCToolsBoardService _ccToolsBoardService;
         private readonly AutomationFactory _automationFactory;
@@ -50,7 +48,6 @@ namespace HA4IoT.Controller.Main.Rooms
 
         public ReadingRoomConfiguration(
             IAreaService areaService,
-            SynonymService synonymService,
             IDeviceService deviceService,
             CCToolsBoardService ccToolsBoardService,
             AutomationFactory automationFactory,
@@ -58,7 +55,6 @@ namespace HA4IoT.Controller.Main.Rooms
             SensorFactory sensorFactory)
         {
             if (areaService == null) throw new ArgumentNullException(nameof(areaService));
-            if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
             if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
             if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
             if (automationFactory == null) throw new ArgumentNullException(nameof(automationFactory));
@@ -66,7 +62,6 @@ namespace HA4IoT.Controller.Main.Rooms
             if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
 
             _areaService = areaService;
-            _synonymService = synonymService;
             _deviceService = deviceService;
             _ccToolsBoardService = ccToolsBoardService;
             _automationFactory = automationFactory;
@@ -82,37 +77,35 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 9;
 
-            var room = _areaService.CreateArea(Room.ReadingRoom);
+            var area = _areaService.CreateArea(Room.ReadingRoom);
 
-            _sensorFactory.RegisterWindow(room, ReadingRoom.Window, w => w.WithCenterCasement(input2.GetInput(8))); // Tilt = input2.GetInput(9) -- currently broken!
+            _sensorFactory.RegisterWindow(area, ReadingRoom.Window, w => w.WithCenterCasement(input2.GetInput(8))); // Tilt = input2.GetInput(9) -- currently broken!
 
-            _sensorFactory.RegisterTemperatureSensor(room, ReadingRoom.TemperatureSensor,
+            _sensorFactory.RegisterTemperatureSensor(area, ReadingRoom.TemperatureSensor,
                 i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
 
-            _sensorFactory.RegisterHumiditySensor(room, ReadingRoom.HumiditySensor,
+            _sensorFactory.RegisterHumiditySensor(area, ReadingRoom.HumiditySensor,
                 i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
 
-            _actuatorFactory.RegisterLamp(room, ReadingRoom.LightCeilingMiddle, hsrel5[HSREL5Pin.GPIO0]);
+            _actuatorFactory.RegisterLamp(area, ReadingRoom.LightCeilingMiddle, hsrel5[HSREL5Pin.GPIO0]);
 
-            _actuatorFactory.RegisterRollerShutter(room, ReadingRoom.RollerShutter, hsrel5[HSREL5Pin.Relay4], hsrel5[HSREL5Pin.Relay3]);
-            _sensorFactory.RegisterRollerShutterButtons(room, ReadingRoom.RollerShutterButtonUp, input2.GetInput(12),
+            _actuatorFactory.RegisterRollerShutter(area, ReadingRoom.RollerShutter, hsrel5[HSREL5Pin.Relay4], hsrel5[HSREL5Pin.Relay3]);
+            _sensorFactory.RegisterRollerShutterButtons(area, ReadingRoom.RollerShutterButtonUp, input2.GetInput(12),
                 ReadingRoom.RollerShutterButtonDown, input2.GetInput(11));
 
-            _actuatorFactory.RegisterSocket(room, ReadingRoom.SocketWindow, hsrel5[HSREL5Pin.Relay0]);
-            _actuatorFactory.RegisterSocket(room, ReadingRoom.SocketWallLeft, hsrel5[HSREL5Pin.Relay1]);
-            _actuatorFactory.RegisterSocket(room, ReadingRoom.SocketWallRight, hsrel5[HSREL5Pin.Relay2]);
+            _actuatorFactory.RegisterSocket(area, ReadingRoom.SocketWindow, hsrel5[HSREL5Pin.Relay0]);
+            _actuatorFactory.RegisterSocket(area, ReadingRoom.SocketWallLeft, hsrel5[HSREL5Pin.Relay1]);
+            _actuatorFactory.RegisterSocket(area, ReadingRoom.SocketWallRight, hsrel5[HSREL5Pin.Relay2]);
 
-            _sensorFactory.RegisterButton(room, ReadingRoom.Button, input2.GetInput(13));
+            _sensorFactory.RegisterButton(area, ReadingRoom.Button, input2.GetInput(13));
 
-            room.GetLamp(ReadingRoom.LightCeilingMiddle).ConnectToggleActionWith(room.GetButton(ReadingRoom.Button));
+            area.GetLamp(ReadingRoom.LightCeilingMiddle).ConnectToggleActionWith(area.GetButton(ReadingRoom.Button));
 
-            _automationFactory.RegisterRollerShutterAutomation(room, ReadingRoom.RollerShutterAutomation)
-                .WithRollerShutters(room.GetRollerShutter(ReadingRoom.RollerShutter));
+            _automationFactory.RegisterRollerShutterAutomation(area, ReadingRoom.RollerShutterAutomation)
+                .WithRollerShutters(area.GetRollerShutter(ReadingRoom.RollerShutter));
 
-            room.GetRollerShutter(ReadingRoom.RollerShutter)
-                .ConnectWith(room.GetButton(ReadingRoom.RollerShutterButtonUp), room.GetButton(ReadingRoom.RollerShutterButtonDown));
-
-            _synonymService.AddSynonymsForArea(Room.ReadingRoom, "Lesezimmer", "Gästezimmer", "ReadingRoom");
+            area.GetRollerShutter(ReadingRoom.RollerShutter)
+                .ConnectWith(area.GetButton(ReadingRoom.RollerShutterButtonUp), area.GetButton(ReadingRoom.RollerShutterButtonDown));
         }
     }
 }

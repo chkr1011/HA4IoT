@@ -8,6 +8,8 @@ namespace HA4IoT.Contracts.Areas
     {
         AreaId Id { get; }
 
+        AreaSettings Settings { get; }
+
         void AddComponent(IComponent component);
 
         bool ContainsComponent(ComponentId componentId);

@@ -9,7 +9,6 @@ using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
-using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.MotionDetectors;
@@ -23,7 +22,6 @@ namespace HA4IoT.Controller.Main.Rooms
         private readonly IAreaService _areaService;
         private readonly IDeviceService _deviceService;
         private readonly CCToolsBoardService _ccToolsBoardService;
-        private readonly SynonymService _synonymService;
         private readonly AutomationFactory _automationFactory;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
@@ -61,7 +59,6 @@ namespace HA4IoT.Controller.Main.Rooms
             IAreaService areaService,
             IDeviceService deviceService,
             CCToolsBoardService ccToolsBoardService,
-            SynonymService synonymService,
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)
@@ -69,7 +66,6 @@ namespace HA4IoT.Controller.Main.Rooms
             if (areaService == null) throw new ArgumentNullException(nameof(areaService));
             if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
             if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
-            if (synonymService == null) throw new ArgumentNullException(nameof(synonymService));
             if (automationFactory == null) throw new ArgumentNullException(nameof(automationFactory));
             if (actuatorFactory == null) throw new ArgumentNullException(nameof(actuatorFactory));
             if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
@@ -77,7 +73,6 @@ namespace HA4IoT.Controller.Main.Rooms
             _areaService = areaService;
             _deviceService = deviceService;
             _ccToolsBoardService = ccToolsBoardService;
-            _synonymService = synonymService;
             _automationFactory = automationFactory;
             _actuatorFactory = actuatorFactory;
             _sensorFactory = sensorFactory;
@@ -95,52 +90,50 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 11;
 
-            var room = _areaService.CreateArea(Room.Kitchen);
+            var area = _areaService.CreateArea(Room.Kitchen);
 
-            _sensorFactory.RegisterWindow(room, Kitchen.Window, w => w.WithCenterCasement(input0.GetInput(6), input0.GetInput(7)));
+            _sensorFactory.RegisterWindow(area, Kitchen.Window, w => w.WithCenterCasement(input0.GetInput(6), input0.GetInput(7)));
 
-            _sensorFactory.RegisterTemperatureSensor(room, Kitchen.TemperatureSensor,
+            _sensorFactory.RegisterTemperatureSensor(area, Kitchen.TemperatureSensor,
                 i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
 
-            _sensorFactory.RegisterHumiditySensor(room, Kitchen.HumiditySensor,
+            _sensorFactory.RegisterHumiditySensor(area, Kitchen.HumiditySensor,
                 i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
 
-            _sensorFactory.RegisterMotionDetector(room, Kitchen.MotionDetector, input1.GetInput(8));
+            _sensorFactory.RegisterMotionDetector(area, Kitchen.MotionDetector, input1.GetInput(8));
 
-            _actuatorFactory.RegisterLamp(room, Kitchen.LightCeilingPassageOuter, hspe8.GetOutput(2).WithInvertedState());
-            _actuatorFactory.RegisterLamp(room, Kitchen.LightCeilingMiddle, hsrel5.GetOutput(5).WithInvertedState());
-            _actuatorFactory.RegisterLamp(room, Kitchen.LightCeilingWindow, hsrel5.GetOutput(6).WithInvertedState());
-            _actuatorFactory.RegisterLamp(room, Kitchen.LightCeilingWall, hsrel5.GetOutput(7).WithInvertedState());
-            _actuatorFactory.RegisterLamp(room, Kitchen.LightCeilingDoor, hspe8.GetOutput(0).WithInvertedState());
-            _actuatorFactory.RegisterLamp(room, Kitchen.LightCeilingPassageInner, hspe8.GetOutput(1).WithInvertedState());
+            _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingPassageOuter, hspe8.GetOutput(2).WithInvertedState());
+            _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingMiddle, hsrel5.GetOutput(5).WithInvertedState());
+            _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingWindow, hsrel5.GetOutput(6).WithInvertedState());
+            _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingWall, hsrel5.GetOutput(7).WithInvertedState());
+            _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingDoor, hspe8.GetOutput(0).WithInvertedState());
+            _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingPassageInner, hspe8.GetOutput(1).WithInvertedState());
 
-            _actuatorFactory.RegisterSocket(room, Kitchen.SocketWall, hsrel5.GetOutput(2));
-            _actuatorFactory.RegisterRollerShutter(room, Kitchen.RollerShutter, hsrel5.GetOutput(4), hsrel5.GetOutput(3));
-            _sensorFactory.RegisterButton(room, Kitchen.ButtonKitchenette, input1.GetInput(11));
-            _sensorFactory.RegisterButton(room, Kitchen.ButtonPassage, input1.GetInput(9));
-            _sensorFactory.RegisterRollerShutterButtons(room, Kitchen.RollerShutterButtonUp, input2.GetInput(15),
+            _actuatorFactory.RegisterSocket(area, Kitchen.SocketWall, hsrel5.GetOutput(2));
+            _actuatorFactory.RegisterRollerShutter(area, Kitchen.RollerShutter, hsrel5.GetOutput(4), hsrel5.GetOutput(3));
+            _sensorFactory.RegisterButton(area, Kitchen.ButtonKitchenette, input1.GetInput(11));
+            _sensorFactory.RegisterButton(area, Kitchen.ButtonPassage, input1.GetInput(9));
+            _sensorFactory.RegisterRollerShutterButtons(area, Kitchen.RollerShutterButtonUp, input2.GetInput(15),
                 Kitchen.RollerShutterButtonDown, input2.GetInput(14));
 
-            room.GetLamp(Kitchen.LightCeilingMiddle).ConnectToggleActionWith(room.GetButton(Kitchen.ButtonKitchenette));
-            room.GetLamp(Kitchen.LightCeilingMiddle).ConnectToggleActionWith(room.GetButton(Kitchen.ButtonPassage));
+            area.GetLamp(Kitchen.LightCeilingMiddle).ConnectToggleActionWith(area.GetButton(Kitchen.ButtonKitchenette));
+            area.GetLamp(Kitchen.LightCeilingMiddle).ConnectToggleActionWith(area.GetButton(Kitchen.ButtonPassage));
 
-            _automationFactory.RegisterRollerShutterAutomation(room, Kitchen.RollerShutterAutomation)
-                .WithRollerShutters(room.GetRollerShutter(Kitchen.RollerShutter));
+            _automationFactory.RegisterRollerShutterAutomation(area, Kitchen.RollerShutterAutomation)
+                .WithRollerShutters(area.GetRollerShutter(Kitchen.RollerShutter));
 
-            room.GetRollerShutter(Kitchen.RollerShutter).ConnectWith(
-                room.GetButton(Kitchen.RollerShutterButtonUp), room.GetButton(Kitchen.RollerShutterButtonDown));
+            area.GetRollerShutter(Kitchen.RollerShutter).ConnectWith(
+                area.GetButton(Kitchen.RollerShutterButtonUp), area.GetButton(Kitchen.RollerShutterButtonDown));
 
-            _actuatorFactory.RegisterLogicalActuator(room, Kitchen.CombinedAutomaticLights)
-                .WithActuator(room.GetLamp(Kitchen.LightCeilingWall))
-                .WithActuator(room.GetLamp(Kitchen.LightCeilingDoor))
-                .WithActuator(room.GetLamp(Kitchen.LightCeilingWindow));
+            _actuatorFactory.RegisterLogicalActuator(area, Kitchen.CombinedAutomaticLights)
+                .WithActuator(area.GetLamp(Kitchen.LightCeilingWall))
+                .WithActuator(area.GetLamp(Kitchen.LightCeilingDoor))
+                .WithActuator(area.GetLamp(Kitchen.LightCeilingWindow));
 
-            _automationFactory.RegisterTurnOnAndOffAutomation(room, Kitchen.CombinedAutomaticLightsAutomation)
-                .WithTrigger(room.GetMotionDetector(Kitchen.MotionDetector))
-                .WithTarget(room.GetActuator(Kitchen.CombinedAutomaticLights))
+            _automationFactory.RegisterTurnOnAndOffAutomation(area, Kitchen.CombinedAutomaticLightsAutomation)
+                .WithTrigger(area.GetMotionDetector(Kitchen.MotionDetector))
+                .WithTarget(area.GetActuator(Kitchen.CombinedAutomaticLights))
                 .WithEnabledAtNight();
-
-            _synonymService.AddSynonymsForArea(Room.Kitchen, "Küche", "Kitchen");
         }
     }
 }

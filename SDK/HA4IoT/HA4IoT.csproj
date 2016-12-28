@@ -72,7 +72,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
     <PlatformTarget>ARM</PlatformTarget>
     <OutputPath>bin\ARM\Release\</OutputPath>
-    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <Optimize>true</Optimize>
     <NoWarn>;2008</NoWarn>
     <DebugType>pdbonly</DebugType>
@@ -281,12 +282,9 @@
     <Compile Include="Logger\UdpLogger.cs" />
     <Compile Include="Notifications\NotificationService.cs" />
     <Compile Include="Notifications\NotificationServiceSettings.cs" />
-    <Compile Include="PersonalAgent\ApiInboundMessage.cs" />
     <Compile Include="PersonalAgent\MessageContext.cs" />
     <Compile Include="PersonalAgent\MessageContextFactory.cs" />
     <Compile Include="PersonalAgent\PersonalAgentService.cs" />
-    <Compile Include="PersonalAgent\SynonymService.cs" />
-    <Compile Include="PersonalAgent\SynonymServiceStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sensors\Buttons\Button.cs" />
     <Compile Include="Sensors\Buttons\ButtonExtensions.cs" />
