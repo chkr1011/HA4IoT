@@ -1,0 +1,41 @@
+{
+    "intents": [
+        {
+            "intent": "Test"
+        },
+        { "intent": "ChangeState",
+            "slots": [
+                { "type": "AREA", "name": "Area" },
+                { "type": "COMPONENT", "name": "Component" },
+                { "type": "STATE", "name": "State" },
+                { "type": "ACTION", "name": "Action" }
+            ]
+        },
+        {
+            "intent": "GetStatus",
+            "slots": [
+                {
+                    "type": "AREA",
+                    "name": "Area"
+                },
+                {
+                    "type": "COMPONENT",
+                    "name": "Component"
+                },
+                {
+                    "type": "STATE_KIND",
+                    "name": "State_Kind"
+                }
+            ]
+        },
+        {
+            "intent": "GetOverallWindowStatus"
+        },
+        {
+            "intent": "GetEnvironmentStatus"
+        },
+        {
+            "intent": "GetNotifications"
+        }
+    ]
+}

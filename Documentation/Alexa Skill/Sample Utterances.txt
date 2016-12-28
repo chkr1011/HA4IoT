@@ -1,0 +1,31 @@
+ChangeState Schalte {Component} im {Area} {State}
+ChangeState Schalte die {Component} im {Area} {State}
+ChangeState Schalte alle {Component} im {Area} {State}
+ChangeState Schalte {Component} in {Area} {State}
+ChangeState Schalte die {Component} in {Area} {State}
+ChangeState Schalte alle {Component} in {Area} {State}
+ChangeState Schalte {Component} {State}
+
+ChangeState Fahre {Component} im {Area} {State}
+ChangeState Fahre die {Component} im {Area} {State}
+ChangeState Fahre alle {Component} im {Area} {State}
+ChangeState Fahre {Component} in {Area} {State}
+ChangeState Fahre die {Component} in {Area} {State}
+ChangeState Fahre alle {Component} in {Area} {State}
+ChangeState Fahre {Component} {State}
+
+GetStatus Wie ist der {State_Kind} von {Component} im {Area}
+GetStatus Wie ist der {State_Kind} im {Area}
+GetStatus Wie ist der {State_Kind} aller {Component}
+
+GetOverallWindowStatus Sind Fenster geöffnet
+GetOverallWindowStatus Alle Fenster geschlossen
+
+GetEnvironmentStatus Wie ist das Wetter
+GetEnvironmentStatus Wie ist die Außentemperatur
+GetEnvironmentStatus Wie ist die Temperatur draußen
+
+GetNotifications Lese Benachrichtigungen vor
+GetNotifications Gibt es Benachrichtigungen
+
+Test Test
