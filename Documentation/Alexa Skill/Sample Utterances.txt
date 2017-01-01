@@ -1,30 +1,31 @@
-ChangeState Schalte {Component} im {Area} {State}
-ChangeState Schalte die {Component} im {Area} {State}
-ChangeState Schalte alle {Component} im {Area} {State}
-ChangeState Schalte {Component} in {Area} {State}
-ChangeState Schalte die {Component} in {Area} {State}
-ChangeState Schalte alle {Component} in {Area} {State}
-ChangeState Schalte {Component} {State}
+//
+// ChangeState samples.
+//
+ChangeState [Schalte|Schalt|Fahre|Fahr|Mach|Mache|] [der|die|das|alle|] {Component} [im|in|in der|] [{Area}|] [auf|] {State}
 
-ChangeState Fahre {Component} im {Area} {State}
-ChangeState Fahre die {Component} im {Area} {State}
-ChangeState Fahre alle {Component} im {Area} {State}
-ChangeState Fahre {Component} in {Area} {State}
-ChangeState Fahre die {Component} in {Area} {State}
-ChangeState Fahre alle {Component} in {Area} {State}
-ChangeState Fahre {Component} {State}
+//
+// GetStatus samples.
+//
+GetStatus [Wie|Was|] [ist|] [der|die|das|] {State_Kind} [in|im|in der|] [{Area}|]
+GetStatus Welchen Status hat [der|die|das|] {Component} [in|im|in der|] [{Area}|]
+GetStatus Welchen Status hat [der|die|das|] {Component}
 
-GetStatus Wie ist der {State_Kind} von {Component} im {Area}
-GetStatus Wie ist der {State_Kind} im {Area}
-GetStatus Wie ist der {State_Kind} aller {Component}
-
+//
+// GetOverallWindowStatus samples
+//
 GetOverallWindowStatus Sind Fenster geöffnet
 GetOverallWindowStatus Alle Fenster geschlossen
 
+//
+// GetEnvironmentStatus samples
+//
 GetEnvironmentStatus Wie ist das Wetter
 GetEnvironmentStatus Wie ist die Außentemperatur
 GetEnvironmentStatus Wie ist die Temperatur draußen
 
+//
+// GetNotifications samples
+//
 GetNotifications Lese Benachrichtigungen vor
 GetNotifications Gibt es Benachrichtigungen
 

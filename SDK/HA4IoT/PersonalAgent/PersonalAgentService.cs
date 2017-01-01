@@ -29,6 +29,8 @@ namespace HA4IoT.PersonalAgent
         private readonly IOutdoorTemperatureService _outdoorTemperatureService;
         private readonly IOutdoorHumidityService _outdoorHumidityService;
 
+        private MessageContext _latestMessageContext;
+
         public PersonalAgentService(
             ISettingsService settingsService,
             IComponentService componentService,
@@ -60,12 +62,10 @@ namespace HA4IoT.PersonalAgent
             var messageContextFactory = new MessageContextFactory(_areaService, _componentService, _settingsService);
             var messageContext = messageContextFactory.Create(request);
 
-            Log.Verbose(GenerateDebugOutput(messageContext));
-
-            var answer = ProcessMessage(messageContext);
+            ProcessMessage(messageContext);
 
             var response = new SkillServiceResponse();
-            response.Response.OutputSpeech.Text = answer;
+            response.Response.OutputSpeech.Text = messageContext.Answer;
 
             apiContext.Response = JObject.FromObject(response);
         }
@@ -77,85 +77,46 @@ namespace HA4IoT.PersonalAgent
             var messageContextFactory = new MessageContextFactory(_areaService, _componentService, _settingsService);
             var messageContext = messageContextFactory.Create(text);
 
-            return ProcessMessage(messageContext);
+            ProcessMessage(messageContext);
+            return messageContext.Answer;
         }
 
         [ApiMethod]
         public void Ask(IApiContext apiContext)
         {
-            var message = (string)apiContext.Parameter["Message"];
-            if (string.IsNullOrEmpty(message))
+            var text = (string)apiContext.Parameter["Message"];
+            if (string.IsNullOrEmpty(text))
             {
                 apiContext.ResultCode = ApiResultCode.InvalidParameter;
                 return;
             }
 
-            apiContext.Response["Answer"] = ProcessTextMessage(message); ;
+            apiContext.Response["Answer"] = ProcessTextMessage(text); ;
         }
 
-        private string ProcessMessage(MessageContext messageContext)
+        [ApiMethod]
+        public void GetLatestMessageContext(IApiContext apiContext)
         {
-            string answer;
+            if (_latestMessageContext == null)
+            {
+                return;
+            }
+
+            apiContext.Response = JObject.FromObject(_latestMessageContext);
+        }
+
+        private void ProcessMessage(MessageContext messageContext)
+        { 
             try
             {
-                answer = ProcessMessageInternal(messageContext);
-
-                if (messageContext.ContainsWord("debug"))
-                {
-                    answer += Environment.NewLine + Environment.NewLine + GenerateDebugOutput(messageContext);
-                }
+                _latestMessageContext = messageContext;
+                messageContext.Answer = ProcessMessageInternal(messageContext);
             }
             catch (Exception exception)
             {
-                answer = $"{Emoji.Scream} Mist! Da ist etwas total schief gelaufen! Bitte stelle mir nie wieder solche Fragen!";
+                messageContext.Answer = $"{Emoji.Scream} Mist! Da ist etwas total schief gelaufen! Bitte stelle mir nie wieder solche Fragen!";
                 Log.Error(exception, $"Error while processing message '{messageContext.Text}'.");
             }
-
-            return answer;
-        }
-
-        private string GenerateDebugOutput(MessageContext messageContext)
-        {
-            var debugOutput = new StringBuilder();
-
-            debugOutput.AppendLine("<b>DEBUG:</b>");
-
-            debugOutput.AppendLine("<b>[Original message]</b>");
-            debugOutput.AppendLine(messageContext.Text);
-
-            int counter = 1;
-            debugOutput.AppendLine("<b>[Identified components]</b>");
-            foreach (var componentId in messageContext.IdentifiedComponentIds)
-            {
-                debugOutput.AppendLine($"{counter} - {componentId}");
-                counter++;
-            }
-
-            counter = 1;
-            debugOutput.AppendLine("<b>[Identified areas]</b>");
-            foreach (var areaId in messageContext.IdentifiedAreaIds)
-            {
-                debugOutput.AppendLine($"{counter} - {areaId}");
-                counter++;
-            }
-
-            counter = 1;
-            debugOutput.AppendLine("<b>[Filtered components]</b>");
-            foreach (var componentId in messageContext.FilteredComponentIds)
-            {
-                debugOutput.AppendLine($"{counter} - {componentId}");
-                counter++;
-            }
-
-            counter = 1;
-            debugOutput.AppendLine("<b>[Identified component states]</b>");
-            foreach (var componentState in messageContext.IdentifiedComponentStates)
-            {
-                debugOutput.AppendLine($"{counter} - {componentState}");
-                counter++;
-            }
-
-            return debugOutput.ToString();
         }
 
         private string ProcessMessageInternal(MessageContext messageContext)

@@ -11,8 +11,6 @@ namespace HA4IoT.PersonalAgent
 {
     public class MessageContextFactory
     {
-        private static readonly char[] WordSeparator = { ' ' };
-
         // TODO: Move to settings and add UI.
         private readonly Dictionary<string, ComponentState> _stateSynonyms = new Dictionary<string, ComponentState>
         {
@@ -53,7 +51,6 @@ namespace HA4IoT.PersonalAgent
 
             _currentContext = new MessageContext { Text = text };
 
-            IdentifyWords(text);
             IdentifyAreas(text);
             IdentifyComponents(text);
             IdentifyComponentStates(text);
@@ -68,8 +65,14 @@ namespace HA4IoT.PersonalAgent
 
             _currentContext = new MessageContext
             {
-                Text = GetText(skillServiceRequest)
+                Text = GetText(skillServiceRequest),
+                Intent = skillServiceRequest.Request.Intent.Name
             };
+
+            foreach (var slot in skillServiceRequest.Request.Intent.Slots)
+            {
+                _currentContext.Slots[slot.Key] = slot.Value.Value;
+            }
 
             if (skillServiceRequest.Request.Intent.Name == "ChangeState")
             {
@@ -113,19 +116,6 @@ namespace HA4IoT.PersonalAgent
             }
 
             return slot.Value;
-        }
-
-        private void IdentifyWords(string input)
-        {
-            input = input.Replace("?", string.Empty);
-            input = input.Replace("!", string.Empty);
-            input = input.Replace(".", string.Empty);
-
-            var words = input.Split(WordSeparator, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var word in words)
-            {
-                _currentContext.Words.Add(word);
-            }
         }
 
         private void IdentifyAreas(string input)

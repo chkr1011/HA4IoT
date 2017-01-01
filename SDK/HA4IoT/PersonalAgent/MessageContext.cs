@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
@@ -9,11 +8,13 @@ namespace HA4IoT.PersonalAgent
 {
     public class MessageContext
     {
-        public string Kind { get; set; } // MessageContextKind > Text / Speech
+        public MessageContextKind Kind { get; set; }
+
+        public string Intent { get; set; } // TODO: To Enum
 
         public string Text { get; set; }
 
-        public HashSet<string> Words { get; } = new HashSet<string>();
+        public Dictionary<string, string> Slots { get; } = new Dictionary<string, string>();
 
         public HashSet<ComponentId> IdentifiedComponentIds { get; } = new HashSet<ComponentId>();
 
@@ -23,12 +24,7 @@ namespace HA4IoT.PersonalAgent
 
         public HashSet<AreaId> IdentifiedAreaIds { get; } = new HashSet<AreaId>();
 
-        public bool ContainsWord(string word)
-        {
-            if (word == null) throw new ArgumentNullException(nameof(word));
-
-            return Words.Any(w => string.Equals(w, word, StringComparison.CurrentCultureIgnoreCase));
-        }
+        public string Answer { get; set; }
 
         public Match GetPatternMatch(string pattern)
         {
