@@ -15,15 +15,19 @@ using Newtonsoft.Json.Serialization;
 
 namespace HA4IoT.CloudApi.Controllers
 {
+    [ExceptionFilter]
     public class AmazonEchoController : ApiController
     {
         private readonly ControllerMessageDispatcher _messageDispatcher;
+        private readonly SecurityService _securityService;
 
-        public AmazonEchoController(ControllerMessageDispatcher messageDispatcher)
+        public AmazonEchoController(ControllerMessageDispatcher messageDispatcher, SecurityService securityService)
         {
             if (messageDispatcher == null) throw new ArgumentNullException(nameof(messageDispatcher));
+            if (securityService == null) throw new ArgumentNullException(nameof(securityService));
 
             _messageDispatcher = messageDispatcher;
+            _securityService = securityService;
         }
 
         public async Task<HttpResponseMessage> ExecuteIntent()
@@ -34,7 +38,11 @@ namespace HA4IoT.CloudApi.Controllers
                 var parameter = JObject.Parse(body);
 
                 var request = parameter.ToObject<SkillServiceRequest>();
-                var controllerId = ResolveControllerId(request.Session.User.UserId);
+                var controllerId = _securityService.GetControllerUidFromAmazonUserId(request.Session.User.UserId);
+                if (controllerId == null)
+                {
+                    throw new UnauthorizedAccessException();
+                }
 
                 Trace.WriteLine($"{nameof(AmazonEchoController)}:ExecuteIntent\r\n{body}");
 
@@ -44,7 +52,7 @@ namespace HA4IoT.CloudApi.Controllers
                     Parameter = parameter
                 };
 
-                var apiResponse = await _messageDispatcher.SendRequestAsync(controllerId, apiRequest, TimeSpan.FromSeconds(5));
+                var apiResponse = await _messageDispatcher.SendRequestAsync(controllerId.Value, apiRequest, TimeSpan.FromSeconds(5));
                 if (apiResponse.ResultCode == ApiResultCode.Success)
                 {
                     return CreateJsonResponse(apiResponse.Result.ToObject<SkillServiceResponse>());
@@ -55,17 +63,12 @@ namespace HA4IoT.CloudApi.Controllers
                         CreateResponseWithText(
                             "Ich konnte deine Wohnung erreichen, jedoch ist ein Fehler aufgetreten. Du kannst dich gerne bei Christian beschweren."));
             }
-            catch (TimeoutException)
+            catch (ControllerNotReachableException)
             {
                 return
                     CreateJsonResponse(
                         CreateResponseWithText(
                             "Ich konnte deine Wohnung leider nicht erreichen. Versuche es später noch einmal."));
-            }
-            catch (Exception exception)
-            {
-                Trace.TraceError("EXCEPTION:" + exception);
-                throw;
             }
         }
 
@@ -95,19 +98,6 @@ namespace HA4IoT.CloudApi.Controllers
             };
 
             return response;
-        }
-
-        private Guid ResolveControllerId(string amazonUserId)
-        {
-            // TODO: Create lookup table.
-
-            if (!amazonUserId.Equals(
-                    "amzn1.ask.account.AFUW7KUWQMSERIFZUZKIYKUIY7IQ4YR76CWXY4NTASC7PH2POXEDFZ2FO53DR7IS5VSB5HEQS747KL74RCWQQJ7BKILGXWNA6PPSMNT34COUNM7NXVJ33GSI5IMMJIOWN4NP4SBNE7EO2HYPQQLCB55FFZCNVRUFD6ZXPK2LRBSEFVYCNOML6EE4EN7D4AQNLII6UCS353CXKPA"))
-            {
-                throw new HttpResponseException(HttpStatusCode.Unauthorized);
-            }
-
-            return Guid.Parse("0f39add9-bc56-4d6d-b69b-9b8b1c1ac890");
         }
     }
 }

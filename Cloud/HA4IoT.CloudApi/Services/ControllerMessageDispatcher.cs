@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Net;
 using System.Threading.Tasks;
 using HA4IoT.Contracts.Api.Cloud;
 
@@ -35,7 +34,7 @@ namespace HA4IoT.CloudApi.Services
 
             if (await Task.WhenAny(messageContext.Task, Task.Delay(timeout)) != messageContext.Task)
             {
-                throw new TimeoutException();
+                throw new ControllerNotReachableException();
             }
 
             return messageContext.ResponseMessage.Response;
@@ -66,12 +65,14 @@ namespace HA4IoT.CloudApi.Services
         private ControllerContext GetOrCreateControllerContext(Guid controllerId)
         {
             ControllerContext result;
-            if (!_pendingMessages.TryGetValue(controllerId, out result))
+            if (_pendingMessages.TryGetValue(controllerId, out result))
             {
-                Trace.WriteLine($"Created new context for controller '{controllerId}'.");
-                result = new ControllerContext(controllerId);
-                _pendingMessages.Add(controllerId, result);
+                return result;
             }
+
+            Trace.WriteLine($"Created new context for controller '{controllerId}'.");
+            result = new ControllerContext(controllerId);
+            _pendingMessages.Add(controllerId, result);
 
             return result;
         }

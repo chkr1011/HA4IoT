@@ -212,12 +212,14 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AmazonEchoController.cs" />
     <Compile Include="Controllers\ControllerProxyController.cs" />
+    <Compile Include="Controllers\ExceptionFilter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Services\ControllerContext.cs" />
     <Compile Include="Services\ControllerMessageDispatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ControllerNotReachableException.cs" />
     <Compile Include="Services\MessageContext.cs" />
     <Compile Include="Services\SecurityService.cs" />
     <Compile Include="Services\WaitForRequestsResult.cs" />
