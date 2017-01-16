@@ -3,7 +3,7 @@ using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Sensors.Buttons
 {
-    public class EmptyButtonEndpoint : IButtonEndpoint
+    public class EmptyButtonEndpoint : IButtonAdapter
     {
         public event EventHandler Pressed;
         public event EventHandler Released;

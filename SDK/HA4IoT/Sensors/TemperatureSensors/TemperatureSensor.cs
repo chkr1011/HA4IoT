@@ -8,7 +8,7 @@ namespace HA4IoT.Sensors.TemperatureSensors
 {
     public class TemperatureSensor : SensorBase, ITemperatureSensor
     {
-        public TemperatureSensor(ComponentId id, ISettingsService settingsService, INumericValueSensorEndpoint endpoint)
+        public TemperatureSensor(ComponentId id, ISettingsService settingsService, INumericValueSensorAdapter endpoint)
             : base(id)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));

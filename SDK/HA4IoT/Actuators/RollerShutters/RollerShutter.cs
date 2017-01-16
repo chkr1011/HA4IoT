@@ -17,7 +17,7 @@ namespace HA4IoT.Actuators.RollerShutters
     public class RollerShutter : ActuatorBase, IRollerShutter
     {
         private readonly Stopwatch _movingDuration = new Stopwatch();
-        private readonly IRollerShutterEndpoint _endpoint;
+        private readonly IRollerShutterAdapter _endpoint;
 
         private readonly ISchedulerService _schedulerService;
         
@@ -32,7 +32,7 @@ namespace HA4IoT.Actuators.RollerShutters
 
         public RollerShutter(
             ComponentId id, 
-            IRollerShutterEndpoint endpoint,
+            IRollerShutterAdapter endpoint,
             ITimerService timerService,
             ISchedulerService schedulerService,
             ISettingsService settingsService)

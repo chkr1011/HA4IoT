@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace HA4IoT.Hardware.Knx
 {
-    public class KnxDigitalJoinEnpoint : IBinaryStateEndpoint
+    public class KnxDigitalJoinEnpoint : IBinaryStateAdapter
     {
         private readonly string _identifier;
         private readonly KnxController _knxController;

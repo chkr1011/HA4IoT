@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
@@ -32,23 +31,7 @@ namespace HA4IoT.Core
 
             _options = options;
 
-            StoragePath.Initialize(ApplicationData.Current.LocalFolder.Path);
-
-            try
-            {
-                Debug.WriteLine(ApplicationData.Current.RoamingFolder.Path); // Sync with all accounts. Maybe best choice.
-                File.AppendAllText(Path.Combine(ApplicationData.Current.RoamingFolder.Path, "Test.txt"), "Test");
-                Debug.WriteLine("Content appended.");
-
-                Debug.WriteLine(ApplicationData.Current.SharedLocalFolder.Path); // Activate in GP
-                Debug.WriteLine(Windows.Storage.KnownFolders.RemovableDevices.Path); // Maybe?
-                Debug.WriteLine(Windows.Storage.KnownFolders.DocumentsLibrary.Path); // Extensions must be known.
-            }
-            catch (Exception exception)
-            {
-                Debug.WriteLine(exception.ToString());
-            }
-
+            StoragePath.Initialize(ApplicationData.Current.LocalFolder.Path, ApplicationData.Current.LocalFolder.Path);
         }
 
         public Task RunAsync(IBackgroundTaskInstance taskInstance)

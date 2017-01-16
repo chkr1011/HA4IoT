@@ -7,7 +7,7 @@ namespace HA4IoT.Actuators.BinaryStateActuators
 {
     public abstract class BinaryStateActuator : StateMachine
     {
-        protected BinaryStateActuator(ComponentId id, IBinaryStateEndpoint endpoint) 
+        protected BinaryStateActuator(ComponentId id, IBinaryStateAdapter endpoint) 
             : base(id)
         {
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));

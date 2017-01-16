@@ -4,7 +4,7 @@ using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Sensors.Buttons
 {
-    public class PortBasedButtonEndpoint : IButtonEndpoint
+    public class PortBasedButtonEndpoint : IButtonAdapter
     {
         public PortBasedButtonEndpoint(IBinaryInput input)
         {

@@ -6,7 +6,7 @@ using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Controller.Local
 {
-    public class CheckBoxBinaryStateEndpoint : IBinaryStateEndpoint
+    public class CheckBoxBinaryStateEndpoint : IBinaryStateAdapter
     {
         private readonly CheckBox _checkBox;
 

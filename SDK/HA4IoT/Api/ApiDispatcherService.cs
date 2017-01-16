@@ -13,13 +13,13 @@ namespace HA4IoT.Api
     public class ApiDispatcherService : ServiceBase, IApiDispatcherService
     {
         private readonly List<IApiAdapter> _adapters = new List<IApiAdapter>();
-        private readonly Dictionary<string, Action<IApiContext>> _routes = new Dictionary<string, Action<IApiContext>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Action<IApiContext>> _actions = new Dictionary<string, Action<IApiContext>>(StringComparer.OrdinalIgnoreCase);
         
         public ApiDispatcherService()
         {
-            Route("Status", HandleGetStatusRequest);
-            Route("Configuration", HandleGetConfigurationRequest);
-            Route("Routes", HandleGetRoutesRequest);
+            Route("Status", HandleGetStatusRequest); // TODO: Append GET
+            Route("Configuration", HandleGetConfigurationRequest); // TODO: Append GET
+            Route("GetActions", HandleGetActionsRequest);
         }
 
         public event EventHandler<ApiRequestReceivedEventArgs> StatusRequested;
@@ -42,9 +42,9 @@ namespace HA4IoT.Api
             if (action == null) throw new ArgumentNullException(nameof(action));
             if (handler == null) throw new ArgumentNullException(nameof(handler));
 
-            lock (_routes)
+            lock (_actions)
             {
-                _routes.Add(action.Trim(), handler);
+                _actions.Add(action.Trim(), handler);
             }
         }
 
@@ -92,19 +92,19 @@ namespace HA4IoT.Api
             }
         }
 
-        private void HandleGetRoutesRequest(IApiContext apiContext)
+        private void HandleGetActionsRequest(IApiContext apiContext)
         {
-            var routes = new JArray();
+            var actions = new JArray();
 
-            lock (_routes)
+            lock (_actions)
             {
-                foreach (var route in _routes)
+                foreach (var action in _actions)
                 {
-                    routes.Add(route.Key);
+                    actions.Add(action.Key);
                 }
             }
 
-            apiContext.Response.Add("Routes", routes);
+            apiContext.Response.Add("Actions", actions);
         }
 
         private void HandleGetStatusRequest(IApiContext apiContext)
@@ -126,9 +126,9 @@ namespace HA4IoT.Api
         private void RouteRequest(object sender, ApiRequestReceivedEventArgs e)
         {
             Action<IApiContext> action;
-            lock (_routes)
+            lock (_actions)
             {
-                if (!_routes.TryGetValue(e.Context.Action, out action))
+                if (!_actions.TryGetValue(e.Context.Action, out action))
                 {
                     e.Context.ResultCode = ApiResultCode.ActionNotSupported;
                     return;

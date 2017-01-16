@@ -6,7 +6,7 @@ using HA4IoT.Features.Proxies;
 
 namespace HA4IoT.Actuators
 {
-    public class PortBasedBinaryStateEndpoint : IBinaryStateEndpoint, ITurnOnFeatureProxy, ITurnOffFeatureProxy
+    public class PortBasedBinaryStateEndpoint : IBinaryStateAdapter, ITurnOnFeatureProxy, ITurnOffFeatureProxy
     {
         private readonly IBinaryOutput _output;
 

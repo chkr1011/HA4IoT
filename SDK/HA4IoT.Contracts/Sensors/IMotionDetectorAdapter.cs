@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Contracts.Sensors
 {
-    public interface IMotionDetectorEndpoint
+    public interface IMotionDetectorAdapter
     {
         event EventHandler MotionDetected;
 

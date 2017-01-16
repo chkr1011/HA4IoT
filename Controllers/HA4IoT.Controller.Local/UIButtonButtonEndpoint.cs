@@ -5,7 +5,7 @@ using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Controller.Local
 {
-    public class UIButtonButtonEndpoint : IButtonEndpoint
+    public class UIButtonButtonEndpoint : IButtonAdapter
     {
         private readonly Button _button;
 

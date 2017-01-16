@@ -70,17 +70,6 @@ namespace HA4IoT.PersonalAgent
             apiContext.Response = JObject.FromObject(response);
         }
 
-        public string ProcessTextMessage(string text)
-        {
-            if (text == null) throw new ArgumentNullException(nameof(text));
-
-            var messageContextFactory = new MessageContextFactory(_areaService, _componentService, _settingsService);
-            var messageContext = messageContextFactory.Create(text);
-
-            ProcessMessage(messageContext);
-            return messageContext.Answer;
-        }
-
         [ApiMethod]
         public void Ask(IApiContext apiContext)
         {
@@ -92,6 +81,17 @@ namespace HA4IoT.PersonalAgent
             }
 
             apiContext.Response["Answer"] = ProcessTextMessage(text); ;
+        }
+
+        public string ProcessTextMessage(string text)
+        {
+            if (text == null) throw new ArgumentNullException(nameof(text));
+
+            var messageContextFactory = new MessageContextFactory(_areaService, _componentService, _settingsService);
+            var messageContext = messageContextFactory.Create(text);
+
+            ProcessMessage(messageContext);
+            return messageContext.Answer;
         }
 
         [ApiMethod]
@@ -141,7 +141,7 @@ namespace HA4IoT.PersonalAgent
                 return GetWindowStatus();
             }
 
-            if (!messageContext.FilteredComponentIds.Any())
+            if (!messageContext.AffectedComponentIds.Any())
             {
                 if (messageContext.IdentifiedComponentIds.Count > 0)
                 {
@@ -151,14 +151,14 @@ namespace HA4IoT.PersonalAgent
                 return $"{Emoji.Confused} Du musst mir schon einen Sensor oder Aktor nennen.";
             }
 
-            if (messageContext.FilteredComponentIds.Count > 1)
+            if (messageContext.AffectedComponentIds.Count > 1)
             {
                 return $"{Emoji.Flushed} Bitte nicht mehrere Komponenten auf einmal.";
             }
 
-            if (messageContext.FilteredComponentIds.Count == 1)
+            if (messageContext.AffectedComponentIds.Count == 1)
             {
-                var component = _componentService.GetComponent<IComponent>(messageContext.FilteredComponentIds.First());
+                var component = _componentService.GetComponent<IComponent>(messageContext.AffectedComponentIds.First());
 
                 var actuator = component as IActuator;
                 if (actuator != null)

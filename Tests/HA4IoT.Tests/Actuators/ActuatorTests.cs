@@ -15,7 +15,7 @@ namespace HA4IoT.Tests.Actuators
         [TestMethod]
         public void TurnOnAndTurnOff_Socket()
         {
-            var endpoint = new TestBinaryStateEndpoint();
+            var endpoint = new TestBinaryStateAdapter();
             var socket = new Socket(ComponentIdGenerator.EmptyId, endpoint);
             socket.ResetState();
             
@@ -52,7 +52,7 @@ namespace HA4IoT.Tests.Actuators
         [TestMethod]
         public void Toggle_Lamp()
         {
-            var endpoint = new TestBinaryStateEndpoint();
+            var endpoint = new TestBinaryStateAdapter();
             var lamp = new Lamp(ComponentIdGenerator.EmptyId, endpoint);
             lamp.ResetState();
 
@@ -74,7 +74,7 @@ namespace HA4IoT.Tests.Actuators
         [TestMethod]
         public void StateAlias_Lamp()
         {
-            var endpoint = new TestBinaryStateEndpoint();
+            var endpoint = new TestBinaryStateAdapter();
             var lamp = new Lamp(ComponentIdGenerator.EmptyId, endpoint);
             lamp.ResetState();
 

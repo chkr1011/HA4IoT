@@ -3,7 +3,7 @@ using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Tests.Mockups
 {
-    public class TestRollerShutterEndpoint : IRollerShutterEndpoint
+    public class TestRollerShutterEndpoint : IRollerShutterAdapter
     {
         public int StartMoveUpCalledCount { get; set; }
 

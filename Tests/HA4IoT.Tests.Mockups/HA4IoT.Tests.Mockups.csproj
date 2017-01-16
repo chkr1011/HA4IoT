@@ -113,7 +113,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TestBinaryStateEndpoint.cs" />
+    <Compile Include="TestBinaryStateAdapter.cs" />
     <Compile Include="TestButton.cs" />
     <Compile Include="TestButtonEndpoint.cs" />
     <Compile Include="TestDateTimeService.cs" />

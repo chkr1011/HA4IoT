@@ -3,7 +3,7 @@ using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Hardware.I2CHardwareBridge
 {
-    public abstract class DHT22SensorBase : INumericValueSensorEndpoint
+    public abstract class DHT22SensorBase : INumericValueSensorAdapter
     {
         private readonly int _id;
         private readonly DHT22Accessor _dht22Accessor;

@@ -5,7 +5,7 @@ using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Actuators.RollerShutters
 {
-    public class PortBasedRollerShutterEndpoint : IRollerShutterEndpoint
+    public class PortBasedRollerShutterEndpoint : IRollerShutterAdapter
     {
         private readonly IBinaryOutput _powerOutput;
         private readonly IBinaryOutput _directionOutput;

@@ -20,7 +20,7 @@ namespace HA4IoT.Sensors.MotionDetectors
 
         private TimedAction _autoEnableAction;
 
-        public MotionDetector(ComponentId id, IMotionDetectorEndpoint endpoint, ISchedulerService schedulerService, ISettingsService settingsService)
+        public MotionDetector(ComponentId id, IMotionDetectorAdapter endpoint, ISchedulerService schedulerService, ISettingsService settingsService)
             : base(id)
         {
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));

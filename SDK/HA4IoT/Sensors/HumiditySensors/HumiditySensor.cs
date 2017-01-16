@@ -8,7 +8,7 @@ namespace HA4IoT.Sensors.HumiditySensors
 {
     public class HumiditySensor : SensorBase, IHumiditySensor
     {
-        public HumiditySensor(ComponentId id, ISettingsService settingsService, INumericValueSensorEndpoint endpoint)
+        public HumiditySensor(ComponentId id, ISettingsService settingsService, INumericValueSensorAdapter endpoint)
             : base(id)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));

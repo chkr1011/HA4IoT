@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Controllers", "Controllers", "{CD5D2CCD-44D0-46E5-BE14-3B377048E0A2}"
-	ProjectSection(SolutionItems) = preProject
-		ExampleControllers\Setup.ps1 = ExampleControllers\Setup.ps1
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SDK", "SDK", "{982ABB4E-A5DC-4C78-87A3-30BF49DD5764}"
 EndProject
@@ -15,9 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App", "App", "{20B098BA-1C6
 		App\DeployApps.ps1 = App\DeployApps.ps1
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Main", "Controllers\HA4IoT.Controller.Main\HA4IoT.Controller.Main.csproj", "{D3634558-2746-441F-BC09-454B1EC7DC1D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Main", "Controllers\Examples\HA4IoT.Controller.Main\HA4IoT.Controller.Main.csproj", "{D3634558-2746-441F-BC09-454B1EC7DC1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Cellar", "Controllers\HA4IoT.Controller.Cellar\HA4IoT.Controller.Cellar.csproj", "{2ECC3769-3EDB-4646-86EE-91FBDACBA972}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Cellar", "Controllers\Examples\HA4IoT.Controller.Cellar\HA4IoT.Controller.Cellar.csproj", "{2ECC3769-3EDB-4646-86EE-91FBDACBA972}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Hardware.Tests", "Tests\HA4IoT.Hardware.Tests\HA4IoT.Hardware.Tests.csproj", "{02CBC16A-2BDA-4789-AE84-BC2679C1185B}"
 EndProject
@@ -62,6 +59,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Contracts", "SDK\HA4IoT.Contracts\HA4IoT.Contracts.csproj", "{B10B2E2A-85CD-4289-8649-FC0C1C98921D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{CED3E271-EE23-4B30-936C-B709F4D176FD}"
+	ProjectSection(SolutionItems) = preProject
+		Controllers\Examples\Setup.ps1 = Controllers\Examples\Setup.ps1
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.AlexaSkillCompiler", "Documentation\Alexa Skill\HA4IoT.AlexaSkillCompiler\HA4IoT.AlexaSkillCompiler.csproj", "{D03C3490-5854-426B-B260-E221F7F7C638}"
 EndProject

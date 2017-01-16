@@ -19,7 +19,7 @@ namespace HA4IoT.Sensors.Buttons
         private readonly Trigger _pressedShortlyTrigger = new Trigger();
         private readonly Trigger _pressedLongTrigger = new Trigger();
 
-        public Button(ComponentId id, IButtonEndpoint endpoint, ITimerService timerService, ISettingsService settingsService)
+        public Button(ComponentId id, IButtonAdapter endpoint, ITimerService timerService, ISettingsService settingsService)
             : base(id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));

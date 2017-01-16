@@ -3,7 +3,7 @@ using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Tests.Mockups
 {
-    public class TestButtonEndpoint : IButtonEndpoint
+    public class TestButtonEndpoint : IButtonAdapter
     {
         public event EventHandler Pressed;
         public event EventHandler Released;

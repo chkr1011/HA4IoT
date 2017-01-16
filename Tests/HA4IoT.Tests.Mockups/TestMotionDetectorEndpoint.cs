@@ -3,7 +3,7 @@ using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Tests.Mockups
 {
-    public class TestMotionDetectorEndpoint : IMotionDetectorEndpoint
+    public class TestMotionDetectorEndpoint : IMotionDetectorAdapter
     {
         public event EventHandler MotionDetected;
         public event EventHandler DetectionCompleted;

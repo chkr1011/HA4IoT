@@ -4,7 +4,7 @@ using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Sensors.MotionDetectors
 {
-    public class PortBasedMotionDetectorEndpoint : IMotionDetectorEndpoint
+    public class PortBasedMotionDetectorEndpoint : IMotionDetectorAdapter
     {
         public PortBasedMotionDetectorEndpoint(IBinaryInput input)
         {

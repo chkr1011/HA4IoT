@@ -33,7 +33,7 @@ namespace HA4IoT.Controller.Local
             _controller = new Core.Controller(options);
             
             // The app is only available from other machines. https://msdn.microsoft.com/en-us/library/windows/apps/Hh780593.aspx
-            StoragePathTextBox.Text = StoragePath.Root;
+            StoragePathTextBox.Text = StoragePath.StorageRoot;
             AppPathTextBox.Text = StoragePath.AppRoot;
         }
 
@@ -56,9 +56,9 @@ namespace HA4IoT.Controller.Local
             }
         }
 
-        public async Task<IBinaryStateEndpoint> CreateDemoBinaryComponent(string caption)
+        public async Task<IBinaryStateAdapter> CreateDemoBinaryComponent(string caption)
         {
-            IBinaryStateEndpoint result = null;
+            IBinaryStateAdapter result = null;
 
             await Dispatcher.RunAsync(
                 CoreDispatcherPriority.Normal,
@@ -78,9 +78,9 @@ namespace HA4IoT.Controller.Local
             return result;
         }
 
-        public async Task<IButtonEndpoint> CreateDemoButton(string caption)
+        public async Task<IButtonAdapter> CreateDemoButton(string caption)
         {
-            IButtonEndpoint result = null;
+            IButtonAdapter result = null;
 
             await Dispatcher.RunAsync(
                 CoreDispatcherPriority.Normal,

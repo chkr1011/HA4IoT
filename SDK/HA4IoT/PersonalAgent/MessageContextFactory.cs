@@ -156,14 +156,9 @@ namespace HA4IoT.PersonalAgent
 
         private void FilterComponentIds()
         {
-            if (!_currentContext.IdentifiedComponentIds.Any())
-            {
-                return;
-            }
-
             if (_currentContext.IdentifiedComponentIds.Count == 1)
             {
-                _currentContext.FilteredComponentIds.Add(_currentContext.IdentifiedComponentIds.First());
+                _currentContext.AffectedComponentIds.Add(_currentContext.IdentifiedComponentIds.First());
                 return;
             }
 
@@ -175,7 +170,7 @@ namespace HA4IoT.PersonalAgent
 
                     if (area.ContainsComponent(componentId))
                     {
-                        _currentContext.FilteredComponentIds.Add(componentId);
+                        _currentContext.AffectedComponentIds.Add(componentId);
                         break;
                     }
                 }

@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Contracts.Actuators
 {
-    public interface IRollerShutterEndpoint
+    public interface IRollerShutterAdapter
     {
         void StartMoveUp(params IHardwareParameter[] parameters);
 

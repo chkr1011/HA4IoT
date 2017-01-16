@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Contracts.Sensors
 {
-    public interface IButtonEndpoint
+    public interface IButtonAdapter
     {
         event EventHandler Pressed;
 

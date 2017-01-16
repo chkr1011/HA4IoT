@@ -10,8 +10,6 @@ namespace HA4IoT.Services.StorageService
 {
     public class StorageService : ServiceBase, IStorageService
     {
-        private readonly string _rootPath = StoragePath.Root;
-
         public bool TryRead<TData>(string filename, out TData data)
         {
             if (filename == null) throw new ArgumentNullException(nameof(filename));
@@ -19,7 +17,7 @@ namespace HA4IoT.Services.StorageService
             data = default(TData);
             try
             {
-                var absoluteFilename = Path.Combine(_rootPath, filename);
+                var absoluteFilename = Path.Combine(StoragePath.StorageRoot, filename);
                 if (!File.Exists(absoluteFilename))
                 {
                     return false;
@@ -46,7 +44,7 @@ namespace HA4IoT.Services.StorageService
         {
             if (filename == null) throw new ArgumentNullException(nameof(filename));
 
-            var absoluteFilename = Path.Combine(_rootPath, filename);
+            var absoluteFilename = Path.Combine(StoragePath.StorageRoot, filename);
             var json = JsonConvert.SerializeObject(content, Formatting.Indented);
 
             File.WriteAllText(absoluteFilename, json);

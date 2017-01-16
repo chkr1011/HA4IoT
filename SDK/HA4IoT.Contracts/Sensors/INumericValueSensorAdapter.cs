@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Contracts.Sensors
 {
-    public interface INumericValueSensorEndpoint
+    public interface INumericValueSensorAdapter
     {
         event EventHandler<NumericValueSensorEndpointValueChangedEventArgs> ValueChanged;
     }
