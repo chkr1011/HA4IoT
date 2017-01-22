@@ -111,6 +111,7 @@
     <Content Include="Scripts\jquery-3.1.0.slim.min.js" />
     <Content Include="UILocalizations-DE.json" />
     <Content Include="UILocalizations-EN.json" />
+    <Content Include="UILocalizations-DA.json" />
     <Content Include="Scripts\angular.min.js.map" />
     <Content Include="Scripts\jquery-3.1.0.slim.min.map" />
     <Content Include="Scripts\jquery-3.1.0.min.map" />

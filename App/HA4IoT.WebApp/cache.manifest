@@ -11,6 +11,7 @@ LocalizationController.js
 
 UILocalizations-EN.json
 UILocalizations-DE.json
+UILocalizations-DA.json
 
 Scripts/jquery-3.1.0.min.js
 Scripts/bootstrap.min.js
