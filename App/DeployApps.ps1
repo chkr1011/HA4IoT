@@ -31,8 +31,8 @@ function Deploy
 function SelectIP
 {   
 	Write-Host "Select IP of controller:";
-	Write-Host "0 - 192.168.1.15";
-	Write-Host "1 - 192.168.1.16";
+	Write-Host "0 - 192.168.1.189 (Raspberry PI 2)";
+	Write-Host "1 - Localhost";
     Write-Host "2 - minwinpc";
     Write-Host "----------------";
 	Write-Host "c - <custom>";
@@ -41,8 +41,8 @@ function SelectIP
 
 	switch($choice)
 	{
-		0 { return "192.168.1.15" }
-		1 { return "192.168.1.16" }
+		0 { return "192.168.1.189" }
+		1 { return "127.0.0.1" }
         2 { return "minwinpc" }
 		"x" 
 		{
