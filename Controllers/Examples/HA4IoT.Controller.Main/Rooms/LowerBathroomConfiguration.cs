@@ -19,7 +19,7 @@ namespace HA4IoT.Controller.Main.Rooms
     {
         private readonly IDeviceService _deviceService;
         private readonly ISchedulerService _schedulerService;
-        private readonly IAreaService _areaService;
+        private readonly IAreaRespositoryService _areaService;
         private readonly AutomationFactory _automationFactory;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
@@ -47,7 +47,7 @@ namespace HA4IoT.Controller.Main.Rooms
         public LowerBathroomConfiguration(
             IDeviceService deviceService,
             ISchedulerService schedulerService,
-            IAreaService areaService,
+            IAreaRespositoryService areaService,
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)

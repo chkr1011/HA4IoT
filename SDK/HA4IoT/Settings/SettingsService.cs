@@ -149,7 +149,7 @@ namespace HA4IoT.Settings
             if (apiContext.Parameter.Type == JTokenType.Object)
             {
                 var request = apiContext.Parameter.ToObject<SettingsServiceApiRequest>();
-                apiContext.Response = GetSettings(request.Uri);
+                apiContext.Result = GetSettings(request.Uri);
             }
             else
             {

@@ -41,7 +41,7 @@ namespace HA4IoT.Controller.Cellar
         {
             private readonly CCToolsBoardService _ccToolsBoardService;
             private readonly IPi2GpioService _pi2GpioService;
-            private readonly IAreaService _areaService;
+            private readonly IAreaRespositoryService _areaService;
             private readonly ActuatorFactory _actuatorFactory;
             private readonly SensorFactory _sensorFactory;
             private readonly AutomationFactory _automationFactory;
@@ -76,7 +76,7 @@ namespace HA4IoT.Controller.Cellar
             public Configuration(
                 CCToolsBoardService ccToolsBoardService, 
                 IPi2GpioService pi2GpioService,
-                IAreaService areaService,
+                IAreaRespositoryService areaService,
                 ActuatorFactory actuatorFactory,
                 SensorFactory sensorFactory,
                 AutomationFactory automationFactory)

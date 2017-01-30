@@ -160,7 +160,7 @@ namespace HA4IoT.Actuators.StateMachines
                 if (!SupportsState(stateId))
                 {
                     apiContext.ResultCode = ApiResultCode.InvalidParameter;
-                    apiContext.Response["Message"] = "State ID not supported.";
+                    apiContext.Result["Message"] = "State ID not supported.";
                 }
 
                 SetState(stateId);

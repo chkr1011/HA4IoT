@@ -77,7 +77,7 @@
     <Compile Include="Areas\AreaIdGenerator.cs" />
     <Compile Include="Areas\AreaSettings.cs" />
     <Compile Include="Areas\IArea.cs" />
-    <Compile Include="Areas\IAreaService.cs" />
+    <Compile Include="Areas\IAreaRespositoryService.cs" />
     <Compile Include="Automations\AutomationId.cs" />
     <Compile Include="Automations\AutomationIdGenerator.cs" />
     <Compile Include="Automations\IAutomation.cs" />

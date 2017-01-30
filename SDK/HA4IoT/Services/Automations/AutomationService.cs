@@ -62,7 +62,7 @@ namespace HA4IoT.Services.Automations
                 automations[automation.Id.Value] = automation.ExportStatusToJsonObject();
             }
 
-            e.Context.Response["Automations"] = automations;
+            e.Context.Result["Automations"] = automations;
         }
     }
 }

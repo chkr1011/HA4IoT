@@ -7,9 +7,9 @@ namespace HA4IoT.Telemetry
 {
     public abstract class ActuatorMonitor
     {
-        private readonly IComponentService _componentService;
+        private readonly IComponentRepositoryService _componentService;
 
-        protected ActuatorMonitor(IComponentService componentService)
+        protected ActuatorMonitor(IComponentRepositoryService componentService)
         {
             if (componentService == null) throw new ArgumentNullException(nameof(componentService));
 

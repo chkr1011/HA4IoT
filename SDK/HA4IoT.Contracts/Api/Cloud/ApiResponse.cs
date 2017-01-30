@@ -6,8 +6,6 @@ namespace HA4IoT.Contracts.Api.Cloud
 {
     public class ApiResponse
     {
-        public string Action { get; set; }
-
         [JsonConverter(typeof(StringEnumConverter))]
         public ApiResultCode ResultCode { get; set; }
 

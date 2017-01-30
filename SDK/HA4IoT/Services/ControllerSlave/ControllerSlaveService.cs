@@ -58,8 +58,8 @@ namespace HA4IoT.Services.ControllerSlave
         [ApiMethod]
         public void Status(IApiContext apiContext)
         {
-            apiContext.Response["LastPull"] = _lastPull;
-            apiContext.Response["LastSuccessfulPull"] = _lastSuccessfulPull;
+            apiContext.Result["LastPull"] = _lastPull;
+            apiContext.Result["LastSuccessfulPull"] = _lastSuccessfulPull;
         }
 
         private void PullValues()

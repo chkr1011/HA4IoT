@@ -2,6 +2,7 @@
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Api.Cloud;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Networking.Http;
@@ -10,6 +11,7 @@ using HA4IoT.Contracts.Services;
 using HA4IoT.Networking.Http;
 using HA4IoT.Networking.Json;
 using HA4IoT.Networking.WebSockets;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Api
@@ -57,7 +59,13 @@ namespace HA4IoT.Api
 
         private void DispatchHttpRequest(HttpContext httpContext)
         {
-            var apiContext = CreateApiContext(httpContext);
+            if (httpContext.Request.Uri.StartsWith("/api/Invoke"))
+            {
+                DispatchGenericHttpRequest(httpContext);
+                return;
+            }
+            
+            IApiContext apiContext = CreateApiContext(httpContext);
             if (apiContext == null)
             {
                 httpContext.Response.StatusCode = HttpStatusCode.BadRequest;
@@ -73,17 +81,17 @@ namespace HA4IoT.Api
                 return;
             }
 
-            if (eventArgs.Context.Response == null)
+            if (eventArgs.Context.Result == null)
             {
-                eventArgs.Context.Response = new JObject();
+                eventArgs.Context.Result = new JObject();
             }
 
             httpContext.Response.StatusCode = ConvertResultCode(eventArgs.Context.ResultCode);
 
             if (apiContext.UseHash)
             {
-                var serverHash = GenerateHash(apiContext.Response.ToString());
-                eventArgs.Context.Response["$Hash"] = serverHash;
+                var serverHash = GenerateHash(apiContext.Result.ToString());
+                eventArgs.Context.Result["$Hash"] = serverHash;
 
                 var serverHashWithQuotes = "\"" + serverHash + "\"";
 
@@ -100,7 +108,39 @@ namespace HA4IoT.Api
                 httpContext.Response.Headers[HttpHeaderNames.ETag] = serverHashWithQuotes;
             }
 
-            httpContext.Response.Body = new JsonBody(eventArgs.Context.Response);
+            httpContext.Response.Body = new JsonBody(eventArgs.Context.Result);
+        }
+
+        private void DispatchGenericHttpRequest(HttpContext httpContext)
+        {
+            var timestamp = DateTime.UtcNow;
+
+            var genericApiRequest = JsonConvert.DeserializeObject<ApiRequest>(httpContext.Request.Body);
+            var apiContext = new ApiContext(genericApiRequest.Action, genericApiRequest.Parameter);
+
+            var eventArgs = new ApiRequestReceivedEventArgs(apiContext);
+            RequestReceived?.Invoke(this, eventArgs);
+            if (!eventArgs.IsHandled)
+            {
+                httpContext.Response.StatusCode = HttpStatusCode.BadRequest;
+                return;
+            }
+
+            if (eventArgs.Context.Result == null)
+            {
+                eventArgs.Context.Result = new JObject();
+            }
+
+            httpContext.Response.StatusCode = HttpStatusCode.OK;
+
+            var response = new ApiResponse
+            {
+                ResultCode = apiContext.ResultCode,
+                Result = apiContext.Result,
+                InternalProcessingDuration = (int)(DateTime.UtcNow - timestamp).TotalMilliseconds
+            };
+
+            httpContext.Response.Body = new JsonBody(JObject.FromObject(response));
         }
 
         private void AttachWebSocket(object sender, WebSocketConnectedEventArgs eventArgs)
@@ -125,7 +165,7 @@ namespace HA4IoT.Api
             var uri = (string)requestMessage["Uri"];
             var request = (JObject)requestMessage["Content"] ?? new JObject();
 
-            var context = new ApiContext(uri, request, new JObject());
+            var context = new ApiContext(uri, request);
             var eventArgs = new ApiRequestReceivedEventArgs(context);
             RequestReceived?.Invoke(this, eventArgs);
 
@@ -138,7 +178,7 @@ namespace HA4IoT.Api
             {
                 ["CorrelationId"] = correlationId,
                 ["ResultCode"] = context.ResultCode.ToString(),
-                ["Content"] = context.Response
+                ["Content"] = context.Result
             };
             
             e.WebSocketClientSession.SendAsync(responseMessage.ToString()).Wait();
@@ -161,21 +201,10 @@ namespace HA4IoT.Api
         {
             try
             {
-                JObject request;
-                if (string.IsNullOrEmpty(httpContext.Request.Body))
-                {
-                    request = new JObject();
-                }
-                else
-                {
-                    request = JObject.Parse(httpContext.Request.Body);
-                }
+                var body = string.IsNullOrEmpty(httpContext.Request.Body) ? new JObject() : JObject.Parse(httpContext.Request.Body);
+                var action = httpContext.Request.Uri.Substring("/api/".Length);
 
-
-                var uri = httpContext.Request.Uri;
-                uri = uri.Substring("/api/".Length);
-
-                return new ApiContext(uri, request, new JObject());
+                return new ApiContext(action, body);
             }
             catch (Exception)
             {

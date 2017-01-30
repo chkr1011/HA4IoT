@@ -23,7 +23,7 @@ namespace HA4IoT.Controller.Main.Rooms
         private readonly CCToolsBoardService _ccToolsBoardService;
         private readonly IDeviceService _deviceService;
         private readonly ISchedulerService _schedulerService;
-        private readonly IAreaService _areaService;
+        private readonly IAreaRespositoryService _areaService;
         private readonly ISettingsService _settingsService;
         private readonly AutomationFactory _automationFactory;
         private readonly ActuatorFactory _actuatorFactory;
@@ -51,7 +51,7 @@ namespace HA4IoT.Controller.Main.Rooms
             CCToolsBoardService ccToolsBoardService,
             IDeviceService deviceService,
             ISchedulerService schedulerService,
-            IAreaService areaService,
+            IAreaRespositoryService areaService,
             ISettingsService settingsService,
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,

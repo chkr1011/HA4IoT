@@ -54,7 +54,7 @@ namespace HA4IoT.Services.Scheduling
         {
             lock (_syncRoot)
             {
-                apiContext.Response = JObject.FromObject(_schedules);
+                apiContext.Result = JObject.FromObject(_schedules);
             }
         }
 

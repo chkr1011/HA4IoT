@@ -21,7 +21,7 @@ namespace HA4IoT.Services.Environment
 
             apiService.StatusRequested += (s, e) =>
             {
-                e.Context.Response.Merge(JObject.FromObject(this));
+                e.Context.Result.Merge(JObject.FromObject(this));
             };
         }
 
@@ -33,7 +33,7 @@ namespace HA4IoT.Services.Environment
         [ApiMethod]
         public void Status(IApiContext apiContext)
         {
-            apiContext.Response = JObject.FromObject(this);
+            apiContext.Result = JObject.FromObject(this);
         }
 
         public void Update(float outdoorHumidity)

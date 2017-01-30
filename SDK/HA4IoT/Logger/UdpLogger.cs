@@ -82,7 +82,7 @@ namespace HA4IoT.Logger
 
             lock (_syncRoot)
             {
-                apiContext.Response = JObject.FromObject(_history);
+                apiContext.Result = JObject.FromObject(_history);
             }
         }
 

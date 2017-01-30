@@ -14,10 +14,10 @@ namespace HA4IoT.Services.Areas
         private readonly ComponentCollection _components = new ComponentCollection();
         private readonly AutomationCollection _automations = new AutomationCollection();
 
-        private readonly IComponentService _componentService;
+        private readonly IComponentRepositoryService _componentService;
         private readonly IAutomationService _automationService;
         
-        public Area(AreaId id, IComponentService componentService, IAutomationService automationService, ISettingsService settingsService)
+        public Area(AreaId id, IComponentRepositoryService componentService, IAutomationService automationService, ISettingsService settingsService)
         {
             if (componentService == null) throw new ArgumentNullException(nameof(componentService));
             if (automationService == null) throw new ArgumentNullException(nameof(automationService));

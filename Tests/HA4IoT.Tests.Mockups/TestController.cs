@@ -48,8 +48,8 @@ namespace HA4IoT.Tests.Mockups
             NotificationService = new NotificationService(DateTimeService, ApiService, SchedulerService, SettingsService, StorageService, ResourceService);
             SystemEventsService = new SystemEventsService(this, NotificationService, ResourceService);
             AutomationService = new AutomationService(SystemEventsService, systemInformationService, apiService);
-            ComponentService = new ComponentService(SystemEventsService, systemInformationService, apiService, SettingsService);
-            AreaService = new AreaService(ComponentService, AutomationService, SystemEventsService, systemInformationService, apiService, SettingsService);
+            ComponentService = new ComponentRepositoryService(SystemEventsService, systemInformationService, apiService, SettingsService);
+            AreaService = new AreaRepositoryService(ComponentService, AutomationService, SystemEventsService, systemInformationService, apiService, SettingsService);
         }
 
         public ISettingsService SettingsService { get; }
@@ -61,10 +61,10 @@ namespace HA4IoT.Tests.Mockups
         public ISchedulerService SchedulerService { get; }
         public IDateTimeService DateTimeService { get; }
         public IDaylightService DaylightService { get; }
-        public IComponentService ComponentService { get; }
+        public IComponentRepositoryService ComponentService { get; }
         public IAutomationService AutomationService { get; }
         public INotificationService NotificationService { get; }
-        public IAreaService AreaService { get; }
+        public IAreaRespositoryService AreaService { get; }
         public IApiDispatcherService ApiService { get; }
 
         public event EventHandler StartupCompleted;

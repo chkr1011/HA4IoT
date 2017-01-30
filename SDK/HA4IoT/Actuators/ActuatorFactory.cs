@@ -11,6 +11,7 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
+using HA4IoT.FeatureRebuild.Features.Adapters;
 
 namespace HA4IoT.Actuators
 {
@@ -68,7 +69,7 @@ namespace HA4IoT.Actuators
             if (area == null) throw new ArgumentNullException(nameof(area));
             if (output == null) throw new ArgumentNullException(nameof(output));
 
-            var socket = new Socket(ComponentIdGenerator.Generate(area.Id, id), new PortBasedBinaryStateEndpoint(output));
+            var socket = new Socket(ComponentIdGenerator.Generate(area.Id, id), new BinaryOutputComponentAdapter(output));
             area.AddComponent(socket);
 
             return socket;
@@ -79,7 +80,7 @@ namespace HA4IoT.Actuators
             if (area == null) throw new ArgumentNullException(nameof(area));
             if (output == null) throw new ArgumentNullException(nameof(output));
 
-            var lamp = new Lamp(ComponentIdGenerator.Generate(area.Id, id), new PortBasedBinaryStateEndpoint(output));
+            var lamp = new Lamp(ComponentIdGenerator.Generate(area.Id, id), new BinaryOutputComponentAdapter(output));
             area.AddComponent(lamp);
 
             return lamp;

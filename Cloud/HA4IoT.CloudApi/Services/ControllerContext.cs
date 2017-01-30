@@ -10,14 +10,8 @@ namespace HA4IoT.CloudApi.Services
     public class ControllerContext
     {
         private readonly TimeSpan _requestTimeToLive = TimeSpan.FromMinutes(1);
-        private readonly Guid _controllerId;
         private readonly Dictionary<Guid, MessageContext> _pendingRequests = new Dictionary<Guid, MessageContext>();
         private readonly AutoResetEvent _pendingRequestsAutoResetEvent = new AutoResetEvent(false);
-
-        public ControllerContext(Guid controllerId)
-        {
-            _controllerId = controllerId;
-        }
 
         public WaitForRequestsResult WaitForRequests(TimeSpan timeout)
         {
@@ -41,7 +35,6 @@ namespace HA4IoT.CloudApi.Services
         public MessageContext EnqueueRequest(ApiRequest request)
         {
             var requestMessage = new CloudRequestMessage();
-            requestMessage.Header.ControllerId = _controllerId;
             requestMessage.Header.CorrelationId = Guid.NewGuid();
             requestMessage.Request.Action = request.Action;
             requestMessage.Request.Parameter = request.Parameter;

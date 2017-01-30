@@ -14,10 +14,10 @@ namespace HA4IoT.Services.Status
     [ApiServiceClass(typeof(StatusService))] // TODO: Use IStatusService
     public class StatusService : ServiceBase
     {
-        private readonly IComponentService _componentService;
+        private readonly IComponentRepositoryService _componentService;
         private readonly ISettingsService _settingsService;
 
-        public StatusService(IComponentService componentService, IApiDispatcherService apiService, ISettingsService settingsService)
+        public StatusService(IComponentRepositoryService componentService, IApiDispatcherService apiService, ISettingsService settingsService)
         {
             if (componentService == null) throw new ArgumentNullException(nameof(componentService));
             if (apiService == null) throw new ArgumentNullException(nameof(apiService));
@@ -37,7 +37,7 @@ namespace HA4IoT.Services.Status
         [ApiMethod]
         public void GetStatus(IApiContext apiContext)
         {
-            apiContext.Response = JObject.FromObject(CollectStatus());
+            apiContext.Result = JObject.FromObject(CollectStatus());
         }
 
         private Status CollectStatus()

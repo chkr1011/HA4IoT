@@ -141,7 +141,7 @@ namespace HA4IoT.Core
             apiService.ConfigurationRequested += (s, e) =>
             {
                 var controllerSettings = settingsService.GetSettings<ControllerSettings>();
-                e.Context.Response["Controller"] = JObject.FromObject(controllerSettings);
+                e.Context.Result["Controller"] = JObject.FromObject(controllerSettings);
             };
         }
 
@@ -150,7 +150,6 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<IController>(() => this);
             _container.RegisterSingleton(() => _options);
             
-
             _container.RegisterServices();
             _options.ContainerConfigurator?.ConfigureContainer(_container);
 

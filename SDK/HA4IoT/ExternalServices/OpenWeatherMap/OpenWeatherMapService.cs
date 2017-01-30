@@ -76,7 +76,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
         [ApiMethod]
         public void Status(IApiContext apiContext)
         {
-            apiContext.Response = JObject.FromObject(this);
+            apiContext.Result = JObject.FromObject(this);
         }
 
         [ApiMethod]

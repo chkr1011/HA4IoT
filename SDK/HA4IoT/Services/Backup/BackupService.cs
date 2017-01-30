@@ -25,7 +25,7 @@ namespace HA4IoT.Services.Backup
             var eventArgs = new BackupEventArgs(backup);
             CreatingBackup?.Invoke(this, eventArgs);
 
-            apiContext.Response = backup;
+            apiContext.Result = backup;
         }
 
         [ApiMethod]

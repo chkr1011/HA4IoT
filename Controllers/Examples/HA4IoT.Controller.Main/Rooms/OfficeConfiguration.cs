@@ -21,7 +21,7 @@ namespace HA4IoT.Controller.Main.Rooms
     internal class OfficeConfiguration
     {
         private readonly IDeviceService _deviceService;
-        private readonly IAreaService _areaService;
+        private readonly IAreaRespositoryService _areaService;
         private readonly IDaylightService _daylightService;
         private readonly CCToolsBoardService _ccToolsBoardService;
         private readonly RemoteSocketService _remoteSocketService;
@@ -57,7 +57,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
         public OfficeConfiguration(
             IDeviceService deviceService,
-            IAreaService areaService,
+            IAreaRespositoryService areaService,
             IDaylightService daylightService,
             CCToolsBoardService ccToolsBoardService,
             RemoteSocketService remoteSocketService,

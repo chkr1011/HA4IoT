@@ -9,8 +9,6 @@ namespace HA4IoT.Components
 {
     public abstract class ComponentBase : IComponent
     {
-        private DateTime? _stateLastChanged;
-
         protected ComponentBase(ComponentId id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
@@ -44,8 +42,7 @@ namespace HA4IoT.Components
         {
             var status = new JObject
             {
-                ["State"] = GetState().JToken,
-                ["StateLastChanged"] = _stateLastChanged
+                ["State"] = GetState().JToken
             };
 
             return status;
@@ -53,8 +50,6 @@ namespace HA4IoT.Components
 
         protected void OnActiveStateChanged(ComponentState oldState, ComponentState newState)
         {
-            _stateLastChanged = DateTime.Now;
-
             Log.Info($"Component '{Id}' updated state from '{oldState}' to '{newState}'");
             StateChanged?.Invoke(this, new ComponentStateChangedEventArgs(oldState, newState));
         }

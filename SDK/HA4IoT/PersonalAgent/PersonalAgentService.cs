@@ -23,8 +23,8 @@ namespace HA4IoT.PersonalAgent
     public class PersonalAgentService : ServiceBase, IPersonalAgentService
     {
         private readonly ISettingsService _settingsService;
-        private readonly IComponentService _componentService;
-        private readonly IAreaService _areaService;
+        private readonly IComponentRepositoryService _componentService;
+        private readonly IAreaRespositoryService _areaService;
         private readonly IWeatherService _weatherService;
         private readonly IOutdoorTemperatureService _outdoorTemperatureService;
         private readonly IOutdoorHumidityService _outdoorHumidityService;
@@ -33,8 +33,8 @@ namespace HA4IoT.PersonalAgent
 
         public PersonalAgentService(
             ISettingsService settingsService,
-            IComponentService componentService,
-            IAreaService areaService,
+            IComponentRepositoryService componentService,
+            IAreaRespositoryService areaService,
             IWeatherService weatherService,
             IOutdoorTemperatureService outdoorTemperatureService,
             IOutdoorHumidityService outdoorHumidityService)
@@ -67,7 +67,7 @@ namespace HA4IoT.PersonalAgent
             var response = new SkillServiceResponse();
             response.Response.OutputSpeech.Text = messageContext.Answer;
 
-            apiContext.Response = JObject.FromObject(response);
+            apiContext.Result = JObject.FromObject(response);
         }
 
         [ApiMethod]
@@ -80,7 +80,7 @@ namespace HA4IoT.PersonalAgent
                 return;
             }
 
-            apiContext.Response["Answer"] = ProcessTextMessage(text); ;
+            apiContext.Result["Answer"] = ProcessTextMessage(text); ;
         }
 
         public string ProcessTextMessage(string text)
@@ -102,7 +102,7 @@ namespace HA4IoT.PersonalAgent
                 return;
             }
 
-            apiContext.Response = JObject.FromObject(_latestMessageContext);
+            apiContext.Result = JObject.FromObject(_latestMessageContext);
         }
 
         private void ProcessMessage(MessageContext messageContext)

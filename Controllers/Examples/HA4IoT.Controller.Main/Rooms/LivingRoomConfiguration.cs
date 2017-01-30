@@ -19,7 +19,7 @@ namespace HA4IoT.Controller.Main.Rooms
     internal class LivingRoomConfiguration
     {
         private readonly IDeviceService _deviceService;
-        private readonly IAreaService _areaService;
+        private readonly IAreaRespositoryService _areaService;
         private readonly CCToolsBoardService _ccToolsBoardService;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
@@ -60,7 +60,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
         public LivingRoomConfiguration(
             IDeviceService deviceService,
-            IAreaService areaService,
+            IAreaRespositoryService areaService,
             CCToolsBoardService ccToolsBoardService,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)

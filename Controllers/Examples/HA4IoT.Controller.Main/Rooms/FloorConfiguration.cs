@@ -22,7 +22,7 @@ namespace HA4IoT.Controller.Main.Rooms
 {
     internal class FloorConfiguration
     {
-        private readonly IAreaService _areaService;
+        private readonly IAreaRespositoryService _areaService;
         private readonly IDeviceService _deviceService;
         private readonly CCToolsBoardService _ccToolsBoardService;
         private readonly AutomationFactory _automationFactory;
@@ -70,7 +70,7 @@ namespace HA4IoT.Controller.Main.Rooms
         }
 
         public FloorConfiguration(
-            IAreaService areaService,
+            IAreaRespositoryService areaService,
             IDeviceService deviceService,
             CCToolsBoardService ccToolsBoardService,
             AutomationFactory automationFactory,
@@ -148,9 +148,9 @@ namespace HA4IoT.Controller.Main.Rooms
 
             _automationFactory.RegisterTurnOnAndOffAutomation(area, Floor.CombinedLampsAutomation)
                 .WithTrigger(area.GetMotionDetector(Floor.LowerFloorMotionDetector))
-                .WithTrigger(area.GetButton(Floor.ButtonLowerFloorUpper).GetPressedShortlyTrigger())
-                .WithTrigger(area.GetButton(Floor.ButtonLowerFloorAtBathroom).GetPressedShortlyTrigger())
-                .WithTrigger(area.GetButton(Floor.ButtonLowerFloorAtKitchen).GetPressedShortlyTrigger())
+                .WithFlipTrigger(area.GetButton(Floor.ButtonLowerFloorUpper).GetPressedShortlyTrigger())
+                .WithFlipTrigger(area.GetButton(Floor.ButtonLowerFloorAtBathroom).GetPressedShortlyTrigger())
+                .WithFlipTrigger(area.GetButton(Floor.ButtonLowerFloorAtKitchen).GetPressedShortlyTrigger())
                 .WithTarget(area.GetActuator(Floor.CombinedLamps))
                 .WithEnabledAtNight()
                 .WithTurnOffIfButtonPressedWhileAlreadyOn();
@@ -166,7 +166,7 @@ namespace HA4IoT.Controller.Main.Rooms
         {
             _automationFactory.RegisterTurnOnAndOffAutomation(room, Floor.CombinedStairwayLampAutomation)
                 .WithTrigger(room.GetMotionDetector(Floor.StairwayMotionDetector))
-                .WithTrigger(room.GetButton(Floor.ButtonStairway).GetPressedShortlyTrigger())
+                .WithFlipTrigger(room.GetButton(Floor.ButtonStairway).GetPressedShortlyTrigger())
                 .WithTarget(room.GetActuator(Floor.CombinedStairwayLamp))
                 .WithEnabledAtNight();
         }

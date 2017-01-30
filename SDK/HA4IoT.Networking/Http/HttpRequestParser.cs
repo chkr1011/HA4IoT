@@ -1,20 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
 using HA4IoT.Contracts.Networking.Http;
 
 namespace HA4IoT.Networking.Http
 {
     public class HttpRequestParser
     {
-        private const string MethodPattern = @"(?'method'GET|POST|PATCH|PUT|DELETE|TRACE)";
-        private const string UriPattern = @"(?'uri'/\S+?)";
-        private const string VersionPattern = @"HTTP/(?'version'1.1)";
-        private const string HeadersPattern = @"(?'headers'[\w\W]*?)";
-        private const string BodyPattern = @"(?'body'.*?)";
-
-        private readonly Regex _regex;
-
         private readonly HttpHeaderCollection _headers = new HttpHeaderCollection();
         
         private HttpMethod _method;
@@ -23,27 +15,27 @@ namespace HA4IoT.Networking.Http
         private string _body;
         private string _query;
 
-        public HttpRequestParser()
-        {
-            var pattern = $@"^{MethodPattern} {UriPattern} {VersionPattern}((\r\n){HeadersPattern})?((\r\n\r\n){BodyPattern})?$";
-            _regex = new Regex(pattern, RegexOptions.Compiled);
-        }
-
         public bool TryParse(byte[] buffer, int bufferLength, out HttpRequest request)
         {
             if (buffer == null) throw new ArgumentNullException(nameof(buffer));
-
+            
             try
             {
-                var content = Encoding.UTF8.GetString(buffer, 0, bufferLength);
-                var groups = _regex.Match(content).Groups;
+                using (var memoryStream = new MemoryStream(buffer, 0, bufferLength))
+                using (var streamReader = new StreamReader(memoryStream))
+                {
+                    ParseFirstLine(streamReader.ReadLine());
 
-                _method = (HttpMethod)Enum.Parse(typeof(HttpMethod), groups["method"].Value, true);
-                _uri = groups["uri"].Value;
-                _httpVersion = groups["version"].Value;
-                ParseHeaders(groups["headers"].Value);
-                _body = groups["body"].Value;
-                
+                    var line = streamReader.ReadLine();
+                    while (!streamReader.EndOfStream && !string.IsNullOrEmpty(line))
+                    {
+                        ParseHeader(line);
+                        line = streamReader.ReadLine();
+                    }
+
+                    _body = streamReader.ReadToEnd();
+                }
+
                 ParseQuery();
 
                 var binaryBodyLength = 0;
@@ -62,31 +54,25 @@ namespace HA4IoT.Networking.Http
             }
         }
 
-        private void ParseHeaders(string source)
+        private void ParseFirstLine(string source)
         {
-            _headers.Clear();
+            var items = source.Split(' ');
 
-            var headers = source.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            _method = (HttpMethod)Enum.Parse(typeof(HttpMethod), items[0], true);
+            _uri = items[1];
+            _httpVersion = items[2].Substring(5); // Remove HTTP/ from HTTP/1.1
+        }
 
-            foreach (var header in headers)
+        private void ParseHeader(string source)
+        {
+            var items = source.Split(':');
+            if (items.Length == 1)
             {
-                if (string.IsNullOrEmpty(header))
-                {
-                    break;
-                }
-
-                if (!header.Contains(":"))
-                {
-                    _headers[header] = string.Empty;
-                }
-                else
-                {
-                    var indexOfDelimiter = header.IndexOf(":", StringComparison.Ordinal);
-                    var name = header.Substring(0, indexOfDelimiter).Trim();
-                    var token = header.Substring(indexOfDelimiter + 1).Trim();
-
-                    _headers[name] = token;
-                }
+                _headers[source] = string.Empty;
+            }
+            else
+            {
+                _headers[items[0].Trim()] = items[1].Trim();
             }
         }
 

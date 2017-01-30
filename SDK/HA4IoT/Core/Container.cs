@@ -29,6 +29,7 @@ using HA4IoT.Contracts.Services.Weather;
 using HA4IoT.ExternalServices.OpenWeatherMap;
 using HA4IoT.ExternalServices.TelegramBot;
 using HA4IoT.ExternalServices.Twitter;
+using HA4IoT.FeatureRebuild.Services;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.Pi2;
@@ -135,11 +136,14 @@ namespace HA4IoT.Core
 
             _container.RegisterSingleton<IDeviceService, DeviceService>();
 
-            _container.RegisterSingleton<IComponentService, ComponentService>();
+            _container.RegisterSingleton<IComponentRepositoryService, ComponentRepositoryService>();
+            _container.RegisterSingleton(() => new NewComponentRepositoryService());
+
+
             _container.RegisterSingleton<ActuatorFactory>();
             _container.RegisterSingleton<SensorFactory>();
 
-            _container.RegisterSingleton<IAreaService, AreaService>();
+            _container.RegisterSingleton<IAreaRespositoryService, AreaRepositoryService>();
 
             _container.RegisterSingleton<IAutomationService, AutomationService>();
             _container.RegisterSingleton<AutomationFactory>();

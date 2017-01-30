@@ -28,13 +28,13 @@ namespace HA4IoT.PersonalAgent
             { "schließe", RollerShutterStateId.MovingDown }
         };
 
-        private readonly IAreaService _areaService;
-        private readonly IComponentService _componentService;
+        private readonly IAreaRespositoryService _areaService;
+        private readonly IComponentRepositoryService _componentService;
         private readonly ISettingsService _settingsService;
 
         private MessageContext _currentContext;
 
-        public MessageContextFactory(IAreaService areaService, IComponentService componentService, ISettingsService settingsService)
+        public MessageContextFactory(IAreaRespositoryService areaService, IComponentRepositoryService componentService, ISettingsService settingsService)
         {
             if (areaService == null) throw new ArgumentNullException(nameof(areaService));
             if (componentService == null) throw new ArgumentNullException(nameof(componentService));

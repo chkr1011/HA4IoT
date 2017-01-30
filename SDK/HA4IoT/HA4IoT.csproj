@@ -117,6 +117,11 @@
     <Compile Include="Actuators\Animations\Animation.cs" />
     <Compile Include="Actuators\Animations\DirectionAnimation.cs" />
     <Compile Include="Actuators\Animations\Frame.cs" />
+    <Compile Include="FeatureRebuild\Actions\ToggleOnOffAction.cs" />
+    <Compile Include="FeatureRebuild\Actions\TurnOffAction.cs" />
+    <Compile Include="FeatureRebuild\Actions\TurnOnAction.cs" />
+    <Compile Include="FeatureRebuild\Commands\SimulateCommand.cs" />
+    <Compile Include="FeatureRebuild\Features\Adapters\BinaryInputComponentAdapter.cs" />
     <Compile Include="Actuators\BinaryStateActuators\BinaryStateActuator.cs" />
     <Compile Include="Actuators\BinaryStateActuators\BinaryStateActuatorExtensions.cs" />
     <Compile Include="Actuators\BinaryStateActuators\CustomBinaryStateActuator.cs" />
@@ -127,7 +132,8 @@
     <Compile Include="Actuators\Lamps\Lamp.cs" />
     <Compile Include="Actuators\Lamps\LampExtensions.cs" />
     <Compile Include="Actuators\PendingActuatorState.cs" />
-    <Compile Include="Actuators\PortBasedBinaryStateEndpoint.cs" />
+    <Compile Include="FeatureRebuild\Features\Adapters\BinaryInputComponentAdapterExtensions.cs" />
+    <Compile Include="FeatureRebuild\Features\Adapters\BinaryOutputComponentAdapter.cs" />
     <Compile Include="Actuators\RollerShutters\PortBasedRollerShutterEndpoint.cs" />
     <Compile Include="Actuators\RollerShutters\RollerShutter.cs" />
     <Compile Include="Actuators\RollerShutters\RollerShutterExtensions.cs" />
@@ -161,14 +167,36 @@
     <Compile Include="Automations\RollerShutterAutomationExtensions.cs" />
     <Compile Include="Automations\RollerShutterAutomationNotification.cs" />
     <Compile Include="Automations\RollerShutterAutomationSettings.cs" />
-    <Compile Include="Automations\TurnOnAndOffAutomation.cs" />
+    <Compile Include="Automations\FlipFlopAutomation.cs" />
     <Compile Include="Automations\TurnOnAndOffAutomationExtensions.cs" />
     <Compile Include="Automations\TurnOnAndOffAutomationSettings.cs" />
-    <Compile Include="Components\Component.cs" />
+    <Compile Include="FeatureRebuild\Api\ComponentConfiguration.cs" />
+    <Compile Include="FeatureRebuild\Api\InvokeCommandRequest.cs" />
+    <Compile Include="FeatureRebuild\Commands\ICommand.cs" />
+    <Compile Include="FeatureRebuild\Commands\MoveDownCommand.cs" />
+    <Compile Include="FeatureRebuild\Commands\MoveToPositionCommand.cs" />
+    <Compile Include="FeatureRebuild\Commands\MoveUpCommand.cs" />
+    <Compile Include="FeatureRebuild\Commands\SetBrightnessCommand.cs" />
+    <Compile Include="FeatureRebuild\Commands\SetColorCommand.cs" />
+    <Compile Include="FeatureRebuild\Commands\SetStateCommand.cs" />
+    <Compile Include="FeatureRebuild\Commands\TurnOffCommand.cs" />
+    <Compile Include="FeatureRebuild\Commands\TurnOnCommand.cs" />
+    <Compile Include="FeatureRebuild\Component.cs" />
     <Compile Include="Components\ComponentBase.cs" />
-    <Compile Include="Components\ComponentClass.cs" />
+    <Compile Include="FeatureRebuild\ComponentClass.cs" />
     <Compile Include="Components\ComponentExtensions.cs" />
     <Compile Include="Components\ComponentSettings.cs" />
+    <Compile Include="FeatureRebuild\ComponentExtensions.cs" />
+    <Compile Include="FeatureRebuild\Exceptions\CommandNotSupportedException.cs" />
+    <Compile Include="FeatureRebuild\Exceptions\FeatureNotSupportedException.cs" />
+    <Compile Include="FeatureRebuild\Features\ActivateSwitchFeature.cs" />
+    <Compile Include="FeatureRebuild\Features\Adapters\IComponentAdapter.cs" />
+    <Compile Include="FeatureRebuild\Features\Adapters\MotionDetectorComponentAdapter.cs" />
+    <Compile Include="FeatureRebuild\Features\MeasureTemperatureFeature.cs" />
+    <Compile Include="FeatureRebuild\Features\DetectMotionFeature.cs" />
+    <Compile Include="FeatureRebuild\Features\SetGearFeature.cs" />
+    <Compile Include="FeatureRebuild\Features\SetStateFeature.cs" />
+    <Compile Include="FeatureRebuild\Features\PressButtonFeature.cs" />
     <Compile Include="Conditions\ActionExtensions.cs" />
     <Compile Include="Conditions\Condition.cs" />
     <Compile Include="Conditions\ConditionalAction.cs" />
@@ -208,12 +236,24 @@
     <Compile Include="ExternalServices\Twitter\TwitterClientService.cs" />
     <Compile Include="ExternalServices\Twitter\TwitterClientServiceExtensions.cs" />
     <Compile Include="ExternalServices\Twitter\TwitterClientServiceSettings.cs" />
-    <Compile Include="Features\FeatureCollection.cs" />
-    <Compile Include="Features\IFeature.cs" />
-    <Compile Include="Features\Proxies\ITurnOnFeatureProxy.cs" />
-    <Compile Include="Features\Proxies\ITurnOffFeatureProxy.cs" />
-    <Compile Include="Features\TurnOffFeature.cs" />
-    <Compile Include="Features\TurnOnFeature.cs" />
+    <Compile Include="FeatureRebuild\Features\IFeature.cs" />
+    <Compile Include="FeatureRebuild\Features\TurnOffFeature.cs" />
+    <Compile Include="FeatureRebuild\Features\TurnOnFeature.cs" />
+    <Compile Include="FeatureRebuild\Status\BrightnessStatus.cs" />
+    <Compile Include="FeatureRebuild\Status\PressButtonStatus.cs" />
+    <Compile Include="FeatureRebuild\Status\HumidityStatus.cs" />
+    <Compile Include="FeatureRebuild\Status\IStatus.cs" />
+    <Compile Include="FeatureRebuild\Status\MoveDownStatus.cs" />
+    <Compile Include="FeatureRebuild\Status\MoveUpStatus.cs" />
+    <Compile Include="FeatureRebuild\Status\DetectMotionStatus.cs" />
+    <Compile Include="FeatureRebuild\Status\StatusChangedEventArgs.cs" />
+    <Compile Include="FeatureRebuild\Status\ActivateSwitchStatus.cs" />
+    <Compile Include="FeatureRebuild\Status\StatusChangedEventArgsExtensions.cs" />
+    <Compile Include="FeatureRebuild\Status\TemperatureStatus.cs" />
+    <Compile Include="FeatureRebuild\Status\TurnOffStatus.cs" />
+    <Compile Include="FeatureRebuild\Status\TurnOnStatus.cs" />
+    <Compile Include="FeatureRebuild\Status\WindowStatus.cs" />
+    <Compile Include="FeatureRebuild\Triggers\MotionDetectedTrigger.cs" />
     <Compile Include="Hardware\BuiltInI2CBusService.cs" />
     <Compile Include="Hardware\ByteExtensions.cs" />
     <Compile Include="Hardware\CCTools\CCToolsBoardBase.cs" />
@@ -303,6 +343,7 @@
     <Compile Include="Sensors\SingleValueSensorSettings.cs" />
     <Compile Include="Sensors\TemperatureSensors\TemperatureSensor.cs" />
     <Compile Include="Sensors\TemperatureSensors\TemperatureSensorExtensions.cs" />
+    <Compile Include="FeatureRebuild\Triggers\ButtonPressedTrigger.cs" />
     <Compile Include="Sensors\Triggers\SensorValueReachedTrigger.cs" />
     <Compile Include="Sensors\Triggers\SensorValueUnderranTrigger.cs" />
     <Compile Include="Sensors\Windows\Casement.cs" />
@@ -310,13 +351,14 @@
     <Compile Include="Sensors\Windows\WindowExtensions.cs" />
     <Compile Include="Services\Areas\Area.cs" />
     <Compile Include="Services\Areas\AreaCollection.cs" />
-    <Compile Include="Services\Areas\AreaService.cs" />
-    <Compile Include="Services\Areas\AreaServiceExtensions.cs" />
+    <Compile Include="Services\Areas\AreaRepositoryService.cs" />
+    <Compile Include="Services\Areas\AreaRepositoryServiceExtensions.cs" />
     <Compile Include="Services\Automations\AutomationCollection.cs" />
     <Compile Include="Services\Automations\AutomationService.cs" />
     <Compile Include="Services\Backup\BackupService.cs" />
     <Compile Include="Services\Components\ComponentCollection.cs" />
-    <Compile Include="Services\Components\ComponentService.cs" />
+    <Compile Include="Services\Components\ComponentRepositoryService.cs" />
+    <Compile Include="FeatureRebuild\Services\NewComponentRepositoryService.cs" />
     <Compile Include="Services\ControllerSlave\ControllerSlaveService.cs" />
     <Compile Include="Services\ControllerSlave\ControllerSlaveServiceSettings.cs" />
     <Compile Include="Services\Devices\DeviceCollection.cs" />
@@ -363,6 +405,7 @@
       <Name>HA4IoT.Networking</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

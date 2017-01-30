@@ -84,8 +84,8 @@
                 </Border>
 
                 <StackPanel Margin="10">
-                    <StackPanel x:Name="DemoLampsStackPanel" Orientation="Horizontal" />
-                    <StackPanel x:Name="DemoButtonStackPanel" Orientation="Horizontal" />
+                    <controls:WrapPanel x:Name="DemoLampsStackPanel" Orientation="Horizontal" />
+                    <controls:WrapPanel x:Name="DemoButtonStackPanel" Orientation="Horizontal" />
                 </StackPanel>
             </controls:DockPanel>
 

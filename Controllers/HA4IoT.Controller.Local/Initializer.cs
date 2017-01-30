@@ -32,7 +32,7 @@ namespace HA4IoT.Controller.Local
 
         public async Task ApplyAsync()
         {
-            var areaService = _containerService.GetInstance<IAreaService>();
+            var areaService = _containerService.GetInstance<IAreaRespositoryService>();
             var timerService = _containerService.GetInstance<ITimerService>();
             var settingsService = _containerService.GetInstance<ISettingsService>();
 
@@ -43,10 +43,10 @@ namespace HA4IoT.Controller.Local
             area.AddComponent(new Lamp(new ComponentId("Lamp4"), await _mainPage.CreateDemoBinaryComponent("Lamp 4")));
             area.AddComponent(new Lamp(new ComponentId("Lamp5"), await _mainPage.CreateDemoBinaryComponent("Lamp 5")));
 
-            var knxController = new KnxController(new HostName("127.0.0.1"), 8900, "mySecretPassword");
-            area.AddComponent(new Socket(new ComponentId("Socket1"), knxController.CreateDigitalJoinEndpoint("d1")));
-            area.AddComponent(new Socket(new ComponentId("Socket2"), knxController.CreateDigitalJoinEndpoint("d2")));
-            area.AddComponent(new Socket(new ComponentId("Socket3"), knxController.CreateDigitalJoinEndpoint("d30")));
+            ////var knxController = new KnxController(new HostName("127.0.0.1"), 8900, "mySecretPassword");
+            ////area.AddComponent(new Socket(new ComponentId("Socket1"), knxController.CreateDigitalJoinEndpoint("d1")));
+            ////area.AddComponent(new Socket(new ComponentId("Socket2"), knxController.CreateDigitalJoinEndpoint("d2")));
+            ////area.AddComponent(new Socket(new ComponentId("Socket3"), knxController.CreateDigitalJoinEndpoint("d30")));
 
             area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button1"), await _mainPage.CreateDemoButton("Button 1"), timerService, settingsService));
             area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button2"), await _mainPage.CreateDemoButton("Button 2"), timerService, settingsService));

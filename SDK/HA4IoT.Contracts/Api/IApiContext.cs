@@ -8,7 +8,7 @@ namespace HA4IoT.Contracts.Api
         JObject Parameter { get; }
         
         ApiResultCode ResultCode { get; set; }
-        JObject Response { get; set; }
+        JObject Result { get; set; }
 
         bool UseHash { get; set; }
     }

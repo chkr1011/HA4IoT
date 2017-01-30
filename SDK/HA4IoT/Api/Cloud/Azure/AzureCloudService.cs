@@ -79,7 +79,7 @@ namespace HA4IoT.Api.Cloud.Azure
             var uri = (string)e.Body["Uri"];
             var request = (JObject)e.Body["Content"] ?? new JObject();
 
-            var context = new QueueBasedApiContext(correlationId, uri, request, new JObject());
+            var context = new QueueBasedApiContext(correlationId, uri, request);
             var eventArgs = new ApiRequestReceivedEventArgs(context);
             RequestReceived?.Invoke(this, eventArgs);
 
@@ -103,15 +103,15 @@ namespace HA4IoT.Api.Cloud.Azure
             var message = new JObject
             {
                 ["ResultCode"] = context.ResultCode.ToString(),
-                ["Content"] = context.Response
+                ["Content"] = context.Result
             };
 
-            var serverEtag = (string)context.Response["Meta"]["Hash"];
+            var serverEtag = (string)context.Result["Meta"]["Hash"];
             message["ETag"] = serverEtag;
 
             if (!string.Equals(clientEtag, serverEtag))
             {
-                message["Content"] = context.Response;
+                message["Content"] = context.Result;
             }
 
             await _outboundQueue.SendAsync(brokerProperties, message);

@@ -104,7 +104,7 @@ namespace HA4IoT.Api
                 }
             }
 
-            apiContext.Response.Add("Actions", actions);
+            apiContext.Result.Add("Actions", actions);
         }
 
         private void HandleGetStatusRequest(IApiContext apiContext)
@@ -148,7 +148,7 @@ namespace HA4IoT.Api
             catch (Exception exception)
             {
                 apiContext.ResultCode = ApiResultCode.UnhandledException;
-                apiContext.Response = JsonSerializer.SerializeException(exception);
+                apiContext.Result = JsonSerializer.SerializeException(exception);
             }
         }
     }

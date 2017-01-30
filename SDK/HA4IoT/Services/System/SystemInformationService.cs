@@ -50,7 +50,7 @@ namespace HA4IoT.Services.System
         [ApiMethod]
         public void GetStatus(IApiContext apiContext)
         {
-            apiContext.Response = JObject.FromObject(_values);
+            apiContext.Result = JObject.FromObject(_values);
         }
     }
 }

@@ -71,7 +71,7 @@ namespace HA4IoT.CloudApi.Services
             }
 
             Trace.WriteLine($"Created new context for controller '{controllerId}'.");
-            result = new ControllerContext(controllerId);
+            result = new ControllerContext();
             _pendingMessages.Add(controllerId, result);
 
             return result;

@@ -17,7 +17,7 @@ namespace HA4IoT.Controller.Main.Rooms
 {
     internal class StoreroomConfiguration
     {
-        private readonly IAreaService _areaService;
+        private readonly IAreaRespositoryService _areaService;
         private readonly IDeviceService _deviceService;
         private readonly CCToolsBoardService _ccToolsBoardService;
         private readonly ITimerService _timerService;
@@ -41,7 +41,7 @@ namespace HA4IoT.Controller.Main.Rooms
         }
 
         public StoreroomConfiguration(
-            IAreaService areaService,
+            IAreaRespositoryService areaService,
             IDeviceService deviceService,
             CCToolsBoardService ccToolsBoardService,
             ITimerService timerService,
