@@ -163,7 +163,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .ConnectToggleActionWith(area.GetButton(Bedroom.ButtonDoor))
                 .ConnectToggleActionWith(area.GetButton(Bedroom.ButtonWindowUpper));
 
-            area.GetButton(Bedroom.ButtonDoor).GetPressedLongTrigger().Attach(() =>
+            area.GetButton(Bedroom.ButtonDoor).PressedLongTrigger.Attach(() =>
             {
                 area.GetStateMachine(Bedroom.LampBedLeft).TryTurnOff();
                 area.GetStateMachine(Bedroom.LampBedRight).TryTurnOff();

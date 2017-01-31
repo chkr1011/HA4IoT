@@ -13,7 +13,7 @@ namespace HA4IoT.Sensors.Buttons
             if (button == null) throw new ArgumentNullException(nameof(button));
             if (action == null) throw new ArgumentNullException(nameof(action));
 
-            button.GetPressedShortlyTrigger().Attach(action);
+            button.PressedShortlyTrigger.Attach(action);
             return button;
         }
 
@@ -22,7 +22,7 @@ namespace HA4IoT.Sensors.Buttons
             if (button == null) throw new ArgumentNullException(nameof(button));
             if (action == null) throw new ArgumentNullException(nameof(action));
 
-            button.GetPressedLongTrigger().Attach(action);
+            button.PressedLongTrigger.Attach(action);
             return button;
         }
 

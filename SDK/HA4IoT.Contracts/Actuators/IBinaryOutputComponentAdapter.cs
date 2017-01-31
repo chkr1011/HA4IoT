@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Contracts.Actuators
 {
-    public interface IBinaryStateAdapter
+    public interface IBinaryOutputComponentAdapter
     {
         void TurnOn(params IHardwareParameter[] parameters);
 

@@ -5,7 +5,7 @@ namespace HA4IoT.Actuators.BinaryStateActuators
 {
     public class CustomBinaryStateActuator : BinaryStateActuator
     {
-        public CustomBinaryStateActuator(ComponentId id, IBinaryStateAdapter endpoint)
+        public CustomBinaryStateActuator(ComponentId id, IBinaryOutputComponentAdapter endpoint)
             : base(id, endpoint)
         {
         }

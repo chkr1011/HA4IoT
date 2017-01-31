@@ -10,20 +10,19 @@ using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Triggers;
+using HA4IoT.FeatureRebuild.Triggers;
 
 namespace HA4IoT.Sensors.Buttons
 {
     public class Button : SensorBase, IButton
     {
         private readonly Stopwatch _stopwatch = new Stopwatch();
-        private readonly Trigger _pressedShortlyTrigger = new Trigger();
-        private readonly Trigger _pressedLongTrigger = new Trigger();
 
-        public Button(ComponentId id, IButtonAdapter endpoint, ITimerService timerService, ISettingsService settingsService)
+        public Button(ComponentId id, IButtonAdapter adapter, ITimerService timerService, ISettingsService settingsService)
             : base(id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
-            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
+            if (adapter == null) throw new ArgumentNullException(nameof(adapter));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
             settingsService.CreateSettingsMonitor<ButtonSettings>(Id, s => Settings = s);
@@ -32,22 +31,15 @@ namespace HA4IoT.Sensors.Buttons
 
             timerService.Tick += CheckForTimeout;
 
-            endpoint.Pressed += (s, e) => HandleInputStateChanged(ButtonStateId.Pressed);
-            endpoint.Released += (s, e) => HandleInputStateChanged(ButtonStateId.Released);
+            adapter.Pressed += (s, e) => HandleInputStateChanged(ButtonStateId.Pressed);
+            adapter.Released += (s, e) => HandleInputStateChanged(ButtonStateId.Released);
         }
 
         public IButtonSettings Settings { get; private set; }
 
-        public ITrigger GetPressedShortlyTrigger()
-        {
-            return _pressedShortlyTrigger;
-        }
-
-        public ITrigger GetPressedLongTrigger()
-        {
-            return _pressedLongTrigger;
-        }
-
+        public ITrigger PressedShortlyTrigger { get; } = new Trigger();
+        public ITrigger PressedLongTrigger { get; } = new Trigger();
+    
         public override void HandleApiCall(IApiContext apiContext)
         {
             var action = (string)apiContext.Parameter["Duration"];
@@ -81,7 +73,7 @@ namespace HA4IoT.Sensors.Buttons
         {
             if (GetState().Equals(ButtonStateId.Pressed))
             {
-                if (!_pressedLongTrigger.IsAnyAttached)
+                if (!PressedLongTrigger.IsAnyAttached)
                 {
                     OnPressedShortlyShort();
                 }
@@ -127,13 +119,13 @@ namespace HA4IoT.Sensors.Buttons
         protected void OnPressedShortlyShort()
         {
             Log.Info($"{Id}: pressed short");
-            _pressedShortlyTrigger.Execute();
+            ((Trigger)PressedShortlyTrigger).Execute();
         }
 
         protected void OnPressedLong()
         {
             Log.Info($"{Id}: pressed long");
-            _pressedLongTrigger.Execute();
+            ((Trigger)PressedLongTrigger).Execute();
         }
     }
 }

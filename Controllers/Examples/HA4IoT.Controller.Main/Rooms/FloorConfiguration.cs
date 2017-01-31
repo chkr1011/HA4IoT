@@ -3,6 +3,7 @@ using HA4IoT.Actuators;
 using HA4IoT.Actuators.Animations;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
+using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Automations;
 using HA4IoT.Contracts.Actuators;
@@ -148,9 +149,9 @@ namespace HA4IoT.Controller.Main.Rooms
 
             _automationFactory.RegisterTurnOnAndOffAutomation(area, Floor.CombinedLampsAutomation)
                 .WithTrigger(area.GetMotionDetector(Floor.LowerFloorMotionDetector))
-                .WithFlipTrigger(area.GetButton(Floor.ButtonLowerFloorUpper).GetPressedShortlyTrigger())
-                .WithFlipTrigger(area.GetButton(Floor.ButtonLowerFloorAtBathroom).GetPressedShortlyTrigger())
-                .WithFlipTrigger(area.GetButton(Floor.ButtonLowerFloorAtKitchen).GetPressedShortlyTrigger())
+                .WithFlipTrigger(area.GetButton(Floor.ButtonLowerFloorUpper).PressedShortlyTrigger)
+                .WithFlipTrigger(area.GetButton(Floor.ButtonLowerFloorAtBathroom).PressedShortlyTrigger)
+                .WithFlipTrigger(area.GetButton(Floor.ButtonLowerFloorAtKitchen).PressedShortlyTrigger)
                 .WithTarget(area.GetActuator(Floor.CombinedLamps))
                 .WithEnabledAtNight()
                 .WithTurnOffIfButtonPressedWhileAlreadyOn();
@@ -166,7 +167,7 @@ namespace HA4IoT.Controller.Main.Rooms
         {
             _automationFactory.RegisterTurnOnAndOffAutomation(room, Floor.CombinedStairwayLampAutomation)
                 .WithTrigger(room.GetMotionDetector(Floor.StairwayMotionDetector))
-                .WithFlipTrigger(room.GetButton(Floor.ButtonStairway).GetPressedShortlyTrigger())
+                .WithFlipTrigger(room.GetButton(Floor.ButtonStairway).PressedShortlyTrigger)
                 .WithTarget(room.GetActuator(Floor.CombinedStairwayLamp))
                 .WithEnabledAtNight();
         }
@@ -190,7 +191,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             var lamp = room.GetLamp(Floor.LampStairsCeiling);
 
-            room.GetButton(Floor.ButtonStairsUpper).GetPressedShortlyTrigger().Triggered += (s, e) =>
+            room.GetButton(Floor.ButtonStairsUpper).PressedShortlyTrigger.Triggered += (s, e) =>
             {
                 if (lamp.GetState().Equals(BinaryStateId.On))
                 {
@@ -202,7 +203,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 }
             };
 
-            room.GetButton(Floor.ButtonStairsLowerUpper).GetPressedShortlyTrigger().Triggered += (s, e) =>
+            room.GetButton(Floor.ButtonStairsLowerUpper).PressedShortlyTrigger.Triggered += (s, e) =>
             {
                 if (lamp.GetState().Equals(BinaryStateId.On))
                 {

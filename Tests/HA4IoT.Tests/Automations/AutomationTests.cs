@@ -28,7 +28,7 @@ namespace HA4IoT.Tests.Automations
             var testOutput = testStateMachineFactory.CreateTestStateMachineWithOnOffStates();
 
             CreateAutomation()
-                .WithTrigger(testButton.GetPressedShortlyTrigger())
+                .WithTrigger(testButton.PressedShortlyTrigger)
                 .WithActionIfConditionsFulfilled(testOutput.GetSetNextStateAction());
 
             testOutput.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
@@ -52,7 +52,7 @@ namespace HA4IoT.Tests.Automations
             var testOutput = testStateMachineFactory.CreateTestStateMachineWithOnOffStates();
 
             new Automation(AutomationIdGenerator.EmptyId)
-                .WithTrigger(testButton.GetPressedShortlyTrigger())
+                .WithTrigger(testButton.PressedShortlyTrigger)
                 .WithCondition(ConditionRelation.And, new TimeRangeCondition(testController.DateTimeService).WithStart(TimeSpan.FromHours(1)).WithEnd(TimeSpan.FromHours(2)))
                 .WithActionIfConditionsFulfilled(testOutput.GetSetNextStateAction());
             

@@ -6,8 +6,8 @@ namespace HA4IoT.Actuators.Sockets
 {
     public class Socket : BinaryStateActuator, ISocket
     {
-        public Socket(ComponentId id, IBinaryStateAdapter endpoint)
-            : base(id, endpoint)
+        public Socket(ComponentId id, IBinaryOutputComponentAdapter adapter)
+            : base(id, adapter)
         {
         }
     }

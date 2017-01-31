@@ -50,7 +50,7 @@
     <Compile Include="Actions\IAction.cs" />
     <Compile Include="Actuators\BinaryStateId.cs" />
     <Compile Include="Actuators\IActuator.cs" />
-    <Compile Include="Actuators\IBinaryStateAdapter.cs" />
+    <Compile Include="Actuators\IBinaryOutputComponentAdapter.cs" />
     <Compile Include="Actuators\ILamp.cs" />
     <Compile Include="Actuators\IRollerShutter.cs" />
     <Compile Include="Actuators\IRollerShutterAdapter.cs" />

@@ -87,7 +87,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             _sensorFactory.RegisterMotionDetector(area, LowerBathroom.MotionDetector, input3.GetInput(15));
 
-            _sensorFactory.RegisterVirtualButton(area, LowerBathroom.StartBathmodeButton, b => b.GetPressedShortlyTrigger().Attach(() => StartBathode(area)));
+            _sensorFactory.RegisterVirtualButton(area, LowerBathroom.StartBathmodeButton, b => b.PressedShortlyTrigger.Attach(() => StartBathode(area)));
 
             _actuatorFactory.RegisterLamp(area, LowerBathroom.LightCeilingDoor,
                 hspe16_FloorAndLowerBathroom.GetOutput(0).WithInvertedState());

@@ -48,7 +48,7 @@ namespace HA4IoT.Tests.Actuators
             var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
             output.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
 
-            automation.WithFlipTrigger(button.GetPressedShortlyTrigger());
+            automation.WithFlipTrigger(button.PressedShortlyTrigger);
             automation.WithTarget(output);
 
             button.PressShortly();
@@ -96,7 +96,7 @@ namespace HA4IoT.Tests.Actuators
             output.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
 
             automation.WithTurnOnWithinTimeRange(() => TimeSpan.Parse("10:00:00"), () => TimeSpan.Parse("15:00:00"));
-            automation.WithFlipTrigger(button.GetPressedShortlyTrigger());
+            automation.WithFlipTrigger(button.PressedShortlyTrigger);
             automation.WithTarget(output);
 
             button.PressShortly();
@@ -184,7 +184,7 @@ namespace HA4IoT.Tests.Actuators
             var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
             output.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
 
-            automation.WithFlipTrigger(button.GetPressedShortlyTrigger());
+            automation.WithFlipTrigger(button.PressedShortlyTrigger);
             automation.WithTarget(output);
 
             IStateMachine[] otherActuators =

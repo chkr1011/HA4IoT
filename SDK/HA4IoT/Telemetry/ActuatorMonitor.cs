@@ -51,8 +51,8 @@ namespace HA4IoT.Telemetry
                 var button = component as IButton;
                 if (button != null)
                 {
-                    button.GetPressedShortlyTrigger().Attach(() => OnButtonPressed(button, ButtonPressedDuration.Short));
-                    button.GetPressedLongTrigger().Attach(() => OnButtonPressed(button, ButtonPressedDuration.Long));
+                    button.PressedShortlyTrigger.Attach(() => OnButtonPressed(button, ButtonPressedDuration.Short));
+                    button.PressedLongTrigger.Attach(() => OnButtonPressed(button, ButtonPressedDuration.Long));
                 }
             }
         }

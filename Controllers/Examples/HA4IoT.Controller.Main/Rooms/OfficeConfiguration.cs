@@ -123,7 +123,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             _actuatorFactory.RegisterStateMachine(area, Office.CombinedCeilingLights, (s, a) => SetupLight(s, hsrel8, hspe8, a));
 
-            area.GetButton(Office.ButtonUpperLeft).GetPressedLongTrigger().Attach(() =>
+            area.GetButton(Office.ButtonUpperLeft).PressedLongTrigger.Attach(() =>
             {
                 area.GetStateMachine(Office.CombinedCeilingLights).TryTurnOff();
                 area.GetSocket(Office.SocketRearLeftEdge).TryTurnOff();
@@ -194,15 +194,15 @@ namespace HA4IoT.Controller.Main.Rooms
             light.WithTurnOffIfStateIsAppliedTwice();
 
             room.GetButton(Office.ButtonLowerRight)
-                .GetPressedShortlyTrigger()
+                .PressedShortlyTrigger
                 .Attach(light.GetSetStateAction(couchOnlyStateId));
 
             room.GetButton(Office.ButtonLowerLeft)
-                .GetPressedShortlyTrigger()
+                .PressedShortlyTrigger
                 .Attach(light.GetSetStateAction(deskOnlyStateId));
 
             room.GetButton(Office.ButtonUpperLeft)
-                .GetPressedShortlyTrigger()
+                .PressedShortlyTrigger
                 .Attach(light.GetSetStateAction(BinaryStateId.On));
         }
     }

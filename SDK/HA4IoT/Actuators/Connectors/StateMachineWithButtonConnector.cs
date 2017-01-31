@@ -8,11 +8,11 @@ namespace HA4IoT.Actuators.Connectors
     {
         public static IStateMachine ConnectMoveNextAndToggleOffWith(this IStateMachine stateMachineActuator, IButton button)
         {
-            button.GetPressedShortlyTrigger().Attach(() => stateMachineActuator.SetNextState());
+            button.PressedShortlyTrigger.Attach(stateMachineActuator.SetNextState);
 
             if (stateMachineActuator.GetSupportsOffState())
             {
-                button.GetPressedLongTrigger().Attach(() => stateMachineActuator.SetState(BinaryStateId.Off));
+                button.PressedLongTrigger.Attach(() => stateMachineActuator.SetState(BinaryStateId.Off));
             }
 
             return stateMachineActuator;

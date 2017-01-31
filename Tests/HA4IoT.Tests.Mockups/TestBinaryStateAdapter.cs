@@ -3,7 +3,7 @@ using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Tests.Mockups
 {
-    public class TestBinaryStateAdapter : IBinaryStateAdapter
+    public class TestBinaryStateAdapter : IBinaryOutputComponentAdapter
     {
         public int TurnOnCalledCount { get; set; }
         public int TurnOffCalledCount { get; set; }

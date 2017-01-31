@@ -131,11 +131,11 @@ namespace HA4IoT.Actuators.BinaryStateActuators
 
             if (pressedDuration == ButtonPressedDuration.Short)
             {
-                button.GetPressedShortlyTrigger().Attach(() => ToggleState());
+                button.PressedShortlyTrigger.Attach(() => ToggleState());
             }
             else if (pressedDuration == ButtonPressedDuration.Long)
             {
-                button.GetPressedLongTrigger().Attach(() => ToggleState());
+                button.PressedLongTrigger.Attach(() => ToggleState());
             }
             else
             {

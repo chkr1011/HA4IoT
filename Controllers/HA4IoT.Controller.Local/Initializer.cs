@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Windows.Networking;
 using HA4IoT.Actuators.Lamps;
-using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
@@ -12,7 +10,6 @@ using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Hardware.Knx;
 
 namespace HA4IoT.Controller.Local
 {
@@ -54,19 +51,19 @@ namespace HA4IoT.Controller.Local
             area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button4"), await _mainPage.CreateDemoButton("Button 4"), timerService, settingsService));
             area.AddComponent(new Sensors.Buttons.Button(new ComponentId("Button5"), await _mainPage.CreateDemoButton("Button 5"), timerService, settingsService));
 
-            area.GetComponent<IButton>(new ComponentId("Button1")).GetPressedShortlyTrigger().Attach(area.GetComponent<ILamp>(new ComponentId("Lamp1")).GetSetNextStateAction());
-            area.GetComponent<IButton>(new ComponentId("Button1")).GetPressedLongTrigger().Attach(area.GetComponent<ILamp>(new ComponentId("Lamp2")).GetSetNextStateAction());
+            area.GetComponent<IButton>(new ComponentId("Button1")).PressedShortlyTrigger.Attach(area.GetComponent<ILamp>(new ComponentId("Lamp1")).GetSetNextStateAction());
+            area.GetComponent<IButton>(new ComponentId("Button1")).PressedLongTrigger.Attach(area.GetComponent<ILamp>(new ComponentId("Lamp2")).GetSetNextStateAction());
 
             area.GetComponent<IButton>("Button3".AsComponentId())
-                .GetPressedShortlyTrigger()
+                .PressedShortlyTrigger
                 .Attach(area.GetComponent<ISocket>("Socket1".AsComponentId()).GetSetNextStateAction());
 
             area.GetComponent<IButton>("Button4".AsComponentId())
-                .GetPressedShortlyTrigger()
+                .PressedShortlyTrigger
                 .Attach(area.GetComponent<ISocket>("Socket2".AsComponentId()).GetSetNextStateAction());
 
             area.GetComponent<IButton>("Button5".AsComponentId())
-                .GetPressedShortlyTrigger()
+                .PressedShortlyTrigger
                 .Attach(area.GetComponent<ISocket>("Socket3".AsComponentId()).GetSetNextStateAction());
         }
     }

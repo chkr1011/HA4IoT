@@ -56,9 +56,9 @@ namespace HA4IoT.Controller.Local
             }
         }
 
-        public async Task<IBinaryStateAdapter> CreateDemoBinaryComponent(string caption)
+        public async Task<IBinaryOutputComponentAdapter> CreateDemoBinaryComponent(string caption)
         {
-            IBinaryStateAdapter result = null;
+            IBinaryOutputComponentAdapter result = null;
 
             await Dispatcher.RunAsync(
                 CoreDispatcherPriority.Normal,
