@@ -10,8 +10,8 @@ namespace HA4IoT.Actuators.StateMachines
 {
     public class StateMachine : ActuatorBase, IStateMachine
     {
-        private readonly Dictionary<ComponentState, ComponentState> _stateAlias = new Dictionary<ComponentState, ComponentState>(); 
-        private readonly List<IStateMachineState> _states = new List<IStateMachineState>(); 
+        private readonly Dictionary<ComponentState, ComponentState> _stateAlias = new Dictionary<ComponentState, ComponentState>();
+        private readonly List<IStateMachineState> _states = new List<IStateMachineState>();
 
         private IStateMachineState _activeState;
         private bool _turnOffIfStateIsAppliedTwice;
@@ -20,7 +20,7 @@ namespace HA4IoT.Actuators.StateMachines
             : base(id)
         {
         }
-        
+
         public bool SupportsState(ComponentState stateId)
         {
             if (stateId == null) throw new ArgumentNullException(nameof(stateId));
@@ -86,16 +86,16 @@ namespace HA4IoT.Actuators.StateMachines
             _stateAlias[alias] = stateId;
         }
 
-        public override ComponentState GetState()
+        public override IList<ComponentState> GetState()
         {
             ThrowIfNoStatesAvailable();
 
             if (_activeState == null)
             {
-                return new ComponentState(null);
+                return new List<ComponentState> { new ComponentState(null) };
             }
 
-            return _activeState?.Id;
+            return new List<ComponentState> { _activeState?.Id };
         }
 
         public ComponentState GetNextState(ComponentState stateId)
@@ -148,7 +148,7 @@ namespace HA4IoT.Actuators.StateMachines
             {
                 if (request.Action == "nextState")
                 {
-                    SetState(GetNextState(GetState()));
+                    SetState(GetNextState(GetState().First()));
                 }
 
                 return;

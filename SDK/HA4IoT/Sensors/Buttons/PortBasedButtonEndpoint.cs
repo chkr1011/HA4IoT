@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Sensors;
 

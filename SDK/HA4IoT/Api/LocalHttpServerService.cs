@@ -1,12 +1,11 @@
 ﻿using System;
+using System.Text;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Api.Cloud;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking.Http;
-using HA4IoT.Contracts.Networking.WebSockets;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Networking.Http;
 using HA4IoT.Networking.Json;
@@ -115,7 +114,8 @@ namespace HA4IoT.Api
         {
             var timestamp = DateTime.UtcNow;
 
-            var genericApiRequest = JsonConvert.DeserializeObject<ApiRequest>(httpContext.Request.Body);
+            var bodyText = Encoding.UTF8.GetString(httpContext.Request.Body ?? new byte[0]);
+            var genericApiRequest = JsonConvert.DeserializeObject<ApiRequest>(bodyText);
             var apiContext = new ApiContext(genericApiRequest.Action, genericApiRequest.Parameter);
 
             var eventArgs = new ApiRequestReceivedEventArgs(apiContext);
@@ -201,7 +201,9 @@ namespace HA4IoT.Api
         {
             try
             {
-                var body = string.IsNullOrEmpty(httpContext.Request.Body) ? new JObject() : JObject.Parse(httpContext.Request.Body);
+                var bodyText = Encoding.UTF8.GetString(httpContext.Request.Body ?? new byte[0]);
+
+                var body = string.IsNullOrEmpty(bodyText) ? new JObject() : JObject.Parse(bodyText);
                 var action = httpContext.Request.Uri.Substring("/api/".Length);
 
                 return new ApiContext(action, body);

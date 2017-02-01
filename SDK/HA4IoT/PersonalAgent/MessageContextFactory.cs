@@ -28,20 +28,20 @@ namespace HA4IoT.PersonalAgent
             { "schließe", RollerShutterStateId.MovingDown }
         };
 
-        private readonly IAreaRespositoryService _areaService;
-        private readonly IComponentRepositoryService _componentService;
+        private readonly IAreaRegistryService _areaService;
+        private readonly IComponentRegistryService _componentRegistry;
         private readonly ISettingsService _settingsService;
 
         private MessageContext _currentContext;
 
-        public MessageContextFactory(IAreaRespositoryService areaService, IComponentRepositoryService componentService, ISettingsService settingsService)
+        public MessageContextFactory(IAreaRegistryService areaService, IComponentRegistryService componentRegistry, ISettingsService settingsService)
         {
             if (areaService == null) throw new ArgumentNullException(nameof(areaService));
-            if (componentService == null) throw new ArgumentNullException(nameof(componentService));
+            if (componentRegistry == null) throw new ArgumentNullException(nameof(componentRegistry));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
             _areaService = areaService;
-            _componentService = componentService;
+            _componentRegistry = componentRegistry;
             _settingsService = settingsService;
         }
 
@@ -131,7 +131,7 @@ namespace HA4IoT.PersonalAgent
 
         private void IdentifyComponents(string input)
         {
-            foreach (var component in _componentService.GetComponents())
+            foreach (var component in _componentRegistry.GetComponents())
             {
                 var componentSettings = _settingsService.GetSettings<ComponentSettings>(component.Id);
 

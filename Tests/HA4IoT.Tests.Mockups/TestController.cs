@@ -47,9 +47,9 @@ namespace HA4IoT.Tests.Mockups
             SchedulerService = new SchedulerService(TimerService, DateTimeService);
             NotificationService = new NotificationService(DateTimeService, ApiService, SchedulerService, SettingsService, StorageService, ResourceService);
             SystemEventsService = new SystemEventsService(this, NotificationService, ResourceService);
-            AutomationService = new AutomationService(SystemEventsService, systemInformationService, apiService);
-            ComponentService = new ComponentRepositoryService(SystemEventsService, systemInformationService, apiService, SettingsService);
-            AreaService = new AreaRepositoryService(ComponentService, AutomationService, SystemEventsService, systemInformationService, apiService, SettingsService);
+            AutomationService = new AutomationRegistryService(SystemEventsService, systemInformationService, apiService);
+            ComponentService = new ComponentRegistryService(SystemEventsService, systemInformationService, apiService, SettingsService);
+            AreaService = new AreaRegistryService(ComponentService, AutomationService, SystemEventsService, systemInformationService, apiService, SettingsService);
         }
 
         public ISettingsService SettingsService { get; }
@@ -61,10 +61,10 @@ namespace HA4IoT.Tests.Mockups
         public ISchedulerService SchedulerService { get; }
         public IDateTimeService DateTimeService { get; }
         public IDaylightService DaylightService { get; }
-        public IComponentRepositoryService ComponentService { get; }
-        public IAutomationService AutomationService { get; }
+        public IComponentRegistryService ComponentService { get; }
+        public IAutomationRegistryService AutomationService { get; }
         public INotificationService NotificationService { get; }
-        public IAreaRespositoryService AreaService { get; }
+        public IAreaRegistryService AreaService { get; }
         public IApiDispatcherService ApiService { get; }
 
         public event EventHandler StartupCompleted;

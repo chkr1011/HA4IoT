@@ -5,10 +5,12 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services.System;
+using HA4IoT.Controller.Local.Controls;
 using HA4IoT.Core;
 
 namespace HA4IoT.Controller.Local
@@ -25,7 +27,7 @@ namespace HA4IoT.Controller.Local
 
             var options = new ControllerOptions
             {
-                ConfigurationType = typeof(Initializer),
+                ConfigurationType = typeof(Configuration),
                 ContainerConfigurator = new ContainerConfigurator(this),
                 HttpServerPort = 1025
             };
@@ -64,15 +66,17 @@ namespace HA4IoT.Controller.Local
                 CoreDispatcherPriority.Normal,
                 () =>
                 {
-                    var checkBox = new CheckBox();
-                    checkBox.IsEnabled = false;
-                    checkBox.Content = caption;
+                    var checkBox = new CheckBox
+                    {
+                        IsEnabled = false,
+                        Content = caption
+                    };
 
-                    var endpoint = new CheckBoxBinaryStateEndpoint(checkBox);
+                    var adapter = new UICheckBoxAdapter(checkBox);
 
                     DemoLampsStackPanel.Children.Add(checkBox);
 
-                    result = endpoint;
+                    result = adapter;
                 });
 
             return result;

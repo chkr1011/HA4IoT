@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.System.Threading;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
@@ -14,6 +13,7 @@ using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Services.Scheduling
 {
+    [ApiServiceClass(typeof(ISchedulerService))]
     public class SchedulerService : ServiceBase, ISchedulerService
     {
         private readonly object _syncRoot = new object();
@@ -43,14 +43,8 @@ namespace HA4IoT.Services.Scheduling
             return new TimedAction(dueTime, TimeSpan.Zero, _timerService);
         }
 
-        public void In(TimeSpan dueTime, Action action)
-        {
-            if (action == null) throw new ArgumentNullException(nameof(action));
-
-            ThreadPoolTimer.CreateTimer(p => action(), dueTime);
-        }
-
-        public void HandleApiCall(IApiContext apiContext)
+        [ApiMethod]
+        public void GetSchedules(IApiContext apiContext)
         {
             lock (_syncRoot)
             {

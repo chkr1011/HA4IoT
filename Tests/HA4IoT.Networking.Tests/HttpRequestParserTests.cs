@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using HA4IoT.Contracts.Networking.Http;
 using HA4IoT.Networking.Http;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -12,15 +11,14 @@ namespace HA4IoT.Networking.Tests
         [TestMethod]
         public void Parse_HttpRequest()
         {
-            var parser = new HttpRequestParser();
-
             var buffer = Encoding.UTF8.GetBytes(GetRequestText());
-            
+            var parser = new HttpRequestParser(buffer, buffer.Length);
+
             HttpRequest request;
-            Assert.AreEqual(true, parser.TryParse(buffer, buffer.Length, out request), "Parse failed.");
+            Assert.AreEqual(true, parser.TryParse(out request), "Parse failed.");
             Assert.AreEqual(HttpMethod.Delete, request.Method);
             Assert.AreEqual("/Uri%20/lalalo323/_/-/+/%/@/&/./~/:/#/;/,/*", request.Uri);
-            Assert.AreEqual("Body123{}%!(:<>=", request.Body);
+            Assert.AreEqual("Body123{}%!(:<>=", Encoding.UTF8.GetString(request.Body));
             Assert.AreEqual(new Version(1, 1), request.HttpVersion);
             Assert.AreEqual("localhost:2400", request.Headers["Host"]);
             Assert.AreEqual("keep-alive", request.Headers["Connection"]);
@@ -31,7 +29,7 @@ namespace HA4IoT.Networking.Tests
             Assert.AreEqual("de,en-US;q=0.8,en;q=0.6,de-DE;q=0.4", request.Headers["Accept-Language"]);
         }
 
-        private string GetRequestText()
+        private static string GetRequestText()
         {
             return @"DELETE /Uri%20/lalalo323/_/-/+/%/@/&/./~/:/#/;/,/* HTTP/1.1
 Host: localhost:2400

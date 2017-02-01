@@ -3,7 +3,7 @@ using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Contracts.Services.System
 {
-    public interface IDeviceService : IService
+    public interface IDeviceRegistryService : IService
     {
         void AddDevice(IDevice device);
 

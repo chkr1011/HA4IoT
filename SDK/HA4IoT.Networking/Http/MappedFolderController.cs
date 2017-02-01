@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using HA4IoT.Contracts.Networking.Http;
 
 namespace HA4IoT.Networking.Http
 {
@@ -11,7 +10,7 @@ namespace HA4IoT.Networking.Http
         private readonly string _name;
         private readonly string _rootFolder;
 
-        public MappedFolderController(string name, string rootFolder, HttpServer httpServer) 
+        public MappedFolderController(string name, string rootFolder, HttpServer httpServer)
             : base(name, httpServer)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
@@ -21,7 +20,7 @@ namespace HA4IoT.Networking.Http
             _rootFolder = rootFolder;
         }
 
-        public string DefaultFile { get; } = "index.html";
+        public string DefaultFile { get; } = "Index.html";
 
         public void Enable()
         {
@@ -40,7 +39,7 @@ namespace HA4IoT.Networking.Http
 
             if (File.Exists(filename))
             {
-                LoadFile(filename, httpContext);
+                httpContext.Response.Body = LoadFile(filename);
             }
             else
             {
@@ -57,40 +56,39 @@ namespace HA4IoT.Networking.Http
                 return;
             }
 
-            string path = Path.GetDirectoryName(filename);
+            var path = Path.GetDirectoryName(filename);
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
 
-            File.WriteAllText(filename, httpContext.Request.Body, Encoding.UTF8);
+            File.WriteAllBytes(filename, httpContext.Request.Body ?? new byte[0]);
         }
 
-        private void LoadFile(string filename, HttpContext httpContext)
+        private BinaryBody LoadFile(string filename)
         {
-            byte[] fileContent = File.ReadAllBytes(filename);
-            string mimeType = _mimeTypeProvider.GetMimeTypeFromFile(filename);
+            var fileContent = File.ReadAllBytes(filename);
+            var mimeType = _mimeTypeProvider.GetMimeTypeFromFile(filename);
 
-            httpContext.Response.Body = new BinaryBody(fileContent).WithMimeType(mimeType);
+            return new BinaryBody { Content = fileContent, MimeType = mimeType };
         }
 
         private bool TryGetFilename(HttpContext httpContext, out string filename)
         {
             filename = null;
 
-            string relativeUrl = Uri.UnescapeDataString(httpContext.Request.Uri);
-            relativeUrl = relativeUrl.Trim('/');
+            var relativeUrl = Uri.UnescapeDataString(httpContext.Request.Uri);
+            relativeUrl = relativeUrl.TrimStart('/');
 
-            bool urlAffectsDifferentController = !relativeUrl.StartsWith(_name, StringComparison.OrdinalIgnoreCase);
+            var urlAffectsDifferentController = !relativeUrl.StartsWith(_name, StringComparison.OrdinalIgnoreCase);
             if (urlAffectsDifferentController)
             {
                 return false;
             }
-            
-            bool urlContainsNoFile = relativeUrl.Equals(_name, StringComparison.OrdinalIgnoreCase);
-            if (urlContainsNoFile)
+
+            if (relativeUrl.EndsWith("/"))
             {
-                relativeUrl += "/" + DefaultFile;
+                relativeUrl += DefaultFile;
             }
 
             relativeUrl = relativeUrl.Substring(_name.Length).Trim('/');

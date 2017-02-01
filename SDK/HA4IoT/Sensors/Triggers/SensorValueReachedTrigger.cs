@@ -1,6 +1,6 @@
 ﻿using System;
-using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Triggers;
 
 namespace HA4IoT.Sensors.Triggers
 {

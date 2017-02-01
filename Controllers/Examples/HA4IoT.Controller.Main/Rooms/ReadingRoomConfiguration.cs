@@ -18,8 +18,8 @@ namespace HA4IoT.Controller.Main.Rooms
 {
     internal class ReadingRoomConfiguration
     {
-        private readonly IAreaRespositoryService _areaService;
-        private readonly IDeviceService _deviceService;
+        private readonly IAreaRegistryService _areaService;
+        private readonly IDeviceRegistryService _deviceService;
         private readonly CCToolsBoardService _ccToolsBoardService;
         private readonly AutomationFactory _automationFactory;
         private readonly ActuatorFactory _actuatorFactory;
@@ -47,8 +47,8 @@ namespace HA4IoT.Controller.Main.Rooms
         }
 
         public ReadingRoomConfiguration(
-            IAreaRespositoryService areaService,
-            IDeviceService deviceService,
+            IAreaRegistryService areaService,
+            IDeviceRegistryService deviceService,
             CCToolsBoardService ccToolsBoardService,
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
@@ -77,7 +77,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 9;
 
-            var area = _areaService.CreateArea(Room.ReadingRoom);
+            var area = _areaService.RegisterArea(Room.ReadingRoom);
 
             _sensorFactory.RegisterWindow(area, ReadingRoom.Window, w => w.WithCenterCasement(input2.GetInput(8))); // Tilt = input2.GetInput(9) -- currently broken!
 

@@ -95,14 +95,15 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="CheckboxBinaryStateEndpoint.cs" />
-    <Compile Include="Initializer.cs" />
+    <Compile Include="Controls\UICheckboxAdapter.cs" />
+    <Compile Include="Configuration.cs" />
+    <Compile Include="Converter\LampStateToColorConverter.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TextBoxLogger.cs" />
-    <Compile Include="UIButtonButtonEndpoint.cs" />
+    <Compile Include="Controls\UIButtonButtonAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">

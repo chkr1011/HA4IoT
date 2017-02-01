@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Sensors;
 
@@ -15,7 +16,7 @@ namespace HA4IoT.Sensors.MotionDetectors
 
         public event EventHandler MotionDetected;
 
-        public event EventHandler DetectionCompleted;
+        public event EventHandler MotionDetectionCompleted;
 
         private void DispatchEvents(object sender, BinaryStateChangedEventArgs eventArgs)
         {
@@ -27,7 +28,7 @@ namespace HA4IoT.Sensors.MotionDetectors
             }
             else
             {
-                DetectionCompleted?.Invoke(this, EventArgs.Empty);
+                MotionDetectionCompleted?.Invoke(this, EventArgs.Empty);
             }
         }
     }

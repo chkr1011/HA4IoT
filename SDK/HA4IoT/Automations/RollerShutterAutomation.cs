@@ -23,7 +23,7 @@ namespace HA4IoT.Automations
         private readonly IDateTimeService _dateTimeService;
         private readonly IDaylightService _daylightService;
         private readonly IOutdoorTemperatureService _outdoorTemperatureService;
-        private readonly IComponentRepositoryService _componentService;
+        private readonly IComponentRegistryService _componentService;
         private readonly ISettingsService _settingsService;
 
         private bool _maxOutsideTemperatureApplied;
@@ -37,7 +37,7 @@ namespace HA4IoT.Automations
             IDateTimeService dateTimeService,
             IDaylightService daylightService,
             IOutdoorTemperatureService outdoorTemperatureService,
-            IComponentRepositoryService componentService,
+            IComponentRegistryService componentRegistry,
             ISettingsService settingsService,
             IResourceService resourceService)
             : base(id)
@@ -46,7 +46,7 @@ namespace HA4IoT.Automations
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
             if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
             if (outdoorTemperatureService == null) throw new ArgumentNullException(nameof(outdoorTemperatureService));
-            if (componentService == null) throw new ArgumentNullException(nameof(componentService));
+            if (componentRegistry == null) throw new ArgumentNullException(nameof(componentRegistry));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             if (resourceService == null) throw new ArgumentNullException(nameof(resourceService));
 
@@ -54,9 +54,9 @@ namespace HA4IoT.Automations
             _dateTimeService = dateTimeService;
             _daylightService = daylightService;
             _outdoorTemperatureService = outdoorTemperatureService;
-            _componentService = componentService;
+            _componentService = componentRegistry;
             _settingsService = settingsService;
-            _componentService = componentService;
+            _componentService = componentRegistry;
 
             resourceService.RegisterText(
                 RollerShutterAutomationNotification.AutoClosingDueToHighOutsideTemperature, 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using HA4IoT.Actuators.Triggers;
+using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
@@ -10,7 +10,7 @@ using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Triggers;
-using HA4IoT.FeatureRebuild.Triggers;
+using HA4IoT.Triggers;
 
 namespace HA4IoT.Sensors.Buttons
 {

@@ -1,6 +1,5 @@
 ﻿using System;
 using HA4IoT.Actuators.StateMachines;
-using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Sensors;
 

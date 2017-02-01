@@ -23,6 +23,7 @@ namespace HA4IoT.Hardware
             DeviceInformationCollection deviceInformation = DeviceInformation.FindAllAsync(deviceSelector).AsTask().Result;
             if (deviceInformation.Count == 0)
             {
+                // TODO: Allow local controller to replace this. Then throw exception again.
                 //throw new InvalidOperationException("I2C bus not found.");
                 return;
             }
@@ -66,9 +67,11 @@ namespace HA4IoT.Hardware
             I2cDevice device;
             if (!useCache || !_deviceCache.TryGetValue(address, out device))
             {
-                var settings = new I2cConnectionSettings(address);
-                settings.BusSpeed = I2cBusSpeed.StandardMode;
-                settings.SharingMode = I2cSharingMode.Exclusive;
+                var settings = new I2cConnectionSettings(address)
+                {
+                    BusSpeed = I2cBusSpeed.StandardMode,
+                    SharingMode = I2cSharingMode.Exclusive
+                };
 
                 device = I2cDevice.FromIdAsync(_i2CBusId, settings).AsTask().Result;
 

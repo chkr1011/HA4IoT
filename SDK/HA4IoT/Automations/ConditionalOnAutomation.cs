@@ -1,12 +1,12 @@
 ﻿using System;
 using HA4IoT.Actuators.StateMachines;
-using HA4IoT.Actuators.Triggers;
 using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.System;
+using HA4IoT.Triggers;
 
 namespace HA4IoT.Automations
 {

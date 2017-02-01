@@ -1,5 +1,4 @@
 ﻿using System;
-using HA4IoT.Contracts.Networking.Http;
 
 namespace HA4IoT.Networking.Http
 {
@@ -14,12 +13,12 @@ namespace HA4IoT.Networking.Http
                 return false;
             }
             
-            if (httpRequest.Headers[HttpHeaderNames.ContentLength] != httpRequest.BinaryBodyLength.ToString())
+            if (httpRequest.Headers[HttpHeaderNames.ContentLength] != httpRequest.Body?.Length.ToString())
             {
                 return true;
             }
 
-            return httpRequest.Headers.GetRequiresContinue();
+            return httpRequest.Headers.RequiresContinue();
         }
     }
 }

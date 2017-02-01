@@ -10,6 +10,10 @@ namespace HA4IoT.Contracts.Areas
             if (string.IsNullOrEmpty(value)) throw new ArgumentException("Area ID is invalid.");
         }
 
+        public AreaId(Enum value) : this(value.ToString())
+        {
+        }
+
         public bool Equals(AreaId other)
         {
             if (other == null)

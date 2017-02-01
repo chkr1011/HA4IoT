@@ -23,8 +23,8 @@ namespace HA4IoT.PersonalAgent
     public class PersonalAgentService : ServiceBase, IPersonalAgentService
     {
         private readonly ISettingsService _settingsService;
-        private readonly IComponentRepositoryService _componentService;
-        private readonly IAreaRespositoryService _areaService;
+        private readonly IComponentRegistryService _componentsRegistry;
+        private readonly IAreaRegistryService _areaService;
         private readonly IWeatherService _weatherService;
         private readonly IOutdoorTemperatureService _outdoorTemperatureService;
         private readonly IOutdoorHumidityService _outdoorHumidityService;
@@ -33,21 +33,21 @@ namespace HA4IoT.PersonalAgent
 
         public PersonalAgentService(
             ISettingsService settingsService,
-            IComponentRepositoryService componentService,
-            IAreaRespositoryService areaService,
+            IComponentRegistryService componentRegistry,
+            IAreaRegistryService areaService,
             IWeatherService weatherService,
             IOutdoorTemperatureService outdoorTemperatureService,
             IOutdoorHumidityService outdoorHumidityService)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-            if (componentService == null) throw new ArgumentNullException(nameof(componentService));
+            if (componentRegistry == null) throw new ArgumentNullException(nameof(componentRegistry));
             if (areaService == null) throw new ArgumentNullException(nameof(areaService));
             if (weatherService == null) throw new ArgumentNullException(nameof(weatherService));
             if (outdoorTemperatureService == null) throw new ArgumentNullException(nameof(outdoorTemperatureService));
             if (outdoorHumidityService == null) throw new ArgumentNullException(nameof(outdoorHumidityService));
 
             _settingsService = settingsService;
-            _componentService = componentService;
+            _componentsRegistry = componentRegistry;
             _areaService = areaService;
             _weatherService = weatherService;
             _outdoorTemperatureService = outdoorTemperatureService;
@@ -59,7 +59,7 @@ namespace HA4IoT.PersonalAgent
         {
             var request = apiContext.Parameter.ToObject<SkillServiceRequest>();
 
-            var messageContextFactory = new MessageContextFactory(_areaService, _componentService, _settingsService);
+            var messageContextFactory = new MessageContextFactory(_areaService, _componentsRegistry, _settingsService);
             var messageContext = messageContextFactory.Create(request);
 
             ProcessMessage(messageContext);
@@ -87,7 +87,7 @@ namespace HA4IoT.PersonalAgent
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
-            var messageContextFactory = new MessageContextFactory(_areaService, _componentService, _settingsService);
+            var messageContextFactory = new MessageContextFactory(_areaService, _componentsRegistry, _settingsService);
             var messageContext = messageContextFactory.Create(text);
 
             ProcessMessage(messageContext);
@@ -158,7 +158,7 @@ namespace HA4IoT.PersonalAgent
 
             if (messageContext.AffectedComponentIds.Count == 1)
             {
-                var component = _componentService.GetComponent<IComponent>(messageContext.AffectedComponentIds.First());
+                var component = _componentsRegistry.GetComponent<IComponent>(messageContext.AffectedComponentIds.First());
 
                 var actuator = component as IActuator;
                 if (actuator != null)
@@ -210,7 +210,7 @@ namespace HA4IoT.PersonalAgent
 
         private string GetWindowStatus()
         {
-            var allWindows = _componentService.GetComponents<IWindow>();
+            var allWindows = _componentsRegistry.GetComponents<IWindow>();
             var openWindows = allWindows.Where(w => w.Casements.Any(c => !c.GetState().Equals(CasementStateId.Closed))).ToList();
 
             string response;

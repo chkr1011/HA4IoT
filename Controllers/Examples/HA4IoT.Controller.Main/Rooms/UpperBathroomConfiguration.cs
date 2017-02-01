@@ -21,9 +21,9 @@ namespace HA4IoT.Controller.Main.Rooms
     internal class UpperBathroomConfiguration
     {
         private readonly CCToolsBoardService _ccToolsBoardService;
-        private readonly IDeviceService _deviceService;
+        private readonly IDeviceRegistryService _deviceService;
         private readonly ISchedulerService _schedulerService;
-        private readonly IAreaRespositoryService _areaService;
+        private readonly IAreaRegistryService _areaService;
         private readonly ISettingsService _settingsService;
         private readonly AutomationFactory _automationFactory;
         private readonly ActuatorFactory _actuatorFactory;
@@ -49,9 +49,9 @@ namespace HA4IoT.Controller.Main.Rooms
 
         public UpperBathroomConfiguration(
             CCToolsBoardService ccToolsBoardService,
-            IDeviceService deviceService,
+            IDeviceRegistryService deviceService,
             ISchedulerService schedulerService,
-            IAreaRespositoryService areaService,
+            IAreaRegistryService areaService,
             ISettingsService settingsService,
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
@@ -84,7 +84,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 4;
 
-            var area = _areaService.CreateArea(Room.UpperBathroom);
+            var area = _areaService.RegisterArea(Room.UpperBathroom);
 
             _actuatorFactory.RegisterStateMachine(area, UpperBathroom.Fan, (s, r) => SetupFan(s, hsrel5));
 

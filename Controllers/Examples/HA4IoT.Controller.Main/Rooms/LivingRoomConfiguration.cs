@@ -18,8 +18,8 @@ namespace HA4IoT.Controller.Main.Rooms
 {
     internal class LivingRoomConfiguration
     {
-        private readonly IDeviceService _deviceService;
-        private readonly IAreaRespositoryService _areaService;
+        private readonly IDeviceRegistryService _deviceService;
+        private readonly IAreaRegistryService _areaService;
         private readonly CCToolsBoardService _ccToolsBoardService;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
@@ -59,8 +59,8 @@ namespace HA4IoT.Controller.Main.Rooms
         }
 
         public LivingRoomConfiguration(
-            IDeviceService deviceService,
-            IAreaRespositoryService areaService,
+            IDeviceRegistryService deviceService,
+            IAreaRegistryService areaService,
             CCToolsBoardService ccToolsBoardService,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)
@@ -89,7 +89,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 12;
 
-            var area = _areaService.CreateArea(Room.LivingRoom);
+            var area = _areaService.RegisterArea(Room.LivingRoom);
 
             _sensorFactory.RegisterWindow(area, LivingRoom.WindowLeft,
                     w => w.WithLeftCasement(input0.GetInput(10), input0.GetInput(11)).WithRightCasement(input0.GetInput(9), input0.GetInput(8)));

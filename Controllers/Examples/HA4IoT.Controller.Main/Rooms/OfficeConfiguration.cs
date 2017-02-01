@@ -20,8 +20,8 @@ namespace HA4IoT.Controller.Main.Rooms
 {
     internal class OfficeConfiguration
     {
-        private readonly IDeviceService _deviceService;
-        private readonly IAreaRespositoryService _areaService;
+        private readonly IDeviceRegistryService _deviceService;
+        private readonly IAreaRegistryService _areaService;
         private readonly IDaylightService _daylightService;
         private readonly CCToolsBoardService _ccToolsBoardService;
         private readonly RemoteSocketService _remoteSocketService;
@@ -56,8 +56,8 @@ namespace HA4IoT.Controller.Main.Rooms
         }
 
         public OfficeConfiguration(
-            IDeviceService deviceService,
-            IAreaRespositoryService areaService,
+            IDeviceRegistryService deviceService,
+            IAreaRegistryService areaService,
             IDaylightService daylightService,
             CCToolsBoardService ccToolsBoardService,
             RemoteSocketService remoteSocketService,
@@ -91,7 +91,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 2;
 
-            var area = _areaService.CreateArea(Room.Office);
+            var area = _areaService.RegisterArea(Room.Office);
 
             _sensorFactory.RegisterWindow(area, Office.WindowLeft,
                 w => w.WithLeftCasement(input4.GetInput(11)).WithRightCasement(input4.GetInput(12), input4.GetInput(10)));

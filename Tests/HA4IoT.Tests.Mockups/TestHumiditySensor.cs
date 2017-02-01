@@ -7,7 +7,7 @@ namespace HA4IoT.Tests.Mockups
 {
     public class TestHumiditySensor : HumiditySensor
     {
-        public TestHumiditySensor(ComponentId id, ISettingsService settingsService, TestNumericValueSensorEndpoint endpoint) 
+        public TestHumiditySensor(ComponentId id, ISettingsService settingsService, TestSensorAdapter endpoint) 
             : base(id, settingsService, endpoint)
         {
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
@@ -15,6 +15,6 @@ namespace HA4IoT.Tests.Mockups
             Endpoint = endpoint;
         }
 
-        public TestNumericValueSensorEndpoint Endpoint{ get; }
+        public TestSensorAdapter Endpoint{ get; }
     }
 }

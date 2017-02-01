@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Tests.Mockups
@@ -6,7 +7,7 @@ namespace HA4IoT.Tests.Mockups
     public class TestMotionDetectorEndpoint : IMotionDetectorAdapter
     {
         public event EventHandler MotionDetected;
-        public event EventHandler DetectionCompleted;
+        public event EventHandler MotionDetectionCompleted;
 
         public void DetectMotion()
         {
@@ -15,7 +16,7 @@ namespace HA4IoT.Tests.Mockups
 
         public void CompleteDetection()
         {
-            DetectionCompleted?.Invoke(this, EventArgs.Empty);
+            MotionDetectionCompleted?.Invoke(this, EventArgs.Empty);
         }
     }
 }

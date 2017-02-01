@@ -52,22 +52,22 @@ namespace HA4IoT.Tests.Actuators
         [TestMethod]
         public void Toggle_Lamp()
         {
-            var endpoint = new TestBinaryStateAdapter();
-            var lamp = new Lamp(ComponentIdGenerator.EmptyId, endpoint);
+            var adapter = new TestBinaryStateAdapter();
+            var lamp = new Lamp(ComponentIdGenerator.EmptyId, adapter);
             lamp.ResetState();
 
-            endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(0);
-            endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(1);
+            adapter.TurnOnCalledCount.ShouldBeEquivalentTo(0);
+            adapter.TurnOffCalledCount.ShouldBeEquivalentTo(1);
             lamp.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
 
             lamp.SetNextState();
-            endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(1);
-            endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(1);
+            adapter.TurnOnCalledCount.ShouldBeEquivalentTo(1);
+            adapter.TurnOffCalledCount.ShouldBeEquivalentTo(1);
             lamp.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
 
             lamp.SetNextState();
-            endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(1);
-            endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(2);
+            adapter.TurnOnCalledCount.ShouldBeEquivalentTo(1);
+            adapter.TurnOffCalledCount.ShouldBeEquivalentTo(2);
             lamp.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
         }
 

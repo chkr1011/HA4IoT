@@ -1,4 +1,5 @@
-﻿using HA4IoT.Components;
+﻿using System.Collections.Generic;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Sensors;
 
@@ -13,9 +14,9 @@ namespace HA4IoT.Sensors
         {
         }
 
-        public override ComponentState GetState()
+        public override IList<ComponentState> GetState()
         {
-            return _state;
+            return new List<ComponentState> { _state };
         }
 
         protected void SetState(ComponentState newState)

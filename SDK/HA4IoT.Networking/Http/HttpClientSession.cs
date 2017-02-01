@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading;
 using Windows.Networking.Sockets;
 using Windows.Security.Cryptography.Core;
-using HA4IoT.Contracts.Networking.Http;
 using HA4IoT.Networking.Json;
 
 namespace HA4IoT.Networking.Http
@@ -18,7 +17,6 @@ namespace HA4IoT.Networking.Http
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly byte[] _buffer = new byte[RequestBufferSize];
 
-        private readonly HttpRequestParser _requestParser = new HttpRequestParser();
         private readonly HttpResponseSerializer _responseSerializer = new HttpResponseSerializer();
 
         private readonly StreamSocket _client;
@@ -84,7 +82,7 @@ namespace HA4IoT.Networking.Http
             ProcessHttpRequest(context);
             SendResponse(context);
 
-            if (context.Response.Headers.GetConnectionMustBeClosed())
+            if (context.Response.Headers.ConnectionMustBeClosed())
             {
                 _cancellationTokenSource.Cancel();
             }
@@ -102,7 +100,7 @@ namespace HA4IoT.Networking.Http
                     return false;
                 }
 
-                if (!_requestParser.TryParse(_buffer, receivedBytes, out httpRequest))
+                if (!new HttpRequestParser(_buffer, receivedBytes).TryParse(out httpRequest))
                 {
                     return false;
                 }
@@ -117,7 +115,7 @@ namespace HA4IoT.Networking.Http
 
                     receivedBytes += additionalReceivedBytes;
 
-                    if (!_requestParser.TryParse(_buffer, receivedBytes, out httpRequest))
+                    if (!new HttpRequestParser(_buffer, receivedBytes).TryParse(out httpRequest))
                     {
                         return false;
                     }
@@ -157,7 +155,7 @@ namespace HA4IoT.Networking.Http
         {
             context.Response.Headers[HttpHeaderNames.AccessControlAllowOrigin] = "*";
 
-            if (context.Request.Headers.GetConnectionMustBeClosed())
+            if (context.Request.Headers.ConnectionMustBeClosed())
             {
                 context.Response.Headers[HttpHeaderNames.Connection] = "close";
             }
@@ -165,14 +163,14 @@ namespace HA4IoT.Networking.Http
 
         private async void SendResponse(HttpContext context)
         {
+            var response = _responseSerializer.SerializeResponse(context);
+
             try
             {
-                var response = _responseSerializer.SerializeResponse(context);
-
                 await _client.OutputStream.WriteAsync(response.AsBuffer());
                 await _client.OutputStream.FlushAsync();
             }
-            catch (IOException)
+            catch (Exception)
             {  
             }
         }

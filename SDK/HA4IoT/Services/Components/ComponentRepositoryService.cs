@@ -12,8 +12,8 @@ using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Services.Components
 {
-    [ApiServiceClass(typeof(IComponentRepositoryService))]
-    public class ComponentRepositoryService : ServiceBase, IComponentRepositoryService
+    [ApiServiceClass(typeof(IComponentRegistryService))]
+    public class ComponentRegistryService : ServiceBase, IComponentRegistryService
     {
         private readonly ComponentCollection _components = new ComponentCollection();
 
@@ -21,7 +21,7 @@ namespace HA4IoT.Services.Components
         private readonly IApiDispatcherService _apiService;
         private readonly ISettingsService _settingsService;
 
-        public ComponentRepositoryService(
+        public ComponentRegistryService(
             ISystemEventsService systemEventsService,
             ISystemInformationService systemInformationService,
             IApiDispatcherService apiService,

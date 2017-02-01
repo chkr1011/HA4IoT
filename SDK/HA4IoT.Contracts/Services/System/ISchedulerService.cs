@@ -7,8 +7,6 @@ namespace HA4IoT.Contracts.Services.System
     {
         TimedAction In(TimeSpan dueTime);
 
-        void In(TimeSpan dueTime, Action action);
-
         void RegisterSchedule(string name, TimeSpan interval, Action action);
     }
 }

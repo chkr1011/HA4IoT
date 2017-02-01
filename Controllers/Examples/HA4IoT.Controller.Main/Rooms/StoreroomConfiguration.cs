@@ -17,8 +17,8 @@ namespace HA4IoT.Controller.Main.Rooms
 {
     internal class StoreroomConfiguration
     {
-        private readonly IAreaRespositoryService _areaService;
-        private readonly IDeviceService _deviceService;
+        private readonly IAreaRegistryService _areaService;
+        private readonly IDeviceRegistryService _deviceService;
         private readonly CCToolsBoardService _ccToolsBoardService;
         private readonly ITimerService _timerService;
         private readonly ITwitterClientService _twitterClientService;
@@ -41,8 +41,8 @@ namespace HA4IoT.Controller.Main.Rooms
         }
 
         public StoreroomConfiguration(
-            IAreaRespositoryService areaService,
-            IDeviceService deviceService,
+            IAreaRegistryService areaService,
+            IDeviceRegistryService deviceService,
             CCToolsBoardService ccToolsBoardService,
             ITimerService timerService,
             ITwitterClientService twitterClientService,
@@ -77,7 +77,7 @@ namespace HA4IoT.Controller.Main.Rooms
             var hsrel5Stairway = _deviceService.GetDevice<HSREL5>(InstalledDevice.StairwayHSREL5);
             var input3 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input3);
 
-            var room = _areaService.CreateArea(Room.Storeroom);
+            var room = _areaService.RegisterArea(Room.Storeroom);
 
             _actuatorFactory.RegisterLamp(room, Storeroom.LightCeiling, hsrel5Stairway[HSREL5Pin.GPIO1]);
 

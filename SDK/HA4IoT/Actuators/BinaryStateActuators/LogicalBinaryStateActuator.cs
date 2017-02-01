@@ -49,9 +49,9 @@ namespace HA4IoT.Actuators.BinaryStateActuators
             return this;
         }
 
-        public override ComponentState GetState()
+        public override IList<ComponentState> GetState()
         {
-            return _state;
+            return new List<ComponentState> { _state };
         }
 
         public override void ResetState()

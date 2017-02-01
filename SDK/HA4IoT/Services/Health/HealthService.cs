@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
@@ -8,28 +9,25 @@ using HA4IoT.Contracts.Hardware.Services;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Core;
-using HA4IoT.Services.System;
 
 namespace HA4IoT.Services.Health
 {
     [ApiServiceClass(typeof(HealthService))]
     public class HealthService : ServiceBase, IHealthService
     {
+        private readonly ControllerOptions _controllerOptions;
+        private readonly IGpioService _pi2GpioService;
+        private readonly ITimerService _timerService;
         private readonly ISystemInformationService _systemInformationService;
 
-        private readonly List<int> _durations = new List<int>(100);
-        private readonly Timeout _ledTimeout = new Timeout();
-        private readonly IBinaryOutput _led;
+        private readonly List<int> _timerDurations = new List<int>(100);
         private float? _averageTimerDuration;
-
-        private bool _ledState;
         private float? _maxTimerDuration;
-
         private float? _minTimerDuration;
 
         public HealthService(
             ControllerOptions controllerOptions, 
-            IPi2GpioService pi2GpioService,
+            IGpioService pi2GpioService,
             ITimerService timerService, 
             ISystemInformationService systemInformationService)
         {
@@ -37,15 +35,45 @@ namespace HA4IoT.Services.Health
             if (timerService == null) throw new ArgumentNullException(nameof(timerService));
             if (systemInformationService == null) throw new ArgumentNullException(nameof(systemInformationService));
 
+            _controllerOptions = controllerOptions;
+            _pi2GpioService = pi2GpioService;
+            _timerService = timerService;
             _systemInformationService = systemInformationService;
+        }
 
-            if (controllerOptions.StatusLedNumber.HasValue)
+        public override void Startup()
+        {
+            Task.Factory.StartNew(BlinkLed, TaskCreationOptions.LongRunning);
+            _timerService.Tick += Tick;
+        }
+
+        private async void BlinkLed()
+        {
+            if (!_controllerOptions.StatusLedNumber.HasValue)
             {
-                _led = pi2GpioService.GetOutput(controllerOptions.StatusLedNumber.Value);
-                _ledTimeout.Start(TimeSpan.FromMilliseconds(1));
+                return;
             }
-            
-            timerService.Tick += Tick;
+
+            var led = _pi2GpioService.GetOutput(_controllerOptions.StatusLedNumber.Value);
+            led.Write(BinaryState.Low);
+
+            var ledState = false;
+
+            while (true)
+            {
+                if (ledState)
+                {
+                    led.Write(BinaryState.High);
+                    await Task.Delay(TimeSpan.FromSeconds(5));
+                }
+                else
+                {
+                    led.Write(BinaryState.Low);
+                    await Task.Delay(TimeSpan.FromMilliseconds(200));
+                }
+
+                ledState = !ledState;
+            }
         }
 
         [ApiMethod]
@@ -63,20 +91,11 @@ namespace HA4IoT.Services.Health
 
         private void Tick(object sender, TimerTickEventArgs e)
         {
-            if (_ledTimeout.IsRunning)
+            _timerDurations.Add((int)e.ElapsedTime.TotalMilliseconds);
+            if (_timerDurations.Count == _timerDurations.Capacity)
             {
-                _ledTimeout.Tick(e.ElapsedTime);
-                if (_ledTimeout.IsElapsed)
-                {
-                    ToggleStatusLed();
-                }
-            }
-
-            _durations.Add((int)e.ElapsedTime.TotalMilliseconds);
-            if (_durations.Count == _durations.Capacity)
-            {
-                _averageTimerDuration = _durations.Sum() / (float)_durations.Count;
-                _durations.Clear();
+                _averageTimerDuration = _timerDurations.Sum() / (float)_timerDurations.Count;
+                _timerDurations.Clear();
 
                 _systemInformationService.Set("Health/SystemTime", DateTime.Now);
 
@@ -92,22 +111,6 @@ namespace HA4IoT.Services.Health
                     _systemInformationService.Set("Health/TimerDurationAverageMin", _averageTimerDuration);
                 }
             }
-        }
-
-        private void ToggleStatusLed()
-        {
-            if (_ledState)
-            {
-                _led.Write(BinaryState.High);
-                _ledTimeout.Start(TimeSpan.FromSeconds(5));
-            }
-            else
-            {
-                _led.Write(BinaryState.Low);
-                _ledTimeout.Start(TimeSpan.FromMilliseconds(200));
-            }
-
-            _ledState = !_ledState;
         }
     }
 }

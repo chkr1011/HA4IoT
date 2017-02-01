@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using HA4IoT.Actuators.StateMachines;
-using HA4IoT.Actuators.Triggers;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Sensors.Triggers;
@@ -8,6 +7,7 @@ using HA4IoT.Services.Backup;
 using HA4IoT.Services.StorageService;
 using HA4IoT.Settings;
 using HA4IoT.Tests.Mockups;
+using HA4IoT.Triggers;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace HA4IoT.Tests.Actuators
@@ -37,7 +37,7 @@ namespace HA4IoT.Tests.Actuators
         [TestMethod]
         public void SensorValueReached_Trigger()
         {
-            var sensor = new TestTemperatureSensor(ComponentIdGenerator.EmptyId, new SettingsService(new BackupService(), new StorageService()), new TestNumericValueSensorEndpoint());
+            var sensor = new TestTemperatureSensor(ComponentIdGenerator.EmptyId, new SettingsService(new BackupService(), new StorageService()), new TestSensorAdapter());
             var trigger = new SensorValueReachedTrigger(sensor);
             trigger.Target = 10.2F;
             trigger.Delta = 3.0F;
@@ -70,7 +70,7 @@ namespace HA4IoT.Tests.Actuators
         [TestMethod]
         public void SensorValueUnderran_Trigger()
         {
-            var sensor = new TestTemperatureSensor(ComponentIdGenerator.EmptyId, new SettingsService(new BackupService(), new StorageService()), new TestNumericValueSensorEndpoint());
+            var sensor = new TestTemperatureSensor(ComponentIdGenerator.EmptyId, new SettingsService(new BackupService(), new StorageService()), new TestSensorAdapter());
             var trigger = new SensorValueUnderranTrigger(sensor);
             trigger.Target = 10F;
             trigger.Delta = 3F;

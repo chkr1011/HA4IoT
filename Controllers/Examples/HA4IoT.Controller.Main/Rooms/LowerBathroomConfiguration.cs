@@ -17,9 +17,9 @@ namespace HA4IoT.Controller.Main.Rooms
 {
     internal class LowerBathroomConfiguration
     {
-        private readonly IDeviceService _deviceService;
+        private readonly IDeviceRegistryService _deviceService;
         private readonly ISchedulerService _schedulerService;
-        private readonly IAreaRespositoryService _areaService;
+        private readonly IAreaRegistryService _areaService;
         private readonly AutomationFactory _automationFactory;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
@@ -45,9 +45,9 @@ namespace HA4IoT.Controller.Main.Rooms
         }
 
         public LowerBathroomConfiguration(
-            IDeviceService deviceService,
+            IDeviceRegistryService deviceService,
             ISchedulerService schedulerService,
-            IAreaRespositoryService areaService,
+            IAreaRegistryService areaService,
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)
@@ -75,7 +75,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 3;
 
-            var area = _areaService.CreateArea(Room.LowerBathroom);
+            var area = _areaService.RegisterArea(Room.LowerBathroom);
 
             _sensorFactory.RegisterWindow(area, LowerBathroom.Window, w => w.WithCenterCasement(input3.GetInput(13), input3.GetInput(14)));
 

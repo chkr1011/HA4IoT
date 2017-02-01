@@ -6,8 +6,8 @@ namespace HA4IoT.Actuators.Lamps
 {
     public class Lamp : BinaryStateActuator, ILamp
     {
-        public Lamp(ComponentId id, IBinaryOutputComponentAdapter endpoint)
-            : base(id, endpoint)
+        public Lamp(ComponentId id, IBinaryOutputComponentAdapter adapter) // TODO: ILampAdapter
+            : base(id, adapter)
         {
         }
     }

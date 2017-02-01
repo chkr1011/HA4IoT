@@ -16,7 +16,6 @@ namespace HA4IoT.Networking.Http
         {
             _serverSocket.Control.KeepAlive = true;
             _serverSocket.Control.NoDelay = true;
-            _serverSocket.Control.QualityOfService = SocketQualityOfService.LowLatency;
 
             _serverSocket.ConnectionReceived += HandleConnection;
         }

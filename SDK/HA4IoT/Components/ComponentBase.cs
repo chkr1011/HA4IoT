@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
@@ -20,7 +21,7 @@ namespace HA4IoT.Components
 
         public ComponentId Id { get; }
 
-        public abstract ComponentState GetState();
+        public abstract IList<ComponentState> GetState();
 
         public abstract IList<ComponentState> GetSupportedStates();
 
@@ -42,7 +43,7 @@ namespace HA4IoT.Components
         {
             var status = new JObject
             {
-                ["State"] = GetState().JToken
+                ["State"] = JObject.FromObject(GetState().ToDictionary(i => i.GetType().Name, i => i))
             };
 
             return status;

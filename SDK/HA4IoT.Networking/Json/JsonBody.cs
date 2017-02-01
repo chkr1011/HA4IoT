@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using HA4IoT.Contracts.Networking.Http;
 using HA4IoT.Networking.Http;
 using Newtonsoft.Json.Linq;
 

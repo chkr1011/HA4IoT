@@ -23,8 +23,8 @@ namespace HA4IoT.Controller.Main.Rooms
 {
     internal class FloorConfiguration
     {
-        private readonly IAreaRespositoryService _areaService;
-        private readonly IDeviceService _deviceService;
+        private readonly IAreaRegistryService _areaService;
+        private readonly IDeviceRegistryService _deviceService;
         private readonly CCToolsBoardService _ccToolsBoardService;
         private readonly AutomationFactory _automationFactory;
         private readonly ActuatorFactory _actuatorFactory;
@@ -71,8 +71,8 @@ namespace HA4IoT.Controller.Main.Rooms
         }
 
         public FloorConfiguration(
-            IAreaRespositoryService areaService,
-            IDeviceService deviceService,
+            IAreaRegistryService areaService,
+            IDeviceRegistryService deviceService,
             CCToolsBoardService ccToolsBoardService,
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
@@ -106,7 +106,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 5;
 
-            var area = _areaService.CreateArea(Room.Floor);
+            var area = _areaService.RegisterArea(Room.Floor);
 
             _sensorFactory.RegisterTemperatureSensor(area, Floor.LowerFloorTemperatureSensor,
                 i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));

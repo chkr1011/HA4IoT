@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
@@ -10,7 +11,7 @@ using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using Newtonsoft.Json.Linq;
-using Action = HA4IoT.Actuators.Actions.Action;
+using Action = HA4IoT.Actions.Action;
 
 namespace HA4IoT.Actuators.RollerShutters
 {
@@ -20,7 +21,7 @@ namespace HA4IoT.Actuators.RollerShutters
         private readonly IRollerShutterAdapter _endpoint;
 
         private readonly ISchedulerService _schedulerService;
-        
+
         private readonly IAction _startMoveUpAction;
         private readonly IAction _turnOffAction;
         private readonly IAction _startMoveDownAction;
@@ -31,7 +32,7 @@ namespace HA4IoT.Actuators.RollerShutters
         private int _position;
 
         public RollerShutter(
-            ComponentId id, 
+            ComponentId id,
             IRollerShutterAdapter endpoint,
             ITimerService timerService,
             ISchedulerService schedulerService,
@@ -60,7 +61,7 @@ namespace HA4IoT.Actuators.RollerShutters
         public RollerShutterSettings Settings { get; private set; }
 
         public bool IsClosed => _position == Settings.MaxPosition;
-        
+
         public IAction GetTurnOffAction()
         {
             return _turnOffAction;
@@ -84,9 +85,9 @@ namespace HA4IoT.Actuators.RollerShutters
             return status;
         }
 
-        public override ComponentState GetState()
+        public override IList<ComponentState> GetState()
         {
-            return _state;
+            return new List<ComponentState> { _state };
         }
 
         public override void ResetState()
@@ -127,7 +128,7 @@ namespace HA4IoT.Actuators.RollerShutters
                 return;
             }
 
-            var newState = new ComponentState((string) apiContext.Parameter["State"]);
+            var newState = new ComponentState((string)apiContext.Parameter["State"]);
             SetState(newState);
         }
 
@@ -166,7 +167,7 @@ namespace HA4IoT.Actuators.RollerShutters
             {
                 _position = 0;
             }
-            
+
             if (_position > Settings.MaxPosition)
             {
                 _position = Settings.MaxPosition;

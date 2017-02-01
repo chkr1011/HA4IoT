@@ -14,16 +14,16 @@ namespace HA4IoT.Services.Status
     [ApiServiceClass(typeof(StatusService))] // TODO: Use IStatusService
     public class StatusService : ServiceBase
     {
-        private readonly IComponentRepositoryService _componentService;
+        private readonly IComponentRegistryService _componentRegistry;
         private readonly ISettingsService _settingsService;
 
-        public StatusService(IComponentRepositoryService componentService, IApiDispatcherService apiService, ISettingsService settingsService)
+        public StatusService(IComponentRegistryService componentRegistry, IApiDispatcherService apiService, ISettingsService settingsService)
         {
-            if (componentService == null) throw new ArgumentNullException(nameof(componentService));
+            if (componentRegistry == null) throw new ArgumentNullException(nameof(componentRegistry));
             if (apiService == null) throw new ArgumentNullException(nameof(apiService));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
-            _componentService = componentService;
+            _componentRegistry = componentRegistry;
             _settingsService = settingsService;
 
             apiService.StatusRequested += ExposeStatus;
@@ -53,14 +53,14 @@ namespace HA4IoT.Services.Status
 
         private List<WindowStatus> GetOpenWindows()
         {
-            return _componentService.GetComponents<IWindow>()
+            return _componentRegistry.GetComponents<IWindow>()
                 .Where(w => w.GetState().Equals(CasementStateId.Open))
                 .Select(w => new WindowStatus { Id = w.Id, Caption = w.Settings.Caption }).ToList();
         }
 
         private List<WindowStatus> GetTiltWindows()
         {
-            return _componentService.GetComponents<IWindow>()
+            return _componentRegistry.GetComponents<IWindow>()
                 .Where(w => w.GetState().Equals(CasementStateId.Tilt))
                 .Select(w => new WindowStatus { Id = w.Id, Caption = w.Settings.Caption }).ToList();
         }
@@ -69,7 +69,7 @@ namespace HA4IoT.Services.Status
         {
             var actuatorStatusList = new List<ActuatorStatus>();
 
-            var actuators = _componentService.GetComponents<IActuator>();
+            var actuators = _componentRegistry.GetComponents<IActuator>();
             foreach (var actuator in actuators)
             {
                 if (actuator.GetState().Equals(BinaryStateId.Off))

@@ -84,7 +84,7 @@ namespace HA4IoT.Networking
             {
                 if (_webSocketClientSession == null)
                 {
-                    if (!e.IsHandled || e.Context.Request.Headers.GetConnectionMustBeClosed())
+                    if (!e.IsHandled || e.Context.Request.Headers.ConnectionMustBeClosed())
                     {
                         _cancellationTokenSource.Cancel();
                     }

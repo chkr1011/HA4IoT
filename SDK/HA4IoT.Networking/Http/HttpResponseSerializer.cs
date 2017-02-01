@@ -2,7 +2,6 @@
 using System.IO;
 using System.IO.Compression;
 using System.Text;
-using HA4IoT.Contracts.Networking.Http;
 
 namespace HA4IoT.Networking.Http
 {
@@ -30,20 +29,6 @@ namespace HA4IoT.Networking.Http
             Array.Copy(body, 0, buffer, prefix.Length, body.Length);
 
             return buffer;
-
-            // TODO: Delete if above code is working.
-            //var prefix = GeneratePrefix(context.Response);
-            ////using (var buffer = new MemoryStream(prefix.Length + body.Length))
-            ////{
-            ////    buffer.Write(prefix, 0, prefix.Length);
-
-            ////    if (body.Length > 0)
-            ////    {
-            ////        buffer.Write(body, 0, body.Length);
-            ////    }
-
-            ////    return buffer.ToArray();
-            ////}
         }
 
         private byte[] GetBody(HttpContext context)
@@ -53,13 +38,13 @@ namespace HA4IoT.Networking.Http
                 return new byte[0];
             }
 
-            byte[] content = new byte[0];
+            var content = new byte[0];
             if (context.Response.Body != null)
             {
                 content = context.Response.Body.ToByteArray();
                 context.Response.Headers[HttpHeaderNames.ContentType] = context.Response.Body.MimeType;
 
-                if (context.Request.Headers.GetClientSupportsGzipCompression())
+                if (context.Request.Headers.ClientSupportsGzipCompression())
                 {
                     content = Compress(content);
                     context.Response.Headers[HttpHeaderNames.ContentEncoding] = "gzip";

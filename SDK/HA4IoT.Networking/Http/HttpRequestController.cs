@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using HA4IoT.Contracts.Networking;
-using HA4IoT.Contracts.Networking.Http;
 
 namespace HA4IoT.Networking.Http
 {
-    public class HttpRequestController : IHttpRequestController
+    public class HttpRequestController
     {
         private readonly string _baseUri;
         private readonly List<HttpRequestDispatcherAction> _handlers = new List<HttpRequestDispatcherAction>();

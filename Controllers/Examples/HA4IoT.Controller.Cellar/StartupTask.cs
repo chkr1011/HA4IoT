@@ -40,8 +40,8 @@ namespace HA4IoT.Controller.Cellar
         private class Configuration : IConfiguration
         {
             private readonly CCToolsBoardService _ccToolsBoardService;
-            private readonly IPi2GpioService _pi2GpioService;
-            private readonly IAreaRespositoryService _areaService;
+            private readonly IGpioService _pi2GpioService;
+            private readonly IAreaRegistryService _areaService;
             private readonly ActuatorFactory _actuatorFactory;
             private readonly SensorFactory _sensorFactory;
             private readonly AutomationFactory _automationFactory;
@@ -75,8 +75,8 @@ namespace HA4IoT.Controller.Cellar
 
             public Configuration(
                 CCToolsBoardService ccToolsBoardService, 
-                IPi2GpioService pi2GpioService,
-                IAreaRespositoryService areaService,
+                IGpioService pi2GpioService,
+                IAreaRegistryService areaService,
                 ActuatorFactory actuatorFactory,
                 SensorFactory sensorFactory,
                 AutomationFactory automationFactory)
@@ -99,7 +99,7 @@ namespace HA4IoT.Controller.Cellar
             {
                 var hsrt16 = _ccToolsBoardService.RegisterHSRT16(InstalledDevice.CellarHSRT16, new I2CSlaveAddress(32));
 
-                var garden = _areaService.CreateArea(Room.Garden);
+                var garden = _areaService.RegisterArea(Room.Garden);
 
                 var parkingLotLamp = new LogicalBinaryOutput(hsrt16[HSRT16Pin.Relay6], hsrt16[HSRT16Pin.Relay7], hsrt16[HSRT16Pin.Relay8]);
                 _actuatorFactory.RegisterLamp(garden, Garden.LampParkingLot, parkingLotLamp);

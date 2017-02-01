@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Linq;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
-using Action = HA4IoT.Actuators.Actions.Action;
+using Action = HA4IoT.Actions.Action;
 
 namespace HA4IoT.Actuators.StateMachines
 {
@@ -60,7 +61,7 @@ namespace HA4IoT.Actuators.StateMachines
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
 
             var activeStateId = stateMachine.GetState();
-            var nextStateId = stateMachine.GetNextState(activeStateId);
+            var nextStateId = stateMachine.GetNextState(activeStateId.First());
 
             stateMachine.SetState(nextStateId);
         }

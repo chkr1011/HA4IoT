@@ -11,9 +11,9 @@ namespace HA4IoT.Contracts.Components
 
         ComponentId Id { get; }
 
-        ComponentState GetState();
+        IList<ComponentState> GetState(); // TODO: Consider create "BrightnessState" with 100% and "PowerState" with "On"
 
-        IList<ComponentState> GetSupportedStates();
+        IList<ComponentState> GetSupportedStates(); // TODO: Consider "SupportedComponentState" class
 
         void HandleApiCall(IApiContext apiContext);
 

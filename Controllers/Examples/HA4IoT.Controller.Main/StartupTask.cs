@@ -37,8 +37,8 @@ namespace HA4IoT.Controller.Main
         private class Configuration : IConfiguration
         {
             private readonly CCToolsBoardService _ccToolsBoardService;
-            private readonly IPi2GpioService _pi2GpioService;
-            private readonly IDeviceService _deviceService;
+            private readonly IGpioService _pi2GpioService;
+            private readonly IDeviceRegistryService _deviceService;
             private readonly II2CBusService _i2CBusService;
             private readonly ISchedulerService _schedulerService;
             private readonly RemoteSocketService _remoteSocketService;
@@ -47,8 +47,8 @@ namespace HA4IoT.Controller.Main
 
             public Configuration(
                 CCToolsBoardService ccToolsBoardService, 
-                IPi2GpioService pi2GpioService,
-                IDeviceService deviceService,
+                IGpioService pi2GpioService,
+                IDeviceRegistryService deviceService,
                 II2CBusService i2CBusService, 
                 ISchedulerService schedulerService, 
                 RemoteSocketService remoteSocketService, 

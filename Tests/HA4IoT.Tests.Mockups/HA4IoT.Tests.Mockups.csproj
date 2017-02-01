@@ -119,7 +119,7 @@
     <Compile Include="TestDateTimeService.cs" />
     <Compile Include="TestI2CDevice.cs" />
     <Compile Include="TestInboundMessage.cs" />
-    <Compile Include="TestNumericValueSensorEndpoint.cs" />
+    <Compile Include="TestSensorAdapter.cs" />
     <Compile Include="TestStateMachineFactory.cs" />
     <Compile Include="TestRollerShutterEndpoint.cs" />
     <Compile Include="TestRollerShutterFactory.cs" />

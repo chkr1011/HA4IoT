@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Actuators.RollerShutters

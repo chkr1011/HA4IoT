@@ -1,50 +1,44 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using HA4IoT.Contracts.Networking.Http;
 
 namespace HA4IoT.Networking.Http
 {
     public class HttpRequestParser
     {
-        private readonly HttpHeaderCollection _headers = new HttpHeaderCollection();
-        
-        private HttpMethod _method;
-        private string _uri;
-        private string _httpVersion;
-        private string _body;
-        private string _query;
+        private readonly byte[] _buffer;
+        private readonly int _bufferLength;
 
-        public bool TryParse(byte[] buffer, int bufferLength, out HttpRequest request)
+        private readonly HttpRequest _request = new HttpRequest();
+
+        public HttpRequestParser(byte[] buffer, int bufferLength)
         {
-            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
-            
+            _buffer = buffer;
+            _bufferLength = bufferLength;
+        }
+
+        public bool TryParse(out HttpRequest request)
+        {
             try
             {
-                using (var memoryStream = new MemoryStream(buffer, 0, bufferLength))
-                using (var streamReader = new StreamReader(memoryStream))
+                using (var memoryStream = new MemoryStream(_buffer, 0, _bufferLength))
                 {
-                    ParseFirstLine(streamReader.ReadLine());
+                    ParsePrefix(ReadLine(memoryStream));
 
-                    var line = streamReader.ReadLine();
-                    while (!streamReader.EndOfStream && !string.IsNullOrEmpty(line))
+                    var line = ReadLine(memoryStream);
+                    while (!string.IsNullOrEmpty(line))
                     {
                         ParseHeader(line);
-                        line = streamReader.ReadLine();
+                        line = ReadLine(memoryStream);
                     }
 
-                    _body = streamReader.ReadToEnd();
+                    _request.Body = new byte[memoryStream.Length - memoryStream.Position];
+                    memoryStream.Read(_request.Body, 0, _request.Body.Length);
                 }
 
                 ParseQuery();
 
-                var binaryBodyLength = 0;
-                if (!string.IsNullOrEmpty(_body))
-                {
-                    binaryBodyLength = Encoding.UTF8.GetByteCount(_body);
-                }
-
-                request = new HttpRequest(_method, _uri, Version.Parse(_httpVersion), _query, _headers, _body, binaryBodyLength);
+                request = _request;
                 return true;
             }
             catch (Exception)
@@ -54,50 +48,80 @@ namespace HA4IoT.Networking.Http
             }
         }
 
-        private void ParseFirstLine(string source)
+        private string ReadLine(MemoryStream memoryStream)
+        {
+            if (memoryStream.Position == memoryStream.Length)
+            {
+                return null;
+            }
+
+            using (var buffer = new MemoryStream())
+            {
+                while (memoryStream.Position != memoryStream.Length)
+                {
+                    var @byte = (byte) memoryStream.ReadByte();
+                    if (@byte == '\n')
+                    {
+                        break;
+                    }
+
+                    if (@byte != '\r')
+                    {
+                        buffer.WriteByte(@byte);
+                    }
+                }
+
+                return Encoding.UTF8.GetString(buffer.ToArray());
+            }
+        }
+
+        private void ParsePrefix(string source)
         {
             var items = source.Split(' ');
 
-            _method = (HttpMethod)Enum.Parse(typeof(HttpMethod), items[0], true);
-            _uri = items[1];
-            _httpVersion = items[2].Substring(5); // Remove HTTP/ from HTTP/1.1
+            _request.Method = (HttpMethod)Enum.Parse(typeof(HttpMethod), items[0], true);
+            _request.Uri = items[1];
+            _request.HttpVersion = Version.Parse(items[2].Substring(5)); // Remove HTTP/ from HTTP/1.1
         }
 
         private void ParseHeader(string source)
         {
-            var items = source.Split(':');
-            if (items.Length == 1)
+            var delimiterIndex = source.IndexOf(':');
+            if (delimiterIndex == -1)
             {
-                _headers[source] = string.Empty;
+                _request.Headers.Add(source, string.Empty);
             }
             else
             {
-                _headers[items[0].Trim()] = items[1].Trim();
+                var name = source.Substring(0, delimiterIndex).Trim();
+                var value = source.Substring(delimiterIndex + 1).Trim();
+
+                _request.Headers.Add(name, value);
             }
         }
 
         private void ParseQuery()
         {
-            if (!_uri.Contains("?"))
+            if (!_request.Uri.Contains("?"))
             {
                 return;
             }
 
-            var indexOfQuestionMark = _uri.IndexOf('?');
+            var indexOfQuestionMark = _request.Uri.IndexOf('?');
 
-            _query = _uri.Substring(indexOfQuestionMark + 1);
-            _uri = _uri.Substring(0, indexOfQuestionMark);
+            _request.Query = _request.Uri.Substring(indexOfQuestionMark + 1);
+            _request.Uri = _request.Uri.Substring(0, indexOfQuestionMark);
 
             // Parse a special query parameter.
-            if (!_query.StartsWith("body="))
+            if (!_request.Query.StartsWith("body="))
             {
                 return;
             }
 
-            _body = Uri.UnescapeDataString(_query.Substring("body=".Length));
-            _headers[HttpHeaderNames.ContentLength] = _body.Length.ToString();
+            _request.Body = Encoding.ASCII.GetBytes(Uri.UnescapeDataString(_request.Query.Substring("body=".Length)));
+            _request.Headers[HttpHeaderNames.ContentLength] = _request.Body.Length.ToString();
 
-            _query = null;
+            _request.Query = null;
         }
     }
 }

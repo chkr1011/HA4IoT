@@ -29,10 +29,8 @@ using HA4IoT.Contracts.Services.Weather;
 using HA4IoT.ExternalServices.OpenWeatherMap;
 using HA4IoT.ExternalServices.TelegramBot;
 using HA4IoT.ExternalServices.Twitter;
-using HA4IoT.FeatureRebuild.Services;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
-using HA4IoT.Hardware.Pi2;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Networking.Http;
 using HA4IoT.Notifications;
@@ -52,6 +50,7 @@ using HA4IoT.Services.StorageService;
 using HA4IoT.Services.System;
 using HA4IoT.Settings;
 using SimpleInjector;
+using GpioService = HA4IoT.Hardware.RaspberryPi.GpioService;
 
 namespace HA4IoT.Core
 {
@@ -130,22 +129,18 @@ namespace HA4IoT.Core
             _container.RegisterInitializer<SettingsService>(s => s.Initialize());
 
             _container.RegisterSingleton<II2CBusService, BuiltInI2CBusService>();
-            _container.RegisterSingleton<IPi2GpioService, Pi2GpioService>();
+            _container.RegisterSingleton<IGpioService, GpioService>();
             _container.RegisterSingleton<CCToolsBoardService>();
             _container.RegisterSingleton<RemoteSocketService>();
 
-            _container.RegisterSingleton<IDeviceService, DeviceService>();
-
-            _container.RegisterSingleton<IComponentRepositoryService, ComponentRepositoryService>();
-            _container.RegisterSingleton(() => new NewComponentRepositoryService());
-
+            _container.RegisterSingleton<IDeviceRegistryService, DeviceRegistryService>();
+            _container.RegisterSingleton<IAreaRegistryService, AreaRegistryService>();
+            _container.RegisterSingleton<IComponentRegistryService, ComponentRegistryService>();
 
             _container.RegisterSingleton<ActuatorFactory>();
             _container.RegisterSingleton<SensorFactory>();
 
-            _container.RegisterSingleton<IAreaRespositoryService, AreaRepositoryService>();
-
-            _container.RegisterSingleton<IAutomationService, AutomationService>();
+            _container.RegisterSingleton<IAutomationRegistryService, AutomationRegistryService>();
             _container.RegisterSingleton<AutomationFactory>();
 
             _container.RegisterSingleton<IPersonalAgentService, PersonalAgentService>();

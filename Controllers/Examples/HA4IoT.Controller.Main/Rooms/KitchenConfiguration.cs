@@ -19,8 +19,8 @@ namespace HA4IoT.Controller.Main.Rooms
 {
     internal class KitchenConfiguration
     {
-        private readonly IAreaRespositoryService _areaService;
-        private readonly IDeviceService _deviceService;
+        private readonly IAreaRegistryService _areaService;
+        private readonly IDeviceRegistryService _deviceService;
         private readonly CCToolsBoardService _ccToolsBoardService;
         private readonly AutomationFactory _automationFactory;
         private readonly ActuatorFactory _actuatorFactory;
@@ -56,8 +56,8 @@ namespace HA4IoT.Controller.Main.Rooms
         }
 
         public KitchenConfiguration(
-            IAreaRespositoryService areaService,
-            IDeviceService deviceService,
+            IAreaRegistryService areaService,
+            IDeviceRegistryService deviceService,
             CCToolsBoardService ccToolsBoardService,
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
@@ -90,7 +90,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             const int SensorPin = 11;
 
-            var area = _areaService.CreateArea(Room.Kitchen);
+            var area = _areaService.RegisterArea(Room.Kitchen);
 
             _sensorFactory.RegisterWindow(area, Kitchen.Window, w => w.WithCenterCasement(input0.GetInput(6), input0.GetInput(7)));
 

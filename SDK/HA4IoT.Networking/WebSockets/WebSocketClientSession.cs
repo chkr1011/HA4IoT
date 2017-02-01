@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Networking.WebSockets;
 using Newtonsoft.Json.Linq;
 using Buffer = Windows.Storage.Streams.Buffer;
 

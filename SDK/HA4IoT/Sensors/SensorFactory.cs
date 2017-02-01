@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
@@ -30,7 +31,7 @@ namespace HA4IoT.Sensors
             _settingsService = settingsService;
         }
 
-        public ITemperatureSensor RegisterTemperatureSensor(IArea area, Enum id, INumericValueSensorAdapter endpoint)
+        public ITemperatureSensor RegisterTemperatureSensor(IArea area, Enum id, ISensorAdapter endpoint)
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
@@ -41,7 +42,7 @@ namespace HA4IoT.Sensors
             return temperatureSensor;
         }
 
-        public IHumiditySensor RegisterHumiditySensor(IArea area, Enum id, INumericValueSensorAdapter endpoint)
+        public IHumiditySensor RegisterHumiditySensor(IArea area, Enum id, ISensorAdapter endpoint)
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));

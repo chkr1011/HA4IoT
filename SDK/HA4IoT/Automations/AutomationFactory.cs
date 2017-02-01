@@ -18,7 +18,7 @@ namespace HA4IoT.Automations
         private readonly IDateTimeService _dateTimeService;
         private readonly IDaylightService _daylightService;
         private readonly IOutdoorTemperatureService _outdoorTemperatureService;
-        private readonly IComponentRepositoryService _componentService;
+        private readonly IComponentRegistryService _componentService;
         private readonly ISettingsService _settingsService;
         private readonly IResourceService _resourceService;
 
@@ -28,7 +28,7 @@ namespace HA4IoT.Automations
             IDateTimeService dateTimeService,
             IDaylightService daylightService,
             IOutdoorTemperatureService outdoorTemperatureService,
-            IComponentRepositoryService componentService,
+            IComponentRegistryService componentService,
             ISettingsService settingsService,
             IResourceService resourceService)
         {
