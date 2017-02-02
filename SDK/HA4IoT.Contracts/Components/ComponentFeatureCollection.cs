@@ -1,0 +1,58 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json.Linq;
+
+namespace HA4IoT.Contracts.Components
+{
+    public class ComponentFeatureCollection
+    {
+        private readonly HashSet<IComponentFeature> _features = new HashSet<IComponentFeature>();
+
+        public TComponentFeature GetFeature<TComponentFeature>() where TComponentFeature : IComponentFeature
+        {
+            var state = _features.FirstOrDefault(s => s is TComponentFeature);
+            if (state == null)
+            {
+                throw new ComponentFeatureNotSupportedException(typeof(TComponentFeature));
+            }
+
+            return (TComponentFeature)state;
+        }
+
+        public bool HasFeature(IComponentFeature state)
+        {
+            if (state == null) throw new ArgumentNullException(nameof(state));
+
+            var foundState = _features.FirstOrDefault(s => s.GetType() == state.GetType());
+            if (foundState == null)
+            {
+                throw new ComponentFeatureNotSupportedException(state.GetType());
+            }
+
+            return ReferenceEquals(state, foundState) || foundState.Equals(state);
+        }
+
+        public bool SupportsFeature<TComponentFeature>() where TComponentFeature : IComponentFeature
+        {
+            return _features.Any(t => t is TComponentFeature);
+        }
+
+        public ComponentFeatureCollection WithFeature(IComponentFeature feature)
+        {
+            if (feature == null) throw new ArgumentNullException(nameof(feature));
+
+            if (!_features.Add(feature))
+            {
+                throw new InvalidOperationException();
+            }
+
+            return this;
+        }
+
+        public Dictionary<string, JToken> Serialize()
+        {
+            return _features.ToDictionary(i => i.GetType().Name, i => i.Serialize());
+        }
+    }
+}

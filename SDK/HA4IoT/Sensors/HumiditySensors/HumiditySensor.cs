@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using HA4IoT.Contracts.Adapters;
+using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Components.Features;
+using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services.Settings;
 
@@ -18,7 +19,7 @@ namespace HA4IoT.Sensors.HumiditySensors
 
             settingsService.CreateSettingsMonitor<SingleValueSensorSettings>(Id, s => Settings = s);
 
-            SetState(new ComponentState(0));
+            SetState(new GenericComponentState(0));
 
             endpoint.ValueChanged += (s, e) =>
             {
@@ -27,25 +28,31 @@ namespace HA4IoT.Sensors.HumiditySensors
                     return;
                 }
 
-                SetState(new ComponentState(e.NewValue));
+                SetState(new GenericComponentState(e.NewValue));
             };
         }
 
         public SingleValueSensorSettings Settings { get; private set; }
 
-        public float GetCurrentNumericValue()
+        public float GetCurrentHumidity()
         {
-            return GetState().First().ToObject<float>();
+            return GetState().GetState<HumidityState>().Value ?? 0;
         }
 
-        public override IList<ComponentState> GetSupportedStates()
+        public override ComponentFeatureCollection GetFeatures()
         {
-            return new List<ComponentState>();
+            return new ComponentFeatureCollection()
+                .WithFeature(new MeasureTemperatureFeature());
+        }
+
+        public override void InvokeCommand(ICommand command)
+        {
+            
         }
 
         private bool GetDifferenceIsLargeEnough(float value)
         {
-            return Math.Abs(GetCurrentNumericValue() - value) >= Settings.MinDelta;
+            return Math.Abs(GetCurrentHumidity() - value) >= Settings.MinDelta;
         }
     }
 }

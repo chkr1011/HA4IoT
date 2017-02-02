@@ -5,7 +5,7 @@ namespace HA4IoT.Contracts.Actuators
 {
     public interface IActuator : IComponent
     {
-        void SetState(ComponentState state, params IHardwareParameter[] parameters);
+        void ChangeState(IComponentFeatureState state, params IHardwareParameter[] parameters);
 
         void ResetState();
     }

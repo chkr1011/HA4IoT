@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
@@ -58,11 +58,17 @@ namespace HA4IoT.Sensors.MotionDetectors
             return _detectionCompletedTrigger;
         }
 
-        public override IList<ComponentState> GetSupportedStates()
+        public override ComponentFeatureCollection GetFeatures()
         {
-            return new List<ComponentState> { MotionDetectorStateId.Idle, MotionDetectorStateId.MotionDetected };
+            return new ComponentFeatureCollection();
         }
 
+        public override void InvokeCommand(ICommand command)
+        {
+            
+        }
+
+        // TODO: To commands.
         public override void HandleApiCall(IApiContext apiContext)
         {
             var action = (string)apiContext.Parameter["Action"];
@@ -89,7 +95,7 @@ namespace HA4IoT.Sensors.MotionDetectors
             _detectionCompletedTrigger.Execute();
         }
 
-        private void UpdateState(ComponentState newState)
+        private void UpdateState(GenericComponentState newState)
         {
             if (!Settings.IsEnabled)
             {

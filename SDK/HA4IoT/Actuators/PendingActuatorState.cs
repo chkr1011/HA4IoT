@@ -11,7 +11,7 @@ namespace HA4IoT.Actuators
     {
         public IActuator Actuator { get; private set; }
 
-        public ComponentState State { get; private set; }
+        public GenericComponentState State { get; private set; }
 
         public IList<IHardwareParameter> Parameters { get; } = new List<IHardwareParameter>();
 
@@ -23,7 +23,7 @@ namespace HA4IoT.Actuators
             return this;
         }
 
-        public PendingActuatorState WithState(ComponentState state)
+        public PendingActuatorState WithState(GenericComponentState state)
         {
             State = state;
             return this;
@@ -39,7 +39,7 @@ namespace HA4IoT.Actuators
 
         public void Apply()
         {
-            Actuator.SetState(State, Parameters.ToArray());
+            Actuator.ChangeState(State, Parameters.ToArray());
         }
     }
 }

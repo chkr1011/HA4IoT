@@ -108,8 +108,6 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\ActionExtensions.cs" />
-    <Compile Include="Actions\HomeAutomationAction.cs" />
     <Compile Include="Actuators\ActuatorBase.cs" />
     <Compile Include="Actuators\ActuatorExtensions.cs" />
     <Compile Include="Actuators\ActuatorFactory.cs" />

@@ -80,7 +80,7 @@ namespace HA4IoT.Tests.Automations
         {
             _automation.PerformPendingActions();
             _rollerShutter.GetState().ShouldBeEquivalentTo(RollerShutterStateId.MovingUp);
-            _rollerShutter.SetState(RollerShutterStateId.Off);
+            _rollerShutter.ChangeState(RollerShutterStateId.Off);
         }
 
         private void Setup()

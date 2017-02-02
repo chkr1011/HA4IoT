@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
-using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Conditions;
@@ -87,14 +86,6 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public FlipFlopAutomation WithFlipAction(IAction action)
-        {
-            if (action == null) throw new ArgumentNullException(nameof(action));
-
-            _flipActions.Add(action.Execute);
-            return this;
-        }
-
         public FlipFlopAutomation WithFlopAction(Action action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
@@ -103,20 +94,12 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public FlipFlopAutomation WithFlopAction(IAction action)
-        {
-            if (action == null) throw new ArgumentNullException(nameof(action));
-
-            _flopActions.Add(action.Execute);
-            return this;
-        }
-
         public FlipFlopAutomation WithTarget(IActuator actuator)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
-            _flipActions.Add(() => actuator.SetState(BinaryStateId.On));
-            _flopActions.Add(() => actuator.SetState(BinaryStateId.Off));
+            _flipActions.Add(() => actuator.ChangeState(BinaryStateId.On));
+            _flopActions.Add(() => actuator.ChangeState(BinaryStateId.Off));
             
             return this;
         }

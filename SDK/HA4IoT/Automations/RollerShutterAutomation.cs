@@ -233,11 +233,11 @@ namespace HA4IoT.Automations
             return condition;
         }
 
-        private void SetStates(ComponentState state)
+        private void SetStates(GenericComponentState state)
         {
             foreach (var rollerShutter in _rollerShutters)
             {
-                _componentService.GetComponent<IRollerShutter>(rollerShutter).SetState(state);
+                _componentService.GetComponent<IRollerShutter>(rollerShutter).ChangeState(state);
             }
         }
     }

@@ -126,8 +126,7 @@ namespace HA4IoT.Controller.Main.Rooms
             area.GetLamp(LivingRoom.LampCouch).
                 ConnectToggleActionWith(area.GetButton(LivingRoom.ButtonMiddle));
 
-            area.GetSocket(LivingRoom.SocketWallRightEdgeRight).
-                ConnectToggleActionWith(area.GetButton(LivingRoom.ButtonLower));
+            area.GetButton(LivingRoom.ButtonLower).PressedShortlyTrigger.Attach(area.GetSocket(LivingRoom.SocketWallRightEdgeRight).TogglePowerStateAction);
         }
     }
 }

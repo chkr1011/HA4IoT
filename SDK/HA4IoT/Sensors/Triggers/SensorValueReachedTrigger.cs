@@ -32,7 +32,7 @@ namespace HA4IoT.Sensors.Triggers
 
         private void CheckValue(INumericValueSensor sensor)
         {
-            var newValue = sensor.GetCurrentNumericValue();
+            var newValue = sensor.GetCurrentHumidity();
 
             if (newValue >= Target)
             {

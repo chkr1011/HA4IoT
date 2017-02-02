@@ -18,7 +18,7 @@ namespace HA4IoT.PersonalAgent
 
         public HashSet<ComponentId> IdentifiedComponentIds { get; } = new HashSet<ComponentId>();
 
-        public HashSet<ComponentState> IdentifiedComponentStates { get; } = new HashSet<ComponentState>();
+        public HashSet<GenericComponentState> IdentifiedComponentStates { get; } = new HashSet<GenericComponentState>();
 
         public HashSet<ComponentId> AffectedComponentIds { get; } = new HashSet<ComponentId>();
 

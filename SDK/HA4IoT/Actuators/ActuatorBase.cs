@@ -13,7 +13,7 @@ namespace HA4IoT.Actuators
             
         }
 
-        public abstract void SetState(ComponentState state, params IHardwareParameter[] parameters);
+        public abstract void ChangeState(IComponentFeatureState state, params IHardwareParameter[] parameters);
 
         public abstract void ResetState();
     }

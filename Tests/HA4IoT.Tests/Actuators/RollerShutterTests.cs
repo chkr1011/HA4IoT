@@ -24,15 +24,15 @@ namespace HA4IoT.Tests.Actuators
             rollerShutter.GetState().Equals(RollerShutterStateId.Off).ShouldBeEquivalentTo(true);
             rollerShutter.Endpoint.StopCalledCount.ShouldBeEquivalentTo(1);
 
-            rollerShutter.SetState(RollerShutterStateId.MovingUp);
+            rollerShutter.ChangeState(RollerShutterStateId.MovingUp);
             rollerShutter.GetState().Equals(RollerShutterStateId.MovingUp).ShouldBeEquivalentTo(true);
             rollerShutter.Endpoint.StartMoveUpCalledCount.ShouldBeEquivalentTo(1);
 
-            rollerShutter.SetState(RollerShutterStateId.MovingDown);
+            rollerShutter.ChangeState(RollerShutterStateId.MovingDown);
             rollerShutter.GetState().Equals(RollerShutterStateId.MovingDown).ShouldBeEquivalentTo(true);
             rollerShutter.Endpoint.StartMoveDownCalledCount.ShouldBeEquivalentTo(1);
 
-            rollerShutter.SetState(RollerShutterStateId.Off);
+            rollerShutter.ChangeState(RollerShutterStateId.Off);
             rollerShutter.GetState().Equals(RollerShutterStateId.Off).ShouldBeEquivalentTo(true);
             rollerShutter.Endpoint.StopCalledCount.ShouldBeEquivalentTo(2);
 

@@ -7,9 +7,9 @@ namespace HA4IoT.Controller.Local
 {
     public class TextBoxLogger : ILogger
     {
-        private readonly TextBox _target;
+        private readonly TextBlock _target;
 
-        public TextBoxLogger(TextBox target)
+        public TextBoxLogger(TextBlock target)
         {
             if (target == null) throw new ArgumentNullException(nameof(target));
 
@@ -48,7 +48,7 @@ namespace HA4IoT.Controller.Local
 
         private void AppendText(string format, params object[] parameters)
         {
-            string message = $"{DateTime.Now.ToString("HH:mm:ss.ffff")}: ";
+            string message = $"{DateTime.Now:HH:mm:ss.ffff}: ";
             if (parameters.Length > 0)
             {
                 message += string.Format(format, parameters);

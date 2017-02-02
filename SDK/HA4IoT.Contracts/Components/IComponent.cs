@@ -7,18 +7,19 @@ namespace HA4IoT.Contracts.Components
 {
     public interface IComponent
     {
-        event EventHandler<ComponentStateChangedEventArgs> StateChanged;
+        event EventHandler<ComponentFeatureStateChangedEventArgs> StateChanged;
 
         ComponentId Id { get; }
 
-        IList<ComponentState> GetState(); // TODO: Consider create "BrightnessState" with 100% and "PowerState" with "On"
+        ComponentFeatureStateCollection GetState();
 
-        IList<ComponentState> GetSupportedStates(); // TODO: Consider "SupportedComponentState" class
+        ComponentFeatureCollection GetFeatures();
 
+        #region OLD
+        IList<GenericComponentState> GetSupportedStates(); // TODO: Consider "SupportedComponentState" class
         void HandleApiCall(IApiContext apiContext);
-
         JToken ExportConfiguration();
-
         JToken ExportStatus();
+        #endregion
     }
 }

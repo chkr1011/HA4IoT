@@ -7,6 +7,27 @@ namespace HA4IoT.Actuators.Connectors
 {
     public static class BinaryStateActuatorWithButtonConnector
     {
+        ////public static ISocket ConnectToggleActionWith(this ISocket socket, IButton button, ButtonPressedDuration pressedDuration = ButtonPressedDuration.Short)
+        ////{
+        ////    if (socket == null) throw new ArgumentNullException(nameof(socket));
+        ////    if (button == null) throw new ArgumentNullException(nameof(button));
+
+        ////    if (pressedDuration == ButtonPressedDuration.Short)
+        ////    {
+        ////        button.PressedShortlyTrigger.Attach(socket.TogglePowerStateAction);
+        ////    }
+        ////    else if (pressedDuration == ButtonPressedDuration.Long)
+        ////    {
+        ////        button.PressedLongTrigger.Attach(socket.TogglePowerStateAction);
+        ////    }
+        ////    else
+        ////    {
+        ////        throw new NotSupportedException();
+        ////    }
+
+        ////    return socket;
+        ////}
+
         public static IStateMachine ConnectToggleActionWith(this IStateMachine actuator, IButton button, ButtonPressedDuration pressedDuration = ButtonPressedDuration.Short)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
@@ -17,15 +38,15 @@ namespace HA4IoT.Actuators.Connectors
             return actuator;
         }
 
-        public static IButton ConnectToggleActionWith(this IButton button, IStateMachine actuator, ButtonPressedDuration pressedDuration = ButtonPressedDuration.Short)
-        {
-            if (actuator == null) throw new ArgumentNullException(nameof(actuator));
-            if (button == null) throw new ArgumentNullException(nameof(button));
+        ////public static IButton ConnectToggleActionWith(this IButton button, IStateMachine actuator, ButtonPressedDuration pressedDuration = ButtonPressedDuration.Short)
+        ////{
+        ////    if (actuator == null) throw new ArgumentNullException(nameof(actuator));
+        ////    if (button == null) throw new ArgumentNullException(nameof(button));
 
-            ConnectToggleAction(button, actuator, pressedDuration);
+        ////    ConnectToggleAction(button, actuator, pressedDuration);
 
-            return button;
-        }
+        ////    return button;
+        ////}
 
         private static void ConnectToggleAction(IButton button, IStateMachine actuator, ButtonPressedDuration pressedDuration)
         {

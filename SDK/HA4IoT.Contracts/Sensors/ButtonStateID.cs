@@ -4,7 +4,7 @@ namespace HA4IoT.Contracts.Sensors
 {
     public static class ButtonStateId
     {
-        public static readonly ComponentState Released = new ComponentState("Released");
-        public static readonly ComponentState Pressed = new ComponentState("Pressed");
+        public static readonly GenericComponentState Released = new GenericComponentState("Released");
+        public static readonly GenericComponentState Pressed = new GenericComponentState("Pressed");
     }
 }

@@ -1,9 +1,10 @@
 ﻿using FluentAssertions;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.Sockets;
-using HA4IoT.Actuators.StateMachines;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Components.States;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -15,79 +16,60 @@ namespace HA4IoT.Tests.Actuators
         [TestMethod]
         public void TurnOnAndTurnOff_Socket()
         {
-            var endpoint = new TestBinaryStateAdapter();
-            var socket = new Socket(ComponentIdGenerator.EmptyId, endpoint);
+            var adapter = new TestBinaryStateAdapter();
+            var socket = new Socket(new ComponentId("Test"), adapter);
             socket.ResetState();
-            
-            endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(0);
-            endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(1);
-            socket.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
+
+            adapter.TurnOnCalledCount.ShouldBeEquivalentTo(0);
+            adapter.TurnOffCalledCount.ShouldBeEquivalentTo(1);
+            socket.GetState().HasState(PowerState.Off);
 
             socket.TryTurnOn();
-            endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(1);
-            endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(1);
-            socket.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
+            adapter.TurnOnCalledCount.ShouldBeEquivalentTo(1);
+            adapter.TurnOffCalledCount.ShouldBeEquivalentTo(1);
+            socket.GetState().HasState(PowerState.On);
 
             socket.TryTurnOn();
-            endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(1);
-            endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(1);
-            socket.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
+            adapter.TurnOnCalledCount.ShouldBeEquivalentTo(1);
+            adapter.TurnOffCalledCount.ShouldBeEquivalentTo(1);
+            socket.GetState().HasState(PowerState.On);
 
             socket.TryTurnOff();
-            endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(1);
-            endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(2);
-            socket.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
+            adapter.TurnOnCalledCount.ShouldBeEquivalentTo(1);
+            adapter.TurnOffCalledCount.ShouldBeEquivalentTo(2);
+            socket.GetState().HasState(PowerState.Off);
 
             socket.TryTurnOff();
-            endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(1);
-            endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(2);
-            socket.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
+            adapter.TurnOnCalledCount.ShouldBeEquivalentTo(1);
+            adapter.TurnOffCalledCount.ShouldBeEquivalentTo(2);
+            socket.GetState().HasState(PowerState.Off);
 
             socket.TryTurnOn();
-            endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(2);
-            endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(2);
-            socket.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
+            adapter.TurnOnCalledCount.ShouldBeEquivalentTo(2);
+            adapter.TurnOffCalledCount.ShouldBeEquivalentTo(2);
+            socket.GetState().HasState(PowerState.On);
         }
 
         [TestMethod]
         public void Toggle_Lamp()
         {
             var adapter = new TestBinaryStateAdapter();
-            var lamp = new Lamp(ComponentIdGenerator.EmptyId, adapter);
+            var lamp = new Lamp(new ComponentId("Test"), adapter);
             lamp.ResetState();
 
             adapter.TurnOnCalledCount.ShouldBeEquivalentTo(0);
             adapter.TurnOffCalledCount.ShouldBeEquivalentTo(1);
-            lamp.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
+            lamp.GetState().HasState(BinaryStateId.Off);
 
-            lamp.SetNextState();
+            lamp.TogglePowerStateAction.Execute();
             adapter.TurnOnCalledCount.ShouldBeEquivalentTo(1);
             adapter.TurnOffCalledCount.ShouldBeEquivalentTo(1);
-            lamp.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
+            lamp.GetState().HasState(BinaryStateId.On);
 
-            lamp.SetNextState();
+            lamp.TogglePowerStateAction.Execute();
             adapter.TurnOnCalledCount.ShouldBeEquivalentTo(1);
             adapter.TurnOffCalledCount.ShouldBeEquivalentTo(2);
-            lamp.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
-        }
-
-        [TestMethod]
-        public void StateAlias_Lamp()
-        {
-            var endpoint = new TestBinaryStateAdapter();
-            var lamp = new Lamp(ComponentIdGenerator.EmptyId, endpoint);
-            lamp.ResetState();
-
-            lamp.SetStateIdAlias(BinaryStateId.On, LevelStateId.Level1);
-
-            endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(0);
-            endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(1);
-            lamp.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
-
-            lamp.SetState(LevelStateId.Level1);
-            endpoint.TurnOnCalledCount.ShouldBeEquivalentTo(1);
-            endpoint.TurnOffCalledCount.ShouldBeEquivalentTo(1);
-            lamp.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
+            lamp.GetState().HasState(BinaryStateId.Off);
         }
     }
 }

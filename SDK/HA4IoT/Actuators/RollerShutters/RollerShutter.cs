@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using Newtonsoft.Json.Linq;
-using Action = HA4IoT.Actions.Action;
 
 namespace HA4IoT.Actuators.RollerShutters
 {
@@ -26,7 +25,7 @@ namespace HA4IoT.Actuators.RollerShutters
         private readonly IAction _turnOffAction;
         private readonly IAction _startMoveDownAction;
 
-        private ComponentState _state = RollerShutterStateId.Off;
+        private IComponentFeatureState _state = RollerShutterStateId.Off;
 
         private TimedAction _autoOffTimer;
         private int _position;
@@ -51,9 +50,9 @@ namespace HA4IoT.Actuators.RollerShutters
 
             timerService.Tick += (s, e) => UpdatePosition(e);
 
-            _startMoveUpAction = new Action(() => SetState(RollerShutterStateId.MovingUp));
-            _turnOffAction = new Action(() => SetState(RollerShutterStateId.Off));
-            _startMoveDownAction = new Action(() => SetState(RollerShutterStateId.MovingDown));
+            _startMoveUpAction = new ActionWrapper(() => ChangeState(RollerShutterStateId.MovingUp));
+            _turnOffAction = new ActionWrapper(() => ChangeState(RollerShutterStateId.Off));
+            _startMoveDownAction = new ActionWrapper(() => ChangeState(RollerShutterStateId.MovingDown));
 
             endpoint.Stop(HardwareParameter.ForceUpdateState);
         }
@@ -85,17 +84,27 @@ namespace HA4IoT.Actuators.RollerShutters
             return status;
         }
 
-        public override IList<ComponentState> GetState()
+        public override ComponentFeatureStateCollection GetState()
         {
-            return new List<ComponentState> { _state };
+            return new ComponentFeatureStateCollection().WithState(_state);
+        }
+
+        public override ComponentFeatureCollection GetFeatures()
+        {
+            return new ComponentFeatureCollection();
+        }
+
+        public override void InvokeCommand(ICommand command)
+        {
+            
         }
 
         public override void ResetState()
         {
-            SetState(RollerShutterStateId.Off, new ForceUpdateStateParameter());
+            ChangeState(RollerShutterStateId.Off, new ForceUpdateStateParameter());
         }
 
-        public override void SetState(ComponentState state, params IHardwareParameter[] parameters)
+        public override void ChangeState(IComponentFeatureState state, params IHardwareParameter[] parameters)
         {
             if (state == null) throw new ArgumentNullException(nameof(state));
 
@@ -117,7 +126,7 @@ namespace HA4IoT.Actuators.RollerShutters
             var oldState = _state;
             _state = state;
 
-            OnActiveStateChanged(oldState, _state);
+            OnStateChanged(oldState, _state);
         }
 
         public override void HandleApiCall(IApiContext apiContext)
@@ -128,13 +137,13 @@ namespace HA4IoT.Actuators.RollerShutters
                 return;
             }
 
-            var newState = new ComponentState((string)apiContext.Parameter["State"]);
-            SetState(newState);
+            var newState = new GenericComponentState((string)apiContext.Parameter["State"]);
+            ChangeState(newState);
         }
 
-        public override IList<ComponentState> GetSupportedStates()
+        public override IList<GenericComponentState> GetSupportedStates()
         {
-            return new List<ComponentState>
+            return new List<GenericComponentState>
             {
                 RollerShutterStateId.Off,
                 RollerShutterStateId.MovingUp,
@@ -147,7 +156,7 @@ namespace HA4IoT.Actuators.RollerShutters
             _movingDuration.Restart();
 
             _autoOffTimer?.Cancel();
-            _autoOffTimer = _schedulerService.In(Settings.AutoOffTimeout).Execute(() => SetState(RollerShutterStateId.Off));
+            _autoOffTimer = _schedulerService.In(Settings.AutoOffTimeout).Execute(() => ChangeState(RollerShutterStateId.Off));
         }
 
         private void UpdatePosition(TimerTickEventArgs timerTickEventArgs)

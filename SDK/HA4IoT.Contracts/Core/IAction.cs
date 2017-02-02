@@ -1,6 +1,6 @@
 ﻿namespace HA4IoT.Contracts.Core
 {
-    public interface IConfigurator
+    public interface IAction
     {
         void Execute();
     }

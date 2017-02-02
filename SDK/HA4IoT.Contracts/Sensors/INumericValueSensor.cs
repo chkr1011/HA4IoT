@@ -2,6 +2,6 @@
 {
     public interface INumericValueSensor : ISensor
     {
-        float GetCurrentNumericValue();
+        float GetCurrentHumidity();
     }
 }

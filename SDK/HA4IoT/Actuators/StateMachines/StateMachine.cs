@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 
@@ -10,7 +11,7 @@ namespace HA4IoT.Actuators.StateMachines
 {
     public class StateMachine : ActuatorBase, IStateMachine
     {
-        private readonly Dictionary<ComponentState, ComponentState> _stateAlias = new Dictionary<ComponentState, ComponentState>();
+        private readonly Dictionary<IComponentFeatureState, IComponentFeatureState> _stateAlias = new Dictionary<IComponentFeatureState, IComponentFeatureState>();
         private readonly List<IStateMachineState> _states = new List<IStateMachineState>();
 
         private IStateMachineState _activeState;
@@ -21,7 +22,7 @@ namespace HA4IoT.Actuators.StateMachines
         {
         }
 
-        public bool SupportsState(ComponentState stateId)
+        public bool SupportsState(IComponentFeatureState stateId)
         {
             if (stateId == null) throw new ArgumentNullException(nameof(stateId));
 
@@ -38,7 +39,7 @@ namespace HA4IoT.Actuators.StateMachines
             return _states.Any(s => s.Id.Equals(stateId));
         }
 
-        public override void SetState(ComponentState id, params IHardwareParameter[] parameters)
+        public override void ChangeState(IComponentFeatureState id, params IHardwareParameter[] parameters)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
@@ -51,7 +52,7 @@ namespace HA4IoT.Actuators.StateMachines
             {
                 if (_turnOffIfStateIsAppliedTwice && SupportsState(BinaryStateId.Off) && !GetState().Equals(BinaryStateId.Off))
                 {
-                    SetState(BinaryStateId.Off, parameters);
+                    ChangeState(BinaryStateId.Off, parameters);
                     return;
                 }
 
@@ -77,28 +78,38 @@ namespace HA4IoT.Actuators.StateMachines
         {
             if (SupportsState(BinaryStateId.Off))
             {
-                SetState(BinaryStateId.Off, new ForceUpdateStateParameter());
+                ChangeState(BinaryStateId.Off, new ForceUpdateStateParameter());
             }
         }
 
-        public void SetStateIdAlias(ComponentState stateId, ComponentState alias)
+        public void SetStateIdAlias(GenericComponentState stateId, GenericComponentState alias)
         {
             _stateAlias[alias] = stateId;
         }
 
-        public override IList<ComponentState> GetState()
+        public override ComponentFeatureStateCollection GetState()
         {
             ThrowIfNoStatesAvailable();
 
             if (_activeState == null)
             {
-                return new List<ComponentState> { new ComponentState(null) };
+                return new ComponentFeatureStateCollection();
             }
 
-            return new List<ComponentState> { _activeState?.Id };
+            return new ComponentFeatureStateCollection().WithState(_activeState?.Id);
         }
 
-        public ComponentState GetNextState(ComponentState stateId)
+        public override ComponentFeatureCollection GetFeatures()
+        {
+            return new ComponentFeatureCollection();
+        }
+
+        public override void InvokeCommand(ICommand command)
+        {
+            
+        }
+
+        public GenericComponentState GetNextState(IComponentFeatureState stateId)
         {
             if (stateId == null) throw new ArgumentNullException(nameof(stateId));
 
@@ -121,11 +132,11 @@ namespace HA4IoT.Actuators.StateMachines
             return this;
         }
 
-        public void SetInitialState(ComponentState id)
+        public void SetInitialState(GenericComponentState id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
-            SetState(id, HardwareParameter.ForceUpdateState);
+            ChangeState(id, HardwareParameter.ForceUpdateState);
         }
 
         public void AddState(IStateMachineState state)
@@ -146,33 +157,34 @@ namespace HA4IoT.Actuators.StateMachines
 
             if (!string.IsNullOrEmpty(request.Action))
             {
-                if (request.Action == "nextState")
-                {
-                    SetState(GetNextState(GetState().First()));
-                }
+                // TODO: Check whether required.
+                ////if (request.Action == "nextState")
+                ////{
+                ////    ChangeState(GetNextState(GetState().First()));
+                ////}
 
                 return;
             }
 
             if (!string.IsNullOrEmpty(request.State))
             {
-                var stateId = new ComponentState(request.State);
+                var stateId = new GenericComponentState(request.State);
                 if (!SupportsState(stateId))
                 {
                     apiContext.ResultCode = ApiResultCode.InvalidParameter;
                     apiContext.Result["Message"] = "State ID not supported.";
                 }
 
-                SetState(stateId);
+                ChangeState(stateId);
             }
         }
 
-        public override IList<ComponentState> GetSupportedStates()
+        public override IList<GenericComponentState> GetSupportedStates()
         {
             return _states.Select(s => s.Id).ToList();
         }
 
-        private IStateMachineState GetState(ComponentState id)
+        private IStateMachineState GetState(IComponentFeatureState id)
         {
             IStateMachineState state = _states.FirstOrDefault(s => s.Id.Equals(id));
 
@@ -191,7 +203,7 @@ namespace HA4IoT.Actuators.StateMachines
 
         protected virtual void OnActiveStateChanged(IStateMachineState oldState, IStateMachineState newState)
         {
-            OnActiveStateChanged(oldState?.Id, newState.Id);
+            OnStateChanged(oldState?.Id, newState.Id);
         }
 
         private void ThrowIfNoStatesAvailable()
@@ -202,7 +214,7 @@ namespace HA4IoT.Actuators.StateMachines
             }
         }
 
-        private void ThrowIfStateNotSupported(ComponentState stateId)
+        private void ThrowIfStateNotSupported(IComponentFeatureState stateId)
         {
             if (!SupportsState(stateId))
             {

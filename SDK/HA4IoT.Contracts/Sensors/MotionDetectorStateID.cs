@@ -4,7 +4,7 @@ namespace HA4IoT.Contracts.Sensors
 {
     public static class MotionDetectorStateId
     {
-        public static readonly ComponentState Idle = new ComponentState("Idle");
-        public static readonly ComponentState MotionDetected = new ComponentState("MotionDetected");
+        public static readonly GenericComponentState Idle = new GenericComponentState("Idle");
+        public static readonly GenericComponentState MotionDetected = new GenericComponentState("MotionDetected");
     }
 }

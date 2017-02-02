@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
@@ -14,7 +15,7 @@ namespace HA4IoT.Actuators.BinaryStateActuators
     {
         private readonly ITimerService _timerService;
 
-        private ComponentState _state = new ComponentState(null);
+        private GenericComponentState _state = new GenericComponentState(null);
 
         public LogicalBinaryStateActuator(ComponentId id, ITimerService timerService) 
             : base(id)
@@ -40,7 +41,7 @@ namespace HA4IoT.Actuators.BinaryStateActuators
                     return;
                 }
 
-                OnActiveStateChanged(oldState, _state);
+                OnStateChanged(oldState, _state);
             };
 
             Actuators.Add(actuator);
@@ -49,17 +50,26 @@ namespace HA4IoT.Actuators.BinaryStateActuators
             return this;
         }
 
-        public override IList<ComponentState> GetState()
+        public override ComponentFeatureStateCollection GetState()
         {
-            return new List<ComponentState> { _state };
+            return new ComponentFeatureStateCollection().WithState(_state);
+        }
+
+        public override ComponentFeatureCollection GetFeatures()
+        {
+            return new ComponentFeatureCollection();
+        }
+
+        public override void InvokeCommand(ICommand command)
+        {
         }
 
         public override void ResetState()
         {
-            SetState(BinaryStateId.Off, new ForceUpdateStateParameter());
+            ChangeState(BinaryStateId.Off, new ForceUpdateStateParameter());
         }
 
-        public override void SetState(ComponentState state, params IHardwareParameter[] parameters)
+        public override void ChangeState(IComponentFeatureState state, params IHardwareParameter[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
@@ -72,7 +82,7 @@ namespace HA4IoT.Actuators.BinaryStateActuators
 
             foreach (var actuator in Actuators)
             {
-                actuator.SetState(state, parameters);
+                actuator.ChangeState(state, parameters);
             }
 
             ////foreach (var actuator in Actuators)
@@ -93,7 +103,7 @@ namespace HA4IoT.Actuators.BinaryStateActuators
             ////}
         }
 
-        public ComponentState GetNextState(ComponentState baseStateId)
+        public GenericComponentState GetNextState(IComponentFeatureState baseStateId)
         {
             if (baseStateId.Equals(BinaryStateId.Off))
             {
@@ -105,10 +115,10 @@ namespace HA4IoT.Actuators.BinaryStateActuators
                 return BinaryStateId.Off;
             }
             
-            throw new StateNotSupportedException(baseStateId);
+            throw new ComponentFeatureStateNotSupportedException(baseStateId);
         }
 
-        public void SetStateIdAlias(ComponentState id, ComponentState alias)
+        public void SetStateIdAlias(GenericComponentState id, GenericComponentState alias)
         {
             throw new NotSupportedException();
         }
@@ -117,11 +127,11 @@ namespace HA4IoT.Actuators.BinaryStateActuators
         {
             if (GetState().Equals(BinaryStateId.Off))
             {
-                SetState(BinaryStateId.On, parameters);
+                ChangeState(BinaryStateId.On, parameters);
             }
             else
             {
-                SetState(BinaryStateId.Off, parameters);
+                ChangeState(BinaryStateId.Off, parameters);
             }
         }
 
@@ -145,12 +155,12 @@ namespace HA4IoT.Actuators.BinaryStateActuators
             return this;
         }
 
-        public override IList<ComponentState> GetSupportedStates()
+        public override IList<GenericComponentState> GetSupportedStates()
         {
-            return new List<ComponentState> {BinaryStateId.Off, BinaryStateId.On};
+            return new List<GenericComponentState> {BinaryStateId.Off, BinaryStateId.On};
         }
 
-        private ComponentState GetStateInternal()
+        private GenericComponentState GetStateInternal()
         {
             if (Actuators.Any(a => a.GetState().Equals(BinaryStateId.On)))
             {

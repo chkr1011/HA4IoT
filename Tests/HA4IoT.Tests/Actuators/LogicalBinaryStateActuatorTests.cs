@@ -27,10 +27,10 @@ namespace HA4IoT.Tests.Actuators
 
             logicalActautor.GetState().Equals(BinaryStateId.Off).ShouldBeEquivalentTo(true);
 
-            logicalActautor.SetState(BinaryStateId.On);
+            logicalActautor.ChangeState(BinaryStateId.On);
             logicalActautor.GetState().Equals(BinaryStateId.On).ShouldBeEquivalentTo(true);
 
-            logicalActautor.SetState(BinaryStateId.Off);
+            logicalActautor.ChangeState(BinaryStateId.Off);
             logicalActautor.GetState().Equals(BinaryStateId.Off).ShouldBeEquivalentTo(true);
         }
     }

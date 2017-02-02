@@ -47,12 +47,12 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\IAction.cs" />
     <Compile Include="Actuators\BinaryStateId.cs" />
     <Compile Include="Actuators\IActuator.cs" />
     <Compile Include="Actuators\IBinaryOutputComponentAdapter.cs" />
     <Compile Include="Actuators\ILamp.cs" />
     <Compile Include="Actuators\IRollerShutter.cs" />
+    <Compile Include="Actuators\LogicalElements\PowerStateElement.cs" />
     <Compile Include="Adapters\IRollerShutterAdapter.cs" />
     <Compile Include="Actuators\ISocket.cs" />
     <Compile Include="Actuators\IStateMachine.cs" />
@@ -84,21 +84,32 @@
     <Compile Include="Automations\IAutomationSettings.cs" />
     <Compile Include="Api\Cloud\CloudRequestMessage.cs" />
     <Compile Include="Api\Cloud\CloudMessageHeader.cs" />
+    <Compile Include="Commands\CommandNotSupportedException.cs" />
+    <Compile Include="Commands\PressCommand.cs" />
+    <Compile Include="Commands\TurnOffCommand.cs" />
+    <Compile Include="Commands\TurnOnCommand.cs" />
+    <Compile Include="Components\ComponentFeatureCollection.cs" />
     <Compile Include="Components\ComponentId.cs" />
-    <Compile Include="Components\ComponentIdExtensions.cs" />
     <Compile Include="Components\ComponentIdGenerator.cs" />
     <Compile Include="Components\ComponentSettings.cs" />
-    <Compile Include="Components\ComponentState.cs" />
-    <Compile Include="Components\ComponentStateChangedEventArgs.cs" />
+    <Compile Include="Components\Features\MeasureTemperatureFeature.cs" />
+    <Compile Include="Components\Features\MotionDetectionFeature.cs" />
+    <Compile Include="Components\GenericComponentState.cs" />
+    <Compile Include="Components\ComponentFeatureStateChangedEventArgs.cs" />
+    <Compile Include="Components\ComponentFeatureStateCollection.cs" />
+    <Compile Include="Components\ComponentFeatureNotSupportedException.cs" />
     <Compile Include="Components\IComponent.cs" />
+    <Compile Include="Components\IComponentFeature.cs" />
     <Compile Include="Components\IComponentRegistryService.cs" />
     <Compile Include="Components\IComponentSettings.cs" />
-    <Compile Include="Components\StateNotSupportedException.cs" />
+    <Compile Include="Components\IComponentFeatureState.cs" />
+    <Compile Include="Components\ComponentFeatureStateNotSupportedException.cs" />
     <Compile Include="Conditions\ConditionState.cs" />
     <Compile Include="Conditions\ICondition.cs" />
+    <Compile Include="Core\ActionWrapper.cs" />
+    <Compile Include="Core\IAction.cs" />
     <Compile Include="Core\Discovery\DiscoveryResponse.cs" />
     <Compile Include="Core\IConfiguration.cs" />
-    <Compile Include="Core\IConfigurator.cs" />
     <Compile Include="Core\IContainerConfigurator.cs" />
     <Compile Include="Core\IController.cs" />
     <Compile Include="Core\IdBase.cs" />
@@ -123,6 +134,7 @@
     <Compile Include="Hardware\IPortExpanderDriver.cs" />
     <Compile Include="Hardware\IsPartOfLogicalUpdateParameter.cs" />
     <Compile Include="Hardware\Services\IGpioService.cs" />
+    <Compile Include="Commands\ICommand.cs" />
     <Compile Include="IContainer.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\Log.cs" />
@@ -199,15 +211,22 @@
     <Compile Include="Services\System\SystemEventNotification.cs" />
     <Compile Include="Services\Weather\IWeatherService.cs" />
     <Compile Include="Services\Weather\Weather.cs" />
-    <Compile Include="States\BrightnessState.cs" />
-    <Compile Include="States\ColorState.cs" />
-    <Compile Include="States\DirectionState.cs" />
-    <Compile Include="States\PositionState.cs" />
-    <Compile Include="States\PowerState.cs" />
-    <Compile Include="States\RollerShutterClosedState.cs" />
+    <Compile Include="Components\States\BrightnessState.cs" />
+    <Compile Include="Components\States\ButtonState.cs" />
+    <Compile Include="Components\States\ButtonStateValue.cs" />
+    <Compile Include="Components\States\ColorState.cs" />
+    <Compile Include="Components\States\DirectionState.cs" />
+    <Compile Include="Components\States\EnumBasedState.cs" />
+    <Compile Include="Components\States\HumidityState.cs" />
+    <Compile Include="Components\States\PositionState.cs" />
+    <Compile Include="Components\States\PowerState.cs" />
+    <Compile Include="Components\States\PowerStateValue.cs" />
+    <Compile Include="Components\States\RollerShutterClosedState.cs" />
+    <Compile Include="Components\States\TemperatureState.cs" />
     <Compile Include="Triggers\ITrigger.cs" />
     <Compile Include="Triggers\TriggeredEventArgs.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

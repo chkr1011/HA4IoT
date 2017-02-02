@@ -193,7 +193,7 @@ namespace HA4IoT.PersonalAgent
                 return $"{Emoji.Hushed} Das wird nicht funktionieren.";
             }
 
-            actuator.SetState(messageContext.IdentifiedComponentStates.First());
+            actuator.ChangeState(messageContext.IdentifiedComponentStates.First());
             return $"{Emoji.ThumbsUp} Habe ich erledigt.";
         }
 

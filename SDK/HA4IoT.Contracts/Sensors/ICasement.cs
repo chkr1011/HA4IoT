@@ -9,9 +9,9 @@ namespace HA4IoT.Contracts.Sensors
     {
         string Id { get; }
 
-        event EventHandler<ComponentStateChangedEventArgs> StateChanged;
+        event EventHandler<ComponentFeatureStateChangedEventArgs> StateChanged;
 
-        ComponentState GetState();
+        GenericComponentState GetState();
 
         ITrigger GetOpenedTrigger();
 

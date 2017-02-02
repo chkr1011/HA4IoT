@@ -195,11 +195,11 @@ namespace HA4IoT.Controller.Main.Rooms
             {
                 if (lamp.GetState().Equals(BinaryStateId.On))
                 {
-                    lamp.SetState(BinaryStateId.Off, new AnimateParameter().WithReversedOrder());
+                    lamp.ChangeState(BinaryStateId.Off, new AnimateParameter().WithReversedOrder());
                 }
                 else
                 {
-                    lamp.SetState(BinaryStateId.On, new AnimateParameter());
+                    lamp.ChangeState(BinaryStateId.On, new AnimateParameter());
                 }
             };
 
@@ -207,11 +207,11 @@ namespace HA4IoT.Controller.Main.Rooms
             {
                 if (lamp.GetState().Equals(BinaryStateId.On))
                 {
-                    lamp.SetState(BinaryStateId.Off, new AnimateParameter());
+                    lamp.ChangeState(BinaryStateId.Off, new AnimateParameter());
                 }
                 else
                 {
-                    lamp.SetState(BinaryStateId.On, new AnimateParameter().WithReversedOrder());
+                    lamp.ChangeState(BinaryStateId.On, new AnimateParameter().WithReversedOrder());
                 }
             };
         }

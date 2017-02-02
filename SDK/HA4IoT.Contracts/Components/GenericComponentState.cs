@@ -3,31 +3,23 @@ using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Contracts.Components
 {
-    public class ComponentState
+    public class GenericComponentState : IComponentFeatureState
     {
-        private readonly int _hashCode;
-
-        public ComponentState(object state)
+        public GenericComponentState(object state)
         {
             JToken = new JValue(state);
-            _hashCode = JToken.ToString().GetHashCode();
         }
 
         public JToken JToken { get; }
 
-        public TValue ToObject<TValue>()
-        {
-            return JToken.ToObject<TValue>();
-        }
-
         public override int GetHashCode()
         {
-            return _hashCode;
+            return JToken.ToString().GetHashCode();
         }
 
         public override bool Equals(object @object)
         {
-            var other = @object as ComponentState;
+            var other = @object as GenericComponentState;
             if (other == null)
             {
                 return false;
@@ -36,7 +28,12 @@ namespace HA4IoT.Contracts.Components
             return Equals(other);
         }
 
-        public bool Equals(ComponentState componentState)
+        public JToken Serialize()
+        {
+            return JToken;
+        }
+
+        public bool Equals(GenericComponentState componentState)
         {
             if (ReferenceEquals(componentState, this))
             {

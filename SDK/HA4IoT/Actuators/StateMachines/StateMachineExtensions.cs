@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Linq;
 using HA4IoT.Components;
-using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
-using Action = HA4IoT.Actions.Action;
 
 namespace HA4IoT.Actuators.StateMachines
 {
@@ -46,7 +43,7 @@ namespace HA4IoT.Actuators.StateMachines
             return stateMachine.AddState(BinaryStateId.On);
         }
 
-        public static StateMachineState AddState(this StateMachine stateMachine, ComponentState id)
+        public static StateMachineState AddState(this StateMachine stateMachine, GenericComponentState id)
         {
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
             if (id == null) throw new ArgumentNullException(nameof(id));
@@ -61,9 +58,9 @@ namespace HA4IoT.Actuators.StateMachines
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
 
             var activeStateId = stateMachine.GetState();
-            var nextStateId = stateMachine.GetNextState(activeStateId.First());
+            var nextStateId = stateMachine.GetNextState(activeStateId.GetState<GenericComponentState>());
 
-            stateMachine.SetState(nextStateId);
+            stateMachine.ChangeState(nextStateId);
         }
 
         public static bool TryTurnOff(this IStateMachine stateMachine)
@@ -75,7 +72,7 @@ namespace HA4IoT.Actuators.StateMachines
                 return false;
             }
 
-            stateMachine.SetState(BinaryStateId.Off);
+            stateMachine.ChangeState(BinaryStateId.Off);
             return true;
         }
 
@@ -88,37 +85,37 @@ namespace HA4IoT.Actuators.StateMachines
                 return false;
             }
 
-            stateMachine.SetState(BinaryStateId.On);
+            stateMachine.ChangeState(BinaryStateId.On);
             return true;
         }
 
-        public static IAction GetSetStateAction(this IStateMachine stateStateMachine, ComponentState stateId)
+        public static Action GetSetStateAction(this IStateMachine stateStateMachine, GenericComponentState stateId)
         {
             if (stateStateMachine == null) throw new ArgumentNullException(nameof(stateStateMachine));
             if (stateId == null) throw new ArgumentNullException(nameof(stateId));
 
-            return new Action(() => stateStateMachine.SetState(stateId));
+            return () => stateStateMachine.ChangeState(stateId);
         }
 
-        public static IAction GetTurnOnAction(this IStateMachine stateMachine)
+        public static Action GetTurnOnAction(this IStateMachine stateMachine)
         {
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
 
-            return new Action(() => stateMachine.SetState(BinaryStateId.On));
+            return () => stateMachine.ChangeState(BinaryStateId.On);
         }
 
-        public static IAction GetTurnOffAction(this IStateMachine stateMachine)
+        public static Action GetTurnOffAction(this IStateMachine stateMachine)
         {
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
 
-            return new Action(() => stateMachine.SetState(BinaryStateId.Off));
+            return () => stateMachine.ChangeState(BinaryStateId.Off);
         }
 
-        public static IAction GetSetNextStateAction(this IStateMachine stateStateMachine)
+        public static Action GetSetNextStateAction(this IStateMachine stateStateMachine)
         {
             if (stateStateMachine == null) throw new ArgumentNullException(nameof(stateStateMachine));
 
-            return new Action(stateStateMachine.SetNextState);
+            return stateStateMachine.SetNextState;
         }
     }
 }

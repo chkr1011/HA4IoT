@@ -1,6 +1,5 @@
 ﻿using System;
-using HA4IoT.Contracts.Actions;
-using HA4IoT.Contracts.Services.ExternalServices;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Services.ExternalServices.Twitter;
 
 namespace HA4IoT.ExternalServices.Twitter

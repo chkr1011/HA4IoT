@@ -7,7 +7,7 @@ namespace HA4IoT.Components
 {
     public static class ComponentExtensions
     {
-        public static bool SupportsState(this IComponent component, ComponentState componentState)
+        public static bool SupportsState(this IComponent component, GenericComponentState componentState)
         {
             if (componentState == null) throw new ArgumentNullException(nameof(componentState));
             if (component == null) throw new ArgumentNullException(nameof(component));
@@ -43,7 +43,7 @@ namespace HA4IoT.Components
             return TrySetState(component, RollerShutterStateId.MovingDown);
         }
 
-        public static bool TrySetState(this IComponent component, ComponentState state)
+        public static bool TrySetState(this IComponent component, GenericComponentState state)
         {
             if (component == null) throw new ArgumentNullException(nameof(component));
 
@@ -53,7 +53,7 @@ namespace HA4IoT.Components
                 return false;
             }
 
-            actuator.SetState(state);
+            actuator.ChangeState(state);
             return true;
         }
     }

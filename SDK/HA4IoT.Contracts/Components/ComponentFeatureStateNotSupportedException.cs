@@ -2,9 +2,9 @@
 
 namespace HA4IoT.Contracts.Components
 {
-    public class StateNotSupportedException : Exception
+    public class ComponentFeatureStateNotSupportedException : Exception
     {
-        public StateNotSupportedException(ComponentState state)
+        public ComponentFeatureStateNotSupportedException(IComponentFeatureState state)
             : base($"State '{state}' is not supported.")
         {
             if (state == null) throw new ArgumentNullException(nameof(state));
@@ -12,6 +12,6 @@ namespace HA4IoT.Contracts.Components
             State = state;
         }
 
-        public ComponentState State { get; }
+        public IComponentFeatureState State { get; }
     }
 }

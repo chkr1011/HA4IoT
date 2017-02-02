@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using HA4IoT.Conditions;
-using HA4IoT.Contracts.Actions;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Conditions;
 using HA4IoT.Contracts.Triggers;
@@ -19,8 +18,8 @@ namespace HA4IoT.Automations
         }
 
         public IList<RelatedCondition> Conditions { get; } = new List<RelatedCondition>();
-        public IList<IAction> ActionsIfFulfilled { get; } = new List<IAction>();
-        public IList<IAction> ActionsIfNotFulfilled { get; } = new List<IAction>();
+        public IList<Action> ActionsIfFulfilled { get; } = new List<Action>();
+        public IList<Action> ActionsIfNotFulfilled { get; } = new List<Action>();
 
         public Automation WithTrigger(ITrigger trigger)
         {
@@ -38,7 +37,7 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public Automation WithActionIfConditionsFulfilled(IAction action)
+        public Automation WithActionIfConditionsFulfilled(Action action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
 
@@ -46,7 +45,7 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public Automation WithActionIfConditionsNotFulfilled(IAction action)
+        public Automation WithActionIfConditionsNotFulfilled(Action action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
 
@@ -60,14 +59,14 @@ namespace HA4IoT.Automations
             {
                 foreach (var action in ActionsIfFulfilled)
                 {
-                    action.Execute();
+                    action();
                 }
             }
             else
             {
                 foreach (var action in ActionsIfNotFulfilled)
                 {
-                    action.Execute();
+                    action();
                 }
             }            
         }

@@ -3,6 +3,7 @@ using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
+using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Automations;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
@@ -98,7 +99,7 @@ namespace HA4IoT.Controller.Main.Rooms
             _actuatorFactory.RegisterRollerShutter(area, ChildrensRoom.RollerShutter, hsrel5[HSREL5Pin.Relay4], hsrel5[HSREL5Pin.Relay3]);
             _sensorFactory.RegisterRollerShutterButtons(area, ChildrensRoom.RollerShutterButtonUp, input0.GetInput(1), ChildrensRoom.RollerShutterButtonDown, input0.GetInput(2));
 
-            area.GetLamp(ChildrensRoom.LightCeilingMiddle).ConnectToggleActionWith(area.GetButton(ChildrensRoom.Button));
+            area.GetButton(ChildrensRoom.Button).PressedShortlyTrigger.Attach(area.GetLamp(ChildrensRoom.LightCeilingMiddle).GetSetNextStateAction());
 
             _automationFactory.RegisterRollerShutterAutomation(area, ChildrensRoom.RollerShutterAutomation)
                 .WithRollerShutters(area.GetRollerShutter(ChildrensRoom.RollerShutter));

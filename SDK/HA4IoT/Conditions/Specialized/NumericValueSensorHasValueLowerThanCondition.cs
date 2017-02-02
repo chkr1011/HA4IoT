@@ -9,7 +9,7 @@ namespace HA4IoT.Conditions.Specialized
         {
             if (sensor == null) throw new ArgumentNullException(nameof(sensor));
 
-            WithExpression(() => sensor.GetCurrentNumericValue() < value);
+            WithExpression(() => sensor.GetCurrentHumidity() < value);
         }
     }
 }

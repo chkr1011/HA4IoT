@@ -22,23 +22,23 @@ namespace HA4IoT.Actuators.Connectors
             return rollerShutter;
         }
 
-        private static void HandleBlindButtonPressedEvent(IRollerShutter rollerShutter, ComponentState direction)
+        private static void HandleBlindButtonPressedEvent(IRollerShutter rollerShutter, GenericComponentState direction)
         {
             if (direction.Equals(RollerShutterStateId.MovingUp) && rollerShutter.GetState().Equals(RollerShutterStateId.MovingUp))
             {
-                rollerShutter.SetState(RollerShutterStateId.Off);
+                rollerShutter.ChangeState(RollerShutterStateId.Off);
             }
             else if (direction.Equals(RollerShutterStateId.MovingDown) && rollerShutter.GetState().Equals(RollerShutterStateId.MovingDown))
             {
-                rollerShutter.SetState(RollerShutterStateId.Off);
+                rollerShutter.ChangeState(RollerShutterStateId.Off);
             }
             else if (direction.Equals(RollerShutterStateId.MovingDown))
             {
-                rollerShutter.SetState(RollerShutterStateId.MovingDown);
+                rollerShutter.ChangeState(RollerShutterStateId.MovingDown);
             }
             else if (direction.Equals(RollerShutterStateId.MovingUp))
             {
-                rollerShutter.SetState(RollerShutterStateId.MovingUp);
+                rollerShutter.ChangeState(RollerShutterStateId.MovingUp);
             }
             else
             {

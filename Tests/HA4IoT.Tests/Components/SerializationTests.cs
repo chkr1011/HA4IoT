@@ -10,7 +10,7 @@ namespace HA4IoT.Tests.Components
         [TestMethod]
         public void NumericValue_Serialize()
         {
-            var state = new ComponentState(5F);
+            var state = new GenericComponentState(5F);
             var jsonValue = state.JToken;
 
             Assert.AreEqual(JTokenType.Float, jsonValue.Type);
@@ -20,7 +20,7 @@ namespace HA4IoT.Tests.Components
         [TestMethod]
         public void StatefulState_Serialize()
         {
-            var state = new ComponentState("Off");
+            var state = new GenericComponentState("Off");
             var jsonValue = state.JToken;
 
             Assert.AreEqual(JTokenType.String, jsonValue.Type);
@@ -30,7 +30,7 @@ namespace HA4IoT.Tests.Components
         [TestMethod]
         public void UnknownState_Serialize()
         {
-            var state = new ComponentState(null);
+            var state = new GenericComponentState(null);
             var jsonValue = state.JToken;
 
             Assert.AreEqual(JTokenType.Null, jsonValue.Type);

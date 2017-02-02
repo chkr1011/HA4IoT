@@ -2,6 +2,7 @@
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
@@ -169,7 +170,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithHighOutput(rl)
                 .WithHighOutput(rr);
 
-            var deskOnlyStateId = new ComponentState("DeskOnly");
+            var deskOnlyStateId = new GenericComponentState("DeskOnly");
             light.AddState(deskOnlyStateId)
                 .WithHighOutput(fl)
                 .WithHighOutput(fm)
@@ -180,7 +181,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithLowOutput(rl)
                 .WithLowOutput(rr);
 
-            var couchOnlyStateId = new ComponentState("CouchOnly");
+            var couchOnlyStateId = new GenericComponentState("CouchOnly");
             light.AddState(couchOnlyStateId)
                 .WithLowOutput(fl)
                 .WithLowOutput(fm)

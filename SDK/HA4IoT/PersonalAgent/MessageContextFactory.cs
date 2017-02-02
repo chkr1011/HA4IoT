@@ -12,7 +12,7 @@ namespace HA4IoT.PersonalAgent
     public class MessageContextFactory
     {
         // TODO: Move to settings and add UI.
-        private readonly Dictionary<string, ComponentState> _stateSynonyms = new Dictionary<string, ComponentState>
+        private readonly Dictionary<string, GenericComponentState> _stateSynonyms = new Dictionary<string, GenericComponentState>
         {
             { "ein", BinaryStateId.On },
             { "an", BinaryStateId.On },

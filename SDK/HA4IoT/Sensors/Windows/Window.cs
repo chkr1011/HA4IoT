@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Sensors;
@@ -76,9 +77,19 @@ namespace HA4IoT.Sensors.Windows
             return status;
         }
 
-        public override IList<ComponentState> GetSupportedStates()
+        public override ComponentFeatureCollection GetFeatures()
         {
-            return new List<ComponentState> { CasementStateId.Closed, CasementStateId.Tilt, CasementStateId.Open };
+            return new ComponentFeatureCollection();
+        }
+
+        public override void InvokeCommand(ICommand command)
+        {
+            
+        }
+
+        public override IList<GenericComponentState> GetSupportedStates()
+        {
+            return new List<GenericComponentState> { CasementStateId.Closed, CasementStateId.Tilt, CasementStateId.Open };
         }
 
         public override JToken ExportConfiguration()
@@ -114,7 +125,7 @@ namespace HA4IoT.Sensors.Windows
             SetState(newState);
         }
 
-        private ComponentState GetStateInternal()
+        private GenericComponentState GetStateInternal()
         {
             if (Casements.Any(c => c.GetState().Equals(CasementStateId.Open)))
             {

@@ -4,9 +4,9 @@ namespace HA4IoT.Contracts.Actuators
 {
     public static class LevelStateId
     {
-        public static readonly ComponentState Off = BinaryStateId.Off;
-        public static readonly ComponentState Level1 = new ComponentState("Level1");
-        public static readonly ComponentState Level2 = new ComponentState("Level2");
-        public static readonly ComponentState Level3 = new ComponentState("Level3");
+        public static readonly GenericComponentState Off = BinaryStateId.Off;
+        public static readonly GenericComponentState Level1 = new GenericComponentState("Level1");
+        public static readonly GenericComponentState Level2 = new GenericComponentState("Level2");
+        public static readonly GenericComponentState Level3 = new GenericComponentState("Level3");
     }
 }

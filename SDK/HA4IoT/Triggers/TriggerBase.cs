@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using HA4IoT.Contracts.Actions;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Triggers

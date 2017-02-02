@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using HA4IoT.Components;
+﻿using HA4IoT.Components;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Sensors;
 
@@ -7,19 +6,19 @@ namespace HA4IoT.Sensors
 {
     public abstract class SensorBase : ComponentBase, ISensor
     {
-        private ComponentState _state = new ComponentState(null);
+        private GenericComponentState _state = new GenericComponentState(null);
 
         protected SensorBase(ComponentId id)
             : base(id)
         {
         }
 
-        public override IList<ComponentState> GetState()
+        public override ComponentFeatureStateCollection GetState()
         {
-            return new List<ComponentState> { _state };
+            return new ComponentFeatureStateCollection().WithState(_state);
         }
 
-        protected void SetState(ComponentState newState)
+        protected void SetState(GenericComponentState newState)
         {
             if (newState.Equals(_state))
             {
@@ -29,7 +28,7 @@ namespace HA4IoT.Sensors
             var oldValue = _state;
             _state = newState;
 
-            OnActiveStateChanged(oldValue, newState);
+            OnStateChanged(oldValue, newState);
         }
     }
 }

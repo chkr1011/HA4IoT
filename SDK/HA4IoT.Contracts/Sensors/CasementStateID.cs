@@ -4,8 +4,8 @@ namespace HA4IoT.Contracts.Sensors
 {
     public static class CasementStateId
     {
-        public static readonly ComponentState Closed = new ComponentState("Closed");
-        public static readonly ComponentState Open = new ComponentState("Open");
-        public static readonly ComponentState Tilt = new ComponentState("Tilt");
+        public static readonly GenericComponentState Closed = new GenericComponentState("Closed");
+        public static readonly GenericComponentState Open = new GenericComponentState("Open");
+        public static readonly GenericComponentState Tilt = new GenericComponentState("Tilt");
     }
 }

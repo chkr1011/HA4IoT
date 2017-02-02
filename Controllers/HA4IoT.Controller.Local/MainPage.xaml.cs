@@ -8,8 +8,6 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Sensors;
-using HA4IoT.Contracts.Services.System;
 using HA4IoT.Controller.Local.Controls;
 using HA4IoT.Core;
 

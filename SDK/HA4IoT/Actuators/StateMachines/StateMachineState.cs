@@ -13,14 +13,14 @@ namespace HA4IoT.Actuators.StateMachines
         private readonly List<PendingActuatorState> _pendingActuatorStates = new List<PendingActuatorState>();
         private readonly List<Tuple<IBinaryOutput, BinaryState>> _pendingBinaryOutputStates = new List<Tuple<IBinaryOutput, BinaryState>>();
 
-        public StateMachineState(ComponentState id)
+        public StateMachineState(GenericComponentState id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
             Id = id;
         }
 
-        public ComponentState Id { get; }
+        public GenericComponentState Id { get; }
 
         public StateMachineState WithAction(Action<IHardwareParameter[]> action)
         {
@@ -52,7 +52,7 @@ namespace HA4IoT.Actuators.StateMachines
             return WithOutput(output, BinaryState.High);
         }
 
-        public StateMachineState WithActuator(IActuator actuator, ComponentState state)
+        public StateMachineState WithActuator(IActuator actuator, GenericComponentState state)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 

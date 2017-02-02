@@ -1,4 +1,5 @@
 ﻿using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 
 namespace HA4IoT.Actuators.BinaryStateActuators
@@ -7,6 +8,15 @@ namespace HA4IoT.Actuators.BinaryStateActuators
     {
         public CustomBinaryStateActuator(ComponentId id, IBinaryOutputComponentAdapter endpoint)
             : base(id, endpoint)
+        {
+        }
+
+        public override ComponentFeatureCollection GetFeatures()
+        {
+            return new ComponentFeatureCollection();
+        }
+
+        public override void InvokeCommand(ICommand command)
         {
         }
     }

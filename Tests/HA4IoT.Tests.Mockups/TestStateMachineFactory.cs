@@ -12,11 +12,11 @@ namespace HA4IoT.Tests.Mockups
             return new TestStateMachine(ComponentIdGenerator.EmptyId);
         }
 
-        public TestStateMachine CreateTestStateMachineWithActiveState(ComponentState id)
+        public TestStateMachine CreateTestStateMachineWithActiveState(GenericComponentState id)
         {
             var stateMachine = new TestStateMachine(ComponentIdGenerator.EmptyId);
             stateMachine.AddState(new StateMachineState(id));
-            stateMachine.SetState(id);
+            stateMachine.ChangeState(id);
 
             return stateMachine;
         }
@@ -26,12 +26,12 @@ namespace HA4IoT.Tests.Mockups
             return CreateTestStateMachineWithOnOffStates(BinaryStateId.Off);
         }
 
-        public TestStateMachine CreateTestStateMachineWithOnOffStates(ComponentState activeState)
+        public TestStateMachine CreateTestStateMachineWithOnOffStates(GenericComponentState activeState)
         {
             var stateMachine = new TestStateMachine(ComponentIdGenerator.EmptyId);
             stateMachine.AddState(new StateMachineState(BinaryStateId.Off));
             stateMachine.AddState(new StateMachineState(BinaryStateId.On));
-            stateMachine.SetState(activeState);
+            stateMachine.ChangeState(activeState);
 
             return stateMachine;
         }

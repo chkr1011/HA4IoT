@@ -50,7 +50,7 @@ namespace HA4IoT.Automations
         {
             _timeout = _schedulerService.In(Settings.SlowDuration).Execute(() =>
             {
-                _actuator.SetState(new ComponentState("2"));
+                _actuator.ChangeState(new GenericComponentState("2"));
                 _timeout = _schedulerService.In(Settings.FastDuration).Execute(() => _actuator.TryTurnOff());
             });
         }
@@ -63,7 +63,7 @@ namespace HA4IoT.Automations
             }
 
             _timeout?.Cancel();
-            _actuator?.SetState(new ComponentState("1"));
+            _actuator?.ChangeState(new GenericComponentState("1"));
         }
     }
 }

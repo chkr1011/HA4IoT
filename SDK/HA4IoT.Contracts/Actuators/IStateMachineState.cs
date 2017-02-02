@@ -5,7 +5,7 @@ namespace HA4IoT.Contracts.Actuators
 {
     public interface IStateMachineState
     {
-        ComponentState Id { get; }
+        GenericComponentState Id { get; }
 
         void Activate(params IHardwareParameter[] parameters);
 
