@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.Sockets;
-using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
@@ -55,8 +54,8 @@ namespace HA4IoT.Controller.Local
             area.AddComponent(new Button(new ComponentId("Button4"), await _mainPage.CreateDemoButton("Button 4"), timerService, settingsService));
             area.AddComponent(new Button(new ComponentId("Button5"), await _mainPage.CreateDemoButton("Button 5"), timerService, settingsService));
 
-            area.GetComponent<IButton>(new ComponentId("Button1")).PressedShortlyTrigger.Attach(area.GetComponent<ILamp>(new ComponentId("Lamp1")).GetSetNextStateAction());
-            area.GetComponent<IButton>(new ComponentId("Button1")).PressedLongTrigger.Attach(area.GetComponent<ILamp>(new ComponentId("Lamp2")).GetSetNextStateAction());
+            area.GetComponent<IButton>(new ComponentId("Button1")).PressedShortlyTrigger.Attach(area.GetComponent<ILamp>(new ComponentId("Lamp1")).TogglePowerStateAction);
+            area.GetComponent<IButton>(new ComponentId("Button1")).PressedLongTrigger.Attach(area.GetComponent<ILamp>(new ComponentId("Lamp2")).TogglePowerStateAction);
 
             area.GetComponent<IButton>(new ComponentId("Button3"))
                 .PressedShortlyTrigger

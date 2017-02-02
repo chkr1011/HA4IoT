@@ -99,7 +99,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             _sensorFactory.RegisterButton(area, ReadingRoom.Button, input2.GetInput(13));
 
-            area.GetLamp(ReadingRoom.LightCeilingMiddle).ConnectToggleActionWith(area.GetButton(ReadingRoom.Button));
+            area.GetButton(ReadingRoom.Button).PressedShortlyTrigger.Attach(area.GetLamp(ReadingRoom.LightCeilingMiddle).TogglePowerStateAction);
 
             _automationFactory.RegisterRollerShutterAutomation(area, ReadingRoom.RollerShutterAutomation)
                 .WithRollerShutters(area.GetRollerShutter(ReadingRoom.RollerShutter));

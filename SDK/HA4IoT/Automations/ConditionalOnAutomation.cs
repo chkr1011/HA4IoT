@@ -4,6 +4,7 @@ using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
+using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Triggers;
@@ -46,8 +47,8 @@ namespace HA4IoT.Automations
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
-            WithActionIfConditionsFulfilled(actuator.GetTurnOnAction());
-            WithActionIfConditionsNotFulfilled(actuator.GetTurnOffAction());
+            WithActionIfConditionsFulfilled(() => actuator.InvokeCommand(new TurnOnCommand()));
+            WithActionIfConditionsNotFulfilled(() => actuator.InvokeCommand(new TurnOffCommand()));
 
             return this;
         }

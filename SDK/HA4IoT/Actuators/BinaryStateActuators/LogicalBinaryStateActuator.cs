@@ -4,7 +4,6 @@ using System.Linq;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services.System;

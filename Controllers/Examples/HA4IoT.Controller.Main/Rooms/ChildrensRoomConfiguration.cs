@@ -99,7 +99,7 @@ namespace HA4IoT.Controller.Main.Rooms
             _actuatorFactory.RegisterRollerShutter(area, ChildrensRoom.RollerShutter, hsrel5[HSREL5Pin.Relay4], hsrel5[HSREL5Pin.Relay3]);
             _sensorFactory.RegisterRollerShutterButtons(area, ChildrensRoom.RollerShutterButtonUp, input0.GetInput(1), ChildrensRoom.RollerShutterButtonDown, input0.GetInput(2));
 
-            area.GetButton(ChildrensRoom.Button).PressedShortlyTrigger.Attach(area.GetLamp(ChildrensRoom.LightCeilingMiddle).GetSetNextStateAction());
+            area.GetButton(ChildrensRoom.Button).PressedShortlyTrigger.Attach(area.GetLamp(ChildrensRoom.LightCeilingMiddle).TogglePowerStateAction);
 
             _automationFactory.RegisterRollerShutterAutomation(area, ChildrensRoom.RollerShutterAutomation)
                 .WithRollerShutters(area.GetRollerShutter(ChildrensRoom.RollerShutter));

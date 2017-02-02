@@ -116,8 +116,8 @@ namespace HA4IoT.Controller.Main.Rooms
             _sensorFactory.RegisterRollerShutterButtons(area, Kitchen.RollerShutterButtonUp, input2.GetInput(15),
                 Kitchen.RollerShutterButtonDown, input2.GetInput(14));
 
-            area.GetLamp(Kitchen.LightCeilingMiddle).ConnectToggleActionWith(area.GetButton(Kitchen.ButtonKitchenette));
-            area.GetLamp(Kitchen.LightCeilingMiddle).ConnectToggleActionWith(area.GetButton(Kitchen.ButtonPassage));
+            area.GetButton(Kitchen.ButtonKitchenette).PressedShortlyTrigger.Attach(area.GetLamp(Kitchen.LightCeilingMiddle).TogglePowerStateAction);
+            area.GetButton(Kitchen.ButtonPassage).PressedShortlyTrigger.Attach(area.GetLamp(Kitchen.LightCeilingMiddle).TogglePowerStateAction);
 
             _automationFactory.RegisterRollerShutterAutomation(area, Kitchen.RollerShutterAutomation)
                 .WithRollerShutters(area.GetRollerShutter(Kitchen.RollerShutter));

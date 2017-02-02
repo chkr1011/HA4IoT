@@ -119,12 +119,8 @@ namespace HA4IoT.Controller.Main.Rooms
             _sensorFactory.RegisterButton(area, LivingRoom.ButtonLower, input0.GetInput(13));
             _sensorFactory.RegisterButton(area, LivingRoom.ButtonPassage, input1.GetInput(10));
 
-            area.GetLamp(LivingRoom.LampDiningTable)
-                .ConnectToggleActionWith(area.GetButton(LivingRoom.ButtonUpper))
-                .ConnectToggleActionWith(area.GetButton(LivingRoom.ButtonPassage));
-
-            area.GetLamp(LivingRoom.LampCouch).
-                ConnectToggleActionWith(area.GetButton(LivingRoom.ButtonMiddle));
+            area.GetButton(LivingRoom.ButtonUpper).PressedShortlyTrigger.Attach(area.GetLamp(LivingRoom.LampDiningTable).TogglePowerStateAction);
+            area.GetButton(LivingRoom.ButtonPassage).PressedShortlyTrigger.Attach(area.GetLamp(LivingRoom.LampDiningTable).TogglePowerStateAction);
 
             area.GetButton(LivingRoom.ButtonLower).PressedShortlyTrigger.Attach(area.GetSocket(LivingRoom.SocketWallRightEdgeRight).TogglePowerStateAction);
         }
