@@ -15,7 +15,7 @@ namespace HA4IoT.Sensors
 
         public override ComponentFeatureStateCollection GetState()
         {
-            return new ComponentFeatureStateCollection().WithState(_state);
+            return new ComponentFeatureStateCollection().With(_state);
         }
 
         protected void SetState(GenericComponentState newState)

@@ -86,7 +86,7 @@ namespace HA4IoT.Actuators.RollerShutters
 
         public override ComponentFeatureStateCollection GetState()
         {
-            return new ComponentFeatureStateCollection().WithState(_state);
+            return new ComponentFeatureStateCollection().With(_state);
         }
 
         public override ComponentFeatureCollection GetFeatures()

@@ -44,7 +44,7 @@ namespace HA4IoT.Sensors.Buttons
         public override ComponentFeatureStateCollection GetState()
         {
             return new ComponentFeatureStateCollection()
-                .WithState(new ButtonState(_state));
+                .With(new ButtonState(_state));
         }
 
         public override ComponentFeatureCollection GetFeatures()

@@ -16,11 +16,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Main", "C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Cellar", "Controllers\Examples\HA4IoT.Controller.Cellar\HA4IoT.Controller.Cellar.csproj", "{2ECC3769-3EDB-4646-86EE-91FBDACBA972}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Hardware.Tests", "Tests\HA4IoT.Hardware.Tests\HA4IoT.Hardware.Tests.csproj", "{02CBC16A-2BDA-4789-AE84-BC2679C1185B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Networking", "SDK\HA4IoT.Networking\HA4IoT.Networking.csproj", "{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Tests.Mockups", "Tests\HA4IoT.Tests.Mockups\HA4IoT.Tests.Mockups.csproj", "{238AD610-4F9B-4652-81DB-A8FC215F61A5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.TraceViewer", "Tools\HA4IoT.TraceViewer\HA4IoT.TraceViewer.csproj", "{1948D9A6-707C-463B-8A16-D0A4020C4896}"
 EndProject
@@ -99,16 +95,6 @@ Global
 		{2ECC3769-3EDB-4646-86EE-91FBDACBA972}.Release|ARM (For Raspberry Pi).Build.0 = Release|ARM
 		{2ECC3769-3EDB-4646-86EE-91FBDACBA972}.Release|x86 (For local).ActiveCfg = Release|x86
 		{2ECC3769-3EDB-4646-86EE-91FBDACBA972}.Release|x86 (For local).Build.0 = Release|x86
-		{02CBC16A-2BDA-4789-AE84-BC2679C1185B}.Debug|Any CPU (For Cloud Components).ActiveCfg = Debug|Any CPU
-		{02CBC16A-2BDA-4789-AE84-BC2679C1185B}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
-		{02CBC16A-2BDA-4789-AE84-BC2679C1185B}.Debug|x86 (For local).ActiveCfg = Debug|x86
-		{02CBC16A-2BDA-4789-AE84-BC2679C1185B}.Debug|x86 (For local).Build.0 = Debug|x86
-		{02CBC16A-2BDA-4789-AE84-BC2679C1185B}.Release|Any CPU (For Cloud Components).ActiveCfg = Release|Any CPU
-		{02CBC16A-2BDA-4789-AE84-BC2679C1185B}.Release|Any CPU (For Cloud Components).Build.0 = Release|Any CPU
-		{02CBC16A-2BDA-4789-AE84-BC2679C1185B}.Release|Any CPU (For Cloud Components).Deploy.0 = Release|Any CPU
-		{02CBC16A-2BDA-4789-AE84-BC2679C1185B}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|ARM
-		{02CBC16A-2BDA-4789-AE84-BC2679C1185B}.Release|x86 (For local).ActiveCfg = Release|x86
-		{02CBC16A-2BDA-4789-AE84-BC2679C1185B}.Release|x86 (For local).Build.0 = Release|x86
 		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}.Debug|Any CPU (For Cloud Components).ActiveCfg = Debug|Any CPU
 		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
 		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|ARM
@@ -120,15 +106,6 @@ Global
 		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}.Release|ARM (For Raspberry Pi).Build.0 = Release|ARM
 		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}.Release|x86 (For local).ActiveCfg = Release|x86
 		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}.Release|x86 (For local).Build.0 = Release|x86
-		{238AD610-4F9B-4652-81DB-A8FC215F61A5}.Debug|Any CPU (For Cloud Components).ActiveCfg = Debug|Any CPU
-		{238AD610-4F9B-4652-81DB-A8FC215F61A5}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
-		{238AD610-4F9B-4652-81DB-A8FC215F61A5}.Debug|x86 (For local).ActiveCfg = Debug|x86
-		{238AD610-4F9B-4652-81DB-A8FC215F61A5}.Debug|x86 (For local).Build.0 = Debug|x86
-		{238AD610-4F9B-4652-81DB-A8FC215F61A5}.Release|Any CPU (For Cloud Components).ActiveCfg = Release|Any CPU
-		{238AD610-4F9B-4652-81DB-A8FC215F61A5}.Release|Any CPU (For Cloud Components).Build.0 = Release|Any CPU
-		{238AD610-4F9B-4652-81DB-A8FC215F61A5}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|ARM
-		{238AD610-4F9B-4652-81DB-A8FC215F61A5}.Release|x86 (For local).ActiveCfg = Release|x86
-		{238AD610-4F9B-4652-81DB-A8FC215F61A5}.Release|x86 (For local).Build.0 = Release|x86
 		{1948D9A6-707C-463B-8A16-D0A4020C4896}.Debug|Any CPU (For Cloud Components).ActiveCfg = Debug|Any CPU
 		{1948D9A6-707C-463B-8A16-D0A4020C4896}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|x86
 		{1948D9A6-707C-463B-8A16-D0A4020C4896}.Debug|x86 (For local).ActiveCfg = Debug|x86
@@ -291,9 +268,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{D3634558-2746-441F-BC09-454B1EC7DC1D} = {CED3E271-EE23-4B30-936C-B709F4D176FD}
 		{2ECC3769-3EDB-4646-86EE-91FBDACBA972} = {CED3E271-EE23-4B30-936C-B709F4D176FD}
-		{02CBC16A-2BDA-4789-AE84-BC2679C1185B} = {C66A0C8B-0AAA-40C0-8D27-BD5B7BF1EF46}
 		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63} = {982ABB4E-A5DC-4C78-87A3-30BF49DD5764}
-		{238AD610-4F9B-4652-81DB-A8FC215F61A5} = {C66A0C8B-0AAA-40C0-8D27-BD5B7BF1EF46}
 		{1948D9A6-707C-463B-8A16-D0A4020C4896} = {36BA1D34-CA76-47F1-97FC-F8386D09AAC3}
 		{0E8A3855-D428-4CA2-B752-486B61056933} = {20B098BA-1C68-4602-8BBA-902E7E3CA0B4}
 		{C9683C4E-1A20-4C29-961D-7D5C89D13678} = {C66A0C8B-0AAA-40C0-8D27-BD5B7BF1EF46}

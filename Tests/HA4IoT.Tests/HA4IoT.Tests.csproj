@@ -110,6 +110,37 @@
     <Compile Include="Automations\RollerShutterAutomationTests.cs" />
     <Compile Include="Components\ComponentStateTests.cs" />
     <Compile Include="Components\SerializationTests.cs" />
+    <Compile Include="Hardware\CCTools\CCToolsTests.cs" />
+    <Compile Include="Hardware\RemoteSwitch\BrennenstuhlCodeSequenceProviderTests.cs" />
+    <Compile Include="Mockups\TestBinaryStateAdapter.cs" />
+    <Compile Include="Mockups\TestButton.cs" />
+    <Compile Include="Mockups\TestButtonEndpoint.cs" />
+    <Compile Include="Mockups\TestButtonFactory.cs" />
+    <Compile Include="Mockups\TestController.cs" />
+    <Compile Include="Mockups\TestDateTimeService.cs" />
+    <Compile Include="Mockups\TestDaylightService.cs" />
+    <Compile Include="Mockups\TestHomeAutomationTimer.cs" />
+    <Compile Include="Mockups\TestHumiditySensor.cs" />
+    <Compile Include="Mockups\TestI2CBusService.cs" />
+    <Compile Include="Mockups\TestI2CDevice.cs" />
+    <Compile Include="Mockups\TestInboundMessage.cs" />
+    <Compile Include="Mockups\TestInputPort.cs" />
+    <Compile Include="Mockups\TestLogger.cs" />
+    <Compile Include="Mockups\TestMotionDetector.cs" />
+    <Compile Include="Mockups\TestMotionDetectorEndpoint.cs" />
+    <Compile Include="Mockups\TestMotionDetectorFactory.cs" />
+    <Compile Include="Mockups\TestOutputPort.cs" />
+    <Compile Include="Mockups\TestPort.cs" />
+    <Compile Include="Mockups\TestPortTests.cs" />
+    <Compile Include="Mockups\TestRollerShutter.cs" />
+    <Compile Include="Mockups\TestRollerShutterEndpoint.cs" />
+    <Compile Include="Mockups\TestRollerShutterFactory.cs" />
+    <Compile Include="Mockups\TestSensorAdapter.cs" />
+    <Compile Include="Mockups\TestStateMachine.cs" />
+    <Compile Include="Mockups\TestStateMachineFactory.cs" />
+    <Compile Include="Mockups\TestStorageService.cs" />
+    <Compile Include="Mockups\TestTemperatureSensor.cs" />
+    <Compile Include="Mockups\TestWeatherStation.cs" />
     <Compile Include="PersonalAgent\MessageContextTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnitTestApp.xaml.cs">
@@ -146,10 +177,6 @@
     <ProjectReference Include="..\..\SDK\HA4IoT\HA4IoT.csproj">
       <Project>{c034ec4d-46cc-490a-a045-e4d4d1f49c31}</Project>
       <Name>HA4IoT</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\HA4IoT.Tests.Mockups\HA4IoT.Tests.Mockups.csproj">
-      <Project>{238AD610-4F9B-4652-81DB-A8FC215F61A5}</Project>
-      <Name>HA4IoT.Tests.Mockups</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

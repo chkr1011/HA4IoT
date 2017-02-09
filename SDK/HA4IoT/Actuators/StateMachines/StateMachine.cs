@@ -96,7 +96,7 @@ namespace HA4IoT.Actuators.StateMachines
                 return new ComponentFeatureStateCollection();
             }
 
-            return new ComponentFeatureStateCollection().WithState(_activeState?.Id);
+            return new ComponentFeatureStateCollection().With(_activeState?.Id);
         }
 
         public override ComponentFeatureCollection GetFeatures()

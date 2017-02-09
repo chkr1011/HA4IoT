@@ -11,8 +11,8 @@ namespace HA4IoT.Tests.PersonalAgent
         public void IdentifyAreaIds()
         {
             var testController = new TestController();
-            
-            var messageContextFactory = new MessageContextFactory(testController.AreaService, testController.ComponentService, testController.SettingsService);
+
+            var messageContextFactory = testController.GetInstance<MessageContextFactory>();
 
             var messageContext = messageContextFactory.Create("Hello World. Büro.");
             Assert.AreEqual(1, messageContext.IdentifiedAreaIds.Count);

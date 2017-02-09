@@ -58,7 +58,7 @@ namespace HA4IoT.Actuators.StateMachines
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
 
             var activeStateId = stateMachine.GetState();
-            var nextStateId = stateMachine.GetNextState(activeStateId.GetState<GenericComponentState>());
+            var nextStateId = stateMachine.GetNextState(activeStateId.Get<GenericComponentState>());
 
             stateMachine.ChangeState(nextStateId);
         }

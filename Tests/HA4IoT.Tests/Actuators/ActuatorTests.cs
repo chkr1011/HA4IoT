@@ -1,8 +1,6 @@
-﻿using FluentAssertions;
-using HA4IoT.Actuators.Lamps;
+﻿using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.Sockets;
 using HA4IoT.Components;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Components.States;
 using HA4IoT.Tests.Mockups;
@@ -20,34 +18,34 @@ namespace HA4IoT.Tests.Actuators
             var socket = new Socket(new ComponentId("Test"), adapter);
             socket.ResetState();
 
-            adapter.TurnOnCalledCount.ShouldBeEquivalentTo(0);
-            adapter.TurnOffCalledCount.ShouldBeEquivalentTo(1);
-            socket.GetState().HasState(PowerState.Off);
+            Assert.AreEqual(0, adapter.TurnOnCalledCount);
+            Assert.AreEqual(1, adapter.TurnOffCalledCount);
+            Assert.AreEqual(true, socket.GetState().Has(PowerState.Off));
 
             socket.TryTurnOn();
-            adapter.TurnOnCalledCount.ShouldBeEquivalentTo(1);
-            adapter.TurnOffCalledCount.ShouldBeEquivalentTo(1);
-            socket.GetState().HasState(PowerState.On);
+            Assert.AreEqual(1, adapter.TurnOnCalledCount);
+            Assert.AreEqual(1, adapter.TurnOffCalledCount);
+            Assert.AreEqual(true, socket.GetState().Has(PowerState.On));
 
             socket.TryTurnOn();
-            adapter.TurnOnCalledCount.ShouldBeEquivalentTo(1);
-            adapter.TurnOffCalledCount.ShouldBeEquivalentTo(1);
-            socket.GetState().HasState(PowerState.On);
+            Assert.AreEqual(1, adapter.TurnOnCalledCount);
+            Assert.AreEqual(1, adapter.TurnOffCalledCount);
+            Assert.AreEqual(true, socket.GetState().Has(PowerState.On));
 
             socket.TryTurnOff();
-            adapter.TurnOnCalledCount.ShouldBeEquivalentTo(1);
-            adapter.TurnOffCalledCount.ShouldBeEquivalentTo(2);
-            socket.GetState().HasState(PowerState.Off);
+            Assert.AreEqual(1, adapter.TurnOnCalledCount);
+            Assert.AreEqual(2, adapter.TurnOffCalledCount);
+            Assert.AreEqual(true, socket.GetState().Has(PowerState.Off));
 
             socket.TryTurnOff();
-            adapter.TurnOnCalledCount.ShouldBeEquivalentTo(1);
-            adapter.TurnOffCalledCount.ShouldBeEquivalentTo(2);
-            socket.GetState().HasState(PowerState.Off);
+            Assert.AreEqual(1, adapter.TurnOnCalledCount);
+            Assert.AreEqual(2, adapter.TurnOffCalledCount);
+            Assert.AreEqual(true, socket.GetState().Has(PowerState.Off));
 
             socket.TryTurnOn();
-            adapter.TurnOnCalledCount.ShouldBeEquivalentTo(2);
-            adapter.TurnOffCalledCount.ShouldBeEquivalentTo(2);
-            socket.GetState().HasState(PowerState.On);
+            Assert.AreEqual(2, adapter.TurnOnCalledCount);
+            Assert.AreEqual(2, adapter.TurnOffCalledCount);
+            Assert.AreEqual(true, socket.GetState().Has(PowerState.On));
         }
 
         [TestMethod]
@@ -57,19 +55,19 @@ namespace HA4IoT.Tests.Actuators
             var lamp = new Lamp(new ComponentId("Test"), adapter);
             lamp.ResetState();
 
-            adapter.TurnOnCalledCount.ShouldBeEquivalentTo(0);
-            adapter.TurnOffCalledCount.ShouldBeEquivalentTo(1);
-            lamp.GetState().HasState(BinaryStateId.Off);
+            Assert.AreEqual(0, adapter.TurnOnCalledCount);
+            Assert.AreEqual(1, adapter.TurnOffCalledCount);
+            Assert.AreEqual(true, lamp.GetState().Has(PowerState.Off));
 
             lamp.TogglePowerStateAction.Execute();
-            adapter.TurnOnCalledCount.ShouldBeEquivalentTo(1);
-            adapter.TurnOffCalledCount.ShouldBeEquivalentTo(1);
-            lamp.GetState().HasState(BinaryStateId.On);
+            Assert.AreEqual(1, adapter.TurnOnCalledCount);
+            Assert.AreEqual(1, adapter.TurnOffCalledCount);
+            Assert.AreEqual(true, lamp.GetState().Has(PowerState.On));
 
             lamp.TogglePowerStateAction.Execute();
-            adapter.TurnOnCalledCount.ShouldBeEquivalentTo(1);
-            adapter.TurnOffCalledCount.ShouldBeEquivalentTo(2);
-            lamp.GetState().HasState(BinaryStateId.Off);
+            Assert.AreEqual(1, adapter.TurnOnCalledCount);
+            Assert.AreEqual(2, adapter.TurnOffCalledCount);
+            Assert.AreEqual(true, lamp.GetState().Has(PowerState.Off));
         }
     }
 }

@@ -1,13 +1,14 @@
 ﻿using System;
-using FluentAssertions;
+using HA4IoT.Actuators.Lamps;
 using HA4IoT.Automations;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
-using HA4IoT.Services.Backup;
-using HA4IoT.Services.Scheduling;
-using HA4IoT.Services.StorageService;
-using HA4IoT.Services.System;
-using HA4IoT.Settings;
+using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Components.States;
+using HA4IoT.Contracts.Services.Daylight;
+using HA4IoT.Contracts.Services.Settings;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -19,57 +20,70 @@ namespace HA4IoT.Tests.Actuators
         [TestMethod]
         public void Should_TurnOn_IfMotionDetected()
         {
-            var schedulerService = new SchedulerService(new TestTimerService(), new DateTimeService());
-            var motionDetectorFactory = new TestMotionDetectorFactory(schedulerService, new SettingsService(new BackupService(), new StorageService()));
-            var stateMachineFactory = new TestStateMachineFactory();
+            var testController = new TestController();
+            var motionDetectorFactory = testController.GetInstance<TestMotionDetectorFactory>();
 
-            var automation = new FlipFlopAutomation(AutomationIdGenerator.EmptyId, new TestDateTimeService(), schedulerService, new SettingsService(new BackupService(), new StorageService()), new TestDaylightService());
+            var automation = new FlipFlopAutomation(
+                AutomationIdGenerator.EmptyId,
+                testController.GetInstance<IDateTimeService>(), 
+                testController.GetInstance<ISchedulerService>(),
+                testController.GetInstance<ISettingsService>(),
+                testController.GetInstance<IDaylightService>());
+
             var motionDetector = motionDetectorFactory.CreateTestMotionDetector();
-            var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
-            output.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
+            var output = new Lamp(new ComponentId("?"), new TestBinaryStateAdapter());
+            Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
 
             automation.WithTrigger(motionDetector);
             automation.WithTarget(output);
 
             motionDetector.TriggerMotionDetection();
 
-            output.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
+            Assert.AreEqual(true, output.GetState().Has(PowerState.On));
         }
 
         [TestMethod]
         public void Should_TurnOn_IfButtonPressedShort()
         {
-            var timer = new TestTimerService();
-            var buttonFactory = new TestButtonFactory(timer, new SettingsService(new BackupService(), new StorageService()));
-            var stateMachineFactory = new TestStateMachineFactory();
+            var testController = new TestController();
+            var buttonFactory = testController.GetInstance<TestButtonFactory>();
 
-            var automation = new FlipFlopAutomation(AutomationIdGenerator.EmptyId, new TestDateTimeService(), new SchedulerService(new TestTimerService(), new DateTimeService()), new SettingsService(new BackupService(), new StorageService()), new TestDaylightService());
+            var automation = new FlipFlopAutomation(
+                AutomationIdGenerator.EmptyId,
+                testController.GetInstance<IDateTimeService>(),
+                testController.GetInstance<ISchedulerService>(),
+                testController.GetInstance<ISettingsService>(),
+                testController.GetInstance<IDaylightService>());
+
             var button = buttonFactory.CreateTestButton();
-            var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
-            output.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
+            var output = new Lamp(new ComponentId("?"), new TestBinaryStateAdapter());
+            Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
 
             automation.WithFlipTrigger(button.PressedShortlyTrigger);
             automation.WithTarget(output);
 
             button.PressShortly();
 
-            output.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
+            Assert.AreEqual(true, output.GetState().Has(PowerState.On));
         }
 
         [TestMethod]
         public void Should_NotTurnOn_IfMotionDetected_AndTimeRangeConditionIs_NotFulfilled()
         {
-            var timer = new TestTimerService();
-            var dateTimeService = new TestDateTimeService();
-            dateTimeService.SetTime(TimeSpan.Parse("18:00:00"));
+            var testController = new TestController();
+            testController.SetTime(TimeSpan.Parse("18:00:00"));
+            var motionDetectorFactory = testController.GetInstance<TestMotionDetectorFactory>();
 
-            var motionDetectorFactory = new TestMotionDetectorFactory(new SchedulerService(timer, dateTimeService), new SettingsService(new BackupService(), new StorageService()));
-            var stateMachineFactory = new TestStateMachineFactory();
+            var automation = new FlipFlopAutomation(
+                AutomationIdGenerator.EmptyId,
+                testController.GetInstance<IDateTimeService>(),
+                testController.GetInstance<ISchedulerService>(),
+                testController.GetInstance<ISettingsService>(),
+                testController.GetInstance<IDaylightService>());
 
-            var automation = new FlipFlopAutomation(AutomationIdGenerator.EmptyId, dateTimeService, new SchedulerService(timer, dateTimeService), new SettingsService(new BackupService(), new StorageService()), new TestDaylightService());
             var motionDetector = motionDetectorFactory.CreateTestMotionDetector();
-            var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
-            output.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
+            var output = new Lamp(new ComponentId("?"), new TestBinaryStateAdapter());
+            Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
 
             automation.WithTurnOnWithinTimeRange(() => TimeSpan.Parse("10:00:00"), () => TimeSpan.Parse("15:00:00"));
             automation.WithTrigger(motionDetector);
@@ -77,23 +91,26 @@ namespace HA4IoT.Tests.Actuators
 
             motionDetector.TriggerMotionDetection();
 
-            output.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
+            Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
         }
 
         [TestMethod]
         public void Should_TurnOn_IfButtonPressed_EvenIfTimeRangeConditionIs_NotFulfilled()
         {
-            var timer = new TestTimerService();
-            var dateTimeService = new TestDateTimeService();
-            dateTimeService.SetTime(TimeSpan.Parse("18:00:00"));
+            var testController = new TestController();
+            testController.SetTime(TimeSpan.Parse("18:00:00"));
+            var buttonFactory = testController.GetInstance<TestButtonFactory>();
 
-            var buttonFactory = new TestButtonFactory(timer, new SettingsService(new BackupService(), new StorageService()));
-            var stateMachineFactory = new TestStateMachineFactory();
+            var automation = new FlipFlopAutomation(
+                AutomationIdGenerator.EmptyId,
+                testController.GetInstance<IDateTimeService>(),
+                testController.GetInstance<ISchedulerService>(),
+                testController.GetInstance<ISettingsService>(),
+                testController.GetInstance<IDaylightService>());
 
-            var automation = new FlipFlopAutomation(AutomationIdGenerator.EmptyId, dateTimeService, new SchedulerService(timer, dateTimeService), new SettingsService(new BackupService(), new StorageService()), new TestDaylightService());
             var button = buttonFactory.CreateTestButton();
-            var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
-            output.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
+            var output = new Lamp(new ComponentId("?"), new TestBinaryStateAdapter());
+            Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
 
             automation.WithTurnOnWithinTimeRange(() => TimeSpan.Parse("10:00:00"), () => TimeSpan.Parse("15:00:00"));
             automation.WithFlipTrigger(button.PressedShortlyTrigger);
@@ -101,109 +118,121 @@ namespace HA4IoT.Tests.Actuators
 
             button.PressShortly();
 
-            output.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
+            Assert.AreEqual(true, output.GetState().Has(PowerState.On));
         }
 
         [TestMethod]
         public void Should_NotTurnOn_IfMotionDetected_AndSkipConditionIs_Fulfilled()
         {
-            var timer = new TestTimerService();
-            var dateTimeService = new TestDateTimeService();
-            dateTimeService.SetTime(TimeSpan.Parse("14:00:00"));
+            var testController = new TestController();
+            testController.SetTime(TimeSpan.Parse("14:00:00"));
+            var motionDetectorFactory = testController.GetInstance<TestMotionDetectorFactory>();
 
-            var motionDetectorFactory = new TestMotionDetectorFactory(new SchedulerService(timer, dateTimeService), new SettingsService(new BackupService(), new StorageService()));
-            var stateMachineFactory = new TestStateMachineFactory();
+            var automation = new FlipFlopAutomation(
+                AutomationIdGenerator.EmptyId,
+                testController.GetInstance<IDateTimeService>(),
+                testController.GetInstance<ISchedulerService>(),
+                testController.GetInstance<ISettingsService>(),
+                testController.GetInstance<IDaylightService>());
 
-            var automation = new FlipFlopAutomation(AutomationIdGenerator.EmptyId, dateTimeService, new SchedulerService(timer, dateTimeService), new SettingsService(new BackupService(), new StorageService()), new TestDaylightService());
             var motionDetector = motionDetectorFactory.CreateTestMotionDetector();
 
-            var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
-            output.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
+            var output = new Lamp(new ComponentId("?"), new TestBinaryStateAdapter());
+            Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
 
             automation.WithTrigger(motionDetector);
             automation.WithTarget(output);
 
-            IStateMachine[] otherActuators =
+            var other2 = new Lamp(new ComponentId("?"), new TestBinaryStateAdapter());
+            other2.TryTurnOn();
+
+            IActuator[] otherActuators =
             {
-                stateMachineFactory.CreateTestStateMachineWithOnOffStates(),
-                stateMachineFactory.CreateTestStateMachineWithOnOffStates(BinaryStateId.On)
+                new Lamp(new ComponentId("?"), new TestBinaryStateAdapter()),
+                other2
             };
 
             automation.WithSkipIfAnyActuatorIsAlreadyOn(otherActuators);
 
             motionDetector.TriggerMotionDetection();
 
-            output.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
+            Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
         }
 
         [TestMethod]
         public void Should_TurnOn_IfMotionDetected_AndSkipConditionIs_NotFulfilled()
         {
-            var timer = new TestTimerService();
-            var dateTimeService = new TestDateTimeService();
-            dateTimeService.SetTime(TimeSpan.Parse("14:00:00"));
+            var testController = new TestController();
+            testController.SetTime(TimeSpan.Parse("14:00:00"));
+            var motionDetectorFactory = testController.GetInstance<TestMotionDetectorFactory>();
 
-            var motionDetectorFactory = new TestMotionDetectorFactory(new SchedulerService(timer, dateTimeService), new SettingsService(new BackupService(), new StorageService()));
-            var stateMachineFactory = new TestStateMachineFactory();
+            var automation = new FlipFlopAutomation(
+                AutomationIdGenerator.EmptyId,
+                testController.GetInstance<IDateTimeService>(),
+                testController.GetInstance<ISchedulerService>(),
+                testController.GetInstance<ISettingsService>(),
+                testController.GetInstance<IDaylightService>());
 
-            var automation = new FlipFlopAutomation(AutomationIdGenerator.EmptyId, dateTimeService, new SchedulerService(timer, dateTimeService), new SettingsService(new BackupService(), new StorageService()), new TestDaylightService());
             var motionDetector = motionDetectorFactory.CreateTestMotionDetector();
 
-            var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
-            output.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
+            var output = new Lamp(new ComponentId("?"), new TestBinaryStateAdapter());
+            Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
 
             automation.WithTrigger(motionDetector);
             automation.WithTarget(output);
 
-            IStateMachine[] otherActuators =
+            IActuator[] otherActuators =
             {
-                stateMachineFactory.CreateTestStateMachineWithOnOffStates(),
-                stateMachineFactory.CreateTestStateMachineWithOnOffStates()
+                new Lamp(new ComponentId("?"), new TestBinaryStateAdapter()),
+                new Lamp(new ComponentId("?"), new TestBinaryStateAdapter())
             };
 
             automation.WithSkipIfAnyActuatorIsAlreadyOn(otherActuators);
 
             motionDetector.TriggerMotionDetection();
 
-            output.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
+            Assert.AreEqual(true, output.GetState().Has(PowerState.On));
         }
 
         [TestMethod]
         public void Should_TurnOff_IfButtonPressed_WhileTargetIsAlreadyOn()
         {
-            var timer = new TestTimerService();
-            var dateTimeService = new TestDateTimeService();
-            dateTimeService.SetTime(TimeSpan.Parse("14:00:00"));
+            var testController = new TestController();
+            testController.SetTime(TimeSpan.Parse("14:00:00"));
+            var buttonFactory = testController.GetInstance<TestButtonFactory>();
 
-            var buttonFactory = new TestButtonFactory(timer, new SettingsService(new BackupService(), new StorageService()));
-            var stateMachineFactory = new TestStateMachineFactory();
-            
-            var automation = new FlipFlopAutomation(AutomationIdGenerator.EmptyId, dateTimeService, new SchedulerService(timer, dateTimeService), new SettingsService(new BackupService(), new StorageService()), new TestDaylightService());
+            var automation = new FlipFlopAutomation(
+                AutomationIdGenerator.EmptyId,
+                testController.GetInstance<IDateTimeService>(),
+                testController.GetInstance<ISchedulerService>(),
+                testController.GetInstance<ISettingsService>(),
+                testController.GetInstance<IDaylightService>());
+
             var button = buttonFactory.CreateTestButton();
 
-            var output = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
-            output.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
+            var output = new Lamp(new ComponentId("?"), new TestBinaryStateAdapter());
+            Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
 
             automation.WithFlipTrigger(button.PressedShortlyTrigger);
             automation.WithTarget(output);
 
-            IStateMachine[] otherActuators =
+            IActuator[] otherActuators =
             {
-                stateMachineFactory.CreateTestStateMachineWithOnOffStates(),
-                stateMachineFactory.CreateTestStateMachineWithOnOffStates()
+                new Lamp(new ComponentId("?"), new TestBinaryStateAdapter()),
+                new Lamp(new ComponentId("?"), new TestBinaryStateAdapter())
             };
 
             automation.WithSkipIfAnyActuatorIsAlreadyOn(otherActuators);
 
             button.PressShortly();
-            output.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
+            Assert.AreEqual(true, output.GetState().Has(PowerState.On));
 
             button.PressShortly();
-            output.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
+            Assert.AreEqual(true, output.GetState().Has(PowerState.On));
 
             automation.WithTurnOffIfButtonPressedWhileAlreadyOn();
             button.PressShortly();
-            output.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
+            Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
         }
     }
 }

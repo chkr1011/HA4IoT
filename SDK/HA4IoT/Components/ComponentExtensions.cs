@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 
 namespace HA4IoT.Components
@@ -19,14 +20,32 @@ namespace HA4IoT.Components
         {
             if (component == null) throw new ArgumentNullException(nameof(component));
 
-            return TrySetState(component, BinaryStateId.On);
+            try
+            {
+                component.InvokeCommand(new TurnOnCommand());
+            }
+            catch (CommandNotSupportedException)
+            {
+                return false;
+            }
+            
+            return true;
         }
 
         public static bool TryTurnOff(this IComponent component)
         {
             if (component == null) throw new ArgumentNullException(nameof(component));
 
-            return TrySetState(component, BinaryStateId.Off);
+            try
+            {
+                component.InvokeCommand(new TurnOffCommand());
+            }
+            catch (CommandNotSupportedException)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public static bool TryMoveUp(this IComponent component)

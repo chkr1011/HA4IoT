@@ -30,7 +30,7 @@ namespace HA4IoT.Actuators.Sockets
         public override ComponentFeatureStateCollection GetState()
         {
             return new ComponentFeatureStateCollection()
-                .WithState(new PowerState(_powerState));
+                .With(new PowerState(_powerState));
         }
 
         public override ComponentFeatureCollection GetFeatures()

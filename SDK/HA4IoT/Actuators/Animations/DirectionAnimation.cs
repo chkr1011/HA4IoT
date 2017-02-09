@@ -72,7 +72,7 @@ namespace HA4IoT.Actuators.Animations
 
             Frames.Clear();
             
-            var orderedActuators = new List<IStateMachine>(_actuator.Actuators);
+            var orderedActuators = new List<IActuator>(_actuator.Actuators);
             if (!_isForward)
             {
                 orderedActuators.Reverse();

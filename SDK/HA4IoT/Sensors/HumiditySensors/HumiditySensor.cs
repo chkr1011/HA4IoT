@@ -36,7 +36,7 @@ namespace HA4IoT.Sensors.HumiditySensors
 
         public float GetCurrentHumidity()
         {
-            return GetState().GetState<HumidityState>().Value ?? 0;
+            return GetState().Get<HumidityState>().Value ?? 0;
         }
 
         public override ComponentFeatureCollection GetFeatures()

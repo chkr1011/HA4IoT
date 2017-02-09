@@ -6,6 +6,7 @@ using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Services.Backup;
 using HA4IoT.Services.StorageService;
 using HA4IoT.Settings;
@@ -44,8 +45,8 @@ namespace HA4IoT.Tests.Automations
         public void Automation_WithCondition()
         {
             var testController = new TestController();
-            
-            var testButtonFactory = new TestButtonFactory(testController.TimerService, new SettingsService(new BackupService(), new StorageService()));
+
+            var testButtonFactory = testController.GetInstance<TestButtonFactory>();
             var testStateMachineFactory = new TestStateMachineFactory();
 
             var testButton = testButtonFactory.CreateTestButton();
@@ -53,7 +54,7 @@ namespace HA4IoT.Tests.Automations
 
             new Automation(AutomationIdGenerator.EmptyId)
                 .WithTrigger(testButton.PressedShortlyTrigger)
-                .WithCondition(ConditionRelation.And, new TimeRangeCondition(testController.DateTimeService).WithStart(TimeSpan.FromHours(1)).WithEnd(TimeSpan.FromHours(2)))
+                .WithCondition(ConditionRelation.And, new TimeRangeCondition(testController.GetInstance<IDateTimeService>()).WithStart(TimeSpan.FromHours(1)).WithEnd(TimeSpan.FromHours(2)))
                 .WithActionIfConditionsFulfilled(testOutput.GetSetNextStateAction());
             
             testOutput.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);

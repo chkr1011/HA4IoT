@@ -4,6 +4,7 @@ using System.Linq;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services.System;
@@ -24,9 +25,9 @@ namespace HA4IoT.Actuators.BinaryStateActuators
             _timerService = timerService;
         }
 
-        public IList<IStateMachine> Actuators { get; } = new List<IStateMachine>();
+        public IList<IActuator> Actuators { get; } = new List<IActuator>();
 
-        public LogicalBinaryStateActuator WithActuator(IStateMachine actuator)
+        public LogicalBinaryStateActuator WithActuator(IActuator actuator)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
@@ -51,7 +52,7 @@ namespace HA4IoT.Actuators.BinaryStateActuators
 
         public override ComponentFeatureStateCollection GetState()
         {
-            return new ComponentFeatureStateCollection().WithState(_state);
+            return new ComponentFeatureStateCollection().With(_state);
         }
 
         public override ComponentFeatureCollection GetFeatures()
@@ -124,7 +125,7 @@ namespace HA4IoT.Actuators.BinaryStateActuators
 
         public void ToggleState(params IHardwareParameter[] parameters)
         {
-            if (GetState().Equals(BinaryStateId.Off))
+            if (GetState().Has(PowerState.Off))
             {
                 ChangeState(BinaryStateId.On, parameters);
             }
@@ -161,7 +162,7 @@ namespace HA4IoT.Actuators.BinaryStateActuators
 
         private GenericComponentState GetStateInternal()
         {
-            if (Actuators.Any(a => a.GetState().Equals(BinaryStateId.On)))
+            if (Actuators.Any(a => a.GetState().Has(PowerState.On)))
             {
                 return BinaryStateId.On;
             }

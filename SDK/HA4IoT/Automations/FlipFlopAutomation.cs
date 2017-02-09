@@ -6,6 +6,8 @@ using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Automations;
+using HA4IoT.Contracts.Commands;
+using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Conditions;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Sensors;
@@ -99,8 +101,11 @@ namespace HA4IoT.Automations
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
             _flipActions.Add(() => actuator.ChangeState(BinaryStateId.On));
+            _flipActions.Add(() => actuator.InvokeCommand(new TurnOnCommand()));
+
             _flopActions.Add(() => actuator.ChangeState(BinaryStateId.Off));
-            
+            _flopActions.Add(() => actuator.InvokeCommand(new TurnOffCommand()));
+
             return this;
         }
 
@@ -139,12 +144,12 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public FlipFlopAutomation WithSkipIfAnyActuatorIsAlreadyOn(params IStateMachine[] actuators)
+        public FlipFlopAutomation WithSkipIfAnyActuatorIsAlreadyOn(params IActuator[] actuators)
         {
             if (actuators == null) throw new ArgumentNullException(nameof(actuators));
 
             _disablingConditionsValidator.WithCondition(ConditionRelation.Or,
-                new Condition().WithExpression(() => actuators.Any(a => a.GetState().Equals(BinaryStateId.On))));
+                new Condition().WithExpression(() => actuators.Any(a => a.GetState().Has(PowerState.On))));
 
             return this;
         }

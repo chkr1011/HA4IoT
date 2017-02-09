@@ -16,6 +16,8 @@ namespace HA4IoT.Actuators.Lamps
             : base(id)
         {
             _powerStateElement = new PowerStateElement(adapter);
+
+            TogglePowerStateAction = _powerStateElement.TogglePowerStateAction;
         }
 
         public IAction TogglePowerStateAction { get; }
@@ -23,7 +25,7 @@ namespace HA4IoT.Actuators.Lamps
         public override ComponentFeatureStateCollection GetState()
         {
             return new ComponentFeatureStateCollection()
-                .WithState(_powerStateElement.GetState());
+                .With(_powerStateElement.GetState());
         }
 
         public override ComponentFeatureCollection GetFeatures()
@@ -45,6 +47,7 @@ namespace HA4IoT.Actuators.Lamps
 
         public void ResetState()
         {
+            _powerStateElement.ResetState();
         }
     }
 }

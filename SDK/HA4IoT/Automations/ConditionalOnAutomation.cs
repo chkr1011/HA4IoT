@@ -43,7 +43,7 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public ConditionalOnAutomation WithActuator(IStateMachine actuator)
+        public ConditionalOnAutomation WithActuator(IActuator actuator)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
