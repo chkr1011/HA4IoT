@@ -84,9 +84,9 @@ namespace HA4IoT.Sensors.Buttons
                 return;
             }
 
-            var oldState = new ButtonState(_state);
+            var oldState = GetState();
             _state = state;
-            var newState = new ButtonState(state);
+            var newState = GetState();
 
             OnStateChanged(oldState, newState);
             InvokeTriggers(state);

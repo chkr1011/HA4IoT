@@ -28,7 +28,7 @@ namespace HA4IoT.Sensors
             var oldValue = _state;
             _state = newState;
 
-            OnStateChanged(oldValue, newState);
+            //OnStateChanged(oldValue, newState);
         }
     }
 }

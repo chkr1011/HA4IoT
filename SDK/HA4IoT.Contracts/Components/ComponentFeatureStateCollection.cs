@@ -33,7 +33,7 @@ namespace HA4IoT.Contracts.Components
             return ReferenceEquals(state, foundState) || foundState.Equals(state);
         }
 
-        public bool SupportsFeature<TComponentFeatureState>() where TComponentFeatureState : IComponentFeatureState
+        public bool Supports<TComponentFeatureState>() where TComponentFeatureState : IComponentFeatureState
         {
             return _states.Any(t => t is TComponentFeatureState);
         }

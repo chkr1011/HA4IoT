@@ -4,14 +4,17 @@ namespace HA4IoT.Contracts.Components
 {
     public class ComponentFeatureStateChangedEventArgs : EventArgs
     {
-        public ComponentFeatureStateChangedEventArgs(IComponentFeatureState oldState, IComponentFeatureState newState)
+        public ComponentFeatureStateChangedEventArgs(ComponentFeatureStateCollection oldState, ComponentFeatureStateCollection newState)
         {
+            if (oldState == null) throw new ArgumentNullException(nameof(oldState));
+            if (newState == null) throw new ArgumentNullException(nameof(newState));
+
             OldState = oldState;
             NewState = newState;
         }
 
-        public IComponentFeatureState OldState { get; }
+        public ComponentFeatureStateCollection OldState { get; }
 
-        public IComponentFeatureState NewState { get; }
+        public ComponentFeatureStateCollection NewState { get; }
     }
 }

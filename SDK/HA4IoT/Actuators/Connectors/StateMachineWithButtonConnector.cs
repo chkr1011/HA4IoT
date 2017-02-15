@@ -1,4 +1,5 @@
-﻿using HA4IoT.Actuators.StateMachines;
+﻿using System;
+using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Sensors;
 
@@ -8,7 +9,8 @@ namespace HA4IoT.Actuators.Connectors
     {
         public static IStateMachine ConnectMoveNextAndToggleOffWith(this IStateMachine stateMachineActuator, IButton button)
         {
-            button.PressedShortlyTrigger.Attach(stateMachineActuator.SetNextState);
+            throw new NotSupportedException();
+            //button.PressedShortlyTrigger.Attach(stateMachineActuator.SetNextState);
 
             if (stateMachineActuator.GetSupportsOffState())
             {

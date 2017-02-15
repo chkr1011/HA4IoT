@@ -203,7 +203,7 @@ namespace HA4IoT.Actuators.StateMachines
 
         protected virtual void OnActiveStateChanged(IStateMachineState oldState, IStateMachineState newState)
         {
-            OnStateChanged(oldState?.Id, newState.Id);
+            //OnStateChanged(oldState?.Id, newState.Id);
         }
 
         private void ThrowIfNoStatesAvailable()

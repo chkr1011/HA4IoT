@@ -9,7 +9,7 @@ namespace HA4IoT.Contracts.Components
     {
         private readonly HashSet<IComponentFeature> _features = new HashSet<IComponentFeature>();
 
-        public TComponentFeature GetFeature<TComponentFeature>() where TComponentFeature : IComponentFeature
+        public TComponentFeature Get<TComponentFeature>() where TComponentFeature : IComponentFeature
         {
             var state = _features.FirstOrDefault(s => s is TComponentFeature);
             if (state == null)
@@ -20,7 +20,7 @@ namespace HA4IoT.Contracts.Components
             return (TComponentFeature)state;
         }
 
-        public bool HasFeature(IComponentFeature state)
+        public bool Has(IComponentFeature state)
         {
             if (state == null) throw new ArgumentNullException(nameof(state));
 
@@ -33,12 +33,12 @@ namespace HA4IoT.Contracts.Components
             return ReferenceEquals(state, foundState) || foundState.Equals(state);
         }
 
-        public bool SupportsFeature<TComponentFeature>() where TComponentFeature : IComponentFeature
+        public bool Supports<TComponentFeature>() where TComponentFeature : IComponentFeature
         {
             return _features.Any(t => t is TComponentFeature);
         }
 
-        public ComponentFeatureCollection WithFeature(IComponentFeature feature)
+        public ComponentFeatureCollection With(IComponentFeature feature)
         {
             if (feature == null) throw new ArgumentNullException(nameof(feature));
 

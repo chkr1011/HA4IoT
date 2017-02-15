@@ -27,12 +27,12 @@ namespace HA4IoT.Components
 
         public abstract void InvokeCommand(ICommand command);
 
-        protected void OnStateChanged<TComponentFeatureState>(TComponentFeatureState oldState, TComponentFeatureState newState) where TComponentFeatureState : IComponentFeatureState
+        protected void OnStateChanged(ComponentFeatureStateCollection oldState, ComponentFeatureStateCollection newState)
         {
             var oldStateText = oldState?.Serialize();
             var newStateText = newState?.Serialize();
 
-            Log.Info($"Component '{Id}' updated state '{typeof(TComponentFeatureState).Name}' from '{oldStateText}' to '{newStateText}'");
+            Log.Info($"Component '{Id}' update state ' from '{oldStateText}' to '{newStateText}'");
             StateChanged?.Invoke(this, new ComponentFeatureStateChangedEventArgs(oldState, newState));
         }
 

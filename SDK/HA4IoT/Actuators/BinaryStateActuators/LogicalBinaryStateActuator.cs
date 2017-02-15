@@ -41,7 +41,7 @@ namespace HA4IoT.Actuators.BinaryStateActuators
                     return;
                 }
 
-                OnStateChanged(oldState, _state);
+               // OnStateChanged(oldState, _state);
             };
 
             Actuators.Add(actuator);
@@ -101,26 +101,6 @@ namespace HA4IoT.Actuators.BinaryStateActuators
             ////{
             ////    actuator.SetState(state, parameters);
             ////}
-        }
-
-        public GenericComponentState GetNextState(IComponentFeatureState baseStateId)
-        {
-            if (baseStateId.Equals(BinaryStateId.Off))
-            {
-                return BinaryStateId.On;
-            }
-
-            if (baseStateId.Equals(BinaryStateId.On))
-            {
-                return BinaryStateId.Off;
-            }
-            
-            throw new ComponentFeatureStateNotSupportedException(baseStateId);
-        }
-
-        public void SetStateIdAlias(GenericComponentState id, GenericComponentState alias)
-        {
-            throw new NotSupportedException();
         }
 
         public void ToggleState(params IHardwareParameter[] parameters)

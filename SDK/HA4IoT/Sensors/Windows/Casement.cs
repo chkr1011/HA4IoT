@@ -88,7 +88,7 @@ namespace HA4IoT.Sensors.Windows
 
         private void OnStateChanged(GenericComponentState oldState, GenericComponentState newState)
         {
-            StateChanged?.Invoke(this, new ComponentFeatureStateChangedEventArgs(oldState, newState));
+            //StateChanged?.Invoke(this, new ComponentFeatureStateChangedEventArgs(oldState, newState));
         }
     }
 }

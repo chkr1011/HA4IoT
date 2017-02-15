@@ -1,10 +1,12 @@
 ﻿using System;
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
+using HA4IoT.Actuators.Fans;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Automations;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
@@ -185,15 +187,15 @@ namespace HA4IoT.Controller.Main.Rooms
 
             _actuatorFactory.RegisterStateMachine(area, Bedroom.Fan, (s, r) => SetupFan(s, r, hsrel8));
 
-            area.GetButton(Bedroom.ButtonBedLeftInner).WithPressedShortlyAction(() => area.GetLamp(Bedroom.LampBedLeft).TogglePowerStateAction.Execute());
-            area.GetButton(Bedroom.ButtonBedLeftInner).WithPressedLongAction(() => area.GetStateMachine(Bedroom.CombinedCeilingLights).SetNextState());
-            area.GetButton(Bedroom.ButtonBedLeftOuter).WithPressedShortlyAction(() => area.GetStateMachine(Bedroom.Fan).SetNextState());
-            area.GetButton(Bedroom.ButtonBedLeftOuter).WithPressedLongAction(() => area.GetStateMachine(Bedroom.Fan).TryTurnOff());
+            area.GetButton(Bedroom.ButtonBedLeftInner).PressedShortlyTrigger.Attach(area.GetLamp(Bedroom.LampBedLeft).TogglePowerStateAction);
+            area.GetButton(Bedroom.ButtonBedLeftInner).PressedLongTrigger.Attach(area.GetLamp(Bedroom.CombinedCeilingLights).TogglePowerStateAction);
+            area.GetButton(Bedroom.ButtonBedLeftOuter).PressedShortlyTrigger.Attach(area.GetFan(Bedroom.Fan).SetNextLevelAction);
+            area.GetButton(Bedroom.ButtonBedLeftOuter).PressedLongTrigger.Attach(() => area.GetFan(Bedroom.Fan).TryTurnOff());
 
-            area.GetButton(Bedroom.ButtonBedRightInner).WithPressedShortlyAction(() => area.GetLamp(Bedroom.LampBedRight).TogglePowerStateAction.Execute());
-            area.GetButton(Bedroom.ButtonBedRightInner).WithPressedLongAction(() => area.GetStateMachine(Bedroom.CombinedCeilingLights).SetNextState());
-            area.GetButton(Bedroom.ButtonBedRightOuter).WithPressedShortlyAction(() => area.GetStateMachine(Bedroom.Fan).SetNextState());
-            area.GetButton(Bedroom.ButtonBedRightOuter).WithPressedLongAction(() => area.GetStateMachine(Bedroom.Fan).TryTurnOff());
+            area.GetButton(Bedroom.ButtonBedRightInner).PressedShortlyTrigger.Attach(area.GetLamp(Bedroom.LampBedRight).TogglePowerStateAction);
+            area.GetButton(Bedroom.ButtonBedRightInner).PressedLongTrigger.Attach(area.GetLamp(Bedroom.CombinedCeilingLights).TogglePowerStateAction);
+            area.GetButton(Bedroom.ButtonBedRightOuter).PressedShortlyTrigger.Attach(area.GetFan(Bedroom.Fan).SetNextLevelAction);
+            area.GetButton(Bedroom.ButtonBedRightOuter).PressedLongTrigger.Attach(() => area.GetFan(Bedroom.Fan).TryTurnOff());
         }
 
         private void SetupFan(StateMachine fan, IArea room, HSREL8 hsrel8)

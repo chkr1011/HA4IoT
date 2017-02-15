@@ -126,7 +126,7 @@ namespace HA4IoT.Actuators.RollerShutters
             var oldState = _state;
             _state = state;
 
-            OnStateChanged(oldState, _state);
+            //OnStateChanged(oldState, _state);
         }
 
         public override void HandleApiCall(IApiContext apiContext)

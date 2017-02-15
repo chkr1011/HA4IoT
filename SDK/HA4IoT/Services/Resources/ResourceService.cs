@@ -68,6 +68,17 @@ namespace HA4IoT.Services.Resources
             }
         }
 
+        public void RegisterType(Enum @enum)
+        {
+            lock (_syncRoot)
+            {
+                foreach (var value in Enum.GetValues(@enum.GetType()))
+                {
+                    RegisterText((Enum)value, "#" + value);
+                }
+            }
+        }
+
         public string GetText(Enum id)
         {
             var uri = GenerateUri(id);
@@ -118,7 +129,7 @@ namespace HA4IoT.Services.Resources
 
             return text;
         }
-
+        
         [ApiMethod]
         public void SetTexts(IApiContext apiContext)
         {

@@ -53,16 +53,6 @@ namespace HA4IoT.Actuators.StateMachines
             return state;
         }
 
-        public static void SetNextState(this IStateMachine stateMachine)
-        {
-            if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
-
-            var activeStateId = stateMachine.GetState();
-            var nextStateId = stateMachine.GetNextState(activeStateId.Get<GenericComponentState>());
-
-            stateMachine.ChangeState(nextStateId);
-        }
-
         public static bool TryTurnOff(this IStateMachine stateMachine)
         {
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
@@ -109,13 +99,6 @@ namespace HA4IoT.Actuators.StateMachines
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
 
             return () => stateMachine.ChangeState(BinaryStateId.Off);
-        }
-
-        public static Action GetSetNextStateAction(this IStateMachine stateStateMachine)
-        {
-            if (stateStateMachine == null) throw new ArgumentNullException(nameof(stateStateMachine));
-
-            return stateStateMachine.SetNextState;
         }
     }
 }

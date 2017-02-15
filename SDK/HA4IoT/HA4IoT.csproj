@@ -119,9 +119,10 @@
     <Compile Include="Actuators\BinaryStateActuators\BinaryStateActuatorExtensions.cs" />
     <Compile Include="Actuators\BinaryStateActuators\CustomBinaryStateActuator.cs" />
     <Compile Include="Actuators\BinaryStateActuators\LogicalBinaryStateActuator.cs" />
-    <Compile Include="Actuators\Connectors\BinaryStateActuatorWithButtonConnector.cs" />
     <Compile Include="Actuators\Connectors\RollerShutterWithRollerShutterButtonsConnector.cs" />
     <Compile Include="Actuators\Connectors\StateMachineWithButtonConnector.cs" />
+    <Compile Include="Actuators\Fans\Fan.cs" />
+    <Compile Include="Actuators\Fans\FanExtensions.cs" />
     <Compile Include="Actuators\Lamps\Lamp.cs" />
     <Compile Include="Actuators\Lamps\LampExtensions.cs" />
     <Compile Include="Actuators\PendingActuatorState.cs" />
@@ -136,6 +137,9 @@
     <Compile Include="Actuators\StateMachines\StateMachineExtensions.cs" />
     <Compile Include="Actuators\StateMachines\StateMachineState.cs" />
     <Compile Include="Adapters\BinaryOutputComponentAdapter.cs" />
+    <Compile Include="Components\CommandInvoker.cs" />
+    <Compile Include="Components\CommandInvokerAction.cs" />
+    <Compile Include="Components\ICommandInvokerAction.cs" />
     <Compile Include="Triggers\ConditionalTrigger.cs" />
     <Compile Include="Triggers\IntervalTrigger.cs" />
     <Compile Include="Triggers\Trigger.cs" />

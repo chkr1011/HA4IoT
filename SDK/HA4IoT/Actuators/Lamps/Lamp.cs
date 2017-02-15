@@ -1,4 +1,5 @@
-﻿using HA4IoT.Components;
+﻿using System;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Actuators.LogicalElements;
 using HA4IoT.Contracts.Commands;
@@ -12,9 +13,10 @@ namespace HA4IoT.Actuators.Lamps
     {
         private readonly PowerStateElement _powerStateElement;
 
-        public Lamp(ComponentId id, IBinaryOutputComponentAdapter adapter) // TODO: Lamp adapter
-            : base(id)
+        public Lamp(ComponentId id, IBinaryOutputComponentAdapter adapter) : base(id) // TODO: Lamp adapter
         {
+            if (adapter == null) throw new ArgumentNullException(nameof(adapter));
+
             _powerStateElement = new PowerStateElement(adapter);
 
             TogglePowerStateAction = _powerStateElement.TogglePowerStateAction;

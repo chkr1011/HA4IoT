@@ -7,8 +7,7 @@ namespace HA4IoT.Actuators
 {
     public abstract class ActuatorBase : ComponentBase, IActuator
     {
-        protected ActuatorBase(ComponentId id) 
-            : base(id)
+        protected ActuatorBase(ComponentId id) : base(id)
         {
             
         }

@@ -1,11 +1,7 @@
-﻿using HA4IoT.Contracts.Components;
-
-namespace HA4IoT.Contracts.Actuators
+﻿namespace HA4IoT.Contracts.Actuators
 {
+    // TODO: Delete!
     public interface IStateMachine : IActuator
     {
-        GenericComponentState GetNextState(IComponentFeatureState baseStateId);
-
-        void SetStateIdAlias(GenericComponentState id, GenericComponentState alias);
     }
 }

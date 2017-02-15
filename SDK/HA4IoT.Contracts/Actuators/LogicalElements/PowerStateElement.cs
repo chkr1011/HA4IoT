@@ -101,9 +101,9 @@ namespace HA4IoT.Contracts.Actuators.LogicalElements
             {
                 _adapter.TurnOff();
             }
-            
+
             _powerState = PowerStateValue.Off;
-            StateChanged?.Invoke(this, new ComponentFeatureStateChangedEventArgs(PowerState.On, PowerState.Off));
+            //StateChanged?.Invoke(this, new ComponentFeatureStateChangedEventArgs(oldState, newState));
         }
 
         private void TurnOnInternal()
@@ -115,7 +115,7 @@ namespace HA4IoT.Contracts.Actuators.LogicalElements
 
             _adapter.TurnOn();
             _powerState = PowerStateValue.On;
-            StateChanged?.Invoke(this, new ComponentFeatureStateChangedEventArgs(PowerState.Off, PowerState.On));
+            //StateChanged?.Invoke(this, new ComponentFeatureStateChangedEventArgs(PowerState.Off, PowerState.On));
         }
     }
 }

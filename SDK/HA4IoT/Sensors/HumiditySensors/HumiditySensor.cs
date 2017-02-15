@@ -42,7 +42,7 @@ namespace HA4IoT.Sensors.HumiditySensors
         public override ComponentFeatureCollection GetFeatures()
         {
             return new ComponentFeatureCollection()
-                .WithFeature(new MeasureTemperatureFeature());
+                .With(new TemperatureMeasurementFeature());
         }
 
         public override void InvokeCommand(ICommand command)
