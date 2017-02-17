@@ -7,7 +7,10 @@ using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Automations;
 using HA4IoT.Components;
+using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services.System;
@@ -17,7 +20,6 @@ using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Services.Areas;
-using HA4IoT.Services.Devices;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
@@ -104,8 +106,8 @@ namespace HA4IoT.Controller.Main.Rooms
         {
             var hsrel5 = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.BedroomHSREL5, new I2CSlaveAddress(38));
             var hsrel8 = _ccToolsBoardService.RegisterHSREL8(InstalledDevice.BedroomHSREL8, new I2CSlaveAddress(21));
-            var input5 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input5);
-            var input4 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input4);
+            var input5 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input5.ToString());
+            var input4 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input4.ToString());
             var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
 
             const int SensorPin = 6;
@@ -173,7 +175,7 @@ namespace HA4IoT.Controller.Main.Rooms
             });
 
             _automationFactory.RegisterRollerShutterAutomation(area, Bedroom.RollerShuttersAutomation)
-                .WithRollerShutters(area.GetRollerShutters())
+                .WithRollerShutters(area.GetComponents<IRollerShutter>())
                 .WithDoNotOpenBefore(TimeSpan.FromHours(7).Add(TimeSpan.FromMinutes(15)))
                 .WithCloseIfOutsideTemperatureIsGreaterThan(24)
                 .WithDoNotOpenIfOutsideTemperatureIsBelowThan(3);
@@ -185,36 +187,76 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithEnabledAtNight()
                 .WithSkipIfAnyActuatorIsAlreadyOn(area.GetLamp(Bedroom.LampBedLeft), area.GetLamp(Bedroom.LampBedRight));
 
-            _actuatorFactory.RegisterStateMachine(area, Bedroom.Fan, (s, r) => SetupFan(s, r, hsrel8));
-
-            area.GetButton(Bedroom.ButtonBedLeftInner).PressedShortlyTrigger.Attach(area.GetLamp(Bedroom.LampBedLeft).TogglePowerStateAction);
-            area.GetButton(Bedroom.ButtonBedLeftInner).PressedLongTrigger.Attach(area.GetLamp(Bedroom.CombinedCeilingLights).TogglePowerStateAction);
+            area.AddComponent(new Fan($"{area.Id}.{Bedroom.Fan}", new BedroomFanAdapter(hsrel8)));
+            
+            area.GetButton(Bedroom.ButtonBedLeftInner).PressedShortlyTrigger.Attach(() => area.GetLamp(Bedroom.LampBedLeft).TryTogglePowerState());
+            area.GetButton(Bedroom.ButtonBedLeftInner).PressedLongTrigger.Attach(() => area.GetLamp(Bedroom.CombinedCeilingLights).TryTogglePowerState());
             area.GetButton(Bedroom.ButtonBedLeftOuter).PressedShortlyTrigger.Attach(area.GetFan(Bedroom.Fan).SetNextLevelAction);
             area.GetButton(Bedroom.ButtonBedLeftOuter).PressedLongTrigger.Attach(() => area.GetFan(Bedroom.Fan).TryTurnOff());
 
-            area.GetButton(Bedroom.ButtonBedRightInner).PressedShortlyTrigger.Attach(area.GetLamp(Bedroom.LampBedRight).TogglePowerStateAction);
-            area.GetButton(Bedroom.ButtonBedRightInner).PressedLongTrigger.Attach(area.GetLamp(Bedroom.CombinedCeilingLights).TogglePowerStateAction);
+            area.GetButton(Bedroom.ButtonBedRightInner).PressedShortlyTrigger.Attach(() => area.GetLamp(Bedroom.LampBedRight).TryTogglePowerState());
+            area.GetButton(Bedroom.ButtonBedRightInner).PressedLongTrigger.Attach(() => area.GetLamp(Bedroom.CombinedCeilingLights).TryTogglePowerState());
             area.GetButton(Bedroom.ButtonBedRightOuter).PressedShortlyTrigger.Attach(area.GetFan(Bedroom.Fan).SetNextLevelAction);
             area.GetButton(Bedroom.ButtonBedRightOuter).PressedLongTrigger.Attach(() => area.GetFan(Bedroom.Fan).TryTurnOff());
         }
 
-        private void SetupFan(StateMachine fan, IArea room, HSREL8 hsrel8)
+        private class BedroomFanAdapter : IFanAdapter
         {
-            var fanRelay1 = hsrel8[HSREL8Pin.Relay0];
-            var fanRelay2 = hsrel8[HSREL8Pin.Relay1];
-            var fanRelay3 = hsrel8[HSREL8Pin.Relay2];
+            private readonly IBinaryOutput _relay0;
+            private readonly IBinaryOutput _relay1;
+            private readonly IBinaryOutput _relay2;
 
-            fan.AddOffState()
-                .WithLowOutput(fanRelay1)
-                .WithLowOutput(fanRelay2)
-                .WithLowOutput(fanRelay3);
+            public int MaxLevel { get; } = 3;
 
-            fan.AddState(new GenericComponentState("1")).WithHighOutput(fanRelay1).WithLowOutput(fanRelay2).WithHighOutput(fanRelay3);
-            fan.AddState(new GenericComponentState("2")).WithHighOutput(fanRelay1).WithHighOutput(fanRelay2).WithLowOutput(fanRelay3);
-            fan.AddState(new GenericComponentState("3")).WithHighOutput(fanRelay1).WithHighOutput(fanRelay2).WithHighOutput(fanRelay3);
-            fan.TryTurnOff();
+            public BedroomFanAdapter(HSREL8 hsrel8)
+            {
+                _relay0 = hsrel8[HSREL8Pin.Relay0];
+                _relay1 = hsrel8[HSREL8Pin.Relay1];
+                _relay2 = hsrel8[HSREL8Pin.Relay2];
+            }
 
-            fan.ConnectMoveNextAndToggleOffWith(room.GetButton(Bedroom.ButtonWindowLower));
+            public void SetLevel(int level, params IHardwareParameter[] parameters)
+            {
+                switch (level)
+                {
+                    case 0:
+                        {
+                            _relay0.Write(BinaryState.Low);
+                            _relay1.Write(BinaryState.Low);
+                            _relay2.Write(BinaryState.Low);
+                            break;
+                        }
+
+                    case 1:
+                        {
+                            _relay0.Write(BinaryState.High);
+                            _relay1.Write(BinaryState.Low);
+                            _relay2.Write(BinaryState.High);
+                            break;
+                        }
+
+                    case 2:
+                        {
+                            _relay0.Write(BinaryState.High);
+                            _relay1.Write(BinaryState.High);
+                            _relay2.Write(BinaryState.Low);
+                            break;
+                        }
+
+                    case 3:
+                        {
+                            _relay0.Write(BinaryState.High);
+                            _relay1.Write(BinaryState.High);
+                            _relay2.Write(BinaryState.High);
+                            break;
+                        }
+
+                    default:
+                        {
+                            throw new NotSupportedException();
+                        }
+                }
+            }
         }
     }
 }

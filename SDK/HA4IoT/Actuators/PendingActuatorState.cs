@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 
@@ -9,13 +8,13 @@ namespace HA4IoT.Actuators
 {
     public class PendingActuatorState
     {
-        public IActuator Actuator { get; private set; }
+        public IComponent Actuator { get; private set; }
 
         public GenericComponentState State { get; private set; }
 
         public IList<IHardwareParameter> Parameters { get; } = new List<IHardwareParameter>();
 
-        public PendingActuatorState WithActuator(IActuator actuator)
+        public PendingActuatorState WithActuator(IComponent actuator)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
@@ -39,7 +38,8 @@ namespace HA4IoT.Actuators
 
         public void Apply()
         {
-            Actuator.ChangeState(State, Parameters.ToArray());
+            // TODO: Fix!
+            //Actuator.ChangeState(State, Parameters.ToArray());
         }
     }
 }

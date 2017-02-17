@@ -7,7 +7,7 @@ namespace HA4IoT.Tests.Mockups
 {
     public class TestTemperatureSensor : TemperatureSensor
     {
-        public TestTemperatureSensor(ComponentId id, ISettingsService settingsService, TestSensorAdapter endpoint) 
+        public TestTemperatureSensor(string id, ISettingsService settingsService, TestSensorAdapter endpoint) 
             : base(id, settingsService, endpoint)
         {
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));

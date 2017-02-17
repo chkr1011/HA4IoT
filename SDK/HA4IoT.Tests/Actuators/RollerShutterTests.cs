@@ -1,11 +1,11 @@
-﻿using FluentAssertions;
-using HA4IoT.Contracts.Actuators;
-using HA4IoT.Services.Backup;
-using HA4IoT.Services.Scheduling;
-using HA4IoT.Services.StorageService;
-using HA4IoT.Services.System;
-using HA4IoT.Settings;
+﻿using System;
+using HA4IoT.Actuators.RollerShutters;
+using HA4IoT.Components;
+using HA4IoT.Contracts.Components.States;
+using HA4IoT.Contracts.Services.Settings;
+using HA4IoT.Contracts.Services.System;
 using HA4IoT.Tests.Mockups;
+using HA4IoT.Tests.Mockups.Adapters;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace HA4IoT.Tests.Actuators
@@ -14,30 +14,78 @@ namespace HA4IoT.Tests.Actuators
     public class RollerShutterTests
     {
         [TestMethod]
-        public void TestRollerShutter()
+        public void RollerShutter_Reset()
         {
-            var timerService = new TestTimerService();
-            var rollerShutterFactory = new TestRollerShutterFactory(timerService, new SchedulerService(timerService, new DateTimeService()), new SettingsService(new BackupService(), new StorageService()));
+            var testController = new TestController();
+            var adapter = new TestRollerShutterAdapter();
+            var rollerShutter = new RollerShutter("Test", adapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>());
 
-            TestRollerShutter rollerShutter = rollerShutterFactory.CreateTestRollerShutter();
+            rollerShutter.TryReset();
+            Assert.AreEqual(1, adapter.StartMoveUpCalledCount);
+            Assert.IsTrue(rollerShutter.GetState().Has(PowerState.On));
+            Assert.IsTrue(rollerShutter.GetState().Has(VerticalMovingState.MovingUp));
+        }
 
-            rollerShutter.GetState().Equals(RollerShutterStateId.Off).ShouldBeEquivalentTo(true);
-            rollerShutter.Endpoint.StopCalledCount.ShouldBeEquivalentTo(1);
+        [TestMethod]
+        public void RollerShutter_MoveUp()
+        {
+            var testController = new TestController();
+            var adapter = new TestRollerShutterAdapter();
+            var rollerShutter = new RollerShutter("Test", adapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>());
+            rollerShutter.TryReset();
+            rollerShutter.TryMoveUp();
 
-            rollerShutter.ChangeState(RollerShutterStateId.MovingUp);
-            rollerShutter.GetState().Equals(RollerShutterStateId.MovingUp).ShouldBeEquivalentTo(true);
-            rollerShutter.Endpoint.StartMoveUpCalledCount.ShouldBeEquivalentTo(1);
+            Assert.AreEqual(2, adapter.StartMoveUpCalledCount);
+            Assert.IsTrue(rollerShutter.GetState().Has(PowerState.On));
+            Assert.IsTrue(rollerShutter.GetState().Has(VerticalMovingState.MovingUp));
+        }
 
-            rollerShutter.ChangeState(RollerShutterStateId.MovingDown);
-            rollerShutter.GetState().Equals(RollerShutterStateId.MovingDown).ShouldBeEquivalentTo(true);
-            rollerShutter.Endpoint.StartMoveDownCalledCount.ShouldBeEquivalentTo(1);
+        [TestMethod]
+        public void RollerShutter_MoveDown()
+        {
+            var testController = new TestController();
+            var adapter = new TestRollerShutterAdapter();
+            var rollerShutter = new RollerShutter("Test", adapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>());
+            rollerShutter.TryReset();
+            rollerShutter.TryMoveDown();
 
-            rollerShutter.ChangeState(RollerShutterStateId.Off);
-            rollerShutter.GetState().Equals(RollerShutterStateId.Off).ShouldBeEquivalentTo(true);
-            rollerShutter.Endpoint.StopCalledCount.ShouldBeEquivalentTo(2);
+            Assert.AreEqual(1, adapter.StartMoveUpCalledCount);
+            Assert.AreEqual(1, adapter.StartMoveDownCalledCount);
+            Assert.IsTrue(rollerShutter.GetState().Has(PowerState.On));
+            Assert.IsTrue(rollerShutter.GetState().Has(VerticalMovingState.MovingDown));
+        }
 
-            rollerShutter.Endpoint.StartMoveUpCalledCount.ShouldBeEquivalentTo(1);
-            rollerShutter.Endpoint.StartMoveDownCalledCount.ShouldBeEquivalentTo(1);
+        [TestMethod]
+        public void RollerShutter_AutoOff()
+        {
+            var testController = new TestController();
+            var adapter = new TestRollerShutterAdapter();
+            var rollerShutter = new RollerShutter("Test", adapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>());
+            rollerShutter.TryReset();
+            rollerShutter.TryMoveDown();
+
+            Assert.AreEqual(1, adapter.StartMoveUpCalledCount);
+            Assert.AreEqual(1, adapter.StartMoveDownCalledCount);
+
+            testController.Tick(TimeSpan.FromHours(1));
+
+            Assert.AreEqual(1, adapter.StopCalledCount);
+        }
+
+        [TestMethod]
+        public void RollerShutter_Stop()
+        {
+            var testController = new TestController();
+            var adapter = new TestRollerShutterAdapter();
+            var rollerShutter = new RollerShutter("Test", adapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>());
+            rollerShutter.TryReset();
+            rollerShutter.TryTurnOff();
+
+            Assert.AreEqual(1, adapter.StartMoveUpCalledCount);
+            Assert.AreEqual(1, adapter.StopCalledCount);
+
+            Assert.IsTrue(rollerShutter.GetState().Has(VerticalMovingState.Stopped));
+            Assert.IsTrue(rollerShutter.GetState().Has(PowerState.Off));
         }
     }
 }

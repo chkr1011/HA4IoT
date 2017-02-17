@@ -19,7 +19,7 @@ namespace HA4IoT.Hardware.CCTools
         private readonly byte[] _state;
         private byte[] _peekedState;
 
-        protected CCToolsBoardBase(DeviceId id, IPortExpanderDriver portExpanderDriver)
+        protected CCToolsBoardBase(string id, IPortExpanderDriver portExpanderDriver)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (portExpanderDriver == null) throw new ArgumentNullException(nameof(portExpanderDriver));
@@ -33,7 +33,7 @@ namespace HA4IoT.Hardware.CCTools
 
         public event EventHandler<IOBoardStateChangedEventArgs> StateChanged;
 
-        public DeviceId Id { get; }
+        public string Id { get; }
 
         public byte[] GetState()
         {
@@ -120,7 +120,7 @@ namespace HA4IoT.Hardware.CCTools
                     PeekState();
                 }
 
-                byte[] newState = _peekedState;
+                var newState = _peekedState;
                 _peekedState = null;
 
                 if (newState.SequenceEqual(_committedState))

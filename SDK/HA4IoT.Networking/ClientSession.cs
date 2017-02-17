@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Windows.Networking.Sockets;
 using HA4IoT.Networking.Http;
 using HA4IoT.Networking.WebSockets;
@@ -26,7 +27,7 @@ namespace HA4IoT.Networking
         public event EventHandler<HttpRequestReceivedEventArgs> HttpRequestReceived;
         public event EventHandler<WebSocketConnectedEventArgs> WebSocketConnected;
 
-        public void Run()
+        public async Task RunAsync()
         {
             while (!_cancellationTokenSource.IsCancellationRequested)
             {
@@ -35,7 +36,11 @@ namespace HA4IoT.Networking
                     throw new InvalidOperationException();
                 }
 
-                _httpClientSession?.WaitForRequest();
+                if (_httpClientSession != null)
+                {
+                    await _httpClientSession.WaitForRequestAsync();
+                }
+                
                 _webSocketClientSession?.WaitForFrameAsync().Wait();
             }
         }

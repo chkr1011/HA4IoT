@@ -1,6 +1,7 @@
 ﻿using System;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Commands;
+using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Actuators.Connectors
@@ -16,29 +17,29 @@ namespace HA4IoT.Actuators.Connectors
             if (upButton == null) throw new ArgumentNullException(nameof(upButton));
             if (downButton == null) throw new ArgumentNullException(nameof(downButton));
 
-            upButton.PressedShortlyTrigger.Attach(() => HandleBlindButtonPressedEvent(rollerShutter, RollerShutterStateId.MovingUp));
-            downButton.PressedShortlyTrigger.Attach(() => HandleBlindButtonPressedEvent(rollerShutter, RollerShutterStateId.MovingDown));
+            upButton.PressedShortlyTrigger.Attach(() => HandleBlindButtonPressedEvent(rollerShutter, VerticalMovingStateValue.MovingUp));
+            downButton.PressedShortlyTrigger.Attach(() => HandleBlindButtonPressedEvent(rollerShutter, VerticalMovingStateValue.MovingDown));
 
             return rollerShutter;
         }
 
-        private static void HandleBlindButtonPressedEvent(IRollerShutter rollerShutter, GenericComponentState direction)
+        private static void HandleBlindButtonPressedEvent(IRollerShutter rollerShutter, VerticalMovingStateValue verticalMovingState)
         {
-            if (direction.Equals(RollerShutterStateId.MovingUp) && rollerShutter.GetState().Equals(RollerShutterStateId.MovingUp))
+            if (verticalMovingState == VerticalMovingStateValue.MovingUp && rollerShutter.GetState().Has(VerticalMovingState.MovingUp))
             {
-                rollerShutter.ChangeState(RollerShutterStateId.Off);
+                rollerShutter.InvokeCommand(new TurnOffCommand());
             }
-            else if (direction.Equals(RollerShutterStateId.MovingDown) && rollerShutter.GetState().Equals(RollerShutterStateId.MovingDown))
+            else if (verticalMovingState == VerticalMovingStateValue.MovingDown && rollerShutter.GetState().Has(VerticalMovingState.MovingDown))
             {
-                rollerShutter.ChangeState(RollerShutterStateId.Off);
+                rollerShutter.InvokeCommand(new TurnOffCommand());
             }
-            else if (direction.Equals(RollerShutterStateId.MovingDown))
+            else if (verticalMovingState == VerticalMovingStateValue.MovingDown)
             {
-                rollerShutter.ChangeState(RollerShutterStateId.MovingDown);
+                rollerShutter.InvokeCommand(new MoveDownCommand());
             }
-            else if (direction.Equals(RollerShutterStateId.MovingUp))
+            else if (verticalMovingState == VerticalMovingStateValue.MovingUp)
             {
-                rollerShutter.ChangeState(RollerShutterStateId.MovingUp);
+                rollerShutter.InvokeCommand(new MoveUpCommand());
             }
             else
             {

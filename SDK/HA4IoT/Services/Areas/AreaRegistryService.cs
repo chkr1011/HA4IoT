@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
@@ -14,7 +15,7 @@ namespace HA4IoT.Services.Areas
     [ApiServiceClass(typeof(IAreaRegistryService))]
     public class AreaRegistryService : ServiceBase, IAreaRegistryService
     {
-        private readonly AreaCollection _areas = new AreaCollection();
+        private readonly Dictionary<string, IArea> _areas = new Dictionary<string, IArea>();
 
         private readonly IComponentRegistryService _componentService;
         private readonly IAutomationRegistryService _automationService;
@@ -41,40 +42,40 @@ namespace HA4IoT.Services.Areas
 
             systemEventsService.StartupCompleted += (s, e) =>
             {
-                systemInformationService.Set("Areas/Count", _areas.GetAll().Count);
+                systemInformationService.Set("Areas/Count", _areas.Count);
             };
 
             apiService.ConfigurationRequested += HandleApiConfigurationRequest;
         }
 
-        public IArea RegisterArea(AreaId id)
+        public IArea RegisterArea(string id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
             var area = new Area(id, _componentService, _automationService, _settingsService);
-            _areas.AddUnique(area.Id, area);
+            _areas.Add(area.Id, area);
 
             return area;
         }
 
-        public IArea GetArea(AreaId id)
+        public IArea GetArea(string id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
-            return _areas.Get(id);
+            return _areas[id];
         }
 
         public IList<IArea> GetAreas()
         {
-            return _areas.GetAll();
+            return _areas.Values.ToList();
         }
 
         private void HandleApiConfigurationRequest(object sender, ApiRequestReceivedEventArgs e)
         {
             var areas = new JObject();
-            foreach (var area in _areas.GetAll())
+            foreach (var area in _areas.Values)
             {
-                areas[area.Id.Value] = ExportAreaConfiguration(area);
+                areas[area.Id] = ExportAreaConfiguration(area);
             }
 
             e.Context.Result["Areas"] = areas;
@@ -85,9 +86,13 @@ namespace HA4IoT.Services.Areas
             var components = new JObject();
             foreach (var component in area.GetComponents())
             {
-                var componentConfiguration = component.ExportConfiguration();
-                componentConfiguration["Settings"] = _settingsService.GetRawSettings(component.Id);
-                
+                var componentConfiguration = new JObject
+                {
+                    ["Type"] = component.GetType().Name,
+                    ["Settings"] = _settingsService.GetRawComponentSettings(component.Id),
+                    ["Features"] = JToken.FromObject(component.GetFeatures().Serialize())
+                };
+
                 var supportedStates = component.GetSupportedStates();
                 if (supportedStates != null)
                 {
@@ -100,7 +105,7 @@ namespace HA4IoT.Services.Areas
                     componentConfiguration["SupportedStates"] = supportedStatesJson;
                 }
                 
-                components[component.Id.Value] = componentConfiguration;
+                components[component.Id] = componentConfiguration;
             }
             
             var automations = new JObject();
@@ -109,15 +114,15 @@ namespace HA4IoT.Services.Areas
                 var automationSettings = new JObject
                 {
                     ["Type"] = automation.GetType().Name,
-                    ["Settings"] = _settingsService.GetRawSettings(automation.Id)
+                    ["Settings"] = _settingsService.GetRawAutomationSettings(automation.Id)
                 };
 
-                automations[automation.Id.Value] = automationSettings;
+                automations[automation.Id] = automationSettings;
             }
             
             var configuration = new JObject
             {
-                ["Settings"] = _settingsService.GetRawSettings(area.Id),
+                ["Settings"] = _settingsService.GetRawAreaSettings(area.Id),
                 ["Components"] = components,
                 ["Automations"] = automations
             };

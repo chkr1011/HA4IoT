@@ -2,9 +2,9 @@
 
 namespace HA4IoT.Hardware.CCTools
 {
-    public class CCToolsInputBoardBase : CCToolsBoardBase
+    public abstract class CCToolsInputBoardBase : CCToolsBoardBase
     {
-        public CCToolsInputBoardBase(DeviceId id, IPortExpanderDriver portExpanderDriver) 
+        protected CCToolsInputBoardBase(string id, IPortExpanderDriver portExpanderDriver) 
             : base(id, portExpanderDriver)
         {
         }

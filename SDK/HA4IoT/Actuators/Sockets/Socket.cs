@@ -1,31 +1,27 @@
 ﻿using System;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Components.Features;
 using HA4IoT.Contracts.Components.States;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Actuators.Sockets
 {
     public class Socket : ComponentBase, ISocket
     {
-        private readonly IBinaryOutputComponentAdapter _adapter;
+        private readonly IBinaryOutputAdapter _adapter;
 
         private PowerStateValue _powerState = PowerStateValue.Off;
 
-        public Socket(ComponentId id, IBinaryOutputComponentAdapter adapter)
-            : base(id)
+        public Socket(string id, IBinaryOutputAdapter adapter) : base(id)
         {
             if (adapter == null) throw new ArgumentNullException(nameof(adapter));
 
             _adapter = adapter;
-
-            TogglePowerStateAction = new ActionWrapper(TogglePowerState);
         }
-
-        public IAction TogglePowerStateAction { get; }
 
         public override ComponentFeatureStateCollection GetState()
         {
@@ -35,35 +31,8 @@ namespace HA4IoT.Actuators.Sockets
 
         public override ComponentFeatureCollection GetFeatures()
         {
-            return new ComponentFeatureCollection();
-        }
-
-        public void ChangeState(IComponentFeatureState state, params IHardwareParameter[] parameters)
-        {
-            // TODO: Delete
-            if (state.Equals(BinaryStateId.Off) || state.Equals(PowerState.Off))
-            {
-                TurnOffInternal();
-            }
-            else if (state.Equals(BinaryStateId.On) || state.Equals(PowerState.On))
-            {
-                TurnOnInternal();
-            }
-            else
-            {
-                throw new ComponentFeatureStateNotSupportedException(state);
-            }
-        }
-
-        public void ResetState()
-        {
-            _adapter.TurnOff(HardwareParameter.ForceUpdateState);
-
-            var oldState = GetState();
-            _powerState = PowerStateValue.Off;
-            var newState = GetState();
-
-            OnStateChanged(oldState, newState);
+            return new ComponentFeatureCollection()
+                .With(new PowerStateFeature());
         }
 
         public override void InvokeCommand(ICommand command)
@@ -71,46 +40,41 @@ namespace HA4IoT.Actuators.Sockets
             if (command == null) throw new ArgumentNullException(nameof(command));
 
             var commandInvoker = new CommandInvoker();
-            commandInvoker.Register<TurnOnCommand>(c => TurnOnInternal());
-            commandInvoker.Register<TurnOffCommand>(c => TurnOffInternal());
+            commandInvoker.Register<TurnOnCommand>(c => SetStateInternal(PowerStateValue.On));
+            commandInvoker.Register<TurnOffCommand>(c => SetStateInternal(PowerStateValue.Off));
+            commandInvoker.Register<TogglePowerStateCommand>(c => TogglePowerState());
+            commandInvoker.Register<ResetCommand>(c => SetStateInternal(PowerStateValue.Off, true));
             commandInvoker.Invoke(command);
         }
 
         private void TogglePowerState()
         {
-            if (_powerState == PowerStateValue.Off)
-            {
-                TurnOnInternal();
-            }
-            else
-            {
-                TurnOffInternal();
-            }
+            SetStateInternal(_powerState == PowerStateValue.Off ? PowerStateValue.On : PowerStateValue.Off);
         }
 
-        private void TurnOffInternal()
+        private void SetStateInternal(PowerStateValue powerState, bool forceUpdate = false)
         {
-            if (_powerState == PowerStateValue.Off)
+            if (!forceUpdate && _powerState == powerState)
             {
                 return;
             }
 
             var oldState = GetState();
-            _powerState = PowerStateValue.Off;
-            var newState = GetState();
-            OnStateChanged(oldState, newState);
-        }
 
-        private void TurnOnInternal()
-        {
-            if (_powerState == PowerStateValue.On)
+            var parameters = forceUpdate ? new IHardwareParameter[] { HardwareParameter.ForceUpdateState } : new IHardwareParameter[0];
+            if (powerState == PowerStateValue.On)
             {
-                return;
+                _adapter.TurnOn(parameters);
+            }
+            else if (powerState == PowerStateValue.Off)
+            {
+                _adapter.TurnOff(parameters);
             }
 
-            var oldState = GetState();
-            _powerState = PowerStateValue.On;
+            _powerState = powerState;
+
             var newState = GetState();
+
             OnStateChanged(oldState, newState);
         }
     }

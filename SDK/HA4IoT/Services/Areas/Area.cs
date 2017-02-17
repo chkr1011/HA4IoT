@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Services.Settings;
-using HA4IoT.Services.Automations;
-using HA4IoT.Services.Components;
 
 namespace HA4IoT.Services.Areas
 {
     public class Area : IArea
     {
-        private readonly ComponentCollection _components = new ComponentCollection();
-        private readonly AutomationCollection _automations = new AutomationCollection();
+        private readonly Dictionary<string, IComponent> _components = new Dictionary<string, IComponent>();
+        private readonly Dictionary<string, IAutomation> _automations = new Dictionary<string, IAutomation>();
 
         private readonly IComponentRegistryService _componentService;
         private readonly IAutomationRegistryService _automationService;
         
-        public Area(AreaId id, IComponentRegistryService componentService, IAutomationRegistryService automationService, ISettingsService settingsService)
+        public Area(string id, IComponentRegistryService componentService, IAutomationRegistryService automationService, ISettingsService settingsService)
         {
             if (componentService == null) throw new ArgumentNullException(nameof(componentService));
             if (automationService == null) throw new ArgumentNullException(nameof(automationService));
@@ -28,10 +27,10 @@ namespace HA4IoT.Services.Areas
 
             Id = id;
 
-            settingsService.CreateSettingsMonitor(Id, s => Settings = s);
+            settingsService.CreateAreaSettingsMonitor(Id, s => Settings = s);
         }
 
-        public AreaId Id { get; }
+        public string Id { get; }
 
         public AreaSettings Settings { get; private set; }
 
@@ -39,46 +38,53 @@ namespace HA4IoT.Services.Areas
         {
             if (component == null) throw new ArgumentNullException(nameof(component));
 
-            _components.AddUnique(component.Id, component);
+            _components.Add(component.Id, component);
             _componentService.AddComponent(component);
         }
 
         public TComponent GetComponent<TComponent>() where TComponent : IComponent
         {
-            return _components.Get<TComponent>();
+            return _components.OfType<TComponent>().SingleOrDefault();
         }
 
         public IList<TComponent> GetComponents<TComponent>() where TComponent : IComponent
         {
-            return _components.GetAll<TComponent>();
+            return _components.OfType<TComponent>().ToList();
         }
 
         public IList<IComponent> GetComponents()
         {
-            return _components.GetAll();
+            return _components.Values.ToList();
         }
 
-        public bool ContainsComponent(ComponentId componentId)
+        public bool ContainsComponent(string id)
         {
-            if (componentId == null) throw new ArgumentNullException(nameof(componentId));
+            if (id == null) throw new ArgumentNullException(nameof(id));
 
-            return _components.Contains(componentId);
+            return _components.ContainsKey(id);
         }
 
-        public TComponent GetComponent<TComponent>(ComponentId id) where TComponent : IComponent
+        public IComponent GetComponent(string id)
         {
-            return _components.Get<TComponent>(id);
+            if (id == null) throw new ArgumentNullException(nameof(id));
+
+            return _components[id];
+        }
+
+        public TComponent GetComponent<TComponent>(string id) where TComponent : IComponent
+        {
+            return (TComponent)_components[Id];
         }
 
         public void AddAutomation(IAutomation automation)
         {
-            _automations.AddUnique(automation.Id, automation);
+            _automations.Add(automation.Id, automation);
             _automationService.AddAutomation(automation);
         }
 
         public IList<IAutomation> GetAutomations()
         {
-            return _automations.GetAll();
+            return _automations.Values.ToList();
         }
     }
 }

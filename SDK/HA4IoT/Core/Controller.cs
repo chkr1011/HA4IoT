@@ -13,6 +13,7 @@ using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Logger;
 using HA4IoT.Networking.Http;
+using HA4IoT.Networking.Http.Controllers;
 using HA4IoT.Settings;
 using Newtonsoft.Json.Linq;
 
@@ -101,8 +102,8 @@ namespace HA4IoT.Core
         {
             var httpServer = _container.GetInstance<HttpServer>();
             
-            new MappedFolderController("App", StoragePath.AppRoot, httpServer).Enable();
-            new MappedFolderController("ManagementApp", StoragePath.ManagementAppRoot, httpServer).Enable();
+            new DirectoryController("App", StoragePath.AppRoot, httpServer).Enable();
+            new DirectoryController("ManagementApp", StoragePath.ManagementAppRoot, httpServer).Enable();
 
             httpServer.Bind(_options.HttpServerPort);
         }

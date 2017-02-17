@@ -108,13 +108,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actuators\ActuatorBase.cs" />
-    <Compile Include="Actuators\ActuatorExtensions.cs" />
     <Compile Include="Actuators\ActuatorFactory.cs" />
-    <Compile Include="Actuators\Animations\AnimateParameter.cs" />
-    <Compile Include="Actuators\Animations\Animation.cs" />
-    <Compile Include="Actuators\Animations\DirectionAnimation.cs" />
-    <Compile Include="Actuators\Animations\Frame.cs" />
     <Compile Include="Actuators\BinaryStateActuators\BinaryStateActuator.cs" />
     <Compile Include="Actuators\BinaryStateActuators\BinaryStateActuatorExtensions.cs" />
     <Compile Include="Actuators\BinaryStateActuators\CustomBinaryStateActuator.cs" />
@@ -136,7 +130,7 @@
     <Compile Include="Actuators\StateMachines\StateMachineApiCallRequest.cs" />
     <Compile Include="Actuators\StateMachines\StateMachineExtensions.cs" />
     <Compile Include="Actuators\StateMachines\StateMachineState.cs" />
-    <Compile Include="Adapters\BinaryOutputComponentAdapter.cs" />
+    <Compile Include="Adapters\BinaryOutputAdapter.cs" />
     <Compile Include="Components\CommandInvoker.cs" />
     <Compile Include="Components\CommandInvokerAction.cs" />
     <Compile Include="Components\ICommandInvokerAction.cs" />
@@ -174,7 +168,7 @@
     <Compile Include="Conditions\ConditionRelation.cs" />
     <Compile Include="Conditions\ConditionsValidator.cs" />
     <Compile Include="Conditions\RelatedCondition.cs" />
-    <Compile Include="Conditions\Specialized\ComponentIsInStateCondition.cs" />
+    <Compile Include="Conditions\Specialized\ComponentHasStateCondition.cs" />
     <Compile Include="Conditions\Specialized\IsDayCondition.cs" />
     <Compile Include="Conditions\Specialized\IsNightCondition.cs" />
     <Compile Include="Conditions\Specialized\NumericValueSensorHasValueGreaterThanCondition.cs" />
@@ -281,8 +275,8 @@
     <Compile Include="Sensors\Buttons\Button.cs" />
     <Compile Include="Sensors\Buttons\ButtonExtensions.cs" />
     <Compile Include="Sensors\Buttons\ButtonSettings.cs" />
-    <Compile Include="Sensors\Buttons\EmptyButtonEndpoint.cs" />
-    <Compile Include="Sensors\Buttons\PortBasedButtonEndpoint.cs" />
+    <Compile Include="Adapters\EmptyButtonAdapter.cs" />
+    <Compile Include="Adapters\BinaryInputButtonAdapter.cs" />
     <Compile Include="Sensors\HumiditySensors\HumiditySensor.cs" />
     <Compile Include="Sensors\HumiditySensors\HumiditySensorExtensions.cs" />
     <Compile Include="Sensors\MotionDetectors\MotionDetector.cs" />
@@ -300,24 +294,18 @@
     <Compile Include="Sensors\Windows\Window.cs" />
     <Compile Include="Sensors\Windows\WindowExtensions.cs" />
     <Compile Include="Services\Areas\Area.cs" />
-    <Compile Include="Services\Areas\AreaCollection.cs" />
     <Compile Include="Services\Areas\AreaRegistryService.cs" />
     <Compile Include="Services\Areas\AreaRegistryServiceExtensions.cs" />
-    <Compile Include="Services\Automations\AutomationCollection.cs" />
-    <Compile Include="Services\Automations\AutomationRegistryService.cs" />
+    <Compile Include="Services\AutomationRegistryService.cs" />
     <Compile Include="Services\Backup\BackupService.cs" />
-    <Compile Include="Services\Components\ComponentCollection.cs" />
-    <Compile Include="Services\Components\ComponentRepositoryService.cs" />
+    <Compile Include="Services\ComponentRepositoryService.cs" />
     <Compile Include="Services\ControllerSlave\ControllerSlaveService.cs" />
     <Compile Include="Services\ControllerSlave\ControllerSlaveServiceSettings.cs" />
-    <Compile Include="Services\Devices\DeviceCollection.cs" />
-    <Compile Include="Services\Devices\DeviceRegistryService.cs" />
-    <Compile Include="Services\Devices\DeviceServiceExtensions.cs" />
+    <Compile Include="Services\DeviceRegistryService.cs" />
     <Compile Include="Services\Environment\DaylightService.cs" />
     <Compile Include="Services\Environment\OutdoorHumidityService.cs" />
     <Compile Include="Services\Environment\OutdoorTemperatureService.cs" />
     <Compile Include="Services\Environment\WeatherService.cs" />
-    <Compile Include="Services\GenericControllerCollection.cs" />
     <Compile Include="Services\Health\HealthService.cs" />
     <Compile Include="Services\Resources\GetTextsRequest.cs" />
     <Compile Include="Services\Resources\ResourceService.cs" />

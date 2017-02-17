@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using HA4IoT.Conditions;
-using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Conditions;
 using HA4IoT.Contracts.Triggers;
 
@@ -11,7 +10,7 @@ namespace HA4IoT.Automations
     {
         private readonly ConditionsValidator _conditionsValidator;
 
-        public Automation(AutomationId id)
+        public Automation(string id)
             : base(id)
         {
             _conditionsValidator = new ConditionsValidator(Conditions);

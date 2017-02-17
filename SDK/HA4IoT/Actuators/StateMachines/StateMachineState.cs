@@ -52,7 +52,7 @@ namespace HA4IoT.Actuators.StateMachines
             return WithOutput(output, BinaryState.High);
         }
 
-        public StateMachineState WithActuator(IActuator actuator, GenericComponentState state)
+        public StateMachineState WithActuator(IComponent actuator, GenericComponentState state)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 

@@ -7,7 +7,7 @@ namespace HA4IoT.Hardware.CCTools
 {
     public class HSRT16 : CCToolsBoardBase, IBinaryOutputController
     {
-        public HSRT16(DeviceId id, I2CSlaveAddress address, II2CBusService i2CBus)
+        public HSRT16(string id, I2CSlaveAddress address, II2CBusService i2CBus)
             : base(id, new MAX7311Driver(address, i2CBus))
         {
             SetState(new byte[] { 0x00, 0x00 });

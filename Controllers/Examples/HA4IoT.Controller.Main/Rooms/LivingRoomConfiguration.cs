@@ -1,18 +1,16 @@
 ﻿using System;
 using HA4IoT.Actuators;
-using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.Sockets;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2CHardwareBridge;
-using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Services.Areas;
-using HA4IoT.Services.Devices;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
@@ -83,8 +81,8 @@ namespace HA4IoT.Controller.Main.Rooms
             var hsrel8 = _ccToolsBoardService.RegisterHSREL8(InstalledDevice.LivingRoomHSREL8, new I2CSlaveAddress(18));
             var hsrel5 = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.LivingRoomHSREL5, new I2CSlaveAddress(57));
 
-            var input0 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input0);
-            var input1 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input1);
+            var input0 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input0.ToString());
+            var input1 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input1.ToString());
             var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
 
             const int SensorPin = 12;
@@ -119,10 +117,14 @@ namespace HA4IoT.Controller.Main.Rooms
             _sensorFactory.RegisterButton(area, LivingRoom.ButtonLower, input0.GetInput(13));
             _sensorFactory.RegisterButton(area, LivingRoom.ButtonPassage, input1.GetInput(10));
 
-            area.GetButton(LivingRoom.ButtonUpper).PressedShortlyTrigger.Attach(area.GetLamp(LivingRoom.LampDiningTable).TogglePowerStateAction);
-            area.GetButton(LivingRoom.ButtonPassage).PressedShortlyTrigger.Attach(area.GetLamp(LivingRoom.LampDiningTable).TogglePowerStateAction);
+            area.GetButton(LivingRoom.ButtonUpper).PressedShortlyTrigger.Attach(
+                () => area.GetLamp(LivingRoom.LampDiningTable).TryTogglePowerState());
 
-            area.GetButton(LivingRoom.ButtonLower).PressedShortlyTrigger.Attach(area.GetSocket(LivingRoom.SocketWallRightEdgeRight).TogglePowerStateAction);
+            area.GetButton(LivingRoom.ButtonPassage).PressedShortlyTrigger.Attach(
+                () => area.GetLamp(LivingRoom.LampDiningTable).TryTogglePowerState());
+
+            area.GetButton(LivingRoom.ButtonLower).PressedShortlyTrigger.Attach(() => 
+                area.GetSocket(LivingRoom.SocketWallRightEdgeRight).TryTogglePowerState());
         }
     }
 }

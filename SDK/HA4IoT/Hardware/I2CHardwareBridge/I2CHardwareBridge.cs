@@ -1,7 +1,6 @@
 ﻿using System;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Hardware.I2CHardwareBridge
@@ -22,7 +21,7 @@ namespace HA4IoT.Hardware.I2CHardwareBridge
             DHT22Accessor = new DHT22Accessor(this, schedulerService);
         }
 
-        public DeviceId Id { get; } = new DeviceId("I2CHardwareBridge");
+        public string Id { get; } = "I2CHardwareBridge";
 
         public DHT22Accessor DHT22Accessor { get; }
 

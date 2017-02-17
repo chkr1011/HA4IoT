@@ -11,7 +11,7 @@ namespace HA4IoT.Sensors.HumiditySensors
 {
     public class HumiditySensor : SensorBase, IHumiditySensor
     {
-        public HumiditySensor(ComponentId id, ISettingsService settingsService, ISensorAdapter endpoint)
+        public HumiditySensor(string id, ISettingsService settingsService, ISensorAdapter endpoint)
             : base(id)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
@@ -36,7 +36,7 @@ namespace HA4IoT.Sensors.HumiditySensors
 
         public float GetCurrentHumidity()
         {
-            return GetState().Get<HumidityState>().Value ?? 0;
+            return GetState().Extract<HumidityState>().Value ?? 0;
         }
 
         public override ComponentFeatureCollection GetFeatures()

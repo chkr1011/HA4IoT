@@ -1,14 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
+using System.Net;
 using System.Text;
 
 namespace HA4IoT.Networking.Http
 {
     public class HttpResponseSerializer
     {
-        private readonly StatusDescriptionProvider _statusDescriptionProvider = new StatusDescriptionProvider();
-
         public byte[] SerializeResponse(HttpContext context)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
@@ -56,10 +55,8 @@ namespace HA4IoT.Networking.Http
 
         private byte[] GeneratePrefix(HttpResponse response)
         {
-            var statusDescription = _statusDescriptionProvider.GetDescription(response.StatusCode);
-
             var buffer = new StringBuilder();
-            buffer.AppendLine("HTTP/1.1 " + (int)response.StatusCode + " " + statusDescription);
+            buffer.AppendLine("HTTP/1.1 " + (int)response.StatusCode + " " + response.StatusCode);
 
             foreach (var header in response.Headers)
             {

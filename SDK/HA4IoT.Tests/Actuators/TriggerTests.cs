@@ -1,13 +1,12 @@
-﻿using System;
-using HA4IoT.Actuators.StateMachines;
-using HA4IoT.Contracts.Components;
+﻿using HA4IoT.Actuators.Lamps;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Services.Settings;
+using HA4IoT.Contracts.Services.System;
+using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.Triggers;
-using HA4IoT.Services.Backup;
-using HA4IoT.Services.StorageService;
-using HA4IoT.Settings;
 using HA4IoT.Tests.Mockups;
+using HA4IoT.Tests.Mockups.Adapters;
 using HA4IoT.Triggers;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -36,12 +35,12 @@ namespace HA4IoT.Tests.Actuators
         }
 
         [TestMethod]
-        public void SensorValueReached_Trigger()
+        public void Trigger_SensorValueReached()
         {
             var testController = new TestController();
 
             var sensor = new TestTemperatureSensor(
-                ComponentIdGenerator.EmptyId,
+                "Test",
                 testController.GetInstance<ISettingsService>(),
                 new TestSensorAdapter());
 
@@ -77,12 +76,12 @@ namespace HA4IoT.Tests.Actuators
         }
 
         [TestMethod]
-        public void SensorValueUnderran_Trigger()
+        public void Trigger_SensorValueUnderran()
         {
             var testController = new TestController();
 
             var sensor = new TestTemperatureSensor(
-                ComponentIdGenerator.EmptyId,
+                "Test",
                 testController.GetInstance<ISettingsService>(),
                 new TestSensorAdapter());
 
@@ -121,22 +120,21 @@ namespace HA4IoT.Tests.Actuators
         }
 
         [TestMethod]
-        public void Associate_TriggerWithActuatorAction()
+        public void Trigger_AttachAction()
         {
-            var buttonFactory = new TestButtonFactory(new TestTimerService(), new SettingsService(new BackupService(), new StorageService()));
-            var stateMachineFactory = new TestStateMachineFactory();
+            var testController = new TestController();
+            
+            var buttonAdapter = new TestButtonAdapter();
+            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>());
+            var lamp = new Lamp("Test", new TestBinaryOutputAdapter());
 
-            var testButton = buttonFactory.CreateTestButton();
-            var testOutput = stateMachineFactory.CreateTestStateMachineWithOnOffStates();
+            button.PressedShortlyTrigger.Attach(() => lamp.TryTogglePowerState());
 
-            throw new NotImplementedException();
-            //testButton.PressedShortlyTrigger.Attach(testOutput.GetSetNextStateAction());
-
-            testOutput.GetState().Has(PowerState.Off);
-            testButton.PressShortly();
-            testOutput.GetState().Has(PowerState.On);
-            testButton.PressShortly();
-            testOutput.GetState().Has(PowerState.Off);
+            lamp.GetState().Has(PowerState.Off);
+            buttonAdapter.Touch();
+            lamp.GetState().Has(PowerState.On);
+            buttonAdapter.Touch();
+            lamp.GetState().Has(PowerState.Off);
         }
     }
 }

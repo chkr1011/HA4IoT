@@ -8,7 +8,7 @@ namespace HA4IoT.Tests.Mockups
 {
     public class TestMotionDetector : MotionDetector
     {
-        public TestMotionDetector(ComponentId id, TestMotionDetectorEndpoint endpoint, ISchedulerService schedulerService, ISettingsService settingsService) 
+        public TestMotionDetector(string id, TestMotionDetectorEndpoint endpoint, ISchedulerService schedulerService, ISettingsService settingsService) 
             : base(id, endpoint, schedulerService, settingsService)
         {
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));

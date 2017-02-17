@@ -7,7 +7,7 @@ namespace HA4IoT.Hardware.CCTools
 {
     public class HSREL8 : CCToolsBoardBase, IBinaryOutputController
     {
-        public HSREL8(DeviceId id, I2CSlaveAddress i2CAddress, II2CBusService i2CBus)
+        public HSREL8(string id, I2CSlaveAddress i2CAddress, II2CBusService i2CBus)
             : base(id, new MAX7311Driver(i2CAddress, i2CBus))
         {
             SetState(new byte[] { 0x00, 255 });

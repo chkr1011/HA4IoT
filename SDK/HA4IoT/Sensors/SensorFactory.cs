@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Adapters;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
@@ -36,7 +37,7 @@ namespace HA4IoT.Sensors
             if (area == null) throw new ArgumentNullException(nameof(area));
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
 
-            var temperatureSensor = new TemperatureSensor(ComponentIdGenerator.Generate(area.Id, id), _settingsService, endpoint);
+            var temperatureSensor = new TemperatureSensor($"{area.Id}.{id}", _settingsService, endpoint);
             area.AddComponent(temperatureSensor);
             
             return temperatureSensor;
@@ -47,7 +48,7 @@ namespace HA4IoT.Sensors
             if (area == null) throw new ArgumentNullException(nameof(area));
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
 
-            var humditySensor = new HumiditySensor(ComponentIdGenerator.Generate(area.Id, id), _settingsService, endpoint);
+            var humditySensor = new HumiditySensor($"{area.Id}.{id}", _settingsService, endpoint);
             area.AddComponent(humditySensor);
 
             return humditySensor;
@@ -57,7 +58,7 @@ namespace HA4IoT.Sensors
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
 
-            var virtualButton = new Button(ComponentIdGenerator.Generate(area.Id, id), new EmptyButtonEndpoint(), _timerService, _settingsService);
+            var virtualButton = new Button($"{area.Id}.{id}", new EmptyButtonAdapter(), _timerService, _settingsService);
             initializer?.Invoke(virtualButton);
 
             area.AddComponent(virtualButton);
@@ -70,8 +71,8 @@ namespace HA4IoT.Sensors
             if (input == null) throw new ArgumentNullException(nameof(input));
 
             var button = new Button(
-                ComponentIdGenerator.Generate(area.Id, id),
-                new PortBasedButtonEndpoint(input),
+                $"{area.Id}.{id}",
+                new BinaryInputButtonAdapter(input),
                 _timerService,
                 _settingsService);
 
@@ -93,16 +94,16 @@ namespace HA4IoT.Sensors
             if (downInput == null) throw new ArgumentNullException(nameof(downInput));
 
             var upButton = new Button(
-                ComponentIdGenerator.Generate(area.Id, upId),
-                new PortBasedButtonEndpoint(upInput),
+                $"{area.Id}.{upId}",
+                new BinaryInputButtonAdapter(upInput),
                 _timerService,
                 _settingsService);
 
             area.AddComponent(upButton);
 
             var downButton = new Button(
-                ComponentIdGenerator.Generate(area.Id, downId),
-                new PortBasedButtonEndpoint(downInput),
+                $"{area.Id}.{downId}",
+                new BinaryInputButtonAdapter(downInput),
                 _timerService,
                 _settingsService);
 
@@ -115,7 +116,7 @@ namespace HA4IoT.Sensors
             if (input == null) throw new ArgumentNullException(nameof(input));
 
             var motionDetector = new MotionDetector(
-                ComponentIdGenerator.Generate(area.Id, id),
+                $"{area.Id}.{id}",
                 new PortBasedMotionDetectorEndpoint(input),
                 _schedulerService,
                 _settingsService);
@@ -130,7 +131,7 @@ namespace HA4IoT.Sensors
             if (area == null) throw new ArgumentNullException(nameof(area));
             if (initializer == null) throw new ArgumentNullException(nameof(initializer));
 
-            var window = new Window(ComponentIdGenerator.Generate(area.Id, id), _settingsService);
+            var window = new Window($"{area.Id}.{id}", _settingsService);
             initializer(window);
 
             area.AddComponent(window);

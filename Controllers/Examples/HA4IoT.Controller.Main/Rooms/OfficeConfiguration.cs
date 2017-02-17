@@ -5,7 +5,6 @@ using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
-using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.System;
@@ -15,7 +14,6 @@ using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Services.Areas;
-using HA4IoT.Services.Devices;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
@@ -86,8 +84,8 @@ namespace HA4IoT.Controller.Main.Rooms
         {
             var hsrel8 = _ccToolsBoardService.RegisterHSREL8(InstalledDevice.OfficeHSREL8, new I2CSlaveAddress(20));
             var hspe8 = _ccToolsBoardService.RegisterHSPE8OutputOnly(InstalledDevice.UpperFloorAndOfficeHSPE8, new I2CSlaveAddress(37));
-            var input4 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input4);
-            var input5 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input5);
+            var input4 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input4.ToString());
+            var input5 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input5.ToString());
             var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
 
             const int SensorPin = 2;
@@ -170,8 +168,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithHighOutput(rl)
                 .WithHighOutput(rr);
 
-            var deskOnlyStateId = new GenericComponentState("DeskOnly");
-            light.AddState(deskOnlyStateId)
+            light.AddState("DeskOnly")
                 .WithHighOutput(fl)
                 .WithHighOutput(fm)
                 .WithLowOutput(fr)
@@ -181,8 +178,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithLowOutput(rl)
                 .WithLowOutput(rr);
 
-            var couchOnlyStateId = new GenericComponentState("CouchOnly");
-            light.AddState(couchOnlyStateId)
+            light.AddState("CouchOnly")
                 .WithLowOutput(fl)
                 .WithLowOutput(fm)
                 .WithLowOutput(fr)
@@ -196,11 +192,11 @@ namespace HA4IoT.Controller.Main.Rooms
 
             room.GetButton(Office.ButtonLowerRight)
                 .PressedShortlyTrigger
-                .Attach(light.GetSetStateAction(couchOnlyStateId));
+                .Attach(light.GetSetStateAction("CouchOnly"));
 
             room.GetButton(Office.ButtonLowerLeft)
                 .PressedShortlyTrigger
-                .Attach(light.GetSetStateAction(deskOnlyStateId));
+                .Attach(light.GetSetStateAction("DeskOnly"));
 
             room.GetButton(Office.ButtonUpperLeft)
                 .PressedShortlyTrigger

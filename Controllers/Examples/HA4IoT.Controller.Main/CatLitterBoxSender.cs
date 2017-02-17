@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services.ExternalServices.Twitter;
@@ -15,7 +14,7 @@ namespace HA4IoT.Controller.Main
         private readonly ITwitterClientService _twitterClientService;
         private const string Suffix = "\r\nTime in litter box: {0}s\r\nNr. this day: {1}\r\n@chkratky";
 
-        private readonly Timeout _timeout = new Timeout(TimeSpan.FromSeconds(30));
+        private readonly Timeout _timeout;
         private readonly Random _random = new Random((int)DateTime.Now.Ticks);
         private readonly Stopwatch _timeInLitterBox = new Stopwatch();
 
@@ -46,7 +45,12 @@ namespace HA4IoT.Controller.Main
 
             _twitterClientService = twitterClientService;
 
-            timerService.Tick += Tick;
+            _timeout = new Timeout(timerService, TimeSpan.FromSeconds(30));
+            _timeout.Elapsed += (s, e) =>
+            {
+                _timeInLitterBox.Stop();
+                Task.Run(() => Tweet(_timeInLitterBox.Elapsed));
+            };
         }
 
         public CatLitterBoxTwitterSender WithTrigger(IMotionDetector motionDetector)
@@ -57,30 +61,13 @@ namespace HA4IoT.Controller.Main
             return this;
         }
 
-        private void Tick(object sender, TimerTickEventArgs e)
-        {
-            if (!_timeout.IsRunning)
-            {
-                return;
-            }
-
-            _timeout.Tick(e);
-
-            if (_timeout.IsElapsed)
-            {
-                _timeInLitterBox.Stop();
-
-                Task.Run(() => Tweet(_timeInLitterBox.Elapsed));
-            }
-        }
-
         private void RestartTimer(object sender, EventArgs eventArgs)
         {
             if (!_timeInLitterBox.IsRunning)
             {
                 _timeInLitterBox.Restart();
             }
-
+            
             _timeout.Restart();
         }
 

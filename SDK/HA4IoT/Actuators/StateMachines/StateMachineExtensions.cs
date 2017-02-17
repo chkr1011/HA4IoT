@@ -12,7 +12,7 @@ namespace HA4IoT.Actuators.StateMachines
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
 
-            return area.GetComponent<IStateMachine>(ComponentIdGenerator.Generate(area.Id, id));
+            return area.GetComponent<IStateMachine>($"{area.Id}.{id}");
         }
 
         public static bool GetSupportsOffState(this IStateMachine stateMachine)
@@ -53,52 +53,14 @@ namespace HA4IoT.Actuators.StateMachines
             return state;
         }
 
-        public static bool TryTurnOff(this IStateMachine stateMachine)
-        {
-            if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
-
-            if (!stateMachine.SupportsState(BinaryStateId.Off))
-            {
-                return false;
-            }
-
-            stateMachine.ChangeState(BinaryStateId.Off);
-            return true;
-        }
-
-        public static bool TryTurnOn(this IStateMachine stateMachine)
-        {
-            if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
-
-            if (!stateMachine.SupportsState(BinaryStateId.On))
-            {
-                return false;
-            }
-
-            stateMachine.ChangeState(BinaryStateId.On);
-            return true;
-        }
-
         public static Action GetSetStateAction(this IStateMachine stateStateMachine, GenericComponentState stateId)
         {
             if (stateStateMachine == null) throw new ArgumentNullException(nameof(stateStateMachine));
             if (stateId == null) throw new ArgumentNullException(nameof(stateId));
 
-            return () => stateStateMachine.ChangeState(stateId);
-        }
-
-        public static Action GetTurnOnAction(this IStateMachine stateMachine)
-        {
-            if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
-
-            return () => stateMachine.ChangeState(BinaryStateId.On);
-        }
-
-        public static Action GetTurnOffAction(this IStateMachine stateMachine)
-        {
-            if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
-
-            return () => stateMachine.ChangeState(BinaryStateId.Off);
+            throw new NotImplementedException();
+            // TODO: Fix
+            //return () => stateStateMachine.ChangeState(stateId);
         }
     }
 }

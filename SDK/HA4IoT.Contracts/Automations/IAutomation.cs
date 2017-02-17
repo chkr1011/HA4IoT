@@ -4,7 +4,7 @@ namespace HA4IoT.Contracts.Automations
 {
     public interface IAutomation
     {
-        AutomationId Id { get; }
+        string Id { get; }
 
         JObject ExportStatusToJsonObject();
     }

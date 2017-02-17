@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
@@ -11,13 +12,13 @@ using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Actuators.BinaryStateActuators
 {
-    public class LogicalBinaryStateActuator : ActuatorBase, IStateMachine
+    public class LogicalBinaryStateActuator : ComponentBase, IStateMachine
     {
         private readonly ITimerService _timerService;
 
         private GenericComponentState _state = new GenericComponentState(null);
 
-        public LogicalBinaryStateActuator(ComponentId id, ITimerService timerService) 
+        public LogicalBinaryStateActuator(string id, ITimerService timerService) 
             : base(id)
         {
             if (timerService == null) throw new ArgumentNullException(nameof(timerService));
@@ -25,9 +26,9 @@ namespace HA4IoT.Actuators.BinaryStateActuators
             _timerService = timerService;
         }
 
-        public IList<IActuator> Actuators { get; } = new List<IActuator>();
+        public IList<IComponent> Actuators { get; } = new List<IComponent>();
 
-        public LogicalBinaryStateActuator WithActuator(IActuator actuator)
+        public LogicalBinaryStateActuator WithActuator(IComponent actuator)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
@@ -64,12 +65,12 @@ namespace HA4IoT.Actuators.BinaryStateActuators
         {
         }
 
-        public override void ResetState()
+        public void ResetState()
         {
             ChangeState(BinaryStateId.Off, new ForceUpdateStateParameter());
         }
 
-        public override void ChangeState(IComponentFeatureState state, params IHardwareParameter[] parameters)
+        public void ChangeState(IComponentFeatureState state, params IHardwareParameter[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
@@ -82,7 +83,8 @@ namespace HA4IoT.Actuators.BinaryStateActuators
 
             foreach (var actuator in Actuators)
             {
-                actuator.ChangeState(state, parameters);
+                // TODO: Fix!
+                //actuator.ChangeState(state, parameters);
             }
 
             ////foreach (var actuator in Actuators)

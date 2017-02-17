@@ -7,7 +7,7 @@ namespace HA4IoT.Contracts.Services.System
     {
         void AddDevice(IDevice device);
 
-        TDevice GetDevice<TDevice>(DeviceId id) where TDevice : IDevice;
+        TDevice GetDevice<TDevice>(string id) where TDevice : IDevice;
 
         TDevice GetDevice<TDevice>() where TDevice : IDevice;
 

@@ -1,55 +1,91 @@
 ﻿using System;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Actuators.LogicalElements;
+using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Components.Features;
+using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Actuators.Lamps
 {
     public class Lamp : ComponentBase, ILamp
     {
-        private readonly PowerStateElement _powerStateElement;
+        private readonly IBinaryOutputAdapter _adapter;
 
-        public Lamp(ComponentId id, IBinaryOutputComponentAdapter adapter) : base(id) // TODO: Lamp adapter
+        private PowerStateValue _powerState = PowerStateValue.Off;
+
+        public Lamp(string id, IBinaryOutputAdapter adapter)
+            : base(id)
         {
             if (adapter == null) throw new ArgumentNullException(nameof(adapter));
 
-            _powerStateElement = new PowerStateElement(adapter);
-
-            TogglePowerStateAction = _powerStateElement.TogglePowerStateAction;
+            _adapter = adapter;
         }
-
-        public IAction TogglePowerStateAction { get; }
 
         public override ComponentFeatureStateCollection GetState()
         {
             return new ComponentFeatureStateCollection()
-                .With(_powerStateElement.GetState());
+                .With(new PowerState(_powerState));
         }
 
         public override ComponentFeatureCollection GetFeatures()
         {
-            return new ComponentFeatureCollection();
-        }
-
-        public override void InvokeCommand(ICommand command)
-        {
-            if (_powerStateElement.TryInvokeCommand(command))
-            {
-                return;
-            }
+            return new ComponentFeatureCollection()
+                .With(new PowerStateFeature());
         }
 
         public void ChangeState(IComponentFeatureState state, params IHardwareParameter[] parameters)
         {
+            // TODO: Delete!
         }
 
         public void ResetState()
         {
-            _powerStateElement.ResetState();
+            SetStateInternal(PowerStateValue.Off, true);
+        }
+
+        public override void InvokeCommand(ICommand command)
+        {
+            if (command == null) throw new ArgumentNullException(nameof(command));
+
+            var commandInvoker = new CommandInvoker();
+            commandInvoker.Register<TurnOnCommand>(c => SetStateInternal(PowerStateValue.On));
+            commandInvoker.Register<TurnOffCommand>(c => SetStateInternal(PowerStateValue.Off));
+            commandInvoker.Register<TogglePowerStateCommand>(c => TogglePowerState());
+            commandInvoker.Invoke(command);
+        }
+
+        private void TogglePowerState()
+        {
+            SetStateInternal(_powerState == PowerStateValue.Off ? PowerStateValue.On : PowerStateValue.Off);
+        }
+
+        private void SetStateInternal(PowerStateValue powerState, bool forceUpdate = false)
+        {
+            if (!forceUpdate && _powerState == powerState)
+            {
+                return;
+            }
+
+            var oldState = GetState();
+
+            var parameters = forceUpdate ? new IHardwareParameter[] { HardwareParameter.ForceUpdateState } : new IHardwareParameter[0];
+            if (powerState == PowerStateValue.On)
+            {
+                _adapter.TurnOn(parameters);
+            }
+            else if (powerState == PowerStateValue.Off)
+            {
+                _adapter.TurnOff(parameters);
+            }
+
+            _powerState = powerState;
+
+            var newState = GetState();
+
+            OnStateChanged(oldState, newState);
         }
     }
 }

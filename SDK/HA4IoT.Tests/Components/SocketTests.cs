@@ -3,6 +3,7 @@ using HA4IoT.Components;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Components.States;
 using HA4IoT.Tests.Mockups;
+using HA4IoT.Tests.Mockups.Adapters;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace HA4IoT.Tests.Components
@@ -11,11 +12,23 @@ namespace HA4IoT.Tests.Components
     public class SocketTests
     {
         [TestMethod]
+        public void Socket_Reset()
+        {
+            var adapter = new TestBinaryOutputAdapter();
+            var socket = new Socket("Test", adapter);
+            socket.TryReset();
+
+            Assert.AreEqual(0, adapter.TurnOnCalledCount);
+            Assert.AreEqual(1, adapter.TurnOffCalledCount);
+            Assert.IsTrue(socket.GetState().Has(PowerState.Off));
+        }
+
+        [TestMethod]
         public void Socket_TurnOnAndOff()
         {
-            var adapter = new TestBinaryStateAdapter();
-            var socket = new Socket(new ComponentId("Test"), adapter);
-            socket.ResetState();
+            var adapter = new TestBinaryOutputAdapter();
+            var socket = new Socket("Test", adapter);
+            socket.TryReset();
 
             Assert.AreEqual(0, adapter.TurnOnCalledCount);
             Assert.AreEqual(1, adapter.TurnOffCalledCount);
@@ -51,6 +64,5 @@ namespace HA4IoT.Tests.Components
             Assert.AreEqual(2, adapter.TurnOffCalledCount);
             Assert.IsTrue(socket.GetState().Has(PowerState.On));
         }
-
     }
 }

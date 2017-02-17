@@ -4,7 +4,7 @@ using System.Linq;
 using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Automations;
+using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.Notifications;
@@ -17,7 +17,7 @@ namespace HA4IoT.Automations
 {
     public class RollerShutterAutomation : AutomationBase
     {
-        private readonly List<ComponentId> _rollerShutters = new List<ComponentId>();
+        private readonly List<string> _rollerShutters = new List<string>();
 
         private readonly INotificationService _notificationService;
         private readonly IDateTimeService _dateTimeService;
@@ -31,7 +31,7 @@ namespace HA4IoT.Automations
         private bool _autoCloseIsApplied;
         
         public RollerShutterAutomation(
-            AutomationId id, 
+            string id, 
             INotificationService notificationService,
             ISchedulerService schedulerService,
             IDateTimeService dateTimeService,
@@ -97,7 +97,7 @@ namespace HA4IoT.Automations
             {
                 _maxOutsideTemperatureApplied = true;
                 _notificationService.CreateInformation(RollerShutterAutomationNotification.AutoClosingDueToHighOutsideTemperature, Settings);
-                SetStates(RollerShutterStateId.MovingDown);
+                InvokeCommand(new MoveDownCommand());
 
                 return;
             }
@@ -153,7 +153,7 @@ namespace HA4IoT.Automations
             }
             else
             {
-                SetStates(RollerShutterStateId.MovingUp);
+                InvokeCommand(new MoveUpCommand());
                 _notificationService.CreateInformation("Applied sunrise");
             }
 
@@ -179,7 +179,7 @@ namespace HA4IoT.Automations
                 }
                 else
                 {
-                    SetStates(RollerShutterStateId.MovingDown);
+                    InvokeCommand(new MoveDownCommand());
                     _notificationService.CreateInformation("Applied sunset");
                 }
             }
@@ -233,11 +233,11 @@ namespace HA4IoT.Automations
             return condition;
         }
 
-        private void SetStates(GenericComponentState state)
+        private void InvokeCommand(ICommand command)
         {
             foreach (var rollerShutter in _rollerShutters)
             {
-                _componentService.GetComponent<IRollerShutter>(rollerShutter).ChangeState(state);
+                _componentService.GetComponent<IRollerShutter>(rollerShutter).InvokeCommand(command);
             }
         }
     }

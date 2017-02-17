@@ -5,8 +5,8 @@ using System.Linq;
 using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Commands;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Conditions;
 using HA4IoT.Contracts.Core;
@@ -38,7 +38,7 @@ namespace HA4IoT.Automations
         private bool _turnOffIfButtonPressedWhileAlreadyOn;
         private bool _isOn;
         
-        public FlipFlopAutomation(AutomationId id, IDateTimeService dateTimeService, ISchedulerService schedulerService, ISettingsService settingsService, IDaylightService daylightService)
+        public FlipFlopAutomation(string id, IDateTimeService dateTimeService, ISchedulerService schedulerService, ISettingsService settingsService, IDaylightService daylightService)
             : base(id)
         {
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
@@ -96,14 +96,16 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public FlipFlopAutomation WithTarget(IActuator actuator)
+        public FlipFlopAutomation WithTarget(IComponent actuator)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
-            _flipActions.Add(() => actuator.ChangeState(BinaryStateId.On));
+            // TODO: Fix
+            //_flipActions.Add(() => actuator.ChangeState(BinaryStateId.On));
             _flipActions.Add(() => actuator.InvokeCommand(new TurnOnCommand()));
 
-            _flopActions.Add(() => actuator.ChangeState(BinaryStateId.Off));
+            // TODO: Fix
+            //_flopActions.Add(() => actuator.ChangeState(BinaryStateId.Off));
             _flopActions.Add(() => actuator.InvokeCommand(new TurnOffCommand()));
 
             return this;
@@ -144,7 +146,7 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public FlipFlopAutomation WithSkipIfAnyActuatorIsAlreadyOn(params IActuator[] actuators)
+        public FlipFlopAutomation WithSkipIfAnyActuatorIsAlreadyOn(params IComponent[] actuators)
         {
             if (actuators == null) throw new ArgumentNullException(nameof(actuators));
 

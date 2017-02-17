@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking.Sockets;
 using HA4IoT.Contracts.Logging;
@@ -10,6 +11,7 @@ namespace HA4IoT.Networking.Http
 {
     public sealed class HttpServer : IDisposable
     {
+        private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private readonly StreamSocketListener _serverSocket = new StreamSocketListener();
 
         public HttpServer()
@@ -32,15 +34,20 @@ namespace HA4IoT.Networking.Http
 
         public void Dispose()
         {
+            _cancellationTokenSource.Cancel();
             _serverSocket.Dispose();
         }
 
         private void HandleConnection(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
-            Task.Run(() => HandleConnection(args.Socket));
+            Task.Factory.StartNew(
+                async () => await HandleConnectionAsync(args.Socket),
+                _cancellationTokenSource.Token,
+                TaskCreationOptions.LongRunning, 
+                TaskScheduler.Default);
         }
 
-        private void HandleConnection(StreamSocket clientSocket)
+        private async Task HandleConnectionAsync(StreamSocket clientSocket)
         {
             using (var clientSession = new ClientSession(clientSocket))
             {
@@ -49,7 +56,7 @@ namespace HA4IoT.Networking.Http
 
                 try
                 {
-                    clientSession.Run();
+                    await clientSession.RunAsync();
                 }
                 catch (Exception exception)
                 {

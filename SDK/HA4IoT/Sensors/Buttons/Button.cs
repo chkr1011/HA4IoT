@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Components.Features;
 using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
@@ -11,17 +11,18 @@ using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Triggers;
+using HA4IoT.Services.System;
 using HA4IoT.Triggers;
 
 namespace HA4IoT.Sensors.Buttons
 {
     public class Button : ComponentBase, IButton
     {
-        private readonly Stopwatch _stopwatch = new Stopwatch();
+        private readonly Timeout _pressedLongTimeout;
 
         private ButtonStateValue _state = ButtonStateValue.Released;
 
-        public Button(ComponentId id, IButtonAdapter adapter, ITimerService timerService, ISettingsService settingsService)
+        public Button(string id, IButtonAdapter adapter, ITimerService timerService, ISettingsService settingsService)
             : base(id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
@@ -30,7 +31,8 @@ namespace HA4IoT.Sensors.Buttons
 
             settingsService.CreateSettingsMonitor<ButtonSettings>(Id, s => Settings = s);
 
-            timerService.Tick += CheckForTimeout;
+            _pressedLongTimeout = new Timeout(timerService);
+            _pressedLongTimeout.Elapsed += (s, e) => OnPressedLong();
 
             adapter.Pressed += (s, e) => ProcessChangedInputState(ButtonStateValue.Pressed);
             adapter.Released += (s, e) => ProcessChangedInputState(ButtonStateValue.Released);
@@ -40,7 +42,7 @@ namespace HA4IoT.Sensors.Buttons
 
         public ITrigger PressedShortlyTrigger { get; } = new Trigger();
         public ITrigger PressedLongTrigger { get; } = new Trigger();
-    
+
         public override ComponentFeatureStateCollection GetState()
         {
             return new ComponentFeatureStateCollection()
@@ -49,20 +51,23 @@ namespace HA4IoT.Sensors.Buttons
 
         public override ComponentFeatureCollection GetFeatures()
         {
-            return new ComponentFeatureCollection();
+            return new ComponentFeatureCollection()
+                .With(new ButtonFeature());
         }
 
         public override void InvokeCommand(ICommand command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
 
-            var pressCommand = command as PressCommand;
-            if (pressCommand == null)
-            {
-                throw new CommandNotSupportedException(command);
-            }
+            var commandInvoker = new CommandInvoker();
+            commandInvoker.Register<ResetCommand>();
+            commandInvoker.Register<PressCommand>(c => PressInternal(c.Duration));
+            commandInvoker.Invoke(command);
+        }
 
-            if (pressCommand.Duration == ButtonPressedDuration.Short)
+        private void PressInternal(ButtonPressedDuration duration)
+        {
+            if (duration == ButtonPressedDuration.Short)
             {
                 OnPressedShortlyShort();
             }
@@ -102,40 +107,16 @@ namespace HA4IoT.Sensors.Buttons
                 }
                 else
                 {
-                    _stopwatch.Restart();
+                    _pressedLongTimeout.Start(Settings.PressedLongDuration);
                 }
             }
             else if (state == ButtonStateValue.Released)
             {
-                if (!_stopwatch.IsRunning)
+                if (_pressedLongTimeout.IsRunning)
                 {
-                    return;
-                }
-
-                _stopwatch.Stop();
-
-                if (_stopwatch.Elapsed >= Settings.PressedLongDuration)
-                {
-                    OnPressedLong();
-                }
-                else
-                {
+                    _pressedLongTimeout.Stop();
                     OnPressedShortlyShort();
                 }
-            }
-        }
-
-        private void CheckForTimeout(object sender, TimerTickEventArgs e)
-        {
-            if (!_stopwatch.IsRunning)
-            {
-                return;
-            }
-
-            if (_stopwatch.Elapsed > Settings.PressedLongDuration)
-            {
-                _stopwatch.Stop();
-                OnPressedLong();
             }
         }
 

@@ -23,7 +23,7 @@ namespace HA4IoT.Hardware.CCTools
 
         public HSPE16InputOnly RegisterHSPE16InputOnly(Enum id, I2CSlaveAddress address)
         {
-            var device = new HSPE16InputOnly(new DeviceId(id), address, _i2CBusService)
+            var device = new HSPE16InputOnly(id.ToString(), address, _i2CBusService)
             {
                 AutomaticallyFetchState = true
             };
@@ -35,7 +35,7 @@ namespace HA4IoT.Hardware.CCTools
 
         public HSPE16OutputOnly RegisterHSPE16OutputOnly(Enum id, I2CSlaveAddress address)
         {
-            var device = new HSPE16OutputOnly(new DeviceId(id), address, _i2CBusService);
+            var device = new HSPE16OutputOnly(id.ToString(), address, _i2CBusService);
             _deviceService.AddDevice(device);
 
             return device;
@@ -43,7 +43,7 @@ namespace HA4IoT.Hardware.CCTools
 
         public HSPE8OutputOnly RegisterHSPE8OutputOnly(Enum id, I2CSlaveAddress i2CAddress)
         {
-            var device = new HSPE8OutputOnly(new DeviceId(id), i2CAddress, _i2CBusService);
+            var device = new HSPE8OutputOnly(id.ToString(), i2CAddress, _i2CBusService);
             _deviceService.AddDevice(device);
 
             return device;
@@ -51,7 +51,7 @@ namespace HA4IoT.Hardware.CCTools
 
         public HSPE8InputOnly RegisterHSPE8InputOnly(Enum id, I2CSlaveAddress i2CAddress)
         {
-            var device = new HSPE8InputOnly(new DeviceId(id), i2CAddress, _i2CBusService);
+            var device = new HSPE8InputOnly(id.ToString(), i2CAddress, _i2CBusService);
             _deviceService.AddDevice(device);
 
             return device;
@@ -59,7 +59,7 @@ namespace HA4IoT.Hardware.CCTools
 
         public HSREL5 RegisterHSREL5(Enum id, I2CSlaveAddress i2CAddress)
         {
-            var device = new HSREL5(new DeviceId(id), i2CAddress, _i2CBusService);
+            var device = new HSREL5(id.ToString(), i2CAddress, _i2CBusService);
             _deviceService.AddDevice(device);
 
             return device;
@@ -67,7 +67,7 @@ namespace HA4IoT.Hardware.CCTools
 
         public HSREL8 RegisterHSREL8(Enum id, I2CSlaveAddress i2CAddress)
         {
-            var device = new HSREL8(new DeviceId(id), i2CAddress, _i2CBusService);
+            var device = new HSREL8(id.ToString(), i2CAddress, _i2CBusService);
             _deviceService.AddDevice(device);
 
             return device;
@@ -75,7 +75,7 @@ namespace HA4IoT.Hardware.CCTools
 
         public HSRT16 RegisterHSRT16(Enum id, I2CSlaveAddress address)
         {
-            var device = new HSRT16(new DeviceId(id), address, _i2CBusService);
+            var device = new HSRT16(id.ToString(), address, _i2CBusService);
             _deviceService.AddDevice(device);
 
             return device;

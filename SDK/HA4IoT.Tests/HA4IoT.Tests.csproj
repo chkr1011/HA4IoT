@@ -98,6 +98,7 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\ButtonTests.cs" />
     <Compile Include="Components\FanTests.cs" />
     <Compile Include="Components\SocketTests.cs" />
     <Compile Include="Actuators\AutomaticTurnOnAndOffAutomationTests.cs" />
@@ -117,17 +118,15 @@
     <Compile Include="Components\SerializationTests.cs" />
     <Compile Include="Hardware\CCTools\CCToolsTests.cs" />
     <Compile Include="Hardware\RemoteSwitch\BrennenstuhlCodeSequenceProviderTests.cs" />
-    <Compile Include="Mockups\TestBinaryStateAdapter.cs" />
-    <Compile Include="Mockups\TestButton.cs" />
-    <Compile Include="Mockups\TestButtonEndpoint.cs" />
-    <Compile Include="Mockups\TestButtonFactory.cs" />
+    <Compile Include="Mockups\Adapters\TestBinaryOutputAdapter.cs" />
+    <Compile Include="Mockups\Adapters\TestButtonAdapter.cs" />
     <Compile Include="Mockups\TestController.cs" />
-    <Compile Include="Mockups\TestDateTimeService.cs" />
-    <Compile Include="Mockups\TestDaylightService.cs" />
-    <Compile Include="Mockups\TestFanAdapter.cs" />
+    <Compile Include="Mockups\Services\TestDateTimeService.cs" />
+    <Compile Include="Mockups\Services\TestDaylightService.cs" />
+    <Compile Include="Mockups\Adapters\TestFanAdapter.cs" />
     <Compile Include="Mockups\TestHomeAutomationTimer.cs" />
     <Compile Include="Mockups\TestHumiditySensor.cs" />
-    <Compile Include="Mockups\TestI2CBusService.cs" />
+    <Compile Include="Mockups\Services\TestI2CBusService.cs" />
     <Compile Include="Mockups\TestI2CDevice.cs" />
     <Compile Include="Mockups\TestInboundMessage.cs" />
     <Compile Include="Mockups\TestInputPort.cs" />
@@ -138,13 +137,10 @@
     <Compile Include="Mockups\TestOutputPort.cs" />
     <Compile Include="Mockups\TestPort.cs" />
     <Compile Include="Mockups\TestPortTests.cs" />
-    <Compile Include="Mockups\TestRollerShutter.cs" />
-    <Compile Include="Mockups\TestRollerShutterEndpoint.cs" />
-    <Compile Include="Mockups\TestRollerShutterFactory.cs" />
+    <Compile Include="Mockups\Adapters\TestRollerShutterAdapter.cs" />
     <Compile Include="Mockups\TestSensorAdapter.cs" />
     <Compile Include="Mockups\TestStateMachine.cs" />
-    <Compile Include="Mockups\TestStateMachineFactory.cs" />
-    <Compile Include="Mockups\TestStorageService.cs" />
+    <Compile Include="Mockups\Services\TestStorageService.cs" />
     <Compile Include="Mockups\TestTemperatureSensor.cs" />
     <Compile Include="Mockups\TestWeatherStation.cs" />
     <Compile Include="Networking\HttpRequestParserTests.cs" />
@@ -152,6 +148,7 @@
     <Compile Include="Networking\WebSocketFrameTests.cs" />
     <Compile Include="PersonalAgent\MessageContextTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Core\TimeoutTests.cs" />
     <Compile Include="UnitTestApp.xaml.cs">
       <DependentUpon>UnitTestApp.xaml</DependentUpon>
     </Compile>
@@ -179,21 +176,21 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{b10b2e2a-85cd-4289-8649-fc0c1c98921d}</Project>
       <Name>HA4IoT.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SDK\HA4IoT\HA4IoT.csproj">
-      <Project>{c034ec4d-46cc-490a-a045-e4d4d1f49c31}</Project>
-      <Name>HA4IoT</Name>
     </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{d4e0a3f9-6521-4aee-815a-e2a60323fb63}</Project>
       <Name>HA4IoT.Networking</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+    <ProjectReference Include="..\HA4IoT\HA4IoT.csproj">
+      <Project>{c034ec4d-46cc-490a-a045-e4d4d1f49c31}</Project>
+      <Name>HA4IoT</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

@@ -2,10 +2,11 @@
 using HA4IoT.Contracts.Hardware;
 using System;
 using System.Text.RegularExpressions;
+using HA4IoT.Contracts.Adapters;
 
 namespace HA4IoT.Hardware.Knx
 {
-    public class KnxDigitalJoinEnpoint : IBinaryOutputComponentAdapter
+    public class KnxDigitalJoinEnpoint : IBinaryOutputAdapter
     {
         private readonly string _identifier;
         private readonly KnxController _knxController;

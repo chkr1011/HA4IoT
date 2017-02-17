@@ -1,10 +1,8 @@
 ﻿using System;
-using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
-using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Commands;
+using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Triggers;
@@ -16,7 +14,7 @@ namespace HA4IoT.Automations
         private readonly IDateTimeService _dateTimeService;
         private readonly IDaylightService _daylightService;
 
-        public ConditionalOnAutomation(AutomationId id, ISchedulerService schedulerService, IDateTimeService dateTimeService, IDaylightService daylightService) 
+        public ConditionalOnAutomation(string id, ISchedulerService schedulerService, IDateTimeService dateTimeService, IDaylightService daylightService) 
             : base(id)
         {
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
@@ -43,12 +41,12 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public ConditionalOnAutomation WithActuator(IActuator actuator)
+        public ConditionalOnAutomation WithComponent(IComponent component)
         {
-            if (actuator == null) throw new ArgumentNullException(nameof(actuator));
+            if (component == null) throw new ArgumentNullException(nameof(component));
 
-            WithActionIfConditionsFulfilled(() => actuator.InvokeCommand(new TurnOnCommand()));
-            WithActionIfConditionsNotFulfilled(() => actuator.InvokeCommand(new TurnOffCommand()));
+            WithActionIfConditionsFulfilled(() => component.InvokeCommand(new TurnOnCommand()));
+            WithActionIfConditionsNotFulfilled(() => component.InvokeCommand(new TurnOffCommand()));
 
             return this;
         }

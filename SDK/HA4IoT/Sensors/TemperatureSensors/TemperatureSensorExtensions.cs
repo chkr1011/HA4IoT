@@ -28,7 +28,7 @@ namespace HA4IoT.Sensors.TemperatureSensors
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
 
-            return area.GetComponent<ITemperatureSensor>(ComponentIdGenerator.Generate(area.Id, id));
+            return area.GetComponent<ITemperatureSensor>($"{area.Id}.{id}");
         }
     }
 }

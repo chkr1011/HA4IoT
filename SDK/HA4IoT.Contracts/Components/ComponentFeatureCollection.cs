@@ -9,7 +9,7 @@ namespace HA4IoT.Contracts.Components
     {
         private readonly HashSet<IComponentFeature> _features = new HashSet<IComponentFeature>();
 
-        public TComponentFeature Get<TComponentFeature>() where TComponentFeature : IComponentFeature
+        public TComponentFeature Extract<TComponentFeature>() where TComponentFeature : IComponentFeature
         {
             var state = _features.FirstOrDefault(s => s is TComponentFeature);
             if (state == null)

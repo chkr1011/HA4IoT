@@ -4,6 +4,7 @@ using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Components.States;
 using HA4IoT.Tests.Mockups;
+using HA4IoT.Tests.Mockups.Adapters;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace HA4IoT.Tests.Actuators
@@ -16,11 +17,11 @@ namespace HA4IoT.Tests.Actuators
         {
             var timer = new TestTimerService();
             
-            var testActuator1 = new Lamp(new ComponentId("Lamp1"), new TestBinaryStateAdapter());
-            var testActuator2 = new Lamp(new ComponentId("Lamp2"), new TestBinaryStateAdapter());
-            var testActuator3 = new Lamp(new ComponentId("Lamp3"), new TestBinaryStateAdapter());
+            var testActuator1 = new Lamp("Lamp1", new TestBinaryOutputAdapter());
+            var testActuator2 = new Lamp("Lamp2", new TestBinaryOutputAdapter());
+            var testActuator3 = new Lamp("Lamp3", new TestBinaryOutputAdapter());
 
-            var logicalActautor = new LogicalBinaryStateActuator(ComponentIdGenerator.EmptyId, timer);
+            var logicalActautor = new LogicalBinaryStateActuator("Test", timer);
             logicalActautor.WithActuator(testActuator1);
             logicalActautor.WithActuator(testActuator2);
             logicalActautor.WithActuator(testActuator3);

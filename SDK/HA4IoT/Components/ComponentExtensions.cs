@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Components
 {
@@ -19,60 +19,60 @@ namespace HA4IoT.Components
         public static bool TryTurnOn(this IComponent component)
         {
             if (component == null) throw new ArgumentNullException(nameof(component));
-
-            try
-            {
-                component.InvokeCommand(new TurnOnCommand());
-            }
-            catch (CommandNotSupportedException)
-            {
-                return false;
-            }
-            
-            return true;
+            return component.TryInvokeCommand(new TurnOnCommand());
         }
 
         public static bool TryTurnOff(this IComponent component)
         {
             if (component == null) throw new ArgumentNullException(nameof(component));
-
-            try
-            {
-                component.InvokeCommand(new TurnOffCommand());
-            }
-            catch (CommandNotSupportedException)
-            {
-                return false;
-            }
-
-            return true;
+            return component.TryInvokeCommand(new TurnOffCommand());
         }
 
+        public static bool TryTogglePowerState(this IComponent component)
+        {
+            if (component == null) throw new ArgumentNullException(nameof(component));
+            return component.TryInvokeCommand(new TogglePowerStateCommand());
+        }
+
+        public static bool TryReset(this IComponent component)
+        {
+            if (component == null) throw new ArgumentNullException(nameof(component));
+            return component.TryInvokeCommand(new ResetCommand());
+        }
+        
         public static bool TryMoveUp(this IComponent component)
         {
             if (component == null) throw new ArgumentNullException(nameof(component));
-
-            return TrySetState(component, RollerShutterStateId.MovingUp);
+            return component.TryInvokeCommand(new MoveUpCommand());
         }
 
         public static bool TryMoveDown(this IComponent component)
         {
             if (component == null) throw new ArgumentNullException(nameof(component));
-
-            return TrySetState(component, RollerShutterStateId.MovingDown);
+            return component.TryInvokeCommand(new MoveDownCommand());
         }
 
-        public static bool TrySetState(this IComponent component, GenericComponentState state)
+        public static bool TryIncreaseLevel(this IComponent component)
         {
             if (component == null) throw new ArgumentNullException(nameof(component));
+            return component.TryInvokeCommand(new IncreaseLevelCommand());
+        }
 
-            var actuator = component as IActuator;
-            if (actuator == null)
+        public static bool TryInvokeCommand(this IComponent component, ICommand command)
+        {
+            if (component == null) throw new ArgumentNullException(nameof(component));
+            if (command == null) throw new ArgumentNullException(nameof(command));
+
+            try
             {
+                component.InvokeCommand(command);
+            }
+            catch (CommandNotSupportedException exception)
+            {
+                Log.Warning(exception, $"Error while invoking command for component '{component.Id}'. " + exception.Message);
                 return false;
             }
 
-            actuator.ChangeState(state);
             return true;
         }
     }

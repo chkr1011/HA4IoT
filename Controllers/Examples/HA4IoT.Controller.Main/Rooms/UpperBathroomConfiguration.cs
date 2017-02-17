@@ -1,11 +1,11 @@
 ﻿using System;
 using HA4IoT.Actuators;
+using HA4IoT.Actuators.Fans;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Automations;
+using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Areas;
-using HA4IoT.Contracts.Automations;
-using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
@@ -14,7 +14,6 @@ using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Services.Areas;
-using HA4IoT.Services.Devices;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
@@ -79,14 +78,14 @@ namespace HA4IoT.Controller.Main.Rooms
         public void Apply()
         {
             var hsrel5 = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.UpperBathroomHSREL5, new I2CSlaveAddress(61));
-            var input5 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input5);
+            var input5 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input5.ToString());
             var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
 
             const int SensorPin = 4;
 
             var area = _areaService.RegisterArea(Room.UpperBathroom);
 
-            _actuatorFactory.RegisterStateMachine(area, UpperBathroom.Fan, (s, r) => SetupFan(s, hsrel5));
+            area.AddComponent(new Fan($"{area.Id}.{UpperBathroom.Fan}", new UpperBathroomFanAdapter(hsrel5)));
 
             _sensorFactory.RegisterTemperatureSensor(area, UpperBathroom.TemperatureSensor,
                 i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
@@ -112,20 +111,55 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithTrigger(area.GetMotionDetector(UpperBathroom.MotionDetector))
                 .WithTarget(combinedLights);
             
-            new BathroomFanAutomation(AutomationIdGenerator.Generate(area, UpperBathroom.FanAutomation), _schedulerService, _settingsService)
+            new BathroomFanAutomation($"{area.Id}.{UpperBathroom.FanAutomation}", _schedulerService, _settingsService)
                 .WithTrigger(area.GetMotionDetector(UpperBathroom.MotionDetector))
                 .WithActuator(area.GetStateMachine(UpperBathroom.Fan));      
         }
 
-        private void SetupFan(StateMachine stateMachine, HSREL5 hsrel5)
+        private class UpperBathroomFanAdapter : IFanAdapter
         {
-            var fanPort0 = hsrel5.GetOutput(4);
-            var fanPort1 = hsrel5.GetOutput(5);
+            private readonly IBinaryOutput _relay1;
+            private readonly IBinaryOutput _relay2;
 
-            stateMachine.AddOffState().WithOutput(fanPort0, BinaryState.Low).WithOutput(fanPort1, BinaryState.Low);
-            stateMachine.AddState(new GenericComponentState("1")).WithOutput(fanPort0, BinaryState.High).WithOutput(fanPort1, BinaryState.Low);
-            stateMachine.AddState(new GenericComponentState("2")).WithOutput(fanPort0, BinaryState.High).WithOutput(fanPort1, BinaryState.High);
-            stateMachine.TryTurnOff();
+            public int MaxLevel { get; } = 2;
+
+            public UpperBathroomFanAdapter(HSREL5 hsrel5)
+            {
+                _relay1 = hsrel5[HSREL5Pin.Relay4];
+                _relay2 = hsrel5[HSREL5Pin.GPIO0];
+            }
+
+            public void SetLevel(int level, params IHardwareParameter[] parameters)
+            {
+                switch (level)
+                {
+                    case 0:
+                        {
+                            _relay1.Write(BinaryState.Low);
+                            _relay2.Write(BinaryState.Low);
+                            break;
+                        }
+
+                    case 1:
+                        {
+                            _relay1.Write(BinaryState.High);
+                            _relay2.Write(BinaryState.Low);
+                            break;
+                        }
+
+                    case 2:
+                        {
+                            _relay1.Write(BinaryState.High);
+                            _relay2.Write(BinaryState.High);
+                            break;
+                        }
+
+                    default:
+                        {
+                            throw new NotSupportedException();
+                        }
+                }
+            }
         }
     }
 }

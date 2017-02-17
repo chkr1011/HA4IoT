@@ -4,6 +4,7 @@ using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Conditions;
 using HA4IoT.Tests.Mockups;
+using HA4IoT.Tests.Mockups.Services;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace HA4IoT.Tests.Actuators

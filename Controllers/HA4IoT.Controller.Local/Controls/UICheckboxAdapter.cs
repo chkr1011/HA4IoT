@@ -2,11 +2,12 @@
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Controller.Local.Controls
 {
-    public class UICheckBoxAdapter : IBinaryOutputComponentAdapter
+    public class UICheckBoxAdapter : IBinaryOutputAdapter
     {
         private readonly CheckBox _checkBox;
 

@@ -14,14 +14,14 @@ using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.Storage;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Notifications;
+using HA4IoT.Services;
 using HA4IoT.Services.Areas;
-using HA4IoT.Services.Automations;
 using HA4IoT.Services.Backup;
-using HA4IoT.Services.Components;
 using HA4IoT.Services.Resources;
 using HA4IoT.Services.Scheduling;
 using HA4IoT.Services.System;
 using HA4IoT.Settings;
+using HA4IoT.Tests.Mockups.Services;
 using SimpleInjector;
 
 namespace HA4IoT.Tests.Mockups
@@ -66,6 +66,11 @@ namespace HA4IoT.Tests.Mockups
         public void SetTime(TimeSpan value)
         {
             ((TestDateTimeService)GetInstance<IDateTimeService>()).SetTime(value);
+        }
+
+        public void Tick(TimeSpan elapsedTime)
+        {
+            ((TestTimerService)GetInstance<ITimerService>()).ExecuteTick(elapsedTime);
         }
     }
 }

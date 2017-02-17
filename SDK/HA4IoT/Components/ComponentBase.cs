@@ -10,7 +10,7 @@ namespace HA4IoT.Components
 {
     public abstract class ComponentBase : IComponent
     {
-        protected ComponentBase(ComponentId id)
+        protected ComponentBase(string id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
@@ -19,13 +19,18 @@ namespace HA4IoT.Components
 
         public event EventHandler<ComponentFeatureStateChangedEventArgs> StateChanged;
 
-        public ComponentId Id { get; }
+        public string Id { get; }
 
         public abstract ComponentFeatureStateCollection GetState();
 
         public abstract ComponentFeatureCollection GetFeatures();
-
+        
         public abstract void InvokeCommand(ICommand command);
+
+        protected void OnStateChanged(ComponentFeatureStateCollection oldState)
+        {
+            OnStateChanged(oldState, GetState());
+        }
 
         protected void OnStateChanged(ComponentFeatureStateCollection oldState, ComponentFeatureStateCollection newState)
         {
@@ -37,15 +42,6 @@ namespace HA4IoT.Components
         }
 
 
-
-
-
-
-
-
-
-
-
         #region OLD
 
         public virtual IList<GenericComponentState> GetSupportedStates()
@@ -55,16 +51,6 @@ namespace HA4IoT.Components
 
         public virtual void HandleApiCall(IApiContext apiContext)
         {
-        }
-
-        public virtual JToken ExportConfiguration()
-        {
-            var configuration = new JObject
-            {
-                ["Type"] = GetType().Name
-            };
-
-            return configuration;
         }
 
         public virtual JToken ExportStatus()

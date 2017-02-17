@@ -1,5 +1,5 @@
 ﻿using System;
-using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Services.System
 {
@@ -8,16 +8,28 @@ namespace HA4IoT.Services.System
         private TimeSpan _duration;
         private TimeSpan _timeLeft;
 
-        public Timeout()
+        public Timeout(ITimerService timerService)
         {
+            if (timerService == null) throw new ArgumentNullException(nameof(timerService));
+
+            timerService.Tick += (s, e) =>
+            {
+                Tick(e.ElapsedTime);
+            };
         }
 
-        public Timeout(TimeSpan defaultDuration)
+        public Timeout(ITimerService timerService, TimeSpan duration) : this(timerService)
         {
-            _duration = defaultDuration;
+            if (timerService == null) throw new ArgumentNullException(nameof(timerService));
+
+            Start(duration);
         }
+
+        public event EventHandler Elapsed; 
 
         public TimeSpan Duration => _duration;
+
+        public bool IsEnabled { get; set; } = true;
 
         public bool IsRunning => _timeLeft > TimeSpan.Zero;
 
@@ -27,27 +39,34 @@ namespace HA4IoT.Services.System
         {
             _duration = duration;
             _timeLeft = duration;
+
+            IsEnabled = true;
         }
 
         public void Restart()
         {
-            _timeLeft = _duration;
-        }
-
-        public void Tick(TimerTickEventArgs timerTickEventArgs)
-        {
-            if (timerTickEventArgs == null) throw new ArgumentNullException(nameof(timerTickEventArgs));
-
-            Tick(timerTickEventArgs.ElapsedTime);
+            Start(_duration);
         }
 
         public void Tick(TimeSpan elapsedTime)
         {
+            if (!IsEnabled || !IsRunning)
+            {
+                return;
+            }
+            
             _timeLeft -= elapsedTime;
-            if (_timeLeft < TimeSpan.Zero)
+            if (_timeLeft <= TimeSpan.Zero)
             {
                 _timeLeft = TimeSpan.Zero;
+                Elapsed?.Invoke(this, EventArgs.Empty);
             }
+        }
+
+        public void Stop()
+        {
+            IsEnabled = false;
+            _timeLeft = TimeSpan.Zero;
         }
     }
 }

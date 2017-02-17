@@ -1,10 +1,12 @@
-﻿using FluentAssertions;
+﻿using HA4IoT.Actuators.Lamps;
 using HA4IoT.Automations;
-using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Automations;
+using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Services.Daylight;
+using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
+using HA4IoT.Sensors.Buttons;
 using HA4IoT.Tests.Mockups;
+using HA4IoT.Tests.Mockups.Adapters;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace HA4IoT.Tests.Automations
@@ -16,23 +18,22 @@ namespace HA4IoT.Tests.Automations
         public void Empty_ConditionalOnAutomation()
         {
             var testController = new TestController();
-            var automation = new ConditionalOnAutomation(AutomationIdGenerator.EmptyId,
+
+            var automation = new ConditionalOnAutomation("Test",
                 testController.GetInstance<ISchedulerService>(),
                 testController.GetInstance<IDateTimeService>(),
                 testController.GetInstance<IDaylightService>());
 
-            var testButtonFactory = testController.GetInstance<TestButtonFactory>();
-            var testStateMachineFactory = new TestStateMachineFactory();
+            var buttonAdapter = new TestButtonAdapter();
+            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>());
+            var testOutput = new Lamp("Test", new TestBinaryOutputAdapter());
 
-            var testButton = testButtonFactory.CreateTestButton();
-            var testOutput = testStateMachineFactory.CreateTestStateMachineWithOnOffStates();
+            automation.WithTrigger(button.PressedShortlyTrigger);
+            automation.WithComponent(testOutput);
 
-            automation.WithTrigger(testButton.PressedShortlyTrigger);
-            automation.WithActuator(testOutput);
-            
-            testOutput.GetState().ShouldBeEquivalentTo(BinaryStateId.Off);
-            testButton.PressShortly();
-            testOutput.GetState().ShouldBeEquivalentTo(BinaryStateId.On);
+            Assert.IsTrue(testOutput.GetState().Has(PowerState.Off));
+            buttonAdapter.Touch();
+            Assert.IsTrue(testOutput.GetState().Has(PowerState.On));
         }
     }
 }

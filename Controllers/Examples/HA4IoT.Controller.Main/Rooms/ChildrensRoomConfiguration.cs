@@ -3,8 +3,8 @@ using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
-using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Automations;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services.System;
@@ -13,7 +13,6 @@ using HA4IoT.Hardware.I2CHardwareBridge;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Services.Areas;
-using HA4IoT.Services.Devices;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
@@ -73,7 +72,7 @@ namespace HA4IoT.Controller.Main.Rooms
         public void Apply()
         {
             var hsrel5 = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.ChildrensRoomHSREL5, new I2CSlaveAddress(63));
-            var input0 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input0);
+            var input0 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input0.ToString());
             var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
 
             const int SensorPin = 7;
@@ -99,7 +98,7 @@ namespace HA4IoT.Controller.Main.Rooms
             _actuatorFactory.RegisterRollerShutter(area, ChildrensRoom.RollerShutter, hsrel5[HSREL5Pin.Relay4], hsrel5[HSREL5Pin.Relay3]);
             _sensorFactory.RegisterRollerShutterButtons(area, ChildrensRoom.RollerShutterButtonUp, input0.GetInput(1), ChildrensRoom.RollerShutterButtonDown, input0.GetInput(2));
 
-            area.GetButton(ChildrensRoom.Button).PressedShortlyTrigger.Attach(area.GetLamp(ChildrensRoom.LightCeilingMiddle).TogglePowerStateAction);
+            area.GetButton(ChildrensRoom.Button).PressedShortlyTrigger.Attach(() => area.GetLamp(ChildrensRoom.LightCeilingMiddle).TryTogglePowerState());
 
             _automationFactory.RegisterRollerShutterAutomation(area, ChildrensRoom.RollerShutterAutomation)
                 .WithRollerShutters(area.GetRollerShutter(ChildrensRoom.RollerShutter));

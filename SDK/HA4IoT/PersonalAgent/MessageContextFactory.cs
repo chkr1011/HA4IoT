@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.PersonalAgent.AmazonEcho;
 using HA4IoT.Contracts.Services.Settings;
@@ -12,20 +12,20 @@ namespace HA4IoT.PersonalAgent
     public class MessageContextFactory
     {
         // TODO: Move to settings and add UI.
-        private readonly Dictionary<string, GenericComponentState> _stateSynonyms = new Dictionary<string, GenericComponentState>
+        private readonly Dictionary<string, ICommand> _commandSynonyms = new Dictionary<string, ICommand>
         {
-            { "ein", BinaryStateId.On },
-            { "an", BinaryStateId.On },
-            { "ab", BinaryStateId.Off },
-            { "aus", BinaryStateId.Off },
-            { "öffne", RollerShutterStateId.MovingUp },
-            { "auf", RollerShutterStateId.MovingUp },
-            { "hoch", RollerShutterStateId.MovingUp },
-            { "rauf", RollerShutterStateId.MovingUp },
-            { "runter", RollerShutterStateId.MovingDown },
-            { "herunter", RollerShutterStateId.MovingDown },
-            { "zu", RollerShutterStateId.MovingDown },
-            { "schließe", RollerShutterStateId.MovingDown }
+            { "ein", new TurnOnCommand() },
+            { "an", new TurnOnCommand() },
+            { "ab", new TurnOffCommand() },
+            { "aus", new TurnOffCommand() },
+            { "öffne", new MoveUpCommand() },
+            { "auf", new MoveUpCommand() },
+            { "hoch", new MoveUpCommand() },
+            { "rauf", new MoveUpCommand() },
+            { "runter", new MoveDownCommand() },
+            { "herunter", new MoveDownCommand() },
+            { "zu", new MoveDownCommand() },
+            { "schließe", new MoveDownCommand() }
         };
 
         private readonly IAreaRegistryService _areaService;
@@ -53,7 +53,7 @@ namespace HA4IoT.PersonalAgent
 
             IdentifyAreas(text);
             IdentifyComponents(text);
-            IdentifyComponentStates(text);
+            IdentifyCommands(text);
             FilterComponentIds();
 
             return _currentContext;
@@ -82,7 +82,7 @@ namespace HA4IoT.PersonalAgent
 
                 IdentifyAreas(mentionedArea);
                 IdentifyComponents(mentionedComponent);
-                IdentifyComponentStates(mentionedState);
+                IdentifyCommands(mentionedState);
 
                 var areaFound = !string.IsNullOrEmpty(mentionedArea) && _currentContext.IdentifiedAreaIds.Any();
                 if (!areaFound)
@@ -142,14 +142,14 @@ namespace HA4IoT.PersonalAgent
             }
         }
 
-        private void IdentifyComponentStates(string input)
+        private void IdentifyCommands(string input)
         {
-            foreach (var stateSynonym in _stateSynonyms)
+            foreach (var stateSynonym in _commandSynonyms)
             {
                 if (input.IndexOf(stateSynonym.Key, StringComparison.CurrentCultureIgnoreCase) > -1)
                 {
                     // TODO: Ensure that the match is not part of a word. Check EOL etc.
-                    _currentContext.IdentifiedComponentStates.Add(stateSynonym.Value);
+                    _currentContext.IdentifiedCommands.Add(stateSynonym.Value);
                 }
             }
         }

@@ -8,7 +8,7 @@ namespace HA4IoT.Sensors
     {
         private GenericComponentState _state = new GenericComponentState(null);
 
-        protected SensorBase(ComponentId id)
+        protected SensorBase(string id)
             : base(id)
         {
         }

@@ -18,17 +18,6 @@ namespace HA4IoT.Contracts.Logging
             ErrorLogged?.Invoke(null, new MessageWithExceptionLoggedEventArgs(message, exception));
         }
 
-        public static void Info(string message)
-        {
-            Instance?.Info(message);
-            InfoLogged?.Invoke(null, new MessageLoggedEventArgs(message));
-        }
-
-        public static void Verbose(string message)
-        {
-            Instance?.Verbose(message);
-        }
-
         public static void Warning(string message)
         {
             Instance?.Warning(message);
@@ -38,6 +27,17 @@ namespace HA4IoT.Contracts.Logging
         {
             Instance?.Warning(exception, message);
             WarningLogged?.Invoke(null, new MessageWithExceptionLoggedEventArgs(message, exception));
+        }
+
+        public static void Info(string message)
+        {
+            Instance?.Info(message);
+            InfoLogged?.Invoke(null, new MessageLoggedEventArgs(message));
+        }
+
+        public static void Verbose(string message)
+        {
+            Instance?.Verbose(message);
         }
     }
 }

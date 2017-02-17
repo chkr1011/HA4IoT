@@ -1,7 +1,6 @@
 ﻿using System;
-using HA4IoT.Actuators.StateMachines;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Sensors;
@@ -17,7 +16,7 @@ namespace HA4IoT.Automations
         private IStateMachine _actuator;
         private TimedAction _timeout;
 
-        public BathroomFanAutomation(AutomationId id, ISchedulerService schedulerService, ISettingsService settingsService)
+        public BathroomFanAutomation(string id, ISchedulerService schedulerService, ISettingsService settingsService)
             : base(id)
         {
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
@@ -50,7 +49,8 @@ namespace HA4IoT.Automations
         {
             _timeout = _schedulerService.In(Settings.SlowDuration).Execute(() =>
             {
-                _actuator.ChangeState(new GenericComponentState("2"));
+                // TODO: Fix
+                //_actuator.ChangeState(new GenericComponentState("2"));
                 _timeout = _schedulerService.In(Settings.FastDuration).Execute(() => _actuator.TryTurnOff());
             });
         }
@@ -63,7 +63,8 @@ namespace HA4IoT.Automations
             }
 
             _timeout?.Cancel();
-            _actuator?.ChangeState(new GenericComponentState("1"));
+            // TODO: Fix
+            //_actuator?.ChangeState(new GenericComponentState("1"));
         }
     }
 }

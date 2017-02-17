@@ -1,4 +1,5 @@
 ﻿using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 
@@ -6,7 +7,7 @@ namespace HA4IoT.Actuators.BinaryStateActuators
 {
     public class CustomBinaryStateActuator : BinaryStateActuator
     {
-        public CustomBinaryStateActuator(ComponentId id, IBinaryOutputComponentAdapter endpoint)
+        public CustomBinaryStateActuator(string id, IBinaryOutputAdapter endpoint)
             : base(id, endpoint)
         {
         }

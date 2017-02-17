@@ -6,15 +6,17 @@ namespace HA4IoT.Contracts.Areas
 {
     public interface IArea
     {
-        AreaId Id { get; }
+        string Id { get; }
 
         AreaSettings Settings { get; }
 
         void AddComponent(IComponent component);
 
-        bool ContainsComponent(ComponentId componentId);
+        bool ContainsComponent(string id);
 
-        TComponent GetComponent<TComponent>(ComponentId componentId) where TComponent : IComponent;
+        IComponent GetComponent(string id);
+
+        TComponent GetComponent<TComponent>(string id) where TComponent : IComponent;
 
         TComponent GetComponent<TComponent>() where TComponent : IComponent;
 

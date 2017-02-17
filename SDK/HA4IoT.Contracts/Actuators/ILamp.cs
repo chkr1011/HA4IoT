@@ -1,9 +1,8 @@
-﻿using HA4IoT.Contracts.Core;
+﻿using HA4IoT.Contracts.Components;
 
 namespace HA4IoT.Contracts.Actuators
 {
-    public interface ILamp : IActuator
+    public interface ILamp : IComponent
     {
-        IAction TogglePowerStateAction { get; }
     }
 }

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using HA4IoT.Contracts.Areas;
-using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Commands;
 
 namespace HA4IoT.PersonalAgent
 {
@@ -16,13 +15,13 @@ namespace HA4IoT.PersonalAgent
 
         public Dictionary<string, string> Slots { get; } = new Dictionary<string, string>();
 
-        public HashSet<ComponentId> IdentifiedComponentIds { get; } = new HashSet<ComponentId>();
+        public HashSet<string> IdentifiedComponentIds { get; } = new HashSet<string>();
 
-        public HashSet<GenericComponentState> IdentifiedComponentStates { get; } = new HashSet<GenericComponentState>();
+        public HashSet<ICommand> IdentifiedCommands { get; } = new HashSet<ICommand>();
 
-        public HashSet<ComponentId> AffectedComponentIds { get; } = new HashSet<ComponentId>();
+        public HashSet<string> AffectedComponentIds { get; } = new HashSet<string>();
 
-        public HashSet<AreaId> IdentifiedAreaIds { get; } = new HashSet<AreaId>();
+        public HashSet<string> IdentifiedAreaIds { get; } = new HashSet<string>();
 
         public string Answer { get; set; }
 

@@ -28,7 +28,7 @@ namespace HA4IoT.Sensors.HumiditySensors
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
 
-            return area.GetComponent<IHumiditySensor>(ComponentIdGenerator.Generate(area.Id, id));
+            return area.GetComponent<IHumiditySensor>($"{area.Id}.{id}");
         }
     }
 }

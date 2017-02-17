@@ -11,14 +11,14 @@ using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Actuators.Fans
 {
-    public class Fan : ActuatorBase, IFan
+    public class Fan : ComponentBase, IFan
     {
         private readonly object _syncRoot = new object();
         private readonly IFanAdapter _adapter;
 
         private int _currentLevel;
 
-        public Fan(ComponentId id, IFanAdapter adapter) : base(id)
+        public Fan(string id, IFanAdapter adapter) : base(id)
         {
             if (adapter == null) throw new ArgumentNullException(nameof(adapter));
 
@@ -64,12 +64,7 @@ namespace HA4IoT.Actuators.Fans
             commandInvoker.Invoke(command);
         }
 
-        public override void ChangeState(IComponentFeatureState state, params IHardwareParameter[] parameters)
-        {
-            // TODO: Delete!
-        }
-
-        public override void ResetState()
+        public void ResetState()
         {
             SetLevelInternal(0, true);
         }

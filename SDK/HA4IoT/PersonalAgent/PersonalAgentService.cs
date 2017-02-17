@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using HA4IoT.Components;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.PersonalAgent;
@@ -73,14 +72,14 @@ namespace HA4IoT.PersonalAgent
         [ApiMethod]
         public void Ask(IApiContext apiContext)
         {
-            var text = (string)apiContext.Parameter["Message"];
+            var text = (string) apiContext.Parameter["Message"];
             if (string.IsNullOrEmpty(text))
             {
                 apiContext.ResultCode = ApiResultCode.InvalidParameter;
                 return;
             }
 
-            apiContext.Result["Answer"] = ProcessTextMessage(text); ;
+            apiContext.Result["Answer"] = ProcessTextMessage(text);
         }
 
         public string ProcessTextMessage(string text)
@@ -106,7 +105,7 @@ namespace HA4IoT.PersonalAgent
         }
 
         private void ProcessMessage(MessageContext messageContext)
-        { 
+        {
             try
             {
                 _latestMessageContext = messageContext;
@@ -114,7 +113,8 @@ namespace HA4IoT.PersonalAgent
             }
             catch (Exception exception)
             {
-                messageContext.Answer = $"{Emoji.Scream} Mist! Da ist etwas total schief gelaufen! Bitte stelle mir nie wieder solche Fragen!";
+                messageContext.Answer =
+                    $"{Emoji.Scream} Mist! Da ist etwas total schief gelaufen! Bitte stelle mir nie wieder solche Fragen!";
                 Log.Error(exception, $"Error while processing message '{messageContext.Text}'.");
             }
         }
@@ -145,7 +145,8 @@ namespace HA4IoT.PersonalAgent
             {
                 if (messageContext.IdentifiedComponentIds.Count > 0)
                 {
-                    return $"{Emoji.Confused} Mit so vielen Anfragen kann ich nicht umgehen. Bitte nenne mir nur eine eindeutige Komponente.";
+                    return
+                        $"{Emoji.Confused} Mit so vielen Anfragen kann ich nicht umgehen. Bitte nenne mir nur eine eindeutige Komponente.";
                 }
 
                 return $"{Emoji.Confused} Du musst mir schon einen Sensor oder Aktor nennen.";
@@ -160,40 +161,39 @@ namespace HA4IoT.PersonalAgent
             {
                 var component = _componentsRegistry.GetComponent<IComponent>(messageContext.AffectedComponentIds.First());
 
-                var actuator = component as IActuator;
-                if (actuator != null)
-                {
-                    return UpdateActuatorState(actuator, messageContext);
-                }
-
                 var sensor = component as ISensor;
                 if (sensor != null)
                 {
                     return GetSensorStatus(sensor);
                 }
+
+                return InvokeCommand(component, messageContext);
             }
 
             return $"{Emoji.Confused} Das habe ich leider nicht verstanden. Bitte stelle Deine Anfrage präziser.";
         }
 
-        private string UpdateActuatorState(IActuator actuator, MessageContext messageContext)
+        private string InvokeCommand(IComponent component, MessageContext messageContext)
         {
-            if (messageContext.IdentifiedComponentStates.Count == 0)
+            if (messageContext.IdentifiedCommands.Count == 0)
             {
                 return $"{Emoji.Confused} Was soll ich damit machen?";
             }
 
-            if (messageContext.IdentifiedComponentStates.Count > 1)
+            if (messageContext.IdentifiedCommands.Count > 1)
             {
                 return $"{Emoji.Confused} Das was du möchtest ist nicht eindeutig.";
             }
 
-            if (!actuator.SupportsState(messageContext.IdentifiedComponentStates.First()))
+            try
             {
-                return $"{Emoji.Hushed} Das wird nicht funktionieren.";
+                component.InvokeCommand(messageContext.IdentifiedCommands.First());
             }
-
-            actuator.ChangeState(messageContext.IdentifiedComponentStates.First());
+            catch (CommandNotSupportedException)
+            {
+                return $"{Emoji.Confused} Das was du möchtest hat nicht funktioniert.";
+            }
+            
             return $"{Emoji.ThumbsUp} Habe ich erledigt.";
         }
 

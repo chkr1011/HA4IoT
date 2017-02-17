@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
@@ -12,7 +10,7 @@ namespace HA4IoT.Sensors.TemperatureSensors
 {
     public class TemperatureSensor : SensorBase, ITemperatureSensor
     {
-        public TemperatureSensor(ComponentId id, ISettingsService settingsService, ISensorAdapter endpoint)
+        public TemperatureSensor(string id, ISettingsService settingsService, ISensorAdapter endpoint)
             : base(id)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
@@ -38,7 +36,7 @@ namespace HA4IoT.Sensors.TemperatureSensors
 
         public float GetCurrentHumidity()
         {
-            return GetState().Get<TemperatureState>().Value ?? 0;
+            return GetState().Extract<TemperatureState>().Value ?? 0;
         }
 
         public override ComponentFeatureCollection GetFeatures()

@@ -8,6 +8,11 @@ namespace HA4IoT.Components
     {
         private readonly Dictionary<Type, ICommandInvokerAction> _actions = new Dictionary<Type, ICommandInvokerAction>();
 
+        public void Register<TCommand>() where TCommand : ICommand
+        {
+            _actions.Add(typeof(TCommand), new CommandInvokerAction<TCommand>(c => {}));
+        }
+
         public void Register<TCommand>(Action<TCommand> callback) where TCommand : ICommand
         {
             if (callback == null) throw new ArgumentNullException(nameof(callback));

@@ -6,14 +6,14 @@ namespace HA4IoT.Automations
 {
     public abstract class AutomationBase : IAutomation
     {
-        protected AutomationBase(AutomationId id)
+        protected AutomationBase(string id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
             Id = id;
         }
 
-        public AutomationId Id { get; }
+        public string Id { get; }
         
         public virtual JObject ExportStatusToJsonObject()
         {

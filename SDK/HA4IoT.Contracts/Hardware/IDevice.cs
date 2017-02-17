@@ -2,6 +2,6 @@
 {
     public interface IDevice
     {
-        DeviceId Id { get; }
+        string Id { get; }
     }
 }

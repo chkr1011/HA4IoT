@@ -1,26 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Actuators.StateMachines
 {
-    public class StateMachine : ActuatorBase, IStateMachine
+    public class StateMachine : ComponentBase, IStateMachine
     {
-        private readonly Dictionary<IComponentFeatureState, IComponentFeatureState> _stateAlias = new Dictionary<IComponentFeatureState, IComponentFeatureState>();
-        private readonly List<IStateMachineState> _states = new List<IStateMachineState>();
+        private readonly Dictionary<string, IStateMachineState> _states = new Dictionary<string, IStateMachineState>();
 
         private IStateMachineState _activeState;
         private bool _turnOffIfStateIsAppliedTwice;
 
-        public StateMachine(ComponentId id)
-            : base(id)
+        public StateMachine(string id) : base(id)
         {
         }
+
+        override 
+
+
+
 
         public bool SupportsState(IComponentFeatureState stateId)
         {
@@ -39,7 +42,7 @@ namespace HA4IoT.Actuators.StateMachines
             return _states.Any(s => s.Id.Equals(stateId));
         }
 
-        public override void ChangeState(IComponentFeatureState id, params IHardwareParameter[] parameters)
+        public void ChangeState(string id, params IHardwareParameter[] parameters)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
@@ -74,7 +77,7 @@ namespace HA4IoT.Actuators.StateMachines
             OnActiveStateChanged(oldState, newState);
         }
 
-        public override void ResetState()
+        public void ResetState()
         {
             if (SupportsState(BinaryStateId.Off))
             {
@@ -109,22 +112,6 @@ namespace HA4IoT.Actuators.StateMachines
             
         }
 
-        public GenericComponentState GetNextState(IComponentFeatureState stateId)
-        {
-            if (stateId == null) throw new ArgumentNullException(nameof(stateId));
-
-            ThrowIfStateNotSupported(stateId);
-
-            IStateMachineState startState = GetState(stateId);
-
-            int indexOfStartState = _states.IndexOf(startState);
-            if (indexOfStartState == _states.Count - 1)
-            {
-                return _states.First().Id;
-            }
-
-            return _states[indexOfStartState + 1].Id;
-        }
 
         public StateMachine WithTurnOffIfStateIsAppliedTwice()
         {
@@ -132,7 +119,7 @@ namespace HA4IoT.Actuators.StateMachines
             return this;
         }
 
-        public void SetInitialState(GenericComponentState id)
+        public void SetInitialState(string id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
@@ -143,46 +130,11 @@ namespace HA4IoT.Actuators.StateMachines
         {
             if (state == null) throw new ArgumentNullException(nameof(state));
 
-            if (SupportsState(state.Id))
-            {
-                throw new InvalidOperationException($"State '{state.Id}' already added.");
-            }
-
-            _states.Add(state);
+            _states.Add(state.Id, state);
         }
 
-        public override void HandleApiCall(IApiContext apiContext)
-        {
-            var request = apiContext.Parameter.ToObject<ApiCallRequest>();
 
-            if (!string.IsNullOrEmpty(request.Action))
-            {
-                // TODO: Check whether required.
-                ////if (request.Action == "nextState")
-                ////{
-                ////    ChangeState(GetNextState(GetState().First()));
-                ////}
 
-                return;
-            }
-
-            if (!string.IsNullOrEmpty(request.State))
-            {
-                var stateId = new GenericComponentState(request.State);
-                if (!SupportsState(stateId))
-                {
-                    apiContext.ResultCode = ApiResultCode.InvalidParameter;
-                    apiContext.Result["Message"] = "State ID not supported.";
-                }
-
-                ChangeState(stateId);
-            }
-        }
-
-        public override IList<GenericComponentState> GetSupportedStates()
-        {
-            return _states.Select(s => s.Id).ToList();
-        }
 
         private IStateMachineState GetState(IComponentFeatureState id)
         {

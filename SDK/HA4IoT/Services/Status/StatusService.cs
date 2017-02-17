@@ -69,7 +69,7 @@ namespace HA4IoT.Services.Status
         {
             var actuatorStatusList = new List<ActuatorStatus>();
 
-            var actuators = _componentRegistry.GetComponents<IActuator>();
+            var actuators = _componentRegistry.GetComponents();
             foreach (var actuator in actuators)
             {
                 if (actuator.GetState().Equals(BinaryStateId.Off))

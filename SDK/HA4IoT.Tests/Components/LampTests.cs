@@ -3,6 +3,7 @@ using HA4IoT.Components;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Components.States;
 using HA4IoT.Tests.Mockups;
+using HA4IoT.Tests.Mockups.Adapters;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace HA4IoT.Tests.Components
@@ -13,8 +14,8 @@ namespace HA4IoT.Tests.Components
         [TestMethod]
         public void Lamp_Reset()
         {
-            var adapter = new TestBinaryStateAdapter();
-            var lamp = new Lamp(new ComponentId("Test"), adapter);
+            var adapter = new TestBinaryOutputAdapter();
+            var lamp = new Lamp("Test", adapter);
             lamp.ResetState();
 
             Assert.AreEqual(0, adapter.TurnOnCalledCount);
@@ -25,8 +26,8 @@ namespace HA4IoT.Tests.Components
         [TestMethod]
         public void Lamp_TurnOn()
         {
-            var adapter = new TestBinaryStateAdapter();
-            var lamp = new Lamp(new ComponentId("Test"), adapter);
+            var adapter = new TestBinaryOutputAdapter();
+            var lamp = new Lamp("Test", adapter);
             lamp.ResetState();
 
             Assert.AreEqual(0, adapter.TurnOnCalledCount);
@@ -43,21 +44,21 @@ namespace HA4IoT.Tests.Components
         [TestMethod]
         public void Lamp_Toggle()
         {
-            var adapter = new TestBinaryStateAdapter();
-            var lamp = new Lamp(new ComponentId("Test"), adapter);
+            var adapter = new TestBinaryOutputAdapter();
+            var lamp = new Lamp("Test", adapter);
             lamp.ResetState();
 
             Assert.AreEqual(0, adapter.TurnOnCalledCount);
             Assert.AreEqual(1, adapter.TurnOffCalledCount);
             Assert.AreEqual(true, lamp.GetState().Has(PowerState.Off));
 
-            lamp.TogglePowerStateAction.Execute();
+            lamp.TryTogglePowerState();
 
             Assert.AreEqual(1, adapter.TurnOnCalledCount);
             Assert.AreEqual(1, adapter.TurnOffCalledCount);
             Assert.AreEqual(true, lamp.GetState().Has(PowerState.On));
 
-            lamp.TogglePowerStateAction.Execute();
+            lamp.TryTogglePowerState();
 
             Assert.AreEqual(1, adapter.TurnOnCalledCount);
             Assert.AreEqual(2, adapter.TurnOffCalledCount);

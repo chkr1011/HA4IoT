@@ -4,6 +4,7 @@ using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Automations;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services.System;
@@ -13,7 +14,6 @@ using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Services.Areas;
-using HA4IoT.Services.Devices;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
@@ -83,9 +83,9 @@ namespace HA4IoT.Controller.Main.Rooms
             var hsrel5 = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.KitchenHSREL5, new I2CSlaveAddress(58));
             var hspe8 = _ccToolsBoardService.RegisterHSPE8OutputOnly(InstalledDevice.KitchenHSPE8, new I2CSlaveAddress(39));
 
-            var input0 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input0);
-            var input1 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input1);
-            var input2 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input2);
+            var input0 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input0.ToString());
+            var input1 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input1.ToString());
+            var input2 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input2.ToString());
             var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
 
             const int SensorPin = 11;
@@ -116,8 +116,8 @@ namespace HA4IoT.Controller.Main.Rooms
             _sensorFactory.RegisterRollerShutterButtons(area, Kitchen.RollerShutterButtonUp, input2.GetInput(15),
                 Kitchen.RollerShutterButtonDown, input2.GetInput(14));
 
-            area.GetButton(Kitchen.ButtonKitchenette).PressedShortlyTrigger.Attach(area.GetLamp(Kitchen.LightCeilingMiddle).TogglePowerStateAction);
-            area.GetButton(Kitchen.ButtonPassage).PressedShortlyTrigger.Attach(area.GetLamp(Kitchen.LightCeilingMiddle).TogglePowerStateAction);
+            area.GetButton(Kitchen.ButtonKitchenette).PressedShortlyTrigger.Attach(() => area.GetLamp(Kitchen.LightCeilingMiddle).TryTogglePowerState());
+            area.GetButton(Kitchen.ButtonPassage).PressedShortlyTrigger.Attach(() => area.GetLamp(Kitchen.LightCeilingMiddle).TryTogglePowerState());
 
             _automationFactory.RegisterRollerShutterAutomation(area, Kitchen.RollerShutterAutomation)
                 .WithRollerShutters(area.GetRollerShutter(Kitchen.RollerShutter));
@@ -132,7 +132,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             _automationFactory.RegisterTurnOnAndOffAutomation(area, Kitchen.CombinedAutomaticLightsAutomation)
                 .WithTrigger(area.GetMotionDetector(Kitchen.MotionDetector))
-                .WithTarget(area.GetActuator(Kitchen.CombinedAutomaticLights))
+                .WithTarget(area.GetComponent(Kitchen.CombinedAutomaticLights.ToString()))
                 .WithEnabledAtNight();
         }
     }

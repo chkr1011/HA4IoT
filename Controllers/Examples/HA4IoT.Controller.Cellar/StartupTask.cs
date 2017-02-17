@@ -110,14 +110,14 @@ namespace HA4IoT.Controller.Cellar
                 _actuatorFactory.RegisterLamp(garden, Garden.LampTap, hsrt16[HSRT16Pin.Relay13]);
                 _actuatorFactory.RegisterLamp(garden, Garden.LampGarage, hsrt16[HSRT16Pin.Relay14]);
                 _actuatorFactory.RegisterLamp(garden, Garden.LampTerrace, hsrt16[HSRT16Pin.Relay15]);
-                _actuatorFactory.RegisterStateMachine(garden, Garden.StateMachine, InitializeStateMachine);
+                //_actuatorFactory.RegisterStateMachine(garden, Garden.StateMachine, InitializeStateMachine);
 
                 _sensorFactory.RegisterButton(garden, Garden.Button, _pi2GpioService.GetInput(4).WithInvertedState());
 
                 garden.GetStateMachine(Garden.StateMachine).ConnectMoveNextAndToggleOffWith(garden.GetButton(Garden.Button));
 
                 _automationFactory.RegisterConditionalOnAutomation(garden, Garden.LampParkingLotAutomation)
-                    .WithActuator(garden.GetLamp(Garden.LampParkingLot))
+                    .WithComponent(garden.GetLamp(Garden.LampParkingLot))
                     .WithOnAtNightRange()
                     .WithOffBetweenRange(TimeSpan.Parse("22:30:00"), TimeSpan.Parse("05:00:00"));
 

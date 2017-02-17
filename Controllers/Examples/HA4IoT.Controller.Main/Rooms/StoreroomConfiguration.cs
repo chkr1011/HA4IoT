@@ -11,7 +11,6 @@ using HA4IoT.Hardware.CCTools;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Services.Areas;
-using HA4IoT.Services.Devices;
 
 namespace HA4IoT.Controller.Main.Rooms
 {
@@ -74,8 +73,8 @@ namespace HA4IoT.Controller.Main.Rooms
             var hsrel8LowerHeatingValves = _ccToolsBoardService.RegisterHSREL8(InstalledDevice.LowerHeatingValvesHSREL8, new I2CSlaveAddress(16));
             var hsrel5UpperHeatingValves = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.UpperHeatingValvesHSREL5, new I2CSlaveAddress(56));
 
-            var hsrel5Stairway = _deviceService.GetDevice<HSREL5>(InstalledDevice.StairwayHSREL5);
-            var input3 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input3);
+            var hsrel5Stairway = _deviceService.GetDevice<HSREL5>(InstalledDevice.StairwayHSREL5.ToString());
+            var input3 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input3.ToString());
 
             var room = _areaService.RegisterArea(Room.Storeroom);
 

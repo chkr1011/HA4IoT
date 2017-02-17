@@ -1,15 +1,8 @@
-﻿using HA4IoT.Contracts.Core;
+﻿using HA4IoT.Contracts.Components;
 
 namespace HA4IoT.Contracts.Actuators
 {
-    public interface IRollerShutter : IActuator
+    public interface IRollerShutter : IComponent
     {
-        bool IsClosed { get; }
-
-        IAction GetTurnOffAction();
-
-        IAction GetStartMoveUpAction();
-
-        IAction GetStartMoveDownAction();
     }
 }

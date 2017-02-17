@@ -7,7 +7,7 @@ namespace HA4IoT.Hardware.CCTools
 {
     public class HSPE8OutputOnly : CCToolsBoardBase, IBinaryOutputController
     {
-        public HSPE8OutputOnly(DeviceId id, I2CSlaveAddress address, II2CBusService bus)
+        public HSPE8OutputOnly(string id, I2CSlaveAddress address, II2CBusService bus)
             : base(id, new PCF8574Driver(address, bus))
         {
             FetchState();

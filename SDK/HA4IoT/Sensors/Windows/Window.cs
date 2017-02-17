@@ -17,7 +17,7 @@ namespace HA4IoT.Sensors.Windows
         private readonly Trigger _openedTrigger = new Trigger();
         private readonly Trigger _closedTrigger = new Trigger();
 
-        public Window(ComponentId id, ISettingsService settingsService)
+        public Window(string id, ISettingsService settingsService)
             : base(id)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
@@ -90,21 +90,6 @@ namespace HA4IoT.Sensors.Windows
         public override IList<GenericComponentState> GetSupportedStates()
         {
             return new List<GenericComponentState> { CasementStateId.Closed, CasementStateId.Tilt, CasementStateId.Open };
-        }
-
-        public override JToken ExportConfiguration()
-        {
-            var configuration = base.ExportConfiguration();
-
-            var casements = new JArray();
-            foreach (var casement in Casements)
-            {
-                casements.Add(casement.Id);
-            }
-
-            configuration["Casements"] = casements;
-
-            return configuration;
         }
 
         private void OnCasementStateChanged()

@@ -57,7 +57,7 @@ namespace HA4IoT.Automations
 
             var automation =
                 new ConditionalOnAutomation(
-                    AutomationIdGenerator.Generate(area, id),
+                    $"{area.Id}.{id}",
                     _schedulerService,
                     _dateTimeService,
                     _daylightService);
@@ -72,7 +72,7 @@ namespace HA4IoT.Automations
             if (area == null) throw new ArgumentNullException(nameof(area));
 
             var automation = new RollerShutterAutomation(
-                AutomationIdGenerator.Generate(area, id),
+                $"{area.Id}.{id}",
                 _notificationService,
                 _schedulerService,
                 _dateTimeService,
@@ -93,7 +93,7 @@ namespace HA4IoT.Automations
 
             var automation =
                 new FlipFlopAutomation(
-                    AutomationIdGenerator.Generate(area, id),
+                    $"{area.Id}.{id}",
                     _dateTimeService,
                     _schedulerService,
                     _settingsService,
