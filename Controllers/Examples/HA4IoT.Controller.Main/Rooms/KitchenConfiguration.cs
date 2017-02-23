@@ -125,10 +125,10 @@ namespace HA4IoT.Controller.Main.Rooms
             area.GetRollerShutter(Kitchen.RollerShutter).ConnectWith(
                 area.GetButton(Kitchen.RollerShutterButtonUp), area.GetButton(Kitchen.RollerShutterButtonDown));
 
-            _actuatorFactory.RegisterLogicalActuator(area, Kitchen.CombinedAutomaticLights)
-                .WithActuator(area.GetLamp(Kitchen.LightCeilingWall))
-                .WithActuator(area.GetLamp(Kitchen.LightCeilingDoor))
-                .WithActuator(area.GetLamp(Kitchen.LightCeilingWindow));
+            _actuatorFactory.RegisterLogicalComponent(area, Kitchen.CombinedAutomaticLights)
+                .WithComponent(area.GetLamp(Kitchen.LightCeilingWall))
+                .WithComponent(area.GetLamp(Kitchen.LightCeilingDoor))
+                .WithComponent(area.GetLamp(Kitchen.LightCeilingWindow));
 
             _automationFactory.RegisterTurnOnAndOffAutomation(area, Kitchen.CombinedAutomaticLightsAutomation)
                 .WithTrigger(area.GetMotionDetector(Kitchen.MotionDetector))

@@ -1,11 +1,13 @@
-﻿using HA4IoT.Contracts.Triggers;
+﻿using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Contracts.Sensors
 {
-    public interface IMotionDetector : ISensor
+    public interface IMotionDetector : IComponent
     {
         IMotionDetectorSettings Settings { get; }
-        ITrigger GetMotionDetectedTrigger();
-        ITrigger GetDetectionCompletedTrigger();
+
+        ITrigger MotionDetectedTrigger { get; }
+        ITrigger MotionDetectionCompletedTrigger { get; }
     }
 }

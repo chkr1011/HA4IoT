@@ -2,7 +2,6 @@
 using HA4IoT.Adapters;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Areas;
-using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services.Settings;
@@ -32,23 +31,23 @@ namespace HA4IoT.Sensors
             _settingsService = settingsService;
         }
 
-        public ITemperatureSensor RegisterTemperatureSensor(IArea area, Enum id, ISensorAdapter endpoint)
+        public ITemperatureSensor RegisterTemperatureSensor(IArea area, Enum id, INumericSensorAdapter adapter)
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
-            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
+            if (adapter == null) throw new ArgumentNullException(nameof(adapter));
 
-            var temperatureSensor = new TemperatureSensor($"{area.Id}.{id}", _settingsService, endpoint);
+            var temperatureSensor = new TemperatureSensor($"{area.Id}.{id}", adapter, _settingsService);
             area.AddComponent(temperatureSensor);
             
             return temperatureSensor;
         }
 
-        public IHumiditySensor RegisterHumiditySensor(IArea area, Enum id, ISensorAdapter endpoint)
+        public IHumiditySensor RegisterHumiditySensor(IArea area, Enum id, INumericSensorAdapter adapter)
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
-            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
+            if (adapter == null) throw new ArgumentNullException(nameof(adapter));
 
-            var humditySensor = new HumiditySensor($"{area.Id}.{id}", _settingsService, endpoint);
+            var humditySensor = new HumiditySensor($"{area.Id}.{id}", adapter, _settingsService);
             area.AddComponent(humditySensor);
 
             return humditySensor;
@@ -117,7 +116,7 @@ namespace HA4IoT.Sensors
 
             var motionDetector = new MotionDetector(
                 $"{area.Id}.{id}",
-                new PortBasedMotionDetectorEndpoint(input),
+                new PortBasedMotionDetectorAdapter(input),
                 _schedulerService,
                 _settingsService);
 

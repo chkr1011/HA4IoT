@@ -5,18 +5,18 @@ using HA4IoT.Contracts.Sensors;
 
 namespace HA4IoT.Sensors.MotionDetectors
 {
-    public class PortBasedMotionDetectorEndpoint : IMotionDetectorAdapter
+    public class PortBasedMotionDetectorAdapter : IMotionDetectorAdapter
     {
-        public PortBasedMotionDetectorEndpoint(IBinaryInput input)
+        public PortBasedMotionDetectorAdapter(IBinaryInput input)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
 
             input.StateChanged += DispatchEvents;
         }
 
-        public event EventHandler MotionDetected;
+        public event EventHandler MotionDetectionBegin;
 
-        public event EventHandler MotionDetectionCompleted;
+        public event EventHandler MotionDetectionEnd;
 
         private void DispatchEvents(object sender, BinaryStateChangedEventArgs eventArgs)
         {
@@ -24,11 +24,11 @@ namespace HA4IoT.Sensors.MotionDetectors
             // The signal is set to false if motion is detected.
             if (eventArgs.NewState == BinaryState.Low)
             {
-                MotionDetected?.Invoke(this, EventArgs.Empty);
+                MotionDetectionBegin?.Invoke(this, EventArgs.Empty);
             }
             else
             {
-                MotionDetectionCompleted?.Invoke(this, EventArgs.Empty);
+                MotionDetectionEnd?.Invoke(this, EventArgs.Empty);
             }
         }
     }

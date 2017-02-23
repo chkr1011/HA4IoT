@@ -161,11 +161,12 @@ namespace HA4IoT.Controller.Main.Rooms
             area.GetRollerShutter(Bedroom.RollerShutterRight)
                 .ConnectWith(area.GetButton(Bedroom.RollerShutterButtonsLowerUp), area.GetButton(Bedroom.RollerShutterButtonsLowerDown));
 
-            _actuatorFactory.RegisterLogicalActuator(area, Bedroom.CombinedCeilingLights)
-                .WithActuator(area.GetLamp(Bedroom.LightCeilingWall))
-                .WithActuator(area.GetLamp(Bedroom.LightCeilingWindow))
-                .ConnectToggleActionWith(area.GetButton(Bedroom.ButtonDoor))
-                .ConnectToggleActionWith(area.GetButton(Bedroom.ButtonWindowUpper));
+            var ceilingLights = _actuatorFactory.RegisterLogicalComponent(area, Bedroom.CombinedCeilingLights)
+                .WithComponent(area.GetLamp(Bedroom.LightCeilingWall))
+                .WithComponent(area.GetLamp(Bedroom.LightCeilingWindow));
+
+            area.GetButton(Bedroom.ButtonDoor).PressedShortlyTrigger.Attach(() => ceilingLights.TryTogglePowerState());
+            area.GetButton(Bedroom.ButtonWindowUpper).PressedShortlyTrigger.Attach(() => ceilingLights.TryTogglePowerState());
 
             area.GetButton(Bedroom.ButtonDoor).PressedLongTrigger.Attach(() =>
             {

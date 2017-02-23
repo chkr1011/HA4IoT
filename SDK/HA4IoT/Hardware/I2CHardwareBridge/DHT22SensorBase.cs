@@ -3,7 +3,7 @@ using HA4IoT.Contracts.Adapters;
 
 namespace HA4IoT.Hardware.I2CHardwareBridge
 {
-    public abstract class DHT22SensorBase : ISensorAdapter
+    public abstract class DHT22SensorBase : INumericSensorAdapter
     {
         private readonly int _id;
         private readonly DHT22Accessor _dht22Accessor;
@@ -18,12 +18,12 @@ namespace HA4IoT.Hardware.I2CHardwareBridge
             dht22Accessor.ValuesUpdated += (s, e) => UpdateValue();
         }
 
-        public event EventHandler<SensorAdapterValueChangedEventArgs> ValueChanged;
+        public event EventHandler<NumericSensorAdapterValueChangedEventArgs> ValueChanged;
 
         private void UpdateValue()
         {
             _value = GetValueInternal((byte)_id, _dht22Accessor);
-            ValueChanged?.Invoke(this, new SensorAdapterValueChangedEventArgs(_value));
+            ValueChanged?.Invoke(this, new NumericSensorAdapterValueChangedEventArgs(_value));
         }
 
         protected abstract float GetValueInternal(int sensorId, DHT22Accessor dht22Accessor);

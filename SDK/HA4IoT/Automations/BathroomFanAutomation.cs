@@ -1,7 +1,6 @@
 ﻿using System;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services.Settings;
@@ -13,15 +12,17 @@ namespace HA4IoT.Automations
     {
         private readonly ISchedulerService _schedulerService;
         
-        private IStateMachine _actuator;
+        private readonly IFan _fan;
         private TimedAction _timeout;
 
-        public BathroomFanAutomation(string id, ISchedulerService schedulerService, ISettingsService settingsService)
+        public BathroomFanAutomation(string id, IFan fan, ISchedulerService schedulerService, ISettingsService settingsService)
             : base(id)
         {
+            if (fan == null) throw new ArgumentNullException(nameof(fan));
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
+            _fan = fan;
             _schedulerService = schedulerService;
 
             settingsService.CreateSettingsMonitor<BathroomFanAutomationSettings>(Id, s => Settings = s);
@@ -33,25 +34,18 @@ namespace HA4IoT.Automations
         {
             if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
 
-            motionDetector.GetMotionDetectedTrigger().Triggered += TurnOn;
-            motionDetector.GetDetectionCompletedTrigger().Triggered += StartTimeout;
+            motionDetector.MotionDetectedTrigger.Triggered += TurnOn;
+            motionDetector.MotionDetectionCompletedTrigger.Triggered += StartTimeout;
 
             return this;
         }
 
-        public BathroomFanAutomation WithActuator(IStateMachine actuator)
-        {
-            _actuator = actuator;
-            return this;
-        }
-        
         private void StartTimeout(object sender, EventArgs e)
         {
             _timeout = _schedulerService.In(Settings.SlowDuration).Execute(() =>
             {
-                // TODO: Fix
-                //_actuator.ChangeState(new GenericComponentState("2"));
-                _timeout = _schedulerService.In(Settings.FastDuration).Execute(() => _actuator.TryTurnOff());
+                _fan.TrySetLevel(2);
+                _timeout = _schedulerService.In(Settings.FastDuration).Execute(() => _fan.TryTurnOff());
             });
         }
 
@@ -63,8 +57,7 @@ namespace HA4IoT.Automations
             }
 
             _timeout?.Cancel();
-            // TODO: Fix
-            //_actuator?.ChangeState(new GenericComponentState("1"));
+            _fan.TrySetLevel(1);
         }
     }
 }

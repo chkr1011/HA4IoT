@@ -1,10 +1,10 @@
 ﻿using System;
-using HA4IoT.Actuators.BinaryStateActuators;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Adapters;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
@@ -35,8 +35,6 @@ namespace HA4IoT.Actuators
             var stateMachine = new StateMachine($"{area.Id}.{id}");
 
             initializer(stateMachine, area);
-            stateMachine.SetInitialState(BinaryStateId.Off);
-
             area.AddComponent(stateMachine);
             return stateMachine;
         }
@@ -49,7 +47,7 @@ namespace HA4IoT.Actuators
 
             var rollerShutter = new RollerShutter(
                 $"{area.Id}.{id}",
-                new PortBasedRollerShutterEndpoint(powerOutput, directionOutput),
+                new PortBasedRollerShutterAdapter(powerOutput, directionOutput), 
                 _timerService,
                 _settingsService);
 
@@ -80,14 +78,14 @@ namespace HA4IoT.Actuators
             return lamp;
         }
 
-        public LogicalBinaryStateActuator RegisterLogicalActuator(IArea area, Enum id)
+        public LogicalComponent RegisterLogicalComponent(IArea area, Enum id)
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
 
-            var actuator = new LogicalBinaryStateActuator($"{area.Id}.{id}", _timerService);
-            area.AddComponent(actuator);
+            var component = new LogicalComponent($"{area.Id}.{id}");
+            area.AddComponent(component);
 
-            return actuator;
+            return component;
         }
     }
 }

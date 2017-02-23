@@ -100,6 +100,7 @@
   <ItemGroup>
     <Compile Include="Components\ButtonTests.cs" />
     <Compile Include="Components\FanTests.cs" />
+    <Compile Include="Components\MotionDetectorTests.cs" />
     <Compile Include="Components\SocketTests.cs" />
     <Compile Include="Actuators\AutomaticTurnOnAndOffAutomationTests.cs" />
     <Compile Include="Actuators\ConditionsValidatorTests.cs" />
@@ -113,9 +114,8 @@
     <Compile Include="Automations\AutomationTests.cs" />
     <Compile Include="Automations\ConditionalOnAutomationTests.cs" />
     <Compile Include="Automations\RollerShutterAutomationTests.cs" />
-    <Compile Include="Components\ComponentStateTests.cs" />
     <Compile Include="Components\LampTests.cs" />
-    <Compile Include="Components\SerializationTests.cs" />
+    <Compile Include="Components\TemperatureSensorTests.cs" />
     <Compile Include="Hardware\CCTools\CCToolsTests.cs" />
     <Compile Include="Hardware\RemoteSwitch\BrennenstuhlCodeSequenceProviderTests.cs" />
     <Compile Include="Mockups\Adapters\TestBinaryOutputAdapter.cs" />
@@ -125,23 +125,19 @@
     <Compile Include="Mockups\Services\TestDaylightService.cs" />
     <Compile Include="Mockups\Adapters\TestFanAdapter.cs" />
     <Compile Include="Mockups\TestHomeAutomationTimer.cs" />
-    <Compile Include="Mockups\TestHumiditySensor.cs" />
     <Compile Include="Mockups\Services\TestI2CBusService.cs" />
     <Compile Include="Mockups\TestI2CDevice.cs" />
     <Compile Include="Mockups\TestInboundMessage.cs" />
     <Compile Include="Mockups\TestInputPort.cs" />
     <Compile Include="Mockups\TestLogger.cs" />
-    <Compile Include="Mockups\TestMotionDetector.cs" />
-    <Compile Include="Mockups\TestMotionDetectorEndpoint.cs" />
-    <Compile Include="Mockups\TestMotionDetectorFactory.cs" />
+    <Compile Include="Mockups\Adapters\TestMotionDetectorAdapter.cs" />
     <Compile Include="Mockups\TestOutputPort.cs" />
     <Compile Include="Mockups\TestPort.cs" />
     <Compile Include="Mockups\TestPortTests.cs" />
     <Compile Include="Mockups\Adapters\TestRollerShutterAdapter.cs" />
-    <Compile Include="Mockups\TestSensorAdapter.cs" />
+    <Compile Include="Mockups\Adapters\TestNumericSensorAdapter.cs" />
     <Compile Include="Mockups\TestStateMachine.cs" />
     <Compile Include="Mockups\Services\TestStorageService.cs" />
-    <Compile Include="Mockups\TestTemperatureSensor.cs" />
     <Compile Include="Mockups\TestWeatherStation.cs" />
     <Compile Include="Networking\HttpRequestParserTests.cs" />
     <Compile Include="Networking\HttpResponseSerializerTests.cs" />

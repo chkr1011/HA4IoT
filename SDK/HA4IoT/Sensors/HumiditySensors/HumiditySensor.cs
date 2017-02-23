@@ -1,6 +1,6 @@
 ﻿using System;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Adapters;
-using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Components.Features;
 using HA4IoT.Contracts.Components.States;
@@ -9,50 +9,60 @@ using HA4IoT.Contracts.Services.Settings;
 
 namespace HA4IoT.Sensors.HumiditySensors
 {
-    public class HumiditySensor : SensorBase, IHumiditySensor
+    public class HumiditySensor : ComponentBase, IHumiditySensor
     {
-        public HumiditySensor(string id, ISettingsService settingsService, ISensorAdapter endpoint)
+        private float? _value;
+
+        public HumiditySensor(string id, INumericSensorAdapter adapter, ISettingsService settingsService)
             : base(id)
         {
+            if (adapter == null) throw new ArgumentNullException(nameof(adapter));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
 
             settingsService.CreateSettingsMonitor<SingleValueSensorSettings>(Id, s => Settings = s);
 
-            SetState(new GenericComponentState(0));
-
-            endpoint.ValueChanged += (s, e) =>
-            {
-                if (!GetDifferenceIsLargeEnough(e.NewValue))
-                {
-                    return;
-                }
-
-                SetState(new GenericComponentState(e.NewValue));
-            };
+            adapter.ValueChanged += (s, e) => Update(e.Value);
         }
 
         public SingleValueSensorSettings Settings { get; private set; }
 
-        public float GetCurrentHumidity()
-        {
-            return GetState().Extract<HumidityState>().Value ?? 0;
-        }
-
         public override ComponentFeatureCollection GetFeatures()
         {
             return new ComponentFeatureCollection()
-                .With(new TemperatureMeasurementFeature());
+                .With(new HumidityMeasurementFeature());
         }
 
-        public override void InvokeCommand(ICommand command)
+        public override ComponentFeatureStateCollection GetState()
         {
-            
+            return new ComponentFeatureStateCollection()
+                .With(new HumidityState(_value));
         }
 
-        private bool GetDifferenceIsLargeEnough(float value)
+        private void Update(float? newValue)
         {
-            return Math.Abs(GetCurrentHumidity() - value) >= Settings.MinDelta;
+            if (!GetDifferenceIsLargeEnough(newValue))
+            {
+                return;
+            }
+
+            var oldState = GetState();
+            _value = newValue;
+            OnStateChanged(oldState);
+        }
+
+        private bool GetDifferenceIsLargeEnough(float? newValue)
+        {
+            if (_value.HasValue != newValue.HasValue)
+            {
+                return true;
+            }
+
+            if (!_value.HasValue)
+            {
+                return false;
+            }
+
+            return Math.Abs(_value.Value - newValue.Value) >= Settings.MinDelta;
         }
     }
 }

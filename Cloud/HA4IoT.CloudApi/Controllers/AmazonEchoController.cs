@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -30,26 +29,20 @@ namespace HA4IoT.CloudApi.Controllers
             _securityService = securityService;
         }
 
-        public async Task<HttpResponseMessage> ExecuteIntent()
+        public async Task<HttpResponseMessage> ExecuteIntent([FromBody] SkillServiceRequest request)
         {
             try
             {
-                var body = await Request.Content.ReadAsStringAsync();
-                var parameter = JObject.Parse(body);
-
-                var request = parameter.ToObject<SkillServiceRequest>();
                 var controllerId = _securityService.GetControllerUidFromAmazonUserId(request.Session.User.UserId);
                 if (controllerId == null)
                 {
                     throw new UnauthorizedAccessException();
                 }
 
-                Trace.WriteLine($"{nameof(AmazonEchoController)}:ExecuteIntent\r\n{body}");
-
                 var apiRequest = new ApiRequest
                 {
                     Action = "Service/IPersonalAgentService/ProcessSkillServiceRequest",
-                    Parameter = parameter
+                    Parameter = JObject.FromObject(request)
                 };
 
                 var apiResponse = await _messageDispatcher.SendRequestAsync(controllerId.Value, apiRequest, TimeSpan.FromSeconds(5));

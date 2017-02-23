@@ -91,20 +91,9 @@ namespace HA4IoT.Services.Areas
                     ["Type"] = component.GetType().Name,
                     ["Settings"] = _settingsService.GetRawComponentSettings(component.Id),
                     ["Features"] = JToken.FromObject(component.GetFeatures().Serialize())
+                    ["State"] = JToken.FromObject(component.GetState().Serialize())
                 };
 
-                var supportedStates = component.GetSupportedStates();
-                if (supportedStates != null)
-                {
-                    var supportedStatesJson = new JArray();
-                    foreach (var supportedState in supportedStates)
-                    {
-                        supportedStatesJson.Add(supportedState.JToken);
-                    }
-
-                    componentConfiguration["SupportedStates"] = supportedStatesJson;
-                }
-                
                 components[component.Id] = componentConfiguration;
             }
             

@@ -47,7 +47,6 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actuators\BinaryStateId.cs" />
     <Compile Include="Adapters\IBinaryOutputAdapter.cs" />
     <Compile Include="Actuators\IFan.cs" />
     <Compile Include="Actuators\ILamp.cs" />
@@ -88,13 +87,17 @@
     <Compile Include="Commands\PressCommand.cs" />
     <Compile Include="Commands\ResetCommand.cs" />
     <Compile Include="Commands\SetLevelCommand.cs" />
+    <Compile Include="Commands\SetStateCommand.cs" />
     <Compile Include="Commands\TogglePowerStateCommand.cs" />
+    <Compile Include="Commands\TriggerMotionDetectionCommand.cs" />
     <Compile Include="Commands\TurnOffCommand.cs" />
     <Compile Include="Commands\TurnOnCommand.cs" />
     <Compile Include="Components\ComponentFeatureCollection.cs" />
     <Compile Include="Components\ComponentSettings.cs" />
     <Compile Include="Components\Features\ButtonFeature.cs" />
     <Compile Include="Components\Features\LevelStateFeature.cs" />
+    <Compile Include="Components\Features\StateMachineFeature.cs" />
+    <Compile Include="Components\Features\HumidityMeasurementFeature.cs" />
     <Compile Include="Components\Features\VerticalMovingFeature.cs" />
     <Compile Include="Components\Features\PositionTrackingFeature.cs" />
     <Compile Include="Components\Features\PowerStateFeature.cs" />
@@ -110,6 +113,10 @@
     <Compile Include="Components\IComponentFeatureState.cs" />
     <Compile Include="Components\ComponentFeatureStateNotSupportedException.cs" />
     <Compile Include="Components\States\LevelState.cs" />
+    <Compile Include="Components\States\MotionDetectionState.cs" />
+    <Compile Include="Components\States\MotionDetectionStateValue.cs" />
+    <Compile Include="Components\States\NumericBasedState.cs" />
+    <Compile Include="Components\States\StateMachineFeatureState.cs" />
     <Compile Include="Components\States\VerticalMovingStateValue.cs" />
     <Compile Include="Conditions\ConditionState.cs" />
     <Compile Include="Conditions\ICondition.cs" />
@@ -159,8 +166,6 @@
     <Compile Include="PersonalAgent\IOutboundTextMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sensors\ButtonPressedDuration.cs" />
-    <Compile Include="Sensors\ButtonStateID.cs" />
-    <Compile Include="Sensors\CasementStateID.cs" />
     <Compile Include="Sensors\IButton.cs" />
     <Compile Include="Adapters\IButtonAdapter.cs" />
     <Compile Include="Sensors\IButtonSettings.cs" />
@@ -169,15 +174,11 @@
     <Compile Include="Sensors\IMotionDetector.cs" />
     <Compile Include="Adapters\IMotionDetectorAdapter.cs" />
     <Compile Include="Sensors\IMotionDetectorSettings.cs" />
-    <Compile Include="Sensors\INumericValueSensor.cs" />
-    <Compile Include="Adapters\ISensorAdapter.cs" />
-    <Compile Include="Sensors\ISensor.cs" />
+    <Compile Include="Adapters\INumericSensorAdapter.cs" />
     <Compile Include="Sensors\ISwitch.cs" />
     <Compile Include="Sensors\ITemperatureSensor.cs" />
     <Compile Include="Sensors\IWindow.cs" />
-    <Compile Include="Sensors\MotionDetectorStateID.cs" />
-    <Compile Include="Adapters\SensorAdapterValueChangedEventArgs.cs" />
-    <Compile Include="Sensors\SwitchStateID.cs" />
+    <Compile Include="Adapters\NumericSensorAdapterValueChangedEventArgs.cs" />
     <Compile Include="Services\ApiServiceClassAttribute.cs" />
     <Compile Include="Services\Backup\BackupEventArgs.cs" />
     <Compile Include="Services\Backup\IBackupService.cs" />

@@ -4,7 +4,7 @@ using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Sensors.Buttons;
-using HA4IoT.Sensors.Triggers;
+using HA4IoT.Sensors.TemperatureSensors;
 using HA4IoT.Tests.Mockups;
 using HA4IoT.Tests.Mockups.Adapters;
 using HA4IoT.Triggers;
@@ -39,39 +39,36 @@ namespace HA4IoT.Tests.Actuators
         {
             var testController = new TestController();
 
-            var sensor = new TestTemperatureSensor(
+            var adapter = new TestNumericSensorAdapter();
+            var sensor = new TemperatureSensor(
                 "Test",
-                testController.GetInstance<ISettingsService>(),
-                new TestSensorAdapter());
+                adapter,
+                testController.GetInstance<ISettingsService>());
 
-            var trigger = new SensorValueReachedTrigger(sensor)
-            {
-                Target = 10.2F,
-                Delta = 3.0F
-            };
+            var trigger = sensor.GetTemperatureReachedTrigger(10.2F, 3.0F);
 
             var triggerCount = 0;
             trigger.Attach(() => triggerCount++);
 
-            sensor.Endpoint.UpdateValue(5);
+            adapter.UpdateValue(5);
             Assert.AreEqual(0, triggerCount);
 
-            sensor.Endpoint.UpdateValue(10);
+            adapter.UpdateValue(10);
             Assert.AreEqual(0, triggerCount);
 
-            sensor.Endpoint.UpdateValue(10.2F);
+            adapter.UpdateValue(10.2F);
             Assert.AreEqual(1, triggerCount);
 
-            sensor.Endpoint.UpdateValue(9.0F);
+            adapter.UpdateValue(9.0F);
             Assert.AreEqual(1, triggerCount);
 
-            sensor.Endpoint.UpdateValue(13.0F);
+            adapter.UpdateValue(13.0F);
             Assert.AreEqual(1, triggerCount);
 
-            sensor.Endpoint.UpdateValue(5.0F);
+            adapter.UpdateValue(5.0F);
             Assert.AreEqual(1, triggerCount);
 
-            sensor.Endpoint.UpdateValue(10.2F);
+            adapter.UpdateValue(10.2F);
             Assert.AreEqual(2, triggerCount);
         }
 
@@ -80,42 +77,39 @@ namespace HA4IoT.Tests.Actuators
         {
             var testController = new TestController();
 
-            var sensor = new TestTemperatureSensor(
+            var adapter = new TestNumericSensorAdapter();
+            var sensor = new TemperatureSensor(
                 "Test",
-                testController.GetInstance<ISettingsService>(),
-                new TestSensorAdapter());
+                adapter,
+                testController.GetInstance<ISettingsService>());
 
-            var trigger = new SensorValueUnderranTrigger(sensor)
-            {
-                Target = 10F,
-                Delta = 3F
-            };
+            var trigger = sensor.GetTemperatureUnderranTrigger(10F, 3F);
 
             var triggerCount = 0;
             trigger.Attach(() => triggerCount++);
 
-            sensor.Endpoint.UpdateValue(5);
+            adapter.UpdateValue(5);
             Assert.AreEqual(1, triggerCount);
 
-            sensor.Endpoint.UpdateValue(10);
+            adapter.UpdateValue(10);
             Assert.AreEqual(1, triggerCount);
 
-            sensor.Endpoint.UpdateValue(13.1F);
+            adapter.UpdateValue(13.1F);
             Assert.AreEqual(1, triggerCount);
 
-            sensor.Endpoint.UpdateValue(9F);
+            adapter.UpdateValue(9F);
             Assert.AreEqual(2, triggerCount);
 
-            sensor.Endpoint.UpdateValue(13.0F);
+            adapter.UpdateValue(13.0F);
             Assert.AreEqual(2, triggerCount);
 
-            sensor.Endpoint.UpdateValue(5F);
+            adapter.UpdateValue(5F);
             Assert.AreEqual(2, triggerCount);
 
-            sensor.Endpoint.UpdateValue(13.1F);
+            adapter.UpdateValue(13.1F);
             Assert.AreEqual(2, triggerCount);
 
-            sensor.Endpoint.UpdateValue(9.9F);
+            adapter.UpdateValue(9.9F);
             Assert.AreEqual(3, triggerCount);
         }
 

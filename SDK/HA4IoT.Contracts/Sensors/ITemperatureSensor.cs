@@ -1,6 +1,8 @@
-﻿namespace HA4IoT.Contracts.Sensors
+﻿using HA4IoT.Contracts.Components;
+
+namespace HA4IoT.Contracts.Sensors
 {
-    public interface ITemperatureSensor : INumericValueSensor
+    public interface ITemperatureSensor : IComponent
     {
     }
 }

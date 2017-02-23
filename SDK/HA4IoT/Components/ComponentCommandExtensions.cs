@@ -1,21 +1,12 @@
 ﻿using System;
-using System.Linq;
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Components
 {
-    public static class ComponentExtensions
+    public static class ComponentCommandExtensions
     {
-        public static bool SupportsState(this IComponent component, GenericComponentState componentState)
-        {
-            if (componentState == null) throw new ArgumentNullException(nameof(componentState));
-            if (component == null) throw new ArgumentNullException(nameof(component));
-
-            return component.GetSupportedStates().Any(s => s.Equals(componentState));
-        }
-
         public static bool TryTurnOn(this IComponent component)
         {
             if (component == null) throw new ArgumentNullException(nameof(component));
@@ -58,6 +49,18 @@ namespace HA4IoT.Components
             return component.TryInvokeCommand(new IncreaseLevelCommand());
         }
 
+        public static bool TryDecreaseLevel(this IComponent component)
+        {
+            if (component == null) throw new ArgumentNullException(nameof(component));
+            return component.TryInvokeCommand(new DecreaseLevelCommand());
+        }
+
+        public static bool TrySetLevel(this IComponent component, int level)
+        {
+            if (component == null) throw new ArgumentNullException(nameof(component));
+            return component.TryInvokeCommand(new SetLevelCommand(level));
+        }
+        
         public static bool TryInvokeCommand(this IComponent component, ICommand command)
         {
             if (component == null) throw new ArgumentNullException(nameof(component));

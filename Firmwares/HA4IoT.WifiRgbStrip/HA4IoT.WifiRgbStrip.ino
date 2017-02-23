@@ -1,29 +1,42 @@
 #include <EEPROM.h>
 #include <String.h>
+#include <Arduino.h>
+
+#include "RgbStrip.h"
+#include "Esp8266.h"
 
 #define LEDPin 13
 
+String inputString = "";         // a string to hold incoming data
+boolean stringComplete = false;  // whether the string is complete
+
 void setup()
 {
+  // Setup LED
   pinMode(LEDPin, OUTPUT);
-
   digitalWrite(LEDPin, HIGH); // Start setup
-  
-  Serial.begin(9600);
-  Serial.println("ATE0");
-  Serial.find("OK");
-  Serial.println("AT+CWSAP=\"HA4IoT-RGB_Strip-A\",\"ha4iot\",6,4");
-  Serial.find("OK");
-  Serial.println("AT+CIPMUX=1");
-  Serial.find("OK");
-  Serial.println("AT+CIPSERVER=1,19226");
-  Serial.find("OK");
 
-  digitalWrite(LEDPin, HIGH); // Setup completed
+  // Setup serial port for ESP8266 communication
+  SetupEsp8266();
 }
 
 void loop()
 {
+  Serial.find("+IPD,");
+  //Serial.read
+}
+
+void serialEvent()
+{
+  while (Serial.available())
+  {
+    char inChar = (char)Serial.read();
+    inputString += inChar;
+    if (inChar == '\n')
+    {
+      stringComplete = true;
+    }
+  }
 }
 
 

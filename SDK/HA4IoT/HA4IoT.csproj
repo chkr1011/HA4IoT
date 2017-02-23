@@ -109,10 +109,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actuators\ActuatorFactory.cs" />
-    <Compile Include="Actuators\BinaryStateActuators\BinaryStateActuator.cs" />
-    <Compile Include="Actuators\BinaryStateActuators\BinaryStateActuatorExtensions.cs" />
-    <Compile Include="Actuators\BinaryStateActuators\CustomBinaryStateActuator.cs" />
-    <Compile Include="Actuators\BinaryStateActuators\LogicalBinaryStateActuator.cs" />
     <Compile Include="Actuators\Connectors\RollerShutterWithRollerShutterButtonsConnector.cs" />
     <Compile Include="Actuators\Connectors\StateMachineWithButtonConnector.cs" />
     <Compile Include="Actuators\Fans\Fan.cs" />
@@ -120,7 +116,7 @@
     <Compile Include="Actuators\Lamps\Lamp.cs" />
     <Compile Include="Actuators\Lamps\LampExtensions.cs" />
     <Compile Include="Actuators\PendingActuatorState.cs" />
-    <Compile Include="Actuators\RollerShutters\PortBasedRollerShutterEndpoint.cs" />
+    <Compile Include="Adapters\PortBasedRollerShutterAdapter.cs" />
     <Compile Include="Actuators\RollerShutters\RollerShutter.cs" />
     <Compile Include="Actuators\RollerShutters\RollerShutterExtensions.cs" />
     <Compile Include="Actuators\RollerShutters\RollerShutterSettings.cs" />
@@ -133,7 +129,10 @@
     <Compile Include="Adapters\BinaryOutputAdapter.cs" />
     <Compile Include="Components\CommandInvoker.cs" />
     <Compile Include="Components\CommandInvokerAction.cs" />
+    <Compile Include="Components\ComponentStateExtensions.cs" />
     <Compile Include="Components\ICommandInvokerAction.cs" />
+    <Compile Include="Components\LogicalComponent.cs" />
+    <Compile Include="Conditions\Specialized\TemperatureIsLowerThanCondition.cs" />
     <Compile Include="Triggers\ConditionalTrigger.cs" />
     <Compile Include="Triggers\IntervalTrigger.cs" />
     <Compile Include="Triggers\Trigger.cs" />
@@ -160,7 +159,7 @@
     <Compile Include="Automations\TurnOnAndOffAutomationExtensions.cs" />
     <Compile Include="Automations\TurnOnAndOffAutomationSettings.cs" />
     <Compile Include="Components\ComponentBase.cs" />
-    <Compile Include="Components\ComponentExtensions.cs" />
+    <Compile Include="Components\ComponentCommandExtensions.cs" />
     <Compile Include="Conditions\ActionExtensions.cs" />
     <Compile Include="Conditions\Condition.cs" />
     <Compile Include="Conditions\ConditionalAction.cs" />
@@ -171,8 +170,7 @@
     <Compile Include="Conditions\Specialized\ComponentHasStateCondition.cs" />
     <Compile Include="Conditions\Specialized\IsDayCondition.cs" />
     <Compile Include="Conditions\Specialized\IsNightCondition.cs" />
-    <Compile Include="Conditions\Specialized\NumericValueSensorHasValueGreaterThanCondition.cs" />
-    <Compile Include="Conditions\Specialized\NumericValueSensorHasValueLowerThanCondition.cs" />
+    <Compile Include="Conditions\Specialized\TemperatureIsGreaterThanCondition.cs" />
     <Compile Include="Conditions\Specialized\TimeRangeCondition.cs" />
     <Compile Include="Conditions\TimeRangeChecker.cs" />
     <Compile Include="Core\Container.cs" />
@@ -282,14 +280,13 @@
     <Compile Include="Sensors\MotionDetectors\MotionDetector.cs" />
     <Compile Include="Sensors\MotionDetectors\MotionDetectorExtensions.cs" />
     <Compile Include="Sensors\MotionDetectors\MotionDetectorSettings.cs" />
-    <Compile Include="Sensors\MotionDetectors\PortBasedMotionDetectorEndpoint.cs" />
-    <Compile Include="Sensors\SensorBase.cs" />
+    <Compile Include="Adapters\PortBasedMotionDetectorAdapter.cs" />
     <Compile Include="Sensors\SensorFactory.cs" />
     <Compile Include="Sensors\SingleValueSensorSettings.cs" />
     <Compile Include="Sensors\TemperatureSensors\TemperatureSensor.cs" />
     <Compile Include="Sensors\TemperatureSensors\TemperatureSensorExtensions.cs" />
-    <Compile Include="Sensors\Triggers\SensorValueReachedTrigger.cs" />
-    <Compile Include="Sensors\Triggers\SensorValueUnderranTrigger.cs" />
+    <Compile Include="Sensors\Triggers\SensorValueThresholdTrigger.cs" />
+    <Compile Include="Sensors\Triggers\SensorValueThresholdMode.cs" />
     <Compile Include="Sensors\Windows\Casement.cs" />
     <Compile Include="Sensors\Windows\Window.cs" />
     <Compile Include="Sensors\Windows\WindowExtensions.cs" />

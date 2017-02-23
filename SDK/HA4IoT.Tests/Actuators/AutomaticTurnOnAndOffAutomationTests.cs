@@ -8,6 +8,7 @@ using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Sensors.Buttons;
+using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Tests.Mockups;
 using HA4IoT.Tests.Mockups.Adapters;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -21,7 +22,12 @@ namespace HA4IoT.Tests.Actuators
         public void Should_TurnOn_IfMotionDetected()
         {
             var testController = new TestController();
-            var motionDetectorFactory = testController.GetInstance<TestMotionDetectorFactory>();
+            var adapter = new TestMotionDetectorAdapter();
+            var motionDetector = new MotionDetector(
+                "Test", 
+                adapter, 
+                testController.GetInstance<ISchedulerService>(),
+                testController.GetInstance<ISettingsService>());
 
             var automation = new FlipFlopAutomation(
                 "Test",
@@ -30,14 +36,13 @@ namespace HA4IoT.Tests.Actuators
                 testController.GetInstance<ISettingsService>(),
                 testController.GetInstance<IDaylightService>());
 
-            var motionDetector = motionDetectorFactory.CreateTestMotionDetector();
             var output = new Lamp("Test", new TestBinaryOutputAdapter());
             Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
 
             automation.WithTrigger(motionDetector);
             automation.WithTarget(output);
 
-            motionDetector.TriggerMotionDetection();
+            adapter.Invoke();
 
             Assert.AreEqual(true, output.GetState().Has(PowerState.On));
         }
@@ -72,7 +77,12 @@ namespace HA4IoT.Tests.Actuators
         {
             var testController = new TestController();
             testController.SetTime(TimeSpan.Parse("18:00:00"));
-            var motionDetectorFactory = testController.GetInstance<TestMotionDetectorFactory>();
+            var adapter = new TestMotionDetectorAdapter();
+            var motionDetector = new MotionDetector(
+                "Test",
+                adapter,
+                testController.GetInstance<ISchedulerService>(),
+                testController.GetInstance<ISettingsService>());
 
             var automation = new FlipFlopAutomation(
                 "Test",
@@ -81,7 +91,6 @@ namespace HA4IoT.Tests.Actuators
                 testController.GetInstance<ISettingsService>(),
                 testController.GetInstance<IDaylightService>());
 
-            var motionDetector = motionDetectorFactory.CreateTestMotionDetector();
             var output = new Lamp("Test", new TestBinaryOutputAdapter());
             Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
 
@@ -89,7 +98,7 @@ namespace HA4IoT.Tests.Actuators
             automation.WithTrigger(motionDetector);
             automation.WithTarget(output);
 
-            motionDetector.TriggerMotionDetection();
+            adapter.Invoke();
 
             Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
         }
@@ -126,7 +135,12 @@ namespace HA4IoT.Tests.Actuators
         {
             var testController = new TestController();
             testController.SetTime(TimeSpan.Parse("14:00:00"));
-            var motionDetectorFactory = testController.GetInstance<TestMotionDetectorFactory>();
+            var adapter = new TestMotionDetectorAdapter();
+            var motionDetector = new MotionDetector(
+                "Test",
+                adapter,
+                testController.GetInstance<ISchedulerService>(),
+                testController.GetInstance<ISettingsService>());
 
             var automation = new FlipFlopAutomation(
                 "Test",
@@ -134,8 +148,6 @@ namespace HA4IoT.Tests.Actuators
                 testController.GetInstance<ISchedulerService>(),
                 testController.GetInstance<ISettingsService>(),
                 testController.GetInstance<IDaylightService>());
-
-            var motionDetector = motionDetectorFactory.CreateTestMotionDetector();
 
             var output = new Lamp("Test", new TestBinaryOutputAdapter());
             Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
@@ -154,7 +166,7 @@ namespace HA4IoT.Tests.Actuators
 
             automation.WithSkipIfAnyActuatorIsAlreadyOn(otherActuators);
 
-            motionDetector.TriggerMotionDetection();
+            adapter.Invoke();
 
             Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
         }
@@ -164,7 +176,12 @@ namespace HA4IoT.Tests.Actuators
         {
             var testController = new TestController();
             testController.SetTime(TimeSpan.Parse("14:00:00"));
-            var motionDetectorFactory = testController.GetInstance<TestMotionDetectorFactory>();
+            var adapter = new TestMotionDetectorAdapter();
+            var motionDetector = new MotionDetector(
+                "Test",
+                adapter,
+                testController.GetInstance<ISchedulerService>(),
+                testController.GetInstance<ISettingsService>());
 
             var automation = new FlipFlopAutomation(
                 "Test",
@@ -172,8 +189,6 @@ namespace HA4IoT.Tests.Actuators
                 testController.GetInstance<ISchedulerService>(),
                 testController.GetInstance<ISettingsService>(),
                 testController.GetInstance<IDaylightService>());
-
-            var motionDetector = motionDetectorFactory.CreateTestMotionDetector();
 
             var output = new Lamp("Test", new TestBinaryOutputAdapter());
             Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
@@ -189,7 +204,7 @@ namespace HA4IoT.Tests.Actuators
 
             automation.WithSkipIfAnyActuatorIsAlreadyOn(otherActuators);
 
-            motionDetector.TriggerMotionDetection();
+            adapter.Invoke();
 
             Assert.AreEqual(true, output.GetState().Has(PowerState.On));
         }

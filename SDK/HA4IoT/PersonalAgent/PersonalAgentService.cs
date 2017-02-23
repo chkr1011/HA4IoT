@@ -161,10 +161,16 @@ namespace HA4IoT.PersonalAgent
             {
                 var component = _componentsRegistry.GetComponent<IComponent>(messageContext.AffectedComponentIds.First());
 
-                var sensor = component as ISensor;
-                if (sensor != null)
+                var temperatureSensor = component as ITemperatureSensor;
+                if (temperatureSensor != null)
                 {
-                    return GetSensorStatus(sensor);
+                    return $"{Emoji.Fire} Die Temperatur dieses Sensor liegt aktuell bei {component.GetState()}°C";
+                }
+
+                var humiditySensor = component as IHumiditySensor;
+                if (humiditySensor != null)
+                {
+                    return $"{Emoji.SweatDrops} Die Luftfeuchtigkeit dieses Sensor liegt aktuell bei {component.GetState()}%";
                 }
 
                 return InvokeCommand(component, messageContext);
@@ -211,7 +217,7 @@ namespace HA4IoT.PersonalAgent
         private string GetWindowStatus()
         {
             var allWindows = _componentsRegistry.GetComponents<IWindow>();
-            var openWindows = allWindows.Where(w => w.Casements.Any(c => !c.GetState().Equals(CasementStateId.Closed))).ToList();
+            var openWindows = allWindows.Where(w => w.Casements.Any(c => !c.GetState().Equals("Closed"))).ToList();
 
             string response;
             if (!openWindows.Any())
@@ -225,23 +231,6 @@ namespace HA4IoT.PersonalAgent
             }
 
             return response;
-        }
-
-        private string GetSensorStatus(ISensor sensor)
-        {
-            var temperatureSensor = sensor as ITemperatureSensor;
-            if (temperatureSensor != null)
-            {
-                return $"{Emoji.Fire} Die Temperatur dieses Sensor liegt aktuell bei {sensor.GetState()}°C";
-            }
-
-            var humiditySensor = sensor as IHumiditySensor;
-            if (humiditySensor != null)
-            {
-                return $"{Emoji.SweatDrops} Die Luftfeuchtigkeit dieses Sensor liegt aktuell bei {sensor.GetState()}%";
-            }
-
-            return $"{Emoji.BarChart} Der sensor hat momentan den folgenden Zustand: {sensor.GetState()}";
         }
     }
 }

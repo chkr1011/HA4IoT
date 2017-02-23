@@ -100,11 +100,11 @@ namespace HA4IoT.Controller.Main.Rooms
             _actuatorFactory.RegisterLamp(area, LowerBathroom.LampMirror,
                 hspe16_FloorAndLowerBathroom.GetOutput(4).WithInvertedState());
 
-            _actuatorFactory.RegisterLogicalActuator(area, LowerBathroom.CombinedLights)
-                .WithActuator(area.GetLamp(LowerBathroom.LightCeilingDoor))
-                .WithActuator(area.GetLamp(LowerBathroom.LightCeilingMiddle))
-                .WithActuator(area.GetLamp(LowerBathroom.LightCeilingWindow))
-                .WithActuator(area.GetLamp(LowerBathroom.LampMirror));
+            _actuatorFactory.RegisterLogicalComponent(area, LowerBathroom.CombinedLights)
+                .WithComponent(area.GetLamp(LowerBathroom.LightCeilingDoor))
+                .WithComponent(area.GetLamp(LowerBathroom.LightCeilingMiddle))
+                .WithComponent(area.GetLamp(LowerBathroom.LightCeilingWindow))
+                .WithComponent(area.GetLamp(LowerBathroom.LampMirror));
 
             _automationFactory.RegisterTurnOnAndOffAutomation(area, LowerBathroom.CombinedLightsAutomation)
                 .WithTrigger(area.GetMotionDetector(LowerBathroom.MotionDetector))

@@ -1,14 +1,9 @@
-﻿using Newtonsoft.Json.Linq;
-
-namespace HA4IoT.Contracts.Components.States
+﻿namespace HA4IoT.Contracts.Components.States
 {
-    public class TemperatureState : IComponentFeatureState
+    public class TemperatureState : NumericBasedState
     {
-        public float? Value { get; set; }
-        
-        public JToken Serialize()
+        public TemperatureState(float? value) : base(value)
         {
-            return JToken.FromObject(Value);
         }
     }
 }

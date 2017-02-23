@@ -111,8 +111,11 @@ namespace HA4IoT.Services
             var components = new JObject();
             foreach (var component in _components.Values)
             {
-                var status = component.ExportStatus();
-                status["Settings"] = _settingsService.GetRawComponentSettings(component.Id);
+                var status = new JObject
+                {
+                    ["Settings"] = _settingsService.GetRawComponentSettings(component.Id),
+                    ["State"] = JToken.FromObject(component.GetState().Serialize())
+                };
 
                 components[component.Id] = status;
             }

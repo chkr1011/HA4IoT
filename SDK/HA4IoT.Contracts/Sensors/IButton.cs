@@ -1,10 +1,10 @@
-﻿using HA4IoT.Contracts.Triggers;
+﻿using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Contracts.Sensors
 {
-    public interface IButton : ISensor
+    public interface IButton : IComponent
     {
-        IButtonSettings Settings { get; }
         ITrigger PressedShortlyTrigger { get; }
         ITrigger PressedLongTrigger { get; }
     }

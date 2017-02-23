@@ -5,6 +5,8 @@ using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Components.Features;
+using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Actuators.StateMachines
@@ -20,110 +22,102 @@ namespace HA4IoT.Actuators.StateMachines
         {
         }
 
-        override 
 
+        ////public bool SupportsState(IComponentFeatureState stateId)
+        ////{
+        ////    if (stateId == null) throw new ArgumentNullException(nameof(stateId));
 
+        ////    if (_states.Any(s => s.Id.Equals(stateId)))
+        ////    {
+        ////        return true;
+        ////    }
 
+        ////    if (!_stateAlias.TryGetValue(stateId, out stateId))
+        ////    {
+        ////        return false;
+        ////    }
 
-        public bool SupportsState(IComponentFeatureState stateId)
-        {
-            if (stateId == null) throw new ArgumentNullException(nameof(stateId));
+        ////    return _states.Any(s => s.Id.Equals(stateId));
+        ////}
 
-            if (_states.Any(s => s.Id.Equals(stateId)))
-            {
-                return true;
-            }
+        ////public void ChangeState(string id, params IHardwareParameter[] parameters)
+        ////{
+        ////    if (id == null) throw new ArgumentNullException(nameof(id));
 
-            if (!_stateAlias.TryGetValue(stateId, out stateId))
-            {
-                return false;
-            }
+        ////    ThrowIfNoStatesAvailable();
 
-            return _states.Any(s => s.Id.Equals(stateId));
-        }
+        ////    IStateMachineState oldState = _activeState;
+        ////    IStateMachineState newState = GetState(id);
 
-        public void ChangeState(string id, params IHardwareParameter[] parameters)
-        {
-            if (id == null) throw new ArgumentNullException(nameof(id));
+        ////    if (newState.Id.Equals(_activeState?.Id))
+        ////    {
+        ////        if (_turnOffIfStateIsAppliedTwice && SupportsState(BinaryStateId.Off) && !GetState().Equals(BinaryStateId.Off))
+        ////        {
+        ////            ChangeState(BinaryStateId.Off, parameters);
+        ////            return;
+        ////        }
 
-            ThrowIfNoStatesAvailable();
+        ////        if (!parameters.Any(p => p is ForceUpdateStateParameter))
+        ////        {
+        ////            return;
+        ////        }
+        ////    }
 
-            IStateMachineState oldState = _activeState;
-            IStateMachineState newState = GetState(id);
+        ////    oldState?.Deactivate(parameters);
+        ////    newState.Activate(parameters);
 
-            if (newState.Id.Equals(_activeState?.Id))
-            {
-                if (_turnOffIfStateIsAppliedTwice && SupportsState(BinaryStateId.Off) && !GetState().Equals(BinaryStateId.Off))
-                {
-                    ChangeState(BinaryStateId.Off, parameters);
-                    return;
-                }
+        ////    if (parameters.Any(p => p is IsPartOfPartialUpdateParameter))
+        ////    {
+        ////        return;
+        ////    }
 
-                if (!parameters.Any(p => p is ForceUpdateStateParameter))
-                {
-                    return;
-                }
-            }
+        ////    _activeState = newState;
+        ////    OnActiveStateChanged(oldState, newState);
+        ////}
 
-            oldState?.Deactivate(parameters);
-            newState.Activate(parameters);
+        ////public void ResetState()
+        ////{
+        ////    if (SupportsState(BinaryStateId.Off))
+        ////    {
+        ////        ChangeState(BinaryStateId.Off, new ForceUpdateStateParameter());
+        ////    }
+        ////}
 
-            if (parameters.Any(p => p is IsPartOfPartialUpdateParameter))
-            {
-                return;
-            }
-
-            _activeState = newState;
-            OnActiveStateChanged(oldState, newState);
-        }
-
-        public void ResetState()
-        {
-            if (SupportsState(BinaryStateId.Off))
-            {
-                ChangeState(BinaryStateId.Off, new ForceUpdateStateParameter());
-            }
-        }
-
-        public void SetStateIdAlias(GenericComponentState stateId, GenericComponentState alias)
-        {
-            _stateAlias[alias] = stateId;
-        }
+        ////public void SetStateIdAlias(GenericComponentState stateId, GenericComponentState alias)
+        ////{
+        ////    _stateAlias[alias] = stateId;
+        ////}
 
         public override ComponentFeatureStateCollection GetState()
         {
-            ThrowIfNoStatesAvailable();
-
-            if (_activeState == null)
-            {
-                return new ComponentFeatureStateCollection();
-            }
-
-            return new ComponentFeatureStateCollection().With(_activeState?.Id);
+            return new ComponentFeatureStateCollection().With(
+                new StateMachineFeatureState(_activeState?.Id));
         }
 
         public override ComponentFeatureCollection GetFeatures()
         {
-            return new ComponentFeatureCollection();
+            var stateMachineFeature = new StateMachineFeature();
+            foreach (var stateId in _states.Keys)
+            {
+                stateMachineFeature.SupportedStates.Add(stateId);
+            }
+            
+            return new ComponentFeatureCollection()
+                .With(stateMachineFeature);
         }
 
         public override void InvokeCommand(ICommand command)
         {
-            
+            var commandInvoker = new CommandInvoker();
+            commandInvoker.Register<ResetCommand>();
+            commandInvoker.Register<SetStateCommand>(c => SetState(c.Id));
+            commandInvoker.Invoke(command);
         }
-
 
         public StateMachine WithTurnOffIfStateIsAppliedTwice()
         {
             _turnOffIfStateIsAppliedTwice = true;
             return this;
-        }
-
-        public void SetInitialState(string id)
-        {
-            if (id == null) throw new ArgumentNullException(nameof(id));
-
-            ChangeState(id, HardwareParameter.ForceUpdateState);
         }
 
         public void AddState(IStateMachineState state)
@@ -136,21 +130,12 @@ namespace HA4IoT.Actuators.StateMachines
 
 
 
-        private IStateMachineState GetState(IComponentFeatureState id)
+
+        private void SetState(string id)
         {
-            IStateMachineState state = _states.FirstOrDefault(s => s.Id.Equals(id));
-
-            if (state == null && _stateAlias.TryGetValue(id, out id))
-            {
-                state = _states.FirstOrDefault(s => s.Id.Equals(id));
-            }
-
-            if (state == null)
-            {
-                throw new InvalidOperationException("State machine state is unknown.");
-            }
-
-            return state;
+            _activeState?.Deactivate();
+            _activeState = _states[id];
+            _activeState.Activate();
         }
 
         protected virtual void OnActiveStateChanged(IStateMachineState oldState, IStateMachineState newState)

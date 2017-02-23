@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Threading.Tasks;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Hardware;
 
-namespace HA4IoT.Actuators.RollerShutters
+namespace HA4IoT.Adapters
 {
-    public class PortBasedRollerShutterEndpoint : IRollerShutterAdapter
+    public class PortBasedRollerShutterAdapter : IRollerShutterAdapter
     {
         private readonly IBinaryOutput _powerOutput;
         private readonly IBinaryOutput _directionOutput;
 
-        public PortBasedRollerShutterEndpoint(IBinaryOutput powerOutput, IBinaryOutput directionOutput)
+        public PortBasedRollerShutterAdapter(IBinaryOutput powerOutput, IBinaryOutput directionOutput)
         {
             if (powerOutput == null) throw new ArgumentNullException(nameof(powerOutput));
             if (directionOutput == null) throw new ArgumentNullException(nameof(directionOutput));

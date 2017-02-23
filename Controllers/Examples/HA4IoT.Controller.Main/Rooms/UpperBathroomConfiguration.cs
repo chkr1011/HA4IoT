@@ -100,20 +100,22 @@ namespace HA4IoT.Controller.Main.Rooms
             _actuatorFactory.RegisterLamp(area, UpperBathroom.LightCeilingMirrorCabinet, hsrel5.GetOutput(2));
             _actuatorFactory.RegisterLamp(area, UpperBathroom.LampMirrorCabinet, hsrel5.GetOutput(3));
 
-            var combinedLights =
-                _actuatorFactory.RegisterLogicalActuator(area, UpperBathroom.CombinedCeilingLights)
-                    .WithActuator(area.GetLamp(UpperBathroom.LightCeilingDoor))
-                    .WithActuator(area.GetLamp(UpperBathroom.LightCeilingEdge))
-                    .WithActuator(area.GetLamp(UpperBathroom.LightCeilingMirrorCabinet))
-                    .WithActuator(area.GetLamp(UpperBathroom.LampMirrorCabinet));
+            var combinedLights = _actuatorFactory.RegisterLogicalComponent(area, UpperBathroom.CombinedCeilingLights)
+                    .WithComponent(area.GetLamp(UpperBathroom.LightCeilingDoor))
+                    .WithComponent(area.GetLamp(UpperBathroom.LightCeilingEdge))
+                    .WithComponent(area.GetLamp(UpperBathroom.LightCeilingMirrorCabinet))
+                    .WithComponent(area.GetLamp(UpperBathroom.LampMirrorCabinet));
 
             _automationFactory.RegisterTurnOnAndOffAutomation(area, UpperBathroom.CombinedCeilingLightsAutomation)
                 .WithTrigger(area.GetMotionDetector(UpperBathroom.MotionDetector))
                 .WithTarget(combinedLights);
-            
-            new BathroomFanAutomation($"{area.Id}.{UpperBathroom.FanAutomation}", _schedulerService, _settingsService)
-                .WithTrigger(area.GetMotionDetector(UpperBathroom.MotionDetector))
-                .WithActuator(area.GetStateMachine(UpperBathroom.Fan));      
+
+            new BathroomFanAutomation(
+                $"{area.Id}.{UpperBathroom.FanAutomation}",
+                area.GetFan(UpperBathroom.Fan),
+                _schedulerService,
+                _settingsService)
+                .WithTrigger(area.GetMotionDetector(UpperBathroom.MotionDetector));
         }
 
         private class UpperBathroomFanAdapter : IFanAdapter

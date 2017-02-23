@@ -133,16 +133,16 @@ namespace HA4IoT.Controller.Main.Rooms
             _actuatorFactory.RegisterLamp(area, Floor.StairwayLampCeiling, hsrel5Stairway.GetOutput(0));
             _actuatorFactory.RegisterLamp(area, Floor.StairwayLampWall, hsrel5Stairway.GetOutput(1));
 
-            _actuatorFactory.RegisterLogicalActuator(area, Floor.CombinedStairwayLamp)
-                .WithActuator(area.GetLamp(Floor.StairwayLampCeiling))
-                .WithActuator(area.GetLamp(Floor.StairwayLampWall));
+            _actuatorFactory.RegisterLogicalComponent(area, Floor.CombinedStairwayLamp)
+                .WithComponent(area.GetLamp(Floor.StairwayLampCeiling))
+                .WithComponent(area.GetLamp(Floor.StairwayLampWall));
 
             SetupStairwayLamps(area);
 
-            _actuatorFactory.RegisterLogicalActuator(area, Floor.CombinedLamps)
-                .WithActuator(area.GetLamp(Floor.Lamp1))
-                .WithActuator(area.GetLamp(Floor.Lamp2))
-                .WithActuator(area.GetLamp(Floor.Lamp3));
+            _actuatorFactory.RegisterLogicalComponent(area, Floor.CombinedLamps)
+                .WithComponent(area.GetLamp(Floor.Lamp1))
+                .WithComponent(area.GetLamp(Floor.Lamp2))
+                .WithComponent(area.GetLamp(Floor.Lamp3));
 
             _automationFactory.RegisterTurnOnAndOffAutomation(area, Floor.CombinedLampsAutomation)
                 .WithTrigger(area.GetMotionDetector(Floor.LowerFloorMotionDetector))

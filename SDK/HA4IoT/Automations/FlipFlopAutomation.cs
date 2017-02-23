@@ -62,8 +62,8 @@ namespace HA4IoT.Automations
         {
             if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
 
-            motionDetector.GetMotionDetectedTrigger().Attach(ExecuteAutoTrigger);
-            motionDetector.GetDetectionCompletedTrigger().Attach(StartTimeout);
+            motionDetector.MotionDetectedTrigger.Attach(ExecuteAutoTrigger);
+            motionDetector.MotionDetectionCompletedTrigger.Attach(StartTimeout);
 
             motionDetector.Settings.ValueChanged += (s, e) => CancelTimeoutIfMotionDetectorDeactivated(motionDetector, e);
 

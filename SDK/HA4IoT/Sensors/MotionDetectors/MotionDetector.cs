@@ -1,8 +1,10 @@
 ﻿using System;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Adapters;
-using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Components.Features;
+using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
@@ -13,30 +15,32 @@ using HA4IoT.Triggers;
 
 namespace HA4IoT.Sensors.MotionDetectors
 {
-    public class MotionDetector : SensorBase, IMotionDetector
+    public class MotionDetector : ComponentBase, IMotionDetector
     {
         private readonly ISchedulerService _schedulerService;
-        private readonly Trigger _motionDetectedTrigger = new Trigger();
-        private readonly Trigger _detectionCompletedTrigger = new Trigger();
+        private readonly ISettingsService _settingsService;
 
         private TimedAction _autoEnableAction;
+        private MotionDetectionStateValue _motionDetectionState = MotionDetectionStateValue.Idle;
 
-        public MotionDetector(string id, IMotionDetectorAdapter endpoint, ISchedulerService schedulerService, ISettingsService settingsService)
+        public MotionDetector(string id, IMotionDetectorAdapter adapter, ISchedulerService schedulerService, ISettingsService settingsService)
             : base(id)
         {
-            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
+            if (adapter == null) throw new ArgumentNullException(nameof(adapter));
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-
+            
             _schedulerService = schedulerService;
+            _settingsService = settingsService;
 
-            settingsService.CreateSettingsMonitor<MotionDetectorSettings>(Id, s => Settings = s);
+            adapter.MotionDetectionBegin += (s, e) => UpdateState(MotionDetectionStateValue.MotionDetected);
+            adapter.MotionDetectionEnd += (s, e) => UpdateState(MotionDetectionStateValue.Idle);
 
-            SetState(MotionDetectorStateId.Idle);
-
-            endpoint.MotionDetected += (s, e) => UpdateState(MotionDetectorStateId.MotionDetected);
-            endpoint.MotionDetectionCompleted += (s, e) => UpdateState(MotionDetectorStateId.Idle);
-
+            settingsService.CreateComponentSettingsMonitor<MotionDetectorSettings>(Id, s =>
+            {
+                Settings = s;
+            });
+            
             Settings.ValueChanged += (s, e) =>
             {
                 if (e.SettingName == nameof(Settings.IsEnabled))
@@ -48,69 +52,54 @@ namespace HA4IoT.Sensors.MotionDetectors
 
         public IMotionDetectorSettings Settings { get; private set; }
 
-        public ITrigger GetMotionDetectedTrigger()
-        {
-            return _motionDetectedTrigger;
-        }
+        public ITrigger MotionDetectedTrigger { get; } = new Trigger();
 
-        public ITrigger GetDetectionCompletedTrigger()
-        {
-            return _detectionCompletedTrigger;
-        }
-
+        public ITrigger MotionDetectionCompletedTrigger { get; } = new Trigger();
+        
         public override ComponentFeatureCollection GetFeatures()
         {
-            return new ComponentFeatureCollection();
+            return new ComponentFeatureCollection()
+                .With(new MotionDetectionFeature());
+        }
+
+        public override ComponentFeatureStateCollection GetState()
+        {
+            return new ComponentFeatureStateCollection()
+                .With(new MotionDetectionState(_motionDetectionState));
         }
 
         public override void InvokeCommand(ICommand command)
         {
-            
+            var commandInvoker = new CommandInvoker();
+
+            commandInvoker.Invoke(command);
         }
 
-        // TODO: To commands.
-        public override void HandleApiCall(IApiContext apiContext)
+        private void UpdateState(MotionDetectionStateValue state)
         {
-            var action = (string)apiContext.Parameter["Action"];
-
-            if (action.Equals("detected", StringComparison.OrdinalIgnoreCase))
-            {
-                UpdateState(MotionDetectorStateId.MotionDetected);
-            }
-            else if (action.Equals("detectionCompleted", StringComparison.OrdinalIgnoreCase))
-            {
-                UpdateState(MotionDetectorStateId.Idle);
-            }
-        }
-
-        protected void OnMotionDetected()
-        {
-            Log.Info(Id + ": Motion detected");
-            _motionDetectedTrigger.Execute();
-        }
-
-        protected void OnDetectionCompleted()
-        {
-            Log.Verbose(Id + ": Detection completed");
-            _detectionCompletedTrigger.Execute();
-        }
-
-        private void UpdateState(GenericComponentState newState)
-        {
-            if (!Settings.IsEnabled)
+            if (state == _motionDetectionState)
             {
                 return;
             }
 
-            SetState(newState);
-
-            if (newState.Equals(MotionDetectorStateId.MotionDetected))
+            if (!_settingsService.GetComponentSettings<MotionDetectorSettings>(Id).IsEnabled)
             {
-                OnMotionDetected();
+                return;
             }
-            else
+
+            var oldState = GetState();
+            _motionDetectionState = state;
+            OnStateChanged(oldState);
+
+            if (state == MotionDetectionStateValue.MotionDetected)
             {
-                OnDetectionCompleted();
+                Log.Info(Id + ": Motion detected");
+                ((Trigger)MotionDetectedTrigger).Execute();
+            }
+            else if (state == MotionDetectionStateValue.Idle)
+            {
+                Log.Verbose(Id + ": Detection completed");
+                ((Trigger)MotionDetectionCompletedTrigger).Execute();
             }
         }
 

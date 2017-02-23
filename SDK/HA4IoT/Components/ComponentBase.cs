@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
-using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Components
 {
@@ -24,8 +21,11 @@ namespace HA4IoT.Components
         public abstract ComponentFeatureStateCollection GetState();
 
         public abstract ComponentFeatureCollection GetFeatures();
-        
-        public abstract void InvokeCommand(ICommand command);
+
+        public virtual void InvokeCommand(ICommand command)
+        {
+            throw new CommandNotSupportedException(command);
+        }
 
         protected void OnStateChanged(ComponentFeatureStateCollection oldState)
         {
@@ -40,30 +40,5 @@ namespace HA4IoT.Components
             Log.Info($"Component '{Id}' update state ' from '{oldStateText}' to '{newStateText}'");
             StateChanged?.Invoke(this, new ComponentFeatureStateChangedEventArgs(oldState, newState));
         }
-
-
-        #region OLD
-
-        public virtual IList<GenericComponentState> GetSupportedStates()
-        {
-            return new List<GenericComponentState>();
-        }
-
-        public virtual void HandleApiCall(IApiContext apiContext)
-        {
-        }
-
-        public virtual JToken ExportStatus()
-        {
-            var status = new JObject
-            {
-                ["State"] = JObject.FromObject(GetState().Serialize())
-            };
-
-            return status;
-        }
-        #endregion
-
-
     }
 }
