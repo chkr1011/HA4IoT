@@ -8,7 +8,7 @@ namespace HA4IoT.Automations
 {
     public static class TurnOnAndOffAutomationExtensions
     {
-        public static FlipFlopAutomation WithTurnOnIfAllRollerShuttersClosed(this FlipFlopAutomation automation, params IRollerShutter[] rollerShutters)
+        public static TurnOnAndOffAutomation WithTurnOnIfAllRollerShuttersClosed(this TurnOnAndOffAutomation automation, params IRollerShutter[] rollerShutters)
         {
             if (automation == null) throw new ArgumentNullException(nameof(automation));
             if (rollerShutters == null) throw new ArgumentNullException(nameof(rollerShutters));

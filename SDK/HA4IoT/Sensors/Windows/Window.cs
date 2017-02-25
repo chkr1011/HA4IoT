@@ -1,128 +1,86 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using HA4IoT.Contracts.Commands;
+using HA4IoT.Components;
+using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Components.Features;
+using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Triggers;
 using HA4IoT.Triggers;
-using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Sensors.Windows
 {
-    public class Window : SensorBase, IWindow
+    public class Window : ComponentBase, IWindow
     {
-        private readonly Trigger _openedTrigger = new Trigger();
-        private readonly Trigger _closedTrigger = new Trigger();
+        private readonly ISettingsService _settingsService;
+        private WindowStateValue _state;
 
-        public Window(string id, ISettingsService settingsService)
+        public Window(string id, IWindowAdapter adapter, ISettingsService settingsService)
             : base(id)
         {
+            if (adapter == null) throw new ArgumentNullException(nameof(adapter));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
-            settingsService.CreateSettingsMonitor<ComponentSettings>(Id, s => Settings = s);
+            _settingsService = settingsService;
+            adapter.StateChanged += (s, e) => Update(e);
         }
 
-        public IComponentSettings Settings { get; private set; }
+        public ITrigger OpenedTrigger { get; } = new Trigger();
 
-        public IList<ICasement> Casements { get; } = new List<ICasement>();
-
-        public ITrigger GetOpenedTrigger()
-        {
-            return _openedTrigger;
-        }
-
-        public ITrigger GetClosedTrigger()
-        {
-            return _closedTrigger;
-        }
-
-        public Window WithCasement(Casement casement)
-        {
-            Casements.Add(casement);
-            casement.StateChanged += (s, e) => OnCasementStateChanged();
-
-            return this;
-        }
-
-        public Window WithLeftCasement(IBinaryInput fullOpenReedSwitch, IBinaryInput tiltReedSwitch = null)
-        {
-            return WithCasement(new Casement(Casement.LeftCasementId, fullOpenReedSwitch, tiltReedSwitch));
-        }
-
-        public Window WithCenterCasement(IBinaryInput fullOpenReedSwitch, IBinaryInput tiltReedSwitch = null)
-        {
-            return WithCasement(new Casement(Casement.CenterCasementId, fullOpenReedSwitch, tiltReedSwitch));
-        }
-
-        public Window WithRightCasement(IBinaryInput fullOpenReedSwitch, IBinaryInput tiltReedSwitch = null)
-        {
-            return WithCasement(new Casement(Casement.RightCasementId, fullOpenReedSwitch, tiltReedSwitch));
-        }
-
-        public override JToken ExportStatus()
-        {
-            var status = base.ExportStatus();
-
-            var state = new JObject();
-            foreach (var casement in Casements)
-            {
-                state[casement.Id] = casement.GetState().JToken;
-            }
-
-            status["State"] = state;
-
-            return status;
-        }
+        public ITrigger ClosedTrigger { get; } = new Trigger();
 
         public override ComponentFeatureCollection GetFeatures()
         {
-            return new ComponentFeatureCollection();
+            return new ComponentFeatureCollection()
+                .With(new WindowOpenStateFeature());
         }
 
-        public override void InvokeCommand(ICommand command)
+        public override ComponentFeatureStateCollection GetState()
         {
-            
+            return new ComponentFeatureStateCollection()
+                .With(new WindowState(_state));
         }
 
-        public override IList<GenericComponentState> GetSupportedStates()
+        private void Update(WindowStateChangedEventArgs eventArgs)
         {
-            return new List<GenericComponentState> { CasementStateId.Closed, CasementStateId.Tilt, CasementStateId.Open };
-        }
+            WindowStateValue newState;
+            if (eventArgs.OpenReedSwitchState == ReedSwitchState.Open)
+            {
+                newState = WindowStateValue.Open;
+            }
+            else if (eventArgs.TildReedSwitchState.HasValue && eventArgs.TildReedSwitchState.Value == ReedSwitchState.Open)
+            {
+                newState = WindowStateValue.TildOpen;
+            }
+            else
+            {
+                newState = WindowStateValue.Closed;
+            }
 
-        private void OnCasementStateChanged()
-        {
+            if (newState.Equals(_state))
+            {
+                return;
+            }
+
             var oldState = GetState();
-            var newState = GetStateInternal();
-
-            if (oldState.Equals(newState))
+            _state = newState;
+            
+            if (!_settingsService.GetComponentSettings<ComponentSettings>(Id).IsEnabled)
             {
                 return;
             }
 
-            if (!Settings.IsEnabled)
+            OnStateChanged(oldState);
+
+            if (_state == WindowStateValue.Closed)
             {
-                return;
+                ((Trigger)ClosedTrigger).Execute();
             }
-
-            SetState(newState);
-        }
-
-        private GenericComponentState GetStateInternal()
-        {
-            if (Casements.Any(c => c.GetState().Equals(CasementStateId.Open)))
+            else
             {
-                return CasementStateId.Open;
+                ((Trigger)OpenedTrigger).Execute();
             }
-
-            if (Casements.Any(c => c.GetState().Equals(CasementStateId.Tilt)))
-            {
-                return CasementStateId.Tilt;
-            }
-
-            return CasementStateId.Closed;
         }
     }
 }

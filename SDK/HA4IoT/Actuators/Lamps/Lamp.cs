@@ -36,11 +36,6 @@ namespace HA4IoT.Actuators.Lamps
                 .With(new PowerStateFeature());
         }
 
-        public void ChangeState(IComponentFeatureState state, params IHardwareParameter[] parameters)
-        {
-            // TODO: Delete!
-        }
-
         public void ResetState()
         {
             SetStateInternal(PowerStateValue.Off, true);

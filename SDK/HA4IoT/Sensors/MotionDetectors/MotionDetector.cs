@@ -50,7 +50,7 @@ namespace HA4IoT.Sensors.MotionDetectors
             };
         }
 
-        public IMotionDetectorSettings Settings { get; private set; }
+        public MotionDetectorSettings Settings { get; private set; }
 
         public ITrigger MotionDetectedTrigger { get; } = new Trigger();
 

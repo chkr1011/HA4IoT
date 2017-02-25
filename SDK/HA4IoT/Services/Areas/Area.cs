@@ -73,7 +73,7 @@ namespace HA4IoT.Services.Areas
 
         public TComponent GetComponent<TComponent>(string id) where TComponent : IComponent
         {
-            return (TComponent)_components[Id];
+            return (TComponent)_components[id];
         }
 
         public void AddAutomation(IAutomation automation)

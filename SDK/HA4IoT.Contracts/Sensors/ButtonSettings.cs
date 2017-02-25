@@ -1,10 +1,9 @@
 ﻿using System;
 using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.Sensors;
 
-namespace HA4IoT.Sensors.Buttons
+namespace HA4IoT.Contracts.Sensors
 {
-    public class ButtonSettings : ComponentSettings, IButtonSettings
+    public class ButtonSettings : ComponentSettings
     {
         private TimeSpan _pressedLongDuration = TimeSpan.FromSeconds(1.5);
 

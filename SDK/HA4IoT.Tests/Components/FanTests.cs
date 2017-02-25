@@ -3,7 +3,6 @@ using HA4IoT.Components;
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components.Features;
 using HA4IoT.Contracts.Components.States;
-using HA4IoT.Tests.Mockups;
 using HA4IoT.Tests.Mockups.Adapters;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -94,7 +93,7 @@ namespace HA4IoT.Tests.Components
             Assert.AreEqual(0, fan.GetState().Extract<LevelState>().CurrentLevel);
             Assert.AreEqual(0, adapter.CurrentLevel);
 
-            fan.InvokeCommand(new SetLevelCommand(2));
+            fan.InvokeCommand(new SetLevelCommand { Level = 2 });
             Assert.AreEqual(2, fan.GetState().Extract<LevelState>().CurrentLevel);
             Assert.AreEqual(2, adapter.CurrentLevel);
         }
@@ -113,7 +112,7 @@ namespace HA4IoT.Tests.Components
             Assert.AreEqual(0, fan.GetState().Extract<LevelState>().CurrentLevel);
             Assert.AreEqual(0, adapter.CurrentLevel);
 
-            fan.InvokeCommand(new SetLevelCommand(2));
+            fan.InvokeCommand(new SetLevelCommand { Level = 2 });
             Assert.AreEqual(2, fan.GetState().Extract<LevelState>().CurrentLevel);
             Assert.AreEqual(2, adapter.CurrentLevel);
 
@@ -136,7 +135,7 @@ namespace HA4IoT.Tests.Components
             Assert.AreEqual(0, fan.GetState().Extract<LevelState>().CurrentLevel);
             Assert.AreEqual(0, adapter.CurrentLevel);
 
-            fan.InvokeCommand(new SetLevelCommand(3));
+            fan.InvokeCommand(new SetLevelCommand { Level = 3 });
             Assert.AreEqual(3, fan.GetState().Extract<LevelState>().CurrentLevel);
             Assert.AreEqual(3, adapter.CurrentLevel);
 

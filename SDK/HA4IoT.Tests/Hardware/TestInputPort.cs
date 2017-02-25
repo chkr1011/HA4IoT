@@ -1,6 +1,6 @@
 ﻿using HA4IoT.Contracts.Hardware;
 
-namespace HA4IoT.Tests.Mockups
+namespace HA4IoT.Tests.Hardware
 {
     public class TestInputPort : TestPort, IBinaryInput
     {

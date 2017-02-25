@@ -2,11 +2,6 @@
 {
     public class SetLevelCommand : ICommand
     {
-        public SetLevelCommand(int level)
-        {
-            Level = level;
-        }
-
-        public int Level { get; }
+        public int Level { get; set; }
     }
 }

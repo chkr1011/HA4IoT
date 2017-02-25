@@ -5,7 +5,7 @@
       xmlns:converter="using:HA4IoT.Controller.Local.Converter"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      d:DesignHeight="600"
+      d:DesignHeight="800"
       d:DesignWidth="800"
       Background="WhiteSmoke"
       mc:Ignorable="d">

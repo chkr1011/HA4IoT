@@ -4,7 +4,7 @@ using HA4IoT.Contracts.Services.Settings;
 
 namespace HA4IoT.Contracts.Components
 {
-    public class ComponentSettings : IComponentSettings
+    public class ComponentSettings
     {
         private bool _isEnabled = true;
         private string _caption;

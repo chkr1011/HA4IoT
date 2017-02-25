@@ -30,7 +30,7 @@ namespace HA4IoT.Components
             if (component == null) throw new ArgumentNullException(nameof(component));
             return component.TryInvokeCommand(new ResetCommand());
         }
-        
+
         public static bool TryMoveUp(this IComponent component)
         {
             if (component == null) throw new ArgumentNullException(nameof(component));
@@ -58,9 +58,9 @@ namespace HA4IoT.Components
         public static bool TrySetLevel(this IComponent component, int level)
         {
             if (component == null) throw new ArgumentNullException(nameof(component));
-            return component.TryInvokeCommand(new SetLevelCommand(level));
+            return component.TryInvokeCommand(new SetLevelCommand { Level = level });
         }
-        
+
         public static bool TryInvokeCommand(this IComponent component, ICommand command)
         {
             if (component == null) throw new ArgumentNullException(nameof(component));

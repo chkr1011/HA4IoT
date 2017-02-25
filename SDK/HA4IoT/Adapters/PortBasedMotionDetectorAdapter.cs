@@ -1,9 +1,8 @@
 ﻿using System;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Sensors;
 
-namespace HA4IoT.Sensors.MotionDetectors
+namespace HA4IoT.Adapters
 {
     public class PortBasedMotionDetectorAdapter : IMotionDetectorAdapter
     {

@@ -1,6 +1,4 @@
-﻿using HA4IoT.Contracts.Components;
-
-namespace HA4IoT.Services.Status
+﻿namespace HA4IoT.Services.Status
 {
     public class WindowStatus
     {

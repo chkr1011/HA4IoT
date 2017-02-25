@@ -2,6 +2,7 @@
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.Sockets;
+using HA4IoT.Adapters;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
@@ -52,8 +53,11 @@ namespace HA4IoT.Controller.Main.Rooms
             ButtonLower,
             ButtonPassage,
 
-            WindowLeft,
-            WindowRight,
+            WindowLeftL,
+            WindowLeftR,
+
+            WindowRightL,
+            WindowRightR,
         }
 
         public LivingRoomConfiguration(
@@ -89,11 +93,17 @@ namespace HA4IoT.Controller.Main.Rooms
 
             var area = _areaService.RegisterArea(Room.LivingRoom);
 
-            _sensorFactory.RegisterWindow(area, LivingRoom.WindowLeft,
-                    w => w.WithLeftCasement(input0.GetInput(10), input0.GetInput(11)).WithRightCasement(input0.GetInput(9), input0.GetInput(8)));
+            _sensorFactory.RegisterWindow(area, LivingRoom.WindowLeftL,
+                    new PortBasedWindowAdapter(input0.GetInput(10), input0.GetInput(11)));
 
-            _sensorFactory.RegisterWindow(area, LivingRoom.WindowRight,
-                    w => w.WithLeftCasement(input1.GetInput(14), input1.GetInput(15)).WithRightCasement(input1.GetInput(13), input1.GetInput(12)));
+            _sensorFactory.RegisterWindow(area, LivingRoom.WindowLeftR,
+                new PortBasedWindowAdapter(input0.GetInput(9), input0.GetInput(8)));
+
+            _sensorFactory.RegisterWindow(area, LivingRoom.WindowRightL,
+                    new PortBasedWindowAdapter(input1.GetInput(14), input1.GetInput(15)));
+
+            _sensorFactory.RegisterWindow(area, LivingRoom.WindowRightR,
+                new PortBasedWindowAdapter(input1.GetInput(13), input1.GetInput(12)));
 
             _sensorFactory.RegisterTemperatureSensor(area, LivingRoom.TemperatureSensor,
                 i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));

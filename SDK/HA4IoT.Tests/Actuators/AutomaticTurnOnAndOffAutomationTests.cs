@@ -29,7 +29,7 @@ namespace HA4IoT.Tests.Actuators
                 testController.GetInstance<ISchedulerService>(),
                 testController.GetInstance<ISettingsService>());
 
-            var automation = new FlipFlopAutomation(
+            var automation = new TurnOnAndOffAutomation(
                 "Test",
                 testController.GetInstance<IDateTimeService>(), 
                 testController.GetInstance<ISchedulerService>(),
@@ -52,7 +52,7 @@ namespace HA4IoT.Tests.Actuators
         {
             var testController = new TestController();
             
-            var automation = new FlipFlopAutomation(
+            var automation = new TurnOnAndOffAutomation(
                 "Test",
                 testController.GetInstance<IDateTimeService>(),
                 testController.GetInstance<ISchedulerService>(),
@@ -84,7 +84,7 @@ namespace HA4IoT.Tests.Actuators
                 testController.GetInstance<ISchedulerService>(),
                 testController.GetInstance<ISettingsService>());
 
-            var automation = new FlipFlopAutomation(
+            var automation = new TurnOnAndOffAutomation(
                 "Test",
                 testController.GetInstance<IDateTimeService>(),
                 testController.GetInstance<ISchedulerService>(),
@@ -109,7 +109,7 @@ namespace HA4IoT.Tests.Actuators
             var testController = new TestController();
             testController.SetTime(TimeSpan.Parse("18:00:00"));
 
-            var automation = new FlipFlopAutomation(
+            var automation = new TurnOnAndOffAutomation(
                 "Test",
                 testController.GetInstance<IDateTimeService>(),
                 testController.GetInstance<ISchedulerService>(),
@@ -142,7 +142,7 @@ namespace HA4IoT.Tests.Actuators
                 testController.GetInstance<ISchedulerService>(),
                 testController.GetInstance<ISettingsService>());
 
-            var automation = new FlipFlopAutomation(
+            var automation = new TurnOnAndOffAutomation(
                 "Test",
                 testController.GetInstance<IDateTimeService>(),
                 testController.GetInstance<ISchedulerService>(),
@@ -183,7 +183,7 @@ namespace HA4IoT.Tests.Actuators
                 testController.GetInstance<ISchedulerService>(),
                 testController.GetInstance<ISettingsService>());
 
-            var automation = new FlipFlopAutomation(
+            var automation = new TurnOnAndOffAutomation(
                 "Test",
                 testController.GetInstance<IDateTimeService>(),
                 testController.GetInstance<ISchedulerService>(),
@@ -215,7 +215,7 @@ namespace HA4IoT.Tests.Actuators
             var testController = new TestController();
             testController.SetTime(TimeSpan.Parse("14:00:00"));
 
-            var automation = new FlipFlopAutomation(
+            var automation = new TurnOnAndOffAutomation(
                 "Test",
                 testController.GetInstance<IDateTimeService>(),
                 testController.GetInstance<ISchedulerService>(),

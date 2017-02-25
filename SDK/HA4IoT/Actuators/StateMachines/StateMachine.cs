@@ -8,6 +8,7 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Components.Features;
 using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Actuators.StateMachines
 {
@@ -22,6 +23,7 @@ namespace HA4IoT.Actuators.StateMachines
         {
         }
 
+        public string ResetStateId { get; set; }
 
         ////public bool SupportsState(IComponentFeatureState stateId)
         ////{
@@ -75,23 +77,32 @@ namespace HA4IoT.Actuators.StateMachines
         ////    OnActiveStateChanged(oldState, newState);
         ////}
 
-        ////public void ResetState()
-        ////{
-        ////    if (SupportsState(BinaryStateId.Off))
-        ////    {
-        ////        ChangeState(BinaryStateId.Off, new ForceUpdateStateParameter());
-        ////    }
-        ////}
-
-        ////public void SetStateIdAlias(GenericComponentState stateId, GenericComponentState alias)
-        ////{
-        ////    _stateAlias[alias] = stateId;
-        ////}
+        public void ResetState()
+        {
+            if (SupportsState(ResetStateId))
+            {
+                SetState(ResetStateId, new ForceUpdateStateParameter());
+            }
+            else
+            {
+                Log.Warning("Reset stat of StateMachine is not supported.");
+            }
+        }
 
         public override ComponentFeatureStateCollection GetState()
         {
-            return new ComponentFeatureStateCollection().With(
+            var state = new ComponentFeatureStateCollection().With(
                 new StateMachineFeatureState(_activeState?.Id));
+
+            if (this.GetSupportsOffState())
+            {
+                state.With(
+                    new PowerState(_activeState.Id == StateMachineStateExtensions.OffStateId
+                        ? PowerStateValue.Off
+                        : PowerStateValue.On));
+            }
+
+            return state;
         }
 
         public override ComponentFeatureCollection GetFeatures()
@@ -109,7 +120,7 @@ namespace HA4IoT.Actuators.StateMachines
         public override void InvokeCommand(ICommand command)
         {
             var commandInvoker = new CommandInvoker();
-            commandInvoker.Register<ResetCommand>();
+            commandInvoker.Register<ResetCommand>(c => ResetState());
             commandInvoker.Register<SetStateCommand>(c => SetState(c.Id));
             commandInvoker.Invoke(command);
         }
@@ -126,16 +137,20 @@ namespace HA4IoT.Actuators.StateMachines
 
             _states.Add(state.Id, state);
         }
-
-
-
-
-
-        private void SetState(string id)
+        
+        public bool SupportsState(string id)
         {
-            _activeState?.Deactivate();
+            return _states.ContainsKey(id);
+        }
+
+        private void SetState(string id, params IHardwareParameter[] parameters)
+        {
+            ThrowIfNoStatesAvailable();
+            ThrowIfStateNotSupported(id);
+            
+            _activeState?.Deactivate(parameters);
             _activeState = _states[id];
-            _activeState.Activate();
+            _activeState.Activate(parameters);
         }
 
         protected virtual void OnActiveStateChanged(IStateMachineState oldState, IStateMachineState newState)
@@ -147,15 +162,15 @@ namespace HA4IoT.Actuators.StateMachines
         {
             if (!_states.Any())
             {
-                throw new InvalidOperationException("The State Machine does not support any state.");
+                throw new InvalidOperationException("StateMachine does not support any state.");
             }
         }
 
-        private void ThrowIfStateNotSupported(IComponentFeatureState stateId)
+        private void ThrowIfStateNotSupported(string id)
         {
-            if (!SupportsState(stateId))
+            if (!SupportsState(id))
             {
-                throw new NotSupportedException($"State '{stateId}' is not supported.");
+                throw new NotSupportedException($"StateMachine state '{id}' is not supported.");
             }
         }
     }

@@ -1,6 +1,6 @@
 ﻿namespace HA4IoT.Services.Status
 {
-    public class ActuatorStatus
+    public class ComponentStatus
     {
         public string Id { get; set; }
 

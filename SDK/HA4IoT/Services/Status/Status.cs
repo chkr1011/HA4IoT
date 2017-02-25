@@ -8,6 +8,6 @@ namespace HA4IoT.Services.Status
 
         public List<WindowStatus> TiltWindows { get; } = new List<WindowStatus>();
 
-        public List<ActuatorStatus> ActiveActuators { get; } = new List<ActuatorStatus>();
+        public List<ComponentStatus> ActiveComponents { get; } = new List<ComponentStatus>();
     }
 }

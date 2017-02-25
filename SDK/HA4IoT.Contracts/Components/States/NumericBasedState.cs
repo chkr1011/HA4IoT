@@ -13,7 +13,7 @@ namespace HA4IoT.Contracts.Components.States
 
         public JToken Serialize()
         {
-            return JToken.FromObject(Value);
+            return Value == null ? new JValue((object)null) : JToken.FromObject(Value);
         }
     }
 }

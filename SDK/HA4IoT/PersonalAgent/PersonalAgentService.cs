@@ -5,6 +5,7 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.PersonalAgent;
 using HA4IoT.Contracts.PersonalAgent.AmazonEcho;
@@ -217,7 +218,7 @@ namespace HA4IoT.PersonalAgent
         private string GetWindowStatus()
         {
             var allWindows = _componentsRegistry.GetComponents<IWindow>();
-            var openWindows = allWindows.Where(w => w.Casements.Any(c => !c.GetState().Equals("Closed"))).ToList();
+            var openWindows = allWindows.Where(w => !w.GetState().Has(WindowState.Closed)).ToList();
 
             string response;
             if (!openWindows.Any())

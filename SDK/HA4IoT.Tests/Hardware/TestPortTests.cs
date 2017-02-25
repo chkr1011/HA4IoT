@@ -1,8 +1,9 @@
 ﻿using FluentAssertions;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
-namespace HA4IoT.Tests.Mockups
+namespace HA4IoT.Tests.Hardware
 {
     [TestClass]
     public class TestPortTests

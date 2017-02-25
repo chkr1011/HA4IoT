@@ -25,7 +25,6 @@ namespace HA4IoT.KnxFakeController
 
         private static void HandleClient(Socket client)
         {
-            // TODO: Create dedicated class for clients!
             Console.WriteLine("Handling new client...");
 
             string request = ReadFromClient(client);

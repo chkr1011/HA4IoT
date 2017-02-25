@@ -1,8 +1,8 @@
 ﻿using System;
-using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
-using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Commands;
+using HA4IoT.Contracts.Core;
 
 namespace HA4IoT.Actuators.StateMachines
 {
@@ -19,31 +19,31 @@ namespace HA4IoT.Actuators.StateMachines
         {
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
 
-            return stateMachine.SupportsState(BinaryStateId.Off);
+            return stateMachine.SupportsState(StateMachineStateExtensions.OffStateId);
         }
 
         public static bool GetSupportsOnState(this IStateMachine stateMachine)
         {
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
 
-            return stateMachine.SupportsState(BinaryStateId.On);
+            return stateMachine.SupportsState(StateMachineStateExtensions.OnStateId);
         }
 
         public static StateMachineState AddOffState(this StateMachine stateMachine)
         {
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
 
-            return stateMachine.AddState(BinaryStateId.Off);
+            return stateMachine.AddState(StateMachineStateExtensions.OffStateId);
         }
 
         public static StateMachineState AddOnState(this StateMachine stateMachine)
         {
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
 
-            return stateMachine.AddState(BinaryStateId.On);
+            return stateMachine.AddState(StateMachineStateExtensions.OnStateId);
         }
 
-        public static StateMachineState AddState(this StateMachine stateMachine, GenericComponentState id)
+        public static StateMachineState AddState(this StateMachine stateMachine, string id)
         {
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
             if (id == null) throw new ArgumentNullException(nameof(id));
@@ -53,14 +53,12 @@ namespace HA4IoT.Actuators.StateMachines
             return state;
         }
 
-        public static Action GetSetStateAction(this IStateMachine stateStateMachine, GenericComponentState stateId)
+        public static IAction GetSetStateAction(this IStateMachine stateMachine, string id)
         {
-            if (stateStateMachine == null) throw new ArgumentNullException(nameof(stateStateMachine));
-            if (stateId == null) throw new ArgumentNullException(nameof(stateId));
+            if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
+            if (id == null) throw new ArgumentNullException(nameof(id));
 
-            throw new NotImplementedException();
-            // TODO: Fix
-            //return () => stateStateMachine.ChangeState(stateId);
+            return new ActionWrapper(() => stateMachine.InvokeCommand(new SetStateCommand { Id = id }));
         }
     }
 }

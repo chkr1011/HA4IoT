@@ -1,10 +1,9 @@
 ﻿using System;
 using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.Sensors;
 
-namespace HA4IoT.Sensors.MotionDetectors
+namespace HA4IoT.Contracts.Sensors
 {
-    public class MotionDetectorSettings : ComponentSettings, IMotionDetectorSettings
+    public class MotionDetectorSettings : ComponentSettings
     {
         private TimeSpan _autoEnableAfter = TimeSpan.FromMinutes(60);
 

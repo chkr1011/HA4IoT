@@ -125,14 +125,12 @@ namespace HA4IoT.Sensors
             return motionDetector;
         }
 
-        public IWindow RegisterWindow(IArea area, Enum id, Action<Window> initializer)
+        public IWindow RegisterWindow(IArea area, Enum id, IWindowAdapter adapter)
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
-            if (initializer == null) throw new ArgumentNullException(nameof(initializer));
+            if (adapter == null) throw new ArgumentNullException(nameof(adapter));
 
-            var window = new Window($"{area.Id}.{id}", _settingsService);
-            initializer(window);
-
+            var window = new Window($"{area.Id}.{id}", adapter, _settingsService);
             area.AddComponent(window);
             return window;
         }

@@ -17,8 +17,8 @@ namespace HA4IoT.Api
         
         public ApiDispatcherService()
         {
-            Route("Status", HandleGetStatusRequest); // TODO: Append GET
-            Route("Configuration", HandleGetConfigurationRequest); // TODO: Append GET
+            Route("GetStatus", HandleGetStatusRequest);
+            Route("GetConfiguration", HandleGetConfigurationRequest);
             Route("GetActions", HandleGetActionsRequest);
         }
 

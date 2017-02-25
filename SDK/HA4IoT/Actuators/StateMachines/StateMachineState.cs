@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using HA4IoT.Contracts.Actuators;
+using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware;
 
@@ -9,18 +10,18 @@ namespace HA4IoT.Actuators.StateMachines
 {
     public class StateMachineState : IStateMachineState
     {
-        private readonly List<Action<IHardwareParameter[]>> _actions = new List<Action<IHardwareParameter[]>>(); 
-        private readonly List<PendingActuatorState> _pendingActuatorStates = new List<PendingActuatorState>();
+        private readonly List<Action<IHardwareParameter[]>> _actions = new List<Action<IHardwareParameter[]>>();
+        private readonly List<PendingComponentCommand> _pendingComponentCommands = new List<PendingComponentCommand>();
         private readonly List<Tuple<IBinaryOutput, BinaryState>> _pendingBinaryOutputStates = new List<Tuple<IBinaryOutput, BinaryState>>();
 
-        public StateMachineState(GenericComponentState id)
+        public StateMachineState(string id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
             Id = id;
         }
 
-        public GenericComponentState Id { get; }
+        public string Id { get; }
 
         public StateMachineState WithAction(Action<IHardwareParameter[]> action)
         {
@@ -30,33 +31,20 @@ namespace HA4IoT.Actuators.StateMachines
             return this;
         }
 
-        public StateMachineState WithOutput(IBinaryOutput output, BinaryState state)
+        public StateMachineState WithCommand(IComponent component, ICommand command)
+        {
+            if (component == null) throw new ArgumentNullException(nameof(component));
+            if (command == null) throw new ArgumentNullException(nameof(command));
+
+            _pendingComponentCommands.Add(new PendingComponentCommand { Component = component, Command = command });
+            return this;
+        }
+
+        public StateMachineState WithBinaryOutput(IBinaryOutput output, BinaryState state)
         {
             if (output == null) throw new ArgumentNullException(nameof(output));
 
             _pendingBinaryOutputStates.Add(new Tuple<IBinaryOutput, BinaryState>(output, state));
-            return this;
-        }
-
-        public StateMachineState WithLowOutput(IBinaryOutput output)
-        {
-            if (output == null) throw new ArgumentNullException(nameof(output));
-
-            return WithOutput(output, BinaryState.Low);
-        }
-
-        public StateMachineState WithHighOutput(IBinaryOutput output)
-        {
-            if (output == null) throw new ArgumentNullException(nameof(output));
-
-            return WithOutput(output, BinaryState.High);
-        }
-
-        public StateMachineState WithActuator(IComponent actuator, GenericComponentState state)
-        {
-            if (actuator == null) throw new ArgumentNullException(nameof(actuator));
-
-            _pendingActuatorStates.Add(new PendingActuatorState().WithActuator(actuator).WithState(state));
             return this;
         }
 
@@ -66,7 +54,7 @@ namespace HA4IoT.Actuators.StateMachines
             {
                 port.Item1.Write(port.Item2, false);
             }
-            
+
             if (!parameters.Any(p => p is IsPartOfPartialUpdateParameter))
             {
                 foreach (var port in _pendingBinaryOutputStates)
@@ -74,9 +62,9 @@ namespace HA4IoT.Actuators.StateMachines
                     port.Item1.Write(port.Item2);
                 }
 
-                foreach (var pendingActuatorState in _pendingActuatorStates)
+                foreach (var pendingActuatorState in _pendingComponentCommands)
                 {
-                    pendingActuatorState.Apply();
+                    pendingActuatorState.Invoke();
                 }
             }
 

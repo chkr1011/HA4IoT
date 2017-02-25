@@ -5,7 +5,7 @@ namespace HA4IoT.Contracts.Sensors
 {
     public interface ISwitch : IComponent
     {
-        ITrigger GetTurnedOnTrigger();
-        ITrigger GetTurnedOffTrigger();
+        ITrigger TurnedOnTrigger { get; }
+        ITrigger TurnedOffTrigger { get; }
     }
 }

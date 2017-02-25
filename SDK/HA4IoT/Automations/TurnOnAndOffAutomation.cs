@@ -18,7 +18,7 @@ using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Automations
 {
-    public class FlipFlopAutomation : AutomationBase
+    public class TurnOnAndOffAutomation : AutomationBase
     {
         private readonly object _syncRoot = new object();
         private readonly ConditionsValidator _enablingConditionsValidator = new ConditionsValidator().WithDefaultState(ConditionState.NotFulfilled);
@@ -38,7 +38,7 @@ namespace HA4IoT.Automations
         private bool _turnOffIfButtonPressedWhileAlreadyOn;
         private bool _isOn;
         
-        public FlipFlopAutomation(string id, IDateTimeService dateTimeService, ISchedulerService schedulerService, ISettingsService settingsService, IDaylightService daylightService)
+        public TurnOnAndOffAutomation(string id, IDateTimeService dateTimeService, ISchedulerService schedulerService, ISettingsService settingsService, IDaylightService daylightService)
             : base(id)
         {
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
@@ -55,10 +55,7 @@ namespace HA4IoT.Automations
 
         public TurnOnAndOffAutomationSettings Settings { get; private set; }
 
-
-        #region OLD MOVE SIMILAR TO EXTENSIONS.
-
-        public FlipFlopAutomation WithTrigger(IMotionDetector motionDetector)
+        public TurnOnAndOffAutomation WithTrigger(IMotionDetector motionDetector)
         {
             if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
 
@@ -70,9 +67,7 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        #endregion
-
-        public FlipFlopAutomation WithFlipTrigger(ITrigger trigger)
+        public TurnOnAndOffAutomation WithFlipTrigger(ITrigger trigger)
         {
             if (trigger == null) throw new ArgumentNullException(nameof(trigger));
 
@@ -80,7 +75,7 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public FlipFlopAutomation WithFlipAction(Action action)
+        public TurnOnAndOffAutomation WithFlipAction(Action action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
 
@@ -88,7 +83,7 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public FlipFlopAutomation WithFlopAction(Action action)
+        public TurnOnAndOffAutomation WithFlopAction(Action action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
 
@@ -96,22 +91,17 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public FlipFlopAutomation WithTarget(IComponent actuator)
+        public TurnOnAndOffAutomation WithTarget(IComponent actuator)
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
-            // TODO: Fix
-            //_flipActions.Add(() => actuator.ChangeState(BinaryStateId.On));
             _flipActions.Add(() => actuator.InvokeCommand(new TurnOnCommand()));
-
-            // TODO: Fix
-            //_flopActions.Add(() => actuator.ChangeState(BinaryStateId.Off));
             _flopActions.Add(() => actuator.InvokeCommand(new TurnOffCommand()));
 
             return this;
         }
 
-        public FlipFlopAutomation WithTurnOnWithinTimeRange(Func<TimeSpan> from, Func<TimeSpan> until)
+        public TurnOnAndOffAutomation WithTurnOnWithinTimeRange(Func<TimeSpan> from, Func<TimeSpan> until)
         {
             if (@from == null) throw new ArgumentNullException(nameof(from));
             if (until == null) throw new ArgumentNullException(nameof(until));
@@ -120,7 +110,7 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public FlipFlopAutomation WithEnablingCondition(ConditionRelation relation, ICondition condition)
+        public TurnOnAndOffAutomation WithEnablingCondition(ConditionRelation relation, ICondition condition)
         {
             if (condition == null) throw new ArgumentNullException(nameof(condition));
 
@@ -128,7 +118,7 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public FlipFlopAutomation WithEnabledAtDay()
+        public TurnOnAndOffAutomation WithEnabledAtDay()
         {
             Func<TimeSpan> start = () => _daylightService.Sunrise.Add(TimeSpan.FromHours(1));
             Func<TimeSpan> end = () => _daylightService.Sunset.Subtract(TimeSpan.FromHours(1));
@@ -137,7 +127,7 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public FlipFlopAutomation WithEnabledAtNight()
+        public TurnOnAndOffAutomation WithEnabledAtNight()
         {
             Func<TimeSpan> start = () => _daylightService.Sunset.Subtract(TimeSpan.FromHours(1));
             Func<TimeSpan> end = () => _daylightService.Sunrise.Add(TimeSpan.FromHours(1));
@@ -146,7 +136,7 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public FlipFlopAutomation WithSkipIfAnyActuatorIsAlreadyOn(params IComponent[] actuators)
+        public TurnOnAndOffAutomation WithSkipIfAnyActuatorIsAlreadyOn(params IComponent[] actuators)
         {
             if (actuators == null) throw new ArgumentNullException(nameof(actuators));
 
@@ -156,13 +146,13 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public FlipFlopAutomation WithTurnOffIfButtonPressedWhileAlreadyOn()
+        public TurnOnAndOffAutomation WithTurnOffIfButtonPressedWhileAlreadyOn()
         {
             _turnOffIfButtonPressedWhileAlreadyOn = true;
             return this;
         }
 
-        public FlipFlopAutomation WithPauseAfterEveryTurnOn(TimeSpan duration)
+        public TurnOnAndOffAutomation WithPauseAfterEveryTurnOn(TimeSpan duration)
         {
             _pauseDuration = duration;
             return this;

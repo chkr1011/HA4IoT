@@ -43,12 +43,20 @@ namespace HA4IoT.Contracts.Services.Settings
             return settingsService.GetSettings<TSettings>(uri);
         }
 
-        public static TSettings GetComponentSettings<TSettings>(this ISettingsService settingsService, string componentId) where TSettings : IComponentSettings
+        public static TSettings GetComponentSettings<TSettings>(this ISettingsService settingsService, string componentId) where TSettings : ComponentSettings
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
             var uri = SettingsUriGenerator.FromComponent(componentId);
             return settingsService.GetSettings<TSettings>(uri);
+        }
+
+        public static ComponentSettings GetComponentSettings(this ISettingsService settingsService, string componentId)
+        {
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
+
+            var uri = SettingsUriGenerator.FromComponent(componentId);
+            return settingsService.GetSettings<ComponentSettings>(uri);
         }
 
         public static TSettings GetAutomationSettings<TSettings>(this ISettingsService settingsService, string automationId) where TSettings : IAutomationSettings
@@ -86,7 +94,7 @@ namespace HA4IoT.Contracts.Services.Settings
             settingsService.CreateSettingsMonitor(uri, callback);
         }
 
-        public static void CreateComponentSettingsMonitor<TSettings>(this ISettingsService settingsService, string componentId, Action<TSettings> callback) where TSettings : IComponentSettings
+        public static void CreateComponentSettingsMonitor<TSettings>(this ISettingsService settingsService, string componentId, Action<TSettings> callback) where TSettings : ComponentSettings
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             

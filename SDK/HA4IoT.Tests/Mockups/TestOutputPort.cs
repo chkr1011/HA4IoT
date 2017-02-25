@@ -1,4 +1,5 @@
 ﻿using HA4IoT.Contracts.Hardware;
+using HA4IoT.Tests.Hardware;
 
 namespace HA4IoT.Tests.Mockups
 {

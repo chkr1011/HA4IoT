@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Components.Features;
+using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Settings;
@@ -25,13 +26,6 @@ namespace HA4IoT.Services.Status
 
             _componentRegistry = componentRegistry;
             _settingsService = settingsService;
-
-            apiService.StatusRequested += ExposeStatus;
-        }
-
-        private void ExposeStatus(object sender, ApiRequestReceivedEventArgs e)
-        {
-
         }
 
         [ApiMethod]
@@ -46,7 +40,7 @@ namespace HA4IoT.Services.Status
 
             status.OpenWindows.AddRange(GetOpenWindows());
             status.TiltWindows.AddRange(GetTiltWindows());
-            status.ActiveActuators.AddRange(GetActuatorStatus());
+            status.ActiveComponents.AddRange(GetComponentStatus());
 
             return status;
         }
@@ -54,31 +48,36 @@ namespace HA4IoT.Services.Status
         private List<WindowStatus> GetOpenWindows()
         {
             return _componentRegistry.GetComponents<IWindow>()
-                .Where(w => w.GetState().Equals(CasementStateId.Open))
-                .Select(w => new WindowStatus { Id = w.Id, Caption = w.Settings.Caption }).ToList();
+                .Where(w => w.GetState().Has(WindowState.Open))
+                .Select(w => new WindowStatus { Id = w.Id, Caption = _settingsService.GetComponentSettings(w.Id).Caption }).ToList();
         }
 
         private List<WindowStatus> GetTiltWindows()
         {
             return _componentRegistry.GetComponents<IWindow>()
-                .Where(w => w.GetState().Equals(CasementStateId.Tilt))
-                .Select(w => new WindowStatus { Id = w.Id, Caption = w.Settings.Caption }).ToList();
+                .Where(w => w.GetState().Has(WindowState.TildOpen))
+                .Select(w => new WindowStatus { Id = w.Id, Caption = _settingsService.GetComponentSettings(w.Id).Caption }).ToList();
         }
 
-        private List<ActuatorStatus> GetActuatorStatus()
+        private List<ComponentStatus> GetComponentStatus()
         {
-            var actuatorStatusList = new List<ActuatorStatus>();
+            var actuatorStatusList = new List<ComponentStatus>();
 
-            var actuators = _componentRegistry.GetComponents();
-            foreach (var actuator in actuators)
+            var components = _componentRegistry.GetComponents();
+            foreach (var component in components)
             {
-                if (actuator.GetState().Equals(BinaryStateId.Off))
+                if (!component.GetFeatures().Supports<PowerStateFeature>())
                 {
                     continue;
                 }
 
-                var settings = _settingsService.GetSettings<ComponentSettings>(actuator.Id);
-                var actuatorStatus = new ActuatorStatus { Id = actuator.Id, Caption = settings.Caption };
+                if (component.GetState().Has(PowerState.Off))
+                {
+                    continue;
+                }
+
+                var settings = _settingsService.GetComponentSettings<ComponentSettings>(component.Id);
+                var actuatorStatus = new ComponentStatus { Id = component.Id, Caption = settings.Caption };
                 actuatorStatusList.Add(actuatorStatus);
             }
 

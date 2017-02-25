@@ -87,12 +87,12 @@ namespace HA4IoT.Automations
             return automation;
         }
 
-        public FlipFlopAutomation RegisterTurnOnAndOffAutomation(IArea area, Enum id)
+        public TurnOnAndOffAutomation RegisterTurnOnAndOffAutomation(IArea area, Enum id)
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
 
             var automation =
-                new FlipFlopAutomation(
+                new TurnOnAndOffAutomation(
                     $"{area.Id}.{id}",
                     _dateTimeService,
                     _schedulerService,

@@ -2,8 +2,8 @@
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
+using HA4IoT.Adapters;
 using HA4IoT.Components;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services.Daylight;
@@ -50,8 +50,11 @@ namespace HA4IoT.Controller.Main.Rooms
 
             CombinedCeilingLights,
 
-            WindowLeft,
-            WindowRight
+            WindowLeftL,
+            WindowLeftR,
+
+            WindowRightL,
+            WindowRightR
         }
 
         public OfficeConfiguration(
@@ -92,11 +95,17 @@ namespace HA4IoT.Controller.Main.Rooms
 
             var area = _areaService.RegisterArea(Room.Office);
 
-            _sensorFactory.RegisterWindow(area, Office.WindowLeft,
-                w => w.WithLeftCasement(input4.GetInput(11)).WithRightCasement(input4.GetInput(12), input4.GetInput(10)));
+            _sensorFactory.RegisterWindow(area, Office.WindowLeftL,
+                new PortBasedWindowAdapter(input4.GetInput(11)));
 
-            _sensorFactory.RegisterWindow(area, Office.WindowRight,
-                w => w.WithLeftCasement(input4.GetInput(8)).WithRightCasement(input4.GetInput(9), input5.GetInput(8)));
+            _sensorFactory.RegisterWindow(area, Office.WindowLeftR,
+                new PortBasedWindowAdapter(input4.GetInput(12), input4.GetInput(10)));
+
+            _sensorFactory.RegisterWindow(area, Office.WindowRightL,
+                new PortBasedWindowAdapter(input4.GetInput(8)));
+
+            _sensorFactory.RegisterWindow(area, Office.WindowRightR,
+                new PortBasedWindowAdapter(input4.GetInput(9), input5.GetInput(8)));
 
             _sensorFactory.RegisterTemperatureSensor(area, Office.TemperatureSensor,
                 i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
@@ -149,44 +158,44 @@ namespace HA4IoT.Controller.Main.Rooms
             var rr = hsrel8[HSREL8Pin.GPIO4];
 
             light.AddOffState()
-                .WithLowOutput(fl)
-                .WithLowOutput(fm)
-                .WithLowOutput(fr)
-                .WithLowOutput(ml)
-                .WithLowOutput(mm)
-                .WithLowOutput(mr)
-                .WithLowOutput(rl)
-                .WithLowOutput(rr);
+                .WithLowBinaryOutput(fl)
+                .WithLowBinaryOutput(fm)
+                .WithLowBinaryOutput(fr)
+                .WithLowBinaryOutput(ml)
+                .WithLowBinaryOutput(mm)
+                .WithLowBinaryOutput(mr)
+                .WithLowBinaryOutput(rl)
+                .WithLowBinaryOutput(rr);
 
             light.AddOnState()
-                .WithHighOutput(fl)
-                .WithHighOutput(fm)
-                .WithHighOutput(fr)
-                .WithHighOutput(ml)
-                .WithHighOutput(mm)
-                .WithHighOutput(mr)
-                .WithHighOutput(rl)
-                .WithHighOutput(rr);
+                .WithHighBinaryOutput(fl)
+                .WithHighBinaryOutput(fm)
+                .WithHighBinaryOutput(fr)
+                .WithHighBinaryOutput(ml)
+                .WithHighBinaryOutput(mm)
+                .WithHighBinaryOutput(mr)
+                .WithHighBinaryOutput(rl)
+                .WithHighBinaryOutput(rr);
 
             light.AddState("DeskOnly")
-                .WithHighOutput(fl)
-                .WithHighOutput(fm)
-                .WithLowOutput(fr)
-                .WithHighOutput(ml)
-                .WithLowOutput(mm)
-                .WithLowOutput(mr)
-                .WithLowOutput(rl)
-                .WithLowOutput(rr);
+                .WithHighBinaryOutput(fl)
+                .WithHighBinaryOutput(fm)
+                .WithLowBinaryOutput(fr)
+                .WithHighBinaryOutput(ml)
+                .WithLowBinaryOutput(mm)
+                .WithLowBinaryOutput(mr)
+                .WithLowBinaryOutput(rl)
+                .WithLowBinaryOutput(rr);
 
             light.AddState("CouchOnly")
-                .WithLowOutput(fl)
-                .WithLowOutput(fm)
-                .WithLowOutput(fr)
-                .WithLowOutput(ml)
-                .WithLowOutput(mm)
-                .WithLowOutput(mr)
-                .WithLowOutput(rl)
-                .WithHighOutput(rr);
+                .WithLowBinaryOutput(fl)
+                .WithLowBinaryOutput(fm)
+                .WithLowBinaryOutput(fr)
+                .WithLowBinaryOutput(ml)
+                .WithLowBinaryOutput(mm)
+                .WithLowBinaryOutput(mr)
+                .WithLowBinaryOutput(rl)
+                .WithHighBinaryOutput(rr);
 
             light.WithTurnOffIfStateIsAppliedTwice();
 
@@ -200,7 +209,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             room.GetButton(Office.ButtonUpperLeft)
                 .PressedShortlyTrigger
-                .Attach(light.GetSetStateAction(BinaryStateId.On));
+                .Attach(light.GetSetStateAction(StateMachineStateExtensions.OnStateId));
         }
     }
 }

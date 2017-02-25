@@ -4,5 +4,6 @@ namespace HA4IoT.Contracts.Actuators
 {
     public interface IStateMachine : IComponent
     {
+        bool SupportsState(string id);
     }
 }

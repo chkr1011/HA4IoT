@@ -44,6 +44,7 @@ using HA4IoT.Services.Environment;
 using HA4IoT.Services.Health;
 using HA4IoT.Services.Resources;
 using HA4IoT.Services.Scheduling;
+using HA4IoT.Services.Status;
 using HA4IoT.Services.StorageService;
 using HA4IoT.Services.System;
 using HA4IoT.Settings;
@@ -134,11 +135,10 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<IDeviceRegistryService, DeviceRegistryService>();
             _container.RegisterSingleton<IAreaRegistryService, AreaRegistryService>();
             _container.RegisterSingleton<IComponentRegistryService, ComponentRegistryService>();
+            _container.RegisterSingleton<IAutomationRegistryService, AutomationRegistryService>();
 
             _container.RegisterSingleton<ActuatorFactory>();
             _container.RegisterSingleton<SensorFactory>();
-
-            _container.RegisterSingleton<IAutomationRegistryService, AutomationRegistryService>();
             _container.RegisterSingleton<AutomationFactory>();
 
             _container.RegisterSingleton<IPersonalAgentService, PersonalAgentService>();
@@ -152,6 +152,8 @@ namespace HA4IoT.Core
 
             _container.RegisterSingleton<ITwitterClientService, TwitterClientService>();
             _container.RegisterSingleton<ITelegramBotService, TelegramBotService>();
+
+            _container.RegisterSingleton<StatusService>();
         }
     }
 }

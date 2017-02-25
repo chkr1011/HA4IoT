@@ -3,6 +3,7 @@ using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
+using HA4IoT.Adapters;
 using HA4IoT.Automations;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Areas;
@@ -79,7 +80,7 @@ namespace HA4IoT.Controller.Main.Rooms
 
             var area = _areaService.RegisterArea(Room.ChildrensRoom);
 
-            _sensorFactory.RegisterWindow(area, ChildrensRoom.Window, w => w.WithCenterCasement(input0.GetInput(5), input0.GetInput(4)));
+            _sensorFactory.RegisterWindow(area, ChildrensRoom.Window, new PortBasedWindowAdapter(input0.GetInput(5), input0.GetInput(4)));
 
             _sensorFactory.RegisterTemperatureSensor(area, ChildrensRoom.TemperatureSensor,
                 i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));

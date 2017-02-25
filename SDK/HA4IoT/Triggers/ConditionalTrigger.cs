@@ -4,7 +4,7 @@ using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Triggers
 {
-    public class ConditionalTrigger : TriggerBase
+    public class ConditionalTrigger : Trigger
     {
         private ICondition _condition;
 
