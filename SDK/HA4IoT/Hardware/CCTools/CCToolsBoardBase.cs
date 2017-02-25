@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Hardware.I2C;
 using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Hardware.CCTools
@@ -13,13 +14,13 @@ namespace HA4IoT.Hardware.CCTools
 
         private readonly Dictionary<int, CCToolsBoardPort> _openPorts = new Dictionary<int, CCToolsBoardPort>();
 
-        private readonly IPortExpanderDriver _portExpanderDriver;
+        private readonly I2CIPortExpanderDriver _portExpanderDriver;
         
         private readonly byte[] _committedState;
         private readonly byte[] _state;
         private byte[] _peekedState;
 
-        protected CCToolsBoardBase(string id, IPortExpanderDriver portExpanderDriver)
+        protected CCToolsBoardBase(string id, I2CIPortExpanderDriver portExpanderDriver)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (portExpanderDriver == null) throw new ArgumentNullException(nameof(portExpanderDriver));

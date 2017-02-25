@@ -10,6 +10,7 @@ using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
+using HA4IoT.Hardware.Sonoff;
 using HA4IoT.Sensors.Buttons;
 
 namespace HA4IoT.Controller.Local
@@ -33,6 +34,7 @@ namespace HA4IoT.Controller.Local
             var areaRepository = _containerService.GetInstance<IAreaRegistryService>();
             var timerService = _containerService.GetInstance<ITimerService>();
             var settingsService = _containerService.GetInstance<ISettingsService>();
+            var sonoffDeviceService = _containerService.GetInstance<SonoffDeviceService>();
 
             var area = areaRepository.RegisterArea("TestArea");
 
@@ -47,6 +49,8 @@ namespace HA4IoT.Controller.Local
             area.AddComponent(new Socket("Socket3", await _mainPage.CreateDemoBinaryComponent("Socket 3")));
             area.AddComponent(new Socket("Socket4", await _mainPage.CreateDemoBinaryComponent("Socket 4")));
             area.AddComponent(new Socket("Socket5", await _mainPage.CreateDemoBinaryComponent("Socket 5")));
+
+            area.AddComponent(new Socket("Socket_POW_01", sonoffDeviceService.GetBinaryOutputAdapter("SonoffPow_01")));
 
             area.AddComponent(new Button("Button1", await _mainPage.CreateDemoButton("Button 1"), timerService, settingsService));
             area.AddComponent(new Button("Button2", await _mainPage.CreateDemoButton("Button 2"), timerService, settingsService));
@@ -67,7 +71,7 @@ namespace HA4IoT.Controller.Local
 
             area.GetComponent<IButton>("Button5")
                 .PressedShortlyTrigger
-                .Attach(() => area.GetComponent<ISocket>("Socket3").TryTogglePowerState());
+                .Attach(() => area.GetComponent<ISocket>("Socket_POW_01").TryTogglePowerState());
         }
     }
 }

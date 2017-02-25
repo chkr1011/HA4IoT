@@ -5,13 +5,14 @@ using HA4IoT.Contracts;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Hardware.I2C;
 using HA4IoT.Contracts.Hardware.Services;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Controller.Main.Rooms;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
-using HA4IoT.Hardware.I2CHardwareBridge;
+using HA4IoT.Hardware.I2C.I2CHardwareBridge;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
 

@@ -8,7 +8,7 @@ using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
-using HA4IoT.Hardware.I2CHardwareBridge;
+using HA4IoT.Hardware.I2C.I2CHardwareBridge;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Services.Areas;

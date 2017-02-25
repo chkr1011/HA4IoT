@@ -31,7 +31,10 @@ using HA4IoT.ExternalServices.TelegramBot;
 using HA4IoT.ExternalServices.Twitter;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
+using HA4IoT.Hardware.I2C;
+using HA4IoT.Hardware.Mqtt;
 using HA4IoT.Hardware.RemoteSwitch;
+using HA4IoT.Hardware.Sonoff;
 using HA4IoT.Networking.Http;
 using HA4IoT.Notifications;
 using HA4IoT.PersonalAgent;
@@ -129,8 +132,11 @@ namespace HA4IoT.Core
 
             _container.RegisterSingleton<II2CBusService, BuiltInI2CBusService>();
             _container.RegisterSingleton<IGpioService, GpioService>();
+            _container.RegisterSingleton<IMqttService, MqttService>();
+
             _container.RegisterSingleton<CCToolsBoardService>();
             _container.RegisterSingleton<RemoteSocketService>();
+            _container.RegisterSingleton<SonoffDeviceService>();
 
             _container.RegisterSingleton<IDeviceRegistryService, DeviceRegistryService>();
             _container.RegisterSingleton<IAreaRegistryService, AreaRegistryService>();

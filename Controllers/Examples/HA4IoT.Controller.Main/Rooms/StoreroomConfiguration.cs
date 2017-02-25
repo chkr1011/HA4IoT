@@ -5,6 +5,7 @@ using HA4IoT.Actuators.Sockets;
 using HA4IoT.Automations;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Hardware.I2C;
 using HA4IoT.Contracts.Services.ExternalServices.Twitter;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;

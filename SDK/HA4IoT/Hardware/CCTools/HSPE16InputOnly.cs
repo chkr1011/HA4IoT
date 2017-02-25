@@ -1,6 +1,7 @@
 ﻿using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Hardware.I2C;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Hardware.PortExpanderDrivers;
+using HA4IoT.Hardware.I2C.I2CPortExpanderDrivers;
 
 namespace HA4IoT.Hardware.CCTools
 {

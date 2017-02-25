@@ -1,16 +1,16 @@
 ﻿using System;
 using HA4IoT.Contracts.Api;
-using HA4IoT.Hardware.I2CHardwareBridge;
+using HA4IoT.Hardware.I2C.I2CHardwareBridge;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Hardware.RemoteSwitch
 {
     public class LPD433MHzSignalSender : ILPD433MHzSignalSender
     {
-        private readonly I2CHardwareBridge.I2CHardwareBridge _i2CHardwareBridge;
+        private readonly I2CHardwareBridge _i2CHardwareBridge;
         private readonly byte _pin;
 
-        public LPD433MHzSignalSender(I2CHardwareBridge.I2CHardwareBridge i2CHardwareBridge, byte pin, IApiDispatcherService apiController)
+        public LPD433MHzSignalSender(I2CHardwareBridge i2CHardwareBridge, byte pin, IApiDispatcherService apiController)
         {
             if (i2CHardwareBridge == null) throw new ArgumentNullException(nameof(i2CHardwareBridge));
             if (apiController == null) throw new ArgumentNullException(nameof(apiController));
