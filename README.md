@@ -6,10 +6,10 @@
 HA4IoT (Home Automation for Internet of Things) is a SDK for Home Automation applications using Windows 10 IoT Core.
 
 
-# Amazon Alexa support
-This project contains a _SKill_ for Amazon Echo (and Echo Dot) which allows controlling actuators via speech commands.
+## Amazon Alexa support
+This project contains a _Skill_ for Amazon Echo (and Echo Dot) which allows controlling actuators via speech commands.
 
-# CCTools support
+## CCTools support
 <p align="center">
   <img src="https://github.com/chkr1011/HA4IoT/blob/feature/feature-rebuild/Documentation/Images/HSRel5.jpg?raw=true" width="256">
   <img src="https://github.com/chkr1011/HA4IoT/blob/feature/feature-rebuild/Documentation/Images/HSPE16.jpg?raw=true" width="256">
@@ -23,31 +23,31 @@ This project has build in support for many devices from _CCTools_ (www.CCTools.e
 
 But also other compatible boards based on _PCF8574_, _PCA9555_ or _MAX7311_ are supported.
 
-# Itead Studio Sonoff supported
+## Itead Studio Sonoff supported
 This project has build in  support for several _Sonoff_ devices from Itead Studio (www.itead.cc). But it is necessary to replace the firmware with a different one. More information can be found here: https://github.com/arendst/Sonoff-Tasmota
 
-# Extensible
+## Extensible
 It is possible to add _Adapters_ for different hardware. I2C bus and MQTT broker are already available in the project.
 
-# Cloud based access
+## Cloud based access
 The HA4IoT WebApp is able to communicate with the controller (Raspberry Pi i.e.) using the Azure cloud. This feature requires an Azure subscription and is optionally.
 
-# Build in actuators and sensors
+## Build in actuators and sensors
 <p align="center">
-  <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Images/Overview2.png?raw=true" width="796">
+  <img src="https://github.com/chkr1011/HA4IoT/blob/feature/feature-rebuild/Documentation/Images/Overview2.png?raw=true" width="796">
 </p>
 Lots of actuators and sensors are already implemented in this project and can be reused. It is also possible to add custom actuators and sensors.
 
-# Awards
+## Awards
 This project was one of the winners of the "Windows 10 Home Automation" contest at Hackster.io. The project documentation is also available at hackster.io ([https://www.hackster.io/cyborg-titanium-14/ck-homeautomation](https://www.hackster.io/cyborg-titanium-14/ck-homeautomation)).
 > This brilliant project explores uncharted home-automation territory; it even includes a cat litterbox controller, which detects the cat and channels the air into an outdoor flue! Be sure to check out the whole hack; it's an incredible embedded system with extensive wiring built right into the house.
 >
 hackster.io (https://www.hackster.io/blog/win-10-winners)
 
-# Contributors
+## Contributors
 If you are interested in supporting this project in any way feel free to contact me. We are a growing community which needs your support.
 
-# Key features
+## Key features
 * Virtual actuators like push buttons, motion motion detectors, lamps, sockets, roller shutters which can be interconnected using a fluent API
 * Responsive WebApp for iOS, Android, OSX and Windows
 * Highly configurable automations with complex conditions
@@ -60,7 +60,7 @@ If you are interested in supporting this project in any way feel free to contact
 * Powerful RESTful API
 * Complete with fritzing sketches and documentation to build devices like 433Mhz sender, sensors etc. on your own
 
-# Built-in automations
+## Built-in automations
 * Opening roller shutters after sunrise
 * Closing roller shutters after sunset
 * Closing roller shutters if outside temperature reaches a custom value (intended for rooms below the roof)
@@ -73,14 +73,14 @@ If you are interested in supporting this project in any way feel free to contact
 * Disable every actuator temporary
 * The project provides a powerful condition framework which allows creating of complex autoamtions using C#
 
-# Personal Agent
+## Personal Agent
 Register a free bot for the messenger "Telegram" and let the bot control the home. Just tell him what he should do. The bot also supports giving status information like Weather information (Temperature, Humidity etc.), Window states (Open, Closed), Sensor values (Temperature, Humidity) etc. The bot will also send errors and warnings from the log to administrative users (which are defined in the configuration file). Every user who want's to interact with the bot must be added to a whitelist to ensure a high level of privacy.
 
 <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/PA_RollerShutterAndTemperature.PNG?raw=true" width="256">
 <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/PA_WeatherAndWindowsAndLight.PNG?raw=true" width="256">
 <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/PA_Debug.PNG?raw=true" width="256">
 
-# App
+## App
 Every actuator can be controlled using the web app which is hosted at the Raspberry Pi 2 using the build in webserver. The language for the examples is German but translation of each UI element is supported. The app shows every rooms/areas and provides several overviews like the overview of all temperature sensor. The app is based on Bootstrap and AngularJS and runs on Smartphones, Tables, PCs etc.
 
 <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/WA_SplashScreen.PNG?raw=true" width="256">
@@ -95,7 +95,7 @@ Every actuator can be controlled using the web app which is hosted at the Raspbe
 <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/WA_WeatherStation.PNG?raw=true" width="256">
 <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.11.0/WA_Info.PNG?raw=true" width="256">
 
-# Management App
+## Management App
 The management app is an HTML/JavaScript application based on AngularJS and Bootstrap which is used the configure all areas, components, automations etc. It is deployed to the controller (Raspberry Pi 2 i.e.) and can be also used to create backups from the configuration.
 
 <img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.14.0B1/MA_1.png?raw=true" width="100%">
