@@ -129,7 +129,8 @@
     <Compile Include="Actuators\StateMachines\StateMachineState.cs" />
     <Compile Include="Adapters\BinaryOutputAdapter.cs" />
     <Compile Include="Adapters\PortBasedWindowAdapter.cs" />
-    <Compile Include="Components\CommandInvoker.cs" />
+    <Compile Include="Commands\CommandInvoker.cs" />
+    <Compile Include="Commands\CommandResolver.cs" />
     <Compile Include="Components\CommandInvokerAction.cs" />
     <Compile Include="Components\ComponentStateExtensions.cs" />
     <Compile Include="Components\ICommandInvokerAction.cs" />

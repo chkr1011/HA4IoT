@@ -4,6 +4,6 @@ namespace HA4IoT.Contracts.Hardware.Services
 {
     public interface IMqttService : IService
     {
-        ushort Publish(string topic, byte[] message, MqttQosLevel qosLevel = MqttQosLevel.At_Least_Once);
+        int Publish(string topic, byte[] message, MqttQosLevel qosLevel);
     }
 }

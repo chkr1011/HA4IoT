@@ -2,11 +2,11 @@
 
 namespace HA4IoT.Contracts.Components.Features
 {
-    public class WindowOpenStateFeature : IComponentFeature
+    public class WindowStateFeature : IComponentFeature
     {
         public JToken Serialize()
         {
-            return JToken.FromObject(null);
+            return JObject.FromObject(this);
         }
     }
 }

@@ -81,6 +81,7 @@
     <Compile Include="Automations\IAutomationSettings.cs" />
     <Compile Include="Api\Cloud\CloudRequestMessage.cs" />
     <Compile Include="Api\Cloud\CloudMessageHeader.cs" />
+    <Compile Include="Commands\CommandUnknownException.cs" />
     <Compile Include="Commands\CommandNotSupportedException.cs" />
     <Compile Include="Commands\CommandParameterInvalidException.cs" />
     <Compile Include="Commands\DecreaseLevelCommand.cs" />
@@ -109,7 +110,7 @@
     <Compile Include="Components\ComponentFeatureStateChangedEventArgs.cs" />
     <Compile Include="Components\ComponentFeatureStateCollection.cs" />
     <Compile Include="Components\ComponentFeatureNotSupportedException.cs" />
-    <Compile Include="Components\Features\WindowOpenStateFeature.cs" />
+    <Compile Include="Components\Features\WindowStateFeature.cs" />
     <Compile Include="Components\IComponent.cs" />
     <Compile Include="Components\IComponentFeature.cs" />
     <Compile Include="Components\IComponentRegistryService.cs" />

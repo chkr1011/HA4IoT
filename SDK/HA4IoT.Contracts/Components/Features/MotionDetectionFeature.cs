@@ -6,7 +6,7 @@ namespace HA4IoT.Contracts.Components.Features
     {
         public JToken Serialize()
         {
-            return JToken.FromObject(null);
+            return JObject.FromObject(this);
         }
     }
 }

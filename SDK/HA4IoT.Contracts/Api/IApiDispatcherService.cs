@@ -10,7 +10,9 @@ namespace HA4IoT.Contracts.Api
 
         event EventHandler<ApiRequestReceivedEventArgs> StatusRequestCompleted;
 
-        event EventHandler<ApiRequestReceivedEventArgs> ConfigurationRequested;  
+        event EventHandler<ApiRequestReceivedEventArgs> ConfigurationRequested;
+
+        event EventHandler<ApiRequestReceivedEventArgs> ConfigurationRequestCompleted;
 
         void RegisterAdapter(IApiAdapter endpoint);
         

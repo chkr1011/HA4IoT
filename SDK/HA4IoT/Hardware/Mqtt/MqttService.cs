@@ -31,7 +31,7 @@ namespace HA4IoT.Hardware.Mqtt
             Log.Info("MQTT client (loopback) connected.");
 
             _client.MqttMsgPublishReceived += ProcessIncomingMessage;
-            
+ 
             //_client.Subscribe(new[] { "SonoffPow_01" }, new[] { MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE });
         }
 
@@ -42,7 +42,7 @@ namespace HA4IoT.Hardware.Mqtt
             this.Publish(parameters);
         }
 
-        public ushort Publish(string topic, byte[] message, MqttQosLevel qosLevel = MqttQosLevel.At_Least_Once)
+        public int Publish(string topic, byte[] message, MqttQosLevel qosLevel)
         {
             var messageId = _client.Publish(topic, message, (byte)qosLevel, false);
             Log.Verbose($"Published MQTT message for topic '{topic}'.");

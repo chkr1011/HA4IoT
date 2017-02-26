@@ -33,7 +33,7 @@ namespace HA4IoT.Sensors.Windows
         public override ComponentFeatureCollection GetFeatures()
         {
             return new ComponentFeatureCollection()
-                .With(new WindowOpenStateFeature());
+                .With(new WindowStateFeature());
         }
 
         public override ComponentFeatureStateCollection GetState()

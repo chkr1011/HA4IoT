@@ -7,7 +7,7 @@ namespace HA4IoT.Hardware.Mqtt
     public class MqttLoopbackClientChannel : IMqttNetworkChannel
     {
         private readonly object _syncRoot = new object();
-        private readonly ManualResetEvent _memorySync = new ManualResetEvent(false);
+        private readonly ManualResetEvent _memoryGate = new ManualResetEvent(false);
         private readonly MemoryStream _memory = new MemoryStream();
 
         public bool DataAvailable
@@ -28,7 +28,7 @@ namespace HA4IoT.Hardware.Mqtt
 
         public int Receive(byte[] buffer, int timeout)
         {
-            if (!_memorySync.WaitOne(timeout))
+            if (!_memoryGate.WaitOne(timeout))
             {
                 return 0;
             }
@@ -40,7 +40,7 @@ namespace HA4IoT.Hardware.Mqtt
                 if (_memory.Position == _memory.Length)
                 {
                     _memory.SetLength(0);
-                    _memorySync.Reset();
+                    _memoryGate.Reset();
                 }
 
                 return length;
@@ -54,7 +54,7 @@ namespace HA4IoT.Hardware.Mqtt
                 _memory.Write(buffer, 0, buffer.Length);
                 _memory.Position -= buffer.Length;
 
-                _memorySync.Set();
+                _memoryGate.Set();
                 return buffer.Length;
             }
         }

@@ -44,7 +44,7 @@ namespace HA4IoT.Api
 
             lock (_actions)
             {
-                _actions.Add(action.Trim(), handler);
+                _actions[action.Trim()] = handler;
             }
         }
 

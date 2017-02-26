@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HA4IoT.Commands;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
@@ -37,6 +38,7 @@ namespace HA4IoT.Services
             _settingsService = settingsService;
 
             apiService.StatusRequested += HandleApiStatusRequest;
+            apiService.Expose(this);
         }
 
         public override void Startup()
@@ -102,8 +104,23 @@ namespace HA4IoT.Services
         [ApiMethod]
         public void InvokeCommand(IApiContext apiContext)
         {
-            //var component = _components.Get(new ComponentId(componentId));
-            throw new NotImplementedException();
+            var componentId = apiContext.Parameter["ComponentId"].Value<string>();
+            var commandType = apiContext.Parameter["CommandType"].Value<string>();
+            
+            var commandResolver = new CommandResolver();
+            ICommand command;
+            try
+            {
+                command = commandResolver.Resolve(commandType, apiContext.Parameter);
+            }
+            catch (CommandUnknownException exception)
+            {
+                Log.Warning(exception, $"Tried to invoke unknown command '{commandType}'.");
+                apiContext.ResultCode = ApiResultCode.InvalidParameter;
+                return;
+            }
+            
+            GetComponent(componentId).InvokeCommand(command);
         }
 
         private void HandleApiStatusRequest(object sender, ApiRequestReceivedEventArgs e)

@@ -9,7 +9,7 @@ namespace HA4IoT.Contracts.Components.Features
 
         public JToken Serialize()
         {
-            return JToken.FromObject(SupportedStates);
+            return JObject.FromObject(this);
         }
     }
 }

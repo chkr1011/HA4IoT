@@ -56,7 +56,7 @@ namespace HA4IoT.Controller.Local
             }
         }
 
-        public async Task<IBinaryOutputAdapter> CreateDemoBinaryComponent(string caption)
+        public async Task<IBinaryOutputAdapter> CreateUIBinaryComponent(string caption)
         {
             IBinaryOutputAdapter result = null;
 
@@ -80,7 +80,7 @@ namespace HA4IoT.Controller.Local
             return result;
         }
 
-        public async Task<IButtonAdapter> CreateDemoButton(string caption)
+        public async Task<IButtonAdapter> CreateUIButton(string caption)
         {
             IButtonAdapter result = null;
 

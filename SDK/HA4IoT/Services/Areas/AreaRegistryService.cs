@@ -90,8 +90,7 @@ namespace HA4IoT.Services.Areas
                 {
                     ["Type"] = component.GetType().Name,
                     ["Settings"] = _settingsService.GetRawComponentSettings(component.Id),
-                    ["Features"] = JToken.FromObject(component.GetFeatures().Serialize())
-                    ["State"] = JToken.FromObject(component.GetState().Serialize())
+                    ["Features"] = JObject.FromObject(component.GetFeatures().Serialize()),
                 };
 
                 components[component.Id] = componentConfiguration;

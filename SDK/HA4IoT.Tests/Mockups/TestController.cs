@@ -1,11 +1,13 @@
 ﻿using System;
 using HA4IoT.Api;
+using HA4IoT.Core;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Backup;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.Notifications;
@@ -22,12 +24,13 @@ using HA4IoT.Services.Scheduling;
 using HA4IoT.Services.System;
 using HA4IoT.Settings;
 using HA4IoT.Tests.Mockups.Services;
-using SimpleInjector;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Tests.Mockups
 {
     public class TestController : IController
     {
+        private readonly TestApiAdapter _apiAdapter = new TestApiAdapter();
         private readonly Container _container = new Container();
 
         public TestController()
@@ -52,6 +55,13 @@ namespace HA4IoT.Tests.Mockups
             _container.RegisterSingleton<IAreaRegistryService, AreaRegistryService>();
 
             _container.Verify();
+
+            _container.GetInstance<IApiDispatcherService>().RegisterAdapter(_apiAdapter);
+
+            foreach (var registration in _container.GetRegistrationsOf<IService>())
+            {
+                ((IService)registration.GetInstance()).Startup();
+            }
         }
 
         public event EventHandler StartupCompleted;
@@ -71,6 +81,18 @@ namespace HA4IoT.Tests.Mockups
         public void Tick(TimeSpan elapsedTime)
         {
             ((TestTimerService)GetInstance<ITimerService>()).ExecuteTick(elapsedTime);
+        }
+
+        public void AddComponent(IComponent component)
+        {
+            if (component == null) throw new ArgumentNullException(nameof(component));
+
+            GetInstance<IComponentRegistryService>().AddComponent(component);
+        }
+
+        public IApiContext InvokeApi(string action, JObject parameter)
+        {
+            return _apiAdapter.Invoke(action, parameter);
         }
     }
 }

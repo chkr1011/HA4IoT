@@ -98,6 +98,8 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\ApiTests.cs" />
+    <Compile Include="Api\ComponentApiTests.cs" />
     <Compile Include="Components\ButtonTests.cs" />
     <Compile Include="Components\FanTests.cs" />
     <Compile Include="Components\MotionDetectorTests.cs" />
@@ -120,6 +122,7 @@
     <Compile Include="Hardware\RemoteSwitch\BrennenstuhlCodeSequenceProviderTests.cs" />
     <Compile Include="Mockups\Adapters\TestBinaryOutputAdapter.cs" />
     <Compile Include="Mockups\Adapters\TestButtonAdapter.cs" />
+    <Compile Include="Mockups\TestApiAdapter.cs" />
     <Compile Include="Mockups\TestController.cs" />
     <Compile Include="Mockups\Services\TestDateTimeService.cs" />
     <Compile Include="Mockups\Services\TestDaylightService.cs" />
