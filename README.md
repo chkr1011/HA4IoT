@@ -7,12 +7,12 @@ HA4IoT (Home Automation for Internet of Things) is an Open Source Home Automatio
 
 ## Raspberry Pi
 <p align="center">
-  <img src="https://github.com/chkr1011/HA4IoT/blob/feature/feature-rebuild/Documentation/Images/Pi2.JPG?raw=true" width="256">
+  <img src="https://github.com/chkr1011/HA4IoT/blob/feature/feature-rebuild/Documentation/Images/Pi2.JPG?raw=true" width="512">
 </p>
 The core application of this project is running under Windows 10 IoT Core which is available for free and runs on a Raspberry Pi 2/3 for example. But any other compatible board is supported.
 
 ## Amazon Alexa support
-This project contains a _Custom Skill_ for Amazon Alexa (Echo and Echo Dot) which allows controlling actuators via speech commands and ask for sensor status like open windows etc.
+This project contains a _Custom Skill_ for Amazon Alexa (Echo and Echo Dot) which allows controlling actuators via speech commands and ask for sensor status like open windows etc. A demonstration is available here: https://www.youtube.com/watch?v=9089vAgu2pQ.
 
 ## CCTools support
 <p align="center">
