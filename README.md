@@ -7,7 +7,7 @@ HA4IoT (Home Automation for Internet of Things) is an Open Source Home Automatio
 
 ## Raspberry Pi
 <p align="center">
-  <img src="https://github.com/chkr1011/HA4IoT/blob/feature/feature-rebuild/Documentation/Images/Pi2.JPG?raw=true" width="512">
+  <img src="https://github.com/chkr1011/HA4IoT/blob/feature/feature-rebuild/Documentation/Images/Pi2.JPG?raw=true" width="375">
 </p>
 The core application of this project is running under Windows 10 IoT Core which is available for free and runs on a Raspberry Pi 2/3 for example. But any other compatible board is supported.
 
