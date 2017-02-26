@@ -3,11 +3,10 @@
 </p>
 
 # HA4IoT
-HA4IoT (Home Automation for Internet of Things) is a SDK for Home Automation applications using Windows 10 IoT Core.
-
+HA4IoT (Home Automation for Internet of Things) is an Open Source Home Automation application running on Windows 10 IoT Core. It allows integration of different hardware actuators and sensors. It also provides a HTML/JavaScript based WebApp to control the system. But also other external services like Alexa, Twitter, Telegram etc. are supported.
 
 ## Amazon Alexa support
-This project contains a _Skill_ for Amazon Echo (and Echo Dot) which allows controlling actuators via speech commands.
+This project contains a _Custom Skill_ for Amazon Alexa (Echo and Echo Dot) which allows controlling actuators via speech commands and ask for sensor status like open windows etc.
 
 ## CCTools support
 <p align="center">
@@ -21,7 +20,10 @@ This project has build in support for many devices from _CCTools_ (www.CCTools.e
 * I2C-Port16-HS
 * PCF-Ports-HS
 
-But also other compatible boards based on _PCF8574_, _PCA9555_ or _MAX7311_ are supported.
+But also other compatible I2C boards based on _PCF8574_, _PCA9555_ or _MAX7311_ are supported.
+
+## 433 MHz support
+Controlling old 433 MHz devices is supported via using a I2C -> 433 MHz sender bridge. Also recording 433 MHz signals like from a TV remote is supported. 
 
 ## Itead Studio Sonoff supported
 This project has build in  support for several _Sonoff_ devices from Itead Studio (www.itead.cc). But it is necessary to replace the firmware with a different one. More information can be found here: https://github.com/arendst/Sonoff-Tasmota
