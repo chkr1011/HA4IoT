@@ -11,7 +11,7 @@ namespace HA4IoT.Actuators.StateMachines
 
         public void Invoke()
         {
-            Component?.InvokeCommand(Command);
+            Component?.ExecuteCommand(Command);
         }
     }
 }

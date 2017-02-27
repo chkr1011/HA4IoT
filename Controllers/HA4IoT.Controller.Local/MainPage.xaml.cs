@@ -4,7 +4,6 @@ using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using HA4IoT.Contracts;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
@@ -31,7 +30,7 @@ namespace HA4IoT.Controller.Local
             };
 
             _controller = new Core.Controller(options);
-            
+
             // The app is only available from other machines. https://msdn.microsoft.com/en-us/library/windows/apps/Hh780593.aspx
             StoragePathTextBox.Text = StoragePath.StorageRoot;
             AppPathTextBox.Text = StoragePath.AppRoot;
@@ -56,7 +55,31 @@ namespace HA4IoT.Controller.Local
             }
         }
 
-        public async Task<IBinaryOutputAdapter> CreateUIBinaryComponent(string caption)
+        public async Task<IMotionDetectorAdapter> CreateUIMotionDetectorAdapter(string caption)
+        {
+            IMotionDetectorAdapter result = null;
+
+            await Dispatcher.RunAsync(
+                CoreDispatcherPriority.Normal,
+                () =>
+                {
+                    var checkBox = new CheckBox
+                    {
+                        Content = caption
+                    };
+
+                    var adapter = new UIMotionDetectorAdapter(checkBox);
+                    adapter.Connect();
+
+                    DemoMotionDetectorsPanel.Children.Add(checkBox);
+
+                    result = adapter;
+                });
+
+            return result;
+        }
+
+        public async Task<IBinaryOutputAdapter> CreateUIBinaryOutputAdapter(string caption)
         {
             IBinaryOutputAdapter result = null;
 
@@ -70,9 +93,9 @@ namespace HA4IoT.Controller.Local
                         Content = caption
                     };
 
-                    var adapter = new UICheckBoxAdapter(checkBox);
+                    var adapter = new UIBinaryOutputAdapter(checkBox);
 
-                    DemoLampsStackPanel.Children.Add(checkBox);
+                    DemoLampsPanel.Children.Add(checkBox);
 
                     result = adapter;
                 });
@@ -80,7 +103,7 @@ namespace HA4IoT.Controller.Local
             return result;
         }
 
-        public async Task<IButtonAdapter> CreateUIButton(string caption)
+        public async Task<IButtonAdapter> CreateUIButtonAdapter(string caption)
         {
             IButtonAdapter result = null;
 
@@ -88,15 +111,13 @@ namespace HA4IoT.Controller.Local
                 CoreDispatcherPriority.Normal,
                 () =>
                 {
-                    var button = new Button();
-                    button.Content = caption;
+                    var button = new Button { Content = caption };
+                    var adapter = new UIButtonAdapter(button);
+                    adapter.Connect();
 
-                    var endpoint = new UIButtonButtonEndpoint(button);
-                    endpoint.Connect();
+                    DemoButtonPanel.Children.Add(button);
 
-                    DemoButtonStackPanel.Children.Add(button);
-
-                    result = endpoint;
+                    result = adapter;
                 });
 
             return result;

@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Components
 {
-    public interface ICommandInvokerAction
+    public interface IcommandExecutorAction
     {
         void Invoke(ICommand command);
     }

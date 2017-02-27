@@ -1,5 +1,3 @@
-app.controller("AppController", ["$scope", "$http", AppController]);
-
 function getVersion(callback) {
     $.get("cache.manifest", function (data) {
         var parser = new RegExp("# Version ([0-9|.]*)", "");
@@ -9,13 +7,15 @@ function getVersion(callback) {
     });
 }
 
-function AppController($scope, $http) {
+function createAppController($http, $scope, modalService, apiService, localizationService, componentService) {
     var c = this;
 
     c.isInitialized = false;
     c.appConfiguration = { showWeatherStation: true, showSensorsOverview: true, showRollerShuttersOverview: true, showMotionDetectorsOverview: true, showWindowsOverview: true }
 
     c.Areas = [];
+    c.Status = null;
+    c.StatusHash = "";
 
     c.sensors = [];
     c.rollerShutters = [];
@@ -25,6 +25,9 @@ function AppController($scope, $http) {
     c.activeRoom = "";
     c.errorMessage = null;
     c.version = "-";
+
+    c.componentService = componentService;
+    c.localizationService = localizationService;
 
     getVersion(function (version) {
         c.version = version;
@@ -38,29 +41,24 @@ function AppController($scope, $http) {
         postController("Service/INotificationService/Delete", { "Uid": uid });
     }
 
-    c.generateRooms = function () {
+    c.loadConfiguration = function () {
+        apiService.executeApi("GetConfiguration", {}, null, function (response) {
 
-        $http.get("/api/Configuration").success(function (data) {
+            localizationService.load(response.Result.Controller.Language);
 
-            c.notifyConfigurationLoaded(data);
+            $.each(response.Result.Areas, function (areaId, area) {
 
-            $.each(data.Areas, function (areaId, area) {
-                if (!getAppSetting(area, "IsVisible", false)) {
+                var components = area.Components;
+
+                area.Id = areaId;
+                configureArea(area);
+
+                if (!area.IsVisible) {
                     return;
                 }
 
-                var areaControl = {
-                    Id: areaId,
-                    Caption: getAppSetting(area, "Caption", areaId),
-                    SortValue: getAppSetting(area, "SortValue", 0),
-                    Components: [],
-                    Automations: [],
-                    OnStateCount: 0
-                };
-
-                $.each(area.Components, function (componentId, component) {
+                $.each(components, function (componentId, component) {
                     component.Id = componentId;
-
                     configureComponent(area, component);
 
                     if (!component.IsVisible) {
@@ -78,10 +76,10 @@ function AppController($scope, $http) {
                         c.windows.push(component);
                     }
 
-                    areaControl.Components.push(component);
+                    area.Components.push(component);
                 });
 
-                c.Areas.push(areaControl);
+                c.Areas.push(area);
             });
 
             if (c.sensors.length === 0) {
@@ -106,9 +104,12 @@ function AppController($scope, $http) {
 
             c.pollStatus();
             c.isInitialized = true;
+        },
+        function() {
+            modalService.show("Configuration not available", "Unable to load the configuration. Please try again later.");
         });
     };
-
+    
     c.setActivePanel = function (id) {
         if (c.activePanel === id) {
             c.activePanel = "";
@@ -124,43 +125,30 @@ function AppController($scope, $http) {
     }
 
     c.pollStatus = function () {
-        $.ajax({ method: "GET", url: "/api/status", timeout: 2500 }).done(function (data) {
+
+        apiService.executeApi("GetStatus", {}, c.StatusHash, function (response) {
             c.errorMessage = null;
 
-            if (c.status != null && data.$Hash === c.status.$Hash) {
+            if (c.StatusHash === response.ResultHash) {
+                setTimeout(function () { c.pollStatus(); }, 500);
                 return;
             }
 
-            c.status = data;
+            c.Status = response.Result;
+            c.StatusHash = response.ResultHash;
             console.log("Updating UI due to state changes");
 
-            $.each(data.Components, function (id, state) {
-                c.updateStatus(id, state);
-            });
+            $.each(response.Result.Components,
+                function (id, component) {
+                    c.updateComponentState(id, component);
+                });
 
             updateOnStateCounters(c.Areas);
+            $scope.$apply(function () { $scope.msgs = response.Result; });
 
-            $scope.$apply(function () { $scope.msgs = data; });
-        }).fail(function (jqXHR, textStatus, errorThrown) {
-            c.errorMessage = textStatus;
-        }).always(function () {
-            setTimeout(function () { c.pollStatus(); }, 250);
+            c.pollStatus();
         });
     };
-
-    $scope.toggleState = function (component) {
-        var newState = "On";
-        if (component.state.State === "On") {
-            newState = "Off";
-        }
-
-        invokeComponent(component.Id, { State: newState }, function () { component.state.State = newState; });
-    };
-
-    $scope.invokeVirtualButton = function (actuator) {
-        invokeComponent(actuator.Id, {});
-        c.pollStatus();
-    }
 
     $scope.toggleIsEnabled = function (component) {
         var isEnabled = !component.Settings.IsEnabled;
@@ -172,36 +160,35 @@ function AppController($scope, $http) {
         });
     };
 
-    $scope.setState = function (component, newState) {
-        invokeComponent(component.Id, {
-            State: newState
-        }, function () {
-            component.state.State = newState;
-        });
-    };
-
-    c.updateStatus = function (id, state) {
+    c.updateComponentState = function (componentId, updatedComponent) {
         $.each(c.Areas, function (i, area) {
-            $.each(area.Components, function (i, component) {
-
-                if (component.Id === id) {
-                    component.state = state;
+            $.each(area.Components, function (j, component) {
+                if (component.Id === componentId) {
+                    component.Settings = updatedComponent.Settings;
+                    component.State = updatedComponent.State;
                 }
-
-                return;
             });
         });
     };
 
-    c.generateRooms();
+    c.loadConfiguration();
+}
+
+function configureArea(area) {
+
+    area.Caption = getAppSetting(area, "Caption", "#" + area.Id);
+    area.SortValue = getAppSetting(area, "SortValue", 0);
+    area.IsVisible = getAppSetting(area, "IsVisible", true);
+    area.Components = [];
+    area.OnStateCount = 0;
 }
 
 function configureComponent(area, component) {
 
     component.Image = getAppSetting(component, "Image", "DefaultActuator");
 
-    component.Caption = getAppSetting(component, "Caption", component.id);
-    component.OverviewCaption = getAppSetting(component, "OverviewCaption", component.id);
+    component.Caption = getAppSetting(component, "Caption", "#" + component.Id);
+    component.OverviewCaption = getAppSetting(component, "OverviewCaption", "#" + component.Id);
 
     component.SortValue = getAppSetting(component, "SortValue", 0);
     component.IsVisible = getAppSetting(component, "IsVisible", true);
@@ -210,14 +197,10 @@ function configureComponent(area, component) {
     component.IsPartOfOnStateCounter = getAppSetting(component, "IsPartOfOnStateCounter", false);
     component.OnStateId = getAppSetting(component, "OnStateId", "On");
 
-    component.state = {};
+    component.State = {};
 
     switch (component.Type) {
         case "Lamp":
-            {
-                component.Template = "Views/ToggleTemplate.html";
-                break;
-            }
         case "Socket":
             {
                 component.Template = "Views/ToggleTemplate.html";
@@ -247,7 +230,7 @@ function configureComponent(area, component) {
                         component.Settings.SupportedStates = [];
                     }
 
-                    var stateSettings = component.Settings.SupportedStates.find(function(i) {
+                    var stateSettings = component.Settings.SupportedStates.find(function (i) {
                         return i.Id === supportedState;
                     });
 
@@ -287,7 +270,7 @@ function configureComponent(area, component) {
 
         case "Button":
             {
-                component.Template = "Views/VirtualButtonTemplate.html";
+                component.Template = "Views/ButtonTemplate.html";
                 break;
             }
 
@@ -322,7 +305,7 @@ function getAppSetting(component, name, defaultValue) {
 
     var value = component.Settings[name];
 
-    if (value === undefined) {
+    if (value === undefined || value === null) {
         return defaultValue;
     }
 
@@ -341,26 +324,7 @@ function updateOnStateCounters(areas) {
             }
         });
 
-        area.OnStateCount = count;
-    });
-}
-
-
-function postController(uri, body, successCallback) {
-    // This hack is required for Safari because only one Ajax request at the same time is allowed.
-    var url = "/api/" + uri + "?body=" + JSON.stringify(body);
-
-    $.ajax({
-        method: "POST",
-        url: url,
-        contentType: "application/json; charset=utf-8",
-        timeout: 2500
-    }).done(function () {
-        if (successCallback != null) {
-            successCallback();
-        }
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        alert(textStatus);
+        area.OnStateCount = count + 10; // TEST!
     });
 }
 

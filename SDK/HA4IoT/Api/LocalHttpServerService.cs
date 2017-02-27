@@ -1,24 +1,19 @@
 ﻿using System;
 using System.Net;
 using System.Text;
-using Windows.Security.Cryptography;
-using Windows.Security.Cryptography.Core;
 using HA4IoT.Contracts.Api;
-using HA4IoT.Contracts.Api.Cloud;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Networking.Http;
 using HA4IoT.Networking.Json;
 using HA4IoT.Networking.WebSockets;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Api
 {
     public class LocalHttpServerService : ServiceBase, IApiAdapter
     {
-        private readonly HashAlgorithmProvider _hashAlgorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Md5);
         private readonly IApiDispatcherService _apiDispatcherService;
         private readonly HttpServer _httpServer;
 
@@ -43,7 +38,6 @@ namespace HA4IoT.Api
 
         public void NotifyStateChanged(IComponent component)
         {
-            // Let the NEXT client create a new state which is cached for all.
         }
 
         private void DispatchHttpRequest(object sender, HttpRequestReceivedEventArgs eventArgs)
@@ -53,18 +47,12 @@ namespace HA4IoT.Api
                 return;
             }
             
-            eventArgs.IsHandled = true;
             DispatchHttpRequest(eventArgs.Context);
+            eventArgs.IsHandled = true;
         }
 
         private void DispatchHttpRequest(HttpContext httpContext)
         {
-            if (httpContext.Request.Uri.StartsWith("/api/Invoke"))
-            {
-                DispatchGenericHttpRequest(httpContext);
-                return;
-            }
-            
             IApiContext apiContext = CreateApiContext(httpContext);
             if (apiContext == null)
             {
@@ -81,67 +69,20 @@ namespace HA4IoT.Api
                 return;
             }
 
-            if (eventArgs.Context.Result == null)
-            {
-                eventArgs.Context.Result = new JObject();
-            }
-
-            httpContext.Response.StatusCode = ConvertResultCode(eventArgs.Context.ResultCode);
-
-            if (apiContext.UseHash)
-            {
-                var serverHash = GenerateHash(apiContext.Result.ToString());
-                eventArgs.Context.Result["$Hash"] = serverHash;
-
-                var serverHashWithQuotes = "\"" + serverHash + "\"";
-
-                string clientHash;
-                if (httpContext.Request.Headers.TryGetValue(HttpHeaderNames.IfNoneMatch, out clientHash))
-                {
-                    if (clientHash.Equals(serverHashWithQuotes))
-                    {
-                        httpContext.Response.StatusCode = HttpStatusCode.NotModified;
-                        return;
-                    }
-                }
-
-                httpContext.Response.Headers[HttpHeaderNames.ETag] = serverHashWithQuotes;
-            }
-
-            httpContext.Response.Body = new JsonBody(eventArgs.Context.Result);
-        }
-
-        private void DispatchGenericHttpRequest(HttpContext httpContext)
-        {
-            var timestamp = DateTime.UtcNow;
-
-            var bodyText = Encoding.UTF8.GetString(httpContext.Request.Body ?? new byte[0]);
-            var genericApiRequest = JsonConvert.DeserializeObject<ApiRequest>(bodyText);
-            var apiContext = new ApiContext(genericApiRequest.Action, genericApiRequest.Parameter);
-
-            var eventArgs = new ApiRequestReceivedEventArgs(apiContext);
-            RequestReceived?.Invoke(this, eventArgs);
-            if (!eventArgs.IsHandled)
-            {
-                httpContext.Response.StatusCode = HttpStatusCode.BadRequest;
-                return;
-            }
-
-            if (eventArgs.Context.Result == null)
-            {
-                eventArgs.Context.Result = new JObject();
-            }
-
             httpContext.Response.StatusCode = HttpStatusCode.OK;
+            if (eventArgs.ApiContext.Result == null)
+            {
+                eventArgs.ApiContext.Result = new JObject();
+            }
 
-            var response = new ApiResponse
+            var apiResponse = new ApiResponse
             {
                 ResultCode = apiContext.ResultCode,
                 Result = apiContext.Result,
-                InternalProcessingDuration = (int)(DateTime.UtcNow - timestamp).TotalMilliseconds
+                ResultHash = apiContext.ResultHash
             };
 
-            httpContext.Response.Body = new JsonBody(JObject.FromObject(response));
+            httpContext.Response.Body = new JsonBody(JObject.FromObject(apiResponse));
         }
 
         private void AttachWebSocket(object sender, WebSocketConnectedEventArgs eventArgs)
@@ -161,12 +102,9 @@ namespace HA4IoT.Api
         private void DispatchWebSocketMessage(object sender, WebSocketMessageReceivedEventArgs e)
         {
             var requestMessage = JObject.Parse(((WebSocketTextMessage)e.Message).Text);
+            var apiRequest = requestMessage.ToObject<ApiRequest>();
 
-            var correlationId = (string)requestMessage["CorrelationId"];
-            var uri = (string)requestMessage["Uri"];
-            var request = (JObject)requestMessage["Content"] ?? new JObject();
-
-            var context = new ApiContext(uri, request);
+            var context = new ApiContext(apiRequest.Action, apiRequest.Parameter, apiRequest.ResultHash);
             var eventArgs = new ApiRequestReceivedEventArgs(context);
             RequestReceived?.Invoke(this, eventArgs);
 
@@ -177,25 +115,12 @@ namespace HA4IoT.Api
 
             var responseMessage = new JObject
             {
-                ["CorrelationId"] = correlationId,
+                ["CorrelationId"] = requestMessage["CorrelationId"].Value<string>(),
                 ["ResultCode"] = context.ResultCode.ToString(),
                 ["Content"] = context.Result
             };
             
             e.WebSocketClientSession.SendAsync(responseMessage.ToString()).Wait();
-        }
-
-        private HttpStatusCode ConvertResultCode(ApiResultCode resultCode)
-        {
-            switch (resultCode)
-            {
-                case ApiResultCode.Success: return HttpStatusCode.OK;
-                case ApiResultCode.UnhandledException: return HttpStatusCode.InternalServerError;
-                case ApiResultCode.ActionNotSupported: return HttpStatusCode.NotFound;
-                case ApiResultCode.InvalidParameter: return HttpStatusCode.BadRequest;
-            }
-
-            throw new NotSupportedException();
         }
 
         private ApiContext CreateApiContext(HttpContext httpContext)
@@ -204,10 +129,10 @@ namespace HA4IoT.Api
             {
                 var bodyText = Encoding.UTF8.GetString(httpContext.Request.Body ?? new byte[0]);
 
-                var body = string.IsNullOrEmpty(bodyText) ? new JObject() : JObject.Parse(bodyText);
                 var action = httpContext.Request.Uri.Substring("/api/".Length);
-
-                return new ApiContext(action, body);
+                var parameter = string.IsNullOrEmpty(bodyText) ? new JObject() : JObject.Parse(bodyText);
+                
+                return new ApiContext(action, parameter, null);
             }
             catch (Exception)
             {
@@ -215,14 +140,6 @@ namespace HA4IoT.Api
 
                 return null;
             }
-        }
-
-        private string GenerateHash(string input)
-        {
-            var buffer = CryptographicBuffer.ConvertStringToBinary(input, BinaryStringEncoding.Utf8);
-            var hashBuffer = _hashAlgorithm.HashData(buffer);
-
-            return CryptographicBuffer.EncodeToBase64String(hashBuffer);
         }
     }
 }

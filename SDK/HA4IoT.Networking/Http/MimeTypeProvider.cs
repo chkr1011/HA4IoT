@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Networking.Http
 {
-    public class MimeTypeProvider
+    public static class MimeTypeProvider
     {
         public const string Csv = "text/csv; charset=utf-8";
         public const string Html = "text/html; charset=utf-8";
@@ -15,7 +15,7 @@ namespace HA4IoT.Networking.Http
         public const string PlainText = "text/plain; charset=utf-8";
         public const string OctetStream = "application/octet-stream";
 
-        public string GetMimeTypeFromFile(string filename)
+        public static string GetMimeTypeFromFile(string filename)
         {
             string extension = Path.GetExtension(filename).ToLower();
             switch (extension)

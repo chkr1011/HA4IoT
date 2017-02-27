@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.Sockets;
+using HA4IoT.Adapters;
 using HA4IoT.Components;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
@@ -12,6 +13,7 @@ using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.Sonoff;
 using HA4IoT.Sensors.Buttons;
+using HA4IoT.Sensors.MotionDetectors;
 
 namespace HA4IoT.Controller.Local
 {
@@ -38,27 +40,28 @@ namespace HA4IoT.Controller.Local
 
             var area = areaRepository.RegisterArea("TestArea");
 
-            area.AddComponent(new Lamp("Lamp1", await _mainPage.CreateUIBinaryComponent("Lamp 1")));
-            area.AddComponent(new Lamp("Lamp2", await _mainPage.CreateUIBinaryComponent("Lamp 2")));
-            area.AddComponent(new Lamp("Lamp3", await _mainPage.CreateUIBinaryComponent("Lamp 3")));
-            area.AddComponent(new Lamp("Lamp4", await _mainPage.CreateUIBinaryComponent("Lamp 4")));
-            area.AddComponent(new Lamp("Lamp5", await _mainPage.CreateUIBinaryComponent("Lamp 5")));
+            area.AddComponent(new Lamp("Lamp1", await _mainPage.CreateUIBinaryOutputAdapter("Lamp 1")));
+            area.AddComponent(new Lamp("Lamp2", await _mainPage.CreateUIBinaryOutputAdapter("Lamp 2")));
+            area.AddComponent(new Lamp("Lamp3", await _mainPage.CreateUIBinaryOutputAdapter("Lamp 3")));
+            area.AddComponent(new Lamp("Lamp4", await _mainPage.CreateUIBinaryOutputAdapter("Lamp 4")));
+            area.AddComponent(new Lamp("Lamp5", await _mainPage.CreateUIBinaryOutputAdapter("Lamp 5")));
 
-            area.AddComponent(new Socket("Socket1", await _mainPage.CreateUIBinaryComponent("Socket 1")));
-            area.AddComponent(new Socket("Socket2", await _mainPage.CreateUIBinaryComponent("Socket 2")));
-            area.AddComponent(new Socket("Socket3", await _mainPage.CreateUIBinaryComponent("Socket 3")));
-            area.AddComponent(new Socket("Socket4", await _mainPage.CreateUIBinaryComponent("Socket 4")));
-            area.AddComponent(new Socket("Socket5", await _mainPage.CreateUIBinaryComponent("Socket 5")));
+            area.AddComponent(new Socket("Socket1", await _mainPage.CreateUIBinaryOutputAdapter("Socket 1")));
+            area.AddComponent(new Socket("Socket2", await _mainPage.CreateUIBinaryOutputAdapter("Socket 2")));
+            area.AddComponent(new Socket("Socket3", await _mainPage.CreateUIBinaryOutputAdapter("Socket 3")));
+            area.AddComponent(new Socket("Socket4", await _mainPage.CreateUIBinaryOutputAdapter("Socket 4")));
+            area.AddComponent(new Socket("Socket5", await _mainPage.CreateUIBinaryOutputAdapter("Socket 5")));
 
             area.AddComponent(new Socket("Socket_POW_01", sonoffDeviceService.GetAdapterForPow("SonoffPow_01")));
 
-            area.AddComponent(new Button("Button1", await _mainPage.CreateUIButton("Button 1"), timerService, settingsService));
-            area.AddComponent(new Button("Button2", await _mainPage.CreateUIButton("Button 2"), timerService, settingsService));
-            area.AddComponent(new Button("Button3", await _mainPage.CreateUIButton("Button 3"), timerService, settingsService));
-            area.AddComponent(new Button("Button4", await _mainPage.CreateUIButton("Button 4"), timerService, settingsService));
-            area.AddComponent(new Button("Button5", await _mainPage.CreateUIButton("Button 5"), timerService, settingsService));
+            area.AddComponent(new Button("Button1", await _mainPage.CreateUIButtonAdapter("Button 1"), timerService, settingsService));
+            area.AddComponent(new Button("Button2", await _mainPage.CreateUIButtonAdapter("Button 2"), timerService, settingsService));
+            area.AddComponent(new Button("Button3", await _mainPage.CreateUIButtonAdapter("Button 3"), timerService, settingsService));
+            area.AddComponent(new Button("Button4", await _mainPage.CreateUIButtonAdapter("Button 4"), timerService, settingsService));
+            area.AddComponent(new Button("Button5_SONOFF", new VirtualButtonAdapter(), timerService, settingsService));
 
-            area.GetComponent<IButton>("Button1").PressedShortlyTrigger.Attach(() => area.GetComponent<ILamp>("Lamp1").TryTogglePowerState());
+            area.AddComponent(new MotionDetector("Motion1", await _mainPage.CreateUIMotionDetectorAdapter("Motion Detector 1"), _containerService.GetInstance<ISchedulerService>(), _containerService.GetInstance<ISettingsService>()));
+            
             area.GetComponent<IButton>("Button1").PressedLongTrigger.Attach(() => area.GetComponent<ILamp>("Lamp2").TryTogglePowerState());
 
             area.GetComponent<IButton>("Button3")
@@ -69,7 +72,7 @@ namespace HA4IoT.Controller.Local
                 .PressedShortlyTrigger
                 .Attach(() => area.GetComponent<ISocket>("Socket2").TryTogglePowerState());
 
-            area.GetComponent<IButton>("Button5")
+            area.GetComponent<IButton>("Button5_SONOFF")
                 .PressedShortlyTrigger
                 .Attach(() => area.GetComponent<ISocket>("Socket_POW_01").TryTogglePowerState());
         }

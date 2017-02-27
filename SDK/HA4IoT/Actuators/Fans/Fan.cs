@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Commands;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Adapters;
@@ -24,7 +25,7 @@ namespace HA4IoT.Actuators.Fans
 
             _adapter = adapter;
 
-            SetNextLevelAction = new ActionWrapper(() => InvokeCommand(new IncreaseLevelCommand()));
+            SetNextLevelAction = new ActionWrapper(() => ExecuteCommand(new IncreaseLevelCommand()));
         }
 
         public IAction SetNextLevelAction { get; }
@@ -51,17 +52,17 @@ namespace HA4IoT.Actuators.Fans
             }
         }
 
-        public override void InvokeCommand(ICommand command)
+        public override void ExecuteCommand(ICommand command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
 
-            var commandInvoker = new CommandInvoker();
-            commandInvoker.Register<TurnOffCommand>(c => SetLevelInternal(0));
-            commandInvoker.Register<TurnOnCommand>(c => SetLevelInternal(_adapter.MaxLevel));
-            commandInvoker.Register<SetLevelCommand>(c => SetLevelInternal(c.Level));
-            commandInvoker.Register<IncreaseLevelCommand>(c => SetLevelInternal(_currentLevel+1));
-            commandInvoker.Register<DecreaseLevelCommand>(c => SetLevelInternal(_currentLevel-1));
-            commandInvoker.Invoke(command);
+            var commandExecutor = new CommandExecutor();
+            commandExecutor.Register<TurnOffCommand>(c => SetLevelInternal(0));
+            commandExecutor.Register<TurnOnCommand>(c => SetLevelInternal(_adapter.MaxLevel));
+            commandExecutor.Register<SetLevelCommand>(c => SetLevelInternal(c.Level));
+            commandExecutor.Register<IncreaseLevelCommand>(c => SetLevelInternal(_currentLevel+1));
+            commandExecutor.Register<DecreaseLevelCommand>(c => SetLevelInternal(_currentLevel-1));
+            commandExecutor.Invoke(command);
         }
 
         public void ResetState()

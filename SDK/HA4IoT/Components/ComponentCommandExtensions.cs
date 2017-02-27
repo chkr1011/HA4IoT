@@ -68,7 +68,7 @@ namespace HA4IoT.Components
 
             try
             {
-                component.InvokeCommand(command);
+                component.ExecuteCommand(command);
             }
             catch (CommandNotSupportedException exception)
             {

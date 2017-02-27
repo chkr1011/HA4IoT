@@ -22,19 +22,19 @@ namespace HA4IoT.Tests.Actuators
             logicalComponent.WithComponent(lamp2);
             logicalComponent.WithComponent(lamp3);
 
-            logicalComponent.InvokeCommand(new TurnOffCommand());
+            logicalComponent.ExecuteCommand(new TurnOffCommand());
             Assert.IsTrue(logicalComponent.GetState().Has(PowerState.Off));
             Assert.IsTrue(lamp1.GetState().Has(PowerState.Off));
             Assert.IsTrue(lamp2.GetState().Has(PowerState.Off));
             Assert.IsTrue(lamp3.GetState().Has(PowerState.Off));
 
-            logicalComponent.InvokeCommand(new TurnOnCommand());
+            logicalComponent.ExecuteCommand(new TurnOnCommand());
             Assert.IsTrue(logicalComponent.GetState().Has(PowerState.On));
             Assert.IsTrue(lamp1.GetState().Has(PowerState.On));
             Assert.IsTrue(lamp2.GetState().Has(PowerState.On));
             Assert.IsTrue(lamp3.GetState().Has(PowerState.On));
 
-            logicalComponent.InvokeCommand(new TurnOffCommand());
+            logicalComponent.ExecuteCommand(new TurnOffCommand());
             Assert.IsTrue(logicalComponent.GetState().Has(PowerState.Off));
             Assert.IsTrue(lamp1.GetState().Has(PowerState.Off));
             Assert.IsTrue(lamp2.GetState().Has(PowerState.Off));

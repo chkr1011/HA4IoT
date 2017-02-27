@@ -95,8 +95,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\UICheckboxAdapter.cs" />
+    <Compile Include="Controls\UIBinaryOutputAdapter.cs" />
     <Compile Include="Configuration.cs" />
+    <Compile Include="Controls\UIMotionDetectorAdapter.cs" />
     <Compile Include="Converter\LampStateToColorConverter.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>

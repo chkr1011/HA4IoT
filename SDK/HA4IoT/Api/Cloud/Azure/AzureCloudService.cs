@@ -75,11 +75,11 @@ namespace HA4IoT.Api.Cloud.Azure
 
         private void DistpachMessage(object sender, MessageReceivedEventArgs e)
         {
-            var correlationId = (string)e.Body["CorrelationId"];
-            var uri = (string)e.Body["Uri"];
-            var request = (JObject)e.Body["Content"] ?? new JObject();
+            var apiRequest = e.Body.ToObject<ApiRequest>();
 
-            var context = new QueueBasedApiContext(correlationId, uri, request);
+            var correlationId = (string)e.Body["CorrelationId"];
+            
+            var context = new QueueBasedApiContext(correlationId, apiRequest.Action, apiRequest.Parameter, apiRequest.ResultHash);
             var eventArgs = new ApiRequestReceivedEventArgs(context);
             RequestReceived?.Invoke(this, eventArgs);
 

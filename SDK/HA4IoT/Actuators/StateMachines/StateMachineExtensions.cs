@@ -58,7 +58,7 @@ namespace HA4IoT.Actuators.StateMachines
             if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
             if (id == null) throw new ArgumentNullException(nameof(id));
 
-            return new ActionWrapper(() => stateMachine.InvokeCommand(new SetStateCommand { Id = id }));
+            return new ActionWrapper(() => stateMachine.ExecuteCommand(new SetStateCommand { Id = id }));
         }
     }
 }

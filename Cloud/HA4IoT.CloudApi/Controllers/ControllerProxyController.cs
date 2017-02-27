@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using HA4IoT.CloudApi.Services;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Api.Cloud;
 
 namespace HA4IoT.CloudApi.Controllers
@@ -27,7 +28,7 @@ namespace HA4IoT.CloudApi.Controllers
             _messageDispatcher = messageDispatcher;
         }
 
-        public async Task<ApiResponse> SendRequest([FromBody] ApiRequest request)
+        public async Task<ApiResponse> Execute([FromBody] ApiRequest request)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
 

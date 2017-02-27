@@ -13,6 +13,6 @@ namespace HA4IoT.Contracts.Components
 
         ComponentFeatureCollection GetFeatures();
 
-        void InvokeCommand(ICommand command);
+        void ExecuteCommand(ICommand command);
     }
 }

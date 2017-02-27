@@ -89,7 +89,7 @@ namespace HA4IoT.Tests.Automations
             _automation.PerformPendingActions();
             _rollerShutter.GetState().Has(VerticalMovingState.MovingUp);
             _rollerShutter.GetState().Has(PowerState.On);
-            _rollerShutter.InvokeCommand(new TurnOffCommand());
+            _rollerShutter.ExecuteCommand(new TurnOffCommand());
         }
 
         private void Setup()

@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Commands;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Adapters;
@@ -62,18 +63,18 @@ namespace HA4IoT.Actuators.RollerShutters
                 .With(new VerticalMovingFeature());
         }
 
-        public override void InvokeCommand(ICommand command)
+        public override void ExecuteCommand(ICommand command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
 
             lock (_syncRoot)
             {
-                var commandInvoker = new CommandInvoker();
-                commandInvoker.Register<MoveUpCommand>(c => MoveUp());
-                commandInvoker.Register<MoveDownCommand>(c => MoveDown());
-                commandInvoker.Register<TurnOffCommand>(c => Stop());
-                commandInvoker.Register<ResetCommand>(c => MoveUp(true));
-                commandInvoker.Invoke(command);
+                var commandExecutor = new CommandExecutor();
+                commandExecutor.Register<MoveUpCommand>(c => MoveUp());
+                commandExecutor.Register<MoveDownCommand>(c => MoveDown());
+                commandExecutor.Register<TurnOffCommand>(c => Stop());
+                commandExecutor.Register<ResetCommand>(c => MoveUp(true));
+                commandExecutor.Invoke(command);
             }
         }
         

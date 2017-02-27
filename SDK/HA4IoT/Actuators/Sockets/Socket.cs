@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Commands;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Adapters;
@@ -35,16 +36,16 @@ namespace HA4IoT.Actuators.Sockets
                 .With(new PowerStateFeature());
         }
 
-        public override void InvokeCommand(ICommand command)
+        public override void ExecuteCommand(ICommand command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
 
-            var commandInvoker = new CommandInvoker();
-            commandInvoker.Register<TurnOnCommand>(c => SetStateInternal(PowerStateValue.On));
-            commandInvoker.Register<TurnOffCommand>(c => SetStateInternal(PowerStateValue.Off));
-            commandInvoker.Register<TogglePowerStateCommand>(c => TogglePowerState());
-            commandInvoker.Register<ResetCommand>(c => SetStateInternal(PowerStateValue.Off, true));
-            commandInvoker.Invoke(command);
+            var commandExecutor = new CommandExecutor();
+            commandExecutor.Register<TurnOnCommand>(c => SetStateInternal(PowerStateValue.On));
+            commandExecutor.Register<TurnOffCommand>(c => SetStateInternal(PowerStateValue.Off));
+            commandExecutor.Register<TogglePowerStateCommand>(c => TogglePowerState());
+            commandExecutor.Register<ResetCommand>(c => SetStateInternal(PowerStateValue.Off, true));
+            commandExecutor.Invoke(command);
         }
 
         private void TogglePowerState()

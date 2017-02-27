@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Windows.Security.Cryptography;
+using Windows.Security.Cryptography.Core;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
@@ -12,6 +14,8 @@ namespace HA4IoT.Api
 {
     public class ApiDispatcherService : ServiceBase, IApiDispatcherService
     {
+        private static readonly HashAlgorithmProvider HashAlgorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Md5);
+
         private readonly List<IApiAdapter> _adapters = new List<IApiAdapter>();
         private readonly Dictionary<string, Action<IApiContext>> _actions = new Dictionary<string, Action<IApiContext>>(StringComparer.OrdinalIgnoreCase);
         
@@ -20,6 +24,8 @@ namespace HA4IoT.Api
             Route("GetStatus", HandleGetStatusRequest);
             Route("GetConfiguration", HandleGetConfigurationRequest);
             Route("GetActions", HandleGetActionsRequest);
+            Route("Ping", HandlePingRequest);
+            Route("Execute", HandleExecuteRequest);
         }
 
         public event EventHandler<ApiRequestReceivedEventArgs> StatusRequested;
@@ -44,7 +50,14 @@ namespace HA4IoT.Api
 
             lock (_actions)
             {
-                _actions[action.Trim()] = handler;
+                action = action.Trim();
+
+                if (_actions.ContainsKey(action))
+                {
+                    Log.Warning($"Overriding action route: {action}");    
+                }
+
+                _actions[action] = handler;
             }
         }
 
@@ -109,8 +122,6 @@ namespace HA4IoT.Api
 
         private void HandleGetStatusRequest(IApiContext apiContext)
         {
-            apiContext.UseHash = true;
-
             var eventArgs = new ApiRequestReceivedEventArgs(apiContext);
             StatusRequested?.Invoke(this, eventArgs);
             StatusRequestCompleted?.Invoke(this, eventArgs);
@@ -123,33 +134,81 @@ namespace HA4IoT.Api
             ConfigurationRequestCompleted?.Invoke(this, eventArgs);
         }
 
+        private void HandlePingRequest(IApiContext apiContext)
+        {
+            apiContext.ResultCode = ApiResultCode.Success;
+            apiContext.Result = apiContext.Parameter;
+        }
+
+        private void HandleExecuteRequest(IApiContext apiContext)
+        {
+            var apiRequest = apiContext.Parameter.ToObject<ApiRequest>();
+            if (apiRequest == null)
+            {
+                apiContext.ResultCode = ApiResultCode.InvalidParameter;
+                return;
+            }
+
+            if (apiRequest.Action.Equals("Execute", StringComparison.OrdinalIgnoreCase))
+            {
+                apiContext.ResultCode = ApiResultCode.ActionNotSupported;
+                return;
+            }
+
+            var innerApiContext = new ApiContext(apiRequest.Action, apiRequest.Parameter, apiRequest.ResultHash);
+
+            var eventArgs = new ApiRequestReceivedEventArgs(innerApiContext);
+            RouteRequest(this, eventArgs);
+
+            apiContext.ResultCode = innerApiContext.ResultCode;
+            apiContext.Result = innerApiContext.Result;
+            apiContext.ResultHash = innerApiContext.ResultHash;
+
+            if (apiContext.ResultHash != null)
+            {
+                var newHash = GenerateHash(apiContext.Result.ToString());
+                if (apiContext.ResultHash.Equals(newHash))
+                {
+                    apiContext.Result = new JObject();
+                }
+
+                apiContext.ResultHash = newHash;
+            }
+        }
+
         private void RouteRequest(object sender, ApiRequestReceivedEventArgs e)
         {
-            Action<IApiContext> action;
+            Action<IApiContext> handler;
             lock (_actions)
             {
-                if (!_actions.TryGetValue(e.Context.Action, out action))
+                if (!_actions.TryGetValue(e.ApiContext.Action, out handler))
                 {
-                    e.Context.ResultCode = ApiResultCode.ActionNotSupported;
+                    e.ApiContext.ResultCode = ApiResultCode.ActionNotSupported;
                     return;
                 }
             }
 
-            e.IsHandled = true;
-            TryHandleRequest(e.Context, action);
-        }
-
-        private static void TryHandleRequest(IApiContext apiContext, Action<IApiContext> action)
-        {
             try
             {
-                action(apiContext);
+                handler(e.ApiContext);
             }
             catch (Exception exception)
             {
-                apiContext.ResultCode = ApiResultCode.UnhandledException;
-                apiContext.Result = JsonSerializer.SerializeException(exception);
+                e.ApiContext.ResultCode = ApiResultCode.UnhandledException;
+                e.ApiContext.Result = JsonSerializer.SerializeException(exception);
             }
+            finally
+            {
+                e.IsHandled = true;
+            }
+        }
+
+        private static string GenerateHash(string input)
+        {
+            var buffer = CryptographicBuffer.ConvertStringToBinary(input, BinaryStringEncoding.Utf8);
+            var hashBuffer = HashAlgorithm.HashData(buffer);
+
+            return CryptographicBuffer.EncodeToBase64String(hashBuffer);
         }
     }
 }

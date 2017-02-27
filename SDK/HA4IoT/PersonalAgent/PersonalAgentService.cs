@@ -194,7 +194,7 @@ namespace HA4IoT.PersonalAgent
 
             try
             {
-                component.InvokeCommand(messageContext.IdentifiedCommands.First());
+                component.ExecuteCommand(messageContext.IdentifiedCommands.First());
             }
             catch (CommandNotSupportedException)
             {

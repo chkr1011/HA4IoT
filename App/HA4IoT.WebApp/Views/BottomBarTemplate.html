@@ -1,12 +1,12 @@
-﻿<div class="row panel panel-default" ng-class="{'panel-primary': haCtrl.activePanel=='bottomBar'}" id="bottomBar">
-    <div class="panel-heading pointer" ng-click="haCtrl.setActivePanel('bottomBar')">
+﻿<div class="row panel panel-default" ng-class="{'panel-primary': ctrl.activePanel=='bottomBar'}" id="bottomBar">
+    <div class="panel-heading pointer" ng-click="ctrl.setActivePanel('bottomBar')">
         <h1 class="panel-title">
             <span class="glyphicon glyphicon-signal"
                   aria-hidden="true"
-                  ng-class="{'text-danger': haCtrl.errorMessage!=null, 'text-success': haCtrl.errorMessage==null}"></span>
+                  ng-class="{'text-danger': ctrl.errorMessage!=null, 'text-success': ctrl.errorMessage==null}"></span>
         </h1>
     </div>
-    <table class="table table-striped" ng-show="haCtrl.activePanel=='bottomBar'">
+    <table class="table table-striped" ng-show="ctrl.activePanel=='bottomBar'">
         <tbody>
             <tr>
                 <td><h4>HA4IoT</h4></td>
@@ -32,7 +32,7 @@
 
             <tr>
                 <td>App version</td>
-                <td class="rightTextAligned">{{haCtrl.version}}</td>
+                <td class="rightTextAligned">{{ctrl.version}}</td>
             </tr>
 
             <tr>

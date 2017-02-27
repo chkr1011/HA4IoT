@@ -93,7 +93,7 @@ namespace HA4IoT.Tests.Components
             Assert.AreEqual(0, fan.GetState().Extract<LevelState>().CurrentLevel);
             Assert.AreEqual(0, adapter.CurrentLevel);
 
-            fan.InvokeCommand(new SetLevelCommand { Level = 2 });
+            fan.ExecuteCommand(new SetLevelCommand { Level = 2 });
             Assert.AreEqual(2, fan.GetState().Extract<LevelState>().CurrentLevel);
             Assert.AreEqual(2, adapter.CurrentLevel);
         }
@@ -112,11 +112,11 @@ namespace HA4IoT.Tests.Components
             Assert.AreEqual(0, fan.GetState().Extract<LevelState>().CurrentLevel);
             Assert.AreEqual(0, adapter.CurrentLevel);
 
-            fan.InvokeCommand(new SetLevelCommand { Level = 2 });
+            fan.ExecuteCommand(new SetLevelCommand { Level = 2 });
             Assert.AreEqual(2, fan.GetState().Extract<LevelState>().CurrentLevel);
             Assert.AreEqual(2, adapter.CurrentLevel);
 
-            fan.InvokeCommand(new TurnOffCommand());
+            fan.ExecuteCommand(new TurnOffCommand());
             Assert.AreEqual(0, fan.GetState().Extract<LevelState>().CurrentLevel);
             Assert.AreEqual(0, adapter.CurrentLevel);
         }
@@ -135,11 +135,11 @@ namespace HA4IoT.Tests.Components
             Assert.AreEqual(0, fan.GetState().Extract<LevelState>().CurrentLevel);
             Assert.AreEqual(0, adapter.CurrentLevel);
 
-            fan.InvokeCommand(new SetLevelCommand { Level = 3 });
+            fan.ExecuteCommand(new SetLevelCommand { Level = 3 });
             Assert.AreEqual(3, fan.GetState().Extract<LevelState>().CurrentLevel);
             Assert.AreEqual(3, adapter.CurrentLevel);
 
-            fan.InvokeCommand(new IncreaseLevelCommand());
+            fan.ExecuteCommand(new IncreaseLevelCommand());
             Assert.AreEqual(0, fan.GetState().Extract<LevelState>().CurrentLevel);
             Assert.AreEqual(0, adapter.CurrentLevel);
         }
@@ -158,7 +158,7 @@ namespace HA4IoT.Tests.Components
             Assert.AreEqual(0, fan.GetState().Extract<LevelState>().CurrentLevel);
             Assert.AreEqual(0, adapter.CurrentLevel);
 
-            fan.InvokeCommand(new DecreaseLevelCommand());
+            fan.ExecuteCommand(new DecreaseLevelCommand());
             Assert.AreEqual(3, fan.GetState().Extract<LevelState>().CurrentLevel);
             Assert.AreEqual(3, adapter.CurrentLevel);
         }

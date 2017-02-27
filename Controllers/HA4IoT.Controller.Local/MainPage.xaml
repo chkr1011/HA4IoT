@@ -19,53 +19,40 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-            </Grid.RowDefinitions>
-
-            <TextBlock Grid.Row="0"
-                       Grid.Column="0"
-                       Margin="0,0,10,0"
-                       VerticalAlignment="Center"
-                       Text="Control:" />
-            <StackPanel Grid.Row="0"
-                        Grid.Column="1"
-                        Orientation="Horizontal">
-                <Button x:Name="StartControllerButton"
-                        Click="StartController"
-                        Content="Start" />
-                <Button Click="ClearLog" Content="Clear log" />
-            </StackPanel>
-
-            <TextBlock Grid.Row="1"
-                       Grid.Column="0"
-                       Margin="0,0,10,0"
-                       VerticalAlignment="Center"
-                       Text="App path:" />
-            <TextBox x:Name="AppPathTextBox"
-                     Grid.Row="1"
-                     Grid.Column="1"
-                     IsReadOnly="True"
-                     Text="-PATH-" />
-
-            <TextBlock Grid.Row="2"
-                       Grid.Column="0"
-                       Margin="0,0,10,0"
-                       VerticalAlignment="Center"
-                       Text="Storage path:" />
-            <TextBox x:Name="StoragePathTextBox"
-                     Grid.Row="2"
-                     Grid.Column="1"
-                     IsReadOnly="True"
-                     Text="-PATH-" />
-        </Grid>
+        <StackPanel Grid.Row="0"
+                    Margin="10"
+                    Orientation="Vertical">
+            <controls:DockPanel>
+                <TextBlock Width="100"
+                           Margin="0,0,10,0"
+                           VerticalAlignment="Center"
+                           Text="Control:" />
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="StartControllerButton"
+                            Click="StartController"
+                            Content="Start" />
+                    <Button Click="ClearLog" Content="Clear log" />
+                </StackPanel>
+            </controls:DockPanel>
+            <controls:DockPanel>
+                <TextBlock Width="100"
+                           Margin="0,0,10,0"
+                           VerticalAlignment="Center"
+                           Text="App path:" />
+                <TextBox x:Name="AppPathTextBox"
+                         IsReadOnly="True"
+                         Text="-PATH-" />
+            </controls:DockPanel>
+            <controls:DockPanel>
+                <TextBlock Width="100"
+                           Margin="0,0,10,0"
+                           VerticalAlignment="Center"
+                           Text="Storage path:" />
+                <TextBox x:Name="StoragePathTextBox"
+                         IsReadOnly="True"
+                         Text="-PATH-" />
+            </controls:DockPanel>
+        </StackPanel>
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -75,16 +62,16 @@
             </Grid.ColumnDefinitions>
 
             <controls:DockPanel Grid.Column="0">
-                <Border controls:DockPanel.Dock="Top" Background="RoyalBlue">
+                <Border controls:DockPanel.Dock="Top" Background="#3F51B5">
                     <TextBlock Margin="10"
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"
-                               Foreground="WhiteSmoke"
-                               Text="Demo Home" />
+                               Foreground="White"
+                               Text="DEMO HOME" />
                 </Border>
 
                 <StackPanel Margin="10" HorizontalAlignment="Stretch">
-                    <controls:WrapPanel x:Name="DemoLampsStackPanel">
+                    <controls:WrapPanel x:Name="DemoLampsPanel">
                         <controls:WrapPanel.Resources>
                             <Style TargetType="CheckBox">
                                 <Setter Property="Template">
@@ -116,7 +103,10 @@
                             </Style>
                         </controls:WrapPanel.Resources>
                     </controls:WrapPanel>
-                    <controls:WrapPanel x:Name="DemoButtonStackPanel" />
+
+                    <controls:WrapPanel x:Name="DemoButtonPanel" />
+
+                    <controls:WrapPanel x:Name="DemoMotionDetectorsPanel" />
                 </StackPanel>
             </controls:DockPanel>
 
@@ -127,12 +117,12 @@
                                          ResizeBehavior="PreviousAndNext" />
 
             <controls:DockPanel Grid.Column="2">
-                <Border controls:DockPanel.Dock="Top" Background="RoyalBlue">
+                <Border controls:DockPanel.Dock="Top" Background="#3F51B5">
                     <TextBlock Margin="10"
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"
-                               Foreground="WhiteSmoke"
-                               Text="Log" />
+                               Foreground="White"
+                               Text="LOG" />
                 </Border>
                 <ScrollViewer VerticalAlignment="Stretch"
                               Background="Black"

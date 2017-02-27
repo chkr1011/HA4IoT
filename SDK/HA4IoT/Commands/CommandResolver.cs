@@ -37,11 +37,22 @@ namespace HA4IoT.Commands
         {
             RegisterCommand<TurnOffCommand>();
             RegisterCommand<TurnOnCommand>();
+            RegisterCommand<TogglePowerStateCommand>();
+
             RegisterCommand<SetLevelCommand>();
             RegisterCommand<IncreaseLevelCommand>();
             RegisterCommand<DecreaseLevelCommand>();
+
             RegisterCommand<MoveUpCommand>();
             RegisterCommand<MoveDownCommand>();
+
+            RegisterCommand<ResetCommand>();
+
+            RegisterCommand<PressCommand>();
+
+            RegisterCommand<SetStateCommand>();
+
+            RegisterCommand<TriggerMotionDetectionCommand>();
         }       
     }
 }

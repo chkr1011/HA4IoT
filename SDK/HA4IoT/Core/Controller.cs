@@ -7,7 +7,6 @@ using Windows.Storage;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Notifications;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
@@ -72,12 +71,19 @@ namespace HA4IoT.Core
                 RegisterServices();
                 TryConfigure();
 
-                StartupServices();
-                ExposeRegistrationsToApi();
+                _container.StartupServices();
+                _container.ExposeRegistrationsToApi();
+
                 StartHttpServer();
 
                 StartupCompleted?.Invoke(this, EventArgs.Empty);
                 stopwatch.Stop();
+
+                _container.GetInstance<IApiDispatcherService>().ConfigurationRequested += (s, e) =>
+                {
+                    var controllerSettings = _container.GetInstance<ISettingsService>().GetSettings<ControllerSettings>();
+                    e.ApiContext.Result["Controller"] = JObject.FromObject(controllerSettings);
+                };
 
                 Log.Info("Startup completed after " + stopwatch.Elapsed);
 
@@ -102,8 +108,8 @@ namespace HA4IoT.Core
         {
             var httpServer = _container.GetInstance<HttpServer>();
             
-            new DirectoryController("App", StoragePath.AppRoot, httpServer).Enable();
-            new DirectoryController("ManagementApp", StoragePath.ManagementAppRoot, httpServer).Enable();
+            new HttpDirectoryController("App", StoragePath.AppRoot, httpServer).Enable();
+            new HttpDirectoryController("ManagementApp", StoragePath.ManagementAppRoot, httpServer).Enable();
 
             httpServer.Bind(_options.HttpServerPort);
         }
@@ -119,31 +125,6 @@ namespace HA4IoT.Core
             udpLogger.Start();
             
             Log.Instance = udpLogger;
-        }
-
-        private void StartupServices()
-        {
-            foreach (var registration in _container.GetRegistrationsOf<IService>())
-            {
-                ((IService)registration.GetInstance()).Startup();
-            }
-        }
-
-        private void ExposeRegistrationsToApi()
-        {
-            var apiService = _container.GetInstance<IApiDispatcherService>();
-            var settingsService = _container.GetInstance<ISettingsService>();
-
-            foreach (var registration in _container.GetCurrentRegistrations())
-            {
-                apiService.Expose(registration.GetInstance());
-            }
-
-            apiService.ConfigurationRequested += (s, e) =>
-            {
-                var controllerSettings = settingsService.GetSettings<ControllerSettings>();
-                e.Context.Result["Controller"] = JObject.FromObject(controllerSettings);
-            };
         }
 
         private void RegisterServices()

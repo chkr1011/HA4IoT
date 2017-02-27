@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Commands;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Commands;
@@ -68,11 +69,11 @@ namespace HA4IoT.Sensors.MotionDetectors
                 .With(new MotionDetectionState(_motionDetectionState));
         }
 
-        public override void InvokeCommand(ICommand command)
+        public override void ExecuteCommand(ICommand command)
         {
-            var commandInvoker = new CommandInvoker();
+            var commandExecutor = new CommandExecutor();
 
-            commandInvoker.Invoke(command);
+            commandExecutor.Invoke(command);
         }
 
         private void UpdateState(MotionDetectionStateValue state)

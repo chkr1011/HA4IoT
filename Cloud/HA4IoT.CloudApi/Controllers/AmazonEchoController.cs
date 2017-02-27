@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using HA4IoT.CloudApi.Services;
 using HA4IoT.Contracts.Api;
-using HA4IoT.Contracts.Api.Cloud;
 using HA4IoT.Contracts.PersonalAgent.AmazonEcho;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

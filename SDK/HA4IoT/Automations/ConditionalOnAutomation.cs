@@ -45,8 +45,8 @@ namespace HA4IoT.Automations
         {
             if (component == null) throw new ArgumentNullException(nameof(component));
 
-            WithActionIfConditionsFulfilled(() => component.InvokeCommand(new TurnOnCommand()));
-            WithActionIfConditionsNotFulfilled(() => component.InvokeCommand(new TurnOffCommand()));
+            WithActionIfConditionsFulfilled(() => component.ExecuteCommand(new TurnOnCommand()));
+            WithActionIfConditionsNotFulfilled(() => component.ExecuteCommand(new TurnOffCommand()));
 
             return this;
         }

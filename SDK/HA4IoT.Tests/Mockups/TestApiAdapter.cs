@@ -21,7 +21,7 @@ namespace HA4IoT.Tests.Mockups
             if (action == null) throw new ArgumentNullException(nameof(action));
             if (parameter == null) throw new ArgumentNullException(nameof(parameter));
 
-            var apiContext = new ApiContext(action, parameter);
+            var apiContext = new ApiContext(action, parameter, null);
             RequestReceived?.Invoke(this, new ApiRequestReceivedEventArgs(apiContext));
 
             return apiContext;

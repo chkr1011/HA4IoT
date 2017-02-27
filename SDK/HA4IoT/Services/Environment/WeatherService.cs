@@ -22,7 +22,7 @@ namespace HA4IoT.Services.Environment
 
             apiService.StatusRequested += (s, e) =>
             {
-                e.Context.Result.Merge(JObject.FromObject(this));
+                e.ApiContext.Result.Merge(JObject.FromObject(this));
             };
         }
 

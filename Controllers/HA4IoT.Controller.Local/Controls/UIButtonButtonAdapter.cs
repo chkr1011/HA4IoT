@@ -5,11 +5,11 @@ using HA4IoT.Contracts.Adapters;
 
 namespace HA4IoT.Controller.Local.Controls
 {
-    public class UIButtonButtonEndpoint: IButtonAdapter
+    public class UIButtonAdapter : IButtonAdapter
     {
         private readonly Button _button;
 
-        public UIButtonButtonEndpoint(Button button)
+        public UIButtonAdapter(Button button)
         {
             if (button == null) throw new ArgumentNullException(nameof(button));
 

@@ -237,7 +237,7 @@ namespace HA4IoT.Automations
         {
             foreach (var rollerShutter in _rollerShutters)
             {
-                _componentService.GetComponent<IRollerShutter>(rollerShutter).InvokeCommand(command);
+                _componentService.GetComponent<IRollerShutter>(rollerShutter).ExecuteCommand(command);
             }
         }
     }

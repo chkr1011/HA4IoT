@@ -38,7 +38,6 @@ namespace HA4IoT.Services
             _settingsService = settingsService;
 
             apiService.StatusRequested += HandleApiStatusRequest;
-            apiService.Expose(this);
         }
 
         public override void Startup()
@@ -47,7 +46,7 @@ namespace HA4IoT.Services
             {
                 try
                 {
-                    actuator.InvokeCommand(new ResetCommand());
+                    actuator.ExecuteCommand(new ResetCommand());
                 }
                 catch (Exception exception)
                 {
@@ -102,7 +101,7 @@ namespace HA4IoT.Services
         }
 
         [ApiMethod]
-        public void InvokeCommand(IApiContext apiContext)
+        public void ExecuteCommand(IApiContext apiContext)
         {
             var componentId = apiContext.Parameter["ComponentId"].Value<string>();
             var commandType = apiContext.Parameter["CommandType"].Value<string>();
@@ -120,7 +119,7 @@ namespace HA4IoT.Services
                 return;
             }
             
-            GetComponent(componentId).InvokeCommand(command);
+            GetComponent(componentId).ExecuteCommand(command);
         }
 
         private void HandleApiStatusRequest(object sender, ApiRequestReceivedEventArgs e)
@@ -137,7 +136,7 @@ namespace HA4IoT.Services
                 components[component.Id] = status;
             }
 
-            e.Context.Result["Components"] = components;
+            e.ApiContext.Result["Components"] = components;
         }
     }
 }

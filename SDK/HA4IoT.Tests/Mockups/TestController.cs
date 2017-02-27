@@ -7,7 +7,6 @@ using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Backup;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.Notifications;
@@ -56,12 +55,10 @@ namespace HA4IoT.Tests.Mockups
 
             _container.Verify();
 
-            _container.GetInstance<IApiDispatcherService>().RegisterAdapter(_apiAdapter);
+            _container.StartupServices();
+            _container.ExposeRegistrationsToApi();
 
-            foreach (var registration in _container.GetRegistrationsOf<IService>())
-            {
-                ((IService)registration.GetInstance()).Startup();
-            }
+            _container.GetInstance<IApiDispatcherService>().RegisterAdapter(_apiAdapter);
         }
 
         public event EventHandler StartupCompleted;

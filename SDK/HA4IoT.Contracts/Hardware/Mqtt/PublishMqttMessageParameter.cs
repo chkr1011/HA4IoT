@@ -8,6 +8,6 @@ namespace HA4IoT.Contracts.Hardware.Mqtt
 
         public byte[] Message { get; set; }
 
-        public MqttQosLevel QosLevel { get; set; } = MqttQosLevel.At_Most_Once;
+        public MqttQosLevel QosLevel { get; set; } = MqttQosLevel.At_Least_Once;
     }
 }

@@ -57,7 +57,7 @@ namespace HA4IoT.Sensors
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
 
-            var virtualButton = new Button($"{area.Id}.{id}", new EmptyButtonAdapter(), _timerService, _settingsService);
+            var virtualButton = new Button($"{area.Id}.{id}", new VirtualButtonAdapter(), _timerService, _settingsService);
             initializer?.Invoke(virtualButton);
 
             area.AddComponent(virtualButton);

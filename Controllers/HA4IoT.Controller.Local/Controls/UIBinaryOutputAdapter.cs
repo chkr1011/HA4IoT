@@ -1,17 +1,16 @@
 ﻿using System;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Controller.Local.Controls
 {
-    public class UICheckBoxAdapter : IBinaryOutputAdapter
+    public class UIBinaryOutputAdapter : IBinaryOutputAdapter
     {
         private readonly CheckBox _checkBox;
 
-        public UICheckBoxAdapter(CheckBox checkBox)
+        public UIBinaryOutputAdapter(CheckBox checkBox)
         {
             if (checkBox == null) throw new ArgumentNullException(nameof(checkBox));
 

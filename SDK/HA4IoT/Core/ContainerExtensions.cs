@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
+using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Services;
 using SimpleInjector;
 
 namespace HA4IoT.Core
@@ -19,6 +22,27 @@ namespace HA4IoT.Core
             }
             
             return services;
+        }
+
+        public static void ExposeRegistrationsToApi(this Container container)
+        {
+            if (container == null) throw new ArgumentNullException(nameof(container));
+
+            var apiService = container.GetInstance<IApiDispatcherService>();
+            foreach (var registration in container.GetCurrentRegistrations())
+            {
+                apiService.Expose(registration.GetInstance());
+            }
+        }
+
+        public static void StartupServices(this Container container)
+        {
+            if (container == null) throw new ArgumentNullException(nameof(container));
+
+            foreach (var registration in container.GetRegistrationsOf<IService>())
+            {
+                ((IService)registration.GetInstance()).Startup();
+            }
         }
     }
 }

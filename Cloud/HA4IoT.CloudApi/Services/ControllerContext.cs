@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Api.Cloud;
 
 namespace HA4IoT.CloudApi.Services

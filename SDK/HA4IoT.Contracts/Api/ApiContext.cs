@@ -5,7 +5,7 @@ namespace HA4IoT.Contracts.Api
 {
     public class ApiContext : IApiContext
     {
-        public ApiContext(string action, JObject parameter)
+        public ApiContext(string action, JObject parameter, string resultHash)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
             if (parameter == null) throw new ArgumentNullException(nameof(parameter));
@@ -14,6 +14,7 @@ namespace HA4IoT.Contracts.Api
 
             Action = action;
             Parameter = parameter;
+            ResultHash = resultHash;
         }
 
         public string Action { get; }
@@ -21,7 +22,6 @@ namespace HA4IoT.Contracts.Api
 
         public ApiResultCode ResultCode { get; set; }
         public JObject Result { get; set; } = new JObject();
-
-        public bool UseHash { get; set; }
+        public string ResultHash { get; set; }
     }
 }

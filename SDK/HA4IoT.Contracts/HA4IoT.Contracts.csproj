@@ -66,8 +66,8 @@
     <Compile Include="Api\ApiMethodAttribute.cs" />
     <Compile Include="Api\ApiRequestReceivedEventArgs.cs" />
     <Compile Include="Api\ApiResultCode.cs" />
-    <Compile Include="Api\Cloud\ApiRequest.cs" />
-    <Compile Include="Api\Cloud\ApiResponse.cs" />
+    <Compile Include="Api\ApiRequest.cs" />
+    <Compile Include="Api\ApiResponse.cs" />
     <Compile Include="Api\Cloud\CloudConnectorHeaders.cs" />
     <Compile Include="Api\Cloud\CloudResponseMessage.cs" />
     <Compile Include="Api\IApiContext.cs" />

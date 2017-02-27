@@ -4,26 +4,30 @@ using System.Net;
 
 namespace HA4IoT.Networking.Http.Controllers
 {
-    public class DirectoryController : HttpRequestController
+    public class HttpDirectoryController : HttpRequestController
     {
-        private readonly MimeTypeProvider _mimeTypeProvider = new MimeTypeProvider();
         private readonly string _name;
-        private readonly string _rootFolder;
+        private readonly string _rootDirectory;
 
-        public DirectoryController(string name, string rootFolder, HttpServer httpServer)
+        public HttpDirectoryController(string name, string rootDirectory, HttpServer httpServer)
             : base(name, httpServer)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
-            if (rootFolder == null) throw new ArgumentNullException(nameof(rootFolder));
+            if (rootDirectory == null) throw new ArgumentNullException(nameof(rootDirectory));
 
             _name = name;
-            _rootFolder = rootFolder;
+            _rootDirectory = rootDirectory;
         }
 
         public string DefaultFile { get; } = "Index.html";
 
         public void Enable()
         {
+            if (!Directory.Exists(_rootDirectory))
+            {
+                Directory.CreateDirectory(_rootDirectory);
+            }
+
             Handle(HttpMethod.Get, string.Empty).WithAnySubUrl().Using(HandleGet);
             Handle(HttpMethod.Post, string.Empty).WithAnySubUrl().Using(HandlePost);
         }
@@ -67,8 +71,8 @@ namespace HA4IoT.Networking.Http.Controllers
 
         private BinaryBody LoadFile(string filename)
         {
+            var mimeType = MimeTypeProvider.GetMimeTypeFromFile(filename);
             var fileContent = File.ReadAllBytes(filename);
-            var mimeType = _mimeTypeProvider.GetMimeTypeFromFile(filename);
 
             return new BinaryBody { Content = fileContent, MimeType = mimeType };
         }
@@ -94,7 +98,7 @@ namespace HA4IoT.Networking.Http.Controllers
             relativeUrl = relativeUrl.Substring(_name.Length).Trim('/');
             relativeUrl = relativeUrl.Replace("/", @"\");
 
-            filename = Path.Combine(_rootFolder, relativeUrl);
+            filename = Path.Combine(_rootDirectory, relativeUrl);
             return true;
         }
     }

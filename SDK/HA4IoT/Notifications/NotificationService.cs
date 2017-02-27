@@ -136,7 +136,7 @@ namespace HA4IoT.Notifications
         {
             lock (_syncRoot)
             {
-                e.Context.Result["Notifications"] = JArray.FromObject(_notifications);
+                e.ApiContext.Result["Notifications"] = JArray.FromObject(_notifications);
             }
         }
 

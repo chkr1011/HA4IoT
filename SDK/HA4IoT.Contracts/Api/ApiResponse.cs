@@ -2,15 +2,13 @@
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 
-namespace HA4IoT.Contracts.Api.Cloud
+namespace HA4IoT.Contracts.Api
 {
     public class ApiResponse
     {
         [JsonConverter(typeof(StringEnumConverter))]
         public ApiResultCode ResultCode { get; set; }
-
-        public int InternalProcessingDuration { get; set; }
-
         public JObject Result { get; set; }
+        public string ResultHash { get; set; }
     }
 }

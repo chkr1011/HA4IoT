@@ -78,7 +78,7 @@ namespace HA4IoT.Services.Areas
                 areas[area.Id] = ExportAreaConfiguration(area);
             }
 
-            e.Context.Result["Areas"] = areas;
+            e.ApiContext.Result["Areas"] = areas;
         }
 
         private JObject ExportAreaConfiguration(IArea area)

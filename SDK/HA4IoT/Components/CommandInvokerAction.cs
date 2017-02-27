@@ -3,11 +3,11 @@ using HA4IoT.Contracts.Commands;
 
 namespace HA4IoT.Components
 {
-    public class CommandInvokerAction<TCommand> : ICommandInvokerAction where TCommand : ICommand
+    public class commandExecutorAction<TCommand> : IcommandExecutorAction where TCommand : ICommand
     {
         private readonly Action<TCommand> _command;
 
-        public CommandInvokerAction(Action<TCommand> command)
+        public commandExecutorAction(Action<TCommand> command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
 

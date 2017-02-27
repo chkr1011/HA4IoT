@@ -195,7 +195,6 @@ namespace HA4IoT.Api.Cloud.CloudConnector
             cloudMessage.Header.CorrelationId = apiContext.RequestMessage.Header.CorrelationId;
             cloudMessage.Response.ResultCode = apiContext.ResultCode;
             cloudMessage.Response.Result = apiContext.Result;
-            cloudMessage.Response.InternalProcessingDuration = (int)(cloudMessage.Header.Created - apiContext.RequestMessage.Header.Created).TotalMilliseconds;
             
             var stringContent = new StringContent(JsonConvert.SerializeObject(cloudMessage));
             stringContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");

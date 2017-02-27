@@ -27,19 +27,19 @@ namespace HA4IoT.Actuators.Connectors
         {
             if (verticalMovingState == VerticalMovingStateValue.MovingUp && rollerShutter.GetState().Has(VerticalMovingState.MovingUp))
             {
-                rollerShutter.InvokeCommand(new TurnOffCommand());
+                rollerShutter.ExecuteCommand(new TurnOffCommand());
             }
             else if (verticalMovingState == VerticalMovingStateValue.MovingDown && rollerShutter.GetState().Has(VerticalMovingState.MovingDown))
             {
-                rollerShutter.InvokeCommand(new TurnOffCommand());
+                rollerShutter.ExecuteCommand(new TurnOffCommand());
             }
             else if (verticalMovingState == VerticalMovingStateValue.MovingDown)
             {
-                rollerShutter.InvokeCommand(new MoveDownCommand());
+                rollerShutter.ExecuteCommand(new MoveDownCommand());
             }
             else if (verticalMovingState == VerticalMovingStateValue.MovingUp)
             {
-                rollerShutter.InvokeCommand(new MoveUpCommand());
+                rollerShutter.ExecuteCommand(new MoveUpCommand());
             }
             else
             {

@@ -32,11 +32,11 @@ namespace HA4IoT.Components
             return Components.First().GetFeatures();
         }
 
-        public override void InvokeCommand(ICommand command)
+        public override void ExecuteCommand(ICommand command)
         {
             foreach (var component in Components)
             {
-                component.InvokeCommand(command);
+                component.ExecuteCommand(command);
             }
         }
     }

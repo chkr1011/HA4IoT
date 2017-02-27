@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HA4IoT.Commands;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Commands;
@@ -117,12 +118,12 @@ namespace HA4IoT.Actuators.StateMachines
                 .With(stateMachineFeature);
         }
 
-        public override void InvokeCommand(ICommand command)
+        public override void ExecuteCommand(ICommand command)
         {
-            var commandInvoker = new CommandInvoker();
-            commandInvoker.Register<ResetCommand>(c => ResetState());
-            commandInvoker.Register<SetStateCommand>(c => SetState(c.Id));
-            commandInvoker.Invoke(command);
+            var commandExecutor = new CommandExecutor();
+            commandExecutor.Register<ResetCommand>(c => ResetState());
+            commandExecutor.Register<SetStateCommand>(c => SetState(c.Id));
+            commandExecutor.Invoke(command);
         }
 
         public StateMachine WithTurnOffIfStateIsAppliedTwice()

@@ -95,8 +95,8 @@ namespace HA4IoT.Automations
         {
             if (actuator == null) throw new ArgumentNullException(nameof(actuator));
 
-            _flipActions.Add(() => actuator.InvokeCommand(new TurnOnCommand()));
-            _flopActions.Add(() => actuator.InvokeCommand(new TurnOffCommand()));
+            _flipActions.Add(() => actuator.ExecuteCommand(new TurnOnCommand()));
+            _flopActions.Add(() => actuator.ExecuteCommand(new TurnOffCommand()));
 
             return this;
         }

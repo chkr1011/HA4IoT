@@ -24,7 +24,7 @@ namespace HA4IoT.Components
 
         public abstract ComponentFeatureCollection GetFeatures();
 
-        public virtual void InvokeCommand(ICommand command)
+        public virtual void ExecuteCommand(ICommand command)
         {
             throw new CommandNotSupportedException(command);
         }

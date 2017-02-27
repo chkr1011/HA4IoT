@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Commands;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Commands;
@@ -52,14 +53,14 @@ namespace HA4IoT.Sensors.Buttons
                 .With(new ButtonFeature());
         }
 
-        public override void InvokeCommand(ICommand command)
+        public override void ExecuteCommand(ICommand command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
 
-            var commandInvoker = new CommandInvoker();
-            commandInvoker.Register<ResetCommand>();
-            commandInvoker.Register<PressCommand>(c => PressInternal(c.Duration));
-            commandInvoker.Invoke(command);
+            var commandExecutor = new CommandExecutor();
+            commandExecutor.Register<ResetCommand>();
+            commandExecutor.Register<PressCommand>(c => PressInternal(c.Duration));
+            commandExecutor.Invoke(command);
         }
 
         private void PressInternal(ButtonPressedDuration duration)
