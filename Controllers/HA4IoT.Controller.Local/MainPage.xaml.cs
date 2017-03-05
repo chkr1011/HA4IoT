@@ -20,7 +20,7 @@ namespace HA4IoT.Controller.Local
         {
             InitializeComponent();
 
-            Log.Instance = new TextBoxLogger(LogTextBox);
+            Log.RegisterAdapter(new TextBoxLogger(LogTextBox));
 
             var options = new ControllerOptions
             {

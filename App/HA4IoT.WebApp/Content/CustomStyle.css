@@ -129,6 +129,9 @@ body {
     top: calc(50% - 50px);
     width: 100%;
 }
+.bottomBarItem {
+    font-size: 20px;
+}
 
 .loadingMessage {
     color: lightgray;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using SimpleInjector;
 
@@ -41,7 +42,15 @@ namespace HA4IoT.Core
 
             foreach (var registration in container.GetRegistrationsOf<IService>())
             {
-                ((IService)registration.GetInstance()).Startup();
+                try
+                {
+                    ((IService)registration.GetInstance()).Startup();
+                }
+                catch (Exception exception)
+                {
+                    Log.Error(exception, $"Error while starting service '{registration.ServiceType.Name}'. " + exception.Message);
+                }
+                
             }
         }
     }

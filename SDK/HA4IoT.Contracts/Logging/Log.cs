@@ -1,43 +1,73 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace HA4IoT.Contracts.Logging
 {
     public static class Log
     {
-        public static event EventHandler<MessageWithExceptionLoggedEventArgs> ErrorLogged;
+        private static readonly List<ILogger> Adapters = new List<ILogger>();
 
-        public static event EventHandler<MessageWithExceptionLoggedEventArgs> WarningLogged;
+        public static void RegisterAdapter(ILogger logger)
+        {
+            lock (Adapters)
+            {
+                Adapters.Add(logger);
+            }
+        }
 
-        public static event EventHandler<MessageLoggedEventArgs> InfoLogged; 
-
-        public static ILogger Instance { get; set; }
-        
         public static void Error(Exception exception, string message)
         {
-            Instance?.Error(exception, message);
-            ErrorLogged?.Invoke(null, new MessageWithExceptionLoggedEventArgs(message, exception));
+            lock (Adapters)
+            {
+                foreach (var adapter in Adapters)
+                {
+                    adapter?.Error(exception, message);
+                }
+            }
         }
 
         public static void Warning(string message)
         {
-            Instance?.Warning(message);
+            lock (Adapters)
+            {
+                foreach (var adapter in Adapters)
+                {
+                    adapter?.Warning(message);
+                }
+            }
         }
 
         public static void Warning(Exception exception, string message)
         {
-            Instance?.Warning(exception, message);
-            WarningLogged?.Invoke(null, new MessageWithExceptionLoggedEventArgs(message, exception));
+            lock (Adapters)
+            {
+                foreach (var adapter in Adapters)
+                {
+                    adapter?.Warning(exception, message);
+                }
+            }
         }
 
         public static void Info(string message)
         {
-            Instance?.Info(message);
-            InfoLogged?.Invoke(null, new MessageLoggedEventArgs(message));
+            lock (Adapters)
+            {
+                foreach (var adapter in Adapters)
+                {
+                    adapter?.Info(message);
+                }
+            }
         }
 
         public static void Verbose(string message)
         {
-            Instance?.Verbose(message);
+            lock (Adapters)
+            {
+                foreach (var adapter in Adapters)
+                {
+                    adapter?.Verbose(message);
+                }
+            }
         }
     }
 }

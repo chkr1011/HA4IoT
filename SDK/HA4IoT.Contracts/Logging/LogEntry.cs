@@ -1,10 +1,13 @@
 ﻿using System;
+using HA4IoT.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
-namespace HA4IoT.Logger
+namespace HA4IoT.Contracts.Logging
 {
-    internal sealed class LogEntry
+    public sealed class LogEntry
     {
-        public LogEntry(long id, DateTime timestamp, int threadId, LogEntrySeverity severity, string source, string message)
+        public LogEntry(long id, DateTime timestamp, int threadId, LogEntrySeverity severity, string source, string message, string exception)
         {
             Id = id;
             Timestamp = timestamp;
@@ -13,6 +16,7 @@ namespace HA4IoT.Logger
 
             Source = source;
             Message = message;
+            Exception = exception;
         }
 
         public long Id { get; }
@@ -21,10 +25,13 @@ namespace HA4IoT.Logger
 
         public int ThreadId { get; }
 
+        [JsonConverter(typeof(StringEnumConverter))]
         public LogEntrySeverity Severity { get; }
 
         public string Source { get; }
 
         public string Message { get; }
+
+        public string Exception { get; }
     }
 }

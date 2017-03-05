@@ -21,7 +21,7 @@
 
         ctrl.fetchComponents = function () {
 
-            controllerProxyService.get("configuration", null, function (response) {
+            controllerProxyService.get("GetConfiguration", null, function (response) {
                 ctrl.loadComponents(response);
             });
         }

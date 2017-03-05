@@ -72,7 +72,7 @@ namespace HA4IoT.Sensors.MotionDetectors
         public override void ExecuteCommand(ICommand command)
         {
             var commandExecutor = new CommandExecutor();
-
+            commandExecutor.Register<ResetCommand>();
             commandExecutor.Invoke(command);
         }
 

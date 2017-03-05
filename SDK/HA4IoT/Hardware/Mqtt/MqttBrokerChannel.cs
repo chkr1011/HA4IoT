@@ -16,6 +16,8 @@ namespace HA4IoT.Hardware.Mqtt
         {
             _socket.ConnectionReceived += ProcessConnection;
             _socket.BindServiceNameAsync(MqttSettings.Instance.Port.ToString()).AsTask().Wait();
+
+            Log.Info($"Started MQTT broker with port {MqttSettings.Instance.Port}.");
         }
 
         public void Stop()

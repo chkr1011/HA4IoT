@@ -14,6 +14,7 @@ using HA4IoT.Contracts.Services.Resources;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.Storage;
 using HA4IoT.Contracts.Services.System;
+using HA4IoT.Logging;
 using HA4IoT.Notifications;
 using HA4IoT.Services;
 using HA4IoT.Services.Areas;
@@ -34,9 +35,10 @@ namespace HA4IoT.Tests.Mockups
 
         public TestController()
         {
-            Log.Instance = new TestLogger();
+            Log.RegisterAdapter(new TestLogger());
 
             _container.RegisterSingleton<IController>(() => this);
+            _container.RegisterSingleton<ILogService, LogService>();
             _container.RegisterSingleton<ISettingsService, SettingsService>();
             _container.RegisterSingleton<IApiDispatcherService, ApiDispatcherService>();
             _container.RegisterSingleton<ISystemInformationService, SystemInformationService>();

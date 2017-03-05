@@ -1,33 +1,52 @@
 ﻿function createApiService() {
     var srv = this;
 
+    srv.statusHash = "";
+
+    srv.apiStatus =
+    {
+        isApiReachable: false,
+        activeCalls: 0,
+        errorMessage: null
+    };
+
+    srv.apiStatusUpdatedCallback = null;
+    srv.newStatusReceivedCallback = null;
+
+    srv.pollStatus = function () {
+        var successHandler = function (response) {
+
+            if (srv.statusHash === response.ResultHash) {
+                setTimeout(function () { srv.pollStatus(); }, 500);
+                return;
+            }
+
+            srv.statusHash = response.ResultHash;
+            console.log("New status received");
+
+            if (srv.newStatusReceivedCallback != null) {
+                srv.newStatusReceivedCallback(response.Result);
+            }
+
+            srv.pollStatus();
+        };
+
+        var errorHandler = function() {
+            setTimeout(function () { srv.pollStatus(); }, 1000);
+        }
+
+        srv.executeApi("GetStatus", {}, srv.statusHash, successHandler, errorHandler);
+    };
+
     srv.executeCommand = function (componentId, commandType, parameter, doneCallback) {
         var payload = parameter;
         payload.ComponentId = componentId;
         payload.CommandType = commandType;
 
-        var action = {
-            Action: "Service/IComponentRegistryService/ExecuteCommand",
-            Parameter: payload
-        };
-
-        var url = "/api/Execute?body=" + JSON.stringify(action);
-        var options = {
-            method: "POST",
-            url: url,
-            timeout: 2500
-        };
-
-        $.ajax(options).done(function () {
-            if (doneCallback != null) {
-                doneCallback();
-            }
-        }).fail(function (jqXHR, textStatus, errorThrown) {
-            alert(textStatus);
-        });
+        srv.executeApi("Service/IComponentRegistryService/ExecuteCommand", payload, null, doneCallback);
     }
 
-    srv.executeApi = function (action, parameter, resultHash, doneCallback) {
+    srv.executeApi = function (action, parameter, resultHash, doneCallback, failCallback) {
         var request = {
             Action: action,
             Parameter: parameter,
@@ -40,13 +59,32 @@
             timeout: 2500
         };
 
+        srv.apiStatus.activeCalls++;
         $.ajax(options).done(function (response) {
+            srv.apiStatus.isApiReachable = true;
+            srv.apiStatus.errorMessage = null;
+            srv.apiStatus.activeCalls--;
+
+            if (srv.apiStatusUpdatedCallback != null) {
+                srv.apiStatusUpdatedCallback(srv.apiStatus);
+            }
+
             if (doneCallback != null) {
                 doneCallback(response);
             }
-        }).fail(function (jqXHR, textStatus, errorThrown) {
-            alert(textStatus);
-        });;
+        }).fail(function (jqXhr, textStatus, errorThrown) {
+            srv.apiStatus.isApiReachable = false;
+            srv.apiStatus.errorMessage = textStatus;
+            srv.apiStatus.activeCalls--;
+
+            if (srv.apiStatusUpdatedCallback != null) {
+                srv.apiStatusUpdatedCallback(srv.apiStatus);
+            }
+
+            if (failCallback != null) {
+                failCallback();
+            }
+        });
     }
 
     return this;

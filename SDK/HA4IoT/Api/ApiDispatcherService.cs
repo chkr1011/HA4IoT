@@ -155,7 +155,7 @@ namespace HA4IoT.Api
                 return;
             }
 
-            var innerApiContext = new ApiContext(apiRequest.Action, apiRequest.Parameter, apiRequest.ResultHash);
+            var innerApiContext = new ApiContext(apiRequest.Action, apiRequest.Parameter ?? new JObject(), apiRequest.ResultHash);
 
             var eventArgs = new ApiRequestReceivedEventArgs(innerApiContext);
             RouteRequest(this, eventArgs);

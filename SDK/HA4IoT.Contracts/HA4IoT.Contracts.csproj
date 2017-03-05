@@ -156,10 +156,14 @@
     <Compile Include="Hardware\Services\IMqttService.cs" />
     <Compile Include="Hardware\Services\MqttQosLevel.cs" />
     <Compile Include="IContainer.cs" />
+    <Compile Include="Logging\GetLogEntriesRequest.cs" />
+    <Compile Include="Logging\GetLogEntriesResponse.cs" />
     <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logging\ILogService.cs" />
     <Compile Include="Logging\Log.cs" />
-    <Compile Include="Logging\MessageLoggedEventArgs.cs" />
-    <Compile Include="Logging\MessageWithExceptionLoggedEventArgs.cs" />
+    <Compile Include="Logging\LogEntry.cs" />
+    <Compile Include="Logging\LogEntrySeverity.cs" />
+    <Compile Include="Logging\LogEntryPublishedEventArgs.cs" />
     <Compile Include="PersonalAgent\AmazonEcho\SkillServiceRequest.cs" />
     <Compile Include="PersonalAgent\AmazonEcho\SkillServiceRequestRequest.cs" />
     <Compile Include="PersonalAgent\AmazonEcho\SkillServiceRequestRequestIntentSlot.cs" />

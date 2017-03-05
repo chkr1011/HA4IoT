@@ -7,7 +7,7 @@ function getVersion(callback) {
     });
 }
 
-function createAppController($http, $scope, modalService, apiService, localizationService, componentService) {
+function createAppController($http, $scope, modalService, apiService, localizationService, componentService, notificationService) {
     var c = this;
 
     c.isInitialized = false;
@@ -22,24 +22,21 @@ function createAppController($http, $scope, modalService, apiService, localizati
     c.motionDetectors = [];
     c.windows = [];
 
-    c.activeRoom = "";
-    c.errorMessage = null;
     c.version = "-";
 
+    c.notificationService = notificationService;
     c.componentService = componentService;
     c.localizationService = localizationService;
+    c.apiService = apiService;
+
+    apiService.apiStatusUpdatedCallback = function (s) {
+        c.apiStatus = s;
+        $scope.$apply(function () { $scope.msgs = s; });
+    }
 
     getVersion(function (version) {
         c.version = version;
     });
-
-    c.notifyConfigurationLoaded = function (configuration) {
-        $scope.$broadcast("configurationLoaded", { language: configuration.Controller.Language });
-    };
-
-    c.deleteNotification = function (uid) {
-        postController("Service/INotificationService/Delete", { "Uid": uid });
-    }
 
     c.loadConfiguration = function () {
         apiService.executeApi("GetConfiguration", {}, null, function (response) {
@@ -102,14 +99,15 @@ function createAppController($http, $scope, modalService, apiService, localizati
                 c.setActivePanel(c.Areas[0].id);
             }
 
-            c.pollStatus();
+            c.apiService.newStatusReceivedCallback = c.applyNewStatus;
+            c.apiService.pollStatus();
             c.isInitialized = true;
         },
-        function() {
+        function () {
             modalService.show("Configuration not available", "Unable to load the configuration. Please try again later.");
         });
     };
-    
+
     c.setActivePanel = function (id) {
         if (c.activePanel === id) {
             c.activePanel = "";
@@ -124,30 +122,18 @@ function createAppController($http, $scope, modalService, apiService, localizati
         }, 100);
     }
 
-    c.pollStatus = function () {
+    c.applyNewStatus = function (status) {
+        c.Status = status;
+        console.log("Updating UI due to state changes");
 
-        apiService.executeApi("GetStatus", {}, c.StatusHash, function (response) {
-            c.errorMessage = null;
+        $.each(status.Components,
+            function (id, component) {
+                c.updateComponentState(id, component);
+            });
 
-            if (c.StatusHash === response.ResultHash) {
-                setTimeout(function () { c.pollStatus(); }, 500);
-                return;
-            }
+        updateOnStateCounters(c.Areas);
 
-            c.Status = response.Result;
-            c.StatusHash = response.ResultHash;
-            console.log("Updating UI due to state changes");
-
-            $.each(response.Result.Components,
-                function (id, component) {
-                    c.updateComponentState(id, component);
-                });
-
-            updateOnStateCounters(c.Areas);
-            $scope.$apply(function () { $scope.msgs = response.Result; });
-
-            c.pollStatus();
-        });
+        $scope.$apply(function () { $scope.msgs = status; });
     };
 
     $scope.toggleIsEnabled = function (component) {

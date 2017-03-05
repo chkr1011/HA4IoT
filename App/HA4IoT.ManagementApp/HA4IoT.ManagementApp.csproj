@@ -52,7 +52,7 @@
     <Content Include="Content\Images\Fan.png" />
     <Content Include="Content\Images\Favorites.png" />
     <Content Include="Content\Images\Garage.png" />
-    <Content Include="Content\Images\HA4IoT-512.png" />
+    <Content Include="Content\Images\HA4IoT_Logo%40512.png" />
     <Content Include="Content\Images\House.png" />
     <Content Include="Content\Images\Humidity.png" />
     <Content Include="Content\Images\Lamp.png" />
@@ -155,7 +155,9 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Log\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

@@ -9,6 +9,7 @@ using HA4IoT.Contracts.PersonalAgent;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.ExternalServices.TelegramBot;
 using HA4IoT.Contracts.Services.Settings;
+using HA4IoT.Logging;
 using Newtonsoft.Json.Linq;
 using HttpClient = System.Net.Http.HttpClient;
 
@@ -20,32 +21,40 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
         private readonly BlockingCollection<TelegramOutboundMessage> _pendingMessages = new BlockingCollection<TelegramOutboundMessage>();
         private readonly IPersonalAgentService _personalAgentService;
+        private readonly ILogger _log;
 
         private int _latestUpdateId;
 
-        public TelegramBotService(ISettingsService settingsService, IPersonalAgentService personalAgentService)
+        public TelegramBotService(ISettingsService settingsService, IPersonalAgentService personalAgentService, ILogService logService)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             if (personalAgentService == null) throw new ArgumentNullException(nameof(personalAgentService));
 
             _personalAgentService = personalAgentService;
 
+            _log = logService.CreatePublisher(nameof(TelegramBotService));
+
             settingsService.CreateSettingsMonitor<TelegramBotServiceSettings>(s => Settings = s);
 
-            Log.WarningLogged += (s, e) =>
+            logService.LogEntryPublished += (s, e) =>
             {
-                EnqueueMessageForAdministrators($"{Emoji.WarningSign} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
-            };
-
-            Log.ErrorLogged += (s, e) =>
-            {
-                if (e.Message.StartsWith("Sending Telegram message failed"))
+                if (e.LogEntry.Severity == LogEntrySeverity.Warning)
                 {
-                    // Prevent recursive send of sending failures.
-                    return;
+                    EnqueueMessageForAdministrators($"{Emoji.WarningSign} {e.LogEntry.Message}\r\n{e.LogEntry.Exception}",
+                        TelegramMessageFormat.PlainText);
                 }
+                else if (e.LogEntry.Severity == LogEntrySeverity.Error)
+                {
+                    if (e.LogEntry.Message.StartsWith("Sending Telegram message failed"))
+                    {
+                        // Prevent recursive send of sending failures.
+                        return;
+                    }
 
-                EnqueueMessageForAdministrators($"{Emoji.HeavyExclamationMark} {e.Message}\r\n{e.Exception}", TelegramMessageFormat.PlainText);
+                    EnqueueMessageForAdministrators(
+                        $"{Emoji.HeavyExclamationMark} {e.LogEntry.Message}\r\n{e.LogEntry.Exception}",
+                        TelegramMessageFormat.PlainText);
+                }
             };
         }
 
@@ -100,17 +109,17 @@ namespace HA4IoT.ExternalServices.TelegramBot
             using (var httpClient = new HttpClient())
             {
                 string uri = $"{BaseUri}{Settings.AuthenticationToken}/sendMessage";
-                StringContent body = ConvertOutboundMessageToJsonMessage(message);
-                HttpResponseMessage response = await httpClient.PostAsync(uri, body);
+                var body = ConvertOutboundMessageToJsonMessage(message);
+                var response = await httpClient.PostAsync(uri, body);
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    Log.Warning(
+                    _log.Warning(
                         $"Sending Telegram message failed (Message='${message.Text}' StatusCode={response.StatusCode}).");
                 }
                 else
                 {
-                    Log.Info($"Sent Telegram message '{message.Text}' to chat {message.ChatId}.");
+                    _log.Info($"Sent Telegram message '{message.Text}' to chat {message.ChatId}.");
                 }
             }
         }
@@ -125,7 +134,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
                 }
                 catch (Exception exception)
                 {
-                    Log.Error(exception, "Error while processing pending Telegram messages.");
+                    _log.Error(exception, "Error while processing pending Telegram messages.");
                 }
             }
         }
@@ -143,7 +152,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
                 }
                 catch (Exception exception)
                 {
-                    Log.Warning(exception, "Error while waiting for next Telegram updates.");
+                    _log.Warning(exception, "Error while waiting for next Telegram updates.");
                 }
             }
         }
@@ -180,7 +189,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
             }
             catch (Exception exception)
             {
-                Log.Warning(exception, "Unable to process updates.");
+                _log.Warning(exception, "Unable to process updates.");
                 return;
             }
             

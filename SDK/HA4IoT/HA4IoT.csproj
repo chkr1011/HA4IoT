@@ -142,6 +142,8 @@
     <Compile Include="Hardware\Mqtt\MqttServiceExtensions.cs" />
     <Compile Include="Hardware\Sonoff\SonoffBinaryOutputAdapter.cs" />
     <Compile Include="Hardware\Sonoff\SonoffDeviceService.cs" />
+    <Compile Include="Logging\LogService.cs" />
+    <Compile Include="Logging\LogServicePublisher.cs" />
     <Compile Include="Triggers\ConditionalTrigger.cs" />
     <Compile Include="Triggers\IntervalTrigger.cs" />
     <Compile Include="Triggers\Trigger.cs" />
@@ -268,9 +270,6 @@
     <Compile Include="Hardware\RemoteSwitch\RemoteSocketCommand.cs" />
     <Compile Include="Hardware\RemoteSwitch\RemoteSocketOutputPort.cs" />
     <Compile Include="Hardware\RemoteSwitch\RemoteSocketService.cs" />
-    <Compile Include="Logger\LogEntry.cs" />
-    <Compile Include="Logger\LogEntrySeverity.cs" />
-    <Compile Include="Logger\UdpLogger.cs" />
     <Compile Include="Notifications\NotificationService.cs" />
     <Compile Include="Notifications\NotificationServiceSettings.cs" />
     <Compile Include="PersonalAgent\MessageContext.cs" />
@@ -342,7 +341,6 @@
       <Name>HA4IoT.Networking</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

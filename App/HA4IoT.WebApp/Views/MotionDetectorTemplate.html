@@ -1,11 +1,15 @@
-﻿<div>
-    <span class="label label-danger pull-left" ng-if="component.State.MotionDetectionState==='MotionDetected'">
-        <span class="glyphicon glyphicon-record" style="margin-right: 10px"></span>
-        Motion detected
-    </span>
-
-    <button class="btn btn-primary pull-right" style="min-width: 60px;" ng-class="{'btn-success': component.Settings.IsEnabled===true}" ng-click="toggleIsEnabled(component)">
-        <span ng-if="component.Settings.IsEnabled===true">{{ ctrl.localizationService.get('UI.MotionDetectorEnabled') }}</span>
-        <span ng-if="component.Settings.IsEnabled===false">{{ ctrl.localizationService.get('UI.MotionDetectorDisabled') }}</span>
-    </button>
+﻿<div class="row">
+    <div class="col-xs-6 vertical-middle">
+        <span class="label label-danger pull-left" ng-if="component.State.MotionDetectionState==='MotionDetected'">
+            <span class="glyphicon glyphicon-record" style="margin-right: 10px"></span>
+            Motion detected
+        </span>
+    </div>
+    
+    <div class="col-xs-6">
+        <button class="btn btn-primary pull-right" style="min-width: 60px;" ng-class="{'btn-success': component.Settings.IsEnabled===true}" ng-click="toggleIsEnabled(component)">
+            <span ng-if="component.Settings.IsEnabled===true">{{ ctrl.localizationService.get('UI.MotionDetectorEnabled') }}</span>
+            <span ng-if="component.Settings.IsEnabled===false">{{ ctrl.localizationService.get('UI.MotionDetectorDisabled') }}</span>
+        </button>
+    </div>
 </div>

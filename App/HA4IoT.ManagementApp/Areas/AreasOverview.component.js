@@ -19,7 +19,7 @@
 
         ctrl.fetchAreas = function () {
 
-            controllerProxyService.get("configuration", null,
+            controllerProxyService.get("GetConfiguration", null,
                 function (response) {
                     ctrl.loadAreas(response);
                 });

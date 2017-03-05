@@ -10,7 +10,6 @@ using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services.Notifications;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Logger;
 using HA4IoT.Networking.Http;
 using HA4IoT.Networking.Http.Controllers;
 using HA4IoT.Settings;
@@ -24,6 +23,7 @@ namespace HA4IoT.Core
         private readonly ControllerOptions _options;
 
         private BackgroundTaskDeferral _deferral;
+        private ILogger _log;
 
         public Controller(ControllerOptions options)
         {
@@ -64,17 +64,13 @@ namespace HA4IoT.Core
             {
                 var stopwatch = Stopwatch.StartNew();
 
-                SetupLogger();
-
-                Log.Info("Starting...");
-
                 RegisterServices();
+                StartHttpServer();
+
                 TryConfigure();
 
                 _container.StartupServices();
                 _container.ExposeRegistrationsToApi();
-
-                StartHttpServer();
 
                 StartupCompleted?.Invoke(this, EventArgs.Empty);
                 stopwatch.Stop();
@@ -114,18 +110,6 @@ namespace HA4IoT.Core
             httpServer.Bind(_options.HttpServerPort);
         }
 
-        private void SetupLogger()
-        {
-            if (Log.Instance != null)
-            {
-                return;
-            }
-
-            var udpLogger = new UdpLogger();
-            udpLogger.Start();
-            
-            Log.Instance = udpLogger;
-        }
 
         private void RegisterServices()
         {
@@ -136,6 +120,9 @@ namespace HA4IoT.Core
             _options.ContainerConfigurator?.ConfigureContainer(_container);
 
             _container.Verify();
+            _log = _container.GetInstance<ILogService>().CreatePublisher(nameof(Controller));
+
+            _log.Info("Services registered.");
         }
         
         private void TryConfigure()
@@ -144,23 +131,23 @@ namespace HA4IoT.Core
             {
                 if (_options.ConfigurationType == null)
                 {
-                    Log.Warning("No configuration is set.");
+                    _log?.Warning("No configuration is set.");
                     return;
                 }
 
                 var configuration = _container.GetInstance(_options.ConfigurationType) as IConfiguration;
                 if (configuration == null)
                 {
-                    Log.Warning("Configuration is set but does not implement 'IConfiguration'.");
+                    _log?.Warning("Configuration is set but does not implement 'IConfiguration'.");
                     return;
                 }
-                
-                Log.Info("Applying configuration");
+
+                _log?.Info("Applying configuration");
                 configuration.ApplyAsync().Wait();
             }
             catch (Exception exception)
             {
-                Log.Error(exception, "Error while configuring");
+                _log?.Error(exception, "Error while configuring");
 
                 _container.GetInstance<INotificationService>().CreateError("Configuration is invalid");
             }

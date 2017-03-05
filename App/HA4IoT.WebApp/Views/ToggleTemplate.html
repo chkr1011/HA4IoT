@@ -1,6 +1,15 @@
-﻿<div class="btn-group">
+﻿<div class="btn-group pull-right" role="group">
     <button class="btn btn-default" style="min-width: 60px;" ng-class="{'btn-danger': component.State.PowerState==='On'}" ng-click="ctrl.componentService.togglePowerState(component)">
         <span ng-if="component.State.PowerState=='On'">{{ ctrl.localizationService.get('UI.On') }}</span>
         <span ng-if="component.State.PowerState=='Off'">{{ ctrl.localizationService.get('UI.Off') }}</span>
     </button>
+    <div class="btn-group" role="group">
+        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-right">
+            <li><a href="#" ng-click="ctrl.componentService.disable(component)">{{ctrl.localizationService.get('UI.DisableComponent')}}</a></li>
+            <li><a href="#" ng-click="ctrl.componentService.enable(component)">{{ctrl.localizationService.get('UI.EnableComponent')}}</a></li>
+        </ul>
+    </div>
 </div>

@@ -1,4 +1,6 @@
-﻿using HA4IoT.Contracts.Api;
+﻿using System;
+using System.Text;
+using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Hardware.Mqtt;
 using HA4IoT.Contracts.Hardware.Services;
 using HA4IoT.Contracts.Logging;
@@ -12,12 +14,17 @@ namespace HA4IoT.Hardware.Mqtt
     public class MqttService : ServiceBase, IMqttService
     {
         private readonly MqttBrokerChannel _brokerChannel = new MqttBrokerChannel();
+
+        private readonly ILogger _log;
         private readonly MqttBroker _broker;
-        
         private readonly MqttClient _client;
 
-        public MqttService()
+        public MqttService(ILogService logService)
         {
+            if (logService == null) throw new ArgumentNullException(nameof(logService));
+
+            _log = logService.CreatePublisher(nameof(MqttService));
+
             _broker = new MqttBroker(_brokerChannel, MqttSettings.Instance);
             _client = new MqttClient(new MqttLoopbackClientChannel());
         }
@@ -25,14 +32,18 @@ namespace HA4IoT.Hardware.Mqtt
         public override void Startup()
         {
             _broker.Start();
-            Log.Info("MQTT broker started.");
-
             _brokerChannel.Attach(_client);
-            Log.Info("MQTT client (loopback) connected.");
+            _log.Info("MQTT client (loopback) connected.");
 
             _client.MqttMsgPublishReceived += ProcessIncomingMessage;
- 
-            //_client.Subscribe(new[] { "SonoffPow_01" }, new[] { MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE });
+
+            _client.Subscribe(new[] { "#" },
+                new[]
+                {
+                    MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE
+                });
+
+            _client.Connect("HA4IoT.Loopback");
         }
 
         [ApiMethod]
@@ -45,14 +56,14 @@ namespace HA4IoT.Hardware.Mqtt
         public int Publish(string topic, byte[] message, MqttQosLevel qosLevel)
         {
             var messageId = _client.Publish(topic, message, (byte)qosLevel, false);
-            Log.Verbose($"Published MQTT message for topic '{topic}'.");
+            _log.Verbose($"Published MQTT message for topic '{topic}'.");
 
             return messageId;
         }
 
         private void ProcessIncomingMessage(object sender, MqttMsgPublishEventArgs e)
         {
-            Log.Verbose($"Received MQTT message for topic '{e.Topic}'.");
+            _log.Verbose($"Received MQTT message [{Encoding.UTF8.GetString(e.Message)}] for topic '{e.Topic}'.");
         }
     }
 }

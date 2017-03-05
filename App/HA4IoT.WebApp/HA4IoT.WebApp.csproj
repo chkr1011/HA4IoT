@@ -129,7 +129,8 @@
     <Content Include="favicon.ico" />
     <Content Include="AppController.js" />
     <Content Include="Index.html" />
-    <Content Include="Style.css" />
+    <Content Include="Services\NotificationService.js" />
+    <Content Include="Content\CustomStyle.css" />
     <Content Include="touch-icon-iphone-retina.png" />
     <Content Include="Views\BottomBarTemplate.html" />
     <Content Include="Views\HumiditySensorTemplate.html" />

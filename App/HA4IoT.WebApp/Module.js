@@ -7,7 +7,19 @@ var app;
     app.factory("apiService", ["$http", createApiService]);
     app.factory("componentService", ["apiService", createComponentService]);
     app.factory("modalService", [createModalService]);
-
-    app.controller("AppController", ["$http", "$scope", "modalService", "apiService", "localizationService", "componentService", createAppController]);
+    app.factory("notificationService", ["apiService", createNotificationService]);
+    
+    app.controller(
+        "AppController",
+        [
+            "$http",
+            "$scope",
+            "modalService",
+            "apiService",
+            "localizationService",
+            "componentService",
+            "notificationService",
+            createAppController
+        ]);
 
 })();

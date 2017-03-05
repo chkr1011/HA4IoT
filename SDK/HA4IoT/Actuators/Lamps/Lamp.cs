@@ -50,6 +50,7 @@ namespace HA4IoT.Actuators.Lamps
             commandExecutor.Register<TurnOnCommand>(c => SetStateInternal(PowerStateValue.On));
             commandExecutor.Register<TurnOffCommand>(c => SetStateInternal(PowerStateValue.Off));
             commandExecutor.Register<TogglePowerStateCommand>(c => TogglePowerState());
+            commandExecutor.Register<ResetCommand>(c => ResetState());
             commandExecutor.Invoke(command);
         }
 

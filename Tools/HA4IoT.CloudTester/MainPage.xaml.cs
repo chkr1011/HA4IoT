@@ -13,7 +13,7 @@ namespace HA4IoT.CloudTester
         {
             InitializeComponent();
 
-            Log.Instance = new TextBoxLogger(LogTextBox);
+            Log.RegisterAdapter(new TextBoxLogger(LogTextBox));
 
             var applicationData = Windows.Storage.ApplicationData.Current;
             var localSettings = applicationData.LocalSettings;
