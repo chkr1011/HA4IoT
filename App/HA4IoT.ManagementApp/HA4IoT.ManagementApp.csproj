@@ -84,6 +84,8 @@
     <Content Include="Home\Home.component.html" />
     <Content Include="Home\Home.component.js" />
     <Content Include="Index.html" />
+    <Content Include="Log\Log.component.html" />
+    <Content Include="Log\Log.component.js" />
     <Content Include="MainPage.component.html" />
     <Content Include="MainPage.component.js" />
     <Content Include="Module.js" />
@@ -155,9 +157,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Log\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
