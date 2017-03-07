@@ -27,7 +27,7 @@ namespace HA4IoT.Logging
 
             _dateTimeService = dateTimeService;
 
-            Log.RegisterAdapter(CreatePublisher(null));
+            Log.Default = CreatePublisher(null);
         }
 
         public event EventHandler<LogEntryPublishedEventArgs> LogEntryPublished;
@@ -154,6 +154,7 @@ namespace HA4IoT.Logging
             }
 
             LogEntryPublished?.Invoke(this, new LogEntryPublishedEventArgs(logEntry));
+            Log.ForwardPublishedLogEntry(logEntry);
 
             if (!Debugger.IsAttached)
             {

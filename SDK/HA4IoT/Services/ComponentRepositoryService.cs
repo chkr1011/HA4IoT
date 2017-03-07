@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using HA4IoT.Commands;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
@@ -9,6 +10,7 @@ using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Services
@@ -21,17 +23,21 @@ namespace HA4IoT.Services
         private readonly ISystemInformationService _systemInformationService;
         private readonly IApiDispatcherService _apiService;
         private readonly ISettingsService _settingsService;
+        private readonly ILogger _log;
 
         public ComponentRegistryService(
             ISystemEventsService systemEventsService,
             ISystemInformationService systemInformationService,
             IApiDispatcherService apiService,
-            ISettingsService settingsService)
+            ISettingsService settingsService,
+            ILogService logService)
         {
             if (systemEventsService == null) throw new ArgumentNullException(nameof(systemEventsService));
             if (systemInformationService == null) throw new ArgumentNullException(nameof(systemInformationService));
             if (apiService == null) throw new ArgumentNullException(nameof(apiService));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
+
+            _log = logService.CreatePublisher(nameof(ComponentRegistryService));
 
             _systemInformationService = systemInformationService;
             _apiService = apiService;
@@ -50,7 +56,7 @@ namespace HA4IoT.Services
                 }
                 catch (Exception exception)
                 {
-                    Log.Warning(exception, $"Error while initially reset of state for actuator '{actuator.Id}'.");
+                    _log.Warning(exception, $"Error while initially reset of state for actuator '{actuator.Id}'.");
                 }
             }
 
@@ -63,7 +69,15 @@ namespace HA4IoT.Services
 
             _components.Add(component.Id, component);
 
-            component.StateChanged += (s, e) => _apiService.NotifyStateChanged(component);
+            component.StateChanged += (s, e) =>
+            {
+                var oldStateText = JToken.FromObject(e.OldState?.Serialize()).ToString(Formatting.None);
+                var newStateText = JToken.FromObject(e.NewState?.Serialize()).ToString(Formatting.None);
+
+                _log.Info($"Component '{((ComponentBase)s).Id}' updated state from:{oldStateText} to:{newStateText}");
+
+                _apiService.NotifyStateChanged(component);
+            };
         }
 
         public IComponent GetComponent(string id)
@@ -114,7 +128,7 @@ namespace HA4IoT.Services
             }
             catch (CommandUnknownException exception)
             {
-                Log.Warning(exception, $"Tried to invoke unknown command '{commandType}'.");
+                _log.Warning(exception, $"Tried to invoke unknown command '{commandType}'.");
                 apiContext.ResultCode = ApiResultCode.InvalidParameter;
                 return;
             }

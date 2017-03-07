@@ -13,6 +13,7 @@ using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.I2C;
 using HA4IoT.Contracts.Hardware.Services;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Core;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
@@ -46,6 +47,7 @@ namespace HA4IoT.Controller.Cellar
             private readonly ActuatorFactory _actuatorFactory;
             private readonly SensorFactory _sensorFactory;
             private readonly AutomationFactory _automationFactory;
+            private readonly ILogService _logService;
 
             private enum InstalledDevice
             {
@@ -80,7 +82,8 @@ namespace HA4IoT.Controller.Cellar
                 IAreaRegistryService areaService,
                 ActuatorFactory actuatorFactory,
                 SensorFactory sensorFactory,
-                AutomationFactory automationFactory)
+                AutomationFactory automationFactory,
+                ILogService logService)
             {
                 if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
                 if (pi2GpioService == null) throw new ArgumentNullException(nameof(pi2GpioService));
@@ -94,6 +97,7 @@ namespace HA4IoT.Controller.Cellar
                 _actuatorFactory = actuatorFactory;
                 _sensorFactory = sensorFactory;
                 _automationFactory = automationFactory;
+                _logService = logService;
             }
             
             public Task ApplyAsync()
@@ -122,7 +126,7 @@ namespace HA4IoT.Controller.Cellar
                     .WithOnAtNightRange()
                     .WithOffBetweenRange(TimeSpan.Parse("22:30:00"), TimeSpan.Parse("05:00:00"));
 
-                var ioBoardsInterruptMonitor = new InterruptMonitor(_pi2GpioService.GetInput(4));
+                var ioBoardsInterruptMonitor = new InterruptMonitor(_pi2GpioService.GetInput(4), _logService);
                 ioBoardsInterruptMonitor.InterruptDetected += (s, e) => _ccToolsBoardService.PollInputBoardStates();
                 ioBoardsInterruptMonitor.Start();
 

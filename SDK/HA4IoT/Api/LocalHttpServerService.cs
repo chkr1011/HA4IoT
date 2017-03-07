@@ -16,14 +16,18 @@ namespace HA4IoT.Api
     {
         private readonly IApiDispatcherService _apiDispatcherService;
         private readonly HttpServer _httpServer;
+        private readonly ILogger _log;
 
-        public LocalHttpServerService(IApiDispatcherService apiDispatcherService, HttpServer httpServer)
+        public LocalHttpServerService(IApiDispatcherService apiDispatcherService, HttpServer httpServer, ILogService logService)
         {
             if (apiDispatcherService == null) throw new ArgumentNullException(nameof(apiDispatcherService));
             if (httpServer == null) throw new ArgumentNullException(nameof(httpServer));
+            if (logService == null) throw new ArgumentNullException(nameof(logService));
 
             _apiDispatcherService = apiDispatcherService;
             _httpServer = httpServer;
+
+            _log = logService.CreatePublisher(nameof(LocalHttpServerService));
         }
 
         public event EventHandler<ApiRequestReceivedEventArgs> RequestReceived;
@@ -136,8 +140,7 @@ namespace HA4IoT.Api
             }
             catch (Exception)
             {
-                Log.Verbose("Received a request with no valid JSON request.");
-
+                _log.Verbose("Received a request with no valid JSON request.");
                 return null;
             }
         }

@@ -16,7 +16,7 @@ namespace HA4IoT.Hardware.Mqtt
             return mqttService.Publish(topic, Encoding.UTF8.GetBytes(message), qosLevel);
         }
 
-        public static void Publish(this IMqttService mqttService, PublishMqttMessageParameter mqttMessageParameters)
+        public static void Publish(this IMqttService mqttService, MqttMessage mqttMessageParameters)
         {
             if (mqttService == null) throw new ArgumentNullException(nameof(mqttService));
             if (mqttMessageParameters == null) throw new ArgumentNullException(nameof(mqttMessageParameters));

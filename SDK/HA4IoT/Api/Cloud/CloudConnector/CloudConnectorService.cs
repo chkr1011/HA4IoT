@@ -27,11 +27,15 @@ namespace HA4IoT.Api.Cloud.CloudConnector
         private readonly StringContent _emptyContent = new StringContent(string.Empty);
         private readonly Uri _receiveRequestsUri;
         private readonly Uri _sendResponseUri;
+        private readonly ILogger _log;
 
-        public CloudConnectorService(IApiDispatcherService apiDispatcherService, ISettingsService settingsService)
+        public CloudConnectorService(IApiDispatcherService apiDispatcherService, ISettingsService settingsService, ILogService logService)
         {
             if (apiDispatcherService == null) throw new ArgumentNullException(nameof(apiDispatcherService));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
+            if (logService == null) throw new ArgumentNullException(nameof(logService));
+
+            _log = logService.CreatePublisher(nameof(CloudConnectorService));
 
             _apiDispatcherService = apiDispatcherService;
             _receiveRequestsUri = new Uri($"{BaseUri}/ReceiveRequests");
@@ -57,11 +61,11 @@ namespace HA4IoT.Api.Cloud.CloudConnector
         {
             if (!_settings.IsEnabled)
             {
-                Log.Info("Cloud Connector service is not enabled.");
+                _log.Info("Cloud Connector service is not enabled.");
                 return;
             }
 
-            Log.Info("Starting Cloud Connector service.");
+            _log.Info("Starting Cloud Connector service.");
 
             _apiDispatcherService.RegisterAdapter(this);
 
@@ -74,7 +78,7 @@ namespace HA4IoT.Api.Cloud.CloudConnector
 
         private async Task ReceivePendingMessagesAsyncLoop()
         {
-            Log.Verbose("Started receiving pending Cloud messages.");
+            _log.Verbose("Started receiving pending Cloud messages.");
             while (!_cancellationTokenSource.IsCancellationRequested)
             {
                 try
@@ -87,7 +91,7 @@ namespace HA4IoT.Api.Cloud.CloudConnector
                 }
                 catch (Exception exception)
                 {
-                    Log.Error(exception, "Error while receiving pending Cloud messages.");
+                    _log.Error(exception, "Error while receiving pending Cloud messages.");
                     await Task.Delay(TimeSpan.FromSeconds(5));
                 }
             }
@@ -122,17 +126,17 @@ namespace HA4IoT.Api.Cloud.CloudConnector
 
             if (result.StatusCode == HttpStatusCode.Unauthorized)
             {
-                Log.Warning("Credentials for Cloud access are invalid.");
+                _log.Warning("Credentials for Cloud access are invalid.");
                 await Task.Delay(TimeSpan.FromMinutes(1));
             }
             else if (result.StatusCode == HttpStatusCode.InternalServerError)
             {
-                Log.Warning("Cloud access is not working properly.");
+                _log.Warning("Cloud access is not working properly.");
                 await Task.Delay(TimeSpan.FromSeconds(10));
             }
             else
             {
-                Log.Warning($"Failed to receive pending Cloud message (Error code: {result.StatusCode}).");
+                _log.Warning($"Failed to receive pending Cloud message (Error code: {result.StatusCode}).");
             }
             
             return new ReceivePendingMessagesAsyncResult();
@@ -148,7 +152,7 @@ namespace HA4IoT.Api.Cloud.CloudConnector
                 await SendResponse(eventArgs);
             }
 
-            Log.Verbose($"Handled {pendingCloudMessages.Count} pending Cloud messages.");
+            _log.Verbose($"Handled {pendingCloudMessages.Count} pending Cloud messages.");
         }
 
         private async Task SendResponse(CloudConnectorApiContext apiContext)
@@ -160,17 +164,17 @@ namespace HA4IoT.Api.Cloud.CloudConnector
                     var result = await _sendingHttpClient.PostAsync(_sendResponseUri, content);
                     if (result.IsSuccessStatusCode)
                     {
-                        Log.Verbose("Sent response message to Cloud.");
+                        _log.Verbose("Sent response message to Cloud.");
                     }
                     else
                     {
-                        Log.Warning($"Failed to send response message to Cloud (Error code: {result.StatusCode}).");
+                        _log.Warning($"Failed to send response message to Cloud (Error code: {result.StatusCode}).");
                     }
                 }
             }
             catch (Exception exception)
             {
-                Log.Warning(exception, "Error while sending response message to cloud.");
+                _log.Warning(exception, "Error while sending response message to cloud.");
             }
         }
 

@@ -14,9 +14,6 @@ void setupMqtt() {
 
   _mqttCommandSetOutputs =
       "ha4iot/rgb_strip/" + _configDeviceName + "/command/setOutputs";
-
-  String commandTopic = "ha4iot/rgb_strip/" + _configDeviceName + "/command/#";
-  _mqttClient.subscribe(commandTopic.c_str());
 }
 
 void loopMqtt() {
@@ -32,52 +29,83 @@ void loopMqtt() {
   _mqttReconnectTimeout--;
   if (_mqttReconnectTimeout <= 0) {
     debugLine(F("MQTT> Trying reconnect with server..."));
-
     _mqttReconnectTimeout = MQTT_RECONNECT_INTERVAL;
 
     _mqttClient.setServer(_configMqttServer.c_str(), 1883);
+
     if (_mqttClient.connect(_configMqttUser.c_str())) {
+      _statusMqttIsConnected = true;
+      _mqttClient.subscribe(_mqttCommandSetOutputs.c_str());
+      publishMqttOutputStatus();
+
       debugLine(F("MQTT> Connected with server."));
     } else {
+      _statusMqttIsConnected = false;
       debugLine(F("MQTT> Connecting with server failed."));
     }
   }
 }
 
-String intToString(int number) {
-  char buffer[10];
-  snprintf(buffer, 3, "%d", number);
+String getMqttServerAddress() {
+  String usedMqttServerAddress = _configMqttServer;
 
-  return String(buffer);
+  return usedMqttServerAddress;
+
+  IPAddress mqttServerIPAddress;
+  if (WiFi.hostByName(_configMqttServer.c_str(), mqttServerIPAddress) == 1) {
+    usedMqttServerAddress = mqttServerIPAddress.toString();
+  } else {
+    debugLine(F("MQTT> Server IP not resolved!"));
+  }
+
+  debug(F("MQTT> Using server address: "));
+  debugLine(usedMqttServerAddress);
+
+  return usedMqttServerAddress;
 }
 
 void publishMqttOutputStatus() {
   String topic = "ha4iot/rgb_strip/" + _configDeviceName + "/status/outputs";
 
-  String outputStatusText = intToString(_status_output_r) + " " +
-                            intToString(_status_output_g) + " " +
-                            intToString(_status_output_b);
+  String message = String(_statusOutputR) + "," + String(_statusOutputG) + "," +
+                   String(_statusOutputB);
 
-  _mqttClient.publish(topic.c_str(), outputStatusText.c_str());
+  _mqttClient.publish(topic.c_str(), message.c_str());
   debugLine(F("MQTT> Published output status."));
 }
 
 void callback(char *topic, byte *payload, unsigned int length) {
+  payload[length] = '\0';
+  String message = String((char *)payload);
+
+  debug(F("MQTT> Received topic: "));
+  debug(topic);
+  debug(F(" with payload: "));
+  debugLine(message);
+
   if (strcmp(_mqttCommandSetOutputs.c_str(), topic) == 0) {
-    char *token = strtok((char*)payload, " ");
-    char *delimiter = (char*)" ";
+    int c1 = message.indexOf(',');
+    if (c1 == -1) {
+      return;
+    }
 
-    int r = 0;
-    token = strtok(NULL, delimiter);
-    r = atoi(token);
+    int c2 = message.indexOf(',', c1 + 1);
+    if (c2 == -1) {
+      return;
+    }
 
-    int g = 0;
-    token = strtok(NULL, delimiter);
-    g = atoi(token);
+    String rText = message.substring(0, c1);
+    String bText = message.substring(c1 + 1, c2);
+    String gText = message.substring(c2 + 1);
 
-    int b = 0;
-    token = strtok(NULL, delimiter);
-    b = atoi(token);
+    int r = rText.toInt();
+    int g = bText.toInt();
+    int b = gText.toInt();
+
     setOutputs(r, g, b);
+
+    // if (scanf(message, "%d,%d,%d", &r, &g, &b) == 3) {
+    //  setOutputs(r, g, b);
+    //}
   }
 }

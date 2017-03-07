@@ -123,7 +123,7 @@ namespace HA4IoT.Controller.Main.Rooms
             _actuatorFactory.RegisterSocket(area, Office.SocketRearLeftEdge, hsrel8.GetOutput(7));
             _actuatorFactory.RegisterSocket(area, Office.SocketRearLeft, hsrel8.GetOutput(2));
             _actuatorFactory.RegisterSocket(area, Office.SocketRearRight, hsrel8.GetOutput(1));
-            _actuatorFactory.RegisterSocket(area, Office.RemoteSocketDesk, _remoteSocketService.GetOutput(0));
+            _actuatorFactory.RegisterSocket(area, Office.RemoteSocketDesk, _remoteSocketService.GetRemoteSocket("OFFICE_0"));
 
             _sensorFactory.RegisterButton(area, Office.ButtonUpperLeft, input5.GetInput(0));
             _sensorFactory.RegisterButton(area, Office.ButtonLowerLeft, input5.GetInput(1));

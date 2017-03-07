@@ -19,16 +19,19 @@ namespace HA4IoT.Networking.WebSockets
         private readonly Guid _sessionUid = Guid.NewGuid();
         private readonly List<WebSocketFrame> _frameQueue = new List<WebSocketFrame>();
         private readonly StreamSocket _clientSocket;
+        private readonly ILogger _log;
 
         private byte[] _overhead = new byte[0];
 
-        public WebSocketClientSession(StreamSocket clientSocket)
+        public WebSocketClientSession(StreamSocket clientSocket, ILogger log)
         {
             if (clientSocket == null) throw new ArgumentNullException(nameof(clientSocket));
+            if (log == null) throw new ArgumentNullException(nameof(log));
 
             _clientSocket = clientSocket;
+            _log = log;
 
-            Log.Verbose($"WebSocket session '{_sessionUid}' created.");
+            _log.Verbose($"WebSocket session '{_sessionUid}' created.");
         }
 
         public event EventHandler<WebSocketMessageReceivedEventArgs> MessageReceived;
@@ -90,7 +93,7 @@ namespace HA4IoT.Networking.WebSockets
             await _clientSocket.CancelIOAsync();
             Closed?.Invoke(this, EventArgs.Empty);
 
-            Log.Verbose($"WebSocket session '{_sessionUid}' closed.");
+            _log.Verbose($"WebSocket session '{_sessionUid}' closed.");
         }
 
         public async Task SendAsync(JObject json)

@@ -27,6 +27,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
         private readonly IDateTimeService _dateTimeService;
         private readonly ISystemInformationService _systemInformationService;
         private readonly IStorageService _storageService;
+        private readonly ILogger _log;
 
         private string _previousResponse;
 
@@ -45,7 +46,8 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             ISchedulerService schedulerService, 
             ISystemInformationService systemInformationService,
             ISettingsService settingsService, 
-            IStorageService storageService)
+            IStorageService storageService,
+            ILogService logService)
         {
             if (outdoorTemperatureService == null) throw new ArgumentNullException(nameof(outdoorTemperatureService));
             if (outdoorHumidityService == null) throw new ArgumentNullException(nameof(outdoorHumidityService));
@@ -55,7 +57,8 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             if (systemInformationService == null) throw new ArgumentNullException(nameof(systemInformationService));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             if (storageService == null) throw new ArgumentNullException(nameof(storageService));
-            
+            if (logService == null) throw new ArgumentNullException(nameof(logService));
+
             _outdoorTemperatureService = outdoorTemperatureService;
             _outdoorHumidityService = outdoorHumidityService;
             _daylightService = daylightService;
@@ -63,6 +66,8 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             _dateTimeService = dateTimeService;
             _systemInformationService = systemInformationService;
             _storageService = storageService;
+
+            _log = logService.CreatePublisher(nameof(OpenWeatherMapService));
 
             settingsService.CreateSettingsMonitor<OpenWeatherMapServiceSettings>(s => Settings = s);
 
@@ -89,11 +94,11 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
         {
             if (!Settings.IsEnabled)
             {
-                Log.Verbose("Fetching Open Weather Map Service is disabled.");
+                _log.Verbose("Fetching Open Weather Map Service is disabled.");
                 return;
             }
 
-            Log.Verbose("Fetching Open Weather Map weather data.");
+            _log.Verbose("Fetching Open Weather Map weather data.");
 
             var response = FetchWeatherData();
 
@@ -175,7 +180,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             }
             catch (Exception exception)
             {
-                Log.Warning(exception, $"Error while parsing Open Weather Map response ({weatherData}).");
+                _log.Warning(exception, $"Error while parsing Open Weather Map response ({weatherData}).");
 
                 return false;
             }

@@ -28,6 +28,7 @@ namespace HA4IoT.PersonalAgent
         private readonly IWeatherService _weatherService;
         private readonly IOutdoorTemperatureService _outdoorTemperatureService;
         private readonly IOutdoorHumidityService _outdoorHumidityService;
+        private readonly ILogger _log;
 
         private MessageContext _latestMessageContext;
 
@@ -37,7 +38,8 @@ namespace HA4IoT.PersonalAgent
             IAreaRegistryService areaService,
             IWeatherService weatherService,
             IOutdoorTemperatureService outdoorTemperatureService,
-            IOutdoorHumidityService outdoorHumidityService)
+            IOutdoorHumidityService outdoorHumidityService,
+            ILogService logService)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             if (componentRegistry == null) throw new ArgumentNullException(nameof(componentRegistry));
@@ -45,6 +47,7 @@ namespace HA4IoT.PersonalAgent
             if (weatherService == null) throw new ArgumentNullException(nameof(weatherService));
             if (outdoorTemperatureService == null) throw new ArgumentNullException(nameof(outdoorTemperatureService));
             if (outdoorHumidityService == null) throw new ArgumentNullException(nameof(outdoorHumidityService));
+            if (logService == null) throw new ArgumentNullException(nameof(logService));
 
             _settingsService = settingsService;
             _componentsRegistry = componentRegistry;
@@ -52,6 +55,7 @@ namespace HA4IoT.PersonalAgent
             _weatherService = weatherService;
             _outdoorTemperatureService = outdoorTemperatureService;
             _outdoorHumidityService = outdoorHumidityService;
+            _log = logService.CreatePublisher(nameof(PersonalAgentService));
         }
 
         [ApiMethod]
@@ -116,7 +120,7 @@ namespace HA4IoT.PersonalAgent
             {
                 messageContext.Answer =
                     $"{Emoji.Scream} Mist! Da ist etwas total schief gelaufen! Bitte stelle mir nie wieder solche Fragen!";
-                Log.Error(exception, $"Error while processing message '{messageContext.Text}'.");
+                _log.Error(exception, $"Error while processing message '{messageContext.Text}'.");
             }
         }
 

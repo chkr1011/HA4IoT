@@ -6,7 +6,7 @@
 
 String FIRMWARE_VERSION = "1.0.1";
 
-String AP_SSID = "HA4IoT-RGBStrip";
+String AP_SSID = "HA4IoT-Device";
 String AP_PASSWORD = "ha4iot123";
 
 #define DEBUG 1
@@ -32,10 +32,7 @@ void loop() {
   loopMqtt();
   loopWebServer();
 
-
-  delay(100);
   return;
-  //delay(5000);
 
   int deviceCount = sensors.getDeviceCount();
   Serial.print("Found ");

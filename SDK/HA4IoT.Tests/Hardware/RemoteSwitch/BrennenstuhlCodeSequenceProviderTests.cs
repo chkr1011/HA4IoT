@@ -2,6 +2,7 @@
 using FluentAssertions;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
+using HA4IoT.Hardware.RemoteSwitch.Codes.Protocols;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace HA4IoT.Tests.Hardware.RemoteSwitch
@@ -12,10 +13,10 @@ namespace HA4IoT.Tests.Hardware.RemoteSwitch
         [TestMethod]
         public void CodeShouldBeGeneratedCorrectly_WithUnitAAndTurnOn()
         {
-            var generator = new BrennenstuhlCodeSequenceProvider();
+            var generator = new DipswitchCodeSequenceProvider();
             var sequence = generator.GetSequence(
-                BrennenstuhlSystemCode.AllOn,
-                BrennenstuhlUnitCode.A,
+                DipswitchSystemCode.AllOn,
+                DipswitchUnitCode.A,
                 RemoteSocketCommand.TurnOn);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);
@@ -25,10 +26,10 @@ namespace HA4IoT.Tests.Hardware.RemoteSwitch
         [TestMethod]
         public void CodeShouldBeGeneratedCorrectly_WithUnitAAndTurnOff()
         {
-            var generator = new BrennenstuhlCodeSequenceProvider();
+            var generator = new DipswitchCodeSequenceProvider();
             var sequence = generator.GetSequence(
-                BrennenstuhlSystemCode.AllOn,
-                BrennenstuhlUnitCode.A,
+                DipswitchSystemCode.AllOn,
+                DipswitchUnitCode.A,
                 RemoteSocketCommand.TurnOff);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);
@@ -38,10 +39,10 @@ namespace HA4IoT.Tests.Hardware.RemoteSwitch
         [TestMethod]
         public void CodeShouldBeGeneratedCorrectly_WithUnitBAndTurnOn()
         {
-            var generator = new BrennenstuhlCodeSequenceProvider();
+            var generator = new DipswitchCodeSequenceProvider();
             var sequence = generator.GetSequence(
-                BrennenstuhlSystemCode.AllOn,
-                BrennenstuhlUnitCode.B,
+                DipswitchSystemCode.AllOn,
+                DipswitchUnitCode.B,
                 RemoteSocketCommand.TurnOn);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);
@@ -51,10 +52,10 @@ namespace HA4IoT.Tests.Hardware.RemoteSwitch
         [TestMethod]
         public void CodeShouldBeGeneratedCorrectly_WithUnitBAndTurnOff()
         {
-            var generator = new BrennenstuhlCodeSequenceProvider();
+            var generator = new DipswitchCodeSequenceProvider();
             var sequence = generator.GetSequence(
-                BrennenstuhlSystemCode.AllOn,
-                BrennenstuhlUnitCode.B,
+                DipswitchSystemCode.AllOn,
+                DipswitchUnitCode.B,
                 RemoteSocketCommand.TurnOff);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);
@@ -64,11 +65,11 @@ namespace HA4IoT.Tests.Hardware.RemoteSwitch
         [TestMethod]
         public void CodeShouldBeGeneratedCorrectly_WithUnitCAndTurnOn()
         {
-            var generator = new BrennenstuhlCodeSequenceProvider();
+            var generator = new DipswitchCodeSequenceProvider();
             var sequence =
                 generator.GetSequence(
-                    BrennenstuhlSystemCode.Switch1 | BrennenstuhlSystemCode.Switch3 | BrennenstuhlSystemCode.Switch5,
-                    BrennenstuhlUnitCode.C,
+                    DipswitchSystemCode.Switch1 | DipswitchSystemCode.Switch3 | DipswitchSystemCode.Switch5,
+                    DipswitchUnitCode.C,
                     RemoteSocketCommand.TurnOn);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);
@@ -78,11 +79,11 @@ namespace HA4IoT.Tests.Hardware.RemoteSwitch
         [TestMethod]
         public void CodeShouldBeGeneratedCorrectly_WithUnitCAndTurnOff()
         {
-            var generator = new BrennenstuhlCodeSequenceProvider();
+            var generator = new DipswitchCodeSequenceProvider();
             var sequence =
                 generator.GetSequence(
-                    BrennenstuhlSystemCode.Switch1 | BrennenstuhlSystemCode.Switch3 | BrennenstuhlSystemCode.Switch5,
-                    BrennenstuhlUnitCode.C,
+                    DipswitchSystemCode.Switch1 | DipswitchSystemCode.Switch3 | DipswitchSystemCode.Switch5,
+                    DipswitchUnitCode.C,
                     RemoteSocketCommand.TurnOff);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);
@@ -92,11 +93,11 @@ namespace HA4IoT.Tests.Hardware.RemoteSwitch
         [TestMethod]
         public void CodeShouldBeGeneratedCorrectly_WithUnitDAndTurnOn()
         {
-            var generator = new BrennenstuhlCodeSequenceProvider();
+            var generator = new DipswitchCodeSequenceProvider();
             var sequence =
                 generator.GetSequence(
-                    BrennenstuhlSystemCode.AllOff,
-                    BrennenstuhlUnitCode.D,
+                    DipswitchSystemCode.AllOff,
+                    DipswitchUnitCode.D,
                     RemoteSocketCommand.TurnOn);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);
@@ -106,11 +107,11 @@ namespace HA4IoT.Tests.Hardware.RemoteSwitch
         [TestMethod]
         public void CodeShouldBeGeneratedCorrectly_WithUnitDAndTurnOff()
         {
-            var generator = new BrennenstuhlCodeSequenceProvider();
+            var generator = new DipswitchCodeSequenceProvider();
             var sequence =
                 generator.GetSequence(
-                    BrennenstuhlSystemCode.AllOff,
-                    BrennenstuhlUnitCode.D,
+                    DipswitchSystemCode.AllOff,
+                    DipswitchUnitCode.D,
                     RemoteSocketCommand.TurnOff);
 
             sequence.Codes.Count.ShouldBeEquivalentTo(1);

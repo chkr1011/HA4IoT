@@ -10,6 +10,15 @@ namespace HA4IoT.Services.StorageService
 {
     public class StorageService : ServiceBase, IStorageService
     {
+        private readonly ILogger _log;
+
+        public StorageService(ILogService logService)
+        {
+            if (logService == null) throw new ArgumentNullException(nameof(logService));
+
+            _log = logService.CreatePublisher(nameof(StorageService));
+        }
+
         public bool TryRead<TData>(string filename, out TData data)
         {
             if (filename == null) throw new ArgumentNullException(nameof(filename));
@@ -34,7 +43,7 @@ namespace HA4IoT.Services.StorageService
             }
             catch (Exception exception)
             {
-                Log.Warning(exception, $"Unable to load data from '{filename}'.");
+                _log.Warning(exception, $"Unable to load data from '{filename}'.");
             }
 
             return false;

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Settings;
 using Newtonsoft.Json.Linq;
@@ -14,17 +15,20 @@ namespace HA4IoT.Api.Cloud.Azure
 
         private readonly IApiDispatcherService _apiService;
         private readonly ISettingsService _settingsService;
+        private readonly ILogger _log;
 
         private QueueSender _outboundQueue;
         private QueueReceiver _inboundQueue;
 
-        public AzureCloudService(IApiDispatcherService apiService, ISettingsService settingsService)
+        public AzureCloudService(IApiDispatcherService apiService, ISettingsService settingsService, ILogService logService)
         {
             if (apiService == null) throw new ArgumentNullException(nameof(apiService));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
+            if (logService == null) throw new ArgumentNullException(nameof(logService));
 
             _apiService = apiService;
             _settingsService = settingsService;
+            _log = logService.CreatePublisher(nameof(AzureCloudService));
         }
 
         public event EventHandler<ApiRequestReceivedEventArgs> RequestReceived;
@@ -52,7 +56,7 @@ namespace HA4IoT.Api.Cloud.Azure
                 Authorization = settings.OutboundQueueAuthorization
             };
 
-            _outboundQueue = new QueueSender(options);
+            _outboundQueue = new QueueSender(options, _log);
         }
 
         private void SetupInboundQueue(AzureCloudServiceSettings settings)
@@ -64,7 +68,7 @@ namespace HA4IoT.Api.Cloud.Azure
                 Authorization = settings.InboundQueueAuthorization
             };
 
-            _inboundQueue = new QueueReceiver(options);
+            _inboundQueue = new QueueReceiver(options, _log);
             _inboundQueue.MessageReceived += DistpachMessage;
             _inboundQueue.Enable();
         }

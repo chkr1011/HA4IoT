@@ -23,6 +23,7 @@ namespace HA4IoT.Notifications
         private readonly IDateTimeService _dateTimeService;
         private readonly IStorageService _storageService;
         private readonly IResourceService _resourceService;
+        private readonly ILogger _log;
 
         public NotificationService(
             IDateTimeService dateTimeService, 
@@ -30,7 +31,8 @@ namespace HA4IoT.Notifications
             ISchedulerService schedulerService, 
             ISettingsService settingsService,
             IStorageService storageService,
-            IResourceService resourceService)
+            IResourceService resourceService,
+            ILogService logService)
         {
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
             if (apiService == null) throw new ArgumentNullException(nameof(apiService));
@@ -43,6 +45,7 @@ namespace HA4IoT.Notifications
             _storageService = storageService;
             _resourceService = resourceService;
 
+            _log = logService.CreatePublisher(nameof(NotificationService));
             settingsService.CreateSettingsMonitor<NotificationServiceSettings>(s => Settings = s);
 
             apiService.StatusRequested += HandleApiStatusRequest;
@@ -109,7 +112,7 @@ namespace HA4IoT.Notifications
 
                 if (removedItems > 0)
                 {
-                    Log.Verbose($"Manually deleted notification '{notificationUid}'");
+                    _log.Verbose($"Manually deleted notification '{notificationUid}'");
                     SaveNotifications();
                 }
             }
@@ -119,12 +122,12 @@ namespace HA4IoT.Notifications
         {
             lock (_syncRoot)
             {
-                Log.Verbose("Starting notification cleanup.");
+                _log.Verbose("Starting notification cleanup.");
 
                 var now = _dateTimeService.Now;
                 var removedItems = _notifications.RemoveAll(n => n.Timestamp.Add(n.TimeToLive) < now);
 
-                Log.Verbose($"Deleted {removedItems} obsolete notifications.");
+                _log.Verbose($"Deleted {removedItems} obsolete notifications.");
                 if (removedItems > 0)
                 {
                     SaveNotifications();

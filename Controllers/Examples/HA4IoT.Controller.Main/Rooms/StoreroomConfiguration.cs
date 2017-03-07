@@ -6,6 +6,7 @@ using HA4IoT.Automations;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.I2C;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services.ExternalServices.Twitter;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
@@ -25,6 +26,7 @@ namespace HA4IoT.Controller.Main.Rooms
         private readonly AutomationFactory _automationFactory;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
+        private readonly ILogService _logService;
         private CatLitterBoxTwitterSender _catLitterBoxTwitterSender;
 
         private enum Storeroom
@@ -48,7 +50,8 @@ namespace HA4IoT.Controller.Main.Rooms
             ITwitterClientService twitterClientService,
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
-            SensorFactory sensorFactory)
+            SensorFactory sensorFactory,
+            ILogService logService)
         {
             if (areaService == null) throw new ArgumentNullException(nameof(areaService));
             if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
@@ -58,6 +61,7 @@ namespace HA4IoT.Controller.Main.Rooms
             if (automationFactory == null) throw new ArgumentNullException(nameof(automationFactory));
             if (actuatorFactory == null) throw new ArgumentNullException(nameof(actuatorFactory));
             if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
+            if (logService == null) throw new ArgumentNullException(nameof(logService));
 
             _areaService = areaService;
             _deviceService = deviceService;
@@ -67,6 +71,7 @@ namespace HA4IoT.Controller.Main.Rooms
             _automationFactory = automationFactory;
             _actuatorFactory = actuatorFactory;
             _sensorFactory = sensorFactory;
+            _logService = logService;
         }
 
         public void Apply()
@@ -108,7 +113,7 @@ namespace HA4IoT.Controller.Main.Rooms
                 .WithEnabledAtDay();
 
             _catLitterBoxTwitterSender =
-                new CatLitterBoxTwitterSender(_timerService, _twitterClientService).WithTrigger(
+                new CatLitterBoxTwitterSender(_timerService, _twitterClientService, _logService).WithTrigger(
                     room.GetMotionDetector(Storeroom.MotionDetectorCatLitterBox));
         }
     }

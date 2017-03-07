@@ -15,14 +15,20 @@ namespace HA4IoT.Hardware.I2C
         private readonly object _syncRoot = new object();
         private readonly Dictionary<int, I2cDevice> _deviceCache = new Dictionary<int, I2cDevice>();
         private readonly string _i2CBusId;
+        private readonly ILogger _log;
 
-        public BuiltInI2CBusService()
+        public BuiltInI2CBusService(ILogService logService)
         {
-            string deviceSelector = I2cDevice.GetDeviceSelector();
+            if (logService == null) throw new ArgumentNullException(nameof(logService));
+
+            _log = logService.CreatePublisher(nameof(BuiltInI2CBusService));
+
+            var deviceSelector = I2cDevice.GetDeviceSelector();
             
-            DeviceInformationCollection deviceInformation = DeviceInformation.FindAllAsync(deviceSelector).AsTask().Result;
+            var deviceInformation = DeviceInformation.FindAllAsync(deviceSelector).AsTask().Result;
             if (deviceInformation.Count == 0)
             {
+                _log.Warning("No I2C bus found.");
                 // TODO: Allow local controller to replace this. Then throw exception again.
                 //throw new InvalidOperationException("I2C bus not found.");
                 return;
@@ -46,7 +52,7 @@ namespace HA4IoT.Hardware.I2C
                 catch (Exception exception)
                 {
                     // Ensure that the application will not crash if some devices are currently not available etc.
-                    Log.Warning(exception, $"Error while accessing I2C device with address {address}.");
+                    _log.Warning(exception, $"Error while accessing I2C device with address {address}.");
                 }
                 finally
                 {

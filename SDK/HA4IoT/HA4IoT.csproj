@@ -136,10 +136,14 @@
     <Compile Include="Components\ICommandInvokerAction.cs" />
     <Compile Include="Components\LogicalComponent.cs" />
     <Compile Include="Conditions\Specialized\TemperatureIsLowerThanCondition.cs" />
+    <Compile Include="Hardware\Mqtt\BrokerMqttStream.cs" />
+    <Compile Include="Hardware\Mqtt\ClientMqttStream.cs" />
     <Compile Include="Hardware\Mqtt\MqttBrokerChannel.cs" />
-    <Compile Include="Hardware\Mqtt\MqttLoopbackClientChannel.cs" />
+    <Compile Include="Hardware\Mqtt\MqttInMemoryChannel.cs" />
     <Compile Include="Hardware\Mqtt\MqttService.cs" />
     <Compile Include="Hardware\Mqtt\MqttServiceExtensions.cs" />
+    <Compile Include="Hardware\RemoteSwitch\Adapters\MqttLdp433MhzAdapter.cs" />
+    <Compile Include="Hardware\RemoteSwitch\Lpd433MhzCodeSequenceReceivedEventArgs.cs" />
     <Compile Include="Hardware\Sonoff\SonoffBinaryOutputAdapter.cs" />
     <Compile Include="Hardware\Sonoff\SonoffDeviceService.cs" />
     <Compile Include="Logging\LogService.cs" />
@@ -256,17 +260,17 @@
     <Compile Include="Hardware\I2C\I2CPortExpanderDrivers\PCF8574AddressGenerator.cs" />
     <Compile Include="Hardware\I2C\I2CPortExpanderDrivers\PCF8574ADriver.cs" />
     <Compile Include="Hardware\I2C\I2CPortExpanderDrivers\PCF8574Driver.cs" />
-    <Compile Include="Hardware\RemoteSwitch\Codes\BrennenstuhlCodeSequenceProvider.cs" />
-    <Compile Include="Hardware\RemoteSwitch\Codes\BrennenstuhlSystemCode.cs" />
-    <Compile Include="Hardware\RemoteSwitch\Codes\BrennenstuhlUnitCode.cs" />
-    <Compile Include="Hardware\RemoteSwitch\Codes\IntertechnoCodeSequenceProvider.cs" />
-    <Compile Include="Hardware\RemoteSwitch\Codes\IntertechnoSystemCode.cs" />
-    <Compile Include="Hardware\RemoteSwitch\Codes\IntertechnoUnitCode.cs" />
-    <Compile Include="Hardware\RemoteSwitch\ILPD433MhzSignalSender.cs" />
-    <Compile Include="Hardware\RemoteSwitch\LPD433MhzCode.cs" />
-    <Compile Include="Hardware\RemoteSwitch\LPD433MhzCodeSequence.cs" />
-    <Compile Include="Hardware\RemoteSwitch\LPD433MHzCodeSequencePair.cs" />
-    <Compile Include="Hardware\RemoteSwitch\LPD433MhzSignalSender.cs" />
+    <Compile Include="Hardware\RemoteSwitch\Codes\Protocols\DipswitchCodeSequenceProvider.cs" />
+    <Compile Include="Hardware\RemoteSwitch\Codes\Protocols\DipswitchSystemCode.cs" />
+    <Compile Include="Hardware\RemoteSwitch\Codes\Protocols\DipswitchUnitCode.cs" />
+    <Compile Include="Hardware\RemoteSwitch\Codes\Protocols\IntertechnoCodeSequenceProvider.cs" />
+    <Compile Include="Hardware\RemoteSwitch\Codes\Protocols\IntertechnoSystemCode.cs" />
+    <Compile Include="Hardware\RemoteSwitch\Codes\Protocols\IntertechnoUnitCode.cs" />
+    <Compile Include="Hardware\RemoteSwitch\ILdp433MhzAdapter.cs" />
+    <Compile Include="Hardware\RemoteSwitch\Codes\Lpd433MhzCode.cs" />
+    <Compile Include="Hardware\RemoteSwitch\Codes\Lpd433MhzCodeSequence.cs" />
+    <Compile Include="Hardware\RemoteSwitch\Codes\Lpd433MhzCodeSequencePair.cs" />
+    <Compile Include="Hardware\RemoteSwitch\Adapters\I2CHardwareBridgeLdp433MhzAdapterAdapter.cs" />
     <Compile Include="Hardware\RemoteSwitch\RemoteSocketCommand.cs" />
     <Compile Include="Hardware\RemoteSwitch\RemoteSocketOutputPort.cs" />
     <Compile Include="Hardware\RemoteSwitch\RemoteSocketService.cs" />
@@ -340,6 +344,12 @@
       <Project>{d4e0a3f9-6521-4aee-815a-e2a60323fb63}</Project>
       <Name>HA4IoT.Networking</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="M2Mqtt.WinRT">
+      <HintPath>..\..\..\M2MQTT\bin\Debug\M2Mqtt.WinRT\M2Mqtt.WinRT.dll</HintPath>
+      <Aliases>mqttClient</Aliases>
+    </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

@@ -2,6 +2,6 @@
 {
     public interface IBinaryOutputController
     {
-        IBinaryOutput GetOutput(int number);
+        IBinaryOutput GetOutput(int id);
     }
 }

@@ -21,14 +21,18 @@ namespace HA4IoT.Services.Scheduling
         private readonly Timer _timer;
         private readonly ITimerService _timerService;
         private readonly IDateTimeService _dateTimeService;
+        private readonly ILogger _log;
 
-        public SchedulerService(ITimerService timerService, IDateTimeService dateTimeService)
+        public SchedulerService(ITimerService timerService, IDateTimeService dateTimeService, ILogService logService)
         {
             if (timerService == null) throw new ArgumentNullException(nameof(timerService));
             if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
+            if (logService == null) throw new ArgumentNullException(nameof(logService));
 
             _timerService = timerService;
             _dateTimeService = dateTimeService;
+
+            _log = logService.CreatePublisher(nameof(SchedulerService));
 
             _timer = new Timer(e => ExecuteSchedules(), null, -1, Timeout.Infinite);
         }
@@ -67,7 +71,7 @@ namespace HA4IoT.Services.Scheduling
                 var schedule = new Schedule(name, interval, action) { NextExecution = _dateTimeService.Now };
                 _schedules.Add(schedule);
 
-                Log.Info($"Registerd schedule '{name}' with interval of {interval}.");
+                _log.Info($"Registerd schedule '{name}' with interval of {interval}.");
             }
         }
 
@@ -108,7 +112,7 @@ namespace HA4IoT.Services.Scheduling
             var stopwatch = Stopwatch.StartNew();
             try
             {
-                Log.Verbose($"Executing schedule '{schedule.Name}'.");
+                _log.Verbose($"Executing schedule '{schedule.Name}'.");
 
                 schedule.Action();
                 schedule.LastErrorMessage = null;
@@ -116,7 +120,7 @@ namespace HA4IoT.Services.Scheduling
             }
             catch (Exception exception)
             {
-                Log.Error(exception, $"Error while executing schedule '{schedule.Name}'.");
+                _log.Error(exception, $"Error while executing schedule '{schedule.Name}'.");
 
                 schedule.Status = ScheduleStatus.Faulted;
                 schedule.LastErrorMessage = exception.Message;

@@ -1,5 +1,7 @@
-String _status_own_ip;
+String _statusOwnIp;
 
-int _status_output_r = 0;
-int _status_output_g = 0;
-int _status_output_b = 0;
+int _statusOutputR = 0;
+int _statusOutputG = 0;
+int _statusOutputB = 0;
+
+bool _statusMqttIsConnected = false;

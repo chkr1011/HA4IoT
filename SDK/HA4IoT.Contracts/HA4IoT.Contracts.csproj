@@ -150,7 +150,8 @@
     <Compile Include="Hardware\I2C\II2CDevice.cs" />
     <Compile Include="Hardware\I2C\II2CPortExpanderDriver.cs" />
     <Compile Include="Hardware\IsPartOfLogicalUpdateParameter.cs" />
-    <Compile Include="Hardware\Mqtt\PublishMqttMessageParameter.cs" />
+    <Compile Include="Hardware\Mqtt\MqttMessage.cs" />
+    <Compile Include="Hardware\Mqtt\MqttMessageReceivedEventArgs.cs" />
     <Compile Include="Hardware\Services\IGpioService.cs" />
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Hardware\Services\IMqttService.cs" />

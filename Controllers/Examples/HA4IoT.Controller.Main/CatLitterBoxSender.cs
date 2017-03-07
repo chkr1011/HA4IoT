@@ -17,12 +17,13 @@ namespace HA4IoT.Controller.Main
         private readonly Timeout _timeout;
         private readonly Random _random = new Random((int)DateTime.Now.Ticks);
         private readonly Stopwatch _timeInLitterBox = new Stopwatch();
+        private readonly ILogger _log;
 
         private TimeSpan _effectiveTimeInLitterBox;
         private int _count = 1;
         private DateTime? _lastTweetTimestamp;
         private string _previousMessage = string.Empty;
-
+        
         // Twitter will not accept the same tweet twice.
         private readonly string[] _messages =
         {
@@ -38,12 +39,15 @@ namespace HA4IoT.Controller.Main
                 "Hey, this one looks like you :-)"         
             };
 
-        public CatLitterBoxTwitterSender(ITimerService timerService, ITwitterClientService twitterClientService)
+        public CatLitterBoxTwitterSender(ITimerService timerService, ITwitterClientService twitterClientService, ILogService logService)
         {
             if (timerService == null) throw new ArgumentNullException(nameof(timerService));
             if (twitterClientService == null) throw new ArgumentNullException(nameof(twitterClientService));
+            if (logService == null) throw new ArgumentNullException(nameof(logService));
 
             _twitterClientService = twitterClientService;
+
+            _log = logService.CreatePublisher(nameof(logService));
 
             _timeout = new Timeout(timerService, TimeSpan.FromSeconds(30));
             _timeout.Elapsed += (s, e) =>
@@ -86,7 +90,7 @@ namespace HA4IoT.Controller.Main
             UpdateCounter();
 
             string message = GenerateMessage();
-            Log.Verbose("Trying to tweet '" + message + "'.");
+            _log.Verbose("Trying to tweet '" + message + "'.");
 
             try
             {
@@ -94,11 +98,11 @@ namespace HA4IoT.Controller.Main
                 await _twitterClientService.Tweet(message);
 
                 _lastTweetTimestamp = DateTime.Now;
-                Log.Info("Successfully tweeted: " + message);
+                _log.Info("Successfully tweeted: " + message);
             }
             catch (Exception exception)
             {
-                Log.Warning("Failed to tweet. " + exception.Message);
+                _log.Warning("Failed to tweet. " + exception.Message);
             }
         }
 

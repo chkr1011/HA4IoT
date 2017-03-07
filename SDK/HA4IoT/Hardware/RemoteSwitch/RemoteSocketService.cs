@@ -1,61 +1,75 @@
 ﻿using System;
 using System.Collections.Generic;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
+using HA4IoT.Hardware.RemoteSwitch.Codes;
 
 namespace HA4IoT.Hardware.RemoteSwitch
 {
-    public class RemoteSocketService : ServiceBase, IBinaryOutputController
+    public class RemoteSocketService : ServiceBase
     {
         private readonly object _syncRoot = new object();
-        private readonly Dictionary<int, RemoteSocketOutputPort> _ports = new Dictionary<int, RemoteSocketOutputPort>();
-        
-        public RemoteSocketService(ISchedulerService schedulerService)
+        private readonly Dictionary<string, RemoteSocketOutputPort> _ports = new Dictionary<string, RemoteSocketOutputPort>();
+        private readonly ILogger _log;
+
+        public RemoteSocketService(ISchedulerService schedulerService, ILogService logService)
         {
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
-            
+            if (logService == null) throw new ArgumentNullException(nameof(logService));
+
             // Ensure that the state of the remote switch is restored if the original remote is used
             // or the switch has been removed from the socket and plugged in at another place.
             schedulerService.RegisterSchedule("RCSocketStateSender", TimeSpan.FromSeconds(5), RefreshStates);
+
+            _log = logService.CreatePublisher(nameof(RemoteSocketService));
         }
         
-        public LPD433MHzSignalSender Sender { get; set; }
+        public ILdp433MhzAdapter Adapter { get; set; }
 
-        public IBinaryOutput GetOutput(int number)
+        public RemoteSocketOutputPort RegisterRemoteSocket(string id, Lpd433MhzCodeSequencePair codeSequencePair)
         {
-            if (number < 0) throw new ArgumentOutOfRangeException(nameof(number));
+            if (id == null) throw new ArgumentNullException(nameof(id));
+            if (codeSequencePair == null) throw new ArgumentNullException(nameof(codeSequencePair));
 
             lock (_syncRoot)
             {
+                var port = new RemoteSocketOutputPort(codeSequencePair, this);
+                _ports.Add(id, port);
+                port.Write(BinaryState.Low);
+
+                _log.Info($"Registered remote socket '{id}'.");
+                return port;
+            }
+        }
+
+        public RemoteSocketOutputPort GetRemoteSocket(string id)
+        {
+            if (id == null) throw new ArgumentNullException(nameof(id));
+            
+            lock (_syncRoot)
+            {
                 RemoteSocketOutputPort output;
-                if (!_ports.TryGetValue(number, out output))
+                if (!_ports.TryGetValue(id, out output))
                 {
-                    throw new InvalidOperationException("No remote switch with ID " + number + " is registered.");    
+                    throw new InvalidOperationException($"No remote switch with ID '{id}' registered.");    
                 }
 
                 return output;
             }
         }
 
-        public RemoteSocketOutputPort RegisterRemoteSocket(int id, LPD433MHzCodeSequencePair codeSequencePair)
+        public void SendCodeSequence(Lpd433MhzCodeSequence codeSequence)
         {
-            if (codeSequencePair == null) throw new ArgumentNullException(nameof(codeSequencePair));
-
-            if (Sender == null)
+            if (codeSequence == null) throw new ArgumentNullException(nameof(codeSequence));
+            if (Adapter == null)
             {
-                throw new InvalidOperationException("No sender is set for remote sockets. Registration not possible.");
+                _log.Warning("Cannot send code sequence because adapter is not specified.");
+                return;
             }
 
-            lock (_syncRoot)
-            {
-                var port = new RemoteSocketOutputPort(codeSequencePair, Sender);
-                port.Write(BinaryState.Low);
-
-                _ports.Add(id, port);
-
-                return port;
-            }
+            Adapter.SendCodeSequence(codeSequence);
         }
 
         private void RefreshStates()

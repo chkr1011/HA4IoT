@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,9 +12,14 @@ namespace HA4IoT.Networking.Http
     {
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private readonly StreamSocketListener _serverSocket = new StreamSocketListener();
+        private readonly ILogger _log;
 
-        public HttpServer()
+        public HttpServer(ILogService logService)
         {
+            if (logService == null) throw new ArgumentNullException(nameof(logService));
+
+            _log = logService.CreatePublisher(nameof(HttpServer));
+
             _serverSocket.Control.KeepAlive = true;
             _serverSocket.Control.NoDelay = true;
 
@@ -26,7 +30,7 @@ namespace HA4IoT.Networking.Http
         {
             _serverSocket.BindServiceNameAsync(port.ToString()).AsTask().Wait();
 
-            Log.Info($"Binded HTTP server to port {port}");
+            _log.Info($"Binded HTTP server to port {port}");
         }
 
         public event EventHandler<HttpRequestReceivedEventArgs> RequestReceived;
@@ -49,7 +53,7 @@ namespace HA4IoT.Networking.Http
 
         private async Task HandleConnectionAsync(StreamSocket clientSocket)
         {
-            using (var clientSession = new ClientSession(clientSocket))
+            using (var clientSession = new ClientSession(clientSocket, _log))
             {
                 clientSession.HttpRequestReceived += HandleHttpRequest;
                 clientSession.WebSocketConnected += HandleWebSocketConnected;
@@ -66,7 +70,7 @@ namespace HA4IoT.Networking.Http
                         return;
                     }
 
-                    Debug.WriteLine("ERROR: Error while handling HTTP client requests. " + exception);
+                    _log.Verbose("Error while handling HTTP client requests. " + exception);
                 }
                 finally
                 {

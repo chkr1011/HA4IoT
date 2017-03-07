@@ -10,16 +10,19 @@ namespace HA4IoT.Api.Cloud.Azure
 {
     public class QueueReceiver
     {
+        private readonly ILogger _log;
         private readonly HttpClient _httpClient = new HttpClient();
         private readonly Uri _uri;
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
         private bool _isEnabled;
 
-        public QueueReceiver(QueueReceiverOptions options)
+        public QueueReceiver(QueueReceiverOptions options, ILogger log)
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
+            if (log == null) throw new ArgumentNullException(nameof(log));
 
+            _log = log;
             _uri = new Uri($"https://{options.NamespaceName}.servicebus.windows.net/{options.QueueName}/messages/head?api-version=2015-01&timeout={(int)options.Timeout.TotalSeconds}");
             _httpClient.DefaultRequestHeaders.TryAppendWithoutValidation("Authorization", options.Authorization);
         }
@@ -52,7 +55,7 @@ namespace HA4IoT.Api.Cloud.Azure
 
         private void WaitForMessages()
         {
-            Log.Verbose("Started waiting for messages on Azure queue.");
+            _log.Verbose("Started waiting for messages on Azure queue.");
             while (!_cancellationTokenSource.IsCancellationRequested)
             {
                 try
@@ -61,7 +64,7 @@ namespace HA4IoT.Api.Cloud.Azure
                 }
                 catch (Exception exception)
                 {
-                    Log.Error(exception, "Error while waiting for message.");
+                    _log.Error(exception, "Error while waiting for message.");
                 }
             }
         }
@@ -73,7 +76,7 @@ namespace HA4IoT.Api.Cloud.Azure
             var result = _httpClient.DeleteAsync(_uri).AsTask().Result;
             if (result.StatusCode == HttpStatusCode.NoContent)
             {
-                Log.Verbose("Azure queue timeout reached. Reconnecting...");
+                _log.Verbose("Azure queue timeout reached. Reconnecting...");
                 return;
             }
 
@@ -89,7 +92,7 @@ namespace HA4IoT.Api.Cloud.Azure
             }
             else
             {
-                Log.Warning($"Failed to wait for Azure queue message (Error code: {result.StatusCode}).");
+                _log.Warning($"Failed to wait for Azure queue message (Error code: {result.StatusCode}).");
             }
         }
 
@@ -98,21 +101,21 @@ namespace HA4IoT.Api.Cloud.Azure
             string brokerPropertiesSource;
             if (!headers.TryGetValue("BrokerProperties", out brokerPropertiesSource))
             {
-                Log.Warning("Received Azure queue message without broker properties.");
+                _log.Warning("Received Azure queue message without broker properties.");
                 return;
             }
             
             var bodySource = await content.ReadAsStringAsync();
             if (string.IsNullOrEmpty(bodySource))
             {
-                Log.Warning("Received Azure queue message with empty body.");
+                _log.Warning("Received Azure queue message with empty body.");
                 return;
             }
 
             var brokerProperties = JObject.Parse(brokerPropertiesSource);
             var body = JObject.Parse(bodySource);
 
-            Log.Verbose("Received valid Azure queue message.");
+            _log.Verbose("Received valid Azure queue message.");
             MessageReceived?.Invoke(this, new MessageReceivedEventArgs(brokerProperties, body));
         }
     }

@@ -31,7 +31,7 @@ namespace HA4IoT.Components
             var state = component.GetState();
             if (!state.Supports<TState>())
             {
-                Log.Warning($"Component '{component.Id}' does not support state '{typeof(TState).Name}'.");
+                Log.Default.Warning($"Component '{component.Id}' does not support state '{typeof(TState).Name}'.");
                 return false;
             }
 

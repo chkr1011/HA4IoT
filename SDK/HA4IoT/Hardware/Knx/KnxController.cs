@@ -32,7 +32,7 @@ namespace HA4IoT.Hardware.Knx
                 knxClient.Connect();
                 string response = knxClient.SendRequestAndWaitForResponse("i=1");
 
-                Log.Verbose("knx-init-answer: " + response);
+                Log.Default.Verbose("knx-init-answer: " + response);
             }
         }
 
@@ -47,7 +47,7 @@ namespace HA4IoT.Hardware.Knx
                     knxClient.Connect();
                     string response = knxClient.SendRequestAndWaitForResponse(identifier + "=1");
 
-                    Log.Verbose("KnxClient: send-digitalJoinOn: " + response);
+                    Log.Default.Verbose("KnxClient: send-digitalJoinOn: " + response);
                 }
             }
         }
@@ -63,7 +63,7 @@ namespace HA4IoT.Hardware.Knx
                     knxClient.Connect();
                     string response = knxClient.SendRequestAndWaitForResponse(identifier + "=0");
 
-                    Log.Verbose("KnxClient: send-digitalJoinOff: " + response);
+                    Log.Default.Verbose("KnxClient: send-digitalJoinOff: " + response);
                 }
             }
         }

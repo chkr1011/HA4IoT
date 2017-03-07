@@ -15,14 +15,19 @@ namespace HA4IoT.ExternalServices.Twitter
 {
     public class TwitterClientService : ServiceBase, ITwitterClientService
     {
+        private readonly ILogger _log;
+
         private string _nonce;
         private string _timestamp;
 
-        public TwitterClientService(ISettingsService settingsService)
+        public TwitterClientService(ISettingsService settingsService, ILogService logService)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
+            if (logService == null) throw new ArgumentNullException(nameof(logService));
 
             settingsService.CreateSettingsMonitor<TwitterClientServiceSettings>(s => Settings = s);
+
+            _log = logService.CreatePublisher(nameof(TwitterClientService));
         }
 
         public TwitterClientServiceSettings Settings { get; private set; }
@@ -33,7 +38,7 @@ namespace HA4IoT.ExternalServices.Twitter
             
             if (!Settings.IsEnabled)
             {
-                Log.Verbose("Twitter client service is disabled.");
+                _log.Verbose("Twitter client service is disabled.");
                 return;
             }
             
@@ -45,7 +50,7 @@ namespace HA4IoT.ExternalServices.Twitter
                 
             using (var httpClient = new HttpClient())
             {
-                string url = "https://api.twitter.com/1.1/statuses/update.json?status=" + Uri.EscapeDataString(message);
+                var url = "https://api.twitter.com/1.1/statuses/update.json?status=" + Uri.EscapeDataString(message);
 
                 var request = new HttpRequestMessage(HttpMethod.Post, url);
                 request.Headers.Add("Authorization", oAuthToken);

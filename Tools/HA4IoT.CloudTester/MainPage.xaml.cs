@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using HA4IoT.Api.Cloud.Azure;
 using HA4IoT.Contracts.Logging;
@@ -13,7 +14,16 @@ namespace HA4IoT.CloudTester
         {
             InitializeComponent();
 
-            Log.RegisterAdapter(new TextBoxLogger(LogTextBox));
+            Log.LogEntryPublished += (s, e) =>
+            {
+                string message = $"{DateTime.Now.ToString("HH:mm:ss.ffff")}: ";
+                LogTextBox.Dispatcher.RunAsync(
+                    CoreDispatcherPriority.Normal,
+                    () =>
+                    {
+                        LogTextBox.Text += message + Environment.NewLine;
+                    }).AsTask().Wait();
+            };
 
             var applicationData = Windows.Storage.ApplicationData.Current;
             var localSettings = applicationData.LocalSettings;
@@ -66,7 +76,8 @@ namespace HA4IoT.CloudTester
                 NamespaceTextBox.Text,
                 EventHubNameTextBox.Text,
                 EventHubPublisherTextBox.Text,
-                EventHubSasTokenTextBox.Text);
+                EventHubSasTokenTextBox.Text,
+                null);
 
             eventHubSender.Enable();
             eventHubSender.EnqueueEvent(new JObject());
@@ -81,7 +92,7 @@ namespace HA4IoT.CloudTester
                 Authorization = OutboundQueueSendSasTokenTextBox.Text
             };
 
-            var queueSender = new QueueSender(options);
+            var queueSender = new QueueSender(options, null);
 
             var properties = new JObject();
             var body = new JObject();
@@ -97,15 +108,20 @@ namespace HA4IoT.CloudTester
                 QueueName = InboundQueueNameTextBox.Text,
                 Authorization = InboundQueueListenSasTokenTextBox.Text
             };
-            
-            var queueReceiver = new QueueReceiver(options);
+
+            var queueReceiver = new QueueReceiver(options, null);
             queueReceiver.MessageReceived += LogMessage;
             queueReceiver.Enable();
         }
 
         private void LogMessage(object sender, MessageReceivedEventArgs e)
         {
-            new TextBoxLogger(LogTextBox).Info("MESSAGE: " + e.BrokerProperties + " " + e.Body);
+            LogTextBox.Dispatcher.RunAsync(
+                CoreDispatcherPriority.Normal,
+                () =>
+                {
+                    LogTextBox.Text += "MESSAGE: " + e.BrokerProperties + " " + e.Body + Environment.NewLine;
+                }).AsTask().Wait();
         }
 
         private void SendTestMessageToInboundQueue(object sender, RoutedEventArgs e)
@@ -117,7 +133,7 @@ namespace HA4IoT.CloudTester
                 Authorization = OutboundQueueSendSasTokenTextBox.Text
             };
 
-            var queueSender = new QueueSender(options);
+            var queueSender = new QueueSender(options, null);
 
             var systemProperties = new JObject
             {
@@ -149,7 +165,7 @@ namespace HA4IoT.CloudTester
                 Authorization = InboundQueueListenSasTokenTextBox.Text
             };
 
-            var queueReceiver = new QueueReceiver(options);
+            var queueReceiver = new QueueReceiver(options, null);
 
             queueReceiver.MessageReceived += LogMessage;
             queueReceiver.Enable();

@@ -3,7 +3,6 @@ using HA4IoT.Hardware.Mqtt;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.Services;
-using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Hardware.Sonoff
 {
@@ -23,13 +22,12 @@ namespace HA4IoT.Hardware.Sonoff
 
         public void TurnOn(params IHardwareParameter[] parameters)
         {
-            int messageId = _mqttService.Publish(_topic, "ON", MqttQosLevel.Exactly_Once);
-            Log.Verbose("RES: " + messageId);
+            _mqttService.Publish(_topic, "ON", MqttQosLevel.ExactlyOnce);
         }
 
         public void TurnOff(params IHardwareParameter[] parameters)
         {
-            _mqttService.Publish(_topic, "OFF", MqttQosLevel.Exactly_Once);
+            _mqttService.Publish(_topic, "OFF", MqttQosLevel.ExactlyOnce);
         }
     }
 }

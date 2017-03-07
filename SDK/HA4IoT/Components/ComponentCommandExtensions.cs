@@ -72,7 +72,7 @@ namespace HA4IoT.Components
             }
             catch (CommandNotSupportedException exception)
             {
-                Log.Warning(exception, $"Error while invoking command for component '{component.Id}'. " + exception.Message);
+                Log.Default.Warning(exception, $"Error while invoking command for component '{component.Id}'. " + exception.Message);
                 return false;
             }
 

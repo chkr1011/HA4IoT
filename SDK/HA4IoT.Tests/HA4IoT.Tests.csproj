@@ -141,6 +141,7 @@
     <Compile Include="Mockups\Adapters\TestNumericSensorAdapter.cs" />
     <Compile Include="Mockups\Services\TestStorageService.cs" />
     <Compile Include="Mockups\TestWeatherStation.cs" />
+    <Compile Include="Mqtt\MqttTests.cs" />
     <Compile Include="Networking\HttpRequestParserTests.cs" />
     <Compile Include="Networking\HttpResponseSerializerTests.cs" />
     <Compile Include="Networking\WebSocketFrameTests.cs" />
@@ -189,6 +190,12 @@
       <Project>{c034ec4d-46cc-490a-a045-e4d4d1f49c31}</Project>
       <Name>HA4IoT</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="GnatMQ.WinRT, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\GnatMQ\bin\Debug\GnatMQ.WinRT\GnatMQ.WinRT.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

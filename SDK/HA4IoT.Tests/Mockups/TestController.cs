@@ -35,8 +35,6 @@ namespace HA4IoT.Tests.Mockups
 
         public TestController()
         {
-            Log.RegisterAdapter(new TestLogger());
-
             _container.RegisterSingleton<IController>(() => this);
             _container.RegisterSingleton<ILogService, LogService>();
             _container.RegisterSingleton<ISettingsService, SettingsService>();
@@ -57,7 +55,10 @@ namespace HA4IoT.Tests.Mockups
 
             _container.Verify();
 
-            _container.StartupServices();
+            var logService = _container.GetInstance<ILogService>();
+            var log = logService.CreatePublisher(nameof(TestController));
+
+            _container.StartupServices(log);
             _container.ExposeRegistrationsToApi();
 
             _container.GetInstance<IApiDispatcherService>().RegisterAdapter(_apiAdapter);

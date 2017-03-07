@@ -69,7 +69,7 @@ namespace HA4IoT.Core
 
                 TryConfigure();
 
-                _container.StartupServices();
+                _container.StartupServices(_log);
                 _container.ExposeRegistrationsToApi();
 
                 StartupCompleted?.Invoke(this, EventArgs.Empty);
@@ -81,7 +81,7 @@ namespace HA4IoT.Core
                     e.ApiContext.Result["Controller"] = JObject.FromObject(controllerSettings);
                 };
 
-                Log.Info("Startup completed after " + stopwatch.Elapsed);
+                _log.Info("Startup completed after " + stopwatch.Elapsed);
 
                 _container.GetInstance<ISystemInformationService>().Set("Health/StartupDuration", stopwatch.Elapsed);
                 _container.GetInstance<ISystemInformationService>().Set("Health/StartupTimestamp", _container.GetInstance<IDateTimeService>().Now);
@@ -90,7 +90,7 @@ namespace HA4IoT.Core
             }
             catch (Exception exception)
             {
-                Log.Error(exception, "Failed to initialize.");
+                _log?.Error(exception, "Failed to initialize.");
                 StartupFailed?.Invoke(this, EventArgs.Empty);
             }
             finally

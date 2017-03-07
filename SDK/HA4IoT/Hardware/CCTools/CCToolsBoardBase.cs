@@ -15,18 +15,21 @@ namespace HA4IoT.Hardware.CCTools
         private readonly Dictionary<int, CCToolsBoardPort> _openPorts = new Dictionary<int, CCToolsBoardPort>();
 
         private readonly I2CIPortExpanderDriver _portExpanderDriver;
-        
+        private readonly ILogger _log;
+
         private readonly byte[] _committedState;
         private readonly byte[] _state;
         private byte[] _peekedState;
 
-        protected CCToolsBoardBase(string id, I2CIPortExpanderDriver portExpanderDriver)
+        protected CCToolsBoardBase(string id, I2CIPortExpanderDriver portExpanderDriver, ILogger log)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (portExpanderDriver == null) throw new ArgumentNullException(nameof(portExpanderDriver));
+            if (log == null) throw new ArgumentNullException(nameof(log));
 
             Id = id;
             _portExpanderDriver = portExpanderDriver;
+            _log = log;
 
             _committedState = new byte[portExpanderDriver.StateSize];
             _state = new byte[portExpanderDriver.StateSize];
@@ -87,7 +90,7 @@ namespace HA4IoT.Hardware.CCTools
                 _portExpanderDriver.Write(_state);
                 Array.Copy(_state, _committedState, _state.Length);
 
-                Log.Verbose(Id + ": Committed state");
+                _log.Verbose(Id + ": Committed state");
             }
         }
 
@@ -101,7 +104,7 @@ namespace HA4IoT.Hardware.CCTools
             {
                 if (_peekedState != null)
                 {
-                    Log.Warning("Peeking state while previous peeked state is not processed at " + Id + "'.");
+                    _log.Warning("Peeking state while previous peeked state is not processed at " + Id + "'.");
                 }
 
                 _peekedState = _portExpanderDriver.Read();
@@ -134,7 +137,7 @@ namespace HA4IoT.Hardware.CCTools
                 Array.Copy(newState, _state, _state.Length);
                 Array.Copy(newState, _committedState, _committedState.Length);
 
-                Log.Verbose("'" + Id + "' fetched different state (" +
+                _log.Verbose("'" + Id + "' fetched different state (" +
                                              ByteExtensions.ToString(oldState) + "->" +
                                              ByteExtensions.ToString(newState) + ").");
 

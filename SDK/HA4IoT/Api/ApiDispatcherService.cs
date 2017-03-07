@@ -18,14 +18,19 @@ namespace HA4IoT.Api
 
         private readonly List<IApiAdapter> _adapters = new List<IApiAdapter>();
         private readonly Dictionary<string, Action<IApiContext>> _actions = new Dictionary<string, Action<IApiContext>>(StringComparer.OrdinalIgnoreCase);
+        private readonly ILogger _log;
         
-        public ApiDispatcherService()
+        public ApiDispatcherService(ILogService logService)
         {
+            if (logService == null) throw new ArgumentNullException(nameof(logService));
+
             Route("GetStatus", HandleGetStatusRequest);
             Route("GetConfiguration", HandleGetConfigurationRequest);
             Route("GetActions", HandleGetActionsRequest);
             Route("Ping", HandlePingRequest);
             Route("Execute", HandleExecuteRequest);
+
+            _log = logService.CreatePublisher(nameof(ApiDispatcherService));
         }
 
         public event EventHandler<ApiRequestReceivedEventArgs> StatusRequested;
@@ -54,7 +59,7 @@ namespace HA4IoT.Api
 
                 if (_actions.ContainsKey(action))
                 {
-                    Log.Warning($"Overriding action route: {action}");    
+                    _log.Warning($"Overriding action route: {action}");    
                 }
 
                 _actions[action] = handler;
@@ -101,7 +106,7 @@ namespace HA4IoT.Api
                 Action<IApiContext> handler = apiContext => method.Invoke(controller, new object[] { apiContext });
                 Route(action, handler);
 
-                Log.Verbose($"Exposed API method to action '{action}'.");
+                _log.Verbose($"Exposed API method to action '{action}'.");
             }
         }
 

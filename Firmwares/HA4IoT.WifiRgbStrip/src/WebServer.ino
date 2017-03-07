@@ -22,7 +22,7 @@ void handleGetInfoRequest() {
   JsonObject &root = jsonBuffer.createObject();
   JsonObject &systemInfo = jsonBuffer.createObject();
   systemInfo["FirmwareVersion"] = FIRMWARE_VERSION;
-  systemInfo["IP"] = _status_own_ip;
+  systemInfo["IP"] = _statusOwnIp;
   systemInfo["DeviceName"] = _configDeviceName;
   systemInfo["SerialDebugging"] = _configSerialDebugging;
   root["System"] = systemInfo;
@@ -36,12 +36,13 @@ void handleGetInfoRequest() {
   JsonObject &mqttConfig = jsonBuffer.createObject();
   mqttConfig["Use"] = _configMqttUse;
   mqttConfig["Server"] = _configMqttServer;
+  mqttConfig["IsConnected"] = _statusMqttIsConnected;
   root["MQTT"] = mqttConfig;
 
   JsonObject &outputStatus = jsonBuffer.createObject();
-  outputStatus["R"] = _status_output_r;
-  outputStatus["G"] = _status_output_g;
-  outputStatus["B"] = _status_output_b;
+  outputStatus["R"] = _statusOutputR;
+  outputStatus["G"] = _statusOutputG;
+  outputStatus["B"] = _statusOutputB;
   root["Outputs"] = outputStatus;
 
   size_t len = root.measureLength();

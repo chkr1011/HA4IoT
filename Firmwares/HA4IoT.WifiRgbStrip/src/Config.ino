@@ -68,6 +68,7 @@ void loadConfig() {
 
 #ifdef DEBUG
   debugLine(F("EEPROM> read"));
+
   debug(F("Config> _configWifiIsConfigured="));
   debugLine(_configWifiIsConfigured);
 

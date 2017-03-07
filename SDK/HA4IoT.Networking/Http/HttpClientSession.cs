@@ -26,18 +26,19 @@ namespace HA4IoT.Networking.Http
         private readonly Stream _inputStream;
         private readonly Action<HttpRequestReceivedEventArgs> _httpRequestReceivedCallback;
         private readonly Action<UpgradedToWebSocketSessionEventArgs> _upgradeToWebSocketSessionCallback;
+        private readonly ILogger _log;
 
         public HttpClientSession(
             StreamSocket client,
             CancellationTokenSource cancellationTokenSource,
             Action<HttpRequestReceivedEventArgs> httpRequestReceivedCallback,
-            Action<UpgradedToWebSocketSessionEventArgs> upgradeToWebSocketSessionCallback)
+            Action<UpgradedToWebSocketSessionEventArgs> upgradeToWebSocketSessionCallback,
+            ILogger log)
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
-            if (httpRequestReceivedCallback == null)
-                throw new ArgumentNullException(nameof(httpRequestReceivedCallback));
-            if (upgradeToWebSocketSessionCallback == null)
-                throw new ArgumentNullException(nameof(upgradeToWebSocketSessionCallback));
+            if (httpRequestReceivedCallback == null) throw new ArgumentNullException(nameof(httpRequestReceivedCallback));
+            if (upgradeToWebSocketSessionCallback == null) throw new ArgumentNullException(nameof(upgradeToWebSocketSessionCallback));
+            if (log == null) throw new ArgumentNullException(nameof(log));
 
             _client = client;
             _inputStream = client.InputStream.AsStreamForRead(RequestBufferSize);
@@ -46,6 +47,7 @@ namespace HA4IoT.Networking.Http
 
             _httpRequestReceivedCallback = httpRequestReceivedCallback;
             _upgradeToWebSocketSessionCallback = upgradeToWebSocketSessionCallback;
+            _log = log;
         }
 
         public async Task WaitForRequestAsync()
@@ -174,7 +176,7 @@ namespace HA4IoT.Networking.Http
             }
             catch (Exception exception)
             {
-                Log.Verbose("Error while sending HTTP response back to client. " + exception.Message);
+                _log.Verbose("Error while sending HTTP response back to client. " + exception.Message);
             }
         }
 

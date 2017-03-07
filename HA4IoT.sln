@@ -28,9 +28,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.CloudTester", "Tools
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.ManagementApp", "App\HA4IoT.ManagementApp\HA4IoT.ManagementApp.csproj", "{F931A02F-DCAD-4301-8DAD-B7D722A9C410}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Default", "Controllers\HA4IoT.Controller.Default\HA4IoT.Controller.Default.csproj", "{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller", "Controllers\HA4IoT.Controller\HA4IoT.Controller.csproj", "{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Local", "Controllers\HA4IoT.Controller.Local\HA4IoT.Controller.Local.csproj", "{F46489CF-4D81-40DD-8EFB-9B4073898A85}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Simulator", "Controllers\HA4IoT.Simulator\HA4IoT.Simulator.csproj", "{F46489CF-4D81-40DD-8EFB-9B4073898A85}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.KnxFakeController", "Tools\HA4IoT.KnxFakeController\HA4IoT.KnxFakeController.csproj", "{38B1BC5D-21DD-4BAB-8CA1-6008518D21F1}"
 EndProject

@@ -17,14 +17,17 @@ namespace HA4IoT.Api.Cloud.Azure
 
         private readonly Uri _uri;
         private readonly string _authorization;
+        private readonly ILogger _log;
 
-        public EventHubSender(string namespaceName, string eventHubName, string publisherName, string authorization)
+        public EventHubSender(string namespaceName, string eventHubName, string publisherName, string authorization, ILogger log)
         {
             if (namespaceName == null) throw new ArgumentNullException(nameof(namespaceName));
             if (eventHubName == null) throw new ArgumentNullException(nameof(eventHubName));
             if (publisherName == null) throw new ArgumentNullException(nameof(publisherName));
             if (authorization == null) throw new ArgumentNullException(nameof(authorization));
+            if (log == null) throw new ArgumentNullException(nameof(log));
 
+            _log = log;
             _uri = new Uri($"https://{namespaceName}.servicebus.windows.net/{eventHubName}/publishers/{publisherName}/messages");
             _authorization = authorization;
         }
@@ -78,7 +81,7 @@ namespace HA4IoT.Api.Cloud.Azure
                 }
                 catch (Exception exception)
                 {
-                    Log.Error(exception, "Error while processing pending EventHub events.");
+                    _log.Error(exception, "Error while processing pending EventHub events.");
                 }
             }
         }
@@ -93,17 +96,17 @@ namespace HA4IoT.Api.Cloud.Azure
                     HttpResponseMessage result = await httpClient.PostAsync(_uri, content);
                     if (result.IsSuccessStatusCode)
                     {
-                        Log.Verbose("Sent event to Azure EventHub.");
+                        _log.Verbose("Sent event to Azure EventHub.");
                     }
                     else
                     {
-                        Log.Warning($"Failed to send Azure EventHub event (Error code: {result.StatusCode}).");
+                        _log.Warning($"Failed to send Azure EventHub event (Error code: {result.StatusCode}).");
                     }
                 }
             }
             catch (Exception exception)
             {
-                Log.Warning(exception, "Error while sending Azure EventHub event.");
+                _log.Warning(exception, "Error while sending Azure EventHub event.");
             }
         }
 

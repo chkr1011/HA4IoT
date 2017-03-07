@@ -21,6 +21,7 @@ namespace HA4IoT.Services.ControllerSlave
         private readonly IOutdoorHumidityService _outdoorHumidityService;
         private readonly IDaylightService _daylightService;
         private readonly IWeatherService _weatherService;
+        private readonly ILogger _log;
 
         private DateTime? _lastPull;
         private DateTime? _lastSuccessfulPull;
@@ -32,7 +33,8 @@ namespace HA4IoT.Services.ControllerSlave
             IOutdoorTemperatureService outdoorTemperatureService,
             IOutdoorHumidityService outdoorHumidityService,
             IDaylightService daylightService,
-            IWeatherService weatherService)
+            IWeatherService weatherService,
+            ILogService logService)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             if (scheduler == null) throw new ArgumentNullException(nameof(scheduler));
@@ -41,12 +43,15 @@ namespace HA4IoT.Services.ControllerSlave
             if (outdoorHumidityService == null) throw new ArgumentNullException(nameof(outdoorHumidityService));
             if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
             if (weatherService == null) throw new ArgumentNullException(nameof(weatherService));
+            if (logService == null) throw new ArgumentNullException(nameof(logService));
 
             _dateTimeService = dateTimeService;
             _outdoorTemperatureService = outdoorTemperatureService;
             _outdoorHumidityService = outdoorHumidityService;
             _daylightService = daylightService;
             _weatherService = weatherService;
+
+            _log = logService.CreatePublisher(nameof(ControllerSlaveService));
 
             settingsService.CreateSettingsMonitor<ControllerSlaveServiceSettings>(s => Settings = s);
 
@@ -66,11 +71,11 @@ namespace HA4IoT.Services.ControllerSlave
         {
             if (!Settings.IsEnabled)
             {
-                Log.Verbose("Controller slave service is disabled.");
+                _log.Verbose("Controller slave service is disabled.");
                 return;
             }
 
-            Log.Verbose($"Pulling values from master controller '{Settings.MasterAddress}'.");
+            _log.Verbose($"Pulling values from master controller '{Settings.MasterAddress}'.");
             _lastPull = _dateTimeService.Now;
 
             try
@@ -84,7 +89,7 @@ namespace HA4IoT.Services.ControllerSlave
             }
             catch (Exception exception)
             {
-                Log.Warning(exception, "Unable to pull values from master controller.");
+                _log.Warning(exception, "Unable to pull values from master controller.");
             }
         }
 

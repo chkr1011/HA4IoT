@@ -37,7 +37,7 @@ namespace HA4IoT.Hardware.Knx
         {
             ThrowIfDisposed();
 
-            Log.Verbose($"KnxClient: Connecting with {_hostName}...");
+            Log.Default.Verbose($"KnxClient: Connecting with {_hostName}...");
 
             var connectTask = _socket.ConnectAsync(_hostName, _port.ToString()).AsTask();
             connectTask.ConfigureAwait(false);
@@ -50,7 +50,7 @@ namespace HA4IoT.Hardware.Knx
 
             Authenticate();
 
-            Log.Verbose("KnxClient: Connected");
+            Log.Default.Verbose("KnxClient: Connected");
         }
 
         public void SendRequest(string request)
@@ -76,7 +76,7 @@ namespace HA4IoT.Hardware.Knx
 
         private void Authenticate()
         {
-            Log.Verbose("KnxClient: Authenticating...");
+            Log.Default.Verbose("KnxClient: Authenticating...");
             string response = SendRequestAndWaitForResponse($"p={_password}");
 
             ThrowIfNotAuthenticated(response);
@@ -109,12 +109,12 @@ namespace HA4IoT.Hardware.Knx
                 throw new TimeoutException("Timeout while sending KNX Client request.");
             }
 
-            Log.Verbose($"KnxClient: Sent {request}");
+            Log.Default.Verbose($"KnxClient: Sent {request}");
         }
 
         private string ReadFromSocket()
         {
-            Log.Verbose("KnxClient: Waiting for response...");
+            Log.Default.Verbose("KnxClient: Waiting for response...");
 
             var buffer = new Buffer(64);
             var readTask = _socket.InputStream.ReadAsync(buffer, buffer.Capacity, InputStreamOptions.Partial).AsTask();
@@ -125,7 +125,7 @@ namespace HA4IoT.Hardware.Knx
             }
 
             var response = Encoding.UTF8.GetString(buffer.ToArray());
-            Log.Verbose($"KnxClient: Received {response}");
+            Log.Default.Verbose($"KnxClient: Received {response}");
 
             return response;
         }

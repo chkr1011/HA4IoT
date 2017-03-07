@@ -2,8 +2,6 @@
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Components
 {
@@ -19,6 +17,8 @@ namespace HA4IoT.Components
         public event EventHandler<ComponentFeatureStateChangedEventArgs> StateChanged;
 
         public string Id { get; }
+
+        protected ILogger Log { get; }
 
         public abstract ComponentFeatureStateCollection GetState();
 
@@ -36,10 +36,6 @@ namespace HA4IoT.Components
 
         protected void OnStateChanged(ComponentFeatureStateCollection oldState, ComponentFeatureStateCollection newState)
         {
-            var oldStateText = JToken.FromObject(oldState?.Serialize()).ToString(Formatting.None);
-            var newStateText = JToken.FromObject(newState?.Serialize()).ToString(Formatting.None);
-
-            Log.Info($"Component '{Id}' updated state from:{oldStateText} to:{newStateText}");
             StateChanged?.Invoke(this, new ComponentFeatureStateChangedEventArgs(oldState, newState));
         }
     }

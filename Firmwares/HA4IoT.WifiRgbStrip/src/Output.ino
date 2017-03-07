@@ -16,22 +16,22 @@ void setupOutput() {
 }
 
 void setOutputs(int r, int g, int b) {
-  _status_output_r = inRange(r);
+  _statusOutputR = inRange(r);
   analogWrite(R_PIN, r);
-  _status_output_g = inRange(g);
+  _statusOutputG = inRange(g);
   analogWrite(G_PIN, g);
-  _status_output_b = inRange(b);
+  _statusOutputB = inRange(b);
   analogWrite(B_PIN, b);
 
   publishMqttOutputStatus();
 
 #ifdef DEBUG
   debug(F("OUTPUT> R="));
-  debug(_status_output_r);
+  debug(_statusOutputR);
   debug(F(" G="));
-  debug(_status_output_g);
+  debug(_statusOutputG);
   debug(F(" B="));
-  debugLine(_status_output_b);
+  debugLine(_statusOutputB);
 #endif
 }
 

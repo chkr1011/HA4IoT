@@ -36,9 +36,10 @@ namespace HA4IoT.Core
             }
         }
 
-        public static void StartupServices(this Container container)
+        public static void StartupServices(this Container container, ILogger log)
         {
             if (container == null) throw new ArgumentNullException(nameof(container));
+            if (log == null) throw new ArgumentNullException(nameof(log));
 
             foreach (var registration in container.GetRegistrationsOf<IService>())
             {
@@ -48,7 +49,7 @@ namespace HA4IoT.Core
                 }
                 catch (Exception exception)
                 {
-                    Log.Error(exception, $"Error while starting service '{registration.ServiceType.Name}'. " + exception.Message);
+                    log.Error(exception, $"Error while starting service '{registration.ServiceType.Name}'. " + exception.Message);
                 }
                 
             }

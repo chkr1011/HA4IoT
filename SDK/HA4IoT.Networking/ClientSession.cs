@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking.Sockets;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Networking.Http;
 using HA4IoT.Networking.WebSockets;
 
@@ -11,17 +12,20 @@ namespace HA4IoT.Networking
     {
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private readonly StreamSocket _clientSocket;
+        private readonly ILogger _log;
 
         private HttpClientSession _httpClientSession;
         private WebSocketClientSession _webSocketClientSession;
 
-        public ClientSession(StreamSocket clientSocket)
+        public ClientSession(StreamSocket clientSocket, ILogger log)
         {
             if (clientSocket == null) throw new ArgumentNullException(nameof(clientSocket));
+            if (log == null) throw new ArgumentNullException(nameof(log));
 
             _clientSocket = clientSocket;
+            _log = log;
 
-            _httpClientSession = new HttpClientSession(clientSocket, _cancellationTokenSource, HandleHttpRequest, UpgradeToWebSocketSession);
+            _httpClientSession = new HttpClientSession(clientSocket, _cancellationTokenSource, HandleHttpRequest, UpgradeToWebSocketSession, _log);
         }
 
         public event EventHandler<HttpRequestReceivedEventArgs> HttpRequestReceived;
@@ -55,7 +59,7 @@ namespace HA4IoT.Networking
         {
             _httpClientSession = null;
 
-            _webSocketClientSession = new WebSocketClientSession(_clientSocket);
+            _webSocketClientSession = new WebSocketClientSession(_clientSocket, _log);
             _webSocketClientSession.Closed += OnWebSocketClientSessionClosed;
 
             var webSocketConnectedEventArgs = new WebSocketConnectedEventArgs(eventArgs.HttpRequest, _webSocketClientSession);
