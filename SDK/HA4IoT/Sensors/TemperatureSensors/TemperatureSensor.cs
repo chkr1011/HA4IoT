@@ -26,13 +26,13 @@ namespace HA4IoT.Sensors.TemperatureSensors
 
         public SingleValueSensorSettings Settings { get; private set; }
 
-        public override ComponentFeatureCollection GetFeatures()
+        public override IComponentFeatureCollection GetFeatures()
         {
             return new ComponentFeatureCollection()
                 .With(new TemperatureMeasurementFeature());
         }
 
-        public override ComponentFeatureStateCollection GetState()
+        public override IComponentFeatureStateCollection GetState()
         {
             return new ComponentFeatureStateCollection()
                 .With(new TemperatureState(_value));

@@ -26,13 +26,13 @@ namespace HA4IoT.Sensors.HumiditySensors
 
         public SingleValueSensorSettings Settings { get; private set; }
 
-        public override ComponentFeatureCollection GetFeatures()
+        public override IComponentFeatureCollection GetFeatures()
         {
             return new ComponentFeatureCollection()
                 .With(new HumidityMeasurementFeature());
         }
 
-        public override ComponentFeatureStateCollection GetState()
+        public override IComponentFeatureStateCollection GetState()
         {
             return new ComponentFeatureStateCollection()
                 .With(new HumidityState(_value));

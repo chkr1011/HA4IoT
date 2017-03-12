@@ -1,7 +1,6 @@
 ﻿using System;
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Components
 {
@@ -18,23 +17,21 @@ namespace HA4IoT.Components
 
         public string Id { get; }
 
-        protected ILogger Log { get; }
+        public abstract IComponentFeatureStateCollection GetState();
 
-        public abstract ComponentFeatureStateCollection GetState();
-
-        public abstract ComponentFeatureCollection GetFeatures();
+        public abstract IComponentFeatureCollection GetFeatures();
 
         public virtual void ExecuteCommand(ICommand command)
         {
             throw new CommandNotSupportedException(command);
         }
 
-        protected void OnStateChanged(ComponentFeatureStateCollection oldState)
+        protected void OnStateChanged(IComponentFeatureStateCollection oldState)
         {
             OnStateChanged(oldState, GetState());
         }
 
-        protected void OnStateChanged(ComponentFeatureStateCollection oldState, ComponentFeatureStateCollection newState)
+        protected void OnStateChanged(IComponentFeatureStateCollection oldState, IComponentFeatureStateCollection newState)
         {
             StateChanged?.Invoke(this, new ComponentFeatureStateChangedEventArgs(oldState, newState));
         }

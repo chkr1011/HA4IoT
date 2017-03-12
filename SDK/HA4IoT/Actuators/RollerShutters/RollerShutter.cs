@@ -47,7 +47,7 @@ namespace HA4IoT.Actuators.RollerShutters
 
         public RollerShutterSettings Settings { get; private set; }
         
-        public override ComponentFeatureStateCollection GetState()
+        public override IComponentFeatureStateCollection GetState()
         {
             return new ComponentFeatureStateCollection()
                 .With(new PowerState(_powerState))
@@ -55,7 +55,7 @@ namespace HA4IoT.Actuators.RollerShutters
                 .With(new PositionTrackingState(_position, _position == Settings.MaxPosition));
         }
 
-        public override ComponentFeatureCollection GetFeatures()
+        public override IComponentFeatureCollection GetFeatures()
         {
             return new ComponentFeatureCollection()
                 .With(new PowerStateFeature())

@@ -1,5 +1,4 @@
 ﻿using System.Web.Http;
-using Microsoft.Owin.Security.OAuth;
 
 namespace HA4IoT.CloudApi
 {

@@ -51,7 +51,6 @@ namespace HA4IoT.Core
                 {
                     log.Error(exception, $"Error while starting service '{registration.ServiceType.Name}'. " + exception.Message);
                 }
-                
             }
         }
     }

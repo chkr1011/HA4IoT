@@ -132,18 +132,16 @@
     <Compile Include="Commands\CommandInvoker.cs" />
     <Compile Include="Commands\CommandResolver.cs" />
     <Compile Include="Components\CommandInvokerAction.cs" />
+    <Compile Include="Components\ComponentFeatureCollection.cs" />
+    <Compile Include="Components\ComponentFeatureStateCollection.cs" />
     <Compile Include="Components\ComponentStateExtensions.cs" />
     <Compile Include="Components\ICommandInvokerAction.cs" />
     <Compile Include="Components\LogicalComponent.cs" />
     <Compile Include="Conditions\Specialized\TemperatureIsLowerThanCondition.cs" />
-    <Compile Include="Hardware\Mqtt\BrokerMqttStream.cs" />
-    <Compile Include="Hardware\Mqtt\ClientMqttStream.cs" />
-    <Compile Include="Hardware\Mqtt\MqttBrokerChannel.cs" />
-    <Compile Include="Hardware\Mqtt\MqttInMemoryChannel.cs" />
-    <Compile Include="Hardware\Mqtt\MqttService.cs" />
-    <Compile Include="Hardware\Mqtt\MqttServiceExtensions.cs" />
+    <Compile Include="Hardware\Services\DeviceMessageBrokerService.cs" />
     <Compile Include="Hardware\RemoteSwitch\Adapters\MqttLdp433MhzAdapter.cs" />
     <Compile Include="Hardware\RemoteSwitch\Lpd433MhzCodeSequenceReceivedEventArgs.cs" />
+    <Compile Include="Hardware\Services\InterruptMonitorService.cs" />
     <Compile Include="Hardware\Sonoff\SonoffBinaryOutputAdapter.cs" />
     <Compile Include="Hardware\Sonoff\SonoffDeviceService.cs" />
     <Compile Include="Logging\LogService.cs" />
@@ -340,17 +338,20 @@
       <Project>{b10b2e2a-85cd-4289-8649-fc0c1c98921d}</Project>
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>
+    <ProjectReference Include="..\HA4IoT.MqttClient\HA4IoT.MqttClient.csproj">
+      <Project>{05EDFCF4-2AAA-4CF1-8824-3A64341DD521}</Project>
+      <Name>HA4IoT.MqttClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HA4IoT.MqttServer\HA4IoT.MqttServer.csproj">
+      <Project>{1C5797E9-BD85-416E-AF5A-1AE1632FE53C}</Project>
+      <Name>HA4IoT.MqttServer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{d4e0a3f9-6521-4aee-815a-e2a60323fb63}</Project>
       <Name>HA4IoT.Networking</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="M2Mqtt.WinRT">
-      <HintPath>..\..\..\M2MQTT\bin\Debug\M2Mqtt.WinRT\M2Mqtt.WinRT.dll</HintPath>
-      <Aliases>mqttClient</Aliases>
-    </Reference>
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

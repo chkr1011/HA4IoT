@@ -2,15 +2,12 @@
 
 namespace HA4IoT.Contracts.Hardware.Mqtt
 {
-    public class MqttMessageReceivedEventArgs
+    public class MqttMessageReceivedEventArgs : EventArgs
     {
-        public MqttMessageReceivedEventArgs(MqttMessage message)
-        {
-            if (message == null) throw new ArgumentNullException(nameof(message));
+        public string Topic { get; set; }
 
-            Message = message;
-        }
+        public byte[] Payload { get; set; }
 
-        public MqttMessage Message { get; }
+        public byte QosLevel { get; set; }
     }
 }

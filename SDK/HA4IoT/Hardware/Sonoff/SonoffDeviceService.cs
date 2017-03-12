@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using HA4IoT.Contracts.Adapters;
-using HA4IoT.Contracts.Hardware.Services;
+using HA4IoT.Contracts.Hardware.DeviceMessaging;
 using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Hardware.Sonoff
@@ -9,13 +9,13 @@ namespace HA4IoT.Hardware.Sonoff
     public class SonoffDeviceService : ServiceBase
     {
         private readonly Dictionary<string, SonoffBinaryOutputAdapter> _adapters = new Dictionary<string, SonoffBinaryOutputAdapter>();
-        private readonly IMqttService _mqttService;
+        private readonly IDeviceMessageBrokerService _deviceMessageBrokerService;
 
-        public SonoffDeviceService(IMqttService mqttService)
+        public SonoffDeviceService(IDeviceMessageBrokerService deviceMessageBrokerService)
         {
-            if (mqttService == null) throw new ArgumentNullException(nameof(mqttService));
+            if (deviceMessageBrokerService == null) throw new ArgumentNullException(nameof(deviceMessageBrokerService));
 
-            _mqttService = mqttService;
+            _deviceMessageBrokerService = deviceMessageBrokerService;
         }
 
         public IBinaryOutputAdapter GetAdapterForPow(string deviceName)
@@ -23,7 +23,7 @@ namespace HA4IoT.Hardware.Sonoff
             SonoffBinaryOutputAdapter adapter;
             if (!_adapters.TryGetValue(deviceName, out adapter))
             {
-                adapter = new SonoffBinaryOutputAdapter($"cmnd/{deviceName}/power", _mqttService);
+                adapter = new SonoffBinaryOutputAdapter($"cmnd/{deviceName}/power", _deviceMessageBrokerService);
                 _adapters.Add(deviceName, adapter);
             }
 
@@ -35,7 +35,7 @@ namespace HA4IoT.Hardware.Sonoff
             SonoffBinaryOutputAdapter adapter;
             if (!_adapters.TryGetValue(deviceName, out adapter))
             {
-                adapter = new SonoffBinaryOutputAdapter($"cmnd/{deviceName}/power1", _mqttService);
+                adapter = new SonoffBinaryOutputAdapter($"cmnd/{deviceName}/power1", _deviceMessageBrokerService);
                 _adapters.Add(deviceName, adapter);
             }
 
@@ -47,7 +47,7 @@ namespace HA4IoT.Hardware.Sonoff
             SonoffBinaryOutputAdapter adapter;
             if (!_adapters.TryGetValue(deviceName, out adapter))
             {
-                adapter = new SonoffBinaryOutputAdapter($"cmnd/{deviceName}/power2", _mqttService);
+                adapter = new SonoffBinaryOutputAdapter($"cmnd/{deviceName}/power2", _deviceMessageBrokerService);
                 _adapters.Add(deviceName, adapter);
             }
 

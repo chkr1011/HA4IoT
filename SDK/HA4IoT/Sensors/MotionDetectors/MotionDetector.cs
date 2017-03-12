@@ -57,13 +57,13 @@ namespace HA4IoT.Sensors.MotionDetectors
 
         public ITrigger MotionDetectionCompletedTrigger { get; } = new Trigger();
         
-        public override ComponentFeatureCollection GetFeatures()
+        public override IComponentFeatureCollection GetFeatures()
         {
             return new ComponentFeatureCollection()
                 .With(new MotionDetectionFeature());
         }
 
-        public override ComponentFeatureStateCollection GetState()
+        public override IComponentFeatureStateCollection GetState()
         {
             return new ComponentFeatureStateCollection()
                 .With(new MotionDetectionState(_motionDetectionState));
@@ -94,12 +94,12 @@ namespace HA4IoT.Sensors.MotionDetectors
 
             if (state == MotionDetectionStateValue.MotionDetected)
             {
-                Log.Info(Id + ": Motion detected");
+                Log.Default.Info(Id + ": Motion detected");
                 ((Trigger)MotionDetectedTrigger).Execute();
             }
             else if (state == MotionDetectionStateValue.Idle)
             {
-                Log.Verbose(Id + ": Detection completed");
+                Log.Default.Verbose(Id + ": Detection completed");
                 ((Trigger)MotionDetectionCompletedTrigger).Execute();
             }
         }
@@ -108,7 +108,7 @@ namespace HA4IoT.Sensors.MotionDetectors
         {
             if (!Settings.IsEnabled)
             {
-                Log.Info(Id + ": Disabled for 1 hour");
+                Log.Default.Info(Id + ": Disabled for 1 hour");
 
                 _autoEnableAction = _schedulerService.In(Settings.AutoEnableAfter).Execute(() => Settings.IsEnabled = true);
             }

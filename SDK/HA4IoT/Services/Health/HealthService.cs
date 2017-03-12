@@ -49,12 +49,12 @@ namespace HA4IoT.Services.Health
 
         private async void BlinkLed()
         {
-            if (!_controllerOptions.StatusLedNumber.HasValue)
+            if (!_controllerOptions.StatusLedGpio.HasValue)
             {
                 return;
             }
 
-            var led = _pi2GpioService.GetOutput(_controllerOptions.StatusLedNumber.Value);
+            var led = _pi2GpioService.GetOutput(_controllerOptions.StatusLedGpio.Value);
             led.Write(BinaryState.Low);
 
             var ledState = false;

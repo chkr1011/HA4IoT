@@ -101,19 +101,24 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InstalledDevice.cs" />
-    <Compile Include="Rooms\BedroomConfiguration.cs" />
-    <Compile Include="CatLitterBoxSender.cs" />
-    <Compile Include="Rooms\FloorConfiguration.cs" />
-    <Compile Include="Rooms\KitchenConfiguration.cs" />
-    <Compile Include="Rooms\LivingRoomConfiguration.cs" />
-    <Compile Include="Rooms\LowerBathroomConfiguration.cs" />
-    <Compile Include="Rooms\OfficeConfiguration.cs" />
-    <Compile Include="Rooms\ChildrensRoomConfiguration.cs" />
-    <Compile Include="Rooms\ReadingRoomConfiguration.cs" />
-    <Compile Include="Rooms\Room.cs" />
-    <Compile Include="Rooms\StoreroomConfiguration.cs" />
-    <Compile Include="Rooms\UpperBathroomConfiguration.cs" />
+    <Compile Include="Cellar\Configuration.cs" />
+    <Compile Include="Cellar\Garden.cs" />
+    <Compile Include="Cellar\InstalledDevice.cs" />
+    <Compile Include="Cellar\Room.cs" />
+    <Compile Include="Main\Configuration.cs" />
+    <Compile Include="Main\InstalledDevice.cs" />
+    <Compile Include="Main\Rooms\BedroomConfiguration.cs" />
+    <Compile Include="Main\CatLitterBoxSender.cs" />
+    <Compile Include="Main\Rooms\FloorConfiguration.cs" />
+    <Compile Include="Main\Rooms\KitchenConfiguration.cs" />
+    <Compile Include="Main\Rooms\LivingRoomConfiguration.cs" />
+    <Compile Include="Main\Rooms\LowerBathroomConfiguration.cs" />
+    <Compile Include="Main\Rooms\OfficeConfiguration.cs" />
+    <Compile Include="Main\Rooms\ChildrensRoomConfiguration.cs" />
+    <Compile Include="Main\Rooms\ReadingRoomConfiguration.cs" />
+    <Compile Include="Main\Room.cs" />
+    <Compile Include="Main\Rooms\StoreroomConfiguration.cs" />
+    <Compile Include="Main\Rooms\UpperBathroomConfiguration.cs" />
     <Compile Include="StartupTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -146,6 +151,7 @@
       <Name>HA4IoT</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

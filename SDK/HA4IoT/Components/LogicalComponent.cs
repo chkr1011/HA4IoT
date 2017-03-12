@@ -22,12 +22,12 @@ namespace HA4IoT.Components
             return this;
         }
 
-        public override ComponentFeatureStateCollection GetState()
+        public override IComponentFeatureStateCollection GetState()
         {
             return Components.First().GetState();
         }
 
-        public override ComponentFeatureCollection GetFeatures()
+        public override IComponentFeatureCollection GetFeatures()
         {
             return Components.First().GetFeatures();
         }

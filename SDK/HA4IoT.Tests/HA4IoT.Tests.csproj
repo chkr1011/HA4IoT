@@ -182,6 +182,14 @@
       <Project>{b10b2e2a-85cd-4289-8649-fc0c1c98921d}</Project>
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>
+    <ProjectReference Include="..\HA4IoT.MqttClient\HA4IoT.MqttClient.csproj">
+      <Project>{05EDFCF4-2AAA-4CF1-8824-3A64341DD521}</Project>
+      <Name>HA4IoT.MqttClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HA4IoT.MqttServer\HA4IoT.MqttServer.csproj">
+      <Project>{1c5797e9-bd85-416e-af5a-1ae1632fe53c}</Project>
+      <Name>HA4IoT.MqttServer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HA4IoT.Networking\HA4IoT.Networking.csproj">
       <Project>{d4e0a3f9-6521-4aee-815a-e2a60323fb63}</Project>
       <Name>HA4IoT.Networking</Name>
@@ -190,12 +198,6 @@
       <Project>{c034ec4d-46cc-490a-a045-e4d4d1f49c31}</Project>
       <Name>HA4IoT</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="GnatMQ.WinRT, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\GnatMQ\bin\Debug\GnatMQ.WinRT\GnatMQ.WinRT.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

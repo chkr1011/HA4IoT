@@ -9,6 +9,7 @@ using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Hardware.DeviceMessaging;
 using HA4IoT.Contracts.Hardware.Services;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services.Settings;
@@ -38,7 +39,7 @@ namespace HA4IoT.Simulator
             var areaRepository = _containerService.GetInstance<IAreaRegistryService>();
             var timerService = _containerService.GetInstance<ITimerService>();
             var settingsService = _containerService.GetInstance<ISettingsService>();
-            var mqttService = _containerService.GetInstance<IMqttService>();
+            var mqttService = _containerService.GetInstance<IDeviceMessageBrokerService>();
             var sonoffDeviceService = _containerService.GetInstance<SonoffDeviceService>();
 
             var area = areaRepository.RegisterArea("TestArea");

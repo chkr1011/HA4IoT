@@ -30,13 +30,13 @@ namespace HA4IoT.Sensors.Windows
 
         public ITrigger ClosedTrigger { get; } = new Trigger();
 
-        public override ComponentFeatureCollection GetFeatures()
+        public override IComponentFeatureCollection GetFeatures()
         {
             return new ComponentFeatureCollection()
                 .With(new WindowStateFeature());
         }
 
-        public override ComponentFeatureStateCollection GetState()
+        public override IComponentFeatureStateCollection GetState()
         {
             return new ComponentFeatureStateCollection()
                 .With(new WindowState(_state));

@@ -41,13 +41,13 @@ namespace HA4IoT.Sensors.Buttons
         public ITrigger PressedShortlyTrigger { get; } = new Trigger();
         public ITrigger PressedLongTrigger { get; } = new Trigger();
 
-        public override ComponentFeatureStateCollection GetState()
+        public override IComponentFeatureStateCollection GetState()
         {
             return new ComponentFeatureStateCollection()
                 .With(new ButtonState(_state));
         }
 
-        public override ComponentFeatureCollection GetFeatures()
+        public override IComponentFeatureCollection GetFeatures()
         {
             return new ComponentFeatureCollection()
                 .With(new ButtonFeature());

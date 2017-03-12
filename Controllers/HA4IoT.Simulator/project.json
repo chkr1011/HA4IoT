@@ -1,7 +1,7 @@
 ﻿{
   "dependencies": {
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
-    "winrtxamltoolkit": "2.0.0"
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
+    "winrtxamltoolkit": "2.3.0"
   },
   "frameworks": {
     "uap10.0": {}

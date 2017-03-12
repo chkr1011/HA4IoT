@@ -9,9 +9,9 @@ namespace HA4IoT.Contracts.Components
 
         string Id { get; }
 
-        ComponentFeatureStateCollection GetState();
+        IComponentFeatureStateCollection GetState();
 
-        ComponentFeatureCollection GetFeatures();
+        IComponentFeatureCollection GetFeatures();
 
         void ExecuteCommand(ICommand command);
     }

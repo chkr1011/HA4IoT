@@ -7,7 +7,7 @@ namespace HA4IoT.Core
     {
         public int HttpServerPort { get; set; } = 80;
 
-        public int? StatusLedNumber { get; set; }
+        public int? StatusLedGpio { get; set; }
 
         public Type ConfigurationType { get; set; }
 

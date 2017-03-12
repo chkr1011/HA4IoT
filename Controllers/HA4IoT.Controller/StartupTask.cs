@@ -8,13 +8,11 @@ namespace HA4IoT.Controller
 {
     public sealed class StartupTask : IBackgroundTask
     {
-        private const int LedGpio = 22; // Replace this with a port which contains a LED for status indication (optional).
-
         public void Run(IBackgroundTaskInstance taskInstance)
         {
             var options = new ControllerOptions
             {
-                StatusLedNumber = LedGpio,
+                StatusLedGpio = 22, // Replace this with a port which contains a LED for status indication (optional).
                 ConfigurationType = typeof(Configuration)
             };
 

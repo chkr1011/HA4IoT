@@ -24,13 +24,13 @@ namespace HA4IoT.Actuators.Sockets
             _adapter = adapter;
         }
 
-        public override ComponentFeatureStateCollection GetState()
+        public override IComponentFeatureStateCollection GetState()
         {
             return new ComponentFeatureStateCollection()
                 .With(new PowerState(_powerState));
         }
 
-        public override ComponentFeatureCollection GetFeatures()
+        public override IComponentFeatureCollection GetFeatures()
         {
             return new ComponentFeatureCollection()
                 .With(new PowerStateFeature());

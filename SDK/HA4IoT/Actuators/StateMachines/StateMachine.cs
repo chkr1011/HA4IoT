@@ -86,11 +86,11 @@ namespace HA4IoT.Actuators.StateMachines
             }
             else
             {
-                Log.Warning("Reset stat of StateMachine is not supported.");
+                Log.Default.Warning("Reset stat of StateMachine is not supported.");
             }
         }
 
-        public override ComponentFeatureStateCollection GetState()
+        public override IComponentFeatureStateCollection GetState()
         {
             var state = new ComponentFeatureStateCollection().With(
                 new StateMachineFeatureState(_activeState?.Id));
@@ -106,7 +106,7 @@ namespace HA4IoT.Actuators.StateMachines
             return state;
         }
 
-        public override ComponentFeatureCollection GetFeatures()
+        public override IComponentFeatureCollection GetFeatures()
         {
             var stateMachineFeature = new StateMachineFeature();
             foreach (var stateId in _states.Keys)

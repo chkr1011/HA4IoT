@@ -30,7 +30,7 @@ namespace HA4IoT.Actuators.Fans
 
         public IAction SetNextLevelAction { get; }
 
-        public override ComponentFeatureStateCollection GetState()
+        public override IComponentFeatureStateCollection GetState()
         {
             lock (_syncRoot)
             {
@@ -42,7 +42,7 @@ namespace HA4IoT.Actuators.Fans
             }
         }
 
-        public override ComponentFeatureCollection GetFeatures()
+        public override IComponentFeatureCollection GetFeatures()
         {
             lock (_syncRoot)
             {
