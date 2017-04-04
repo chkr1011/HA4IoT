@@ -1,0 +1,23 @@
+﻿<div class="btn-group pull-right" role="group">
+    <button class="btn btn-default" ng-click="ctrl.componentService.decreaseLevel(component)">
+        <span class="glyphicon glyphicon-arrow-down"></span>
+    </button>
+    
+    <button class="btn btn-default" ng-repeat="i in getNumber(component.Features.LevelStateFeature.MaxLevel)" ng-class="{'btn-danger': component.State.LevelState.CurrentLevel===i, 'btn-success': component.State.LevelState.CurrentLevel===0}" ng-click="ctrl.componentService.setLevel(component, i)">
+        <span>{{i}}</span>
+    </button>
+    
+    <button class="btn btn-default" ng-click="ctrl.componentService.increaseLevel(component)">
+        <span class="glyphicon glyphicon-arrow-up"></span>
+    </button>
+
+    <div class="btn-group" role="group">
+        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-right">
+            <li><a href="#" ng-click="ctrl.componentService.disable(component)">{{ctrl.localizationService.get('UI.DisableComponent')}}</a></li>
+            <li><a href="#" ng-click="ctrl.componentService.enable(component)">{{ctrl.localizationService.get('UI.EnableComponent')}}</a></li>
+        </ul>
+    </div>
+</div>

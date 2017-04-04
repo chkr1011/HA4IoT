@@ -1,23 +1,24 @@
-#include <EEPROM.h>
+#define EEPROM_SIZE 512
 
-int _eeprom_offset = 0;
+uint16_t _eepromOffset = 0;
 
-byte readConfigByte() {
-  byte result = EEPROM.read(_eeprom_offset);
-  _eeprom_offset++;
-  return result;
+bool readConfigBool() {
+  uint8_t result = EEPROM.read(_eepromOffset);
+  _eepromOffset++;
+  return result == 1;
 }
 
-void writeConfigByte(byte data) {
-  writeIfChanged(_eeprom_offset, data);
-  _eeprom_offset++;
+void writeConfigBool(bool value) {
+  EEPROM.write(_eepromOffset, value);
+  _eepromOffset++;
 }
 
-char *readConfigString(int bufferSize) {
+char *readConfigString(uint8_t bufferSize) {
   char *buffer = (char *)malloc(bufferSize);
-  for (int i = 0; i < bufferSize; i++) {
-    buffer[i] = EEPROM.read(_eeprom_offset);
-    _eeprom_offset++;
+
+  for (uint8_t i = 0; i < bufferSize; i++) {
+    buffer[i] = EEPROM.read(_eepromOffset);
+    _eepromOffset++;
 
     if (buffer[i] == '\0') {
       break;
@@ -27,11 +28,11 @@ char *readConfigString(int bufferSize) {
   return buffer;
 }
 
-void writeConfigString(String data, int maxLength) {
-  for (int i = 0; i < maxLength; i++) {
+void writeConfigString(String data, uint8_t maxLength) {
+  for (uint8_t i = 0; i < maxLength; i++) {
     char c = data[i];
-    writeIfChanged(_eeprom_offset, c);
-    _eeprom_offset++;
+    EEPROM.write(_eepromOffset, c);
+    _eepromOffset++;
 
     if (c == '\0') {
       break;
@@ -39,66 +40,83 @@ void writeConfigString(String data, int maxLength) {
   }
 }
 
+void resetConfig() {
+  _sysSettings.name = "New";
+
+  _wiFiSettings.isConfigured = false;
+  _wiFiSettings.ssid = F("");
+  _wiFiSettings.password = F("");
+
+  _mqttSettings.isEnabled = false;
+  _mqttSettings.server = F("");
+  _mqttSettings.user = F("");
+  _mqttSettings.password = F("");
+
+  _featureSettings.isRgbEnabled = false;
+  _featureSettings.isLpdEnabled = false;
+}
+
 void saveConfig() {
-  EEPROM.begin(512);
-  _eeprom_offset = 0;
-  writeConfigByte(_configWiFiIsConfigured);
-  writeConfigString(_configWiFiSsid, 16);
-  writeConfigString(_configWiFiPassword, 64);
+  EEPROM.begin(EEPROM_SIZE);
 
-  writeConfigByte(_configMqttIsEnabled);
-  writeConfigString(_configMqttServer, 24);
-  writeConfigString(_configDeviceName, 24);
+  _eepromOffset = 0;
 
-  writeConfigByte(_configSerialDebugging);
+  writeConfigString(getFirmwareVersion(), 8);
+
+  writeConfigString(_sysSettings.name, 24);
+
+  writeConfigBool(_wiFiSettings.isConfigured);
+  writeConfigString(_wiFiSettings.ssid, 24);
+  writeConfigString(_wiFiSettings.password, 64);
+
+  writeConfigBool(_mqttSettings.isEnabled);
+  writeConfigString(_mqttSettings.server, 24);
+  writeConfigString(_mqttSettings.user, 24);
+  writeConfigString(_mqttSettings.password, 32);
+
+  writeConfigBool(_featureSettings.isRgbEnabled);
+  writeConfigBool(_featureSettings.isLpdEnabled);
+
   EEPROM.end();
 
-  debugLine(F("EEPROM> Saved"));
+  Serial.printf("Saved config. Length=%s\n", _eepromOffset);
 }
 
 void loadConfig() {
-  EEPROM.begin(512);
-  _eeprom_offset = 0;
+  EEPROM.begin(EEPROM_SIZE);
 
-  _configWiFiIsConfigured = readConfigByte();
-  _configWiFiSsid = readConfigString(16);
-  _configWiFiPassword = readConfigString(64);
-
-  _configMqttIsEnabled = readConfigByte();
-  _configMqttServer = readConfigString(24);
-  _configDeviceName = readConfigString(24);
-
-  _configSerialDebugging = readConfigByte();
-  EEPROM.end();
-
-#ifdef DEBUG
-  debugLine(F("EEPROM> read"));
-
-  debug(F("Config> _configWiFiIsConfigured="));
-  debugLine(_configWiFiIsConfigured);
-
-  debug(F("Config> _configWiFiSsid="));
-  debugLine(_configWiFiSsid);
-
-  debug(F("Config> _configWiFiPassword="));
-  debugLine(_configWiFiPassword);
-
-  debug(F("Config> _configMqttIsEnabled="));
-  debugLine(_configMqttIsEnabled);
-
-  debug(F("Config> _configMqttServer="));
-  debugLine(_configMqttServer);
-
-  debug(F("Config> _configDeviceName="));
-  debugLine(_configDeviceName);
-#endif
-}
-
-void writeIfChanged(int index, byte data) {
-  byte existing = EEPROM.read(index);
-  if (existing == data) {
+  bool isFirstRun = EEPROM.read(0) == 0xFF;
+  if (isFirstRun)
+  {
+    Serial.println(F("Resetting config due to first run."));
+    resetConfig();
+    saveConfig();
     return;
   }
 
-  EEPROM.write(index, data);
+  _eepromOffset = 0;
+
+  String configVersion = readConfigString(8);
+
+  _sysSettings.name = readConfigString(24);
+
+  _wiFiSettings.isConfigured = readConfigBool();
+  _wiFiSettings.ssid = readConfigString(24);
+  _wiFiSettings.password = readConfigString(64);
+
+  _mqttSettings.isEnabled = readConfigBool();
+  _mqttSettings.server = readConfigString(24);
+  _mqttSettings.user = readConfigString(24);
+  _mqttSettings.password = readConfigString(32);
+
+  _featureSettings.isRgbEnabled = readConfigBool();
+  _featureSettings.isLpdEnabled = readConfigBool();
+
+  EEPROM.end();
+
+  Serial.println(F("Config loaded"));
+}
+
+void setupConfig() {
+  loadConfig();
 }

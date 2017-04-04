@@ -108,32 +108,32 @@
       <HintPath>..\..\packages\Microsoft.Win32.Primitives.4.3.0\lib\net46\Microsoft.Win32.Primitives.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SimpleInjector, Version=3.3.2.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SimpleInjector.3.3.2\lib\net45\SimpleInjector.dll</HintPath>
+    <Reference Include="SimpleInjector, Version=4.0.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SimpleInjector.4.0.0\lib\net45\SimpleInjector.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SimpleInjector.Extensions.ExecutionContextScoping, Version=3.3.2.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SimpleInjector.Extensions.ExecutionContextScoping.3.3.2\lib\net45\SimpleInjector.Extensions.ExecutionContextScoping.dll</HintPath>
+    <Reference Include="SimpleInjector.Extensions.ExecutionContextScoping, Version=4.0.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SimpleInjector.Extensions.ExecutionContextScoping.4.0.0\lib\net45\SimpleInjector.Extensions.ExecutionContextScoping.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SimpleInjector.Integration.Web, Version=3.3.2.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SimpleInjector.Integration.Web.3.3.2\lib\net40\SimpleInjector.Integration.Web.dll</HintPath>
+    <Reference Include="SimpleInjector.Integration.Web, Version=4.0.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SimpleInjector.Integration.Web.4.0.0\lib\net40\SimpleInjector.Integration.Web.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SimpleInjector.Integration.Web.Mvc, Version=3.3.2.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SimpleInjector.Integration.Web.Mvc.3.3.2\lib\net40\SimpleInjector.Integration.Web.Mvc.dll</HintPath>
+    <Reference Include="SimpleInjector.Integration.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SimpleInjector.Integration.Web.Mvc.4.0.0\lib\net40\SimpleInjector.Integration.Web.Mvc.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SimpleInjector.Integration.WebApi, Version=3.3.2.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SimpleInjector.Integration.WebApi.3.3.2\lib\net45\SimpleInjector.Integration.WebApi.dll</HintPath>
+    <Reference Include="SimpleInjector.Integration.WebApi, Version=4.0.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SimpleInjector.Integration.WebApi.4.0.1\lib\net45\SimpleInjector.Integration.WebApi.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -170,8 +170,7 @@
     </Reference>
     <Reference Include="System.Net" />
     <Reference Include="System.Net.Http, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Net.Http.4.3.0\lib\net46\System.Net.Http.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\System.Net.Http.4.3.1\lib\net46\System.Net.Http.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Net.Http.Formatting.Extension.5.2.3.0\lib\System.Net.Http.Extensions.dll</HintPath>
@@ -291,7 +290,7 @@
     <Folder Include="Scripts\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SDK\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
+    <ProjectReference Include="..\..\Core\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{B10B2E2A-85CD-4289-8649-FC0C1C98921D}</Project>
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>

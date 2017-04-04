@@ -1,4 +1,5 @@
 ﻿using System;
+using Windows.Gaming.Input.ForceFeedback;
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;
@@ -10,7 +11,9 @@ using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware.I2C;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
+using HA4IoT.Hardware.CCTools.Devices;
 using HA4IoT.Hardware.I2C.I2CHardwareBridge;
+using HA4IoT.Hardware.Outpost;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.MotionDetectors;
@@ -22,7 +25,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
     {
         private readonly IAreaRegistryService _areaService;
         private readonly IDeviceRegistryService _deviceService;
-        private readonly CCToolsBoardService _ccToolsBoardService;
+        private readonly CCToolsDeviceService _ccToolsBoardService;
+        private readonly OutpostDeviceService _outpostDeviceService;
         private readonly AutomationFactory _automationFactory;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
@@ -39,6 +43,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             LightCeilingDoor,
             LightCeilingPassageOuter,
             LightCeilingPassageInner,
+            LightKitchenette,
             CombinedAutomaticLights,
             CombinedAutomaticLightsAutomation,
 
@@ -59,21 +64,24 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         public KitchenConfiguration(
             IAreaRegistryService areaService,
             IDeviceRegistryService deviceService,
-            CCToolsBoardService ccToolsBoardService,
+            CCToolsDeviceService ccToolsDeviceService,
+            OutpostDeviceService outpostDeviceService,
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)
         {
             if (areaService == null) throw new ArgumentNullException(nameof(areaService));
             if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
-            if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
+            if (ccToolsDeviceService == null) throw new ArgumentNullException(nameof(ccToolsDeviceService));
+            if (outpostDeviceService == null) throw new ArgumentNullException(nameof(outpostDeviceService));
             if (automationFactory == null) throw new ArgumentNullException(nameof(automationFactory));
             if (actuatorFactory == null) throw new ArgumentNullException(nameof(actuatorFactory));
             if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
 
             _areaService = areaService;
             _deviceService = deviceService;
-            _ccToolsBoardService = ccToolsBoardService;
+            _ccToolsBoardService = ccToolsDeviceService;
+            _outpostDeviceService = outpostDeviceService;
             _automationFactory = automationFactory;
             _actuatorFactory = actuatorFactory;
             _sensorFactory = sensorFactory;
@@ -81,8 +89,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
         public void Apply()
         {
-            var hsrel5 = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.KitchenHSREL5, new I2CSlaveAddress(58));
-            var hspe8 = _ccToolsBoardService.RegisterHSPE8OutputOnly(InstalledDevice.KitchenHSPE8, new I2CSlaveAddress(39));
+            var hsrel5 = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.KitchenHSREL5.ToString(), new I2CSlaveAddress(58));
+            var hspe8 = _ccToolsBoardService.RegisterHSPE8OutputOnly(InstalledDevice.KitchenHSPE8.ToString(), new I2CSlaveAddress(39));
 
             var input0 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input0.ToString());
             var input1 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input1.ToString());
@@ -103,12 +111,15 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             _sensorFactory.RegisterMotionDetector(area, Kitchen.MotionDetector, input1.GetInput(8));
 
+            var rgb = _outpostDeviceService.GetRgbAdapter("RGBSK1");
+
             _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingPassageOuter, hspe8.GetOutput(2).WithInvertedState());
             _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingMiddle, hsrel5.GetOutput(5).WithInvertedState());
             _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingWindow, hsrel5.GetOutput(6).WithInvertedState());
             _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingWall, hsrel5.GetOutput(7).WithInvertedState());
             _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingDoor, hspe8.GetOutput(0).WithInvertedState());
             _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingPassageInner, hspe8.GetOutput(1).WithInvertedState());
+            _actuatorFactory.RegisterLamp(area, Kitchen.LightKitchenette, rgb);
 
             _actuatorFactory.RegisterSocket(area, Kitchen.SocketWall, hsrel5.GetOutput(2));
             _actuatorFactory.RegisterRollerShutter(area, Kitchen.RollerShutter, hsrel5.GetOutput(4), hsrel5.GetOutput(3));
@@ -126,6 +137,14 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             area.GetRollerShutter(Kitchen.RollerShutter).ConnectWith(
                 area.GetButton(Kitchen.RollerShutterButtonUp), area.GetButton(Kitchen.RollerShutterButtonDown));
 
+            area.GetButton(Kitchen.RollerShutterButtonUp).PressedLongTrigger.Attach(() => area.GetComponent(Kitchen.LightKitchenette).TryTogglePowerState());
+
+            var random = new Random((int)DateTime.UtcNow.Ticks);
+            area.GetButton(Kitchen.RollerShutterButtonDown).PressedLongTrigger.Attach(() =>
+            {
+                rgb.SetColor(random.Next(1024), random.Next(1024), random.Next(1024));
+            });
+
             _actuatorFactory.RegisterLogicalComponent(area, Kitchen.CombinedAutomaticLights)
                 .WithComponent(area.GetLamp(Kitchen.LightCeilingWall))
                 .WithComponent(area.GetLamp(Kitchen.LightCeilingDoor))
@@ -133,7 +152,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             _automationFactory.RegisterTurnOnAndOffAutomation(area, Kitchen.CombinedAutomaticLightsAutomation)
                 .WithTrigger(area.GetMotionDetector(Kitchen.MotionDetector))
-                .WithTarget(area.GetComponent(Kitchen.CombinedAutomaticLights.ToString()))
+                .WithTarget(area.GetComponent(Kitchen.CombinedAutomaticLights))
                 .WithEnabledAtNight();
         }
     }

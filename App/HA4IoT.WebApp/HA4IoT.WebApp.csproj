@@ -91,8 +91,6 @@
     <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
-    <Content Include="Scripts\Chart.js" />
-    <Content Include="Scripts\Chart.min.js" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
@@ -101,7 +99,10 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="Scripts\angular.min.js.map" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
+    <Content Include="Scripts\Chart.js" />
+    <Content Include="Scripts\Chart.min.js" />
     <Content Include="Scripts\jquery-3.1.1.js" />
     <Content Include="Scripts\jquery-3.1.1.min.js" />
     <Content Include="Scripts\jquery-3.1.1.slim.js" />
@@ -115,7 +116,6 @@
     <Content Include="Localizations\UILocalizations-DE.json" />
     <Content Include="Localizations\UILocalizations-EN.json" />
     <Content Include="packages.config" />
-    <Content Include="Scripts\angular.min.js.map" />
     <Content Include="Scripts\jquery-3.1.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.1.1.min.map" />
     <None Include="Web.Debug.config">
@@ -133,6 +133,7 @@
     <Content Include="Content\CustomStyle.css" />
     <Content Include="touch-icon-iphone-retina.png" />
     <Content Include="Views\BottomBarTemplate.html" />
+    <Content Include="Views\FanTemplate.html" />
     <Content Include="Views\HumiditySensorTemplate.html" />
     <Content Include="Views\ModalTemplate.html" />
     <Content Include="Views\MotionDetectorsOverviewTemplate.html" />

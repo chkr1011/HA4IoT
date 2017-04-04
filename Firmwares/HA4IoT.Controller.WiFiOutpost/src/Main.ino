@@ -1,50 +1,91 @@
+#include <Arduino.h>
+#include <ArduinoJson.h>
+#include <EEPROM.h>
+
+#include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
+#include <ESP8266HTTPUpdate.h>
+#include <ESP8266WebServer.h>
+
+#include <PubSubClient.h>
+
 #include "Config.h"
-#include "Status.h"
+#include "Mqtt.h"
+#include "System.h"
+#include "WebServer.h"
+#include "WiFi.h"
 
-String VERSION = "1.0.2";
+// Comment out to disable features.
+#define FEATURE_RGB
+//#define FEATURE_LPD
+//#define FEATURE_ONEWIRE_SENSORS
 
-#define DEBUG 1
+// nodemcuv2 Pins:
+// D0=16 D1=5 D2=4 D3=0 D4=2 D5=14 D6=12 D7=13 D8=15
 
-#define STATUS_LED D4
+#ifdef FEATURE_RGB
+#include "Rgb.h"
+#endif
+#ifdef FEATURE_LPD
+#include <RCSwitch.h>
+#include "Lpd.h"
+#endif
+#ifdef FEATURE_ONEWIRE_SENSORS
+#include <DallasTemperature.h>
+#include <OneWire.h>
+#include "OneWireSensors.h"
+#endif
 
-#define RGB_R_PIN D2
-#define RGB_G_PIN D5
-#define RGB_B_PIN D6
-
-#define LDP_RECEIVE_PIN D0
-#define LDP_TRANSMIT_PIN D1
-
-int _previousMillis = millis();
+uint16_t _previousMillis = millis();
 
 void setup() {
-  setupStatus();
-  setupDebugging();
-  debugLine(F("Booting..."));
+  Serial.begin(115200);
+  Serial.println();
+  Serial.println("[HA4IoT-Outpost-RGB] (www.ha4iot.de)");
+  Serial.printf("+ FIRMWARE_VERSION=%s\n", getFirmwareVersion().c_str());
+  Serial.printf("+ ResetReason=%s\n", ESP.getResetReason().c_str());
+  Serial.printf("+ SketchSize=%d\n", ESP.getSketchSize());
+  Serial.printf("+ FreeSketchSpace=%d\n", ESP.getFreeSketchSpace());
+  Serial.printf("+ FreeHeap=%d\n", ESP.getFreeHeap());
 
-  loadConfig();
+  setupConfig();
+  setupSystem();
 
+#ifdef FEATURE_LPD
   setupLpd();
-  setupOutput();
+#endif
+#ifdef FEATURE_RGB
+  setupRgb();
+#endif
+#ifdef FEATURE_ONEWIRE_SENSORS
+  setupOneWireSensors();
+#endif
 
   setupWiFi();
   setupWebServer();
   setupMqtt();
 
-  debugLine(F("Boot done"));
+  Serial.printf("Boot done. Name=%s\n", _sysSettings.name.c_str());
 }
 
 void loop() {
   delay(50);
 
-  int elapsedMillis = millis() - _previousMillis;
-  _previousMillis = millis();
+  uint16_t now = millis();
+  uint16_t elapsedMillis = now - _previousMillis;
+  _previousMillis = now;
 
   // Loop core components.
+  loopSystem(elapsedMillis);
   loopWiFi();
   loopMqtt(elapsedMillis);
   loopWebServer();
 
-  // Loop hardware components.
+// Loop hardware components.
+#ifdef FEATURE_LPD
   loopLpd();
-  loopDallasSensors();
+#endif
+#ifdef FEATURE_ONEWIRE_SENSORS
+  loopOneWireSensors();
+#endif
 }

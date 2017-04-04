@@ -1,28 +1,70 @@
-#include <Arduino.h>
-#include <ESP8266mDNS.h>
-#include <PubSubClient.h>
-
 #define MQTT_RECONNECT_INTERVAL 15000; // Retry every 15 seconds.
 
-WiFiClient espClient;
-PubSubClient _mqttClient(espClient);
+struct mqttConnectedCallback {
+  void (*callback)();
+};
 
-int _mqttReconnectTimeout = 0;
+struct mqttOnMessageCallback {
+  String topic;
+  void (*callback)(String);
+};
+
+WiFiClient _espClient;
+PubSubClient _mqttClient(_espClient);
+
+bool _isConnected;
+int16_t _mqttReconnectTimeout = 0;
+
+mqttOnMessageCallback _onMessageCallbacks[10];
+uint8_t _onMessageCallbacksIndex = 0;
+
+mqttConnectedCallback _onConnectedCallbacks[10];
+uint8_t _onConnectedCallbacksIndex = 0;
+
+void onMqttMessage(String topic, void (*callback)(String)) {
+  _onMessageCallbacks[_onMessageCallbacksIndex].topic = topic;
+  _onMessageCallbacks[_onMessageCallbacksIndex].callback = callback;
+  _onMessageCallbacksIndex++;
+}
+
+void onMqttConnected(void (*callback)()) {
+  _onConnectedCallbacks[_onConnectedCallbacksIndex].callback = callback;
+  _onConnectedCallbacksIndex++;
+}
+
+void callback(char *topic, byte *payload, uint16_t length) {
+  payload[length] = '\0';
+  String message = String((char *)payload);
+
+  Serial.printf("RX MQTT message: T=%s, P=%s\n", topic, (char *)payload);
+
+  for (uint8_t i = 0; i < _onMessageCallbacksIndex; i++) {
+    if (strcmp(_onMessageCallbacks[i].topic.c_str(), topic) == 0) {
+      _onMessageCallbacks[i].callback(message);
+    }
+  }
+}
+
+bool getMqttIsConnected() { return _isConnected; }
 
 void setupMqtt() {
-  if (!_configMqttIsEnabled) {
+  if (!_mqttSettings.isEnabled) {
     return;
   }
 
   _mqttClient.setCallback(callback);
 }
 
-void loopMqtt(int elapsedMillis) {
-  if (!_configMqttIsEnabled) {
+void loopMqtt(uint16_t elapsedMillis) {
+  if (!_mqttSettings.isEnabled) {
     return;
   }
 
-  if (_mqttClient.loop()) {
+  if (!getWiFiIsConnected()) {
+    return;
+  }
+
+  if (_mqttClient.connected() && _mqttClient.loop()) {
     _mqttReconnectTimeout = MQTT_RECONNECT_INTERVAL;
     clearError();
     return;
@@ -31,112 +73,47 @@ void loopMqtt(int elapsedMillis) {
   setError();
 
   _mqttReconnectTimeout -= elapsedMillis;
-  if (_mqttReconnectTimeout <= 0) {
-    debugLine(F("MQTT> Trying reconnect with server..."));
-    _mqttReconnectTimeout = MQTT_RECONNECT_INTERVAL;
-
-    _mqttClient.setServer(_configMqttServer.c_str(), 1883);
-    if (_mqttClient.connect(_configMqttUser.c_str())) {
-      _statusMqttIsConnected = true;
-      _mqttClient.subscribe(
-          ("HA4IoT/Outpost/" + _configDeviceName + "/Command/#").c_str());
-      publishMqttOutputStatus();
-
-      debugLine(F("MQTT> Connected with server."));
-    } else {
-      _statusMqttIsConnected = false;
-      debugLine(F("MQTT> Connecting with server failed."));
-    }
-  }
-}
-
-String getMqttServerAddress() {
-  String usedMqttServerAddress = _configMqttServer;
-
-  return usedMqttServerAddress;
-
-  IPAddress mqttServerIPAddress;
-  if (WiFi.hostByName(_configMqttServer.c_str(), mqttServerIPAddress) == 1) {
-    usedMqttServerAddress = mqttServerIPAddress.toString();
-  } else {
-    debugLine(F("MQTT> Server IP not resolved!"));
-  }
-
-  debug(F("MQTT> Using server address: "));
-  debugLine(usedMqttServerAddress);
-
-  return usedMqttServerAddress;
-}
-
-void publishMqttReceivedLpdCode() {
-  String topic = generateStatusTopic("LPD/Received");
-
-  String message = String(_statusLpdLastReceivedValue) + "," +
-                   String(_statusLpdLastReceivedLength) + "," +
-                   String(_statusLpdLastReceivedProtocol);
-
-  tryPublish(topic.c_str(), message.c_str());
-}
-
-void publishMqttOutputStatus() {
-  String topic = generateStatusTopic("RGBS/Outputs");
-
-  String message = String(_statusOutputR) + "," + String(_statusOutputG) + "," +
-                   String(_statusOutputB);
-
-  tryPublish(topic.c_str(), message.c_str());
-}
-
-void callback(char *topic, byte *payload, unsigned int length) {
-  payload[length] = '\0';
-  String message = String((char *)payload);
-
-  debug(F("MQTT> Received topic: "));
-  debug(topic);
-  debug(F(" with payload: "));
-  debugLine(message);
-
-  if (strcmp(generateCommandTopic("/RGBS/SetOutputs").c_str(), topic) == 0) {
-    int c1 = message.indexOf(',');
-    if (c1 == -1) {
-      return;
-    }
-
-    int c2 = message.indexOf(',', c1 + 1);
-    if (c2 == -1) {
-      return;
-    }
-
-    String rText = message.substring(0, c1);
-    String bText = message.substring(c1 + 1, c2);
-    String gText = message.substring(c2 + 1);
-
-    int r = rText.toInt();
-    int g = bText.toInt();
-    int b = gText.toInt();
-
-    setOutputs(r, g, b);
-
-    // if (scanf(message, "%d,%d,%d", &r, &g, &b) == 3) {
-    //  setOutputs(r, g, b);
-    //}
-  }
-}
-
-String generateStatusTopic(String suffix) {
-  return "HA4IoT/Outpost/" + _configDeviceName + "/Status/" + suffix;
-}
-
-String generateCommandTopic(String suffix) {
-  return "HA4IoT/Outpost/" + _configDeviceName + "/Command/" + suffix;
-}
-
-void tryPublish(String topic, String payload) {
-  if (!_statusMqttIsConnected) {
+  if (_mqttReconnectTimeout > 0) {
     return;
   }
 
-  _mqttClient.publish(topic.c_str(), payload.c_str());
-  debug(F("MQTT> Published: "));
-  debugLine(topic);
+  _mqttReconnectTimeout = MQTT_RECONNECT_INTERVAL;
+  Serial.printf("Connecting with MQTT server %s...\n",
+                _mqttSettings.server.c_str());
+
+  _mqttClient.setServer(_mqttSettings.server.c_str(), 1883);
+
+  _isConnected =
+      _mqttClient.connect(_sysSettings.name.c_str(), _mqttSettings.user.c_str(),
+                          _mqttSettings.password.c_str());
+
+  if (_isConnected) {
+    _mqttClient.subscribe(("HA4IoT/Device/" + _sysSettings.name + "/#").c_str());
+
+    for (uint8_t i = 0; i < _onConnectedCallbacksIndex; i++) {
+      _onConnectedCallbacks[i].callback();
+    }
+
+    Serial.println(F("Connected with MQTT server"));
+  } else {
+    Serial.println(F("MQTT client not connected"));
+  }
+}
+
+String generateMqttNotificationTopic(String suffix) {
+  return "HA4IoT/Device/" + _sysSettings.name + "/Notification/" + suffix;
+}
+
+String generateMqttCommandTopic(String suffix) {
+  return "HA4IoT/Device/" + _sysSettings.name + "/Command/" + suffix;
+}
+
+void publishMqttMessage(const char *topic, const char *payload) {
+  if (!_isConnected) {
+    return;
+  }
+
+  _mqttClient.publish(topic, payload);
+
+  Serial.printf("TX MQTT message: T=%s P=%s\n", topic, payload);
 }

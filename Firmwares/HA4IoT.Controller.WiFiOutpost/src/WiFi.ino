@@ -1,69 +1,63 @@
-#include <ESP8266WiFi.h>
-#include <ESP8266mDNS.h>
-#include <String.h>
-
 #define WIFI_CHECK_TIMEOUT 100
 
+String _ip;
 String _hostname;
-int _previousWiFiStatus = WL_DISCONNECTED;
+uint8_t _status = WL_DISCONNECTED;
 
-void setupWiFi() {
-  _hostname = "HA4IoT-" + String(_configDeviceName);
+String getWiFiIpAddress() { return _ip; }
 
-  debugLine(F("WiFi> Setting up..."));
-  //WiFi.softAPdisconnect(true);
-  WiFi.disconnect();
-  //ESP.eraseConfig();
+bool getWiFiIsConnected() { return _status == WL_CONNECTED; }
 
-  // ESP.reset();
-
-  // WiFi.mode(WIFI_OFF);
-
-  // WiFi.setSleepMode(WIFI_LIGHT_SLEEP);
-
-  if (_configWiFiIsConfigured) {
-    setupWiFiConnection();
-  } else {
-    setupAccessPoint();
-  }
-
-  MDNS.begin(_hostname.c_str());
-}
-
-void setupAccessPoint() {
-  debugLine(F("WiFi> Opening Access Point"));
+void openAccessPoint() {
+  Serial.println(F("Opening AP"));
+  _hostname = F("HA4IoT-Outpost");
 
   WiFi.mode(WIFI_AP);
-  WiFi.softAP("HA4IoT-Device", "ha4iot123");
+  WiFi.hostname(_hostname);
+  WiFi.softAP("HA4IoT-Outpost", "ha4iot123456");
 
-  _statusOwnIp = WiFi.softAPIP().toString();
+  _ip = WiFi.softAPIP().toString();
 }
 
-void setupWiFiConnection() {
-  debugLine(F("WiFi> Connecting to Access Point"));
+void connectWithAccessPoint() {
+  Serial.printf("Connecting to AP %s\n", _wiFiSettings.ssid.c_str());
+  _hostname = "HA4IoT-Outpost-" + _sysSettings.name;
 
   WiFi.mode(WIFI_STA);
   WiFi.hostname(_hostname);
-  WiFi.begin(_configWiFiSsid.c_str(), _configWiFiPassword.c_str());
+  WiFi.begin(_wiFiSettings.ssid.c_str(), _wiFiSettings.password.c_str());
 }
 
 void loopWiFi() {
   MDNS.update();
 
-  int newWiFiStatus = WiFi.status();
-  if (newWiFiStatus == _previousWiFiStatus) {
+  uint8_t newStatus = WiFi.status();
+  if (newStatus == _status) {
     return;
-  } else {
-    _previousWiFiStatus = newWiFiStatus;
   }
 
-  _statusOwnIp = WiFi.localIP().toString();
+  _status = newStatus;
+  _ip = WiFi.localIP().toString();
 
-  if (newWiFiStatus == WL_CONNECTED) {
-    debugLine(F("WiFi> Connected!"));
-    debug(F("WiFi> Local IP="));
-    debugLine(_statusOwnIp);
+  if (_status == WL_CONNECTED) {
+    Serial.printf("Connected with AP %s. IP=%s\n", _wiFiSettings.ssid.c_str(),
+                  _ip.c_str());
   } else {
-    debugLine(F("WiFi> Disconnected!"));
+    Serial.println(F("WiFi disconnected."));
   }
+}
+
+void setupWiFi() {
+  WiFi.disconnect();
+  ESP.eraseConfig();
+  // WiFi.setSleepMode(WIFI_LIGHT_SLEEP);
+
+  if (_wiFiSettings.isConfigured) {
+    connectWithAccessPoint();
+  } else {
+    openAccessPoint();
+  }
+
+  MDNS.begin(_hostname.c_str());
+  MDNS.addService("http", "tcp", 80);
 }

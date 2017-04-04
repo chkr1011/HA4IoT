@@ -10,6 +10,7 @@ using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services.ExternalServices.Twitter;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
+using HA4IoT.Hardware.CCTools.Devices;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Services.Areas;
@@ -20,7 +21,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
     {
         private readonly IAreaRegistryService _areaService;
         private readonly IDeviceRegistryService _deviceService;
-        private readonly CCToolsBoardService _ccToolsBoardService;
+        private readonly CCToolsDeviceService _ccToolsBoardService;
         private readonly ITimerService _timerService;
         private readonly ITwitterClientService _twitterClientService;
         private readonly AutomationFactory _automationFactory;
@@ -45,7 +46,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         public StoreroomConfiguration(
             IAreaRegistryService areaService,
             IDeviceRegistryService deviceService,
-            CCToolsBoardService ccToolsBoardService,
+            CCToolsDeviceService ccToolsBoardService,
             ITimerService timerService,
             ITwitterClientService twitterClientService,
             AutomationFactory automationFactory,
@@ -76,8 +77,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
         public void Apply()
         {
-            var hsrel8LowerHeatingValves = _ccToolsBoardService.RegisterHSREL8(InstalledDevice.LowerHeatingValvesHSREL8, new I2CSlaveAddress(16));
-            var hsrel5UpperHeatingValves = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.UpperHeatingValvesHSREL5, new I2CSlaveAddress(56));
+            var hsrel8LowerHeatingValves = _ccToolsBoardService.RegisterHSREL8(InstalledDevice.LowerHeatingValvesHSREL8.ToString(), new I2CSlaveAddress(16));
+            var hsrel5UpperHeatingValves = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.UpperHeatingValvesHSREL5.ToString(), new I2CSlaveAddress(56));
 
             var hsrel5Stairway = _deviceService.GetDevice<HSREL5>(InstalledDevice.StairwayHSREL5.ToString());
             var input3 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input3.ToString());

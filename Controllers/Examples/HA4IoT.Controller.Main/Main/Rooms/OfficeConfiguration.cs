@@ -9,6 +9,7 @@ using HA4IoT.Contracts.Hardware.I2C;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
+using HA4IoT.Hardware.CCTools.Devices;
 using HA4IoT.Hardware.I2C.I2CHardwareBridge;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Sensors;
@@ -22,7 +23,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         private readonly IDeviceRegistryService _deviceService;
         private readonly IAreaRegistryService _areaService;
         private readonly IDaylightService _daylightService;
-        private readonly CCToolsBoardService _ccToolsBoardService;
+        private readonly CCToolsDeviceService _ccToolsBoardService;
         private readonly RemoteSocketService _remoteSocketService;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
@@ -61,7 +62,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             IDeviceRegistryService deviceService,
             IAreaRegistryService areaService,
             IDaylightService daylightService,
-            CCToolsBoardService ccToolsBoardService,
+            CCToolsDeviceService ccToolsBoardService,
             RemoteSocketService remoteSocketService,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)
@@ -85,8 +86,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
         public void Apply()
         {
-            var hsrel8 = _ccToolsBoardService.RegisterHSREL8(InstalledDevice.OfficeHSREL8, new I2CSlaveAddress(20));
-            var hspe8 = _ccToolsBoardService.RegisterHSPE8OutputOnly(InstalledDevice.UpperFloorAndOfficeHSPE8, new I2CSlaveAddress(37));
+            var hsrel8 = _ccToolsBoardService.RegisterHSREL8(InstalledDevice.OfficeHSREL8.ToString(), new I2CSlaveAddress(20));
+            var hspe8 = _ccToolsBoardService.RegisterHSPE8OutputOnly(InstalledDevice.UpperFloorAndOfficeHSPE8.ToString(), new I2CSlaveAddress(37));
             var input4 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input4.ToString());
             var input5 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input5.ToString());
             var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();

@@ -1,10 +1,33 @@
-String _configDeviceName;
-bool _configSerialDebugging = 1;
+struct sysSettings {
+  String name;
+};
 
-bool _configWiFiIsConfigured = 0;
-String _configWiFiSsid;
-String _configWiFiPassword;
+sysSettings _sysSettings;
 
-bool _configMqttIsEnabled = 0;
-String _configMqttServer;
-String _configMqttUser;
+struct mqttSettings {
+  bool isEnabled;
+  String server;
+  String user;
+  String password;
+};
+
+mqttSettings _mqttSettings;
+
+struct wiFiSettings {
+  bool isConfigured;
+  String ssid;
+  String password;
+};
+
+wiFiSettings _wiFiSettings;
+
+struct featureSettings {
+  bool isRgbEnabled;
+  bool isLpdEnabled;
+};
+
+featureSettings _featureSettings;
+
+void setupConfig();
+void resetConfig();
+void saveConfig();

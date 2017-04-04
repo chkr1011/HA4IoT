@@ -1,4 +1,4 @@
-﻿namespace HA4IoT.Controller.Main.Main.Rooms
+﻿namespace HA4IoT.Controller.Main.Main
 {
     internal enum Room
     {

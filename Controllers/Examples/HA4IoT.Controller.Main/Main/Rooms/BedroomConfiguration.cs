@@ -4,7 +4,6 @@ using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Fans;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
-using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Adapters;
 using HA4IoT.Automations;
 using HA4IoT.Components;
@@ -15,6 +14,7 @@ using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.I2C;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
+using HA4IoT.Hardware.CCTools.Devices;
 using HA4IoT.Hardware.I2C.I2CHardwareBridge;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
@@ -27,7 +27,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
     {
         private readonly IDeviceRegistryService _deviceService;
         private readonly IAreaRegistryService _areaService;
-        private readonly CCToolsBoardService _ccToolsBoardService;
+        private readonly CCToolsDeviceService _ccToolsBoardService;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
         private readonly AutomationFactory _automationFactory;
@@ -82,7 +82,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         public BedroomConfiguration(
             IDeviceRegistryService deviceService,
             IAreaRegistryService areaService,
-            CCToolsBoardService ccToolsBoardService,
+            CCToolsDeviceService ccToolsBoardService,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory,
             AutomationFactory automationFactory)
@@ -104,8 +104,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
         public void Apply()
         {
-            var hsrel5 = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.BedroomHSREL5, new I2CSlaveAddress(38));
-            var hsrel8 = _ccToolsBoardService.RegisterHSREL8(InstalledDevice.BedroomHSREL8, new I2CSlaveAddress(21));
+            var hsrel5 = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.BedroomHSREL5.ToString(), new I2CSlaveAddress(38));
+            var hsrel8 = _ccToolsBoardService.RegisterHSREL8(InstalledDevice.BedroomHSREL8.ToString(), new I2CSlaveAddress(21));
             var input5 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input5.ToString());
             var input4 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input4.ToString());
             var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
@@ -170,9 +170,9 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             area.GetButton(Bedroom.ButtonDoor).PressedLongTrigger.Attach(() =>
             {
-                area.GetStateMachine(Bedroom.LampBedLeft).TryTurnOff();
-                area.GetStateMachine(Bedroom.LampBedRight).TryTurnOff();
-                area.GetStateMachine(Bedroom.CombinedCeilingLights).TryTurnOff();
+                area.GetComponent(Bedroom.LampBedLeft).TryTurnOff();
+                area.GetComponent(Bedroom.LampBedRight).TryTurnOff();
+                area.GetComponent(Bedroom.CombinedCeilingLights).TryTurnOff();
             });
 
             _automationFactory.RegisterRollerShutterAutomation(area, Bedroom.RollerShuttersAutomation)
@@ -183,12 +183,12 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             _automationFactory.RegisterTurnOnAndOffAutomation(area, Bedroom.LightCeilingAutomation)
                 .WithTrigger(area.GetMotionDetector(Bedroom.MotionDetector))
-                .WithTarget(area.GetStateMachine(Bedroom.LightCeiling))
+                .WithTarget(area.GetLamp(Bedroom.LightCeiling))
                 .WithTurnOnIfAllRollerShuttersClosed(area.GetRollerShutter(Bedroom.RollerShutterLeft), area.GetRollerShutter(Bedroom.RollerShutterRight))
                 .WithEnabledAtNight()
                 .WithSkipIfAnyActuatorIsAlreadyOn(area.GetLamp(Bedroom.LampBedLeft), area.GetLamp(Bedroom.LampBedRight));
 
-            area.AddComponent(new Fan($"{area.Id}.{Bedroom.Fan}", new BedroomFanAdapter(hsrel8)));
+            area.RegisterComponent(new Fan($"{area.Id}.{Bedroom.Fan}", new BedroomFanAdapter(hsrel8)));
             
             area.GetButton(Bedroom.ButtonBedLeftInner).PressedShortlyTrigger.Attach(() => area.GetLamp(Bedroom.LampBedLeft).TryTogglePowerState());
             area.GetButton(Bedroom.ButtonBedLeftInner).PressedLongTrigger.Attach(() => area.GetLamp(Bedroom.CombinedCeilingLights).TryTogglePowerState());

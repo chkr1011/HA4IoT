@@ -3,8 +3,9 @@
         <span ng-if="component.State.PowerState=='On'">{{ ctrl.localizationService.get('UI.On') }}</span>
         <span ng-if="component.State.PowerState=='Off'">{{ ctrl.localizationService.get('UI.Off') }}</span>
     </button>
+
     <div class="btn-group" role="group">
-        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
             <span class="caret"></span>
         </button>
         <ul class="dropdown-menu dropdown-menu-right">

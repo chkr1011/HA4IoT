@@ -10,6 +10,7 @@ using HA4IoT.Contracts.Hardware.I2C;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
+using HA4IoT.Hardware.CCTools.Devices;
 using HA4IoT.Hardware.I2C.I2CHardwareBridge;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.MotionDetectors;
@@ -19,7 +20,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 {
     internal class UpperBathroomConfiguration
     {
-        private readonly CCToolsBoardService _ccToolsBoardService;
+        private readonly CCToolsDeviceService _ccToolsBoardService;
         private readonly IDeviceRegistryService _deviceService;
         private readonly ISchedulerService _schedulerService;
         private readonly IAreaRegistryService _areaService;
@@ -47,7 +48,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         }
 
         public UpperBathroomConfiguration(
-            CCToolsBoardService ccToolsBoardService,
+            CCToolsDeviceService ccToolsBoardService,
             IDeviceRegistryService deviceService,
             ISchedulerService schedulerService,
             IAreaRegistryService areaService,
@@ -77,7 +78,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
         public void Apply()
         {
-            var hsrel5 = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.UpperBathroomHSREL5, new I2CSlaveAddress(61));
+            var hsrel5 = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.UpperBathroomHSREL5.ToString(), new I2CSlaveAddress(61));
             var input5 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input5.ToString());
             var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
 
@@ -85,7 +86,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             var area = _areaService.RegisterArea(Room.UpperBathroom);
 
-            area.AddComponent(new Fan($"{area.Id}.{UpperBathroom.Fan}", new UpperBathroomFanAdapter(hsrel5)));
+            area.RegisterComponent(new Fan($"{area.Id}.{UpperBathroom.Fan}", new UpperBathroomFanAdapter(hsrel5)));
 
             _sensorFactory.RegisterTemperatureSensor(area, UpperBathroom.TemperatureSensor,
                 i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));

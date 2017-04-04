@@ -10,6 +10,15 @@ function getVersion(callback) {
 function createAppController($http, $scope, modalService, apiService, localizationService, componentService, notificationService) {
     var c = this;
 
+    $scope.getNumber = function (num) {
+        var a = new Array(num + 1);
+        for (var i = 0; i < num + 1; i++) {
+            a[i] = i;
+        }
+
+        return a;
+    }
+
     c.isInitialized = false;
     c.appConfiguration = { showWeatherStation: true, showSensorsOverview: true, showRollerShuttersOverview: true, showMotionDetectorsOverview: true, showWindowsOverview: true }
 
@@ -193,6 +202,12 @@ function configureComponent(area, component) {
                 break;
             }
 
+        case "Fan":
+            {
+                component.Template = "Views/FanTemplate.html";
+                break;
+            }
+
         case "RollerShutter":
             {
                 component.Template = "Views/RollerShutterTemplate.html";
@@ -209,28 +224,28 @@ function configureComponent(area, component) {
             {
                 component.Template = "Views/StateMachineTemplate.html";
 
-                var extendedSupportedStates = [];
-                component.SupportedStates.forEach(function (supportedState) {
+                //var extendedSupportedStates = [];
+                //component.SupportedStates.forEach(function (supportedState) {
 
-                    if (component.Settings.SupportedStates === null || component.Settings.SupportedStates === undefined) {
-                        component.Settings.SupportedStates = [];
-                    }
+                //    if (component.Settings.SupportedStates === null || component.Settings.SupportedStates === undefined) {
+                //        component.Settings.SupportedStates = [];
+                //    }
 
-                    var stateSettings = component.Settings.SupportedStates.find(function (i) {
-                        return i.Id === supportedState;
-                    });
+                //    var stateSettings = component.Settings.SupportedStates.find(function (i) {
+                //        return i.Id === supportedState;
+                //    });
 
-                    if (stateSettings === null || stateSettings === undefined) {
-                        stateSettings = {
-                            Id: supportedState,
-                            Caption: supportedState
-                        }
-                    }
+                //    if (stateSettings === null || stateSettings === undefined) {
+                //        stateSettings = {
+                //            Id: supportedState,
+                //            Caption: supportedState
+                //        }
+                //    }
 
-                    extendedSupportedStates.push(stateSettings);
-                });
+                //    extendedSupportedStates.push(stateSettings);
+                //});
 
-                component.SupportedStates = extendedSupportedStates;
+                //component.SupportedStates = extendedSupportedStates;
                 break;
             }
 
@@ -257,22 +272,6 @@ function configureComponent(area, component) {
         case "Button":
             {
                 component.Template = "Views/ButtonTemplate.html";
-                break;
-            }
-
-        case "VirtualButtonGroup":
-            {
-                component.Template = "Views/VirtualButtonGroupTemplate.html";
-
-                var extendedButtons = [];
-                $.each(component.buttons, function (i, button) {
-                    var key = "Caption." + button;
-                    var buttonCaption = getAppSetting(component, key, key);
-
-                    extendedButtons.push({ id: button, caption: buttonCaption });
-                });
-
-                component.buttons = extendedButtons;
                 break;
             }
 

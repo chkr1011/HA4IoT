@@ -12,6 +12,7 @@ using HA4IoT.Contracts.Hardware.Services;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
+using HA4IoT.Hardware.CCTools.Devices;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Services.Areas;
@@ -20,7 +21,7 @@ namespace HA4IoT.Controller.Main.Cellar
 {
     internal sealed class Configuration : IConfiguration
     {
-        private readonly CCToolsBoardService _ccToolsBoardService;
+        private readonly CCToolsDeviceService _ccToolsBoardService;
         private readonly IGpioService _pi2GpioService;
         private readonly IAreaRegistryService _areaService;
         private readonly ActuatorFactory _actuatorFactory;
@@ -29,7 +30,7 @@ namespace HA4IoT.Controller.Main.Cellar
         private readonly ILogService _logService;
 
         public Configuration(
-            CCToolsBoardService ccToolsBoardService,
+            CCToolsDeviceService ccToolsBoardService,
             IGpioService pi2GpioService,
             IAreaRegistryService areaService,
             ActuatorFactory actuatorFactory,
@@ -54,7 +55,7 @@ namespace HA4IoT.Controller.Main.Cellar
 
         public Task ApplyAsync()
         {
-            var hsrt16 = _ccToolsBoardService.RegisterHSRT16(InstalledDevice.CellarHSRT16, new I2CSlaveAddress(32));
+            var hsrt16 = _ccToolsBoardService.RegisterHSRT16(InstalledDevice.CellarHSRT16.ToString(), new I2CSlaveAddress(32));
 
             var garden = _areaService.RegisterArea(Room.Garden);
 

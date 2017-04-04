@@ -8,6 +8,7 @@ using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware.I2C;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
+using HA4IoT.Hardware.CCTools.Devices;
 using HA4IoT.Hardware.I2C.I2CHardwareBridge;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
@@ -19,7 +20,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
     {
         private readonly IDeviceRegistryService _deviceService;
         private readonly IAreaRegistryService _areaService;
-        private readonly CCToolsBoardService _ccToolsBoardService;
+        private readonly CCToolsDeviceService _ccToolsBoardService;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
 
@@ -63,7 +64,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         public LivingRoomConfiguration(
             IDeviceRegistryService deviceService,
             IAreaRegistryService areaService,
-            CCToolsBoardService ccToolsBoardService,
+            CCToolsDeviceService ccToolsBoardService,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)
         {
@@ -82,8 +83,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
         public void Apply()
         {
-            var hsrel8 = _ccToolsBoardService.RegisterHSREL8(InstalledDevice.LivingRoomHSREL8, new I2CSlaveAddress(18));
-            var hsrel5 = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.LivingRoomHSREL5, new I2CSlaveAddress(57));
+            var hsrel8 = _ccToolsBoardService.RegisterHSREL8(InstalledDevice.LivingRoomHSREL8.ToString(), new I2CSlaveAddress(18));
+            var hsrel5 = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.LivingRoomHSREL5.ToString(), new I2CSlaveAddress(57));
 
             var input0 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input0.ToString());
             var input1 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input1.ToString());

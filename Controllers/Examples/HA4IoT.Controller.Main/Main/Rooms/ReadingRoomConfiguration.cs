@@ -10,6 +10,7 @@ using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware.I2C;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
+using HA4IoT.Hardware.CCTools.Devices;
 using HA4IoT.Hardware.I2C.I2CHardwareBridge;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
@@ -21,7 +22,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
     {
         private readonly IAreaRegistryService _areaService;
         private readonly IDeviceRegistryService _deviceService;
-        private readonly CCToolsBoardService _ccToolsBoardService;
+        private readonly CCToolsDeviceService _ccToolsBoardService;
         private readonly AutomationFactory _automationFactory;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
@@ -50,7 +51,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         public ReadingRoomConfiguration(
             IAreaRegistryService areaService,
             IDeviceRegistryService deviceService,
-            CCToolsBoardService ccToolsBoardService,
+            CCToolsDeviceService ccToolsBoardService,
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)
@@ -72,7 +73,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
         public void Apply()
         {
-            var hsrel5 = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.ReadingRoomHSREL5, new I2CSlaveAddress(62));
+            var hsrel5 = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.ReadingRoomHSREL5.ToString(), new I2CSlaveAddress(62));
             var input2 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input2.ToString());
             var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
 

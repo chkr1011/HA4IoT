@@ -10,6 +10,7 @@ using HA4IoT.Contracts.Hardware.I2C;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
+using HA4IoT.Hardware.CCTools.Devices;
 using HA4IoT.Hardware.I2C.I2CHardwareBridge;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
@@ -22,7 +23,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
     {
         private readonly IAreaRegistryService _areaService;
         private readonly IDeviceRegistryService _deviceService;
-        private readonly CCToolsBoardService _ccToolsBoardService;
+        private readonly CCToolsDeviceService _ccToolsBoardService;
         private readonly AutomationFactory _automationFactory;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
@@ -70,7 +71,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         public FloorConfiguration(
             IAreaRegistryService areaService,
             IDeviceRegistryService deviceService,
-            CCToolsBoardService ccToolsBoardService,
+            CCToolsDeviceService ccToolsBoardService,
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)
@@ -92,9 +93,9 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
         public void Apply()
         {
-            var hsrel5Stairway = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.StairwayHSREL5, new I2CSlaveAddress(60));
+            var hsrel5Stairway = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.StairwayHSREL5.ToString(), new I2CSlaveAddress(60));
             var hspe8UpperFloor = _deviceService.GetDevice<HSPE8OutputOnly>(InstalledDevice.UpperFloorAndOfficeHSPE8.ToString());
-            var hspe16FloorAndLowerBathroom = _ccToolsBoardService.RegisterHSPE16OutputOnly(InstalledDevice.LowerFloorAndLowerBathroomHSPE16, new I2CSlaveAddress(17));
+            var hspe16FloorAndLowerBathroom = _ccToolsBoardService.RegisterHSPE16OutputOnly(InstalledDevice.LowerFloorAndLowerBathroomHSPE16.ToString(), new I2CSlaveAddress(17));
 
             var input1 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input1.ToString());
             var input2 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input2.ToString());
@@ -149,7 +150,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
                 .WithFlipTrigger(area.GetButton(Floor.ButtonLowerFloorUpper).PressedShortlyTrigger)
                 .WithFlipTrigger(area.GetButton(Floor.ButtonLowerFloorAtBathroom).PressedShortlyTrigger)
                 .WithFlipTrigger(area.GetButton(Floor.ButtonLowerFloorAtKitchen).PressedShortlyTrigger)
-                .WithTarget(area.GetComponent(Floor.CombinedLamps.ToString()))
+                .WithTarget(area.GetComponent(Floor.CombinedLamps))
                 .WithEnabledAtNight()
                 .WithTurnOffIfButtonPressedWhileAlreadyOn();
 
@@ -165,7 +166,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             _automationFactory.RegisterTurnOnAndOffAutomation(room, Floor.CombinedStairwayLampAutomation)
                 .WithTrigger(room.GetMotionDetector(Floor.StairwayMotionDetector))
                 .WithFlipTrigger(room.GetButton(Floor.ButtonStairway).PressedShortlyTrigger)
-                .WithTarget(room.GetComponent(Floor.CombinedStairwayLamp.ToString()))
+                .WithTarget(room.GetComponent(Floor.CombinedStairwayLamp))
                 .WithEnabledAtNight();
         }
 
@@ -184,7 +185,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
                 .WithTrigger(room.GetMotionDetector(Floor.StairsLowerMotionDetector))
                 .WithTrigger(room.GetMotionDetector(Floor.StairsUpperMotionDetector))
                 //.WithTrigger(floor.GetButton(Floor.ButtonStairsUpper).GetPressedShortlyTrigger())
-                .WithTarget(room.GetStateMachine(Floor.LampStairsCeiling));
+                .WithTarget(room.GetLamp(Floor.LampStairsCeiling));
 
             var lamp = room.GetLamp(Floor.LampStairsCeiling);
 

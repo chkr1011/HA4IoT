@@ -1,0 +1,281 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B10B2E2A-85CD-4289-8649-FC0C1C98921D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HA4IoT.Contracts</RootNamespace>
+    <AssemblyName>HA4IoT.Contracts</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkProfile />
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="project.json" />
+    <!-- A reference to the entire .NET Framework is automatically included -->
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Actuators\IFan.cs" />
+    <Compile Include="Actuators\ILamp.cs" />
+    <Compile Include="Actuators\IRollerShutter.cs" />
+    <Compile Include="Actuators\ISocket.cs" />
+    <Compile Include="Actuators\IStateMachine.cs" />
+    <Compile Include="Actuators\IStateMachineState.cs" />
+    <Compile Include="Actuators\StateChangedEventArgs.cs" />
+    <Compile Include="Adapters\IBinaryOutputAdapter.cs" />
+    <Compile Include="Adapters\IButtonAdapter.cs" />
+    <Compile Include="Adapters\IFanAdapter.cs" />
+    <Compile Include="Adapters\IMotionDetectorAdapter.cs" />
+    <Compile Include="Adapters\INumericSensorAdapter.cs" />
+    <Compile Include="Adapters\IRollerShutterAdapter.cs" />
+    <Compile Include="Adapters\IStateMachineStateAdapter.cs" />
+    <Compile Include="Adapters\IWindowAdapter.cs" />
+    <Compile Include="Adapters\NumericSensorAdapterValueChangedEventArgs.cs" />
+    <Compile Include="Adapters\ReedSwitchState.cs" />
+    <Compile Include="Adapters\WindowStateChangedEventArgs.cs" />
+    <Compile Include="Api\ApiClassAttribute.cs" />
+    <Compile Include="Api\ApiContext.cs" />
+    <Compile Include="Api\ApiMethodAttribute.cs" />
+    <Compile Include="Api\ApiRequestReceivedEventArgs.cs" />
+    <Compile Include="Api\ApiResultCode.cs" />
+    <Compile Include="Api\ApiRequest.cs" />
+    <Compile Include="Api\ApiResponse.cs" />
+    <Compile Include="Api\Cloud\CloudConnectorHeaders.cs" />
+    <Compile Include="Api\Cloud\CloudResponseMessage.cs" />
+    <Compile Include="Api\IApiContext.cs" />
+    <Compile Include="Api\IApiAdapter.cs" />
+    <Compile Include="Api\IApiDispatcherService.cs" />
+    <Compile Include="Areas\AreaSettings.cs" />
+    <Compile Include="Areas\IArea.cs" />
+    <Compile Include="Areas\IAreaRegistryService.cs" />
+    <Compile Include="Automations\IAutomation.cs" />
+    <Compile Include="Automations\IAutomationRegistryService.cs" />
+    <Compile Include="Automations\IAutomationSettings.cs" />
+    <Compile Include="Api\Cloud\CloudRequestMessage.cs" />
+    <Compile Include="Api\Cloud\CloudMessageHeader.cs" />
+    <Compile Include="Commands\CommandUnknownException.cs" />
+    <Compile Include="Commands\CommandNotSupportedException.cs" />
+    <Compile Include="Commands\CommandParameterInvalidException.cs" />
+    <Compile Include="Commands\DecreaseLevelCommand.cs" />
+    <Compile Include="Commands\IncreaseLevelCommand.cs" />
+    <Compile Include="Commands\MoveDownCommand.cs" />
+    <Compile Include="Commands\MoveUpCommand.cs" />
+    <Compile Include="Commands\PressCommand.cs" />
+    <Compile Include="Commands\ResetCommand.cs" />
+    <Compile Include="Commands\SetLevelCommand.cs" />
+    <Compile Include="Commands\SetStateCommand.cs" />
+    <Compile Include="Commands\TogglePowerStateCommand.cs" />
+    <Compile Include="Commands\TriggerMotionDetectionCommand.cs" />
+    <Compile Include="Commands\TurnOffCommand.cs" />
+    <Compile Include="Commands\TurnOnCommand.cs" />
+    <Compile Include="Components\Exceptions\ComponentNotFoundException.cs" />
+    <Compile Include="Components\ComponentSettings.cs" />
+    <Compile Include="Components\Features\ButtonFeature.cs" />
+    <Compile Include="Components\Features\LevelStateFeature.cs" />
+    <Compile Include="Components\Features\StateMachineFeature.cs" />
+    <Compile Include="Components\Features\HumidityMeasurementFeature.cs" />
+    <Compile Include="Components\Features\VerticalMovingFeature.cs" />
+    <Compile Include="Components\Features\PositionTrackingFeature.cs" />
+    <Compile Include="Components\Features\PowerStateFeature.cs" />
+    <Compile Include="Components\Features\TemperatureMeasurementFeature.cs" />
+    <Compile Include="Components\Features\MotionDetectionFeature.cs" />
+    <Compile Include="Components\ComponentFeatureStateChangedEventArgs.cs" />
+    <Compile Include="Components\Exceptions\ComponentFeatureNotSupportedException.cs" />
+    <Compile Include="Components\Features\WindowStateFeature.cs" />
+    <Compile Include="Components\IComponent.cs" />
+    <Compile Include="Components\IComponentFeature.cs" />
+    <Compile Include="Components\IComponentFeatureCollection.cs" />
+    <Compile Include="Components\IComponentFeatureStateCollection.cs" />
+    <Compile Include="Components\IComponentRegistryService.cs" />
+    <Compile Include="Components\IComponentFeatureState.cs" />
+    <Compile Include="Components\Exceptions\ComponentFeatureStateNotSupportedException.cs" />
+    <Compile Include="Components\States\LevelState.cs" />
+    <Compile Include="Components\States\MotionDetectionState.cs" />
+    <Compile Include="Components\States\MotionDetectionStateValue.cs" />
+    <Compile Include="Components\States\NumericBasedState.cs" />
+    <Compile Include="Components\States\StateMachineFeatureState.cs" />
+    <Compile Include="Components\States\VerticalMovingStateValue.cs" />
+    <Compile Include="Components\States\WindowState.cs" />
+    <Compile Include="Components\States\WindowStateValue.cs" />
+    <Compile Include="Conditions\ConditionState.cs" />
+    <Compile Include="Conditions\ICondition.cs" />
+    <Compile Include="Core\ActionWrapper.cs" />
+    <Compile Include="Core\IAction.cs" />
+    <Compile Include="Core\Discovery\DiscoveryResponse.cs" />
+    <Compile Include="Core\IConfiguration.cs" />
+    <Compile Include="Core\IContainerConfigurator.cs" />
+    <Compile Include="Core\IController.cs" />
+    <Compile Include="Core\StoragePath.cs" />
+    <Compile Include="Core\TimerTickEventArgs.cs" />
+    <Compile Include="Daylight.cs" />
+    <Compile Include="Hardware\BinaryState.cs" />
+    <Compile Include="Hardware\BinaryStateChangedEventArgs.cs" />
+    <Compile Include="Hardware\DeviceMessaging\DeviceMessageBrokerServiceExtensions.cs" />
+    <Compile Include="Hardware\ForceUpdateStateParameter.cs" />
+    <Compile Include="Hardware\HardwareParameter.cs" />
+    <Compile Include="Hardware\I2C\I2CSlaveAddress.cs" />
+    <Compile Include="Hardware\IBinaryInput.cs" />
+    <Compile Include="Hardware\IBinaryInputController.cs" />
+    <Compile Include="Hardware\IBinaryOutput.cs" />
+    <Compile Include="Hardware\IBinaryOutputController.cs" />
+    <Compile Include="Hardware\IDevice.cs" />
+    <Compile Include="Hardware\IHardwareParameter.cs" />
+    <Compile Include="Hardware\I2C\II2CDevice.cs" />
+    <Compile Include="Hardware\I2C\II2CPortExpanderDriver.cs" />
+    <Compile Include="Hardware\IsPartOfLogicalUpdateParameter.cs" />
+    <Compile Include="Hardware\DeviceMessaging\DeviceMessage.cs" />
+    <Compile Include="Hardware\DeviceMessaging\DeviceMessageReceivedEventArgs.cs" />
+    <Compile Include="Hardware\Mqtt\MqttMessageReceivedEventArgs.cs" />
+    <Compile Include="Hardware\Services\IGpioService.cs" />
+    <Compile Include="Commands\ICommand.cs" />
+    <Compile Include="Hardware\DeviceMessaging\IDeviceMessageBrokerService.cs" />
+    <Compile Include="Hardware\Services\MqttQosLevel.cs" />
+    <Compile Include="IContainer.cs" />
+    <Compile Include="Logging\GetLogEntriesRequest.cs" />
+    <Compile Include="Logging\GetLogEntriesResponse.cs" />
+    <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logging\ILogService.cs" />
+    <Compile Include="Logging\Log.cs" />
+    <Compile Include="Logging\LogEntry.cs" />
+    <Compile Include="Logging\LogEntrySeverity.cs" />
+    <Compile Include="Logging\LogEntryPublishedEventArgs.cs" />
+    <Compile Include="PersonalAgent\AmazonEcho\SkillServiceRequest.cs" />
+    <Compile Include="PersonalAgent\AmazonEcho\SkillServiceRequestRequest.cs" />
+    <Compile Include="PersonalAgent\AmazonEcho\SkillServiceRequestRequestIntentSlot.cs" />
+    <Compile Include="PersonalAgent\AmazonEcho\SkillServiceRequestRequestIntent.cs" />
+    <Compile Include="PersonalAgent\AmazonEcho\SkillServiceRequestSession.cs" />
+    <Compile Include="PersonalAgent\AmazonEcho\SkillServiceRequestSessionApplication.cs" />
+    <Compile Include="PersonalAgent\AmazonEcho\SkillServiceRequestSessionUser.cs" />
+    <Compile Include="PersonalAgent\AmazonEcho\SkillServiceResponseResponseOutputSpeech.cs" />
+    <Compile Include="PersonalAgent\AmazonEcho\SkillServiceResponseResponse.cs" />
+    <Compile Include="PersonalAgent\AmazonEcho\SkillServiceResponse.cs" />
+    <Compile Include="PersonalAgent\Emoji.cs" />
+    <Compile Include="PersonalAgent\IInboundTextMessage.cs" />
+    <Compile Include="PersonalAgent\IOutboundTextMessage.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sensors\ButtonPressedDuration.cs" />
+    <Compile Include="Sensors\ButtonSettings.cs" />
+    <Compile Include="Sensors\IButton.cs" />
+    <Compile Include="Sensors\IHumiditySensor.cs" />
+    <Compile Include="Sensors\IMotionDetector.cs" />
+    <Compile Include="Sensors\ISwitch.cs" />
+    <Compile Include="Sensors\ITemperatureSensor.cs" />
+    <Compile Include="Sensors\IWindow.cs" />
+    <Compile Include="Sensors\MotionDetectorSettings.cs" />
+    <Compile Include="Services\ApiServiceClassAttribute.cs" />
+    <Compile Include="Services\Backup\BackupEventArgs.cs" />
+    <Compile Include="Services\Backup\IBackupService.cs" />
+    <Compile Include="Services\Daylight\IDaylightService.cs" />
+    <Compile Include="Services\ExternalServices\TelegramBot\ITelegramBotService.cs" />
+    <Compile Include="Services\ExternalServices\TelegramBot\MessageBase.cs" />
+    <Compile Include="Services\ExternalServices\TelegramBot\TelegramInboundMessage.cs" />
+    <Compile Include="Services\ExternalServices\TelegramBot\TelegramMessageFormat.cs" />
+    <Compile Include="Services\ExternalServices\TelegramBot\TelegramOutboundMessage.cs" />
+    <Compile Include="Services\ExternalServices\Twitter\ITwitterClientService.cs" />
+    <Compile Include="Services\IPersonalAgentService.cs" />
+    <Compile Include="Services\IService.cs" />
+    <Compile Include="Services\Notifications\INotificationService.cs" />
+    <Compile Include="Services\Notifications\Notification.cs" />
+    <Compile Include="Services\Notifications\NotificationType.cs" />
+    <Compile Include="Services\OutdoorHumidity\IOutdoorHumidityService.cs" />
+    <Compile Include="Services\OutdoorTemperature\IOutdoorTemperatureService.cs" />
+    <Compile Include="Services\Resources\IResourceService.cs" />
+    <Compile Include="Services\Resources\Resource.cs" />
+    <Compile Include="Services\Resources\ResourceValue.cs" />
+    <Compile Include="Services\ServiceBase.cs" />
+    <Compile Include="Services\Settings\ISettingsService.cs" />
+    <Compile Include="Services\Settings\SettingsServiceExtensions.cs" />
+    <Compile Include="Services\Settings\SettingsUriGenerator.cs" />
+    <Compile Include="Services\Settings\SettingValueChangedEventArgs.cs" />
+    <Compile Include="Services\Storage\IStorageService.cs" />
+    <Compile Include="Services\System\IDateTimeService.cs" />
+    <Compile Include="Services\System\IDelayedAction.cs" />
+    <Compile Include="Services\System\IDeviceService.cs" />
+    <Compile Include="Services\System\IHealthService.cs" />
+    <Compile Include="Services\System\II2CBusService.cs" />
+    <Compile Include="Services\System\ISchedulerService.cs" />
+    <Compile Include="Services\System\ISystemEventsService.cs" />
+    <Compile Include="Services\System\ISystemInformationService.cs" />
+    <Compile Include="Services\System\ITimerService.cs" />
+    <Compile Include="Services\System\SystemEventNotification.cs" />
+    <Compile Include="Services\Weather\IWeatherService.cs" />
+    <Compile Include="Services\Weather\Weather.cs" />
+    <Compile Include="Components\States\BrightnessState.cs" />
+    <Compile Include="Components\States\ButtonState.cs" />
+    <Compile Include="Components\States\ButtonStateValue.cs" />
+    <Compile Include="Components\States\ColorState.cs" />
+    <Compile Include="Components\States\VerticalMovingState.cs" />
+    <Compile Include="Components\States\EnumBasedState.cs" />
+    <Compile Include="Components\States\HumidityState.cs" />
+    <Compile Include="Components\States\PositionTrackingState.cs" />
+    <Compile Include="Components\States\PowerState.cs" />
+    <Compile Include="Components\States\PowerStateValue.cs" />
+    <Compile Include="Components\States\RollerShutterClosedState.cs" />
+    <Compile Include="Components\States\TemperatureState.cs" />
+    <Compile Include="Triggers\ITrigger.cs" />
+    <Compile Include="Triggers\TriggeredEventArgs.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

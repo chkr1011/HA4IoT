@@ -5,9 +5,8 @@ using HA4IoT.Adapters;
 using HA4IoT.Automations;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Areas;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Hardware.CCTools;
+using HA4IoT.Hardware.CCTools.Devices;
 using HA4IoT.Hardware.I2C.I2CHardwareBridge;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.MotionDetectors;
@@ -23,7 +22,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         private readonly AutomationFactory _automationFactory;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
-        private TimedAction _bathmodeResetTimer;
+
+        private IDelayedAction _bathmodeResetTimer;
 
         public enum LowerBathroom
         {
@@ -109,12 +109,12 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             _automationFactory.RegisterTurnOnAndOffAutomation(area, LowerBathroom.CombinedLightsAutomation)
                 .WithTrigger(area.GetMotionDetector(LowerBathroom.MotionDetector))
-                .WithTarget(area.GetComponent(LowerBathroom.CombinedLights.ToString()));
+                .WithTarget(area.GetComponent(LowerBathroom.CombinedLights));
         }
 
         private void StartBathode(IArea bathroom)
         {
-            bathroom.GetMotionDetector().Settings.IsEnabled = false;
+            bathroom.GetMotionDetector(LowerBathroom.MotionDetector).Settings.IsEnabled = false;
 
             bathroom.GetLamp(LowerBathroom.LightCeilingDoor).TryTurnOn();
             bathroom.GetLamp(LowerBathroom.LightCeilingMiddle).TryTurnOff();
@@ -122,7 +122,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             bathroom.GetLamp(LowerBathroom.LampMirror).TryTurnOff();
 
             _bathmodeResetTimer?.Cancel();
-            _bathmodeResetTimer = _schedulerService.In(TimeSpan.FromHours(1)).Execute(() => bathroom.GetMotionDetector().Settings.IsEnabled = true);
+            _bathmodeResetTimer = _schedulerService.In(TimeSpan.FromHours(1), () => bathroom.GetMotionDetector(LowerBathroom.MotionDetector).Settings.IsEnabled = true);
         }
     }
 }

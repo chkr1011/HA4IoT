@@ -72,17 +72,6 @@ body {
     width: 37px;
 }
 
-.temperatureValue {
-    font-family: Monospace;
-    font-size: 14pt;
-}
-
-.humidityValue {
-    font-family: Monospace;
-    font-size: 12pt;
-    margin-left: 0.5em;
-}
-
 .humidityImage {
     height: 0.8em;
     vertical-align: center;
@@ -118,6 +107,28 @@ body {
     margin: 0;
 }
 
+.status-icon {
+    font-size: 18px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.status-icon-ok {
+    color: #5cb85c;
+}
+
+.status-icon-warning {
+    color:  #f0ad4e;
+}
+
+.status-icon-danger {
+    color: #d9534f;
+}
+
+.status-icon-default {
+    color: lightgray;
+}
+
 .loadingTitle {
     color: white;
     font: 300 24px/1 'Open sans condensed', sans-serif;
@@ -144,8 +155,8 @@ body {
 
 .sensorValue {
     font-size: 18px;
-    width: 60px;
     margin-left: 10px;
+    float: right
 }
 
 .loadingAnimation {
