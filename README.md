@@ -96,7 +96,7 @@ If you are interested in supporting this project in any way feel free to contact
 ## Personal Agent
 Register a free bot for the messenger "Telegram" and let the bot control the home. Just tell him what he should do. The bot also supports giving status information like Weather information (Temperature, Humidity etc.), Window states (Open, Closed), Sensor values (Temperature, Humidity) etc. The bot will also send errors and warnings from the log to administrative users (which are defined in the configuration file). Every user who want's to interact with the bot must be added to a whitelist to ensure a high level of privacy.
 
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/PA_1.png?raw=true" width="100%">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/feature/feature-rebuild/Documentation/Screens/PA_1.png?raw=true" width="100%">
 
 ## App
 Every actuator can be controlled using the web app which is hosted at the Raspberry Pi 2 using the build in webserver. The language for the examples is German but translation of each UI element is supported. The app shows every rooms/areas and provides several overviews like the overview of all temperature sensor. The app is based on Bootstrap and AngularJS and runs on Smartphones, Tables, PCs etc.
