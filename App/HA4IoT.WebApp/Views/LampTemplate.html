@@ -1,10 +1,6 @@
 ﻿<div>
     <div class="btn-group pull-right" role="group">
         
-        <a href="#" class="btn" id="color-{{component.Id}}" style="width: 50px;">
-            <span></span>
-        </a>
-
         <a href="#" id="color-button-{{component.Id}}" class="btn btn-default action-button" ng-if="component.Features.ColorFeature!=undefined" ng-click="ctrl.showSetColorPopover(component)">
             {{ ctrl.localizationService.get('UI.LampColor') }}
         </a>

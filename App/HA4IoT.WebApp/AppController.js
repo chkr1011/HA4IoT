@@ -219,17 +219,6 @@ function createAppController($http, $scope, modalService, apiService, localizati
     c.loadConfiguration();
 }
 
-function onLampStateChangedCallback(lamp) {
-    if (lamp.Features.ColorFeature == undefined) {
-        return;
-    }
-
-    var color = convertHsvToRgb(lamp.State.ColorState.Hue, lamp.State.ColorState.Saturation, lamp.State.ColorState.Value);
-
-    var buttonSelector = "[id='color-" + lamp.Id + "']";
-    $(buttonSelector).css("background-color", "rgb(" + color.r + "," + color.g + "," + color.b + ")");
-}
-
 function configureArea(area) {
 
     area.Caption = getAppSetting(area, "Caption", "#" + area.Id);
@@ -258,7 +247,6 @@ function configureComponent(area, component) {
     switch (component.Type) {
         case "Lamp":
             component.template = "Views/LampTemplate.html";
-            component.onStateChangedCallback = onLampStateChangedCallback;
             component.colorSelector = {};
             break;
         case "Socket":
@@ -327,34 +315,4 @@ function updateOnStateCounters(areas) {
 
         area.OnStateCount = count;
     });
-}
-
-function convertHsvToRgb(h, s, v) {
-    var r, g, b;
-
-    if (arguments.length === 1) {
-        s = h.s, v = h.v, h = h.h;
-    }
-
-    var i = Math.floor(h * 6);
-    var f = h * 6 - i;
-    var p = v * (1 - s);
-    var q = v * (1 - f * s);
-    var t = v * (1 - (1 - f) * s);
-
-    switch (i % 6) {
-        case 0: r = v, g = t, b = p; break;
-        case 1: r = q, g = v, b = p; break;
-        case 2: r = p, g = v, b = t; break;
-        case 3: r = p, g = q, b = v; break;
-        case 4: r = t, g = p, b = v; break;
-        case 5: r = v, g = p, b = q; break;
-        default: console.error("Unable to convert HSV to RGB."); break;
-    }
-
-    return {
-        r: Math.round(r * 255),
-        g: Math.round(g * 255),
-        b: Math.round(b * 255)
-    };
 }
