@@ -37,7 +37,7 @@ But also other compatible I2C boards based on _PCF8574_, _PCA9555_ or _MAX7311_ 
   <img src="https://github.com/chkr1011/HA4IoT/blob/feature/feature-rebuild/Documentation/Images/LPD.jpg?raw=true" height="256">
 </p>
 
-Controlling old 433 MHz devices is supported via using a I2C -> 433 MHz sender bridge. Also recording 433 MHz signals like from a TV remote is supported.
+Controlling old 433 MHz devices is supported via using a I2C or WiFi -> 433 MHz sender bridge. The bridge is based on Arduino/ESP8266. Also recording 433 MHz signals like from a TV remote is supported.
 
 ## Itead Studio Sonoff supported
 <p align="center">
@@ -96,9 +96,9 @@ If you are interested in supporting this project in any way feel free to contact
 ## Personal Agent
 Register a free bot for the messenger "Telegram" and let the bot control the home. Just tell him what he should do. The bot also supports giving status information like Weather information (Temperature, Humidity etc.), Window states (Open, Closed), Sensor values (Temperature, Humidity) etc. The bot will also send errors and warnings from the log to administrative users (which are defined in the configuration file). Every user who want's to interact with the bot must be added to a whitelist to ensure a high level of privacy.
 
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/PA_RollerShutterAndTemperature.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/PA_WeatherAndWindowsAndLight.PNG?raw=true" width="256">
-<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/PA_Debug.PNG?raw=true" width="256">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/PA_RollerShutterAndTemperature.PNG?raw=true" width="250">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/PA_WeatherAndWindowsAndLight.PNG?raw=true" width="250">
+<img src="https://github.com/chkr1011/CK.HomeAutomation/blob/master/Documentation/Screens/1.12.0/PA_Debug.PNG?raw=true" width="250">
 
 ## App
 Every actuator can be controlled using the web app which is hosted at the Raspberry Pi 2 using the build in webserver. The language for the examples is German but translation of each UI element is supported. The app shows every rooms/areas and provides several overviews like the overview of all temperature sensor. The app is based on Bootstrap and AngularJS and runs on Smartphones, Tables, PCs etc.
