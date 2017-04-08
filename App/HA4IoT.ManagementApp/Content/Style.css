@@ -1,5 +1,5 @@
 body {
-    margin: 0px;
+    margin: 0;
     padding-top: 70px;
 }
 
@@ -46,5 +46,33 @@ body {
 .box{
   background: #F9F9F9; 
   padding: 15px;
+}
+
+.log {
+    background: black;
+    padding: 10px;
+    overflow-y: scroll;
+    overflow-x: scroll;
+    height: 900px;
+}
+
+.log-message {
+    font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+    font-size: 10pt;
+    color: white;
+    border: 0; background-color: transparent;
+    display: inline;
+}
+
+.log-error-message {
+    color: red;
+}
+
+.log-info-message {
+    color: lightgreen;
+}
+
+.log-warning-message {
+    color: yellow;
 }
 

@@ -1,18 +1,15 @@
-﻿<div class="panel panel-default row" id="motionDetectorsOverview">
-    <div class="panel-heading pointer" ng-click="haCtrl.setActivePanel('motionDetectorsOverview')">
-        <div>
-            <span class="glyphicon glyphicon-th-list"></span>
-            <span class="panel-title">{{localizationCtrl.getUILocalization('UI.MotionDetectors')}}</span>
-        </div>
+﻿<div class="row panel" ng-class="ctrl.activePanel==='motionDetectorsOverview' ? 'panel-primary' : 'panel-default'" id="motionDetectorsOverview">
+    <div class="panel-heading pointer clearfix" ng-click="ctrl.setActivePanel('motionDetectorsOverview')">
+        <span class="glyphicon glyphicon-th-list">  </span>
+        <span class="panel-title">{{ctrl.localizationService.get('UI.MotionDetectors')}}</span>
     </div>
-    <table class="table table-striped" ng-show="haCtrl.activePanel=='motionDetectorsOverview'">
-        <tbody>
-            <tr ng-repeat="actuator in haCtrl.motionDetectors | orderBy:['overviewCaption']">
-                <td style="vertical-align: middle;">
-                    <span><img class="icon" ng-src="Images/{{actuator.image}}.png" />{{actuator.overviewCaption}}</span>
-                </td>
-                <td class="rightTextAligned" ng-include="actuator.template"></td>
-            </tr>
-        </tbody>
-    </table>
+
+    <ul class="list-group" ng-show="ctrl.activePanel=='motionDetectorsOverview'">
+        <li class="list-group-item" ng-repeat="component in ctrl.motionDetectors | orderBy:['OverviewCaption']">
+            <span><img class="icon" ng-src="Images/{{component.Image}}.png" /></span>
+            <span>{{component.OverviewCaption}}</span>
+
+            <div class="container-fluid" style="padding: 0; padding-top: 5px;" ng-include="component.template"></div>
+        </li>
+    </ul>
 </div>

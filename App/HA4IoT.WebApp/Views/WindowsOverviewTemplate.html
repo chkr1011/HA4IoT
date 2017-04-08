@@ -1,18 +1,15 @@
-﻿<div class="panel panel-default row" id="windowsOverview">
-    <div class="panel-heading pointer" ng-click="haCtrl.setActivePanel('windowsOverview')">
-        <div>
-            <span class="glyphicon glyphicon-th-list"></span>
-            <span class="panel-title">{{localizationCtrl.getUILocalization('UI.Windows')}}</span>
-        </div>
+﻿<div class="row panel" ng-class="ctrl.activePanel==='windowsOverview' ? 'panel-primary' : 'panel-default'" id="windowsOverview">
+    <div class="panel-heading pointer clearfix" ng-click="ctrl.setActivePanel('windowsOverview')">
+        <span class="glyphicon glyphicon-th-list">  </span>
+        <span class="panel-title">{{ctrl.localizationService.get('UI.Windows')}}</span>
     </div>
-    <table class="table table-striped" ng-show="haCtrl.activePanel=='windowsOverview'">
-        <tbody>
-            <tr ng-repeat="actuator in haCtrl.windows | orderBy:['overviewCaption']">
-                <td style="vertical-align: middle;">
-                    <span><img class="icon" ng-src="Images/{{actuator.image}}.png" />{{actuator.overviewCaption}}</span>
-                </td>
-                <td class="rightTextAligned" ng-include="actuator.template"></td>
-            </tr>
-        </tbody>
-    </table>
+
+    <ul class="list-group" ng-show="ctrl.activePanel=='windowsOverview'">
+        <li class="list-group-item" ng-repeat="component in ctrl.windows | orderBy:['OverviewCaption']">
+            <span><img class="icon" ng-src="Images/{{component.Image}}.png" /></span>
+            <span>{{component.OverviewCaption}}</span>
+
+            <div class="container-fluid" style="padding: 0; padding-top: 5px;" ng-include="component.template"></div>
+        </li>
+    </ul>
 </div>

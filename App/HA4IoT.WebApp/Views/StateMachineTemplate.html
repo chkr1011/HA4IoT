@@ -1,8 +1,8 @@
-﻿<div ng-class="{'btn-group-vertical': component.DisplayVertical===true,'btn-group': component.DisplayVertical===false}">
-    <button class="btn btn-default"
-            ng-repeat="supportedState in component.SupportedStates"
-            ng-class="{'btn-danger': component.state.State===supportedState.Id}" 
-            ng-click="setState(component, supportedState.Id)">
-        {{supportedState.Caption}}
-    </button>
+﻿<div class="pull-right" ng-class="{'btn-group-vertical': component.DisplayVertical===true,'btn-group': component.DisplayVertical===false}">
+    <a href="#" class="btn"
+            ng-repeat="s in component.Features.StateMachineFeature.SupportedStates"
+            ng-class="component.State.StateMachineFeatureState.Value===s ? s==='Off' ? 'btn-success' : 'btn-danger' : 'btn-default'"
+            ng-click="ctrl.componentService.setState(component, s)">
+        {{getStateCaption(component, s)}}
+    </a>
 </div>

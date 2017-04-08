@@ -1,31 +1,41 @@
 function createControllerProxyService($http) {
     return {
 
-        execute: function (uri, payload, successCallback) {
-            var fullUri = "/api/" + uri;
-
-            console.log("COMMAND@" + fullUri);
-            console.log(payload);
-
-            $http.post(fullUri, payload).then(successCallback);
-        },
-
-        get: function (uri, payload, callback) {
-            var fullUri = "/api/" + uri;
-
-            if (payload != null) {
-                fullUri += "?body=" + JSON.stringify(payload);
+        execute: function (action, parameter, successCallback) {
+            var request = {
+                "Action": action,
+                "Parameter": parameter
             }
 
-            console.log("GET@" + fullUri);
-            console.log(payload);
+            var uri = "/api/Execute";
+            console.log("COMMAND@" + uri);
+            console.log(request);
 
-            $http.get(fullUri).then(function (response) {
+            $http.post(uri, request).then(function (response) {
                 console.log("Response data:");
-                console.log(response.data);
+                console.log(response.data.Result);
 
-                if (callback != null) {
-                    callback(response.data);
+                if (successCallback != null) {
+                    successCallback(response.data.Result);
+                }
+            });
+        },
+
+        get: function (action, parameter, successCallback) {
+            var request = {
+                "Action": action,
+                "Parameter": parameter
+            }
+
+            var uri = "/api/Execute?body=" + JSON.stringify(request);
+            console.log("GET@" + uri);
+
+            $http.get(uri).then(function (response) {
+                console.log("Response data:");
+                console.log(response.data.Result);
+
+                if (successCallback != null) {
+                    successCallback(response.data.Result);
                 }
             });
         }

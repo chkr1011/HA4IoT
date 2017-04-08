@@ -11,7 +11,9 @@ project.lock.json
 __vm/
 HA4IoT.opensdf
 HA4IoT.sdf
+
 *.VC.opendb
-HA4IoT.VC.db
+*.VC.db
+
 *.user
-Homepage/Properties/PublishProfiles/HA4IoTHomepage - Web Deploy.pubxml
+*.pubxml

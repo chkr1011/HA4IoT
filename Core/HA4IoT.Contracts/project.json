@@ -1,0 +1,15 @@
+﻿{
+  "supports": {
+    "net46.app": {},
+    "uwp.10.0.app": {}
+  },
+  "dependencies": {
+    "NETStandard.Library": "1.6.1",
+    "Newtonsoft.Json": "10.0.2"
+  },
+  "frameworks": {
+    ".NETStandard1.3": {
+      "imports": "portable-net452+win81"
+    }
+  }
+}
