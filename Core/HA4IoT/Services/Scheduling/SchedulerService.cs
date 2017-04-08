@@ -26,14 +26,10 @@ namespace HA4IoT.Services.Scheduling
 
         public SchedulerService(ITimerService timerService, IDateTimeService dateTimeService, ILogService logService)
         {
-            if (timerService == null) throw new ArgumentNullException(nameof(timerService));
-            if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
-            if (logService == null) throw new ArgumentNullException(nameof(logService));
+            _timerService = timerService ?? throw new ArgumentNullException(nameof(timerService));
+            _dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
 
-            _timerService = timerService;
-            _dateTimeService = dateTimeService;
-
-            _log = logService.CreatePublisher(nameof(SchedulerService));
+            _log = logService?.CreatePublisher(nameof(SchedulerService)) ?? throw new ArgumentNullException(nameof(logService));
 
             _timer = new Timer(e => ExecuteSchedules(), null, -1, Timeout.Infinite);
         }
@@ -58,6 +54,15 @@ namespace HA4IoT.Services.Scheduling
         }
 
         public void RegisterSchedule(string name, TimeSpan interval, Action action)
+        {
+            RegisterSchedule(name, interval, () =>
+            {
+                action();
+                return Task.FromResult(0);
+            });
+        }
+
+        public void RegisterSchedule(string name, TimeSpan interval, Func<Task> action)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
             if (action == null) throw new ArgumentNullException(nameof(action));
@@ -108,14 +113,14 @@ namespace HA4IoT.Services.Scheduling
             }
         }
 
-        private void ExecuteSchedule(Schedule schedule)
+        private async Task ExecuteSchedule(Schedule schedule)
         {
             var stopwatch = Stopwatch.StartNew();
             try
             {
                 _log.Verbose($"Executing schedule '{schedule.Name}'.");
 
-                schedule.Action();
+                await schedule.Action();
                 schedule.LastErrorMessage = null;
                 schedule.Status = ScheduleStatus.Idle;
             }

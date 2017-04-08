@@ -12,11 +12,8 @@ namespace HA4IoT.Networking.Http.Controllers
         public HttpDirectoryController(string name, string rootDirectory, HttpServer httpServer)
             : base(name, httpServer)
         {
-            if (name == null) throw new ArgumentNullException(nameof(name));
-            if (rootDirectory == null) throw new ArgumentNullException(nameof(rootDirectory));
-
-            _name = name;
-            _rootDirectory = rootDirectory;
+            _name = name ?? throw new ArgumentNullException(nameof(name));
+            _rootDirectory = rootDirectory ?? throw new ArgumentNullException(nameof(rootDirectory));
         }
 
         public string DefaultFile { get; } = "Index.html";

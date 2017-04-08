@@ -29,18 +29,14 @@ namespace HA4IoT.Core
 
         public Controller(ControllerOptions options)
         {
-            if (options == null) throw new ArgumentNullException(nameof(options));
-
-            _options = options;
+            _options = options ?? throw new ArgumentNullException(nameof(options));
 
             StoragePath.Initialize(ApplicationData.Current.LocalFolder.Path, ApplicationData.Current.LocalFolder.Path);
         }
 
         public Task RunAsync(IBackgroundTaskInstance taskInstance)
         {
-            if (taskInstance == null) throw new ArgumentNullException(nameof(taskInstance));
-
-            _deferral = taskInstance.GetDeferral();
+            _deferral = taskInstance?.GetDeferral() ?? throw new ArgumentNullException(nameof(taskInstance));
             return RunAsync();
         }
 

@@ -9,9 +9,7 @@ namespace HA4IoT.Logging
 
         public LogServicePublisher(string source, LogService logService)
         {
-            if (logService == null) throw new ArgumentNullException(nameof(logService));
-
-            _logService = logService;
+            _logService = logService ?? throw new ArgumentNullException(nameof(logService));
             Source = source;
         }
 

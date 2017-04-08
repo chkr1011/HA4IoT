@@ -14,9 +14,7 @@ namespace HA4IoT.Services.StorageService
 
         public StorageService(ILogService logService)
         {
-            if (logService == null) throw new ArgumentNullException(nameof(logService));
-
-            _log = logService.CreatePublisher(nameof(StorageService));
+            _log = logService?.CreatePublisher(nameof(StorageService)) ?? throw new ArgumentNullException(nameof(logService));
         }
 
         public bool TryRead<TData>(string filename, out TData data)

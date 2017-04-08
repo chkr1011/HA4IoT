@@ -11,14 +11,17 @@ namespace HA4IoT.Hardware.I2C.I2CHardwareBridge
 
         protected DHT22SensorBase(int id, DHT22Accessor dht22Accessor)
         {
-            if (dht22Accessor == null) throw new ArgumentNullException(nameof(dht22Accessor));
-
             _id = id;
-            _dht22Accessor = dht22Accessor;
+            _dht22Accessor = dht22Accessor ?? throw new ArgumentNullException(nameof(dht22Accessor));
             dht22Accessor.ValuesUpdated += (s, e) => UpdateValue();
         }
 
         public event EventHandler<NumericSensorAdapterValueChangedEventArgs> ValueChanged;
+
+        public void Refresh()
+        {
+            UpdateValue();
+        }
 
         private void UpdateValue()
         {

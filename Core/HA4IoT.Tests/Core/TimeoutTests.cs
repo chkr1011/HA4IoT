@@ -18,7 +18,7 @@ namespace HA4IoT.Tests.Core
             var eventFired = false;
             timeout.Elapsed += (s,e) => eventFired = true;
 
-            Assert.IsTrue(timeout.IsEnabled);
+            Assert.IsFalse(timeout.IsEnabled);
             Assert.IsTrue(timeout.IsElapsed);
             Assert.IsFalse(eventFired);
 
@@ -36,7 +36,7 @@ namespace HA4IoT.Tests.Core
 
             testController.Tick(TimeSpan.FromSeconds(1));
 
-            Assert.IsTrue(timeout.IsEnabled);
+            Assert.IsFalse(timeout.IsEnabled);
             Assert.IsTrue(timeout.IsElapsed);
             Assert.IsTrue(eventFired);
         }

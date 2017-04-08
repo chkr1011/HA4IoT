@@ -6,34 +6,35 @@ using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Simulator.Controls
 {
-    public class UIBinaryOutputAdapter : IBinaryOutputAdapter
+    public class UIBinaryOutputAdapter : IBinaryOutputAdapter, ILampAdapter
     {
         private readonly CheckBox _checkBox;
 
         public UIBinaryOutputAdapter(CheckBox checkBox)
         {
-            if (checkBox == null) throw new ArgumentNullException(nameof(checkBox));
-
-            _checkBox = checkBox;
+            _checkBox = checkBox ?? throw new ArgumentNullException(nameof(checkBox));
         }
 
-        public async void TurnOn(params IHardwareParameter[] parameters)
+        public bool SupportsColor => false;
+        public int ColorResolutionBits => 0;
+
+        public async void SetState(AdapterPowerState powerState, params IHardwareParameter[] parameters)
         {
             await _checkBox.Dispatcher.RunAsync(
                 CoreDispatcherPriority.Normal,
                 () =>
                 {
-                    _checkBox.IsChecked = true;
+                    _checkBox.IsChecked = powerState == AdapterPowerState.On;
                 });
         }
-
-        public async void TurnOff(params IHardwareParameter[] parameters)
+        
+        public async void SetState(AdapterPowerState powerState, AdapterColor color, params IHardwareParameter[] hardwareParameters)
         {
             await _checkBox.Dispatcher.RunAsync(
                 CoreDispatcherPriority.Normal,
                 () =>
                 {
-                    _checkBox.IsChecked = false;
+                    _checkBox.IsChecked = powerState == AdapterPowerState.On;
                 });
         }
     }

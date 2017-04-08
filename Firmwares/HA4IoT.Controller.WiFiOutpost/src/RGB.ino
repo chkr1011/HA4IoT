@@ -60,8 +60,8 @@ void processMqttMessageRgbSet(String message) {
     return;
 
   uint16_t r = message.substring(0, c1).toInt();
-  uint16_t b = message.substring(c1 + 1, c2).toInt();
-  uint16_t g = message.substring(c2 + 1).toInt();
+  uint16_t g = message.substring(c1 + 1, c2).toInt();
+  uint16_t b = message.substring(c2 + 1).toInt();
 
   setRgb(r, g, b);
 

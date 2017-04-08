@@ -143,7 +143,7 @@ namespace HA4IoT.Services
             {
                 var status = new JObject
                 {
-                    ["Settings"] = _settingsService.GetRawComponentSettings(component.Id),
+                    ["Settings"] = _settingsService.GetRawSettings(component),
                     ["State"] = JToken.FromObject(component.GetState().Serialize())
                 };
 

@@ -1,5 +1,4 @@
-﻿using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Hardware;
+﻿using HA4IoT.Contracts.Hardware;
 using System;
 using System.Text.RegularExpressions;
 using HA4IoT.Contracts.Adapters;
@@ -14,22 +13,22 @@ namespace HA4IoT.Hardware.Knx
         public KnxDigitalJoinEnpoint(string identifier, KnxController knxController)
         {
             if (identifier == null) throw new ArgumentNullException(nameof(identifier));
-            if (knxController == null) throw new ArgumentNullException(nameof(knxController));
-
-            if (!ValidationJoin(identifier)) throw new ArgumentException("identifier is in a wrong format");
+            if (!ValidationJoin(identifier)) throw new ArgumentException("Identifier is in a wrong format");
 
             _identifier = identifier;
-            _knxController = knxController;
+            _knxController = knxController ?? throw new ArgumentNullException(nameof(knxController));
         }
 
-        public void TurnOn(params IHardwareParameter[] parameters)
+        public void SetState(AdapterPowerState powerState, params IHardwareParameter[] parameters)
         {
-            _knxController.SendDigitalJoinOn(_identifier);
-        }
-
-        public void TurnOff(params IHardwareParameter[] parameters)
-        {
-            _knxController.SendDigitalJoinOff(_identifier);
+            if (powerState == AdapterPowerState.On)
+            {
+                _knxController.SendDigitalJoinOn(_identifier);
+            }
+            else
+            {
+                _knxController.SendDigitalJoinOff(_identifier);
+            }
         }
 
         private bool ValidationJoin(string join)

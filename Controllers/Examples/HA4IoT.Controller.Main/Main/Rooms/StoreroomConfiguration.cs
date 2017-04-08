@@ -54,25 +54,15 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             SensorFactory sensorFactory,
             ILogService logService)
         {
-            if (areaService == null) throw new ArgumentNullException(nameof(areaService));
-            if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
-            if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
-            if (timerService == null) throw new ArgumentNullException(nameof(timerService));
-            if (twitterClientService == null) throw new ArgumentNullException(nameof(twitterClientService));
-            if (automationFactory == null) throw new ArgumentNullException(nameof(automationFactory));
-            if (actuatorFactory == null) throw new ArgumentNullException(nameof(actuatorFactory));
-            if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
-            if (logService == null) throw new ArgumentNullException(nameof(logService));
-
-            _areaService = areaService;
-            _deviceService = deviceService;
-            _ccToolsBoardService = ccToolsBoardService;
-            _timerService = timerService;
-            _twitterClientService = twitterClientService;
-            _automationFactory = automationFactory;
-            _actuatorFactory = actuatorFactory;
-            _sensorFactory = sensorFactory;
-            _logService = logService;
+            _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
+            _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
+            _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
+            _timerService = timerService ?? throw new ArgumentNullException(nameof(timerService));
+            _twitterClientService = twitterClientService ?? throw new ArgumentNullException(nameof(twitterClientService));
+            _automationFactory = automationFactory ?? throw new ArgumentNullException(nameof(automationFactory));
+            _actuatorFactory = actuatorFactory ?? throw new ArgumentNullException(nameof(actuatorFactory));
+            _sensorFactory = sensorFactory ?? throw new ArgumentNullException(nameof(sensorFactory));
+            _logService = logService ?? throw new ArgumentNullException(nameof(logService));
         }
 
         public void Apply()

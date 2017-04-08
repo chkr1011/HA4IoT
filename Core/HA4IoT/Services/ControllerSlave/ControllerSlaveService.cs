@@ -38,24 +38,18 @@ namespace HA4IoT.Services.ControllerSlave
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             if (scheduler == null) throw new ArgumentNullException(nameof(scheduler));
-            if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
-            if (outdoorTemperatureService == null) throw new ArgumentNullException(nameof(outdoorTemperatureService));
-            if (outdoorHumidityService == null) throw new ArgumentNullException(nameof(outdoorHumidityService));
-            if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
-            if (weatherService == null) throw new ArgumentNullException(nameof(weatherService));
-            if (logService == null) throw new ArgumentNullException(nameof(logService));
 
-            _dateTimeService = dateTimeService;
-            _outdoorTemperatureService = outdoorTemperatureService;
-            _outdoorHumidityService = outdoorHumidityService;
-            _daylightService = daylightService;
-            _weatherService = weatherService;
+            _dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
+            _outdoorTemperatureService = outdoorTemperatureService ?? throw new ArgumentNullException(nameof(outdoorTemperatureService));
+            _outdoorHumidityService = outdoorHumidityService ?? throw new ArgumentNullException(nameof(outdoorHumidityService));
+            _daylightService = daylightService ?? throw new ArgumentNullException(nameof(daylightService));
+            _weatherService = weatherService ?? throw new ArgumentNullException(nameof(weatherService));
 
-            _log = logService.CreatePublisher(nameof(ControllerSlaveService));
+            _log = logService?.CreatePublisher(nameof(ControllerSlaveService)) ?? throw new ArgumentNullException(nameof(logService));
 
-            settingsService.CreateSettingsMonitor<ControllerSlaveServiceSettings>(s => Settings = s);
+            settingsService.CreateSettingsMonitor<ControllerSlaveServiceSettings>(s => Settings = s.NewSettings);
 
-            scheduler.RegisterSchedule("ControllerSlavePolling", TimeSpan.FromMinutes(5), PullValues);
+            scheduler.RegisterSchedule("ControllerSlavePolling", TimeSpan.FromMinutes(5), () => PullValues());
         }
 
         public ControllerSlaveServiceSettings Settings { get; private set; }

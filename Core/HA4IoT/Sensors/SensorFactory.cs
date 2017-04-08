@@ -22,13 +22,9 @@ namespace HA4IoT.Sensors
 
         public SensorFactory(ITimerService timerService, ISchedulerService schedulerService, ISettingsService settingsService)
         {
-            if (timerService == null) throw new ArgumentNullException(nameof(timerService));
-            if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
-            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-
-            _timerService = timerService;
-            _schedulerService = schedulerService;
-            _settingsService = settingsService;
+            _timerService = timerService ?? throw new ArgumentNullException(nameof(timerService));
+            _schedulerService = schedulerService ?? throw new ArgumentNullException(nameof(schedulerService));
+            _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
         }
 
         public ITemperatureSensor RegisterTemperatureSensor(IArea area, Enum id, INumericSensorAdapter adapter)
@@ -38,7 +34,7 @@ namespace HA4IoT.Sensors
 
             var temperatureSensor = new TemperatureSensor($"{area.Id}.{id}", adapter, _settingsService);
             area.RegisterComponent(temperatureSensor);
-            
+
             return temperatureSensor;
         }
 
@@ -53,18 +49,17 @@ namespace HA4IoT.Sensors
             return humditySensor;
         }
 
-        public IButton RegisterVirtualButton(IArea area, Enum id, Action<IButton> initializer = null)
+        public IButton RegisterVirtualButton(IArea area, Enum id)
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
 
             var virtualButton = new Button($"{area.Id}.{id}", new VirtualButtonAdapter(), _timerService, _settingsService);
-            initializer?.Invoke(virtualButton);
-
             area.RegisterComponent(virtualButton);
+
             return virtualButton;
         }
 
-        public IButton RegisterButton(IArea area, Enum id, IBinaryInput input, Action<IButton> initializer = null)
+        public IButton RegisterButton(IArea area, Enum id, IBinaryInput input)
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
             if (input == null) throw new ArgumentNullException(nameof(input));
@@ -74,8 +69,6 @@ namespace HA4IoT.Sensors
                 new BinaryInputButtonAdapter(input),
                 _timerService,
                 _settingsService);
-
-            initializer?.Invoke(button);
 
             area.RegisterComponent(button);
             return button;
@@ -130,6 +123,17 @@ namespace HA4IoT.Sensors
             if (area == null) throw new ArgumentNullException(nameof(area));
             if (adapter == null) throw new ArgumentNullException(nameof(adapter));
 
+            var window = new Window($"{area.Id}.{id}", adapter, _settingsService);
+            area.RegisterComponent(window);
+            return window;
+        }
+
+        public IWindow RegisterWindow(IArea area, Enum id, IBinaryInput fullOpenReedSwitch, IBinaryInput tildOpenReedSwitch = null)
+        {
+            if (area == null) throw new ArgumentNullException(nameof(area));
+            if (fullOpenReedSwitch == null) throw new ArgumentNullException(nameof(fullOpenReedSwitch));
+
+            var adapter = new PortBasedWindowAdapter(fullOpenReedSwitch, tildOpenReedSwitch);
             var window = new Window($"{area.Id}.{id}", adapter, _settingsService);
             area.RegisterComponent(window);
             return window;

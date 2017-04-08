@@ -6,6 +6,6 @@ namespace HA4IoT.Contracts.Adapters
     {
         int MaxLevel { get; }
 
-        void SetLevel(int level, params IHardwareParameter[] parameters);
+        void SetState(int level, params IHardwareParameter[] parameters);
     }
 }

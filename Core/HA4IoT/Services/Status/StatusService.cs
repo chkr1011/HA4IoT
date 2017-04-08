@@ -8,24 +8,23 @@ using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Settings;
+using HA4IoT.Contracts.Services.System;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Services.Status
 {
-    [ApiServiceClass(typeof(StatusService))] // TODO: Use IStatusService
-    public class StatusService : ServiceBase
+    [ApiServiceClass(typeof(IStatusService))]
+    public class StatusService : ServiceBase, IStatusService
     {
         private readonly IComponentRegistryService _componentRegistry;
         private readonly ISettingsService _settingsService;
 
         public StatusService(IComponentRegistryService componentRegistry, IApiDispatcherService apiService, ISettingsService settingsService)
         {
-            if (componentRegistry == null) throw new ArgumentNullException(nameof(componentRegistry));
             if (apiService == null) throw new ArgumentNullException(nameof(apiService));
-            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
-            _componentRegistry = componentRegistry;
-            _settingsService = settingsService;
+            _componentRegistry = componentRegistry ?? throw new ArgumentNullException(nameof(componentRegistry));
+            _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
         }
 
         [ApiMethod]
@@ -49,14 +48,14 @@ namespace HA4IoT.Services.Status
         {
             return _componentRegistry.GetComponents<IWindow>()
                 .Where(w => w.GetState().Has(WindowState.Open))
-                .Select(w => new WindowStatus { Id = w.Id, Caption = _settingsService.GetComponentSettings(w.Id).Caption }).ToList();
+                .Select(w => new WindowStatus { Id = w.Id, Caption = _settingsService.GetComponentSettings<ComponentSettings>(w.Id).Caption }).ToList();
         }
 
         private List<WindowStatus> GetTiltWindows()
         {
             return _componentRegistry.GetComponents<IWindow>()
                 .Where(w => w.GetState().Has(WindowState.TildOpen))
-                .Select(w => new WindowStatus { Id = w.Id, Caption = _settingsService.GetComponentSettings(w.Id).Caption }).ToList();
+                .Select(w => new WindowStatus { Id = w.Id, Caption = _settingsService.GetComponentSettings<ComponentSettings>(w.Id).Caption }).ToList();
         }
 
         private List<ComponentStatus> GetComponentStatus()

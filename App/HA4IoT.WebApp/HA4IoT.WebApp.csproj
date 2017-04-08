@@ -135,6 +135,7 @@
     <Content Include="Views\BottomBarTemplate.html" />
     <Content Include="Views\FanTemplate.html" />
     <Content Include="Views\HumiditySensorTemplate.html" />
+    <Content Include="Views\LampTemplate.html" />
     <Content Include="Views\ModalTemplate.html" />
     <Content Include="Views\MotionDetectorsOverviewTemplate.html" />
     <Content Include="Views\MotionDetectorTemplate.html" />

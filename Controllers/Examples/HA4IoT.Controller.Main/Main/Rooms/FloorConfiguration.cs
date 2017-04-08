@@ -2,7 +2,6 @@
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
-using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Automations;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Areas;
@@ -76,19 +75,12 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)
         {
-            if (areaService == null) throw new ArgumentNullException(nameof(areaService));
-            if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
-            if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
-            if (automationFactory == null) throw new ArgumentNullException(nameof(automationFactory));
-            if (actuatorFactory == null) throw new ArgumentNullException(nameof(actuatorFactory));
-            if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
-
-            _areaService = areaService;
-            _deviceService = deviceService;
-            _ccToolsBoardService = ccToolsBoardService;
-            _automationFactory = automationFactory;
-            _actuatorFactory = actuatorFactory;
-            _sensorFactory = sensorFactory;
+            _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
+            _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
+            _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
+            _automationFactory = automationFactory ?? throw new ArgumentNullException(nameof(automationFactory));
+            _actuatorFactory = actuatorFactory ?? throw new ArgumentNullException(nameof(actuatorFactory));
+            _sensorFactory = sensorFactory ?? throw new ArgumentNullException(nameof(sensorFactory));
         }
 
         public void Apply()
@@ -147,9 +139,9 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             _automationFactory.RegisterTurnOnAndOffAutomation(area, Floor.CombinedLampsAutomation)
                 .WithTrigger(area.GetMotionDetector(Floor.LowerFloorMotionDetector))
-                .WithFlipTrigger(area.GetButton(Floor.ButtonLowerFloorUpper).PressedShortlyTrigger)
-                .WithFlipTrigger(area.GetButton(Floor.ButtonLowerFloorAtBathroom).PressedShortlyTrigger)
-                .WithFlipTrigger(area.GetButton(Floor.ButtonLowerFloorAtKitchen).PressedShortlyTrigger)
+                .WithTrigger(area.GetButton(Floor.ButtonLowerFloorUpper).PressedShortTrigger)
+                .WithTrigger(area.GetButton(Floor.ButtonLowerFloorAtBathroom).PressedShortTrigger)
+                .WithTrigger(area.GetButton(Floor.ButtonLowerFloorAtKitchen).PressedShortTrigger)
                 .WithTarget(area.GetComponent(Floor.CombinedLamps))
                 .WithEnabledAtNight()
                 .WithTurnOffIfButtonPressedWhileAlreadyOn();
@@ -165,7 +157,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         {
             _automationFactory.RegisterTurnOnAndOffAutomation(room, Floor.CombinedStairwayLampAutomation)
                 .WithTrigger(room.GetMotionDetector(Floor.StairwayMotionDetector))
-                .WithFlipTrigger(room.GetButton(Floor.ButtonStairway).PressedShortlyTrigger)
+                .WithTrigger(room.GetButton(Floor.ButtonStairway).PressedShortTrigger)
                 .WithTarget(room.GetComponent(Floor.CombinedStairwayLamp))
                 .WithEnabledAtNight();
         }
@@ -189,8 +181,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             var lamp = room.GetLamp(Floor.LampStairsCeiling);
 
-            room.GetButton(Floor.ButtonStairsUpper).PressedShortlyTrigger.Attach(() => lamp.TryTogglePowerState());
-            room.GetButton(Floor.ButtonStairsLowerUpper).PressedShortlyTrigger.Attach(() => lamp.TryTogglePowerState());
+            room.GetButton(Floor.ButtonStairsUpper).PressedShortTrigger.Attach(() => lamp.TryTogglePowerState());
+            room.GetButton(Floor.ButtonStairsLowerUpper).PressedShortTrigger.Attach(() => lamp.TryTogglePowerState());
         }
 
         private void SetupStairsLamps(IArea room, HSPE16OutputOnly hspe16FloorAndLowerBathroom)

@@ -59,7 +59,7 @@ namespace HA4IoT.Tests.Components
             var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>());
 
             var triggerRaised = false;
-            button.PressedShortlyTrigger.Attach(() => triggerRaised = true);
+            button.PressedShortTrigger.Attach(() => triggerRaised = true);
 
             Assert.IsTrue(button.GetState().Has(ButtonState.Released));
             buttonAdapter.Touch();

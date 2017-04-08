@@ -21,9 +21,7 @@ namespace HA4IoT.Actuators.Fans
 
         public Fan(string id, IFanAdapter adapter) : base(id)
         {
-            if (adapter == null) throw new ArgumentNullException(nameof(adapter));
-
-            _adapter = adapter;
+            _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
 
             SetNextLevelAction = new ActionWrapper(() => ExecuteCommand(new IncreaseLevelCommand()));
         }
@@ -57,6 +55,7 @@ namespace HA4IoT.Actuators.Fans
             if (command == null) throw new ArgumentNullException(nameof(command));
 
             var commandExecutor = new CommandExecutor();
+            commandExecutor.Register<ResetCommand>(c => ResetState());
             commandExecutor.Register<TurnOffCommand>(c => SetLevelInternal(0));
             commandExecutor.Register<TurnOnCommand>(c => SetLevelInternal(_adapter.MaxLevel));
             commandExecutor.Register<SetLevelCommand>(c => SetLevelInternal(c.Level));
@@ -93,11 +92,11 @@ namespace HA4IoT.Actuators.Fans
 
                 if (!forceUpdate)
                 {
-                    _adapter.SetLevel(level);
+                    _adapter.SetState(level);
                 }
                 else
                 {
-                    _adapter.SetLevel(level, HardwareParameter.ForceUpdateState);
+                    _adapter.SetState(level, HardwareParameter.ForceUpdateState);
                 }
 
                 _currentLevel = level;

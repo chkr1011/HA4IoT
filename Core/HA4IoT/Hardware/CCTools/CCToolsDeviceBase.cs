@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Windows.Data.Json;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.DeviceMessaging;
 using HA4IoT.Contracts.Hardware.I2C;
@@ -25,15 +24,10 @@ namespace HA4IoT.Hardware.CCTools
 
         protected CCToolsDeviceBase(string id, I2CIPortExpanderDriver portExpanderDriver, IDeviceMessageBrokerService deviceMessageBrokerService, ILogger log)
         {
-            if (id == null) throw new ArgumentNullException(nameof(id));
-            if (portExpanderDriver == null) throw new ArgumentNullException(nameof(portExpanderDriver));
-            if (deviceMessageBrokerService == null) throw new ArgumentNullException(nameof(deviceMessageBrokerService));
-            if (log == null) throw new ArgumentNullException(nameof(log));
-
-            Id = id;
-            _log = log;
-            _portExpanderDriver = portExpanderDriver;
-            _deviceMessageBrokerService = deviceMessageBrokerService;
+            Id = id ?? throw new ArgumentNullException(nameof(id));
+            _log = log ?? throw new ArgumentNullException(nameof(log));
+            _portExpanderDriver = portExpanderDriver ?? throw new ArgumentNullException(nameof(portExpanderDriver));
+            _deviceMessageBrokerService = deviceMessageBrokerService ?? throw new ArgumentNullException(nameof(deviceMessageBrokerService));
 
             _committedState = new byte[portExpanderDriver.StateSize];
             _state = new byte[portExpanderDriver.StateSize];
@@ -163,11 +157,6 @@ namespace HA4IoT.Hardware.CCTools
             {
                 _state.SetBit(pinNumber, state == BinaryState.High);
             }
-        }
-
-        private byte[] JsonValueToByteArray(JsonArray value)
-        {
-            return value.Select(item => (byte)item.GetNumber()).ToArray();
         }
     }
 }

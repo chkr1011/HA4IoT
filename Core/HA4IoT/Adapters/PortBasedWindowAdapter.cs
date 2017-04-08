@@ -11,35 +11,31 @@ namespace HA4IoT.Adapters
 
         public PortBasedWindowAdapter(IBinaryInput fullOpenReedSwitch, IBinaryInput tildOpenReedSwitch = null)
         {
-            if (fullOpenReedSwitch == null) throw new ArgumentNullException(nameof(fullOpenReedSwitch));
-
-            _fullOpenReedSwitch = fullOpenReedSwitch;
+            _fullOpenReedSwitch = fullOpenReedSwitch ?? throw new ArgumentNullException(nameof(fullOpenReedSwitch));
             _tildOpenReedSwitch = tildOpenReedSwitch;
 
             if (_tildOpenReedSwitch != null)
             {
-                _tildOpenReedSwitch.StateChanged += (s, e) => Update();
+                _tildOpenReedSwitch.StateChanged += (s, e) => Refresh();
             }
 
-            _fullOpenReedSwitch.StateChanged += (s, e) => Update();
-
-            Update();
+            _fullOpenReedSwitch.StateChanged += (s, e) => Refresh();
         }
 
         public event EventHandler<WindowStateChangedEventArgs> StateChanged;
 
-        private void Update()
+        public void Refresh()
         {
             var fullOpenReedSwitchState = _fullOpenReedSwitch.Read() == BinaryState.High
-                ? ReedSwitchState.Closed
-                : ReedSwitchState.Open;
+                ? AdapterSwitchState.Closed
+                : AdapterSwitchState.Open;
 
-            ReedSwitchState? tildOpenReedSwitchState = null;
+            AdapterSwitchState? tildOpenReedSwitchState = null;
             if (_tildOpenReedSwitch != null)
             {
                 tildOpenReedSwitchState = _tildOpenReedSwitch.Read() == BinaryState.High
-                    ? ReedSwitchState.Closed
-                    : ReedSwitchState.Open;
+                    ? AdapterSwitchState.Closed
+                    : AdapterSwitchState.Open;
             }
 
             StateChanged?.Invoke(this, new WindowStateChangedEventArgs(fullOpenReedSwitchState, tildOpenReedSwitchState));

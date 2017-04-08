@@ -11,30 +11,29 @@ using Newtonsoft.Json.Linq;
 namespace HA4IoT.Logging
 {
     [ApiServiceClass(typeof(ILogService))]
-    public class LogService : ILogService
+    public class LogService : ServiceBase, ILogService
     {
         private const int LogHistorySize = 1000;
-
+        private const int LogErrorHistorySize = 250;
+        private const int LogWarningHistorySize = 250;
+        
         private readonly Guid _sessionId = Guid.NewGuid();
-        private readonly Queue<LogEntry> _entries = new Queue<LogEntry>();
+        private readonly Queue<LogEntry> _logEntries = new Queue<LogEntry>();
+        private readonly Queue<LogEntry> _logErrorEntries = new Queue<LogEntry>();
+        private readonly Queue<LogEntry> _logWarningEntries = new Queue<LogEntry>();
+
         private readonly IDateTimeService _dateTimeService;
 
         private long _id;
 
         public LogService(IDateTimeService dateTimeService)
         {
-            if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
-
-            _dateTimeService = dateTimeService;
+            _dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
 
             Log.Default = CreatePublisher(null);
         }
 
         public event EventHandler<LogEntryPublishedEventArgs> LogEntryPublished;
-
-        public void Startup()
-        {
-        }
 
         public ILogger CreatePublisher(string source)
         {
@@ -78,7 +77,7 @@ namespace HA4IoT.Logging
 
         public void Warning(string source, Exception exception, string message)
         {
-            Add(LogEntrySeverity.Warning, source, message, null);
+            Add(LogEntrySeverity.Warning, source, message, exception);
         }
 
         public void Error(string message)
@@ -102,6 +101,36 @@ namespace HA4IoT.Logging
         }
 
         [ApiMethod]
+        public void GetWarningLogEntries(IApiContext apiContext)
+        {
+            lock (_logErrorEntries)
+            {
+                var response = new GetLogEntriesResponse
+                {
+                    SessionId = _sessionId,
+                    LogEntries = _logWarningEntries.ToList()
+                };
+
+                apiContext.Result = JObject.FromObject(response);
+            }
+        }
+
+        [ApiMethod]
+        public void GetErrorLogEntries(IApiContext apiContext)
+        {
+            lock (_logErrorEntries)
+            {
+                var response = new GetLogEntriesResponse
+                {
+                    SessionId = _sessionId,
+                    LogEntries = _logErrorEntries.ToList()
+                };
+
+                apiContext.Result = JObject.FromObject(response);
+            }
+        }
+
+        [ApiMethod]
         public void GetLogEntries(IApiContext apiContext)
         {
             var request = apiContext.Parameter.ToObject<GetLogEntriesRequest>();
@@ -117,15 +146,15 @@ namespace HA4IoT.Logging
             }
 
             List<LogEntry> logEntries;
-            lock (_entries)
+            lock (_logEntries)
             {
                 if (request.SessionId != _sessionId)
                 {
-                    logEntries = _entries.Take(request.MaxCount).ToList();
+                    logEntries = _logEntries.Take(request.MaxCount).ToList();
                 }
                 else
                 {
-                    logEntries = _entries.Where(e => e.Id > request.Offset).Take(request.MaxCount).ToList();
+                    logEntries = _logEntries.Where(e => e.Id > request.Offset).Take(request.MaxCount).ToList();
                 }
             }
 
@@ -141,15 +170,26 @@ namespace HA4IoT.Logging
         private void Add(LogEntrySeverity severity, string source, string message, Exception exception)
         {
             LogEntry logEntry;
-            lock (_entries)
+            lock (_logEntries)
             {
                 _id += 1L;
                 logEntry = new LogEntry(_id, _dateTimeService.Now, Environment.CurrentManagedThreadId, severity, source, message, exception?.ToString());
 
-                _entries.Enqueue(logEntry);
-                while (_entries.Count > LogHistorySize)
+                EnqueueLogEntry(logEntry, _logEntries, LogHistorySize);
+            }
+
+            if (severity == LogEntrySeverity.Warning)
+            {
+                lock (_logWarningEntries)
                 {
-                    _entries.Dequeue();
+                    EnqueueLogEntry(logEntry, _logWarningEntries, LogWarningHistorySize);
+                }
+            }
+            else if (severity == LogEntrySeverity.Error)
+            {
+                lock (_logErrorEntries)
+                {
+                    EnqueueLogEntry(logEntry, _logErrorEntries, LogErrorHistorySize);
                 }
             }
 
@@ -161,7 +201,16 @@ namespace HA4IoT.Logging
                 return;
             }
             
-            Debug.WriteLine($"{severity}@{source}: {message}");
+            Debug.WriteLine($"[{logEntry.Severity}] [{logEntry.Source}] [{logEntry.ThreadId}]: {message}");
+        }
+
+        private void EnqueueLogEntry(LogEntry logEntry, Queue<LogEntry> target, int maxLogEntriesCount)
+        {
+            target.Enqueue(logEntry);
+            while (target.Count > maxLogEntriesCount)
+            {
+                _logEntries.Dequeue();
+            }
         }
     }
 }

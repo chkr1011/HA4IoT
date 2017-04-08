@@ -7,10 +7,8 @@ namespace HA4IoT.Hardware.CCTools
     {
         public CCToolsDevicePort(int number, CCToolsDeviceBase board)
         {
-            if (board == null) throw new ArgumentNullException(nameof(board));
-
             Number = number;
-            Board = board;
+            Board = board ?? throw new ArgumentNullException(nameof(board));
 
             board.StateChanged += OnControllerStateChanged;
         }

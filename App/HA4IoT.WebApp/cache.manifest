@@ -1,58 +1,7 @@
 CACHE MANIFEST
-# Version 1.16.61
+# Version 1.17.168
 
 CACHE:
-
-#Index.html
-#Style.css
-
-AppController.js
-#Services/
-
-#UILocalizations-EN.json
-#UILocalizations-DE.json
-
-Scripts/jquery-3.1.1.min.js
-Scripts/bootstrap.min.js
-Scripts/angular.min.js
-
-Content/bootstrap.min.css
-Content/bootstrap-theme.min.css
-
-fonts/glyphicons-halflings-regular.ttf
-fonts/glyphicons-halflings-regular.svg
-fonts/glyphicons-halflings-regular.eot
-fonts/glyphicons-halflings-regular.woff
-fonts/glyphicons-halflings-regular.woff2
-
-Views/MotionDetectorTemplate.html
-Views/TemperatureSensorTemplate.html
-Views/HumiditySensorTemplate.html
-Views/WindowTemplate.html
-Views/ToggleTemplate.html
-Views/RollerShutterTemplate.html
-Views/AreasOverviewTemplate.html
-Views/BottomBarTemplate.html
-Views/StateMachineTemplate.html
-
-Images/Wifi.png
-Images/Cat.png
-Images/Car.png
-Images/Fan.png
-Images/Air.png
-Images/WaterPump.png
-Images/Sunrise.png
-Images/Sunset.png
-Images/Socket.png
-Images/StateMachine.png
-Images/Lamp.png
-Images/RollerShutter.png
-Images/Temperature.png
-Images/Humidity.png
-Images/Motion.png
-Images/NightLamp.png
-Images/Sunrise.png
-Images/Sunset.png
 
 NETWORK:
 *

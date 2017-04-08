@@ -4,7 +4,7 @@
     srv.togglePowerState = function (component) {
 
         var commandType = "TurnOnCommand";
-        if (component.State.PowerState === "On") {
+        if (component.State.PowerState.Value === "On") {
             commandType = "TurnOffCommand";
         }
 
@@ -21,6 +21,12 @@
         }
 
         apiService.executeCommand(component.Id, commandType, {});
+    }
+
+    srv.setColor = function (component, hue, saturation, value) {
+
+        var command = { Hue: hue, Saturation: saturation, Value: value };
+        apiService.executeCommand(component.Id, "SetColorCommand", command);
     }
 
     srv.pressButton = function (component, duration) {
@@ -41,6 +47,14 @@
 
     srv.decreaseLevel = function (component) {
         apiService.executeCommand(component.Id, "DecreaseLevelCommand", {});
+    }
+
+    srv.disable = function (component) {
+        apiService.updateComponentSettings(component.Id, { IsEnabled: false });
+    }
+
+    srv.enable = function (component) {
+        apiService.updateComponentSettings(component.Id, { IsEnabled: true });
     }
 
     return this;

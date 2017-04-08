@@ -14,11 +14,10 @@ namespace HA4IoT.Hardware.I2C.I2CHardwareBridge
         
         public DHT22Accessor(I2CHardwareBridge i2CHardwareBridge, ISchedulerService schedulerService)
         {
-            if (i2CHardwareBridge == null) throw new ArgumentNullException(nameof(i2CHardwareBridge));
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
             
-            _i2CHardwareBridge = i2CHardwareBridge;
-            schedulerService.RegisterSchedule("DHT22Updater", TimeSpan.FromSeconds(10), FetchValues);
+            _i2CHardwareBridge = i2CHardwareBridge ?? throw new ArgumentNullException(nameof(i2CHardwareBridge));
+            schedulerService.RegisterSchedule("DHT22Updater", TimeSpan.FromSeconds(10), () => FetchValues());
         }
 
         public event EventHandler ValuesUpdated;

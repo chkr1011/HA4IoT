@@ -13,9 +13,9 @@ namespace HA4IoT.Networking.Json
             // and throwing exceptions in the getter.
             var json = new JObject
             {
-                ["Type"] = exception.GetType().FullName,
-                ["Source"] = exception.Source,
-                ["Message"] = exception.Message,
+                ["ExceptionType"] = exception.GetType().FullName,
+                ["ExceptionSource"] = exception.Source,
+                ["ExceptionMessage"] = exception.Message,
                 ["StackTrace"] = exception.StackTrace
             };
 

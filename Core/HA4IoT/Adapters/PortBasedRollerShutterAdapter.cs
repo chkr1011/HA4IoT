@@ -12,33 +12,31 @@ namespace HA4IoT.Adapters
 
         public PortBasedRollerShutterAdapter(IBinaryOutput powerOutput, IBinaryOutput directionOutput)
         {
-            if (powerOutput == null) throw new ArgumentNullException(nameof(powerOutput));
-            if (directionOutput == null) throw new ArgumentNullException(nameof(directionOutput));
-
-            _powerOutput = powerOutput;
-            _directionOutput = directionOutput;
+            _powerOutput = powerOutput ?? throw new ArgumentNullException(nameof(powerOutput));
+            _directionOutput = directionOutput ?? throw new ArgumentNullException(nameof(directionOutput));
         }
 
-        public void StartMoveUp(params IHardwareParameter[] parameters)
+        public void SetState(AdapterRollerShutterState state, params IHardwareParameter[] parameters)
         {
-            StopAndWait();
-            _directionOutput.Write(BinaryState.Low);
-            Start();
-        }
+            if (state == AdapterRollerShutterState.MoveUp)
+            {
+                StopAndWait();
+                _directionOutput.Write(BinaryState.Low);
+                Start();
+            }
+            else if (state == AdapterRollerShutterState.MoveDown)
+            {
+                StopAndWait();
+                _directionOutput.Write(BinaryState.High);
+                Start();
+            }
+            else
+            {
+                _powerOutput.Write(BinaryState.Low);
 
-        public void Stop(params IHardwareParameter[] parameters)
-        {
-            _powerOutput.Write(BinaryState.Low);
-
-            // Ensure that the direction relay is not wasting energy.
-            _directionOutput.Write(BinaryState.Low);
-        }
-
-        public void StartMoveDown(params IHardwareParameter[] parameters)
-        {
-            StopAndWait();
-            _directionOutput.Write(BinaryState.High);
-            Start();
+                // Ensure that the direction relay is not wasting energy.
+                _directionOutput.Write(BinaryState.Low);
+            }
         }
 
         private void StopAndWait()

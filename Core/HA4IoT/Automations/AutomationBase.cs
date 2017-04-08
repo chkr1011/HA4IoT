@@ -1,6 +1,5 @@
 ﻿using System;
 using HA4IoT.Contracts.Automations;
-using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Automations
 {
@@ -8,16 +7,9 @@ namespace HA4IoT.Automations
     {
         protected AutomationBase(string id)
         {
-            if (id == null) throw new ArgumentNullException(nameof(id));
-
-            Id = id;
+            Id = id ?? throw new ArgumentNullException(nameof(id));
         }
 
         public string Id { get; }
-        
-        public virtual JObject ExportStatusToJsonObject()
-        {
-            return new JObject();
-        }
     }
 }

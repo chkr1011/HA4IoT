@@ -61,6 +61,12 @@ namespace HA4IoT.Components
             return component.TryInvokeCommand(new SetLevelCommand { Level = level });
         }
 
+        public static bool TrySetState(this IComponent component, string state)
+        {
+            if (component == null) throw new ArgumentNullException(nameof(component));
+            return component.TryInvokeCommand(new SetStateCommand { Id = state });
+        }
+
         public static bool TryInvokeCommand(this IComponent component, ICommand command)
         {
             if (component == null) throw new ArgumentNullException(nameof(component));

@@ -8,30 +8,30 @@ namespace HA4IoT.Contracts.Services.Settings
 {
     public static class SettingsServiceExtensions
     {
-        public static JObject GetRawAreaSettings(this ISettingsService settingsService, string areaId)
+        public static JObject GetRawSettings(this ISettingsService settingsService, IArea area)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-            if (areaId == null) throw new ArgumentNullException(nameof(areaId));
+            if (area == null) throw new ArgumentNullException(nameof(area));
 
-            var uri = SettingsUriGenerator.FromArea(areaId);
+            var uri = SettingsUriGenerator.FromArea(area.Id);
             return settingsService.GetSettings(uri);
         }
 
-        public static JObject GetRawComponentSettings(this ISettingsService settingsService, string componentId)
+        public static JObject GetRawSettings(this ISettingsService settingsService, IComponent component)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-            if (componentId == null) throw new ArgumentNullException(nameof(componentId));
+            if (component == null) throw new ArgumentNullException(nameof(component));
 
-            var uri = SettingsUriGenerator.FromComponent(componentId);
+            var uri = SettingsUriGenerator.FromComponent(component.Id);
             return settingsService.GetSettings(uri);
         }
 
-        public static JObject GetRawAutomationSettings(this ISettingsService settingsService, string automationId)
+        public static JObject GetRawSettings(this ISettingsService settingsService, IAutomation automation)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-            if (automationId == null) throw new ArgumentNullException(nameof(automationId));
+            if (automation == null) throw new ArgumentNullException(nameof(automation));
 
-            var uri = SettingsUriGenerator.FromAutomation(automationId);
+            var uri = SettingsUriGenerator.FromAutomation(automation.Id);
             return settingsService.GetSettings(uri);
         }
 
@@ -43,6 +43,22 @@ namespace HA4IoT.Contracts.Services.Settings
             return settingsService.GetSettings<TSettings>(uri);
         }
 
+        public static TSettings GetSettings<TSettings>(this ISettingsService settingsService, IAutomation automation) where TSettings : AutomationSettings
+        {
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
+            if (automation == null) throw new ArgumentNullException(nameof(automation));
+
+            var uri = SettingsUriGenerator.FromAutomation(automation.Id);
+            return settingsService.GetSettings<TSettings>(uri);
+        }
+
+        public static TSettings GetSettings<TSettings>(this ISettingsService settingsService, IComponent component) where TSettings : ComponentSettings
+        {
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
+
+            return settingsService.GetComponentSettings<TSettings>(component.Id);
+        }
+
         public static TSettings GetComponentSettings<TSettings>(this ISettingsService settingsService, string componentId) where TSettings : ComponentSettings
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
@@ -51,34 +67,35 @@ namespace HA4IoT.Contracts.Services.Settings
             return settingsService.GetSettings<TSettings>(uri);
         }
 
-        public static ComponentSettings GetComponentSettings(this ISettingsService settingsService, string componentId)
+        public static void SetSettings<TSettings>(this ISettingsService settingsService, IComponent component, TSettings settings) where TSettings : ComponentSettings
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
+            if (component == null) throw new ArgumentNullException(nameof(component));
 
-            var uri = SettingsUriGenerator.FromComponent(componentId);
-            return settingsService.GetSettings<ComponentSettings>(uri);
-        }
-
-        public static TSettings GetAutomationSettings<TSettings>(this ISettingsService settingsService, string automationId) where TSettings : IAutomationSettings
-        {
-            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-            if (automationId == null) throw new ArgumentNullException(nameof(automationId));
-
-            var uri = SettingsUriGenerator.FromAutomation(automationId);
-            return settingsService.GetSettings<TSettings>(uri);
-        }
-
-        public static void SetSettings<TSettings>(this ISettingsService settingsService, string automationId, TSettings settings) where TSettings : IAutomationSettings
-        {
-            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-            if (automationId == null) throw new ArgumentNullException(nameof(automationId));
-
-            var uri = SettingsUriGenerator.FromAutomation(automationId);
-
+            var uri = SettingsUriGenerator.FromComponent(component.Id);
             settingsService.ImportSettings(uri, settings);
         }
 
-        public static void CreateSettingsMonitor<TSettings>(this ISettingsService settingsService, Action<TSettings> callback)
+        public static void SetSettings<TSettings>(this ISettingsService settingsService, IAutomation automation, TSettings settings) where TSettings : AutomationSettings
+        {
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
+            if (automation == null) throw new ArgumentNullException(nameof(automation));
+
+            var uri = SettingsUriGenerator.FromAutomation(automation.Id);
+            settingsService.ImportSettings(uri, settings);
+        }
+
+        public static void SetComponentEnabledState(this ISettingsService settingsService, IComponent component, bool isEnabled)
+        {
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
+            if (component == null) throw new ArgumentNullException(nameof(component));
+
+            var settings = settingsService.GetComponentSettings<ComponentSettings>(component.Id);
+            settings.IsEnabled = isEnabled;
+            settingsService.SetSettings(component, settings);
+        }
+
+        public static void CreateSettingsMonitor<TSettings>(this ISettingsService settingsService, Action<SettingsChangedEventArgs<TSettings>> callback)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             
@@ -86,27 +103,27 @@ namespace HA4IoT.Contracts.Services.Settings
             settingsService.CreateSettingsMonitor(uri, callback);
         }
 
-        public static void CreateAreaSettingsMonitor(this ISettingsService settingsService, string areaId, Action<AreaSettings> callback)
+        public static void CreateSettingsMonitor(this ISettingsService settingsService, IArea area, Action<SettingsChangedEventArgs<AreaSettings>> callback)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
-            var uri = SettingsUriGenerator.FromArea(areaId);
+            var uri = SettingsUriGenerator.FromArea(area.Id);
             settingsService.CreateSettingsMonitor(uri, callback);
         }
 
-        public static void CreateComponentSettingsMonitor<TSettings>(this ISettingsService settingsService, string componentId, Action<TSettings> callback) where TSettings : ComponentSettings
+        public static void CreateSettingsMonitor<TSettings>(this ISettingsService settingsService, IComponent component, Action<SettingsChangedEventArgs<TSettings>> callback) where TSettings : ComponentSettings
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             
-            var uri = SettingsUriGenerator.FromComponent(componentId);
+            var uri = SettingsUriGenerator.FromComponent(component.Id);
             settingsService.CreateSettingsMonitor(uri, callback);
         }
 
-        public static void CreateAutomationSettingsMonitor<TSettings>(this ISettingsService settingsService, string automationId, Action<TSettings> callback) where TSettings : IAutomationSettings
+        public static void CreateSettingsMonitor<TSettings>(this ISettingsService settingsService, IAutomation automation, Action<SettingsChangedEventArgs<TSettings>> callback) where TSettings : AutomationSettings
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             
-            var uri = SettingsUriGenerator.FromAutomation(automationId);
+            var uri = SettingsUriGenerator.FromAutomation(automation.Id);
             settingsService.CreateSettingsMonitor(uri, callback);
         }
     }

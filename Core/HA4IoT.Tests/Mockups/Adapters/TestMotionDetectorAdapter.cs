@@ -20,8 +20,14 @@ namespace HA4IoT.Tests.Mockups.Adapters
 
         public void Invoke()
         {
-            Begin();
-            End();
+            try
+            {
+                Begin();
+            }
+            finally
+            {
+                End();
+            }           
         }
     }
 }

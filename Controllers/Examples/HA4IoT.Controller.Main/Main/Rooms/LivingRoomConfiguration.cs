@@ -1,8 +1,5 @@
 ﻿using System;
 using HA4IoT.Actuators;
-using HA4IoT.Actuators.Lamps;
-using HA4IoT.Actuators.Sockets;
-using HA4IoT.Adapters;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware.I2C;
@@ -68,17 +65,11 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)
         {
-            if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
-            if (areaService == null) throw new ArgumentNullException(nameof(areaService));
-            if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
-            if (actuatorFactory == null) throw new ArgumentNullException(nameof(actuatorFactory));
-            if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
-
-            _deviceService = deviceService;
-            _areaService = areaService;
-            _ccToolsBoardService = ccToolsBoardService;
-            _actuatorFactory = actuatorFactory;
-            _sensorFactory = sensorFactory;
+            _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
+            _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
+            _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
+            _actuatorFactory = actuatorFactory ?? throw new ArgumentNullException(nameof(actuatorFactory));
+            _sensorFactory = sensorFactory ?? throw new ArgumentNullException(nameof(sensorFactory));
         }
 
         public void Apply()
@@ -94,17 +85,10 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             var area = _areaService.RegisterArea(Room.LivingRoom);
 
-            _sensorFactory.RegisterWindow(area, LivingRoom.WindowLeftL,
-                    new PortBasedWindowAdapter(input0.GetInput(10), input0.GetInput(11)));
-
-            _sensorFactory.RegisterWindow(area, LivingRoom.WindowLeftR,
-                new PortBasedWindowAdapter(input0.GetInput(9), input0.GetInput(8)));
-
-            _sensorFactory.RegisterWindow(area, LivingRoom.WindowRightL,
-                    new PortBasedWindowAdapter(input1.GetInput(14), input1.GetInput(15)));
-
-            _sensorFactory.RegisterWindow(area, LivingRoom.WindowRightR,
-                new PortBasedWindowAdapter(input1.GetInput(13), input1.GetInput(12)));
+            _sensorFactory.RegisterWindow(area, LivingRoom.WindowLeftL, input0.GetInput(10), input0.GetInput(11));
+            _sensorFactory.RegisterWindow(area, LivingRoom.WindowLeftR, input0.GetInput(9), input0.GetInput(8));
+            _sensorFactory.RegisterWindow(area, LivingRoom.WindowRightL, input1.GetInput(14), input1.GetInput(15));
+            _sensorFactory.RegisterWindow(area, LivingRoom.WindowRightR, input1.GetInput(13), input1.GetInput(12));
 
             _sensorFactory.RegisterTemperatureSensor(area, LivingRoom.TemperatureSensor,
                 i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
@@ -128,14 +112,17 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             _sensorFactory.RegisterButton(area, LivingRoom.ButtonLower, input0.GetInput(13));
             _sensorFactory.RegisterButton(area, LivingRoom.ButtonPassage, input1.GetInput(10));
 
-            area.GetButton(LivingRoom.ButtonUpper).PressedShortlyTrigger.Attach(
-                () => area.GetLamp(LivingRoom.LampDiningTable).TryTogglePowerState());
+            area.GetButton(LivingRoom.ButtonUpper).PressedShortTrigger.Attach(
+                () => area.GetComponent(LivingRoom.LampDiningTable).TryTogglePowerState());
 
-            area.GetButton(LivingRoom.ButtonPassage).PressedShortlyTrigger.Attach(
-                () => area.GetLamp(LivingRoom.LampDiningTable).TryTogglePowerState());
+            area.GetButton(LivingRoom.ButtonMiddle).PressedShortTrigger.Attach(() =>
+                area.GetComponent(LivingRoom.LampCouch).TryTogglePowerState());
+            
+            area.GetButton(LivingRoom.ButtonLower).PressedShortTrigger.Attach(() => 
+                area.GetComponent(LivingRoom.SocketWallRightEdgeRight).TryTogglePowerState());
 
-            area.GetButton(LivingRoom.ButtonLower).PressedShortlyTrigger.Attach(() => 
-                area.GetSocket(LivingRoom.SocketWallRightEdgeRight).TryTogglePowerState());
+            area.GetButton(LivingRoom.ButtonPassage).PressedShortTrigger.Attach(
+                () => area.GetComponent(LivingRoom.LampDiningTable).TryTogglePowerState());
         }
     }
 }

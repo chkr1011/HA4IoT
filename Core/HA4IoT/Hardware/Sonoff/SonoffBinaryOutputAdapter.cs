@@ -13,21 +13,13 @@ namespace HA4IoT.Hardware.Sonoff
 
         public SonoffBinaryOutputAdapter(string topic, IDeviceMessageBrokerService deviceMessageBrokerService)
         {
-            if (topic == null) throw new ArgumentNullException(nameof(topic));
-            if (deviceMessageBrokerService == null) throw new ArgumentNullException(nameof(deviceMessageBrokerService));
-
-            _topic = topic;
-            _deviceMessageBrokerService = deviceMessageBrokerService;
+            _topic = topic ?? throw new ArgumentNullException(nameof(topic));
+            _deviceMessageBrokerService = deviceMessageBrokerService ?? throw new ArgumentNullException(nameof(deviceMessageBrokerService));
         }
 
-        public void TurnOn(params IHardwareParameter[] parameters)
+        public void SetState(AdapterPowerState powerState, params IHardwareParameter[] parameters)
         {
-            _deviceMessageBrokerService.Publish(_topic, "ON", MqttQosLevel.ExactlyOnce);
-        }
-
-        public void TurnOff(params IHardwareParameter[] parameters)
-        {
-            _deviceMessageBrokerService.Publish(_topic, "OFF", MqttQosLevel.ExactlyOnce);
+            _deviceMessageBrokerService.Publish(_topic, powerState == AdapterPowerState.On ? "ON" : "OFF", MqttQosLevel.ExactlyOnce);
         }
     }
 }

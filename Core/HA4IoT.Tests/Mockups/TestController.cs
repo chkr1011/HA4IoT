@@ -6,6 +6,7 @@ using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Hardware.DeviceMessaging;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services.Backup;
 using HA4IoT.Contracts.Services.Daylight;
@@ -52,6 +53,7 @@ namespace HA4IoT.Tests.Mockups
             _container.RegisterSingleton<IAutomationRegistryService, AutomationRegistryService>();
             _container.RegisterSingleton<IComponentRegistryService, ComponentRegistryService>();
             _container.RegisterSingleton<IAreaRegistryService, AreaRegistryService>();
+            _container.RegisterSingleton<IDeviceMessageBrokerService, TestDeviceMessageBrokerService>();
 
             _container.Verify();
 

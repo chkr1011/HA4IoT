@@ -1,30 +1,11 @@
 ﻿using System;
+using HA4IoT.Contracts.Automations;
 
 namespace HA4IoT.Automations
 {
     public class BathroomFanAutomationSettings : AutomationSettings
     {
-        private TimeSpan _slowDuration = TimeSpan.FromMinutes(8);
-        private TimeSpan _fastDuration = TimeSpan.FromMinutes(12);
-
-        public TimeSpan SlowDuration
-        {
-            get { return _slowDuration; }
-            set
-            {
-                _slowDuration = value;
-                OnValueChanged(nameof(SlowDuration));
-            }
-        }
-
-        public TimeSpan FastDuration
-        {
-            get { return _fastDuration; }
-            set
-            {
-                _fastDuration = value;
-                OnValueChanged(nameof(FastDuration));
-            }
-        }
+        public TimeSpan SlowDuration { get; set; } = TimeSpan.FromMinutes(8);
+        public TimeSpan FastDuration { get; set; } = TimeSpan.FromMinutes(12);
     }
 }

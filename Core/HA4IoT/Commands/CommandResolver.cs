@@ -51,6 +51,7 @@ namespace HA4IoT.Commands
             RegisterCommand<PressCommand>();
 
             RegisterCommand<SetStateCommand>();
+            RegisterCommand<SetColorCommand>();
 
             RegisterCommand<TriggerMotionDetectionCommand>();
         }       

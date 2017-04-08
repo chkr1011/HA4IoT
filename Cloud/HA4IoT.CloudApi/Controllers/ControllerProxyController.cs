@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using HA4IoT.CloudApi.Services;
@@ -17,65 +17,75 @@ namespace HA4IoT.CloudApi.Controllers
         private readonly ControllerMessageDispatcher _messageDispatcher;
         private readonly SecurityService _securityService;
 
-        private Guid _controllerId;
-
         public ControllerProxyController(SecurityService securityService, ControllerMessageDispatcher messageDispatcher)
         {
-            if (securityService == null) throw new ArgumentNullException(nameof(securityService));
-            if (messageDispatcher == null) throw new ArgumentNullException(nameof(messageDispatcher));
-
-            _securityService = securityService;
-            _messageDispatcher = messageDispatcher;
+            _securityService = securityService ?? throw new ArgumentNullException(nameof(securityService));
+            _messageDispatcher = messageDispatcher ?? throw new ArgumentNullException(nameof(messageDispatcher));
         }
 
-        public async Task<ApiResponse> Execute([FromBody] ApiRequest request)
+        public Task<ApiResponse> Execute([FromBody] ApiRequest request)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
-            ValidateControllerSecurity();
+            Guid controllerId;
+            ValidateControllerSecurity(out controllerId);
 
-            Trace.TraceInformation($"Received request for controller '{_controllerId}'.");
-            return await _messageDispatcher.SendRequestAsync(_controllerId, request, _timeout);
+            Trace.TraceInformation($"Received request for controller '{controllerId}'.");
+            return _messageDispatcher.SendRequestAsync(controllerId, request, _timeout);
         }
 
         public List<CloudRequestMessage> ReceiveRequests()
         {
-            ValidateControllerSecurity();
+            Guid controllerId;
+            ValidateControllerSecurity(out controllerId);
 
-            Trace.TraceInformation($"Controller '{_controllerId}' is requesting pending requests.");
-            return _messageDispatcher.GetPendingMessages(_controllerId);
+            Trace.TraceInformation($"Controller '{controllerId}' is requesting pending requests.");
+            return _messageDispatcher.GetPendingMessagesAsync(controllerId);
         }
 
         public void SendResponse([FromBody] CloudResponseMessage response)
         {
             if (response == null) throw new ArgumentNullException(nameof(response));
 
-            ValidateControllerSecurity();
+            Guid controllerId;
+            ValidateControllerSecurity(out controllerId);
 
-            Trace.TraceInformation($"Received response from controller '{_controllerId}'.");
-            _messageDispatcher.EnqueueResponse(_controllerId, response);
+            Trace.TraceInformation($"Received response from controller '{controllerId}'.");
+            _messageDispatcher.EnqueueResponse(controllerId, response);
         }
 
-        private void ValidateControllerSecurity()
+        private void ValidateControllerSecurity(out Guid controllerId)
         {
-            if (!Request.Headers.Contains(CloudConnectorHeaders.ApiKey))
+            if (Request.Headers.Authorization == null)
             {
                 throw new UnauthorizedAccessException();
             }
 
-            var sentApiKey = Request.Headers.GetValues(CloudConnectorHeaders.ApiKey).First();
-            if (!_securityService.ApiKeyIsValid(sentApiKey))
+            if (Request.Headers.Authorization.Scheme != "Basic")
             {
                 throw new UnauthorizedAccessException();
             }
 
-            if (!Request.Headers.Contains(CloudConnectorHeaders.ControllerId))
+            var authorizationValue = Encoding.UTF8.GetString(Convert.FromBase64String(Request.Headers.Authorization.Parameter));
+            if (!authorizationValue.Contains(":"))
             {
                 throw new UnauthorizedAccessException();
             }
 
-            _controllerId = Guid.Parse(Request.Headers.GetValues(CloudConnectorHeaders.ControllerId).First());
-            if (!_securityService.ControllerIsAllowed(_controllerId))
+            var controllerIdText = authorizationValue.Substring(0, authorizationValue.IndexOf(':'));
+            var apiKey = authorizationValue.Substring(controllerIdText.Length + 1);
+
+            if (string.IsNullOrEmpty(controllerIdText) || string.IsNullOrEmpty(apiKey))
+            {
+                throw new UnauthorizedAccessException();
+            }
+
+            if (!Guid.TryParse(controllerIdText, out controllerId))
+            {
+                throw new UnauthorizedAccessException();
+            }
+
+            if (!_securityService.CredentialsAreValid(controllerId, apiKey))
             {
                 throw new UnauthorizedAccessException();
             }

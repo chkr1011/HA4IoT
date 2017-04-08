@@ -10,26 +10,38 @@ namespace HA4IoT.CloudApi.Services
 {
     public class ControllerContext
     {
-        private readonly TimeSpan _requestTimeToLive = TimeSpan.FromMinutes(1);
         private readonly Dictionary<Guid, MessageContext> _pendingRequests = new Dictionary<Guid, MessageContext>();
-        private readonly AutoResetEvent _pendingRequestsAutoResetEvent = new AutoResetEvent(false);
+        private readonly AutoResetEvent _pendingRequestsEvent = new AutoResetEvent(false);
 
-        public WaitForRequestsResult WaitForRequests(TimeSpan timeout)
+        private readonly TimeSpan _requestTimeToLive = TimeSpan.FromMinutes(1);
+       
+        public WaitForRequestsResult WaitForRequestsAsync(TimeSpan timeout)
         {
-            return _pendingRequestsAutoResetEvent.WaitOne(timeout) ? WaitForRequestsResult.RequestsAvailable : WaitForRequestsResult.NoRequestsAvailable;
+            if (!_pendingRequestsEvent.WaitOne(timeout))
+            {
+                return WaitForRequestsResult.NoRequestsAvailable;
+            }
+
+            return WaitForRequestsResult.RequestsAvailable;
         }
 
         public List<CloudRequestMessage> GetPendingRequests()
         {
             lock (_pendingRequests)
             {
-                var pendingRequests = _pendingRequests.Values.Where(pr => !pr.IsDelivered).ToList();
-                foreach (var pendingRequest in pendingRequests)
+                var pendingRequestMessages = new List<CloudRequestMessage>();
+                foreach (var pendingRequest in _pendingRequests)
                 {
-                    pendingRequest.IsDelivered = true;
+                    if (pendingRequest.Value.IsDelivered)
+                    {
+                        continue;
+                    }
+
+                    pendingRequest.Value.IsDelivered = true;
+                    pendingRequestMessages.Add(pendingRequest.Value.RequestMessage);
                 }
 
-                return pendingRequests.Select(pr => pr.RequestMessage).ToList();
+                return pendingRequestMessages;
             }
         }
 
@@ -47,7 +59,8 @@ namespace HA4IoT.CloudApi.Services
                 CleanupRequests();
 
                 _pendingRequests.Add(requestMessage.Header.CorrelationId, messageContext);
-                _pendingRequestsAutoResetEvent.Set();
+                _pendingRequestsEvent.Set();
+
                 return messageContext;
             }
         }
@@ -63,7 +76,7 @@ namespace HA4IoT.CloudApi.Services
                     return;
                 }
 
-                pendingMessage.Close(response);
+                pendingMessage.Complete(response);
                 _pendingRequests.Remove(response.Header.CorrelationId);
             }
         }

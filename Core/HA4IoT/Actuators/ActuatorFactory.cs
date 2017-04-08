@@ -68,7 +68,7 @@ namespace HA4IoT.Actuators
             return socket;
         }
 
-        public ILamp RegisterLamp(IArea area, Enum id, IBinaryOutputAdapter adapter)
+        public ILamp RegisterLamp(IArea area, Enum id, ILampAdapter adapter)
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
             if (adapter == null) throw new ArgumentNullException(nameof(adapter));

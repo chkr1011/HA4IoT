@@ -1,6 +1,8 @@
 ﻿using System;
+using HA4IoT.Commands;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Adapters;
+using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Components.Features;
 using HA4IoT.Contracts.Components.States;
@@ -13,16 +15,15 @@ namespace HA4IoT.Sensors.Windows
 {
     public class Window : ComponentBase, IWindow
     {
+        private readonly IWindowAdapter _adapter;
         private readonly ISettingsService _settingsService;
         private WindowStateValue _state;
 
         public Window(string id, IWindowAdapter adapter, ISettingsService settingsService)
             : base(id)
         {
-            if (adapter == null) throw new ArgumentNullException(nameof(adapter));
-            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-
-            _settingsService = settingsService;
+            _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
+            _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
             adapter.StateChanged += (s, e) => Update(e);
         }
 
@@ -42,14 +43,21 @@ namespace HA4IoT.Sensors.Windows
                 .With(new WindowState(_state));
         }
 
+        public override void ExecuteCommand(ICommand command)
+        {
+            var commandExecutor = new CommandExecutor();
+            commandExecutor.Register<ResetCommand>(c => _adapter.Refresh());
+            commandExecutor.Execute(command);
+        }
+        
         private void Update(WindowStateChangedEventArgs eventArgs)
         {
             WindowStateValue newState;
-            if (eventArgs.OpenReedSwitchState == ReedSwitchState.Open)
+            if (eventArgs.OpenReedSwitchState == AdapterSwitchState.Open)
             {
                 newState = WindowStateValue.Open;
             }
-            else if (eventArgs.TildReedSwitchState.HasValue && eventArgs.TildReedSwitchState.Value == ReedSwitchState.Open)
+            else if (eventArgs.TildReedSwitchState.HasValue && eventArgs.TildReedSwitchState.Value == AdapterSwitchState.Open)
             {
                 newState = WindowStateValue.TildOpen;
             }
@@ -66,7 +74,7 @@ namespace HA4IoT.Sensors.Windows
             var oldState = GetState();
             _state = newState;
             
-            if (!_settingsService.GetComponentSettings<ComponentSettings>(Id).IsEnabled)
+            if (!_settingsService.GetSettings<ComponentSettings>(this).IsEnabled)
             {
                 return;
             }

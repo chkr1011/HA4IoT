@@ -13,9 +13,9 @@ namespace HA4IoT.Tests.Actuators
         [TestMethod]
         public void CombinedComponent_TurnOnAndOff()
         {
-            var lamp1 = new Lamp("Lamp1", new TestBinaryOutputAdapter());
-            var lamp2 = new Lamp("Lamp2", new TestBinaryOutputAdapter());
-            var lamp3 = new Lamp("Lamp3", new TestBinaryOutputAdapter());
+            var lamp1 = new Lamp("Lamp1", new TestLampAdapter());
+            var lamp2 = new Lamp("Lamp2", new TestLampAdapter());
+            var lamp3 = new Lamp("Lamp3", new TestLampAdapter());
 
             var logicalComponent = new LogicalComponent("Test");
             logicalComponent.WithComponent(lamp1);

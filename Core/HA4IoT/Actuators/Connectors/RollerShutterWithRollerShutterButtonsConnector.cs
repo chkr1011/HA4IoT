@@ -17,8 +17,8 @@ namespace HA4IoT.Actuators.Connectors
             if (upButton == null) throw new ArgumentNullException(nameof(upButton));
             if (downButton == null) throw new ArgumentNullException(nameof(downButton));
 
-            upButton.PressedShortlyTrigger.Attach(() => HandleBlindButtonPressedEvent(rollerShutter, VerticalMovingStateValue.MovingUp));
-            downButton.PressedShortlyTrigger.Attach(() => HandleBlindButtonPressedEvent(rollerShutter, VerticalMovingStateValue.MovingDown));
+            upButton.PressedShortTrigger.Attach(() => HandleBlindButtonPressedEvent(rollerShutter, VerticalMovingStateValue.MovingUp));
+            downButton.PressedShortTrigger.Attach(() => HandleBlindButtonPressedEvent(rollerShutter, VerticalMovingStateValue.MovingDown));
 
             return rollerShutter;
         }

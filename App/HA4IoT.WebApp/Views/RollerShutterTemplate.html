@@ -1,20 +1,20 @@
 ﻿<span class="status-icon pull-left glyphicon glyphicon-save" ng-class="component.State.PositionTrackingState.IsClosed===true ? 'status-icon-ok' : 'status-icon-default'"></span>
 
 <div class="btn-group pull-right" role="group">
-    <button class="btn btn-default" ng-class="{'btn-danger': component.State.VerticalMovingState==='MovingUp'}" ng-click="ctrl.componentService.invokeRollerShutter(component, 'MoveUp')">
+    <a href="#" class="btn" ng-class="component.State.VerticalMovingState.Value==='MovingUp' ? 'btn-danger' : 'btn-default'" ng-click="ctrl.componentService.invokeRollerShutter(component, 'MoveUp')">
         <span class="glyphicon glyphicon-arrow-up"></span>
-    </button>
-    <button class="btn btn-default" ng-class="{'btn-success': component.State.VerticalMovingState==='Stopped'}" ng-click="ctrl.componentService.invokeRollerShutter(component, 'Stop')">
+    </a>
+    <a href="#" class="btn" ng-class="component.State.VerticalMovingState.Value==='Stopped' ? 'btn-success' : 'btn-default'" ng-click="ctrl.componentService.invokeRollerShutter(component, 'Stop')">
         <span class="glyphicon glyphicon-stop"></span>
-    </button>
-    <button class="btn btn-default" ng-class="{'btn-danger': component.State.VerticalMovingState==='MovingDown'}" ng-click="ctrl.componentService.invokeRollerShutter(component, 'MoveDown')">
+    </a>
+    <a href="#" class="btn btn-default" ng-class="component.State.VerticalMovingState.Value==='MovingDown' ? 'btn-danger' : 'btn-default'" ng-click="ctrl.componentService.invokeRollerShutter(component, 'MoveDown')">
         <span class="glyphicon glyphicon-arrow-down"></span>
-    </button>
+    </a>
 
     <div class="btn-group" role="group">
-        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        <a href="#" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
             <span class="caret"></span>
-        </button>
+        </a>
         <ul class="dropdown-menu dropdown-menu-right">
             <li><a href="#" ng-click="ctrl.componentService.disable(component)">{{ctrl.localizationService.get('UI.DisableComponent')}}</a></li>
             <li><a href="#" ng-click="ctrl.componentService.enable(component)">{{ctrl.localizationService.get('UI.EnableComponent')}}</a></li>

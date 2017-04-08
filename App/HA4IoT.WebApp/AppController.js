@@ -10,7 +10,7 @@ function getVersion(callback) {
 function createAppController($http, $scope, modalService, apiService, localizationService, componentService, notificationService) {
     var c = this;
 
-    $scope.getNumber = function (num) {
+    $scope.getNumbers = function (num) {
         var a = new Array(num + 1);
         for (var i = 0; i < num + 1; i++) {
             a[i] = i;
@@ -19,12 +19,37 @@ function createAppController($http, $scope, modalService, apiService, localizati
         return a;
     }
 
+    $scope.getStateCaption = function (component, id) {
+        if (component == undefined) {
+            return id;
+        }
+
+        if (component.Settings == undefined) {
+            return id;
+        }
+
+        if (component.Settings.SupportedStates == undefined) {
+            return id;
+        }
+
+        var settings = component.Settings.SupportedStates.find(function (i) { return i.Id === id });
+        if (settings == undefined) {
+            return id;
+        }
+
+        if (settings.Caption == undefined) {
+            return id;
+        }
+
+        return settings.Caption;
+    }
+
     c.isInitialized = false;
     c.appConfiguration = { showWeatherStation: true, showSensorsOverview: true, showRollerShuttersOverview: true, showMotionDetectorsOverview: true, showWindowsOverview: true }
 
-    c.Areas = [];
-    c.Status = null;
-    c.StatusHash = "";
+    c.areas = [];
+
+    c.weatherStation = {}
 
     c.sensors = [];
     c.rollerShutters = [];
@@ -47,8 +72,40 @@ function createAppController($http, $scope, modalService, apiService, localizati
         c.version = version;
     });
 
+    c.showInfoPopover = function () {
+        $("#infoIcon").popover({
+            html: true,
+            title: "HA4IoT",
+            placement: "top",
+            content: function () {
+                return $('#infoPopoverContent').html();
+            }
+        });
+    }
+
+    c.showSetColorPopover = function (component) {
+        if (component.State.ColorState == undefined) {
+            return;
+        }
+
+        if (component.showColorSelector === true) {
+            component.showColorSelector = false;
+            return;
+        }
+
+        component.colorSelector.hue = component.State.ColorState.Hue;
+        component.colorSelector.saturation = component.State.ColorState.Saturation;
+        component.colorSelector.value = component.State.ColorState.Value;
+
+        component.showColorSelector = true;
+    }
+
+    c.hideSetColorPopover = function (component) {
+        component.showColorSelector = false;
+    }
+
     c.loadConfiguration = function () {
-        apiService.executeApi("GetConfiguration", {}, null, function (response) {
+        apiService.getConfiguration(function (response) {
 
             localizationService.load(response.Result.Controller.Language);
 
@@ -85,26 +142,15 @@ function createAppController($http, $scope, modalService, apiService, localizati
                     area.Components.push(component);
                 });
 
-                c.Areas.push(area);
+                c.areas.push(area);
             });
 
-            if (c.sensors.length === 0) {
-                c.appConfiguration.showSensorsOverview = false;
-            }
+            c.appConfiguration.showSensorsOverview = c.sensors.length > 0;
+            c.appConfiguration.showRollerShuttersOverview = c.rollerShutters.length > 0;
+            c.appConfiguration.showMotionDetectorsOverview = c.motionDetectors.length > 0;
+            c.appConfiguration.showWindowsOverview = c.windows.length > 0;
 
-            if (c.rollerShutters.length === 0) {
-                c.appConfiguration.showRollerShuttersOverview = false;
-            }
-
-            if (c.motionDetectors.length === 0) {
-                c.appConfiguration.showMotionDetectorsOverview = false;
-            }
-
-            if (c.windows.length === 0) {
-                c.appConfiguration.showWindowsOverview = false;
-            }
-
-            if (c.Areas.length === 1) {
+            if (c.areas.length === 1) {
                 c.setActivePanel(c.Areas[0].id);
             }
 
@@ -112,9 +158,9 @@ function createAppController($http, $scope, modalService, apiService, localizati
             c.apiService.pollStatus();
             c.isInitialized = true;
         },
-        function () {
-            modalService.show("Configuration not available", "Unable to load the configuration. Please try again later.");
-        });
+            function () {
+                modalService.show("Configuration not available", "Unable to load the configuration. Please try again later.");
+            });
     };
 
     c.setActivePanel = function (id) {
@@ -132,41 +178,56 @@ function createAppController($http, $scope, modalService, apiService, localizati
     }
 
     c.applyNewStatus = function (status) {
-        c.Status = status;
         console.log("Updating UI due to state changes");
 
-        $.each(status.Components,
-            function (id, component) {
-                c.updateComponentState(id, component);
-            });
-
-        updateOnStateCounters(c.Areas);
-
-        $scope.$apply(function () { $scope.msgs = status; });
-    };
-
-    $scope.toggleIsEnabled = function (component) {
-        var isEnabled = !component.Settings.IsEnabled;
-
-        updateComponentSettings(component.Id, {
-            IsEnabled: isEnabled
-        }, function () {
-            component.Settings.IsEnabled = isEnabled;
+        $.each(status.Components, function (id, component) {
+            c.updateComponentState(id, component);
         });
+
+        c.weatherStation.temperature = status.OutdoorTemperature;
+        c.weatherStation.humidity = status.OutdoorHumidity;
+        c.weatherStation.sunrise = status.Sunrise;
+        c.weatherStation.sunset = status.Sunset;
+        c.weatherStation.weather = status.Weather;
+
+        updateOnStateCounters(c.areas);
     };
 
     c.updateComponentState = function (componentId, updatedComponent) {
-        $.each(c.Areas, function (i, area) {
+        $.each(c.areas, function (i, area) {
             $.each(area.Components, function (j, component) {
                 if (component.Id === componentId) {
                     component.Settings = updatedComponent.Settings;
                     component.State = updatedComponent.State;
+
+                    if (component.onStateChangedCallback != undefined) {
+                        component.onStateChangedCallback(component);
+                    }
                 }
             });
         });
     };
 
+    c.toggleIsEnabled = function (component) {
+        if (component.Settings.IsEnabled) {
+            componentService.disable(component);
+        } else {
+            componentService.enable(component);
+        }
+    };
+
     c.loadConfiguration();
+}
+
+function onLampStateChangedCallback(lamp) {
+    if (lamp.Features.ColorFeature == undefined) {
+        return;
+    }
+
+    var color = convertHsvToRgb(lamp.State.ColorState.Hue, lamp.State.ColorState.Saturation, lamp.State.ColorState.Value);
+
+    var buttonSelector = "[id='color-" + lamp.Id + "']";
+    $(buttonSelector).css("background-color", "rgb(" + color.r + "," + color.g + "," + color.b + ")");
 }
 
 function configureArea(area) {
@@ -183,7 +244,7 @@ function configureComponent(area, component) {
     component.Image = getAppSetting(component, "Image", "DefaultActuator");
 
     component.Caption = getAppSetting(component, "Caption", "#" + component.Id);
-    component.OverviewCaption = getAppSetting(component, "OverviewCaption", "#" + component.Id);
+    component.OverviewCaption = area.Caption + " / " + component.Caption;
 
     component.SortValue = getAppSetting(component, "SortValue", 0);
     component.IsVisible = getAppSetting(component, "IsVisible", true);
@@ -196,84 +257,39 @@ function configureComponent(area, component) {
 
     switch (component.Type) {
         case "Lamp":
+            component.template = "Views/LampTemplate.html";
+            component.onStateChangedCallback = onLampStateChangedCallback;
+            component.colorSelector = {};
+            break;
         case "Socket":
-            {
-                component.Template = "Views/ToggleTemplate.html";
-                break;
-            }
-
+            component.template = "Views/ToggleTemplate.html";
+            break;
         case "Fan":
-            {
-                component.Template = "Views/FanTemplate.html";
-                break;
-            }
-
+            component.template = "Views/FanTemplate.html";
+            break;
         case "RollerShutter":
-            {
-                component.Template = "Views/RollerShutterTemplate.html";
-                break;
-            }
-
+            component.template = "Views/RollerShutterTemplate.html";
+            break;
         case "Window":
-            {
-                component.Template = "Views/WindowTemplate.html";
-                break;
-            }
-
+            component.template = "Views/WindowTemplate.html";
+            break;
         case "StateMachine":
-            {
-                component.Template = "Views/StateMachineTemplate.html";
-
-                //var extendedSupportedStates = [];
-                //component.SupportedStates.forEach(function (supportedState) {
-
-                //    if (component.Settings.SupportedStates === null || component.Settings.SupportedStates === undefined) {
-                //        component.Settings.SupportedStates = [];
-                //    }
-
-                //    var stateSettings = component.Settings.SupportedStates.find(function (i) {
-                //        return i.Id === supportedState;
-                //    });
-
-                //    if (stateSettings === null || stateSettings === undefined) {
-                //        stateSettings = {
-                //            Id: supportedState,
-                //            Caption: supportedState
-                //        }
-                //    }
-
-                //    extendedSupportedStates.push(stateSettings);
-                //});
-
-                //component.SupportedStates = extendedSupportedStates;
-                break;
-            }
-
+            component.template = "Views/StateMachineTemplate.html";
+            break;
         case "TemperatureSensor":
-            {
-                component.Template = "Views/TemperatureSensorTemplate.html";
-                break;
-            }
-
+            component.template = "Views/TemperatureSensorTemplate.html";
+            break;
         case "HumiditySensor":
-            {
-                component.Template = "Views/HumiditySensorTemplate.html";
-                component.DangerValue = getAppSetting(component, "DangerValue", 70);
-                component.WarningValue = getAppSetting(component, "WarningValue", 60);
-                break;
-            }
-
+            component.template = "Views/HumiditySensorTemplate.html";
+            component.DangerValue = getAppSetting(component, "DangerValue", 70);
+            component.WarningValue = getAppSetting(component, "WarningValue", 60);
+            break;
         case "MotionDetector":
-            {
-                component.Template = "Views/MotionDetectorTemplate.html";
-                break;
-            }
-
+            component.template = "Views/MotionDetectorTemplate.html";
+            break;
         case "Button":
-            {
-                component.Template = "Views/ButtonTemplate.html";
-                break;
-            }
+            component.template = "Views/ButtonTemplate.html";
+            break;
 
         default:
             {
@@ -309,49 +325,36 @@ function updateOnStateCounters(areas) {
             }
         });
 
-        area.OnStateCount = count + 10; // TEST!
+        area.OnStateCount = count;
     });
 }
 
-function invokeComponent(id, payload, successCallback) {
+function convertHsvToRgb(h, s, v) {
+    var r, g, b;
 
-    payload.ComponentId = id;
+    if (arguments.length === 1) {
+        s = h.s, v = h.v, h = h.h;
+    }
 
-    var url = "/api/Service/IComponentService/Invoke?body=" + JSON.stringify(payload);
-    var options = {
-        method: "POST",
-        url: url,
-        timeout: 2500
+    var i = Math.floor(h * 6);
+    var f = h * 6 - i;
+    var p = v * (1 - s);
+    var q = v * (1 - f * s);
+    var t = v * (1 - (1 - f) * s);
+
+    switch (i % 6) {
+        case 0: r = v, g = t, b = p; break;
+        case 1: r = q, g = v, b = p; break;
+        case 2: r = p, g = v, b = t; break;
+        case 3: r = p, g = q, b = v; break;
+        case 4: r = t, g = p, b = v; break;
+        case 5: r = v, g = p, b = q; break;
+        default: console.error("Unable to convert HSV to RGB."); break;
+    }
+
+    return {
+        r: Math.round(r * 255),
+        g: Math.round(g * 255),
+        b: Math.round(b * 255)
     };
-
-    $.ajax(options).done(function () {
-        if (successCallback != null) {
-            successCallback();
-        }
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        alert(textStatus);
-    });
-}
-
-function updateComponentSettings(id, newSettings, successCallback) {
-
-    var payload = {
-        Uri: id,
-        Settings: newSettings
-    };
-
-    var url = "/api/Service/ISettingsService/Import?body=" + JSON.stringify(payload);
-    var options = {
-        method: "POST",
-        url: url,
-        timeout: 2500
-    };
-
-    $.ajax(options).done(function () {
-        if (successCallback != null) {
-            successCallback();
-        }
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        alert(textStatus);
-    });
 }

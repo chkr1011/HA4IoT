@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-
-namespace HA4IoT.Contracts.Components.States
+﻿namespace HA4IoT.Contracts.Components.States
 {
     public abstract class NumericBasedState : IComponentFeatureState
     {
@@ -10,10 +8,5 @@ namespace HA4IoT.Contracts.Components.States
         }
 
         public float? Value { get; }
-
-        public JToken Serialize()
-        {
-            return Value == null ? new JValue((object)null) : JToken.FromObject(Value);
-        }
     }
 }

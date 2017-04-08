@@ -4,7 +4,7 @@ using HA4IoT.Contracts.Hardware.Services;
 
 namespace HA4IoT.Contracts.Hardware.DeviceMessaging
 {
-    public static class DeviceMessageBusServiceExtensions
+    public static class DeviceMessageBrokerServiceExtensions
     {
         public static void Publish(this IDeviceMessageBrokerService deviceMessageBrokerService, string topic,
             string message, MqttQosLevel qosLevel)

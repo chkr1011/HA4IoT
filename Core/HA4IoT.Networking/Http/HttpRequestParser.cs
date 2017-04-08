@@ -111,17 +111,6 @@ namespace HA4IoT.Networking.Http
 
             _request.Query = _request.Uri.Substring(indexOfQuestionMark + 1);
             _request.Uri = _request.Uri.Substring(0, indexOfQuestionMark);
-
-            // Parse a special query parameter.
-            if (!_request.Query.StartsWith("body="))
-            {
-                return;
-            }
-
-            _request.Body = Encoding.ASCII.GetBytes(Uri.UnescapeDataString(_request.Query.Substring("body=".Length)));
-            _request.Headers[HttpHeaderNames.ContentLength] = _request.Body.Length.ToString();
-
-            _request.Query = null;
         }
     }
 }

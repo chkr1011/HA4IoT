@@ -15,7 +15,7 @@ namespace HA4IoT.Tests.Api
         public void API_InvokeCommand()
         {
             var testController = new TestController();
-            var socket = new Lamp("Test", new TestBinaryOutputAdapter());
+            var socket = new Lamp("Test", new TestLampAdapter());
             socket.ResetState();
             testController.AddComponent(socket);
 

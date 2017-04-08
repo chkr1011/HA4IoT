@@ -1,34 +1,32 @@
 ﻿using System;
+using System.Diagnostics;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Services.System
 {
-    public class DelayedAction : IDelayedAction
+    public sealed class DelayedAction : IDelayedAction, IDisposable
     {
+        private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
         private readonly ITimerService _timerService;
         private readonly Action _action;
-        private readonly Timeout _timeout;
+        private readonly TimeSpan _delay;
         
         public DelayedAction(TimeSpan delay, Action action, ITimerService timerService)
         {
-            if (action == null) throw new ArgumentNullException(nameof(action));
-            if (timerService == null) throw new ArgumentNullException(nameof(timerService));
-
-            _timerService = timerService;
+            _timerService = timerService ?? throw new ArgumentNullException(nameof(timerService));
+            _action = action ?? throw new ArgumentNullException(nameof(action));
+            _delay = delay;
             _timerService.Tick += CheckForTimeout;
-
-            _timeout = new Timeout(timerService, delay);
-            _action = action;
         }
 
         private void CheckForTimeout(object sender, TimerTickEventArgs e)
         {
-            if (!_timeout.IsElapsed)
+            if (_stopwatch.Elapsed < _delay)
             {
                 return;
             }
-
+            
             try
             {
                 _action?.Invoke();
@@ -42,7 +40,12 @@ namespace HA4IoT.Services.System
         public void Cancel()
         {
             _timerService.Tick -= CheckForTimeout;
-            _timeout.Stop();
+            _stopwatch.Stop();
+        }
+
+        public void Dispose()
+        {
+            Cancel();
         }
     }
 }

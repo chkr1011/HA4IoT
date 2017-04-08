@@ -1,5 +1,4 @@
 ﻿using System;
-using Windows.Gaming.Input.ForceFeedback;
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;
@@ -70,21 +69,13 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)
         {
-            if (areaService == null) throw new ArgumentNullException(nameof(areaService));
-            if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
-            if (ccToolsDeviceService == null) throw new ArgumentNullException(nameof(ccToolsDeviceService));
-            if (outpostDeviceService == null) throw new ArgumentNullException(nameof(outpostDeviceService));
-            if (automationFactory == null) throw new ArgumentNullException(nameof(automationFactory));
-            if (actuatorFactory == null) throw new ArgumentNullException(nameof(actuatorFactory));
-            if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
-
-            _areaService = areaService;
-            _deviceService = deviceService;
-            _ccToolsBoardService = ccToolsDeviceService;
-            _outpostDeviceService = outpostDeviceService;
-            _automationFactory = automationFactory;
-            _actuatorFactory = actuatorFactory;
-            _sensorFactory = sensorFactory;
+            _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
+            _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
+            _ccToolsBoardService = ccToolsDeviceService ?? throw new ArgumentNullException(nameof(ccToolsDeviceService));
+            _outpostDeviceService = outpostDeviceService ?? throw new ArgumentNullException(nameof(outpostDeviceService));
+            _automationFactory = automationFactory ?? throw new ArgumentNullException(nameof(automationFactory));
+            _actuatorFactory = actuatorFactory ?? throw new ArgumentNullException(nameof(actuatorFactory));
+            _sensorFactory = sensorFactory ?? throw new ArgumentNullException(nameof(sensorFactory));
         }
 
         public void Apply()
@@ -128,8 +119,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             _sensorFactory.RegisterRollerShutterButtons(area, Kitchen.RollerShutterButtonUp, input2.GetInput(15),
                 Kitchen.RollerShutterButtonDown, input2.GetInput(14));
 
-            area.GetButton(Kitchen.ButtonKitchenette).PressedShortlyTrigger.Attach(() => area.GetLamp(Kitchen.LightCeilingMiddle).TryTogglePowerState());
-            area.GetButton(Kitchen.ButtonPassage).PressedShortlyTrigger.Attach(() => area.GetLamp(Kitchen.LightCeilingMiddle).TryTogglePowerState());
+            area.GetButton(Kitchen.ButtonKitchenette).PressedShortTrigger.Attach(() => area.GetLamp(Kitchen.LightCeilingMiddle).TryTogglePowerState());
+            area.GetButton(Kitchen.ButtonPassage).PressedShortTrigger.Attach(() => area.GetLamp(Kitchen.LightCeilingMiddle).TryTogglePowerState());
 
             _automationFactory.RegisterRollerShutterAutomation(area, Kitchen.RollerShutterAutomation)
                 .WithRollerShutters(area.GetRollerShutter(Kitchen.RollerShutter));
@@ -138,12 +129,6 @@ namespace HA4IoT.Controller.Main.Main.Rooms
                 area.GetButton(Kitchen.RollerShutterButtonUp), area.GetButton(Kitchen.RollerShutterButtonDown));
 
             area.GetButton(Kitchen.RollerShutterButtonUp).PressedLongTrigger.Attach(() => area.GetComponent(Kitchen.LightKitchenette).TryTogglePowerState());
-
-            var random = new Random((int)DateTime.UtcNow.Ticks);
-            area.GetButton(Kitchen.RollerShutterButtonDown).PressedLongTrigger.Attach(() =>
-            {
-                rgb.SetColor(random.Next(1024), random.Next(1024), random.Next(1024));
-            });
 
             _actuatorFactory.RegisterLogicalComponent(area, Kitchen.CombinedAutomaticLights)
                 .WithComponent(area.GetLamp(Kitchen.LightCeilingWall))

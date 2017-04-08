@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using HA4IoT.Components;
 using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
-using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Conditions;
@@ -18,16 +18,16 @@ namespace HA4IoT.Automations
 {
     public class TurnOnAndOffAutomation : AutomationBase
     {
+        private readonly ISettingsService _settingsService;
         private readonly object _syncRoot = new object();
+        private readonly List<IComponent> _components = new List<IComponent>();
+
         private readonly ConditionsValidator _enablingConditionsValidator = new ConditionsValidator().WithDefaultState(ConditionState.NotFulfilled);
         private readonly ConditionsValidator _disablingConditionsValidator = new ConditionsValidator().WithDefaultState(ConditionState.NotFulfilled);
 
         private readonly IDateTimeService _dateTimeService;
         private readonly ISchedulerService _schedulerService;
         private readonly IDaylightService _daylightService;
-
-        private readonly List<Action> _flipActions = new List<Action>();
-        private readonly List<Action> _flopActions = new List<Action>();
 
         private readonly Stopwatch _lastTurnedOn = new Stopwatch();
 
@@ -39,16 +39,12 @@ namespace HA4IoT.Automations
         public TurnOnAndOffAutomation(string id, IDateTimeService dateTimeService, ISchedulerService schedulerService, ISettingsService settingsService, IDaylightService daylightService)
             : base(id)
         {
-            if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
-            if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
-            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-            if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
+            _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
+            _dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
+            _schedulerService = schedulerService ?? throw new ArgumentNullException(nameof(schedulerService));
+            _daylightService = daylightService ?? throw new ArgumentNullException(nameof(daylightService));
 
-            _dateTimeService = dateTimeService;
-            _schedulerService = schedulerService;
-            _daylightService = daylightService;
-
-            settingsService.CreateAutomationSettingsMonitor<TurnOnAndOffAutomationSettings>(Id, s => Settings = s);
+            settingsService.CreateSettingsMonitor<TurnOnAndOffAutomationSettings>(this, s => Settings = s.NewSettings);
         }
 
         public TurnOnAndOffAutomationSettings Settings { get; private set; }
@@ -60,12 +56,12 @@ namespace HA4IoT.Automations
             motionDetector.MotionDetectedTrigger.Attach(ExecuteAutoTrigger);
             motionDetector.MotionDetectionCompletedTrigger.Attach(StartTimeout);
 
-            motionDetector.Settings.ValueChanged += (s, e) => CancelTimeoutIfMotionDetectorDeactivated(motionDetector, e);
+            _settingsService.CreateSettingsMonitor<MotionDetectorSettings>(motionDetector, CancelTimeoutIfMotionDetectorDeactivated);
 
             return this;
         }
 
-        public TurnOnAndOffAutomation WithFlipTrigger(ITrigger trigger)
+        public TurnOnAndOffAutomation WithTrigger(ITrigger trigger)
         {
             if (trigger == null) throw new ArgumentNullException(nameof(trigger));
 
@@ -73,29 +69,11 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        public TurnOnAndOffAutomation WithFlipAction(Action action)
+        public TurnOnAndOffAutomation WithTarget(IComponent component)
         {
-            if (action == null) throw new ArgumentNullException(nameof(action));
+            if (component == null) throw new ArgumentNullException(nameof(component));
 
-            _flipActions.Add(action);
-            return this;
-        }
-
-        public TurnOnAndOffAutomation WithFlopAction(Action action)
-        {
-            if (action == null) throw new ArgumentNullException(nameof(action));
-
-            _flopActions.Add(action);
-            return this;
-        }
-
-        public TurnOnAndOffAutomation WithTarget(IComponent actuator)
-        {
-            if (actuator == null) throw new ArgumentNullException(nameof(actuator));
-
-            _flipActions.Add(() => actuator.ExecuteCommand(new TurnOnCommand()));
-            _flopActions.Add(() => actuator.ExecuteCommand(new TurnOffCommand()));
-
+            _components.Add(component);
             return this;
         }
 
@@ -118,28 +96,28 @@ namespace HA4IoT.Automations
 
         public TurnOnAndOffAutomation WithEnabledAtDay()
         {
-            Func<TimeSpan> start = () => _daylightService.Sunrise.Add(TimeSpan.FromHours(1));
-            Func<TimeSpan> end = () => _daylightService.Sunset.Subtract(TimeSpan.FromHours(1));
+            TimeSpan Start() => _daylightService.Sunrise.Add(TimeSpan.FromHours(1));
+            TimeSpan End() => _daylightService.Sunset.Subtract(TimeSpan.FromHours(1));
 
-            _enablingConditionsValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_dateTimeService).WithStart(start).WithEnd(end));
+            _enablingConditionsValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_dateTimeService).WithStart(Start).WithEnd(End));
             return this;
         }
 
         public TurnOnAndOffAutomation WithEnabledAtNight()
         {
-            Func<TimeSpan> start = () => _daylightService.Sunset.Subtract(TimeSpan.FromHours(1));
-            Func<TimeSpan> end = () => _daylightService.Sunrise.Add(TimeSpan.FromHours(1));
+            TimeSpan Start() => _daylightService.Sunset.Subtract(TimeSpan.FromHours(1));
+            TimeSpan End() => _daylightService.Sunrise.Add(TimeSpan.FromHours(1));
 
-            _enablingConditionsValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_dateTimeService).WithStart(start).WithEnd(end));
+            _enablingConditionsValidator.WithCondition(ConditionRelation.Or, new TimeRangeCondition(_dateTimeService).WithStart(Start).WithEnd(End));
             return this;
         }
 
-        public TurnOnAndOffAutomation WithSkipIfAnyActuatorIsAlreadyOn(params IComponent[] actuators)
+        public TurnOnAndOffAutomation WithSkipIfAnyIsAlreadyOn(params IComponent[] components)
         {
-            if (actuators == null) throw new ArgumentNullException(nameof(actuators));
+            if (components == null) throw new ArgumentNullException(nameof(components));
 
             _disablingConditionsValidator.WithCondition(ConditionRelation.Or,
-                new Condition().WithExpression(() => actuators.Any(a => a.GetState().Has(PowerState.On))));
+                new Condition().WithExpression(() => components.Any(a => a.GetState().Has(PowerState.On))));
 
             return this;
         }
@@ -156,14 +134,9 @@ namespace HA4IoT.Automations
             return this;
         }
 
-        private void CancelTimeoutIfMotionDetectorDeactivated(IMotionDetector motionDetector, SettingValueChangedEventArgs eventArgs)
+        private void CancelTimeoutIfMotionDetectorDeactivated(SettingsChangedEventArgs<MotionDetectorSettings> e)
         {
-            if (eventArgs.SettingName != "IsEnabled")
-            {
-                return;
-            }
-            
-            if (!motionDetector.Settings.IsEnabled)
+            if (!e.NewSettings.IsEnabled)
             {
                 lock (_syncRoot)
                 {
@@ -250,10 +223,7 @@ namespace HA4IoT.Automations
         {
             _turnOffTimeout?.Cancel();
 
-            foreach (var action in _flipActions)
-            {
-                action();
-            }
+            _components.ForEach(c => c.TryTurnOn());
             
             _isOn = true;
             _lastTurnedOn.Restart();
@@ -263,10 +233,7 @@ namespace HA4IoT.Automations
         {
             _turnOffTimeout?.Cancel();
 
-            foreach (var action in _flopActions)
-            {
-                action();
-            }
+            _components.ForEach(c => c.TryTurnOff());
 
             _isOn = false;
             _lastTurnedOn.Stop();

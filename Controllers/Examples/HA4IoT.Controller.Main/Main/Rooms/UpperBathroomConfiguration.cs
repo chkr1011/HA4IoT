@@ -57,23 +57,14 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)
         {
-            if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
-            if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
-            if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
-            if (areaService == null) throw new ArgumentNullException(nameof(areaService));
-            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-            if (automationFactory == null) throw new ArgumentNullException(nameof(automationFactory));
-            if (actuatorFactory == null) throw new ArgumentNullException(nameof(actuatorFactory));
-            if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
-
-            _ccToolsBoardService = ccToolsBoardService;
-            _deviceService = deviceService;
-            _schedulerService = schedulerService;
-            _areaService = areaService;
-            _settingsService = settingsService;
-            _automationFactory = automationFactory;
-            _actuatorFactory = actuatorFactory;
-            _sensorFactory = sensorFactory;
+            _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
+            _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
+            _schedulerService = schedulerService ?? throw new ArgumentNullException(nameof(schedulerService));
+            _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
+            _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
+            _automationFactory = automationFactory ?? throw new ArgumentNullException(nameof(automationFactory));
+            _actuatorFactory = actuatorFactory ?? throw new ArgumentNullException(nameof(actuatorFactory));
+            _sensorFactory = sensorFactory ?? throw new ArgumentNullException(nameof(sensorFactory));
         }
 
         public void Apply()
@@ -132,7 +123,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
                 _relay2 = hsrel5[HSREL5Pin.GPIO0];
             }
 
-            public void SetLevel(int level, params IHardwareParameter[] parameters)
+            public void SetState(int level, params IHardwareParameter[] parameters)
             {
                 switch (level)
                 {

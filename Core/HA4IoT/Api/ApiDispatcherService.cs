@@ -103,8 +103,8 @@ namespace HA4IoT.Api
                 }
 
                 var action = @namespace + "/" + method.Name;
-                Action<IApiContext> handler = apiContext => method.Invoke(controller, new object[] { apiContext });
-                Route(action, handler);
+                void Handler(IApiContext apiContext) => method.Invoke(controller, new object[] {apiContext});
+                Route(action, Handler);
 
                 _log.Verbose($"Exposed API method to action '{action}'.");
             }
@@ -147,6 +147,12 @@ namespace HA4IoT.Api
 
         private void HandleExecuteRequest(IApiContext apiContext)
         {
+            if (apiContext.Parameter == null || string.IsNullOrEmpty(apiContext.Action))
+            {
+                apiContext.ResultCode = ApiResultCode.InvalidParameter;
+                return;
+            }
+            
             var apiRequest = apiContext.Parameter.ToObject<ApiRequest>();
             if (apiRequest == null)
             {

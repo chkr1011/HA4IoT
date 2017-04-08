@@ -16,9 +16,7 @@ namespace HA4IoT.Networking.Http
 
         public HttpServer(ILogService logService)
         {
-            if (logService == null) throw new ArgumentNullException(nameof(logService));
-
-            _log = logService.CreatePublisher(nameof(HttpServer));
+            _log = logService?.CreatePublisher(nameof(HttpServer)) ?? throw new ArgumentNullException(nameof(logService));
 
             _serverSocket.Control.KeepAlive = true;
             _serverSocket.Control.NoDelay = true;

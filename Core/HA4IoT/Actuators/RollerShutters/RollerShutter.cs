@@ -12,7 +12,6 @@ using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Services.System;
-using HA4IoT.Settings;
 
 namespace HA4IoT.Actuators.RollerShutters
 {
@@ -20,7 +19,6 @@ namespace HA4IoT.Actuators.RollerShutters
     {
         private readonly object _syncRoot = new object();
         private readonly IRollerShutterAdapter _adapter;
-        private readonly ISettingsService _settingsService;
         private readonly Timeout _autoOffTimeout;
 
         private PowerStateValue _powerState = PowerStateValue.Off;
@@ -35,18 +33,15 @@ namespace HA4IoT.Actuators.RollerShutters
             : base(id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
-            if (adapter == null) throw new ArgumentNullException(nameof(adapter));
-            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
-            _adapter = adapter;
-            _settingsService = settingsService;
+            _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
 
             _autoOffTimeout = new Timeout(timerService);
             _autoOffTimeout.Elapsed += (s, e) => Stop();
 
             timerService.Tick += (s, e) => TrackPosition(e);
 
-            settingsService.CreateComponentSettingsMonitor<RollerShutterSettings>(Id, s => Settings = s);
+            settingsService.CreateSettingsMonitor<RollerShutterSettings>(this, s => Settings = s.NewSettings);
         }
 
         public RollerShutterSettings Settings { get; set; }
@@ -88,11 +83,11 @@ namespace HA4IoT.Actuators.RollerShutters
 
             if (forceUpdate)
             {
-                _adapter.StartMoveUp(HardwareParameter.ForceUpdateState);
+                _adapter.SetState(AdapterRollerShutterState.MoveUp, HardwareParameter.ForceUpdateState);
             }
             else
             {
-                _adapter.StartMoveUp();
+                _adapter.SetState(AdapterRollerShutterState.MoveUp);
             }
             
             _powerState = PowerStateValue.On;
@@ -106,7 +101,7 @@ namespace HA4IoT.Actuators.RollerShutters
         {
             var oldState = GetState();
 
-            _adapter.StartMoveDown();
+            _adapter.SetState(AdapterRollerShutterState.MoveDown);
 
             _powerState = PowerStateValue.On;
             _verticalMovingState = VerticalMovingStateValue.MovingDown;
@@ -119,7 +114,7 @@ namespace HA4IoT.Actuators.RollerShutters
         {
             var oldState = GetState();
 
-            _adapter.Stop();
+            _adapter.SetState(AdapterRollerShutterState.Stop);
 
             _powerState = PowerStateValue.Off;
             _verticalMovingState = VerticalMovingStateValue.Stopped;

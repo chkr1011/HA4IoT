@@ -11,19 +11,11 @@ namespace HA4IoT.Tests.Mockups.Adapters
 
         public int StartMoveDownCalledCount { get; set; }
 
-        public void StartMoveUp(params IHardwareParameter[] parameters)
+        public void SetState(AdapterRollerShutterState state, params IHardwareParameter[] parameters)
         {
-            StartMoveUpCalledCount++;
-        }
-
-        public void Stop(params IHardwareParameter[] parameters)
-        {
-            StopCalledCount++;
-        }
-
-        public void StartMoveDown(params IHardwareParameter[] parameters)
-        {
-            StartMoveDownCalledCount++;
+            if (state == AdapterRollerShutterState.Stop) StopCalledCount++;
+            if (state == AdapterRollerShutterState.MoveUp) StartMoveUpCalledCount++;
+            if (state == AdapterRollerShutterState.MoveDown) StartMoveDownCalledCount++;
         }
     }
 }

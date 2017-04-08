@@ -70,21 +70,21 @@ namespace HA4IoT.Simulator
             
             area.GetComponent<IButton>("Button1").PressedLongTrigger.Attach(() => area.GetComponent<ILamp>("Lamp2").TryTogglePowerState());
 
-            area.GetComponent<IButton>("Button2").PressedShortlyTrigger.Attach(() =>
+            area.GetComponent<IButton>("Button2").PressedShortTrigger.Attach(() =>
             {
                 area.GetComponent<ILamp>("RGBS1").TryTogglePowerState();
             });
 
             area.GetComponent<IButton>("Button3")
-                .PressedShortlyTrigger
+                .PressedShortTrigger
                 .Attach(() => area.GetComponent<ISocket>("Socket1").TryTogglePowerState());
 
             area.GetComponent<IButton>("Button4")
-                .PressedShortlyTrigger
+                .PressedShortTrigger
                 .Attach(() => area.GetComponent<ISocket>("Socket2").TryTogglePowerState());
 
             area.GetComponent<IButton>("Button5_SONOFF")
-                .PressedShortlyTrigger
+                .PressedShortTrigger
                 .Attach(() => area.GetComponent<ISocket>("Socket_POW_01").TryTogglePowerState());
         }
     }

@@ -25,7 +25,7 @@ namespace HA4IoT.ExternalServices.Twitter
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             if (logService == null) throw new ArgumentNullException(nameof(logService));
 
-            settingsService.CreateSettingsMonitor<TwitterClientServiceSettings>(s => Settings = s);
+            settingsService.CreateSettingsMonitor<TwitterClientServiceSettings>(s => Settings = s.NewSettings);
 
             _log = logService.CreatePublisher(nameof(TwitterClientService));
         }

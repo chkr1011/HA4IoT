@@ -120,9 +120,9 @@ namespace HA4IoT.Tests.Actuators
             
             var buttonAdapter = new TestButtonAdapter();
             var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>());
-            var lamp = new Lamp("Test", new TestBinaryOutputAdapter());
+            var lamp = new Lamp("Test", new TestLampAdapter());
 
-            button.PressedShortlyTrigger.Attach(() => lamp.TryTogglePowerState());
+            button.PressedShortTrigger.Attach(() => lamp.TryTogglePowerState());
 
             lamp.GetState().Has(PowerState.Off);
             buttonAdapter.Touch();

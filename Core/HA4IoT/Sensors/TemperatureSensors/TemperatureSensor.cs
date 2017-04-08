@@ -1,6 +1,8 @@
 ﻿using System;
+using HA4IoT.Commands;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Adapters;
+using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Components.Features;
 using HA4IoT.Contracts.Components.States;
@@ -11,15 +13,16 @@ namespace HA4IoT.Sensors.TemperatureSensors
 {
     public class TemperatureSensor : ComponentBase, ITemperatureSensor
     {
+        private readonly INumericSensorAdapter _adapter;
         private float? _value;
 
         public TemperatureSensor(string id, INumericSensorAdapter adapter, ISettingsService settingsService)
             : base(id)
         {
-            if (adapter == null) throw new ArgumentNullException(nameof(adapter));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-            
-            settingsService.CreateComponentSettingsMonitor<SingleValueSensorSettings>(Id, s => Settings = s);
+
+            _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
+            settingsService.CreateSettingsMonitor<SingleValueSensorSettings>(this, s => Settings = s.NewSettings);
 
             adapter.ValueChanged += (s, e) => Update(e.Value);
         }
@@ -36,6 +39,13 @@ namespace HA4IoT.Sensors.TemperatureSensors
         {
             return new ComponentFeatureStateCollection()
                 .With(new TemperatureState(_value));
+        }
+
+        public override void ExecuteCommand(ICommand command)
+        {
+            var commandExecutor = new CommandExecutor();
+            commandExecutor.Register<ResetCommand>(c => _adapter.Refresh());
+            commandExecutor.Execute(command);
         }
 
         private void Update(float? newValue)
@@ -58,6 +68,11 @@ namespace HA4IoT.Sensors.TemperatureSensors
             }
 
             if (!_value.HasValue)
+            {
+                return false;
+            }
+
+            if (!newValue.HasValue)
             {
                 return false;
             }

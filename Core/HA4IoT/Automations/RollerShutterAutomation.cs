@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Actuators;
@@ -23,7 +24,7 @@ namespace HA4IoT.Automations
         private readonly IDateTimeService _dateTimeService;
         private readonly IDaylightService _daylightService;
         private readonly IOutdoorTemperatureService _outdoorTemperatureService;
-        private readonly IComponentRegistryService _componentService;
+        private readonly IComponentRegistryService _componentRegistry;
         private readonly ISettingsService _settingsService;
 
         private bool _maxOutsideTemperatureApplied;
@@ -42,30 +43,23 @@ namespace HA4IoT.Automations
             IResourceService resourceService)
             : base(id)
         {
-            if (notificationService == null) throw new ArgumentNullException(nameof(notificationService));
-            if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
-            if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
-            if (outdoorTemperatureService == null) throw new ArgumentNullException(nameof(outdoorTemperatureService));
-            if (componentRegistry == null) throw new ArgumentNullException(nameof(componentRegistry));
-            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             if (resourceService == null) throw new ArgumentNullException(nameof(resourceService));
 
-            _notificationService = notificationService;
-            _dateTimeService = dateTimeService;
-            _daylightService = daylightService;
-            _outdoorTemperatureService = outdoorTemperatureService;
-            _componentService = componentRegistry;
-            _settingsService = settingsService;
-            _componentService = componentRegistry;
-
+            _notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
+            _dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
+            _daylightService = daylightService ?? throw new ArgumentNullException(nameof(daylightService));
+            _outdoorTemperatureService = outdoorTemperatureService ?? throw new ArgumentNullException(nameof(outdoorTemperatureService));
+            _componentRegistry = componentRegistry ?? throw new ArgumentNullException(nameof(componentRegistry));
+            _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
+           
             resourceService.RegisterText(
                 RollerShutterAutomationNotification.AutoClosingDueToHighOutsideTemperature, 
                 "Closing roller shutter because outside temperature reaches {AutoCloseIfTooHotTemperaure}°C.");
 
-            settingsService.CreateAutomationSettingsMonitor<RollerShutterAutomationSettings>(Id, s => Settings = s);
+            settingsService.CreateSettingsMonitor<RollerShutterAutomationSettings>(this, s => Settings = s.NewSettings);
 
             // TODO: Consider timer service here.
-            schedulerService.RegisterSchedule("RollerShutterAutomation-" + Guid.NewGuid(), TimeSpan.FromMinutes(1), PerformPendingActions);
+            schedulerService.RegisterSchedule("RollerShutterAutomation-" + Guid.NewGuid(), TimeSpan.FromMinutes(1), () => PerformPendingActions());
         }
 
         public RollerShutterAutomationSettings Settings { get; private set; }
@@ -126,7 +120,7 @@ namespace HA4IoT.Automations
 
             if (TooColdIsAffected())
             {
-                _notificationService.CreateInformation($"Cancelling opening because outside temperature is lower than {Settings.SkipIfFrozenTemperature}°C.");
+                _notificationService.CreateInformation($"Cancelling opening '{GetRollerShutterNames()}' because outside temperature is lower than {Settings.SkipIfFrozenTemperature}°C'.");
 
                 _autoOpenIsApplied = true;
                 _autoCloseIsApplied = false;
@@ -136,7 +130,7 @@ namespace HA4IoT.Automations
 
             if (TooHotIsAffected())
             {
-                _notificationService.CreateInformation($"Cancelling opening because outside temperature is higher than {Settings.AutoCloseIfTooHotTemperaure}°C.");
+                _notificationService.CreateInformation($"Cancelling opening '{GetRollerShutterNames()}' because outside temperature is higher than {Settings.AutoCloseIfTooHotTemperaure}°C.");
 
                 _autoOpenIsApplied = true;
                 _autoCloseIsApplied = false;
@@ -148,13 +142,13 @@ namespace HA4IoT.Automations
             if (Settings.SkipNextOpenOnSunrise)
             {
                 Settings.SkipNextOpenOnSunrise = false;
-                _settingsService.SetSettings(Id, Settings);
-                _notificationService.CreateInformation("Skipped sunrise this time.");
+                _settingsService.SetSettings(this, Settings);
+                _notificationService.CreateInformation($"Skipped opening '{GetRollerShutterNames()}' due to sunrise this time.");
             }
             else
             {
                 InvokeCommand(new MoveUpCommand());
-                _notificationService.CreateInformation("Applied sunrise");
+                _notificationService.CreateInformation($"Opening '{GetRollerShutterNames()}' due to sunrise.");
             }
 
             _autoOpenIsApplied = true;
@@ -163,32 +157,41 @@ namespace HA4IoT.Automations
             _maxOutsideTemperatureApplied = false;
         }
 
+        private string GetRollerShutterNames()
+        {
+            var captions = new List<string>();
+            foreach (var rollerShutterId in _rollerShutters)
+            {
+                var settings = _settingsService.GetComponentSettings<RollerShutterSettings>(rollerShutterId);
+                captions.Add(settings.Caption);
+            }
+
+            return string.Join(", ", captions);
+        }
+
         private void PerformPendingSunsetActions()
         {
             if (TooColdIsAffected())
             {
-                _notificationService.CreateInformation($"Cancelling closing because outside temperature is lower than {Settings.SkipIfFrozenTemperature}°C.");
+                _notificationService.CreateInformation($"Cancelling closing '{GetRollerShutterNames()}' because outside temperature is lower than {Settings.SkipIfFrozenTemperature}°C.");
             }
             else
             {
                 if (Settings.SkipNextCloseOnSunset)
                 {
                     Settings.SkipNextCloseOnSunset = false;
-                    _settingsService.SetSettings(Id, Settings);
-                    _notificationService.CreateInformation("Skipped sunset this time.");
+                    _settingsService.SetSettings(this, Settings);
+                    _notificationService.CreateInformation($"Skipped closing '{GetRollerShutterNames()}' due to sunrise this time.");
                 }
                 else
                 {
                     InvokeCommand(new MoveDownCommand());
-                    _notificationService.CreateInformation("Applied sunset");
+                    _notificationService.CreateInformation($"Closed '{GetRollerShutterNames()}' due to sunset.");
                 }
             }
 
             _autoCloseIsApplied = true;
             _autoOpenIsApplied = false;
-
-            _notificationService.CreateInformation("Applied sunset");
-
         }
 
         private bool DoNotOpenDueToTimeIsAffected()
@@ -237,7 +240,7 @@ namespace HA4IoT.Automations
         {
             foreach (var rollerShutter in _rollerShutters)
             {
-                _componentService.GetComponent<IRollerShutter>(rollerShutter).ExecuteCommand(command);
+                _componentRegistry.GetComponent<IRollerShutter>(rollerShutter).ExecuteCommand(command);
             }
         }
     }

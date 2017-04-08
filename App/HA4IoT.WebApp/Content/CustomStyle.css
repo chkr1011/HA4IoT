@@ -1,20 +1,59 @@
-body {
-    padding-bottom: 70px;
-}
+/* Bootstrap overrides */
 
 .panel {
     margin-bottom: 0;
     border: 0;
 }
 
+.panel-heading {
+    background: #F2F2F2;
+    background-image: none !important;
+}
+
+.btn-default {
+    background: #F2F2F2;
+    background-image: none !important;
+}
+
+.btn-success {
+    background: #5CB85C;
+    background-image: none !important;
+}
+
+.btn-danger {
+    background: #D9534F;
+    background-image: none !important;
+}
+
+.alert {
+    background-image: none !important;
+    margin: 0 !important;
+    border: 0 !important;
+}
+
 * {
     border-radius: 0 !important;
 }
 
-.versionText {
-    font-family: Monospace;
+body {
+    background: #286090;
+    margin: 0;
+}
+
+/* Custom styles */
+
+.slider-legend {
+    height: 16px;
+    width: 100%;
+}
+
+.action-button {
+    min-width: 60px;
+}
+
+.version-text {
     font-size: 10pt;
-    margin: 5pt;
+    margin-right: 5px;
 }
 
 .icon {
@@ -28,14 +67,9 @@ body {
     width: 1.5em;
 }
 
-.icon_mini {
-    height: 0.9em;
-    width: 0.9em;
-}
-
 .ui-content {
-    margin-top: 0em;
-    padding-top: 0em;
+    margin-top: 0;
+    padding-top: 0;
 }
 
 .ellipsis {
@@ -44,73 +78,9 @@ body {
     white-space: nowrap;
 }
 
-.blindBlades {
-    background-image: url(images/blind-blade-open.png);
-    background-position: bottom;
-    background-repeat: repeat-y;
-    background-size: 100%;
-    width: 100%;
-}
-
-.blindInnerBorder {
-    background-color: #3388CC;
-    background-size: 100% 100%;
-    border-bottom-color: black;
-    border-color: #F0F0F0;
-    border-style: solid;
-    border-width: 0px;
-    box-sizing: border-box;
-    height: 100%;
-}
-
-.blindOuterBorder {
-    border-color: #DDDDDD;
-    border-style: solid;
-    border-width: 1px;
-    box-sizing: border-box;
-    height: 31px;
-    width: 37px;
-}
-
-.humidityImage {
-    height: 0.8em;
-    vertical-align: center;
-    width: 0.8em;
-}
-
-.keyValuesPairTableRightCell {
-    padding-bottom: 5px;
-    padding-top: 5px;
-    text-align: right;
-}
-
-.mainPanel {
-    text-align: center;
-    vertical-align: middle;
-    visibility: collapse;
-}
-
-.contentTable {
-    width: 100%;
-}
-
-.iconColumn {
-    width: 2.0em;
-}
-
-.rightTextAligned {
-    text-align: right;
-}
-
-body {
-    background: #286090;
-    margin: 0;
-}
-
 .status-icon {
     font-size: 18px;
-    margin-top: 5px;
-    margin-bottom: 5px;
+    margin-top: 7px;
 }
 
 .status-icon-ok {
@@ -118,7 +88,7 @@ body {
 }
 
 .status-icon-warning {
-    color:  #f0ad4e;
+    color: #f0ad4e;
 }
 
 .status-icon-danger {
@@ -127,6 +97,15 @@ body {
 
 .status-icon-default {
     color: lightgray;
+}
+
+.window-status {
+    font-size: 12px;
+    min-width: 125px;
+}
+
+.window-status-icon {
+    margin-right: 10px;
 }
 
 .loadingTitle {
@@ -140,6 +119,7 @@ body {
     top: calc(50% - 50px);
     width: 100%;
 }
+
 .bottomBarItem {
     font-size: 20px;
 }
@@ -153,7 +133,7 @@ body {
     cursor: pointer;
 }
 
-.sensorValue {
+.sensor-value {
     font-size: 18px;
     margin-left: 10px;
     float: right

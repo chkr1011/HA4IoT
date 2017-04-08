@@ -8,9 +8,7 @@ namespace HA4IoT.Components
     {
         protected ComponentBase(string id)
         {
-            if (id == null) throw new ArgumentNullException(nameof(id));
-
-            Id = id;
+            Id = id ?? throw new ArgumentNullException(nameof(id));
         }
 
         public event EventHandler<ComponentFeatureStateChangedEventArgs> StateChanged;

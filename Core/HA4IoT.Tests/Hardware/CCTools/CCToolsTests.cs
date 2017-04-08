@@ -46,7 +46,7 @@ namespace HA4IoT.Tests.Hardware.CCTools
             var i2CBus = new TestI2CBusService();
             i2CBus.I2CDevice.BufferForNextRead = new byte[] { 255, 255 };
 
-            var deviceMessageBrokerService = new DeviceMessageBrokerService(new LogService(new DateTimeService()));
+            var deviceMessageBrokerService = new TestDeviceMessageBrokerService();
             var hspe16 = new HSPE16InputOnly("Test", new I2CSlaveAddress(32), i2CBus, deviceMessageBrokerService, new TestLogger());
 
             hspe16.FetchState();

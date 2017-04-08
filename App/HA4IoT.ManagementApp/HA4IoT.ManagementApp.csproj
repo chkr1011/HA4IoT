@@ -52,10 +52,10 @@
     <Content Include="Content\Images\Fan.png" />
     <Content Include="Content\Images\Favorites.png" />
     <Content Include="Content\Images\Garage.png" />
-    <Content Include="Content\Images\HA4IoT_Logo%40512.png" />
     <Content Include="Content\Images\House.png" />
     <Content Include="Content\Images\Humidity.png" />
     <Content Include="Content\Images\Lamp.png" />
+    <Content Include="Content\Images\Logo_256.png" />
     <Content Include="Content\Images\Motion.png" />
     <Content Include="Content\Images\NightLamp.png" />
     <Content Include="Content\Images\Palette.png" />
@@ -79,6 +79,7 @@
     <Content Include="Content\Images\Window.png" />
     <Content Include="Content\Style.css" />
     <Content Include="Content\ui-bootstrap-csp.css" />
+    <Content Include="favicon.ico" />
     <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Home\Home.component.html" />

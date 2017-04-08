@@ -19,11 +19,8 @@ namespace HA4IoT.Networking
 
         public ClientSession(StreamSocket clientSocket, ILogger log)
         {
-            if (clientSocket == null) throw new ArgumentNullException(nameof(clientSocket));
-            if (log == null) throw new ArgumentNullException(nameof(log));
-
-            _clientSocket = clientSocket;
-            _log = log;
+            _clientSocket = clientSocket ?? throw new ArgumentNullException(nameof(clientSocket));
+            _log = log ?? throw new ArgumentNullException(nameof(log));
 
             _httpClientSession = new HttpClientSession(clientSocket, _cancellationTokenSource, HandleHttpRequest, UpgradeToWebSocketSession, _log);
         }
@@ -44,8 +41,11 @@ namespace HA4IoT.Networking
                 {
                     await _httpClientSession.WaitForRequestAsync();
                 }
-                
-                _webSocketClientSession?.WaitForFrameAsync().Wait();
+
+                if (_webSocketClientSession != null)
+                {
+                    await _webSocketClientSession?.WaitForFrameAsync();
+                }
             }
         }
 

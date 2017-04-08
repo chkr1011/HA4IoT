@@ -7,6 +7,10 @@ namespace HA4IoT.Tests.Mockups.Adapters
     {
         public event EventHandler<NumericSensorAdapterValueChangedEventArgs> ValueChanged;
 
+        public void Refresh()
+        {
+        }
+
         public void UpdateValue(float? value)
         {
             ValueChanged?.Invoke(this, new NumericSensorAdapterValueChangedEventArgs(value));

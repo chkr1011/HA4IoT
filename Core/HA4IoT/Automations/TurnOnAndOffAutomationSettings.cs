@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts.Automations;
 
 namespace HA4IoT.Automations
 {

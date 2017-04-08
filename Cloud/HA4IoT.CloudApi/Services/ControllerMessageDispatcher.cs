@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using HA4IoT.CloudApi.Services.Exceptions;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Api.Cloud;
 
@@ -9,17 +10,17 @@ namespace HA4IoT.CloudApi.Services
 {
     public class ControllerMessageDispatcher
     {
-        private readonly Dictionary<Guid, ControllerContext> _pendingMessages = new Dictionary<Guid, ControllerContext>();
+        private readonly Dictionary<Guid, ControllerContext> _controllerContexts = new Dictionary<Guid, ControllerContext>();
 
-        public List<CloudRequestMessage> GetPendingMessages(Guid controllerUid)
+        public List<CloudRequestMessage> GetPendingMessagesAsync(Guid controllerUid)
         {
             ControllerContext controllerContext;
-            lock (_pendingMessages)
+            lock (_controllerContexts)
             {
                 controllerContext = GetOrCreateControllerContext(controllerUid);
             }
 
-            if (controllerContext.WaitForRequests(TimeSpan.FromMinutes(1)) == WaitForRequestsResult.NoRequestsAvailable)
+            if (controllerContext.WaitForRequestsAsync(TimeSpan.FromMinutes(1)) == WaitForRequestsResult.NoRequestsAvailable)
             {
                 return null;
             }
@@ -35,6 +36,7 @@ namespace HA4IoT.CloudApi.Services
 
             if (await Task.WhenAny(messageContext.Task, Task.Delay(timeout)) != messageContext.Task)
             {
+                messageContext.Complete(null);
                 throw new ControllerNotReachableException();
             }
 
@@ -44,7 +46,7 @@ namespace HA4IoT.CloudApi.Services
         public void EnqueueResponse(Guid controllerId, CloudResponseMessage response)
         {
             ControllerContext controllerContext;
-            lock (_pendingMessages)
+            lock (_controllerContexts)
             {
                 controllerContext = GetOrCreateControllerContext(controllerId);
             }
@@ -55,7 +57,7 @@ namespace HA4IoT.CloudApi.Services
         private MessageContext EnqueueRequest(Guid controllerId, ApiRequest request)
         {
             ControllerContext controllerContext;
-            lock (_pendingMessages)
+            lock (_controllerContexts)
             {
                 controllerContext = GetOrCreateControllerContext(controllerId);
             }
@@ -66,14 +68,15 @@ namespace HA4IoT.CloudApi.Services
         private ControllerContext GetOrCreateControllerContext(Guid controllerId)
         {
             ControllerContext result;
-            if (_pendingMessages.TryGetValue(controllerId, out result))
+            if (_controllerContexts.TryGetValue(controllerId, out result))
             {
                 return result;
             }
 
             Trace.WriteLine($"Created new context for controller '{controllerId}'.");
+
             result = new ControllerContext();
-            _pendingMessages.Add(controllerId, result);
+            _controllerContexts.Add(controllerId, result);
 
             return result;
         }

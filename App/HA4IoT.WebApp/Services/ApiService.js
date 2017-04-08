@@ -4,11 +4,11 @@
     srv.statusHash = "";
 
     srv.apiStatus =
-    {
-        isApiReachable: false,
-        activeCalls: 0,
-        errorMessage: null
-    };
+        {
+            isApiReachable: false,
+            activeCalls: 0,
+            errorMessage: null
+        };
 
     srv.apiStatusUpdatedCallback = null;
     srv.newStatusReceivedCallback = null;
@@ -31,7 +31,7 @@
             srv.pollStatus();
         };
 
-        var errorHandler = function() {
+        var errorHandler = function () {
             setTimeout(function () { srv.pollStatus(); }, 1000);
         }
 
@@ -44,6 +44,19 @@
         payload.CommandType = commandType;
 
         srv.executeApi("Service/IComponentRegistryService/ExecuteCommand", payload, null, doneCallback);
+    }
+
+    srv.getConfiguration = function (doneCallback) {
+        srv.executeApi("GetConfiguration", {}, null, doneCallback);
+    }
+
+    srv.updateComponentSettings = function (componentId, settings) {
+        var parameter = {
+            Uri: "Component/" + componentId,
+            Settings: settings
+        };
+
+        srv.executeApi("Service/ISettingsService/Import", parameter, null);
     }
 
     srv.executeApi = function (action, parameter, resultHash, doneCallback, failCallback) {

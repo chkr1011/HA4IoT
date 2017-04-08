@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Windows.Web.Http;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Logging;
@@ -49,31 +50,23 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             IStorageService storageService,
             ILogService logService)
         {
-            if (outdoorTemperatureService == null) throw new ArgumentNullException(nameof(outdoorTemperatureService));
-            if (outdoorHumidityService == null) throw new ArgumentNullException(nameof(outdoorHumidityService));
-            if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
-            if (weatherService == null) throw new ArgumentNullException(nameof(weatherService));
-            if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
-            if (systemInformationService == null) throw new ArgumentNullException(nameof(systemInformationService));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-            if (storageService == null) throw new ArgumentNullException(nameof(storageService));
-            if (logService == null) throw new ArgumentNullException(nameof(logService));
 
-            _outdoorTemperatureService = outdoorTemperatureService;
-            _outdoorHumidityService = outdoorHumidityService;
-            _daylightService = daylightService;
-            _weatherService = weatherService;
-            _dateTimeService = dateTimeService;
-            _systemInformationService = systemInformationService;
-            _storageService = storageService;
+            _outdoorTemperatureService = outdoorTemperatureService ?? throw new ArgumentNullException(nameof(outdoorTemperatureService));
+            _outdoorHumidityService = outdoorHumidityService ?? throw new ArgumentNullException(nameof(outdoorHumidityService));
+            _daylightService = daylightService ?? throw new ArgumentNullException(nameof(daylightService));
+            _weatherService = weatherService ?? throw new ArgumentNullException(nameof(weatherService));
+            _dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
+            _systemInformationService = systemInformationService ?? throw new ArgumentNullException(nameof(systemInformationService));
+            _storageService = storageService ?? throw new ArgumentNullException(nameof(storageService));
 
-            _log = logService.CreatePublisher(nameof(OpenWeatherMapService));
+            _log = logService?.CreatePublisher(nameof(OpenWeatherMapService)) ?? throw new ArgumentNullException(nameof(logService));
 
-            settingsService.CreateSettingsMonitor<OpenWeatherMapServiceSettings>(s => Settings = s);
+            settingsService.CreateSettingsMonitor<OpenWeatherMapServiceSettings>(s => Settings = s.NewSettings);
 
             LoadPersistedData();
             
-            schedulerService.RegisterSchedule("OpenWeatherMapServiceUpdater", TimeSpan.FromMinutes(5), Refresh);
+            schedulerService.RegisterSchedule("OpenWeatherMapServiceUpdater", TimeSpan.FromMinutes(5), RefreshAsync);
         }
 
         public OpenWeatherMapServiceSettings Settings { get; private set; }
@@ -87,10 +80,10 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
         [ApiMethod]
         public void Refresh(IApiContext apiContext)
         {
-            Refresh();
+            RefreshAsync().Wait();
         }
 
-        private void Refresh()
+        private async Task RefreshAsync()
         {
             if (!Settings.IsEnabled)
             {
@@ -100,7 +93,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
 
             _log.Verbose("Fetching Open Weather Map weather data.");
 
-            var response = FetchWeatherData();
+            var response = await FetchWeatherDataAsync();
 
             if (!string.Equals(response, _previousResponse))
             {
@@ -141,7 +134,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             }
         }
 
-        private string FetchWeatherData()
+        private async Task<string> FetchWeatherDataAsync()
         {
             var uri = new Uri($"http://api.openweathermap.org/data/2.5/weather?lat={Settings.Latitude}&lon={Settings.Longitude}&APPID={Settings.AppId}&units=metric");
 
@@ -151,9 +144,9 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             try
             {
                 using (var httpClient = new HttpClient())
-                using (HttpResponseMessage result = httpClient.GetAsync(uri).AsTask().Result)
+                using (HttpResponseMessage result = await httpClient.GetAsync(uri))
                 {
-                    return result.Content.ReadAsStringAsync().AsTask().Result;
+                    return await result.Content.ReadAsStringAsync();
                 }
             }
             finally
@@ -188,10 +181,10 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
 
         private void LoadPersistedData()
         {
-            JObject cachedResponse;
+            string cachedResponse;
             if (_storageService.TryRead(StorageFilename, out cachedResponse))
             {
-                TryParseData(cachedResponse.ToString());
+                TryParseData(cachedResponse);
             }
         }
     }

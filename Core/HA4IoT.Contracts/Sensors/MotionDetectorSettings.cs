@@ -5,16 +5,6 @@ namespace HA4IoT.Contracts.Sensors
 {
     public class MotionDetectorSettings : ComponentSettings
     {
-        private TimeSpan _autoEnableAfter = TimeSpan.FromMinutes(60);
-
-        public TimeSpan AutoEnableAfter
-        {
-            get { return _autoEnableAfter; }
-            set
-            {
-                _autoEnableAfter = value;
-                OnValueChanged(nameof(AutoEnableAfter));
-            }
-        }
+        public TimeSpan AutoEnableAfter { get; set; } = TimeSpan.FromMinutes(60);
     }
 }

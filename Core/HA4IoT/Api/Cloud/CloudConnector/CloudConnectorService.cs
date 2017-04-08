@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using HA4IoT.Contracts.Api;
@@ -17,45 +18,30 @@ namespace HA4IoT.Api.Cloud.CloudConnector
 {
     public class CloudConnectorService : ServiceBase, IApiAdapter
     {
-        private const string BaseUri = "https://ha4iot-cloudapi.azurewebsites.net/api/ControllerProxy";
+        private const string BaseUri = "https://ha4iot-cloudapi.azurewebsites.net";
 
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
-        private readonly IApiDispatcherService _apiDispatcherService;
-        private readonly CloudConnectorServiceSettings _settings;
-        private readonly HttpClient _receivingHttpClient = new HttpClient();
-        private readonly HttpClient _sendingHttpClient = new HttpClient();
+
         private readonly StringContent _emptyContent = new StringContent(string.Empty);
         private readonly Uri _receiveRequestsUri;
         private readonly Uri _sendResponseUri;
+
+        private readonly CloudConnectorServiceSettings _settings;
+        private readonly IApiDispatcherService _apiDispatcherService;
         private readonly ILogger _log;
 
         public CloudConnectorService(IApiDispatcherService apiDispatcherService, ISettingsService settingsService, ILogService logService)
         {
-            if (apiDispatcherService == null) throw new ArgumentNullException(nameof(apiDispatcherService));
-            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-            if (logService == null) throw new ArgumentNullException(nameof(logService));
+            _log = logService?.CreatePublisher(nameof(CloudConnectorService)) ?? throw new ArgumentNullException(nameof(logService));
+            _apiDispatcherService = apiDispatcherService ?? throw new ArgumentNullException(nameof(apiDispatcherService));
 
-            _log = logService.CreatePublisher(nameof(CloudConnectorService));
+            _receiveRequestsUri = new Uri($"{BaseUri}/api/ControllerProxy/ReceiveRequests");
+            _sendResponseUri = new Uri($"{BaseUri}/api/ControllerProxy/SendResponse");
 
-            _apiDispatcherService = apiDispatcherService;
-            _receiveRequestsUri = new Uri($"{BaseUri}/ReceiveRequests");
-            _sendResponseUri = new Uri($"{BaseUri}/SendResponse");
-
-            _settings = settingsService.GetSettings<CloudConnectorServiceSettings>();
-
-            _receivingHttpClient.DefaultRequestHeaders.Add(CloudConnectorHeaders.ControllerId, _settings.ControllerId);
-            _receivingHttpClient.DefaultRequestHeaders.Add(CloudConnectorHeaders.ApiKey, _settings.ApiKey);
-            _receivingHttpClient.Timeout = TimeSpan.FromMinutes(1.25);
-
-            _sendingHttpClient.DefaultRequestHeaders.Add(CloudConnectorHeaders.ControllerId, _settings.ControllerId);
-            _sendingHttpClient.DefaultRequestHeaders.Add(CloudConnectorHeaders.ApiKey, _settings.ApiKey);
+            _settings = settingsService?.GetSettings<CloudConnectorServiceSettings>() ?? throw new ArgumentNullException(nameof(settingsService));
         }
 
         public event EventHandler<ApiRequestReceivedEventArgs> RequestReceived;
-
-        public void NotifyStateChanged(IComponent component)
-        {
-        }
 
         public override void Startup()
         {
@@ -69,46 +55,53 @@ namespace HA4IoT.Api.Cloud.CloudConnector
 
             _apiDispatcherService.RegisterAdapter(this);
 
-            Task.Factory.StartNew(
-                async () => await ReceivePendingMessagesAsyncLoop(),
-                _cancellationTokenSource.Token,
-                TaskCreationOptions.LongRunning,
-                TaskScheduler.Default);
+            Task.Run(ReceivePendingMessagesAsyncLoop, _cancellationTokenSource.Token);
+        }
+
+        public void NotifyStateChanged(IComponent component)
+        {
         }
 
         private async Task ReceivePendingMessagesAsyncLoop()
         {
-            _log.Verbose("Started receiving pending Cloud messages.");
-            while (!_cancellationTokenSource.IsCancellationRequested)
+            _log.Verbose("Starting receiving pending Cloud messages.");
+
+            using (var httpClient = new HttpClient())
             {
-                try
+                httpClient.DefaultRequestHeaders.Authorization = CreateAuthorizationHeader();
+                httpClient.Timeout = TimeSpan.FromMinutes(1.25);
+                
+                while (!_cancellationTokenSource.IsCancellationRequested)
                 {
-                    var response = await ReceivePendingMessagesAsync();
-                    if (response.Succeeded && !string.IsNullOrEmpty(response.Response))
+                    try
                     {
-                        Task.Run(() => ProcessPendingCloudMessages(response.Response)).Forget();
+                        var response = await ReceivePendingMessagesAsync(httpClient, _cancellationTokenSource.Token);
+                        if (response.Succeeded && !string.IsNullOrEmpty(response.Response))
+                        {
+                            Task.Run(() => ProcessPendingCloudMessages(response.Response)).Forget();
+                        }
                     }
-                }
-                catch (Exception exception)
-                {
-                    _log.Error(exception, "Error while receiving pending Cloud messages.");
-                    await Task.Delay(TimeSpan.FromSeconds(5));
+                    catch (Exception exception)
+                    {
+                        _log.Error(exception, "Error while receiving pending Cloud messages.");
+                        await Task.Delay(TimeSpan.FromSeconds(5));
+                    }
                 }
             }
         }
 
-        private async Task<ReceivePendingMessagesAsyncResult> ReceivePendingMessagesAsync()
+        private async Task<ReceivePendingMessagesAsyncResult> ReceivePendingMessagesAsync(HttpClient httpClient, CancellationToken cancellationToken)
         {
             HttpResponseMessage result;
             try
             {
-                result = await _receivingHttpClient.PostAsync(_receiveRequestsUri, _emptyContent);
+                result = await httpClient.PostAsync(_receiveRequestsUri, _emptyContent, cancellationToken);
             }
             catch (TaskCanceledException)
             {
                 return new ReceivePendingMessagesAsyncResult();
             }
-            
+
             if (result.IsSuccessStatusCode)
             {
                 var content = await result.Content.ReadAsStringAsync();
@@ -127,18 +120,18 @@ namespace HA4IoT.Api.Cloud.CloudConnector
             if (result.StatusCode == HttpStatusCode.Unauthorized)
             {
                 _log.Warning("Credentials for Cloud access are invalid.");
-                await Task.Delay(TimeSpan.FromMinutes(1));
+                await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
             }
             else if (result.StatusCode == HttpStatusCode.InternalServerError)
             {
                 _log.Warning("Cloud access is not working properly.");
-                await Task.Delay(TimeSpan.FromSeconds(10));
+                await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
             }
             else
             {
                 _log.Warning($"Failed to receive pending Cloud message (Error code: {result.StatusCode}).");
             }
-            
+
             return new ReceivePendingMessagesAsyncResult();
         }
 
@@ -164,16 +157,18 @@ namespace HA4IoT.Api.Cloud.CloudConnector
             {
                 _log.Error(exception, "Unhandled exception while processing cloud messages. " + exception.Message);
             }
-            
         }
 
         private async Task SendResponse(CloudConnectorApiContext apiContext)
         {
             try
             {
+                using (var httpClient = new HttpClient())
                 using (var content = CreateContent(apiContext))
                 {
-                    var result = await _sendingHttpClient.PostAsync(_sendResponseUri, content);
+                    httpClient.DefaultRequestHeaders.Authorization = CreateAuthorizationHeader();
+
+                    var result = await httpClient.PostAsync(_sendResponseUri, content);
                     if (result.IsSuccessStatusCode)
                     {
                         _log.Verbose("Sent response message to Cloud.");
@@ -205,18 +200,24 @@ namespace HA4IoT.Api.Cloud.CloudConnector
             return apiContext;
         }
 
-        private StringContent CreateContent(CloudConnectorApiContext apiContext)
+        private static StringContent CreateContent(CloudConnectorApiContext apiContext)
         {
             var cloudMessage = new CloudResponseMessage();
             cloudMessage.Header.CorrelationId = apiContext.RequestMessage.Header.CorrelationId;
             cloudMessage.Response.ResultCode = apiContext.ResultCode;
             cloudMessage.Response.Result = apiContext.Result;
-            
+
             var stringContent = new StringContent(JsonConvert.SerializeObject(cloudMessage));
             stringContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
             stringContent.Headers.ContentEncoding.Add("utf-8");
 
             return stringContent;
+        }
+
+        private AuthenticationHeaderValue CreateAuthorizationHeader()
+        {
+            var value = $"{_settings.ControllerId}:{_settings.ApiKey}";
+            return new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes(value)));
         }
     }
 }

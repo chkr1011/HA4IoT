@@ -56,19 +56,12 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)
         {
-            if (areaService == null) throw new ArgumentNullException(nameof(areaService));
-            if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
-            if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
-            if (automationFactory == null) throw new ArgumentNullException(nameof(automationFactory));
-            if (actuatorFactory == null) throw new ArgumentNullException(nameof(actuatorFactory));
-            if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
-
-            _areaService = areaService;
-            _deviceService = deviceService;
-            _ccToolsBoardService = ccToolsBoardService;
-            _automationFactory = automationFactory;
-            _actuatorFactory = actuatorFactory;
-            _sensorFactory = sensorFactory;
+            _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
+            _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
+            _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
+            _automationFactory = automationFactory ?? throw new ArgumentNullException(nameof(automationFactory));
+            _actuatorFactory = actuatorFactory ?? throw new ArgumentNullException(nameof(actuatorFactory));
+            _sensorFactory = sensorFactory ?? throw new ArgumentNullException(nameof(sensorFactory));
         }
 
         public void Apply()
@@ -100,7 +93,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             _actuatorFactory.RegisterRollerShutter(area, ChildrensRoom.RollerShutter, hsrel5[HSREL5Pin.Relay4], hsrel5[HSREL5Pin.Relay3]);
             _sensorFactory.RegisterRollerShutterButtons(area, ChildrensRoom.RollerShutterButtonUp, input0.GetInput(1), ChildrensRoom.RollerShutterButtonDown, input0.GetInput(2));
 
-            area.GetButton(ChildrensRoom.Button).PressedShortlyTrigger.Attach(() => area.GetLamp(ChildrensRoom.LightCeilingMiddle).TryTogglePowerState());
+            area.GetButton(ChildrensRoom.Button).PressedShortTrigger.Attach(() => area.GetLamp(ChildrensRoom.LightCeilingMiddle).TryTogglePowerState());
 
             _automationFactory.RegisterRollerShutterAutomation(area, ChildrensRoom.RollerShutterAutomation)
                 .WithRollerShutters(area.GetRollerShutter(ChildrensRoom.RollerShutter));

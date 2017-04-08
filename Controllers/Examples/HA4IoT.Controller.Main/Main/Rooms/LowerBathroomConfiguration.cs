@@ -5,6 +5,8 @@ using HA4IoT.Adapters;
 using HA4IoT.Automations;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools.Devices;
 using HA4IoT.Hardware.I2C.I2CHardwareBridge;
@@ -16,6 +18,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 {
     internal class LowerBathroomConfiguration
     {
+        private readonly ISettingsService _settingsService;
         private readonly IDeviceRegistryService _deviceService;
         private readonly ISchedulerService _schedulerService;
         private readonly IAreaRegistryService _areaService;
@@ -23,7 +26,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
 
-        private IDelayedAction _bathmodeResetTimer;
+        private IDelayedAction _bathmodeResetDelayedAction;
 
         public enum LowerBathroom
         {
@@ -48,23 +51,18 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             IDeviceRegistryService deviceService,
             ISchedulerService schedulerService,
             IAreaRegistryService areaService,
+            ISettingsService settingsService,
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)
         {
-            if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
-            if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
-            if (areaService == null) throw new ArgumentNullException(nameof(areaService));
-            if (automationFactory == null) throw new ArgumentNullException(nameof(automationFactory));
-            if (actuatorFactory == null) throw new ArgumentNullException(nameof(actuatorFactory));
-            if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
-
-            _deviceService = deviceService;
-            _schedulerService = schedulerService;
-            _areaService = areaService;
-            _automationFactory = automationFactory;
-            _actuatorFactory = actuatorFactory;
-            _sensorFactory = sensorFactory;
+            _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
+            _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
+            _schedulerService = schedulerService ?? throw new ArgumentNullException(nameof(schedulerService));
+            _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
+            _automationFactory = automationFactory ?? throw new ArgumentNullException(nameof(automationFactory));
+            _actuatorFactory = actuatorFactory ?? throw new ArgumentNullException(nameof(actuatorFactory));
+            _sensorFactory = sensorFactory ?? throw new ArgumentNullException(nameof(sensorFactory));
         }
 
         public void Apply()
@@ -87,7 +85,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             _sensorFactory.RegisterMotionDetector(area, LowerBathroom.MotionDetector, input3.GetInput(15));
 
-            _sensorFactory.RegisterVirtualButton(area, LowerBathroom.StartBathmodeButton, b => b.PressedShortlyTrigger.Attach(() => StartBathode(area)));
+            var bathModeButton = _sensorFactory.RegisterVirtualButton(area, LowerBathroom.StartBathmodeButton);
+            bathModeButton.PressedShortTrigger.Attach(() => StartBathode(area));
 
             _actuatorFactory.RegisterLamp(area, LowerBathroom.LightCeilingDoor,
                 hspe16_FloorAndLowerBathroom.GetOutput(0).WithInvertedState());
@@ -114,15 +113,16 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
         private void StartBathode(IArea bathroom)
         {
-            bathroom.GetMotionDetector(LowerBathroom.MotionDetector).Settings.IsEnabled = false;
+            var motionDetector = bathroom.GetMotionDetector(LowerBathroom.MotionDetector);
+            _settingsService.SetComponentEnabledState(motionDetector, false);
 
             bathroom.GetLamp(LowerBathroom.LightCeilingDoor).TryTurnOn();
             bathroom.GetLamp(LowerBathroom.LightCeilingMiddle).TryTurnOff();
             bathroom.GetLamp(LowerBathroom.LightCeilingWindow).TryTurnOff();
             bathroom.GetLamp(LowerBathroom.LampMirror).TryTurnOff();
 
-            _bathmodeResetTimer?.Cancel();
-            _bathmodeResetTimer = _schedulerService.In(TimeSpan.FromHours(1), () => bathroom.GetMotionDetector(LowerBathroom.MotionDetector).Settings.IsEnabled = true);
+            _bathmodeResetDelayedAction?.Cancel();
+            _bathmodeResetDelayedAction = _schedulerService.In(TimeSpan.FromHours(1), () => _settingsService.SetComponentEnabledState(motionDetector, true));
         }
     }
 }

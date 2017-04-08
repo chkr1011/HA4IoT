@@ -87,19 +87,12 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             SensorFactory sensorFactory,
             AutomationFactory automationFactory)
         {
-            if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
-            if (areaService == null) throw new ArgumentNullException(nameof(areaService));
-            if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
-            if (actuatorFactory == null) throw new ArgumentNullException(nameof(actuatorFactory));
-            if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
-            if (automationFactory == null) throw new ArgumentNullException(nameof(automationFactory));
-
-            _deviceService = deviceService;
-            _areaService = areaService;
-            _ccToolsBoardService = ccToolsBoardService;
-            _actuatorFactory = actuatorFactory;
-            _sensorFactory = sensorFactory;
-            _automationFactory = automationFactory;
+            _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
+            _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
+            _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
+            _actuatorFactory = actuatorFactory ?? throw new ArgumentNullException(nameof(actuatorFactory));
+            _sensorFactory = sensorFactory ?? throw new ArgumentNullException(nameof(sensorFactory));
+            _automationFactory = automationFactory ?? throw new ArgumentNullException(nameof(automationFactory));
         }
 
         public void Apply()
@@ -165,8 +158,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
                 .WithComponent(area.GetLamp(Bedroom.LightCeilingWall))
                 .WithComponent(area.GetLamp(Bedroom.LightCeilingWindow));
 
-            area.GetButton(Bedroom.ButtonDoor).PressedShortlyTrigger.Attach(() => ceilingLights.TryTogglePowerState());
-            area.GetButton(Bedroom.ButtonWindowUpper).PressedShortlyTrigger.Attach(() => ceilingLights.TryTogglePowerState());
+            area.GetButton(Bedroom.ButtonDoor).PressedShortTrigger.Attach(() => ceilingLights.TryTogglePowerState());
+            area.GetButton(Bedroom.ButtonWindowUpper).PressedShortTrigger.Attach(() => ceilingLights.TryTogglePowerState());
 
             area.GetButton(Bedroom.ButtonDoor).PressedLongTrigger.Attach(() =>
             {
@@ -183,22 +176,22 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             _automationFactory.RegisterTurnOnAndOffAutomation(area, Bedroom.LightCeilingAutomation)
                 .WithTrigger(area.GetMotionDetector(Bedroom.MotionDetector))
-                .WithTarget(area.GetLamp(Bedroom.LightCeiling))
+                .WithTarget(area.GetComponent(Bedroom.LightCeiling))
                 .WithTurnOnIfAllRollerShuttersClosed(area.GetRollerShutter(Bedroom.RollerShutterLeft), area.GetRollerShutter(Bedroom.RollerShutterRight))
                 .WithEnabledAtNight()
-                .WithSkipIfAnyActuatorIsAlreadyOn(area.GetLamp(Bedroom.LampBedLeft), area.GetLamp(Bedroom.LampBedRight));
+                .WithSkipIfAnyIsAlreadyOn(area.GetLamp(Bedroom.LampBedLeft), area.GetLamp(Bedroom.LampBedRight));
 
             area.RegisterComponent(new Fan($"{area.Id}.{Bedroom.Fan}", new BedroomFanAdapter(hsrel8)));
             
-            area.GetButton(Bedroom.ButtonBedLeftInner).PressedShortlyTrigger.Attach(() => area.GetLamp(Bedroom.LampBedLeft).TryTogglePowerState());
-            area.GetButton(Bedroom.ButtonBedLeftInner).PressedLongTrigger.Attach(() => area.GetLamp(Bedroom.CombinedCeilingLights).TryTogglePowerState());
-            area.GetButton(Bedroom.ButtonBedLeftOuter).PressedShortlyTrigger.Attach(area.GetFan(Bedroom.Fan).SetNextLevelAction);
-            area.GetButton(Bedroom.ButtonBedLeftOuter).PressedLongTrigger.Attach(() => area.GetFan(Bedroom.Fan).TryTurnOff());
+            area.GetButton(Bedroom.ButtonBedLeftInner).PressedShortTrigger.Attach(() => area.GetComponent(Bedroom.LampBedLeft).TryTogglePowerState());
+            area.GetButton(Bedroom.ButtonBedLeftInner).PressedLongTrigger.Attach(() => area.GetComponent(Bedroom.CombinedCeilingLights).TryTogglePowerState());
+            area.GetButton(Bedroom.ButtonBedLeftOuter).PressedShortTrigger.Attach(area.GetFan(Bedroom.Fan).SetNextLevelAction);
+            area.GetButton(Bedroom.ButtonBedLeftOuter).PressedLongTrigger.Attach(() => area.GetComponent(Bedroom.Fan).TryTurnOff());
 
-            area.GetButton(Bedroom.ButtonBedRightInner).PressedShortlyTrigger.Attach(() => area.GetLamp(Bedroom.LampBedRight).TryTogglePowerState());
-            area.GetButton(Bedroom.ButtonBedRightInner).PressedLongTrigger.Attach(() => area.GetLamp(Bedroom.CombinedCeilingLights).TryTogglePowerState());
-            area.GetButton(Bedroom.ButtonBedRightOuter).PressedShortlyTrigger.Attach(area.GetFan(Bedroom.Fan).SetNextLevelAction);
-            area.GetButton(Bedroom.ButtonBedRightOuter).PressedLongTrigger.Attach(() => area.GetFan(Bedroom.Fan).TryTurnOff());
+            area.GetButton(Bedroom.ButtonBedRightInner).PressedShortTrigger.Attach(() => area.GetComponent(Bedroom.LampBedRight).TryTogglePowerState());
+            area.GetButton(Bedroom.ButtonBedRightInner).PressedLongTrigger.Attach(() => area.GetComponent(Bedroom.CombinedCeilingLights).TryTogglePowerState());
+            area.GetButton(Bedroom.ButtonBedRightOuter).PressedShortTrigger.Attach(area.GetFan(Bedroom.Fan).SetNextLevelAction);
+            area.GetButton(Bedroom.ButtonBedRightOuter).PressedLongTrigger.Attach(() => area.GetComponent(Bedroom.Fan).TryTurnOff());
         }
 
         private class BedroomFanAdapter : IFanAdapter
@@ -216,7 +209,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
                 _relay2 = hsrel8[HSREL8Pin.Relay2];
             }
 
-            public void SetLevel(int level, params IHardwareParameter[] parameters)
+            public void SetState(int level, params IHardwareParameter[] parameters)
             {
                 switch (level)
                 {

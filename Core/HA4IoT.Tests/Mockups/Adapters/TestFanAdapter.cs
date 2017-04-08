@@ -9,7 +9,7 @@ namespace HA4IoT.Tests.Mockups.Adapters
 
         public int CurrentLevel { get; set; }
 
-        public void SetLevel(int level, params IHardwareParameter[] parameters)
+        public void SetState(int level, params IHardwareParameter[] parameters)
         {
             CurrentLevel = level;
         }

@@ -1,8 +1,6 @@
 ﻿using HA4IoT.Actuators.Lamps;
 using HA4IoT.Components;
-using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Components.States;
-using HA4IoT.Tests.Mockups;
 using HA4IoT.Tests.Mockups.Adapters;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -14,7 +12,7 @@ namespace HA4IoT.Tests.Components
         [TestMethod]
         public void Lamp_Reset()
         {
-            var adapter = new TestBinaryOutputAdapter();
+            var adapter = new TestLampAdapter();
             var lamp = new Lamp("Test", adapter);
             lamp.ResetState();
 
@@ -26,7 +24,7 @@ namespace HA4IoT.Tests.Components
         [TestMethod]
         public void Lamp_TurnOn()
         {
-            var adapter = new TestBinaryOutputAdapter();
+            var adapter = new TestLampAdapter();
             var lamp = new Lamp("Test", adapter);
             lamp.ResetState();
 
@@ -44,7 +42,7 @@ namespace HA4IoT.Tests.Components
         [TestMethod]
         public void Lamp_Toggle()
         {
-            var adapter = new TestBinaryOutputAdapter();
+            var adapter = new TestLampAdapter();
             var lamp = new Lamp("Test", adapter);
             lamp.ResetState();
 

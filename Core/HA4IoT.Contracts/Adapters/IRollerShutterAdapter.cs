@@ -4,10 +4,6 @@ namespace HA4IoT.Contracts.Adapters
 {
     public interface IRollerShutterAdapter
     {
-        void StartMoveUp(params IHardwareParameter[] parameters);
-
-        void Stop(params IHardwareParameter[] parameters);
-
-        void StartMoveDown(params IHardwareParameter[] parameters);
+        void SetState(AdapterRollerShutterState state, params IHardwareParameter[] parameters);
     }
 }

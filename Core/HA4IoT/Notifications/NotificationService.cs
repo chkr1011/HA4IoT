@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Notifications;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Notifications;
 using HA4IoT.Contracts.Services.Resources;
@@ -34,23 +35,20 @@ namespace HA4IoT.Notifications
             IResourceService resourceService,
             ILogService logService)
         {
-            if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
             if (apiService == null) throw new ArgumentNullException(nameof(apiService));
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-            if (storageService == null) throw new ArgumentNullException(nameof(storageService));
-            if (resourceService == null) throw new ArgumentNullException(nameof(resourceService));
 
-            _dateTimeService = dateTimeService;
-            _storageService = storageService;
-            _resourceService = resourceService;
+            _dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
+            _storageService = storageService ?? throw new ArgumentNullException(nameof(storageService));
+            _resourceService = resourceService ?? throw new ArgumentNullException(nameof(resourceService));
 
             _log = logService.CreatePublisher(nameof(NotificationService));
-            settingsService.CreateSettingsMonitor<NotificationServiceSettings>(s => Settings = s);
+            settingsService.CreateSettingsMonitor<NotificationServiceSettings>(s => Settings = s.NewSettings);
 
             apiService.StatusRequested += HandleApiStatusRequest;
 
-            schedulerService.RegisterSchedule("NotificationCleanup", TimeSpan.FromMinutes(15), Cleanup);
+            schedulerService.RegisterSchedule("NotificationCleanup", TimeSpan.FromMinutes(15), () => Cleanup());
         }
 
         public NotificationServiceSettings Settings { get; private set; }
@@ -94,6 +92,19 @@ namespace HA4IoT.Notifications
         public void CreateError(string text)
         {
             Create(NotificationType.Error, text, Settings.ErrorTimeToLive);
+        }
+
+        [ApiMethod]
+        public void Create(IApiContext apiContext)
+        {
+            var parameter = apiContext.Parameter.ToObject<ApiParameterForCreate>();
+            if (parameter == null)
+            {
+                apiContext.ResultCode = ApiResultCode.InvalidParameter;
+                return;
+            }
+
+            Create(parameter.Type, parameter.Text, parameter.TimeToLive);
         }
 
         [ApiMethod]

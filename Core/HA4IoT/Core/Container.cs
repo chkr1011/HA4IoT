@@ -164,7 +164,7 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<ITwitterClientService, TwitterClientService>();
             _container.RegisterSingleton<ITelegramBotService, TelegramBotService>();
 
-            _container.RegisterSingleton<StatusService>();
+            _container.RegisterSingleton<IStatusService, StatusService>();
         }
     }
 }

@@ -49,12 +49,14 @@ namespace HA4IoT.Controller.Main.Main
 
             _log = logService.CreatePublisher(nameof(logService));
 
-            _timeout = new Timeout(timerService, TimeSpan.FromSeconds(30));
+            _timeout = new Timeout(timerService);
             _timeout.Elapsed += (s, e) =>
             {
                 _timeInLitterBox.Stop();
                 Task.Run(() => Tweet(_timeInLitterBox.Elapsed));
             };
+
+            _timeout.Start(TimeSpan.FromSeconds(30));
         }
 
         public CatLitterBoxTwitterSender WithTrigger(IMotionDetector motionDetector)
@@ -89,7 +91,7 @@ namespace HA4IoT.Controller.Main.Main
 
             UpdateCounter();
 
-            string message = GenerateMessage();
+            var message = GenerateMessage();
             _log.Verbose("Trying to tweet '" + message + "'.");
 
             try

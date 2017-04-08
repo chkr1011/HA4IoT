@@ -1,16 +1,38 @@
 ﻿{
+  "UI.Accept": "Anwenden",
+
+  "UI.DisableComponent": "Deaktivieren",
+  "UI.EnableComponent": "Aktivieren",
+
   "UI.On": "An",
   "UI.Off": "Aus",
+
+  "UI.ButtonPress": "Drücken",
+  "UI.ButtonPressShort": "Kurz drücken",
+  "UI.ButtonPressLong": "Lange drücken",
+
+  "UI.LampColor": "Farbe",
+
+  "UI.Sensor": "Sensor",
+  "UI.Sensors": "Sensoren",
+
   "UI.WindowClosed": "Geschlossen",
   "UI.WindowOpen": "Offen",
   "UI.WindowTilt": "Kipp",
   "UI.Window": "Fenster",
-  "UI.RollerShutter": "Rollo",
+  "UI.Windows": "Fenster",
+
   "UI.Temperature": "Temperatur",
   "UI.Humidity": "Luftfeuchtigkeit",
-  "UI.MotionDetector": "Bewegung",
+
+  "UI.MotionDetector": "Motion Detector",
+  "UI.MotionDetectors": "Bewegungsmelder",
   "UI.MotionDetectorDisabled": "Aus",
   "UI.MotionDetectorEnabled": "Aktiv",
+
+  "UI.RollerShutter": "Rollo",
+  "UI.RollerShutters": "Rolladen",
+
   "UI.Sunrise": "Sonnenaufgang",
   "UI.Sunset": "Sonnenuntergang",
   "UI.Mold": "Schimmel",

@@ -10,9 +10,7 @@ namespace HA4IoT.CloudApi.Services
 
         public MessageContext(CloudRequestMessage requestMessage)
         {
-            if (requestMessage == null) throw new ArgumentNullException(nameof(requestMessage));
-
-            RequestMessage = requestMessage;
+            RequestMessage = requestMessage ?? throw new ArgumentNullException(nameof(requestMessage));
         }
 
         public DateTime CreatedTimestamp { get; } = DateTime.UtcNow;
@@ -27,7 +25,7 @@ namespace HA4IoT.CloudApi.Services
 
         public bool IsDelivered { get; set; }
 
-        public void Close(CloudResponseMessage response)
+        public void Complete(CloudResponseMessage response)
         {
             ResponseMessage = response;
 

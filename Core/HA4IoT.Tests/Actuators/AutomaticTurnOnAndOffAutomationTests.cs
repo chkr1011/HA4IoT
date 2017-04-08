@@ -36,7 +36,7 @@ namespace HA4IoT.Tests.Actuators
                 testController.GetInstance<ISettingsService>(),
                 testController.GetInstance<IDaylightService>());
 
-            var output = new Lamp("Test", new TestBinaryOutputAdapter());
+            var output = new Lamp("Test", new TestLampAdapter());
             Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
 
             automation.WithTrigger(motionDetector);
@@ -61,10 +61,10 @@ namespace HA4IoT.Tests.Actuators
 
             var buttonAdapter = new TestButtonAdapter();
             var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>());
-            var output = new Lamp("Test", new TestBinaryOutputAdapter());
+            var output = new Lamp("Test", new TestLampAdapter());
             Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
 
-            automation.WithFlipTrigger(button.PressedShortlyTrigger);
+            automation.WithTrigger(button.PressedShortTrigger);
             automation.WithTarget(output);
 
             buttonAdapter.Touch();
@@ -91,7 +91,7 @@ namespace HA4IoT.Tests.Actuators
                 testController.GetInstance<ISettingsService>(),
                 testController.GetInstance<IDaylightService>());
 
-            var output = new Lamp("Test", new TestBinaryOutputAdapter());
+            var output = new Lamp("Test", new TestLampAdapter());
             Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
 
             automation.WithTurnOnWithinTimeRange(() => TimeSpan.Parse("10:00:00"), () => TimeSpan.Parse("15:00:00"));
@@ -118,11 +118,11 @@ namespace HA4IoT.Tests.Actuators
 
             var buttonAdapter = new TestButtonAdapter();
             var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>());
-            var output = new Lamp("Test", new TestBinaryOutputAdapter());
+            var output = new Lamp("Test", new TestLampAdapter());
             Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
 
             automation.WithTurnOnWithinTimeRange(() => TimeSpan.Parse("10:00:00"), () => TimeSpan.Parse("15:00:00"));
-            automation.WithFlipTrigger(button.PressedShortlyTrigger);
+            automation.WithTrigger(button.PressedShortTrigger);
             automation.WithTarget(output);
 
             buttonAdapter.Touch();
@@ -149,22 +149,22 @@ namespace HA4IoT.Tests.Actuators
                 testController.GetInstance<ISettingsService>(),
                 testController.GetInstance<IDaylightService>());
 
-            var output = new Lamp("Test", new TestBinaryOutputAdapter());
+            var output = new Lamp("Test", new TestLampAdapter());
             Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
 
             automation.WithTrigger(motionDetector);
             automation.WithTarget(output);
 
-            var other2 = new Lamp("Test", new TestBinaryOutputAdapter());
+            var other2 = new Lamp("Test", new TestLampAdapter());
             other2.TryTurnOn();
 
             IComponent[] otherActuators =
             {
-                new Lamp("Test", new TestBinaryOutputAdapter()),
+                new Lamp("Test", new TestLampAdapter()),
                 other2
             };
 
-            automation.WithSkipIfAnyActuatorIsAlreadyOn(otherActuators);
+            automation.WithSkipIfAnyIsAlreadyOn(otherActuators);
 
             adapter.Invoke();
 
@@ -190,7 +190,7 @@ namespace HA4IoT.Tests.Actuators
                 testController.GetInstance<ISettingsService>(),
                 testController.GetInstance<IDaylightService>());
 
-            var output = new Lamp("Test", new TestBinaryOutputAdapter());
+            var output = new Lamp("Test", new TestLampAdapter());
             Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
 
             automation.WithTrigger(motionDetector);
@@ -198,11 +198,11 @@ namespace HA4IoT.Tests.Actuators
 
             IComponent[] otherActuators =
             {
-                new Lamp("Test", new TestBinaryOutputAdapter()),
-                new Lamp("Test", new TestBinaryOutputAdapter())
+                new Lamp("Test", new TestLampAdapter()),
+                new Lamp("Test", new TestLampAdapter())
             };
 
-            automation.WithSkipIfAnyActuatorIsAlreadyOn(otherActuators);
+            automation.WithSkipIfAnyIsAlreadyOn(otherActuators);
 
             adapter.Invoke();
 
@@ -224,19 +224,19 @@ namespace HA4IoT.Tests.Actuators
 
             var buttonAdapter = new TestButtonAdapter();
             var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>());
-            var output = new Lamp("Test", new TestBinaryOutputAdapter());
+            var output = new Lamp("Test", new TestLampAdapter());
             Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
 
-            automation.WithFlipTrigger(button.PressedShortlyTrigger);
+            automation.WithTrigger(button.PressedShortTrigger);
             automation.WithTarget(output);
 
             IComponent[] otherActuators =
             {
-                new Lamp("Test", new TestBinaryOutputAdapter()),
-                new Lamp("Test", new TestBinaryOutputAdapter())
+                new Lamp("Test", new TestLampAdapter()),
+                new Lamp("Test", new TestLampAdapter())
             };
 
-            automation.WithSkipIfAnyActuatorIsAlreadyOn(otherActuators);
+            automation.WithSkipIfAnyIsAlreadyOn(otherActuators);
 
             buttonAdapter.Touch();
             Assert.AreEqual(true, output.GetState().Has(PowerState.On));

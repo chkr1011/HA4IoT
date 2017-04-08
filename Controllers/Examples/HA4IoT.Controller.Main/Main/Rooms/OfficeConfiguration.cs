@@ -1,12 +1,9 @@
 ﻿using System;
 using HA4IoT.Actuators;
-using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
-using HA4IoT.Adapters;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware.I2C;
-using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.CCTools.Devices;
@@ -22,13 +19,12 @@ namespace HA4IoT.Controller.Main.Main.Rooms
     {
         private readonly IDeviceRegistryService _deviceService;
         private readonly IAreaRegistryService _areaService;
-        private readonly IDaylightService _daylightService;
         private readonly CCToolsDeviceService _ccToolsBoardService;
         private readonly RemoteSocketService _remoteSocketService;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
 
-        public enum Office
+        private enum Office
         {
             TemperatureSensor,
             HumiditySensor,
@@ -61,27 +57,17 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         public OfficeConfiguration(
             IDeviceRegistryService deviceService,
             IAreaRegistryService areaService,
-            IDaylightService daylightService,
             CCToolsDeviceService ccToolsBoardService,
             RemoteSocketService remoteSocketService,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)
         {
-            if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
-            if (areaService == null) throw new ArgumentNullException(nameof(areaService));
-            if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
-            if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
-            if (remoteSocketService == null) throw new ArgumentNullException(nameof(remoteSocketService));
-            if (actuatorFactory == null) throw new ArgumentNullException(nameof(actuatorFactory));
-            if (sensorFactory == null) throw new ArgumentNullException(nameof(sensorFactory));
-
-            _deviceService = deviceService;
-            _areaService = areaService;
-            _daylightService = daylightService;
-            _ccToolsBoardService = ccToolsBoardService;
-            _remoteSocketService = remoteSocketService;
-            _actuatorFactory = actuatorFactory;
-            _sensorFactory = sensorFactory;
+            _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
+            _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
+            _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
+            _remoteSocketService = remoteSocketService ?? throw new ArgumentNullException(nameof(remoteSocketService));
+            _actuatorFactory = actuatorFactory ?? throw new ArgumentNullException(nameof(actuatorFactory));
+            _sensorFactory = sensorFactory ?? throw new ArgumentNullException(nameof(sensorFactory));
         }
 
         public void Apply()
@@ -96,20 +82,12 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             var area = _areaService.RegisterArea(Room.Office);
 
-            _sensorFactory.RegisterWindow(area, Office.WindowLeftL,
-                new PortBasedWindowAdapter(input4.GetInput(11)));
+            _sensorFactory.RegisterWindow(area, Office.WindowLeftL, input4.GetInput(11));
+            _sensorFactory.RegisterWindow(area, Office.WindowLeftR, input4.GetInput(12), input4.GetInput(10));
+            _sensorFactory.RegisterWindow(area, Office.WindowRightL, input4.GetInput(8));
+            _sensorFactory.RegisterWindow(area, Office.WindowRightR, input4.GetInput(9), input5.GetInput(8));
 
-            _sensorFactory.RegisterWindow(area, Office.WindowLeftR,
-                new PortBasedWindowAdapter(input4.GetInput(12), input4.GetInput(10)));
-
-            _sensorFactory.RegisterWindow(area, Office.WindowRightL,
-                new PortBasedWindowAdapter(input4.GetInput(8)));
-
-            _sensorFactory.RegisterWindow(area, Office.WindowRightR,
-                new PortBasedWindowAdapter(input4.GetInput(9), input5.GetInput(8)));
-
-            _sensorFactory.RegisterTemperatureSensor(area, Office.TemperatureSensor,
-                i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
+            _sensorFactory.RegisterTemperatureSensor(area, Office.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
 
             _sensorFactory.RegisterHumiditySensor(area, Office.HumiditySensor,
                 i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
@@ -130,18 +108,32 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             _sensorFactory.RegisterButton(area, Office.ButtonLowerRight, input4.GetInput(14));
             _sensorFactory.RegisterButton(area, Office.ButtonUpperRight, input4.GetInput(15));
 
-            _actuatorFactory.RegisterStateMachine(area, Office.CombinedCeilingLights, (s, a) => SetupLight(s, hsrel8, hspe8, a));
+            var stateMachine = _actuatorFactory.RegisterStateMachine(area, Office.CombinedCeilingLights, (s, a) => SetupLight(s, hsrel8, hspe8));
+            stateMachine.AlternativeStateId = StateMachineStateExtensions.OffStateId;
+            stateMachine.ResetStateId = StateMachineStateExtensions.OffStateId;
+
+            area.GetButton(Office.ButtonUpperLeft)
+                .PressedShortTrigger
+                .Attach(() => area.GetComponent(Office.CombinedCeilingLights).TrySetState(StateMachineStateExtensions.OnStateId));
 
             area.GetButton(Office.ButtonUpperLeft).PressedLongTrigger.Attach(() =>
             {
-                area.GetStateMachine(Office.CombinedCeilingLights).TryTurnOff();
-                area.GetSocket(Office.SocketRearLeftEdge).TryTurnOff();
-                area.GetSocket(Office.SocketRearLeft).TryTurnOff();
-                area.GetSocket(Office.SocketFrontLeft).TryTurnOff();
+                area.GetComponent(Office.CombinedCeilingLights).TryTurnOff();
+                area.GetComponent(Office.SocketRearLeftEdge).TryTurnOff();
+                area.GetComponent(Office.SocketRearLeft).TryTurnOff();
+                area.GetComponent(Office.SocketFrontLeft).TryTurnOff();
             });
+
+            area.GetButton(Office.ButtonLowerLeft)
+                .PressedShortTrigger
+                .Attach(() => area.GetComponent(Office.CombinedCeilingLights).TrySetState("DeskOnly"));
+
+            area.GetButton(Office.ButtonLowerRight)
+                .PressedShortTrigger
+                .Attach(() => area.GetComponent(Office.CombinedCeilingLights).TrySetState("CouchOnly"));
         }
 
-        private void SetupLight(StateMachine light, HSREL8 hsrel8, HSPE8OutputOnly hspe8, IArea room)
+        private void SetupLight(StateMachine light, HSREL8 hsrel8, HSPE8OutputOnly hspe8)
         {
             // Front lights (left, middle, right)
             var fl = hspe8[HSPE8Pin.GPIO0].WithInvertedState();
@@ -198,19 +190,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
                 .WithLowBinaryOutput(rl)
                 .WithHighBinaryOutput(rr);
 
-            light.WithTurnOffIfStateIsAppliedTwice();
-
-            room.GetButton(Office.ButtonLowerRight)
-                .PressedShortlyTrigger
-                .Attach(light.GetSetStateAction("CouchOnly"));
-
-            room.GetButton(Office.ButtonLowerLeft)
-                .PressedShortlyTrigger
-                .Attach(light.GetSetStateAction("DeskOnly"));
-
-            room.GetButton(Office.ButtonUpperLeft)
-                .PressedShortlyTrigger
-                .Attach(light.GetSetStateAction(StateMachineStateExtensions.OnStateId));
+            light.AlternativeStateId = StateMachineStateExtensions.OffStateId;
+            light.ResetStateId = StateMachineStateExtensions.OffStateId;
         }
     }
 }

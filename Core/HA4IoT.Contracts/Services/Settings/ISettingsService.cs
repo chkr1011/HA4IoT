@@ -5,7 +5,7 @@ namespace HA4IoT.Contracts.Services.Settings
 {
     public interface ISettingsService : IService
     {
-        void CreateSettingsMonitor<TSettings>(string uri, Action<TSettings> callback);
+        void CreateSettingsMonitor<TSettings>(string uri, Action<SettingsChangedEventArgs<TSettings>> callback);
 
         TSettings GetSettings<TSettings>(string uri);
 

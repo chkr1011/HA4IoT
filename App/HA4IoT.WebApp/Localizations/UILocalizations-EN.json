@@ -1,12 +1,23 @@
 ﻿{
+  "UI.Accept": "Accept",
+
+  "UI.DisableComponent": "Disable",
+  "UI.EnableComponent": "Enable",
+
   "UI.On": "On",
   "UI.Off": "Off",
 
-  "UI.Window": "Window",
-  "UI.Windows": "Windows",
+  "UI.ButtonPress": "Press",
+  "UI.ButtonPressShort": "Press short",
+  "UI.ButtonPressLong": "Press long",
+
+  "UI.LampColor": "Color",
+
   "UI.WindowClosed": "Window Closed",
   "UI.WindowOpen": "Window Open",
   "UI.WindowTilt": "Tilt",
+  "UI.Window": "Window",
+  "UI.Windows": "Windows",
 
   "UI.Sensor": "Sensor",
   "UI.Sensors": "Sensors",

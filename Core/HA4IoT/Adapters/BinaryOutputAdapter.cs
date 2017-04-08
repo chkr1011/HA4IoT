@@ -5,37 +5,38 @@ using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Adapters
 {
-    public class BinaryOutputAdapter : IBinaryOutputAdapter
+    public class BinaryOutputAdapter : IBinaryOutputAdapter, ILampAdapter
     {
         private readonly IBinaryOutput _output;
 
         public BinaryOutputAdapter(IBinaryOutput output)
         {
-            if (output == null) throw new ArgumentNullException(nameof(output));
-
-            _output = output;
+            _output = output ?? throw new ArgumentNullException(nameof(output));
         }
 
-        public void TurnOn(params IHardwareParameter[] parameters)
+        public bool SupportsColor => false;
+
+        public int ColorResolutionBits => 0;
+
+        public void SetState(AdapterPowerState powerState, params IHardwareParameter[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
+            var commit = !parameters.Any(p => p is IsPartOfPartialUpdateParameter);
             lock (_output)
             {
-                bool commit = !parameters.Any(p => p is IsPartOfPartialUpdateParameter);
-                _output.Write(BinaryState.High, commit);
+                _output.Write(powerState == AdapterPowerState.On ? BinaryState.High : BinaryState.Low, commit);
             }
         }
 
-        public void TurnOff(params IHardwareParameter[] parameters)
+        public void SetState(AdapterPowerState powerState, AdapterColor color, params IHardwareParameter[] hardwareParameters)
         {
-            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
-
-            lock (_output)
+            if (color != null)
             {
-                bool commit = !parameters.Any(p => p is IsPartOfPartialUpdateParameter);
-                _output.Write(BinaryState.Low, commit);
+                throw new InvalidOperationException("Color is not supported.");
             }
+
+            SetState(powerState, hardwareParameters);
         }
     }
 }

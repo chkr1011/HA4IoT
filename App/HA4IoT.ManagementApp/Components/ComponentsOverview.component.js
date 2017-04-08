@@ -73,17 +73,34 @@
             });
         }
 
+        ctrl.getSettingValue = function(component, settingName, defaultValue)
+        {
+            if (component == undefined) {
+                return defaultValue;
+            }
+
+            if (component.Settings == undefined) {
+                return defaultValue;
+            }
+
+            if (component.Settings[settingName] == undefined) {
+                return defaultValue;
+            }
+
+            return component.Settings[settingName];
+        }
+
         ctrl.createComponent = function (componentId, source) {
             var component = {
                 Id: componentId,
                 Type: source.Type,
-                Caption: source.Settings.Caption,
-                OverviewCaption: source.Settings.OverviewCaption,
-                Keywords: source.Settings.Keywords,
-                SortValue: source.Settings.SortValue,
-                Image: source.Settings.Image,
-                IsEnabled: source.Settings.IsEnabled,
-                IsVisible: source.Settings.IsVisible
+                Caption: ctrl.getSettingValue(source, "Caption", ""),
+                OverviewCaption: ctrl.getSettingValue(source, "OverviewCaption", ""),
+                Keywords: ctrl.getSettingValue(source, "Keywords", ""),
+                SortValue: ctrl.getSettingValue(source, "SortValue", 0),
+                Image: ctrl.getSettingValue(source, "Image", "DefaultActuator"),
+                IsEnabled: ctrl.getSettingValue(source, "IsEnabled", true),
+                IsVisible: ctrl.getSettingValue(source, "IsVisible", true)
             };
 
             if (component.Type === "StateMachine") {
@@ -94,7 +111,7 @@
                     source.Settings.SupportedStates = [];
                 }
 
-                source.SupportedStates.forEach(function (supportedState) {
+                source.Features.StateMachineFeature.SupportedStates.forEach(function (supportedState) {
 
                     var settings = source.Settings.SupportedStates.find(function (i) {
                         return i.Id === supportedState;

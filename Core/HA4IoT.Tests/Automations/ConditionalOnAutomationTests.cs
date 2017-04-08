@@ -26,9 +26,9 @@ namespace HA4IoT.Tests.Automations
 
             var buttonAdapter = new TestButtonAdapter();
             var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>());
-            var testOutput = new Lamp("Test", new TestBinaryOutputAdapter());
+            var testOutput = new Lamp("Test", new TestLampAdapter());
 
-            automation.WithTrigger(button.PressedShortlyTrigger);
+            automation.WithTrigger(button.PressedShortTrigger);
             automation.WithComponent(testOutput);
 
             Assert.IsTrue(testOutput.GetState().Has(PowerState.Off));

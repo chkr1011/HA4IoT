@@ -29,16 +29,13 @@ namespace HA4IoT.Services.Areas
             IApiDispatcherService apiService,
             ISettingsService settingsService)
         {
-            if (componentService == null) throw new ArgumentNullException(nameof(componentService));
-            if (automationService == null) throw new ArgumentNullException(nameof(automationService));
             if (systemEventsService == null) throw new ArgumentNullException(nameof(systemEventsService));
             if (systemInformationService == null) throw new ArgumentNullException(nameof(systemInformationService));
             if (apiService == null) throw new ArgumentNullException(nameof(apiService));
-            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
-            _componentService = componentService;
-            _automationService = automationService;
-            _settingsService = settingsService;
+            _componentService = componentService ?? throw new ArgumentNullException(nameof(componentService));
+            _automationService = automationService ?? throw new ArgumentNullException(nameof(automationService));
+            _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
 
             systemEventsService.StartupCompleted += (s, e) =>
             {
@@ -89,7 +86,7 @@ namespace HA4IoT.Services.Areas
                 var componentConfiguration = new JObject
                 {
                     ["Type"] = component.GetType().Name,
-                    ["Settings"] = _settingsService.GetRawComponentSettings(component.Id),
+                    ["Settings"] = _settingsService.GetRawSettings(component),
                     ["Features"] = JObject.FromObject(component.GetFeatures().Serialize()),
                 };
 
@@ -102,7 +99,7 @@ namespace HA4IoT.Services.Areas
                 var automationSettings = new JObject
                 {
                     ["Type"] = automation.GetType().Name,
-                    ["Settings"] = _settingsService.GetRawAutomationSettings(automation.Id)
+                    ["Settings"] = _settingsService.GetRawSettings(automation)
                 };
 
                 automations[automation.Id] = automationSettings;
@@ -110,7 +107,7 @@ namespace HA4IoT.Services.Areas
             
             var configuration = new JObject
             {
-                ["Settings"] = _settingsService.GetRawAreaSettings(area.Id),
+                ["Settings"] = _settingsService.GetRawSettings(area),
                 ["Components"] = components,
                 ["Automations"] = automations
             };

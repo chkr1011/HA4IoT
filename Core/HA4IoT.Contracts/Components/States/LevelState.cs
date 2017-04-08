@@ -1,19 +1,12 @@
-﻿using Newtonsoft.Json.Linq;
-
-namespace HA4IoT.Contracts.Components.States
+﻿namespace HA4IoT.Contracts.Components.States
 {
     public class LevelState : IComponentFeatureState
     {
-        public LevelState(int currentLevel)
+        public LevelState(int value)
         {
-            CurrentLevel = currentLevel;
+            Value = value;
         }
 
-        public int CurrentLevel { get; }
-
-        public JToken Serialize()
-        {
-            return JObject.FromObject(this);
-        }
+        public int Value { get; }
     }
 }

@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
 using HA4IoT.CloudApi.Services;
+using HA4IoT.CloudApi.Services.Exceptions;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.PersonalAgent.AmazonEcho;
 using Newtonsoft.Json;
@@ -21,11 +22,8 @@ namespace HA4IoT.CloudApi.Controllers
 
         public AmazonEchoController(ControllerMessageDispatcher messageDispatcher, SecurityService securityService)
         {
-            if (messageDispatcher == null) throw new ArgumentNullException(nameof(messageDispatcher));
-            if (securityService == null) throw new ArgumentNullException(nameof(securityService));
-
-            _messageDispatcher = messageDispatcher;
-            _securityService = securityService;
+            _messageDispatcher = messageDispatcher ?? throw new ArgumentNullException(nameof(messageDispatcher));
+            _securityService = securityService ?? throw new ArgumentNullException(nameof(securityService));
         }
 
         public async Task<HttpResponseMessage> ExecuteIntent([FromBody] SkillServiceRequest request)
@@ -50,26 +48,20 @@ namespace HA4IoT.CloudApi.Controllers
                     return CreateJsonResponse(apiResponse.Result.ToObject<SkillServiceResponse>());
                 }
 
-                return
-                    CreateJsonResponse(
-                        CreateResponseWithText(
-                            "Ich konnte deine Wohnung erreichen, jedoch ist ein Fehler aufgetreten. Du kannst dich gerne bei Christian beschweren."));
+                return CreateJsonResponse("Es ist ein Fehler aufgetreten. Du musst dich bei Christian beschweren.");
             }
             catch (ControllerNotReachableException)
             {
-                return
-                    CreateJsonResponse(
-                        CreateResponseWithText(
-                            "Ich konnte deine Wohnung leider nicht erreichen. Versuche es später noch einmal."));
+                return CreateJsonResponse("Ich konnte deine Wohnung leider nicht erreichen. Versuche es später noch einmal.");
             }
         }
 
-        private SkillServiceResponse CreateResponseWithText(string text)
+        private HttpResponseMessage CreateJsonResponse(string answer)
         {
             var response = new SkillServiceResponse();
-            response.Response.OutputSpeech.Text = text;
+            response.Response.OutputSpeech.Text = answer;
 
-            return response;
+            return CreateJsonResponse(response);
         }
 
         private HttpResponseMessage CreateJsonResponse(SkillServiceResponse skillServiceResponse)

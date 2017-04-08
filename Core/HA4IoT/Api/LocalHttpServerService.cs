@@ -20,14 +20,10 @@ namespace HA4IoT.Api
 
         public LocalHttpServerService(IApiDispatcherService apiDispatcherService, HttpServer httpServer, ILogService logService)
         {
-            if (apiDispatcherService == null) throw new ArgumentNullException(nameof(apiDispatcherService));
-            if (httpServer == null) throw new ArgumentNullException(nameof(httpServer));
-            if (logService == null) throw new ArgumentNullException(nameof(logService));
+            _apiDispatcherService = apiDispatcherService ?? throw new ArgumentNullException(nameof(apiDispatcherService));
+            _httpServer = httpServer ?? throw new ArgumentNullException(nameof(httpServer));
 
-            _apiDispatcherService = apiDispatcherService;
-            _httpServer = httpServer;
-
-            _log = logService.CreatePublisher(nameof(LocalHttpServerService));
+            _log = logService?.CreatePublisher(nameof(LocalHttpServerService)) ?? throw new ArgumentNullException(nameof(logService));
         }
 
         public event EventHandler<ApiRequestReceivedEventArgs> RequestReceived;
@@ -50,7 +46,7 @@ namespace HA4IoT.Api
             {
                 return;
             }
-            
+
             DispatchHttpRequest(eventArgs.Context);
             eventArgs.IsHandled = true;
         }
@@ -123,7 +119,7 @@ namespace HA4IoT.Api
                 ["ResultCode"] = context.ResultCode.ToString(),
                 ["Content"] = context.Result
             };
-            
+
             e.WebSocketClientSession.SendAsync(responseMessage.ToString()).Wait();
         }
 
@@ -131,11 +127,21 @@ namespace HA4IoT.Api
         {
             try
             {
-                var bodyText = Encoding.UTF8.GetString(httpContext.Request.Body ?? new byte[0]);
+                string bodyText;
+
+                // Parse a special query parameter.
+                if (!string.IsNullOrEmpty(httpContext.Request.Query) && httpContext.Request.Query.StartsWith("body=", StringComparison.OrdinalIgnoreCase))
+                {
+                    bodyText = Uri.UnescapeDataString(httpContext.Request.Query.Substring("body=".Length));
+                }
+                else
+                {
+                    bodyText = Encoding.UTF8.GetString(httpContext.Request.Body ?? new byte[0]);
+                }
 
                 var action = httpContext.Request.Uri.Substring("/api/".Length);
                 var parameter = string.IsNullOrEmpty(bodyText) ? new JObject() : JObject.Parse(bodyText);
-                
+
                 return new ApiContext(action, parameter, null);
             }
             catch (Exception)

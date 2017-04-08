@@ -4,14 +4,14 @@ namespace HA4IoT.Contracts.Adapters
 {
     public class WindowStateChangedEventArgs : EventArgs
     {
-        public WindowStateChangedEventArgs(ReedSwitchState openReedSwitchState, ReedSwitchState? tildReedSwitchState)
+        public WindowStateChangedEventArgs(AdapterSwitchState openReedSwitchState, AdapterSwitchState? tildReedSwitchState)
         {
             OpenReedSwitchState = openReedSwitchState;
             TildReedSwitchState = tildReedSwitchState;
         }
 
-        public ReedSwitchState OpenReedSwitchState { get; }
+        public AdapterSwitchState OpenReedSwitchState { get; }
 
-        public ReedSwitchState? TildReedSwitchState { get; }
+        public AdapterSwitchState? TildReedSwitchState { get; }
     }
 }

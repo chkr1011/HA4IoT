@@ -2,8 +2,9 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
+using System.Web.Http;
 using System.Web.Http.Filters;
-using HA4IoT.CloudApi.Services;
+using HA4IoT.CloudApi.Services.Exceptions;
 
 namespace HA4IoT.CloudApi.Controllers
 {
@@ -23,8 +24,17 @@ namespace HA4IoT.CloudApi.Controllers
                 return;
             }
 
-            Trace.WriteLine("EXCEPTION:" + context.Exception);
-            context.Response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+            var httpResponseException = context.Exception as HttpResponseException;
+            if (httpResponseException != null)
+            {
+                Trace.WriteLine($"EXCEPTION ({httpResponseException.Response.StatusCode}): " + context.Exception);
+                context.Response = httpResponseException.Response;
+            }
+            else
+            {
+                Trace.WriteLine("EXCEPTION:" + context.Exception);
+                context.Response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+            }
         }
     }
 }

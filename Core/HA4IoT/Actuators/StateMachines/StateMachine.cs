@@ -16,67 +16,15 @@ namespace HA4IoT.Actuators.StateMachines
     public class StateMachine : ComponentBase, IStateMachine
     {
         private readonly Dictionary<string, IStateMachineState> _states = new Dictionary<string, IStateMachineState>();
-
         private IStateMachineState _activeState;
-        private bool _turnOffIfStateIsAppliedTwice;
 
         public StateMachine(string id) : base(id)
         {
         }
 
+        public string AlternativeStateId { get; set; }
+
         public string ResetStateId { get; set; }
-
-        ////public bool SupportsState(IComponentFeatureState stateId)
-        ////{
-        ////    if (stateId == null) throw new ArgumentNullException(nameof(stateId));
-
-        ////    if (_states.Any(s => s.Id.Equals(stateId)))
-        ////    {
-        ////        return true;
-        ////    }
-
-        ////    if (!_stateAlias.TryGetValue(stateId, out stateId))
-        ////    {
-        ////        return false;
-        ////    }
-
-        ////    return _states.Any(s => s.Id.Equals(stateId));
-        ////}
-
-        ////public void ChangeState(string id, params IHardwareParameter[] parameters)
-        ////{
-        ////    if (id == null) throw new ArgumentNullException(nameof(id));
-
-        ////    ThrowIfNoStatesAvailable();
-
-        ////    IStateMachineState oldState = _activeState;
-        ////    IStateMachineState newState = GetState(id);
-
-        ////    if (newState.Id.Equals(_activeState?.Id))
-        ////    {
-        ////        if (_turnOffIfStateIsAppliedTwice && SupportsState(BinaryStateId.Off) && !GetState().Equals(BinaryStateId.Off))
-        ////        {
-        ////            ChangeState(BinaryStateId.Off, parameters);
-        ////            return;
-        ////        }
-
-        ////        if (!parameters.Any(p => p is ForceUpdateStateParameter))
-        ////        {
-        ////            return;
-        ////        }
-        ////    }
-
-        ////    oldState?.Deactivate(parameters);
-        ////    newState.Activate(parameters);
-
-        ////    if (parameters.Any(p => p is IsPartOfPartialUpdateParameter))
-        ////    {
-        ////        return;
-        ////    }
-
-        ////    _activeState = newState;
-        ////    OnActiveStateChanged(oldState, newState);
-        ////}
 
         public void ResetState()
         {
@@ -113,7 +61,7 @@ namespace HA4IoT.Actuators.StateMachines
             {
                 stateMachineFeature.SupportedStates.Add(stateId);
             }
-            
+
             return new ComponentFeatureCollection()
                 .With(stateMachineFeature);
         }
@@ -123,13 +71,18 @@ namespace HA4IoT.Actuators.StateMachines
             var commandExecutor = new CommandExecutor();
             commandExecutor.Register<ResetCommand>(c => ResetState());
             commandExecutor.Register<SetStateCommand>(c => SetState(c.Id));
-            commandExecutor.Execute(command);
-        }
 
-        public StateMachine WithTurnOffIfStateIsAppliedTwice()
-        {
-            _turnOffIfStateIsAppliedTwice = true;
-            return this;
+            if (SupportsState(StateMachineStateExtensions.OnStateId))
+            {
+                commandExecutor.Register<TurnOnCommand>(c => SetState(StateMachineStateExtensions.OnStateId));
+            }
+
+            if (SupportsState(StateMachineStateExtensions.OffStateId))
+            {
+                commandExecutor.Register<TurnOffCommand>(c => SetState(StateMachineStateExtensions.OffStateId));
+            }
+
+            commandExecutor.Execute(command);
         }
 
         public void AddState(IStateMachineState state)
@@ -138,7 +91,7 @@ namespace HA4IoT.Actuators.StateMachines
 
             _states.Add(state.Id, state);
         }
-        
+
         public bool SupportsState(string id)
         {
             return _states.ContainsKey(id);
@@ -148,15 +101,19 @@ namespace HA4IoT.Actuators.StateMachines
         {
             ThrowIfNoStatesAvailable();
             ThrowIfStateNotSupported(id);
-            
+
+            var oldState = GetState();
+
+            if (AlternativeStateId != null && id == _activeState?.Id)
+            {
+                id = AlternativeStateId;
+            }
+
             _activeState?.Deactivate(parameters);
             _activeState = _states[id];
             _activeState.Activate(parameters);
-        }
 
-        protected virtual void OnActiveStateChanged(IStateMachineState oldState, IStateMachineState newState)
-        {
-            //OnStateChanged(oldState?.Id, newState.Id);
+            OnStateChanged(oldState);
         }
 
         private void ThrowIfNoStatesAvailable()

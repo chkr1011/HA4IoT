@@ -24,10 +24,10 @@ namespace HA4IoT.Tests.Automations
 
             var buttonAdapter = new TestButtonAdapter();
             var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>());
-            var testOutput = new Lamp("Test", new TestBinaryOutputAdapter());
+            var testOutput = new Lamp("Test", new TestLampAdapter());
             
             new Automation("Test")
-                .WithTrigger(button.PressedShortlyTrigger)
+                .WithTrigger(button.PressedShortTrigger)
                 .WithActionIfConditionsFulfilled(() => testOutput.TryTogglePowerState());
 
             Assert.IsTrue(testOutput.GetState().Has(PowerState.Off));
@@ -46,10 +46,10 @@ namespace HA4IoT.Tests.Automations
 
             var buttonAdapter = new TestButtonAdapter();
             var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>());
-            var testOutput = new Lamp("Test", new TestBinaryOutputAdapter());
+            var testOutput = new Lamp("Test", new TestLampAdapter());
 
             new Automation("Test")
-                .WithTrigger(button.PressedShortlyTrigger)
+                .WithTrigger(button.PressedShortTrigger)
                 .WithCondition(ConditionRelation.And, new TimeRangeCondition(testController.GetInstance<IDateTimeService>()).WithStart(TimeSpan.FromHours(1)).WithEnd(TimeSpan.FromHours(2)))
                 .WithActionIfConditionsFulfilled(() => testOutput.TryTogglePowerState());
 

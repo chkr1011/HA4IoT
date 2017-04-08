@@ -22,9 +22,7 @@ namespace HA4IoT.Settings
         public SettingsService(IBackupService backupService, IStorageService storageService)
         {
             if (backupService == null) throw new ArgumentNullException(nameof(backupService));
-            if (storageService == null) throw new ArgumentNullException(nameof(storageService));
-
-            _storageService = storageService;
+            _storageService = storageService ?? throw new ArgumentNullException(nameof(storageService));
 
             backupService.CreatingBackup += (s, e) => CreateBackup(e);
             backupService.RestoringBackup += (s, e) => RestoreBackup(e);
@@ -40,13 +38,13 @@ namespace HA4IoT.Settings
 
         public event EventHandler<SettingsChangedEventArgs> SettingsChanged;
 
-        public void CreateSettingsMonitor<TSettings>(string uri, Action<TSettings> callback)
+        public void CreateSettingsMonitor<TSettings>(string uri, Action<SettingsChangedEventArgs<TSettings>> callback)
         {
             if (uri == null) throw new ArgumentNullException(nameof(uri));
             if (callback == null) throw new ArgumentNullException(nameof(callback));
 
             var initialSettings = GetSettings<TSettings>(uri);
-            callback(initialSettings);
+            callback(new SettingsChangedEventArgs<TSettings>(default(TSettings), initialSettings));
 
             SettingsChanged += (s, e) =>
             {
@@ -55,8 +53,19 @@ namespace HA4IoT.Settings
                     return;
                 }
 
-                var updateSettings = GetSettings<TSettings>(uri);
-                callback(updateSettings);
+                TSettings oldSettings = default(TSettings);
+                if (e.OldSettings != null)
+                {
+                    oldSettings = e.OldSettings.ToObject<TSettings>();
+                }
+
+                TSettings newSettings = default(TSettings);
+                if (e.NewSettings != null)
+                {
+                    newSettings = e.NewSettings.ToObject<TSettings>();
+                }
+
+                callback(new SettingsChangedEventArgs<TSettings>(oldSettings, newSettings));
             };
         }
 
@@ -173,20 +182,9 @@ namespace HA4IoT.Settings
             }
 
             var settings = backupEventArgs.Backup[BackupKeyName].Value<Dictionary<string, JObject>>();
-
-            lock (_syncRoot)
-            {
-                foreach (var setting in settings)
-                {
-                    _settings[setting.Key] = setting.Value;
-                }
-
-                SaveSettings();
-            }
-
             foreach (var setting in settings)
             {
-                SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(setting.Key));
+                SetRawSettings(setting.Key, setting.Value);
             }
         }
 
@@ -194,11 +192,13 @@ namespace HA4IoT.Settings
         {
             lock (_syncRoot)
             {
-                _settings[uri] = settings;
+                JObject oldSettings;
+                _settings.TryGetValue(uri, out oldSettings);
 
+                _settings[uri] = settings;
                 SaveSettings();
 
-                SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(uri));
+                SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(uri, oldSettings, settings));
             }
         }
 
@@ -209,16 +209,18 @@ namespace HA4IoT.Settings
                 JObject existingSettings;
                 if (_settings.TryGetValue(uri, out existingSettings))
                 {
-                    var mergeSettings = new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace };
-                    existingSettings.Merge(settings, mergeSettings);
+                    var oldSettings = (JObject)existingSettings.DeepClone();
+                    existingSettings.Merge(settings, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
+
+                    SaveSettings();
+                    SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(uri, oldSettings, existingSettings));
                 }
                 else
                 {
                     _settings[uri] = settings;
+                    SaveSettings();
+                    SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(uri, null, settings));
                 }
-
-                SaveSettings();
-                SettingsChanged?.Invoke(this, new SettingsChangedEventArgs(uri));
             }
         }
 

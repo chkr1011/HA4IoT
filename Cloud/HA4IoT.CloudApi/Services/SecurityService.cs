@@ -7,18 +7,15 @@ namespace HA4IoT.CloudApi.Services
 {
     public class SecurityService
     {
+        private readonly Dictionary<Guid, string> _allowedControllers = new Dictionary<Guid, string>();
         private readonly Dictionary<string, Guid> _amazonUserIdMappings = new Dictionary<string, Guid>();
-        private readonly HashSet<Guid> _allowedControllerIds = new HashSet<Guid>();
-        private readonly string _apiKey;
 
         public SecurityService()
         {
-            _apiKey = ConfigurationManager.AppSettings["ApiKey"];
-
-            var allowedControllerIds = ConfigurationManager.AppSettings["AllowedControllerIds"] ?? string.Empty;
-            if (!string.IsNullOrEmpty(allowedControllerIds))
+            var allowedControllers = ConfigurationManager.AppSettings["AllowedControllers"] ?? string.Empty;
+            if (!string.IsNullOrEmpty(allowedControllers))
             {
-                _allowedControllerIds = JsonConvert.DeserializeObject<HashSet<Guid>>(allowedControllerIds);
+                _allowedControllers = JsonConvert.DeserializeObject<Dictionary<Guid, string>>(allowedControllers);
             }
 
             var amazonUserIdMappings = ConfigurationManager.AppSettings["AmazonUserIdMappings"] ?? string.Empty;
@@ -28,16 +25,17 @@ namespace HA4IoT.CloudApi.Services
             }
         }
         
-        public bool ApiKeyIsValid(string apiKey)
+        public bool CredentialsAreValid(Guid controllerId, string apiKey)
         {
             if (apiKey == null) throw new ArgumentNullException(nameof(apiKey));
 
-            return string.CompareOrdinal(_apiKey, apiKey) == 0;
-        }
+            string expectedApiKey;
+            if (!_allowedControllers.TryGetValue(controllerId, out expectedApiKey))
+            {
+                return false;
+            }
 
-        public bool ControllerIsAllowed(Guid controllerId)
-        {
-            return _allowedControllerIds.Contains(controllerId);
+            return string.CompareOrdinal(apiKey, expectedApiKey) == 0;
         }
 
         public Guid? GetControllerUidFromAmazonUserId(string azureUserId)

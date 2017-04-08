@@ -18,14 +18,12 @@ namespace HA4IoT.Automations
         public BathroomFanAutomation(string id, IFan fan, ISchedulerService schedulerService, ISettingsService settingsService)
             : base(id)
         {
-            if (fan == null) throw new ArgumentNullException(nameof(fan));
-            if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
-            _fan = fan;
-            _schedulerService = schedulerService;
+            _fan = fan ?? throw new ArgumentNullException(nameof(fan));
+            _schedulerService = schedulerService ?? throw new ArgumentNullException(nameof(schedulerService));
 
-            settingsService.CreateAutomationSettingsMonitor<BathroomFanAutomationSettings>(Id, s => Settings = s);
+            settingsService.CreateSettingsMonitor<BathroomFanAutomationSettings>(this, s => Settings = s.NewSettings);
         }
 
         public BathroomFanAutomationSettings Settings { get; private set; }

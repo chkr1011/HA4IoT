@@ -1,5 +1,5 @@
 body {
-    margin: 0px;
+    margin: 0;
     padding-top: 70px;
 }
 
@@ -69,7 +69,7 @@ body {
 }
 
 .log-info-message {
-    color: green;
+    color: lightgreen;
 }
 
 .log-warning-message {

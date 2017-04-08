@@ -5,7 +5,7 @@ namespace HA4IoT.Contracts.Sensors
 {
     public interface IButton : IComponent
     {
-        ITrigger PressedShortlyTrigger { get; }
+        ITrigger PressedShortTrigger { get; }
         ITrigger PressedLongTrigger { get; }
     }
 }

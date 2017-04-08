@@ -77,16 +77,20 @@
     <Compile Include="Actuators\IStateMachine.cs" />
     <Compile Include="Actuators\IStateMachineState.cs" />
     <Compile Include="Actuators\StateChangedEventArgs.cs" />
+    <Compile Include="Adapters\AdapterColor.cs" />
     <Compile Include="Adapters\IBinaryOutputAdapter.cs" />
     <Compile Include="Adapters\IButtonAdapter.cs" />
     <Compile Include="Adapters\IFanAdapter.cs" />
+    <Compile Include="Adapters\ILampAdapter.cs" />
     <Compile Include="Adapters\IMotionDetectorAdapter.cs" />
     <Compile Include="Adapters\INumericSensorAdapter.cs" />
     <Compile Include="Adapters\IRollerShutterAdapter.cs" />
     <Compile Include="Adapters\IStateMachineStateAdapter.cs" />
     <Compile Include="Adapters\IWindowAdapter.cs" />
     <Compile Include="Adapters\NumericSensorAdapterValueChangedEventArgs.cs" />
-    <Compile Include="Adapters\ReedSwitchState.cs" />
+    <Compile Include="Adapters\AdapterPowerState.cs" />
+    <Compile Include="Adapters\AdapterSwitchState.cs" />
+    <Compile Include="Adapters\AdapterRollerShutterState.cs" />
     <Compile Include="Adapters\WindowStateChangedEventArgs.cs" />
     <Compile Include="Api\ApiClassAttribute.cs" />
     <Compile Include="Api\ApiContext.cs" />
@@ -95,7 +99,6 @@
     <Compile Include="Api\ApiResultCode.cs" />
     <Compile Include="Api\ApiRequest.cs" />
     <Compile Include="Api\ApiResponse.cs" />
-    <Compile Include="Api\Cloud\CloudConnectorHeaders.cs" />
     <Compile Include="Api\Cloud\CloudResponseMessage.cs" />
     <Compile Include="Api\IApiContext.cs" />
     <Compile Include="Api\IApiAdapter.cs" />
@@ -103,9 +106,9 @@
     <Compile Include="Areas\AreaSettings.cs" />
     <Compile Include="Areas\IArea.cs" />
     <Compile Include="Areas\IAreaRegistryService.cs" />
+    <Compile Include="Automations\AutomationSettings.cs" />
     <Compile Include="Automations\IAutomation.cs" />
     <Compile Include="Automations\IAutomationRegistryService.cs" />
-    <Compile Include="Automations\IAutomationSettings.cs" />
     <Compile Include="Api\Cloud\CloudRequestMessage.cs" />
     <Compile Include="Api\Cloud\CloudMessageHeader.cs" />
     <Compile Include="Commands\CommandUnknownException.cs" />
@@ -117,6 +120,7 @@
     <Compile Include="Commands\MoveUpCommand.cs" />
     <Compile Include="Commands\PressCommand.cs" />
     <Compile Include="Commands\ResetCommand.cs" />
+    <Compile Include="Commands\SetColorCommand.cs" />
     <Compile Include="Commands\SetLevelCommand.cs" />
     <Compile Include="Commands\SetStateCommand.cs" />
     <Compile Include="Commands\TogglePowerStateCommand.cs" />
@@ -126,6 +130,7 @@
     <Compile Include="Components\Exceptions\ComponentNotFoundException.cs" />
     <Compile Include="Components\ComponentSettings.cs" />
     <Compile Include="Components\Features\ButtonFeature.cs" />
+    <Compile Include="Components\Features\ColorFeature.cs" />
     <Compile Include="Components\Features\LevelStateFeature.cs" />
     <Compile Include="Components\Features\StateMachineFeature.cs" />
     <Compile Include="Components\Features\HumidityMeasurementFeature.cs" />
@@ -194,6 +199,7 @@
     <Compile Include="Logging\LogEntry.cs" />
     <Compile Include="Logging\LogEntrySeverity.cs" />
     <Compile Include="Logging\LogEntryPublishedEventArgs.cs" />
+    <Compile Include="Notifications\ApiParameterForCreate.cs" />
     <Compile Include="PersonalAgent\AmazonEcho\SkillServiceRequest.cs" />
     <Compile Include="PersonalAgent\AmazonEcho\SkillServiceRequestRequest.cs" />
     <Compile Include="PersonalAgent\AmazonEcho\SkillServiceRequestRequestIntentSlot.cs" />
@@ -241,7 +247,7 @@
     <Compile Include="Services\Settings\ISettingsService.cs" />
     <Compile Include="Services\Settings\SettingsServiceExtensions.cs" />
     <Compile Include="Services\Settings\SettingsUriGenerator.cs" />
-    <Compile Include="Services\Settings\SettingValueChangedEventArgs.cs" />
+    <Compile Include="Services\Settings\SettingsChangedEventArgs.cs" />
     <Compile Include="Services\Storage\IStorageService.cs" />
     <Compile Include="Services\System\IDateTimeService.cs" />
     <Compile Include="Services\System\IDelayedAction.cs" />
@@ -249,13 +255,13 @@
     <Compile Include="Services\System\IHealthService.cs" />
     <Compile Include="Services\System\II2CBusService.cs" />
     <Compile Include="Services\System\ISchedulerService.cs" />
+    <Compile Include="Services\System\IStatusService.cs" />
     <Compile Include="Services\System\ISystemEventsService.cs" />
     <Compile Include="Services\System\ISystemInformationService.cs" />
     <Compile Include="Services\System\ITimerService.cs" />
     <Compile Include="Services\System\SystemEventNotification.cs" />
     <Compile Include="Services\Weather\IWeatherService.cs" />
     <Compile Include="Services\Weather\Weather.cs" />
-    <Compile Include="Components\States\BrightnessState.cs" />
     <Compile Include="Components\States\ButtonState.cs" />
     <Compile Include="Components\States\ButtonStateValue.cs" />
     <Compile Include="Components\States\ColorState.cs" />
@@ -265,7 +271,6 @@
     <Compile Include="Components\States\PositionTrackingState.cs" />
     <Compile Include="Components\States\PowerState.cs" />
     <Compile Include="Components\States\PowerStateValue.cs" />
-    <Compile Include="Components\States\RollerShutterClosedState.cs" />
     <Compile Include="Components\States\TemperatureState.cs" />
     <Compile Include="Triggers\ITrigger.cs" />
     <Compile Include="Triggers\TriggeredEventArgs.cs" />

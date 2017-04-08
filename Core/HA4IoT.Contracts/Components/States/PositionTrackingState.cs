@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-
-namespace HA4IoT.Contracts.Components.States
+﻿namespace HA4IoT.Contracts.Components.States
 {
     public class PositionTrackingState : IComponentFeatureState
     {
@@ -13,10 +11,5 @@ namespace HA4IoT.Contracts.Components.States
         public int Position { get; }
 
         public bool IsClosed { get; }
-
-        public JToken Serialize()
-        {
-            return JObject.FromObject(this);
-        }
     }
 }

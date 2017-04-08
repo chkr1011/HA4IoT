@@ -6,11 +6,8 @@ namespace HA4IoT.Networking.Http
     {
         public HttpContext(HttpRequest request, HttpResponse response)
         {
-            if (request == null) throw new ArgumentNullException(nameof(request));
-            if (response == null) throw new ArgumentNullException(nameof(response));
-
-            Request = request;
-            Response = response;
+            Request = request ?? throw new ArgumentNullException(nameof(request));
+            Response = response ?? throw new ArgumentNullException(nameof(response));
         }
 
         public HttpRequest Request { get; }

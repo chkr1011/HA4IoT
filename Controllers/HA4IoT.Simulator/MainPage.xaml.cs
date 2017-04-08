@@ -97,9 +97,9 @@ namespace HA4IoT.Simulator
             return result;
         }
 
-        public async Task<IBinaryOutputAdapter> CreateUIBinaryOutputAdapter(string caption)
+        public async Task<UIBinaryOutputAdapter> CreateUIBinaryOutputAdapter(string caption)
         {
-            IBinaryOutputAdapter result = null;
+            UIBinaryOutputAdapter result = null;
 
             await Dispatcher.RunAsync(
                 CoreDispatcherPriority.Normal,

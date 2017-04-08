@@ -19,16 +19,14 @@ namespace HA4IoT.Services.Areas
         
         public Area(string id, IComponentRegistryService componentService, IAutomationRegistryService automationService, ISettingsService settingsService)
         {
-            if (componentService == null) throw new ArgumentNullException(nameof(componentService));
-            if (automationService == null) throw new ArgumentNullException(nameof(automationService));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 
-            _componentService = componentService;
-            _automationService = automationService;
+            _componentService = componentService ?? throw new ArgumentNullException(nameof(componentService));
+            _automationService = automationService ?? throw new ArgumentNullException(nameof(automationService));
 
             Id = id;
 
-            settingsService.CreateAreaSettingsMonitor(Id, s => Settings = s);
+            settingsService.CreateSettingsMonitor(this, s => Settings = s.NewSettings);
         }
 
         public string Id { get; }

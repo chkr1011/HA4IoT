@@ -122,6 +122,8 @@
     <Compile Include="Hardware\RemoteSwitch\BrennenstuhlCodeSequenceProviderTests.cs" />
     <Compile Include="Mockups\Adapters\TestBinaryOutputAdapter.cs" />
     <Compile Include="Mockups\Adapters\TestButtonAdapter.cs" />
+    <Compile Include="Mockups\Adapters\TestLampAdapter.cs" />
+    <Compile Include="Mockups\Services\TestDeviceMessageBrokerService.cs" />
     <Compile Include="Mockups\TestApiAdapter.cs" />
     <Compile Include="Mockups\TestController.cs" />
     <Compile Include="Mockups\Services\TestDateTimeService.cs" />

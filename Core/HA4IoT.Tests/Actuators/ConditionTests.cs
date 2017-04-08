@@ -127,7 +127,7 @@ namespace HA4IoT.Tests.Actuators
         [TestMethod]
         public void ComponentHasStateCondition()
         {
-            var output = new Lamp("Test", new TestBinaryOutputAdapter());
+            var output = new Lamp("Test", new TestLampAdapter());
             output.TryReset();
 
             var condition = new ComponentHasStateCondition(output, PowerState.Off);

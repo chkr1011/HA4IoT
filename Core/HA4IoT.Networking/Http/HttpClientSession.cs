@@ -35,19 +35,14 @@ namespace HA4IoT.Networking.Http
             Action<UpgradedToWebSocketSessionEventArgs> upgradeToWebSocketSessionCallback,
             ILogger log)
         {
-            if (client == null) throw new ArgumentNullException(nameof(client));
-            if (httpRequestReceivedCallback == null) throw new ArgumentNullException(nameof(httpRequestReceivedCallback));
-            if (upgradeToWebSocketSessionCallback == null) throw new ArgumentNullException(nameof(upgradeToWebSocketSessionCallback));
-            if (log == null) throw new ArgumentNullException(nameof(log));
-
-            _client = client;
+            _client = client ?? throw new ArgumentNullException(nameof(client));
             _inputStream = client.InputStream.AsStreamForRead(RequestBufferSize);
 
             _cancellationTokenSource = cancellationTokenSource;
 
-            _httpRequestReceivedCallback = httpRequestReceivedCallback;
-            _upgradeToWebSocketSessionCallback = upgradeToWebSocketSessionCallback;
-            _log = log;
+            _httpRequestReceivedCallback = httpRequestReceivedCallback ?? throw new ArgumentNullException(nameof(httpRequestReceivedCallback));
+            _upgradeToWebSocketSessionCallback = upgradeToWebSocketSessionCallback ?? throw new ArgumentNullException(nameof(upgradeToWebSocketSessionCallback));
+            _log = log ?? throw new ArgumentNullException(nameof(log));
         }
 
         public async Task WaitForRequestAsync()

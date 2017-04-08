@@ -7,15 +7,11 @@ namespace HA4IoT.Tests.Mockups.Adapters
     {
         public int TurnOnCalledCount { get; set; }
         public int TurnOffCalledCount { get; set; }
-
-        public void TurnOn(params IHardwareParameter[] parameters)
+        
+        public void SetState(AdapterPowerState powerState, params IHardwareParameter[] parameters)
         {
-            TurnOnCalledCount++;
-        }
-
-        public void TurnOff(params IHardwareParameter[] parameters)
-        {
-            TurnOffCalledCount++;
+            if (powerState == AdapterPowerState.On) TurnOnCalledCount++;
+            if (powerState == AdapterPowerState.Off) TurnOffCalledCount++;
         }
     }
 }

@@ -34,7 +34,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
             _log = logService.CreatePublisher(nameof(TelegramBotService));
 
-            settingsService.CreateSettingsMonitor<TelegramBotServiceSettings>(s => Settings = s);
+            settingsService.CreateSettingsMonitor<TelegramBotServiceSettings>(s => Settings = s.NewSettings);
 
             logService.LogEntryPublished += (s, e) =>
             {

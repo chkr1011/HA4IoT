@@ -13,33 +13,46 @@ namespace HA4IoT.Actuators.Lamps
 {
     public class Lamp : ComponentBase, ILamp
     {
-        private readonly IBinaryOutputAdapter _adapter;
+        private readonly ILampAdapter _adapter;
 
         private PowerStateValue _powerState = PowerStateValue.Off;
+        private ColorState _colorState;
 
-        public Lamp(string id, IBinaryOutputAdapter adapter)
+        public Lamp(string id, ILampAdapter adapter)
             : base(id)
         {
-            if (adapter == null) throw new ArgumentNullException(nameof(adapter));
+            _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
 
-            _adapter = adapter;
+            if (adapter.SupportsColor)
+            {
+                _colorState = new ColorState();
+            }
         }
 
         public override IComponentFeatureStateCollection GetState()
         {
-            return new ComponentFeatureStateCollection()
+            var state = new ComponentFeatureStateCollection()
                 .With(new PowerState(_powerState));
+
+            if (_adapter.SupportsColor)
+            {
+                return state.With(_colorState);
+            }
+
+            return state;
         }
 
         public override IComponentFeatureCollection GetFeatures()
         {
-            return new ComponentFeatureCollection()
+            var features = new ComponentFeatureCollection()
                 .With(new PowerStateFeature());
-        }
 
-        public void ResetState()
-        {
-            SetStateInternal(PowerStateValue.Off, true);
+            if (_adapter.SupportsColor)
+            {
+                return features.With(new ColorFeature());
+            }
+
+            return features;
         }
 
         public override void ExecuteCommand(ICommand command)
@@ -47,21 +60,39 @@ namespace HA4IoT.Actuators.Lamps
             if (command == null) throw new ArgumentNullException(nameof(command));
 
             var commandExecutor = new CommandExecutor();
-            commandExecutor.Register<TurnOnCommand>(c => SetStateInternal(PowerStateValue.On));
-            commandExecutor.Register<TurnOffCommand>(c => SetStateInternal(PowerStateValue.Off));
-            commandExecutor.Register<TogglePowerStateCommand>(c => TogglePowerState());
             commandExecutor.Register<ResetCommand>(c => ResetState());
+            commandExecutor.Register<TurnOnCommand>(c => SetStateInternal(PowerStateValue.On, _colorState));
+            commandExecutor.Register<TurnOffCommand>(c => SetStateInternal(PowerStateValue.Off, _colorState));
+            commandExecutor.Register<TogglePowerStateCommand>(c => TogglePowerState());
+
+            if (_adapter.SupportsColor)
+            {
+                commandExecutor.Register<SetColorCommand>(c => SetStateInternal(_powerState, GenerateColorState(c)));
+            }
+
             commandExecutor.Execute(command);
+        }
+
+        public void ResetState()
+        {
+            SetStateInternal(PowerStateValue.Off, _colorState, true);
         }
 
         private void TogglePowerState()
         {
-            SetStateInternal(_powerState == PowerStateValue.Off ? PowerStateValue.On : PowerStateValue.Off);
+            SetStateInternal(_powerState == PowerStateValue.Off ? PowerStateValue.On : PowerStateValue.Off, _colorState);
         }
 
-        private void SetStateInternal(PowerStateValue powerState, bool forceUpdate = false)
+        private void SetStateInternal(PowerStateValue powerState, ColorState colorState, bool forceUpdate = false)
         {
-            if (!forceUpdate && _powerState == powerState)
+            if (colorState == null)
+            {
+                if (!forceUpdate && _powerState == powerState)
+                {
+                    return;
+                }
+            }
+            else if (!forceUpdate && _powerState == powerState && colorState.Equals(_colorState))
             {
                 return;
             }
@@ -71,18 +102,50 @@ namespace HA4IoT.Actuators.Lamps
             var parameters = forceUpdate ? new IHardwareParameter[] { HardwareParameter.ForceUpdateState } : new IHardwareParameter[0];
             if (powerState == PowerStateValue.On)
             {
-                _adapter.TurnOn(parameters);
+                _adapter.SetState(AdapterPowerState.On, GenerateAdapterColor(colorState), parameters);
             }
             else if (powerState == PowerStateValue.Off)
             {
-                _adapter.TurnOff(parameters);
+                _adapter.SetState(AdapterPowerState.Off, GenerateAdapterColor(colorState), parameters);
             }
 
             _powerState = powerState;
+            _colorState = colorState;
 
-            var newState = GetState();
+            OnStateChanged(oldState);
+        }
 
-            OnStateChanged(oldState, newState);
+        private ColorState GenerateColorState(SetColorCommand setColorCommand)
+        {
+            return new ColorState
+            {
+                Hue = setColorCommand.Hue,
+                Saturation = setColorCommand.Saturation,
+                Value = setColorCommand.Value
+            };
+        }
+
+        private AdapterColor GenerateAdapterColor(ColorState colorState)
+        {
+            if (!_adapter.SupportsColor)
+            {
+                return null;
+            }
+
+            double r, g, b;
+            ColorConverter.ConvertHsvToRgb(colorState.Hue, colorState.Saturation, colorState.Value, out r, out g, out b);
+
+            var maxValue = Math.Pow(2, _adapter.ColorResolutionBits);
+            r = maxValue * r;
+            g = maxValue * g;
+            b = maxValue * b;
+
+            return new AdapterColor
+            {
+                Red = (int)r,
+                Green = (int)g,
+                Blue = (int)b
+            };
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using Newtonsoft.Json.Linq;
 
@@ -11,13 +12,16 @@ namespace HA4IoT.Services
 {
     public class AutomationRegistryService : ServiceBase, IAutomationRegistryService
     {
+        private readonly ISettingsService _settingsService;
         private readonly Dictionary<string, IAutomation> _automations = new Dictionary<string, IAutomation>();
 
         public AutomationRegistryService(
+            ISettingsService settingsService,
             ISystemEventsService systemEventsService,
             ISystemInformationService systemInformationService, 
             IApiDispatcherService apiService)
         {
+            _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
             if (systemEventsService == null) throw new ArgumentNullException(nameof(systemEventsService));
             if (systemInformationService == null) throw new ArgumentNullException(nameof(systemInformationService));
             if (apiService == null) throw new ArgumentNullException(nameof(apiService));
@@ -58,9 +62,15 @@ namespace HA4IoT.Services
         private void HandleApiStatusRequest(object sender, ApiRequestReceivedEventArgs e)
         {
             var automations = new JObject();
-            foreach (var automation in _automations.Values)
+            foreach (var automation in _automations.Values.ToList())
             {
-                automations[automation.Id] = automation.ExportStatusToJsonObject();
+                var status = new JObject
+                {
+                    ["Settings"] = _settingsService.GetRawSettings(automation),
+                    //["State"] = JToken.FromObject(automation.GetState().Serialize())
+                };
+
+                automations[automation.Id] = status;
             }
 
             e.ApiContext.Result["Automations"] = automations;

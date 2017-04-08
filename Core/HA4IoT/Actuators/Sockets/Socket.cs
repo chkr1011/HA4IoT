@@ -19,9 +19,7 @@ namespace HA4IoT.Actuators.Sockets
 
         public Socket(string id, IBinaryOutputAdapter adapter) : base(id)
         {
-            if (adapter == null) throw new ArgumentNullException(nameof(adapter));
-
-            _adapter = adapter;
+            _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
         }
 
         public override IComponentFeatureStateCollection GetState()
@@ -65,18 +63,16 @@ namespace HA4IoT.Actuators.Sockets
             var parameters = forceUpdate ? new IHardwareParameter[] { HardwareParameter.ForceUpdateState } : new IHardwareParameter[0];
             if (powerState == PowerStateValue.On)
             {
-                _adapter.TurnOn(parameters);
+                _adapter.SetState(AdapterPowerState.On, parameters);
             }
             else if (powerState == PowerStateValue.Off)
             {
-                _adapter.TurnOff(parameters);
+                _adapter.SetState(AdapterPowerState.Off, parameters);
             }
 
             _powerState = powerState;
 
-            var newState = GetState();
-
-            OnStateChanged(oldState, newState);
+            OnStateChanged(oldState);
         }
     }
 }
