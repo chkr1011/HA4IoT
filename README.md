@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/chkr1011/HA4IoT/blob/feature/feature-rebuild/Documentation/Images/Logo_256.png?raw=true" width="256">
+<img src="https://github.com/chkr1011/HA4IoT/blob/feature/feature-rebuild/Documentation/Images/Logo_256.png?raw=true" width="128">
 </p>
 
 # HA4IoT
@@ -7,7 +7,7 @@ HA4IoT (Home Automation for Internet of Things) is an Open Source Home Automatio
 
 ## Raspberry Pi
 <p align="center">
-  <img src="https://github.com/chkr1011/HA4IoT/blob/feature/feature-rebuild/Documentation/Images/Pi2.jpg?raw=true" width="375">
+  <img src="https://github.com/chkr1011/HA4IoT/blob/feature/feature-rebuild/Documentation/Images/Pi2.JPG?raw=true" width="375">
 </p>
 The core application of this project is running under Windows 10 IoT Core which is available for free and runs on a Raspberry Pi 2/3 for example. But any other compatible board is supported.
 
@@ -34,14 +34,14 @@ But also other compatible I2C boards based on _PCF8574_, _PCA9555_ or _MAX7311_ 
 
 ## 433 MHz support
 <p align="center">
-  <img src="https://github.com/chkr1011/HA4IoT/blob/feature/feature-rebuild/Documentation/Images/LPD.jpg?raw=true" width="256">
+  <img src="https://github.com/chkr1011/HA4IoT/blob/feature/feature-rebuild/Documentation/Images/LPD.jpg?raw=true" height="256">
 </p>
 
 Controlling old 433 MHz devices is supported via using a I2C -> 433 MHz sender bridge. Also recording 433 MHz signals like from a TV remote is supported.
 
 ## Itead Studio Sonoff supported
 <p align="center">
-  <img src="https://github.com/chkr1011/HA4IoT/blob/feature/feature-rebuild/Documentation/Images/Sonoff.jpg?raw=true" width="256">
+  <img src="https://github.com/chkr1011/HA4IoT/blob/feature/feature-rebuild/Documentation/Images/Sonoff.jpg?raw=true" height="256">
 </p>
 
 This project has build in  support for several _Sonoff_ devices from Itead Studio (www.itead.cc). But it is necessary to replace the firmware with a different one. More information can be found here: https://github.com/arendst/Sonoff-Tasmota
