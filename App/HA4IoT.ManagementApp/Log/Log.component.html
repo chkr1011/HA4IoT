@@ -1,0 +1,12 @@
+<div class="row">
+    <button class="btn" ng-click="lCtrl.clear()">Clear</button>
+    <label class="checkbox-inline"><input type="checkbox" ng-model="lCtrl.AutoScroll">Auto scroll</label>
+</div>
+
+<br />
+
+<div class="row log" id="logView">
+    <pre class="log-message"
+         ng-class="{'log-error-message': logEntry.Severity == 'Error', 'log-info-message': logEntry.Severity == 'Info', 'log-warning-message': logEntry.Severity == 'Warning'}"
+         ng-repeat="logEntry in lCtrl.LogEntries">{{ logEntry.Text }}<br /></pre>
+</div>

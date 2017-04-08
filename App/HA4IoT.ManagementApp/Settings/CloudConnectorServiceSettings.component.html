@@ -1,0 +1,39 @@
+<div class="panel panel-default">
+    <div class="panel-heading">Cloud Connector service settings</div>
+    <div class="panel-body">
+        <div class="alert alert-info" role="alert">Required to use several features like external access or Amazon Echo.</div>
+        <div class="alert alert-warning" role="alert">A restart is required to apply this settings.</div>
+
+        <form class="form-horizontal">
+
+            <div class="form-group">
+                <label class="col-md-2 control-label">Enabled</label>
+                <div class="col-md-10">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" ng-model="ccsCtrl.Model.IsEnabled"><label></label>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-2 control-label">Controller ID</label>
+                <div class="col-md-10">
+                    <input type="text" class="form-control" ng-model="ccsCtrl.Model.ControllerId">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-2 control-label">API key</label>
+                <div class="col-md-10">
+                    <input type="text" class="form-control" ng-model="ccsCtrl.Model.ApiKey">
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <div class="panel-footer clearfix">
+        <button class="btn btn-default pull-right" ng-click="ccsCtrl.save()">Save</button>
+    </div>
+
+</div>

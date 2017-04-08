@@ -15,7 +15,7 @@
 
         ctrl.fetchAutomations = function () {
 
-            controllerProxyService.get("configuration", null, function (response) {
+            controllerProxyService.get("GetConfiguration", null, function (response) {
                 ctrl.loadAutomations(response);
             });
         }

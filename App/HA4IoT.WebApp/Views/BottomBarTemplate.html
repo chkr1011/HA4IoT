@@ -1,44 +1,43 @@
-﻿<div class="row panel panel-default" ng-class="{'panel-primary': haCtrl.activePanel=='bottomBar'}" id="bottomBar">
-    <div class="panel-heading pointer" ng-click="haCtrl.setActivePanel('bottomBar')">
-        <h1 class="panel-title">
-            <span class="glyphicon glyphicon-signal"
-                  aria-hidden="true"
-                  ng-class="{'text-danger': haCtrl.errorMessage!=null, 'text-success': haCtrl.errorMessage==null}"></span>
-        </h1>
+﻿<div class="row" style="background: whitesmoke; padding-top: 10px; padding-bottom: 10px;">
+    <div class="col-xs-3 text-center">
+        <span class="glyphicon glyphicon-signal bottomBarItem"
+              aria-hidden="true"
+              ng-class="ctrl.apiStatus.isApiReachable===false ? 'text-danger' : 'text-success'"></span>
     </div>
-    <table class="table table-striped" ng-show="haCtrl.activePanel=='bottomBar'">
-        <tbody>
-            <tr>
-                <td><h4>HA4IoT</h4></td>
-                <td class="rightTextAligned" style="font-family: monospace; vertical-align: middle;">
-                    (c) Christian Kratky
-                </td>
-            </tr>
+    <div id="infoIcon" class="col-xs-3 text-center" ng-click="ctrl.showInfoPopover()">
+        <span class="text-primary glyphicon glyphicon-info-sign bottomBarItem"></span>
+    </div>
 
-            <tr>
-                <td>Homepage</td>
-                <td class="rightTextAligned"><a href="http://www.HA4IoT.de" target="_blank">http://www.HA4IoT.de</a></td>
-            </tr>
+    <div class="col-xs-3 text-center">
+        <span class="text-primary glyphicon glyphicon-cog bottomBarItem"></span>
+    </div>
 
-            <tr>
-                <td>Twitter</td>
-                <td class="rightTextAligned"><a href="http://twitter.com/chkratky" target="_blank">http://twitter.com/chkratky</a></td>
-            </tr>
+    <div class="col-xs-3 text-center">
+        <span class="text-primary version-text">v{{ctrl.version}}</span>
+    </div>
+</div>
 
-            <tr>
-                <td>E-Mail</td>
-                <td class="rightTextAligned"><a href="mailto:christian.kratky@googlemail.com" target="_blank">christian.kratky@googlemail.com</a></td>
-            </tr>
 
-            <tr>
-                <td>App version</td>
-                <td class="rightTextAligned">{{haCtrl.version}}</td>
-            </tr>
+<div class="hide">
+    <div id="infoPopoverContent" class="popover">
 
-            <tr>
-                <td>STAGING-Version</td>
-                <td class="rightTextAligned"><a href="STAGING/Index.html" target="_blank">open</a></td>
-            </tr>
-        </tbody>
-    </table>
+        <h4>Homepage</h4>
+        <a href="http://www.HA4IoT.de" target="_blank">http://www.HA4IoT.de</a>
+
+        <h4>GitHub</h4>
+        <a href="http://github.com/chkr1011" target="_blank">https://github.com/chkr1011</a>
+
+        <h4>Twitter</h4>
+        <a href="http://twitter.com/chkratky" target="_blank">http://twitter.com/chkratky</a>
+
+        <h4>E-Mail</h4>
+        <a href="mailto:christian.kratky@googlemail.com" target="_blank">christian.kratky@googlemail.com</a>
+
+        <h4>STAGING-Version</h4>
+        <a href="STAGING/Index.html" target="_blank">open</a>
+
+        <hr />
+
+        <span>&#9400; Christian Kratky 2015 - 2017</span>
+    </div>
 </div>

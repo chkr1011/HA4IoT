@@ -1,19 +1,23 @@
-﻿<div class="btn-group" role="group">
+﻿<span class="status-icon pull-left glyphicon glyphicon-save" ng-class="component.State.PositionTrackingState.IsClosed===true ? 'status-icon-ok' : 'status-icon-default'"></span>
 
-    <div class="progress" style="height: 12px; margin-bottom: 6px;">
-        <div class="progress-bar progress-bar-default"
-             ng-class="{'active progress-bar-striped' : component.state.State!='Off', 'progress-bar-success' : component.State.Position > (15467-3000)}"
-             ng-style="{width: ((component.state.Position / (component.Settings.MaxPosition))*100) + '%'}">
-        </div>
+<div class="btn-group pull-right" role="group">
+    <a href="#" class="btn" ng-class="component.State.VerticalMovingState.Value==='MovingUp' ? 'btn-danger' : 'btn-default'" ng-click="ctrl.componentService.invokeRollerShutter(component, 'MoveUp')">
+        <span class="glyphicon glyphicon-arrow-up"></span>
+    </a>
+    <a href="#" class="btn" ng-class="component.State.VerticalMovingState.Value==='Stopped' ? 'btn-success' : 'btn-default'" ng-click="ctrl.componentService.invokeRollerShutter(component, 'Stop')">
+        <span class="glyphicon glyphicon-stop"></span>
+    </a>
+    <a href="#" class="btn btn-default" ng-class="component.State.VerticalMovingState.Value==='MovingDown' ? 'btn-danger' : 'btn-default'" ng-click="ctrl.componentService.invokeRollerShutter(component, 'MoveDown')">
+        <span class="glyphicon glyphicon-arrow-down"></span>
+    </a>
+
+    <div class="btn-group" role="group">
+        <a href="#" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-right">
+            <li><a href="#" ng-click="ctrl.componentService.disable(component)">{{ctrl.localizationService.get('UI.DisableComponent')}}</a></li>
+            <li><a href="#" ng-click="ctrl.componentService.enable(component)">{{ctrl.localizationService.get('UI.EnableComponent')}}</a></li>
+        </ul>
     </div>
-
-    <button class="btn btn-default" ng-class="{'btn-danger': component.state.State==='MovingUp'}" ng-click="setState(component, 'MovingUp')">
-        <span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span>
-    </button>
-    <button class="btn btn-default" ng-class="{'btn-success': component.state.State==='Stopped'}" ng-click="setState(component, 'Off')">
-        <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
-    </button>
-    <button class="btn btn-default" ng-class="{'btn-danger': component.state.State==='MovingDown'}" ng-click="setState(component, 'MovingDown')">
-        <span class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></span>
-    </button>
 </div>

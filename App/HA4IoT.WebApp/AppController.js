@@ -1,5 +1,3 @@
-app.controller("AppController", ["$scope", "$http", AppController]);
-
 function getVersion(callback) {
     $.get("cache.manifest", function (data) {
         var parser = new RegExp("# Version ([0-9|.]*)", "");
@@ -9,104 +7,160 @@ function getVersion(callback) {
     });
 }
 
-function AppController($scope, $http) {
+function createAppController($http, $scope, modalService, apiService, localizationService, componentService, notificationService) {
     var c = this;
+
+    $scope.getNumbers = function (num) {
+        var a = new Array(num + 1);
+        for (var i = 0; i < num + 1; i++) {
+            a[i] = i;
+        }
+
+        return a;
+    }
+
+    $scope.getStateCaption = function (component, id) {
+        if (component == undefined) {
+            return id;
+        }
+
+        if (component.Settings == undefined) {
+            return id;
+        }
+
+        if (component.Settings.SupportedStates == undefined) {
+            return id;
+        }
+
+        var settings = component.Settings.SupportedStates.find(function (i) { return i.Id === id });
+        if (settings == undefined) {
+            return id;
+        }
+
+        if (settings.Caption == undefined) {
+            return id;
+        }
+
+        return settings.Caption;
+    }
 
     c.isInitialized = false;
     c.appConfiguration = { showWeatherStation: true, showSensorsOverview: true, showRollerShuttersOverview: true, showMotionDetectorsOverview: true, showWindowsOverview: true }
 
-    c.Areas = [];
+    c.areas = [];
+
+    c.weatherStation = {}
 
     c.sensors = [];
     c.rollerShutters = [];
     c.motionDetectors = [];
     c.windows = [];
 
-    c.activeRoom = "";
-    c.errorMessage = null;
     c.version = "-";
+
+    c.notificationService = notificationService;
+    c.componentService = componentService;
+    c.localizationService = localizationService;
+    c.apiService = apiService;
+
+    apiService.apiStatusUpdatedCallback = function (s) {
+        c.apiStatus = s;
+        $scope.$apply(function () { $scope.msgs = s; });
+    }
 
     getVersion(function (version) {
         c.version = version;
     });
 
-    c.notifyConfigurationLoaded = function (configuration) {
-        $scope.$broadcast("configurationLoaded", { language: configuration.Controller.Language });
-    };
-
-    c.deleteNotification = function (uid) {
-        postController("Service/INotificationService/Delete", { "Uid": uid });
+    c.showInfoPopover = function () {
+        $("#infoIcon").popover({
+            html: true,
+            title: "HA4IoT",
+            placement: "top",
+            content: function () {
+                return $('#infoPopoverContent').html();
+            }
+        });
     }
 
-    c.generateRooms = function () {
+    c.showSetColorPopover = function (component) {
+        if (component.State.ColorState == undefined) {
+            return;
+        }
 
-        $http.get("/api/Configuration").success(function (data) {
+        if (component.showColorSelector === true) {
+            component.showColorSelector = false;
+            return;
+        }
 
-            c.notifyConfigurationLoaded(data);
+        component.colorSelector.hue = component.State.ColorState.Hue;
+        component.colorSelector.saturation = component.State.ColorState.Saturation;
+        component.colorSelector.value = component.State.ColorState.Value;
 
-            $.each(data.Areas, function (areaId, area) {
-                if (!getAppSetting(area, "IsVisible", false)) {
+        component.showColorSelector = true;
+    }
+
+    c.hideSetColorPopover = function (component) {
+        component.showColorSelector = false;
+    }
+
+    c.loadConfiguration = function () {
+        apiService.getConfiguration(function (response) {
+
+            localizationService.load(response.Result.Controller.Language);
+
+            $.each(response.Result.Areas, function (areaId, area) {
+
+                var components = area.Components;
+
+                area.Id = areaId;
+                configureArea(area);
+
+                if (!area.IsVisible) {
                     return;
                 }
 
-                var areaControl = {
-                    Id: areaId,
-                    Caption: getAppSetting(area, "Caption", areaId),
-                    SortValue: getAppSetting(area, "SortValue", 0),
-                    Components: [],
-                    Automations: [],
-                    OnStateCount: 0
-                };
-
-                $.each(area.Components, function (componentId, component) {
+                $.each(components, function (componentId, component) {
                     component.Id = componentId;
-
                     configureComponent(area, component);
 
                     if (!component.IsVisible) {
                         return;
                     }
 
-                    if (component.type === "TemperatureSensor" ||
-                        component.type === "HumiditySensor") {
+                    if (component.Type === "TemperatureSensor" ||
+                        component.Type === "HumiditySensor") {
                         c.sensors.push(component);
-                    } else if (component.type === "RollerShutter") {
+                    } else if (component.Type === "RollerShutter") {
                         c.rollerShutters.push(component);
-                    } else if (component.type === "MotionDetector") {
+                    } else if (component.Type === "MotionDetector") {
                         c.motionDetectors.push(component);
-                    } else if (component.type === "Window") {
+                    } else if (component.Type === "Window") {
                         c.windows.push(component);
                     }
 
-                    areaControl.Components.push(component);
+                    area.Components.push(component);
                 });
 
-                c.Areas.push(areaControl);
+                c.areas.push(area);
             });
 
-            if (c.sensors.length === 0) {
-                c.appConfiguration.showSensorsOverview = false;
-            }
+            c.appConfiguration.showSensorsOverview = c.sensors.length > 0;
+            c.appConfiguration.showRollerShuttersOverview = c.rollerShutters.length > 0;
+            c.appConfiguration.showMotionDetectorsOverview = c.motionDetectors.length > 0;
+            c.appConfiguration.showWindowsOverview = c.windows.length > 0;
 
-            if (c.rollerShutters.length === 0) {
-                c.appConfiguration.showRollerShuttersOverview = false;
-            }
-
-            if (c.motionDetectors.length === 0) {
-                c.appConfiguration.showMotionDetectorsOverview = false;
-            }
-
-            if (c.windows.length === 0) {
-                c.appConfiguration.showWindowsOverview = false;
-            }
-
-            if (c.Areas.length === 1) {
+            if (c.areas.length === 1) {
                 c.setActivePanel(c.Areas[0].id);
             }
 
-            c.pollStatus();
+            c.apiService.newStatusReceivedCallback = c.applyNewStatus;
+            c.apiService.pollStatus();
             c.isInitialized = true;
-        });
+        },
+            function () {
+                modalService.show("Configuration not available", "Unable to load the configuration. Please try again later.");
+            });
     };
 
     c.setActivePanel = function (id) {
@@ -123,189 +177,107 @@ function AppController($scope, $http) {
         }, 100);
     }
 
-    c.pollStatus = function () {
-        $.ajax({ method: "GET", url: "/api/status", timeout: 2500 }).done(function (data) {
-            c.errorMessage = null;
+    c.applyNewStatus = function (status) {
+        console.log("Updating UI due to state changes");
 
-            if (c.status != null && data.$Hash === c.status.$Hash) {
-                return;
-            }
-
-            c.status = data;
-            console.log("Updating UI due to state changes");
-
-            $.each(data.Components, function (id, state) {
-                c.updateStatus(id, state);
-            });
-
-            updateOnStateCounters(c.Areas);
-
-            $scope.$apply(function () { $scope.msgs = data; });
-        }).fail(function (jqXHR, textStatus, errorThrown) {
-            c.errorMessage = textStatus;
-        }).always(function () {
-            setTimeout(function () { c.pollStatus(); }, 250);
+        $.each(status.Components, function (id, component) {
+            c.updateComponentState(id, component);
         });
+
+        c.weatherStation.temperature = status.OutdoorTemperature;
+        c.weatherStation.humidity = status.OutdoorHumidity;
+        c.weatherStation.sunrise = status.Sunrise;
+        c.weatherStation.sunset = status.Sunset;
+        c.weatherStation.weather = status.Weather;
+
+        updateOnStateCounters(c.areas);
     };
 
-    $scope.toggleState = function (component) {
-        var newState = "On";
-        if (component.state.State === "On") {
-            newState = "Off";
-        }
+    c.updateComponentState = function (componentId, updatedComponent) {
+        $.each(c.areas, function (i, area) {
+            $.each(area.Components, function (j, component) {
+                if (component.Id === componentId) {
+                    component.Settings = updatedComponent.Settings;
+                    component.State = updatedComponent.State;
 
-        invokeComponent(component.Id, { State: newState }, function () { component.state.State = newState; });
-    };
-
-    $scope.invokeVirtualButton = function (actuator) {
-        invokeComponent(actuator.Id, {});
-        c.pollStatus();
-    }
-
-    $scope.toggleIsEnabled = function (component) {
-        var isEnabled = !component.Settings.IsEnabled;
-
-        updateComponentSettings(component.Id, {
-            IsEnabled: isEnabled
-        }, function () {
-            component.Settings.IsEnabled = isEnabled;
-        });
-    };
-
-    $scope.setState = function (component, newState) {
-        invokeComponent(component.Id, {
-            State: newState
-        }, function () {
-            component.state.State = newState;
-        });
-    };
-
-    c.updateStatus = function (id, state) {
-        $.each(c.Areas, function (i, area) {
-            $.each(area.Components, function (i, component) {
-
-                if (component.Id === id) {
-                    component.state = state;
+                    if (component.onStateChangedCallback != undefined) {
+                        component.onStateChangedCallback(component);
+                    }
                 }
-
-                return;
             });
         });
     };
 
-    c.generateRooms();
+    c.toggleIsEnabled = function (component) {
+        if (component.Settings.IsEnabled) {
+            componentService.disable(component);
+        } else {
+            componentService.enable(component);
+        }
+    };
+
+    c.loadConfiguration();
+}
+
+function configureArea(area) {
+
+    area.Caption = getAppSetting(area, "Caption", "#" + area.Id);
+    area.SortValue = getAppSetting(area, "SortValue", 0);
+    area.IsVisible = getAppSetting(area, "IsVisible", true);
+    area.Components = [];
+    area.OnStateCount = 0;
 }
 
 function configureComponent(area, component) {
 
     component.Image = getAppSetting(component, "Image", "DefaultActuator");
 
-    component.Caption = getAppSetting(component, "Caption", component.id);
-    component.OverviewCaption = getAppSetting(component, "OverviewCaption", component.id);
+    component.Caption = getAppSetting(component, "Caption", "#" + component.Id);
+    component.OverviewCaption = area.Caption + " / " + component.Caption;
 
     component.SortValue = getAppSetting(component, "SortValue", 0);
-    component.IsVisible = getAppSetting(component, "IsVisible", false);
+    component.IsVisible = getAppSetting(component, "IsVisible", true);
 
     component.DisplayVertical = getAppSetting(component, "DisplayVertical", false);
     component.IsPartOfOnStateCounter = getAppSetting(component, "IsPartOfOnStateCounter", false);
     component.OnStateId = getAppSetting(component, "OnStateId", "On");
 
-    component.state = {};
+    component.State = {};
 
     switch (component.Type) {
         case "Lamp":
-            {
-                component.Template = "Views/ToggleTemplate.html";
-                break;
-            }
+            component.template = "Views/LampTemplate.html";
+            component.colorSelector = {};
+            break;
         case "Socket":
-            {
-                component.Template = "Views/ToggleTemplate.html";
-                break;
-            }
-
+            component.template = "Views/ToggleTemplate.html";
+            break;
+        case "Fan":
+            component.template = "Views/FanTemplate.html";
+            break;
         case "RollerShutter":
-            {
-                component.Template = "Views/RollerShutterTemplate.html";
-                break;
-            }
-
+            component.template = "Views/RollerShutterTemplate.html";
+            break;
         case "Window":
-            {
-                component.Template = "Views/WindowTemplate.html";
-                break;
-            }
-
+            component.template = "Views/WindowTemplate.html";
+            break;
         case "StateMachine":
-            {
-                component.Template = "Views/StateMachineTemplate.html";
-
-                var extendedSupportedStates = [];
-                component.SupportedStates.forEach(function (supportedState) {
-
-                    if (component.Settings.SupportedStates === null || component.Settings.SupportedStates === undefined) {
-                        component.Settings.SupportedStates = [];
-                    }
-
-                    var stateSettings = component.Settings.SupportedStates.find(function(i) {
-                        return i.Id === supportedState;
-                    });
-
-                    if (stateSettings === null || stateSettings === undefined) {
-                        stateSettings = {
-                            Id: supportedState,
-                            Caption: supportedState
-                        }
-                    }
-
-                    extendedSupportedStates.push(stateSettings);
-                });
-
-                component.SupportedStates = extendedSupportedStates;
-                break;
-            }
-
+            component.template = "Views/StateMachineTemplate.html";
+            break;
         case "TemperatureSensor":
-            {
-                component.Template = "Views/TemperatureSensorTemplate.html";
-                break;
-            }
-
+            component.template = "Views/TemperatureSensorTemplate.html";
+            break;
         case "HumiditySensor":
-            {
-                component.Template = "Views/HumiditySensorTemplate.html";
-                component.DangerValue = getAppSetting(component, "DangerValue", 70);
-                component.WarningValue = getAppSetting(component, "WarningValue", 60);
-                break;
-            }
-
+            component.template = "Views/HumiditySensorTemplate.html";
+            component.DangerValue = getAppSetting(component, "DangerValue", 70);
+            component.WarningValue = getAppSetting(component, "WarningValue", 60);
+            break;
         case "MotionDetector":
-            {
-                component.Template = "Views/MotionDetectorTemplate.html";
-                break;
-            }
-
+            component.template = "Views/MotionDetectorTemplate.html";
+            break;
         case "Button":
-            {
-                component.Template = "Views/VirtualButtonTemplate.html";
-                break;
-            }
-
-        case "VirtualButtonGroup":
-            {
-                component.Template = "Views/VirtualButtonGroupTemplate.html";
-
-                var extendedButtons = [];
-                $.each(component.buttons, function (i, button) {
-                    var key = "Caption." + button;
-                    var buttonCaption = getAppSetting(component, key, key);
-
-                    extendedButtons.push({ id: button, caption: buttonCaption });
-                });
-
-                component.buttons = extendedButtons;
-                break;
-            }
+            component.template = "Views/ButtonTemplate.html";
+            break;
 
         default:
             {
@@ -322,7 +294,7 @@ function getAppSetting(component, name, defaultValue) {
 
     var value = component.Settings[name];
 
-    if (value === undefined) {
+    if (value === undefined || value === null) {
         return defaultValue;
     }
 
@@ -342,67 +314,5 @@ function updateOnStateCounters(areas) {
         });
 
         area.OnStateCount = count;
-    });
-}
-
-
-function postController(uri, body, successCallback) {
-    // This hack is required for Safari because only one Ajax request at the same time is allowed.
-    var url = "/api/" + uri + "?body=" + JSON.stringify(body);
-
-    $.ajax({
-        method: "POST",
-        url: url,
-        contentType: "application/json; charset=utf-8",
-        timeout: 2500
-    }).done(function () {
-        if (successCallback != null) {
-            successCallback();
-        }
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        alert(textStatus);
-    });
-}
-
-function invokeComponent(id, payload, successCallback) {
-
-    payload.ComponentId = id;
-
-    var url = "/api/Service/IComponentService/Invoke?body=" + JSON.stringify(payload);
-    var options = {
-        method: "POST",
-        url: url,
-        timeout: 2500
-    };
-
-    $.ajax(options).done(function () {
-        if (successCallback != null) {
-            successCallback();
-        }
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        alert(textStatus);
-    });
-}
-
-function updateComponentSettings(id, newSettings, successCallback) {
-
-    var payload = {
-        Uri: id,
-        Settings: newSettings
-    };
-
-    var url = "/api/Service/ISettingsService/Import?body=" + JSON.stringify(payload);
-    var options = {
-        method: "POST",
-        url: url,
-        timeout: 2500
-    };
-
-    $.ajax(options).done(function () {
-        if (successCallback != null) {
-            successCallback();
-        }
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        alert(textStatus);
     });
 }

@@ -1,10 +1,6 @@
-﻿<div class="row panel panel-default" id="notificationsBar">
-    <div class="row">
-        <div class="col-sm-12" ng-repeat="notification in haCtrl.status.Notifications">
-            <div class="alert alert-block" style="margin: 0;" ng-class="{'alert-success' : notification.Type=='Information', 'alert-warning': notification.Type=='Warning', 'alert-danger' : notification.Type=='Error' }" >
-                <button ng-click="haCtrl.deleteNotification(notification.Uid)" class="close" data-dismiss="alert" aria-label="close">&times;</button>
-                <strong>{{notification.Timestamp | date : "dd.MM HH:mm"}}</strong> {{notification.Message}}
-            </div>
-        </div>
+﻿<div class="row">
+    <div ng-repeat="notification in ctrl.Status.Notifications" class="alert" ng-class="{'alert-success' : notification.Type==='Information', 'alert-warning': notification.Type==='Warning', 'alert-danger' : notification.Type==='Error' }">
+        <a href="#" ng-click="ctrl.notificationService.delete(notification.Uid)" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <strong>{{notification.Timestamp | date : "fullDate"}} {{notification.Timestamp | date : "mediumTime"}}</strong><br/>{{notification.Message}}
     </div>
 </div>

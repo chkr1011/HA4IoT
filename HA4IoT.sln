@@ -4,245 +4,179 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Controllers", "Controllers", "{CD5D2CCD-44D0-46E5-BE14-3B377048E0A2}"
-	ProjectSection(SolutionItems) = preProject
-		ExampleControllers\Setup.ps1 = ExampleControllers\Setup.ps1
-	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SDK", "SDK", "{982ABB4E-A5DC-4C78-87A3-30BF49DD5764}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{982ABB4E-A5DC-4C78-87A3-30BF49DD5764}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App", "App", "{20B098BA-1C68-4602-8BBA-902E7E3CA0B4}"
 	ProjectSection(SolutionItems) = preProject
 		App\DeployApps.ps1 = App\DeployApps.ps1
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Main", "Controllers\HA4IoT.Controller.Main\HA4IoT.Controller.Main.csproj", "{D3634558-2746-441F-BC09-454B1EC7DC1D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Main", "Controllers\Examples\HA4IoT.Controller.Main\HA4IoT.Controller.Main.csproj", "{D3634558-2746-441F-BC09-454B1EC7DC1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Cellar", "Controllers\HA4IoT.Controller.Cellar\HA4IoT.Controller.Cellar.csproj", "{2ECC3769-3EDB-4646-86EE-91FBDACBA972}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Hardware.Tests", "Tests\HA4IoT.Hardware.Tests\HA4IoT.Hardware.Tests.csproj", "{02CBC16A-2BDA-4789-AE84-BC2679C1185B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Networking", "SDK\HA4IoT.Networking\HA4IoT.Networking.csproj", "{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Tests.Mockups", "Tests\HA4IoT.Tests.Mockups\HA4IoT.Tests.Mockups.csproj", "{238AD610-4F9B-4652-81DB-A8FC215F61A5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.TraceViewer", "Tools\HA4IoT.TraceViewer\HA4IoT.TraceViewer.csproj", "{1948D9A6-707C-463B-8A16-D0A4020C4896}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Networking", "Core\HA4IoT.Networking\HA4IoT.Networking.csproj", "{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.WebApp", "App\HA4IoT.WebApp\HA4IoT.WebApp.csproj", "{0E8A3855-D428-4CA2-B752-486B61056933}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{36BA1D34-CA76-47F1-97FC-F8386D09AAC3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Networking.Tests", "Tests\HA4IoT.Networking.Tests\HA4IoT.Networking.Tests.csproj", "{C9683C4E-1A20-4C29-961D-7D5C89D13678}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.TraceReceiver", "SDK\HA4IoT.TraceReceiver\HA4IoT.TraceReceiver.csproj", "{25C33CC4-07E7-41AA-B2DC-299AFBB9DE25}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.SasTokenGenerator", "Tools\HA4IoT.SasTokenGenerator\HA4IoT.SasTokenGenerator.csproj", "{2B4A23E4-96DC-49A5-A364-CD922CFFD80A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.CloudTester", "Tools\HA4IoT.CloudTester\HA4IoT.CloudTester.csproj", "{7BB52E78-4753-4353-B5F6-D34A790F98A9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Contracts", "SDK\HA4IoT.Contracts\HA4IoT.Contracts.csproj", "{E1EDAC4B-83B9-46F4-9F6A-3BAE97D79F29}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.ManagementApp", "App\HA4IoT.ManagementApp\HA4IoT.ManagementApp.csproj", "{F931A02F-DCAD-4301-8DAD-B7D722A9C410}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Default", "Controllers\HA4IoT.Controller.Default\HA4IoT.Controller.Default.csproj", "{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller", "Controllers\HA4IoT.Controller\HA4IoT.Controller.csproj", "{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Controller.Local", "Controllers\HA4IoT.Controller.Local\HA4IoT.Controller.Local.csproj", "{F46489CF-4D81-40DD-8EFB-9B4073898A85}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Simulator", "Controllers\HA4IoT.Simulator\HA4IoT.Simulator.csproj", "{F46489CF-4D81-40DD-8EFB-9B4073898A85}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C66A0C8B-0AAA-40C0-8D27-BD5B7BF1EF46}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cloud", "Cloud", "{AF6D96DE-60FE-4711-A888-3F6A06AF1628}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.KnxFakeController", "Tools\HA4IoT.KnxFakeController\HA4IoT.KnxFakeController.csproj", "{38B1BC5D-21DD-4BAB-8CA1-6008518D21F1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT", "Core\HA4IoT\HA4IoT.csproj", "{C034EC4D-46CC-490A-A045-E4D4D1F49C31}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Homepage", "Homepage", "{AF6D96DE-60FE-4711-A888-3F6A06AF1628}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.CloudApi", "Cloud\HA4IoT.CloudApi\HA4IoT.CloudApi.csproj", "{C4619FEF-F44F-45EE-9473-5C80BC72E866}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Homepage", "Homepage\HA4IoT.Homepage.csproj", "{15C79C50-497E-40EF-840E-65B0464417CF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Contracts", "Core\HA4IoT.Contracts\HA4IoT.Contracts.csproj", "{B10B2E2A-85CD-4289-8649-FC0C1C98921D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Hardware", "SDK\HA4IoT.Hardware\HA4IoT.Hardware.csproj", "{287A9BD0-4037-4ADD-986F-54056F059EAE}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{CED3E271-EE23-4B30-936C-B709F4D176FD}"
+	ProjectSection(SolutionItems) = preProject
+		Controllers\Examples\Setup.ps1 = Controllers\Examples\Setup.ps1
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.ExternalServices", "SDK\HA4IoT.ExternalServices\HA4IoT.ExternalServices.csproj", "{1792CCEF-9F6C-4535-BE20-BAA777243980}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT", "SDK\HA4IoT\HA4IoT.csproj", "{C034EC4D-46CC-490A-A045-E4D4D1F49C31}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Tests", "Tests\HA4IoT.Tests\HA4IoT.Tests.csproj", "{1D5441C2-B934-4563-A11C-A617475564AE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HA4IoT.Tests", "Core\HA4IoT.Tests\HA4IoT.Tests.csproj", "{1D5441C2-B934-4563-A11C-A617475564AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU (For Cloud Components) = Debug|Any CPU (For Cloud Components)
 		Debug|ARM (For Raspberry Pi) = Debug|ARM (For Raspberry Pi)
 		Debug|x86 (For local) = Debug|x86 (For local)
+		Release|Any CPU (For Cloud Components) = Release|Any CPU (For Cloud Components)
 		Release|ARM (For Raspberry Pi) = Release|ARM (For Raspberry Pi)
 		Release|x86 (For local) = Release|x86 (For local)
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D3634558-2746-441F-BC09-454B1EC7DC1D}.Debug|Any CPU (For Cloud Components).ActiveCfg = Debug|Any CPU
 		{D3634558-2746-441F-BC09-454B1EC7DC1D}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
 		{D3634558-2746-441F-BC09-454B1EC7DC1D}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|ARM
 		{D3634558-2746-441F-BC09-454B1EC7DC1D}.Debug|ARM (For Raspberry Pi).Deploy.0 = Debug|ARM
 		{D3634558-2746-441F-BC09-454B1EC7DC1D}.Debug|x86 (For local).ActiveCfg = Debug|x86
 		{D3634558-2746-441F-BC09-454B1EC7DC1D}.Debug|x86 (For local).Build.0 = Debug|x86
+		{D3634558-2746-441F-BC09-454B1EC7DC1D}.Release|Any CPU (For Cloud Components).ActiveCfg = Release|Any CPU
+		{D3634558-2746-441F-BC09-454B1EC7DC1D}.Release|Any CPU (For Cloud Components).Build.0 = Release|Any CPU
+		{D3634558-2746-441F-BC09-454B1EC7DC1D}.Release|Any CPU (For Cloud Components).Deploy.0 = Release|Any CPU
 		{D3634558-2746-441F-BC09-454B1EC7DC1D}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|ARM
 		{D3634558-2746-441F-BC09-454B1EC7DC1D}.Release|ARM (For Raspberry Pi).Build.0 = Release|ARM
 		{D3634558-2746-441F-BC09-454B1EC7DC1D}.Release|ARM (For Raspberry Pi).Deploy.0 = Release|ARM
 		{D3634558-2746-441F-BC09-454B1EC7DC1D}.Release|x86 (For local).ActiveCfg = Release|x86
 		{D3634558-2746-441F-BC09-454B1EC7DC1D}.Release|x86 (For local).Build.0 = Release|x86
-		{2ECC3769-3EDB-4646-86EE-91FBDACBA972}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
-		{2ECC3769-3EDB-4646-86EE-91FBDACBA972}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|ARM
-		{2ECC3769-3EDB-4646-86EE-91FBDACBA972}.Debug|x86 (For local).ActiveCfg = Debug|x86
-		{2ECC3769-3EDB-4646-86EE-91FBDACBA972}.Debug|x86 (For local).Build.0 = Debug|x86
-		{2ECC3769-3EDB-4646-86EE-91FBDACBA972}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|ARM
-		{2ECC3769-3EDB-4646-86EE-91FBDACBA972}.Release|ARM (For Raspberry Pi).Build.0 = Release|ARM
-		{2ECC3769-3EDB-4646-86EE-91FBDACBA972}.Release|x86 (For local).ActiveCfg = Release|x86
-		{2ECC3769-3EDB-4646-86EE-91FBDACBA972}.Release|x86 (For local).Build.0 = Release|x86
-		{02CBC16A-2BDA-4789-AE84-BC2679C1185B}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
-		{02CBC16A-2BDA-4789-AE84-BC2679C1185B}.Debug|x86 (For local).ActiveCfg = Debug|x86
-		{02CBC16A-2BDA-4789-AE84-BC2679C1185B}.Debug|x86 (For local).Build.0 = Debug|x86
-		{02CBC16A-2BDA-4789-AE84-BC2679C1185B}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|ARM
-		{02CBC16A-2BDA-4789-AE84-BC2679C1185B}.Release|x86 (For local).ActiveCfg = Release|x86
-		{02CBC16A-2BDA-4789-AE84-BC2679C1185B}.Release|x86 (For local).Build.0 = Release|x86
+		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}.Debug|Any CPU (For Cloud Components).ActiveCfg = Debug|Any CPU
 		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
 		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|ARM
 		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}.Debug|x86 (For local).ActiveCfg = Debug|x86
 		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}.Debug|x86 (For local).Build.0 = Debug|x86
+		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}.Release|Any CPU (For Cloud Components).ActiveCfg = Release|Any CPU
+		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}.Release|Any CPU (For Cloud Components).Build.0 = Release|Any CPU
 		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|ARM
 		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}.Release|ARM (For Raspberry Pi).Build.0 = Release|ARM
 		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}.Release|x86 (For local).ActiveCfg = Release|x86
 		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}.Release|x86 (For local).Build.0 = Release|x86
-		{238AD610-4F9B-4652-81DB-A8FC215F61A5}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
-		{238AD610-4F9B-4652-81DB-A8FC215F61A5}.Debug|x86 (For local).ActiveCfg = Debug|x86
-		{238AD610-4F9B-4652-81DB-A8FC215F61A5}.Debug|x86 (For local).Build.0 = Debug|x86
-		{238AD610-4F9B-4652-81DB-A8FC215F61A5}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|ARM
-		{238AD610-4F9B-4652-81DB-A8FC215F61A5}.Release|x86 (For local).ActiveCfg = Release|x86
-		{238AD610-4F9B-4652-81DB-A8FC215F61A5}.Release|x86 (For local).Build.0 = Release|x86
-		{1948D9A6-707C-463B-8A16-D0A4020C4896}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|x86
-		{1948D9A6-707C-463B-8A16-D0A4020C4896}.Debug|x86 (For local).ActiveCfg = Debug|x86
-		{1948D9A6-707C-463B-8A16-D0A4020C4896}.Debug|x86 (For local).Build.0 = Debug|x86
-		{1948D9A6-707C-463B-8A16-D0A4020C4896}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|Any CPU
-		{1948D9A6-707C-463B-8A16-D0A4020C4896}.Release|x86 (For local).ActiveCfg = Release|x86
-		{1948D9A6-707C-463B-8A16-D0A4020C4896}.Release|x86 (For local).Build.0 = Release|x86
+		{0E8A3855-D428-4CA2-B752-486B61056933}.Debug|Any CPU (For Cloud Components).ActiveCfg = Debug|Any CPU
 		{0E8A3855-D428-4CA2-B752-486B61056933}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|x86
 		{0E8A3855-D428-4CA2-B752-486B61056933}.Debug|x86 (For local).ActiveCfg = Debug|x86
+		{0E8A3855-D428-4CA2-B752-486B61056933}.Release|Any CPU (For Cloud Components).ActiveCfg = Release|Any CPU
+		{0E8A3855-D428-4CA2-B752-486B61056933}.Release|Any CPU (For Cloud Components).Build.0 = Release|Any CPU
 		{0E8A3855-D428-4CA2-B752-486B61056933}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|Any CPU
 		{0E8A3855-D428-4CA2-B752-486B61056933}.Release|x86 (For local).ActiveCfg = Release|x86
 		{0E8A3855-D428-4CA2-B752-486B61056933}.Release|x86 (For local).Build.0 = Release|x86
-		{C9683C4E-1A20-4C29-961D-7D5C89D13678}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
-		{C9683C4E-1A20-4C29-961D-7D5C89D13678}.Debug|x86 (For local).ActiveCfg = Debug|x86
-		{C9683C4E-1A20-4C29-961D-7D5C89D13678}.Debug|x86 (For local).Build.0 = Debug|x86
-		{C9683C4E-1A20-4C29-961D-7D5C89D13678}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|ARM
-		{C9683C4E-1A20-4C29-961D-7D5C89D13678}.Release|x86 (For local).ActiveCfg = Release|x86
-		{C9683C4E-1A20-4C29-961D-7D5C89D13678}.Release|x86 (For local).Build.0 = Release|x86
-		{25C33CC4-07E7-41AA-B2DC-299AFBB9DE25}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|x86
-		{25C33CC4-07E7-41AA-B2DC-299AFBB9DE25}.Debug|x86 (For local).ActiveCfg = Debug|x86
-		{25C33CC4-07E7-41AA-B2DC-299AFBB9DE25}.Debug|x86 (For local).Build.0 = Debug|x86
-		{25C33CC4-07E7-41AA-B2DC-299AFBB9DE25}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|Any CPU
-		{25C33CC4-07E7-41AA-B2DC-299AFBB9DE25}.Release|x86 (For local).ActiveCfg = Release|x86
-		{25C33CC4-07E7-41AA-B2DC-299AFBB9DE25}.Release|x86 (For local).Build.0 = Release|x86
-		{2B4A23E4-96DC-49A5-A364-CD922CFFD80A}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|x86
-		{2B4A23E4-96DC-49A5-A364-CD922CFFD80A}.Debug|x86 (For local).ActiveCfg = Debug|x86
-		{2B4A23E4-96DC-49A5-A364-CD922CFFD80A}.Debug|x86 (For local).Build.0 = Debug|x86
-		{2B4A23E4-96DC-49A5-A364-CD922CFFD80A}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|Any CPU
-		{2B4A23E4-96DC-49A5-A364-CD922CFFD80A}.Release|x86 (For local).ActiveCfg = Release|x86
-		{2B4A23E4-96DC-49A5-A364-CD922CFFD80A}.Release|x86 (For local).Build.0 = Release|x86
-		{7BB52E78-4753-4353-B5F6-D34A790F98A9}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
-		{7BB52E78-4753-4353-B5F6-D34A790F98A9}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|ARM
-		{7BB52E78-4753-4353-B5F6-D34A790F98A9}.Debug|x86 (For local).ActiveCfg = Debug|x86
-		{7BB52E78-4753-4353-B5F6-D34A790F98A9}.Debug|x86 (For local).Build.0 = Debug|x86
-		{7BB52E78-4753-4353-B5F6-D34A790F98A9}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|ARM
-		{7BB52E78-4753-4353-B5F6-D34A790F98A9}.Release|x86 (For local).ActiveCfg = Release|x86
-		{7BB52E78-4753-4353-B5F6-D34A790F98A9}.Release|x86 (For local).Build.0 = Release|x86
-		{E1EDAC4B-83B9-46F4-9F6A-3BAE97D79F29}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
-		{E1EDAC4B-83B9-46F4-9F6A-3BAE97D79F29}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|ARM
-		{E1EDAC4B-83B9-46F4-9F6A-3BAE97D79F29}.Debug|x86 (For local).ActiveCfg = Debug|x86
-		{E1EDAC4B-83B9-46F4-9F6A-3BAE97D79F29}.Debug|x86 (For local).Build.0 = Debug|x86
-		{E1EDAC4B-83B9-46F4-9F6A-3BAE97D79F29}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|ARM
-		{E1EDAC4B-83B9-46F4-9F6A-3BAE97D79F29}.Release|ARM (For Raspberry Pi).Build.0 = Release|ARM
-		{E1EDAC4B-83B9-46F4-9F6A-3BAE97D79F29}.Release|x86 (For local).ActiveCfg = Release|x86
-		{E1EDAC4B-83B9-46F4-9F6A-3BAE97D79F29}.Release|x86 (For local).Build.0 = Release|x86
+		{F931A02F-DCAD-4301-8DAD-B7D722A9C410}.Debug|Any CPU (For Cloud Components).ActiveCfg = Debug|Any CPU
 		{F931A02F-DCAD-4301-8DAD-B7D722A9C410}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|x86
 		{F931A02F-DCAD-4301-8DAD-B7D722A9C410}.Debug|x86 (For local).ActiveCfg = Debug|x86
+		{F931A02F-DCAD-4301-8DAD-B7D722A9C410}.Release|Any CPU (For Cloud Components).ActiveCfg = Release|Any CPU
+		{F931A02F-DCAD-4301-8DAD-B7D722A9C410}.Release|Any CPU (For Cloud Components).Build.0 = Release|Any CPU
 		{F931A02F-DCAD-4301-8DAD-B7D722A9C410}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|x86
 		{F931A02F-DCAD-4301-8DAD-B7D722A9C410}.Release|x86 (For local).ActiveCfg = Release|x86
 		{F931A02F-DCAD-4301-8DAD-B7D722A9C410}.Release|x86 (For local).Build.0 = Release|x86
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Debug|Any CPU (For Cloud Components).ActiveCfg = Debug|Any CPU
 		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
 		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|ARM
 		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Debug|x86 (For local).ActiveCfg = Debug|x86
 		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Debug|x86 (For local).Build.0 = Debug|x86
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Release|Any CPU (For Cloud Components).ActiveCfg = Release|Any CPU
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Release|Any CPU (For Cloud Components).Build.0 = Release|Any CPU
+		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Release|Any CPU (For Cloud Components).Deploy.0 = Release|Any CPU
 		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|ARM
 		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Release|ARM (For Raspberry Pi).Build.0 = Release|ARM
 		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Release|x86 (For local).ActiveCfg = Release|x86
 		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4}.Release|x86 (For local).Build.0 = Release|x86
+		{F46489CF-4D81-40DD-8EFB-9B4073898A85}.Debug|Any CPU (For Cloud Components).ActiveCfg = Debug|Any CPU
 		{F46489CF-4D81-40DD-8EFB-9B4073898A85}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
 		{F46489CF-4D81-40DD-8EFB-9B4073898A85}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|ARM
 		{F46489CF-4D81-40DD-8EFB-9B4073898A85}.Debug|x86 (For local).ActiveCfg = Debug|x86
 		{F46489CF-4D81-40DD-8EFB-9B4073898A85}.Debug|x86 (For local).Build.0 = Debug|x86
 		{F46489CF-4D81-40DD-8EFB-9B4073898A85}.Debug|x86 (For local).Deploy.0 = Debug|x86
+		{F46489CF-4D81-40DD-8EFB-9B4073898A85}.Release|Any CPU (For Cloud Components).ActiveCfg = Release|Any CPU
+		{F46489CF-4D81-40DD-8EFB-9B4073898A85}.Release|Any CPU (For Cloud Components).Build.0 = Release|Any CPU
+		{F46489CF-4D81-40DD-8EFB-9B4073898A85}.Release|Any CPU (For Cloud Components).Deploy.0 = Release|Any CPU
 		{F46489CF-4D81-40DD-8EFB-9B4073898A85}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|ARM
 		{F46489CF-4D81-40DD-8EFB-9B4073898A85}.Release|x86 (For local).ActiveCfg = Release|x86
 		{F46489CF-4D81-40DD-8EFB-9B4073898A85}.Release|x86 (For local).Build.0 = Release|x86
 		{F46489CF-4D81-40DD-8EFB-9B4073898A85}.Release|x86 (For local).Deploy.0 = Release|x86
-		{38B1BC5D-21DD-4BAB-8CA1-6008518D21F1}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|x86
-		{38B1BC5D-21DD-4BAB-8CA1-6008518D21F1}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|x86
-		{38B1BC5D-21DD-4BAB-8CA1-6008518D21F1}.Debug|x86 (For local).ActiveCfg = Debug|x86
-		{38B1BC5D-21DD-4BAB-8CA1-6008518D21F1}.Debug|x86 (For local).Build.0 = Debug|x86
-		{38B1BC5D-21DD-4BAB-8CA1-6008518D21F1}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|x86
-		{38B1BC5D-21DD-4BAB-8CA1-6008518D21F1}.Release|x86 (For local).ActiveCfg = Release|x86
-		{38B1BC5D-21DD-4BAB-8CA1-6008518D21F1}.Release|x86 (For local).Build.0 = Release|x86
-		{15C79C50-497E-40EF-840E-65B0464417CF}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|x86
-		{15C79C50-497E-40EF-840E-65B0464417CF}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|x86
-		{15C79C50-497E-40EF-840E-65B0464417CF}.Debug|x86 (For local).ActiveCfg = Debug|x86
-		{15C79C50-497E-40EF-840E-65B0464417CF}.Debug|x86 (For local).Build.0 = Debug|x86
-		{15C79C50-497E-40EF-840E-65B0464417CF}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|x86
-		{15C79C50-497E-40EF-840E-65B0464417CF}.Release|x86 (For local).ActiveCfg = Release|x86
-		{15C79C50-497E-40EF-840E-65B0464417CF}.Release|x86 (For local).Build.0 = Release|x86
-		{287A9BD0-4037-4ADD-986F-54056F059EAE}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
-		{287A9BD0-4037-4ADD-986F-54056F059EAE}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|ARM
-		{287A9BD0-4037-4ADD-986F-54056F059EAE}.Debug|x86 (For local).ActiveCfg = Debug|x86
-		{287A9BD0-4037-4ADD-986F-54056F059EAE}.Debug|x86 (For local).Build.0 = Debug|x86
-		{287A9BD0-4037-4ADD-986F-54056F059EAE}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|Any CPU
-		{287A9BD0-4037-4ADD-986F-54056F059EAE}.Release|ARM (For Raspberry Pi).Build.0 = Release|Any CPU
-		{287A9BD0-4037-4ADD-986F-54056F059EAE}.Release|x86 (For local).ActiveCfg = Release|Any CPU
-		{287A9BD0-4037-4ADD-986F-54056F059EAE}.Release|x86 (For local).Build.0 = Release|Any CPU
-		{1792CCEF-9F6C-4535-BE20-BAA777243980}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
-		{1792CCEF-9F6C-4535-BE20-BAA777243980}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|ARM
-		{1792CCEF-9F6C-4535-BE20-BAA777243980}.Debug|x86 (For local).ActiveCfg = Debug|x86
-		{1792CCEF-9F6C-4535-BE20-BAA777243980}.Debug|x86 (For local).Build.0 = Debug|x86
-		{1792CCEF-9F6C-4535-BE20-BAA777243980}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|Any CPU
-		{1792CCEF-9F6C-4535-BE20-BAA777243980}.Release|ARM (For Raspberry Pi).Build.0 = Release|Any CPU
-		{1792CCEF-9F6C-4535-BE20-BAA777243980}.Release|x86 (For local).ActiveCfg = Release|Any CPU
-		{1792CCEF-9F6C-4535-BE20-BAA777243980}.Release|x86 (For local).Build.0 = Release|Any CPU
+		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Debug|Any CPU (For Cloud Components).ActiveCfg = Debug|Any CPU
 		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
 		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|ARM
 		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Debug|x86 (For local).ActiveCfg = Debug|x86
 		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Debug|x86 (For local).Build.0 = Debug|x86
-		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|Any CPU
-		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Release|ARM (For Raspberry Pi).Build.0 = Release|Any CPU
+		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Release|Any CPU (For Cloud Components).ActiveCfg = Release|Any CPU
+		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Release|Any CPU (For Cloud Components).Build.0 = Release|Any CPU
+		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|ARM
+		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Release|ARM (For Raspberry Pi).Build.0 = Release|ARM
 		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Release|x86 (For local).ActiveCfg = Release|Any CPU
 		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Release|x86 (For local).Build.0 = Release|Any CPU
-		{1D5441C2-B934-4563-A11C-A617475564AE}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
+		{C4619FEF-F44F-45EE-9473-5C80BC72E866}.Debug|Any CPU (For Cloud Components).ActiveCfg = Debug|Any CPU
+		{C4619FEF-F44F-45EE-9473-5C80BC72E866}.Debug|Any CPU (For Cloud Components).Build.0 = Debug|Any CPU
+		{C4619FEF-F44F-45EE-9473-5C80BC72E866}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|x86
+		{C4619FEF-F44F-45EE-9473-5C80BC72E866}.Debug|x86 (For local).ActiveCfg = Debug|x86
+		{C4619FEF-F44F-45EE-9473-5C80BC72E866}.Debug|x86 (For local).Build.0 = Debug|x86
+		{C4619FEF-F44F-45EE-9473-5C80BC72E866}.Release|Any CPU (For Cloud Components).ActiveCfg = Release|Any CPU
+		{C4619FEF-F44F-45EE-9473-5C80BC72E866}.Release|Any CPU (For Cloud Components).Build.0 = Release|Any CPU
+		{C4619FEF-F44F-45EE-9473-5C80BC72E866}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|Any CPU
+		{C4619FEF-F44F-45EE-9473-5C80BC72E866}.Release|ARM (For Raspberry Pi).Build.0 = Release|Any CPU
+		{C4619FEF-F44F-45EE-9473-5C80BC72E866}.Release|x86 (For local).ActiveCfg = Release|Any CPU
+		{C4619FEF-F44F-45EE-9473-5C80BC72E866}.Release|x86 (For local).Build.0 = Release|Any CPU
+		{B10B2E2A-85CD-4289-8649-FC0C1C98921D}.Debug|Any CPU (For Cloud Components).ActiveCfg = Debug|Any CPU
+		{B10B2E2A-85CD-4289-8649-FC0C1C98921D}.Debug|Any CPU (For Cloud Components).Deploy.0 = Debug|Any CPU
+		{B10B2E2A-85CD-4289-8649-FC0C1C98921D}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
+		{B10B2E2A-85CD-4289-8649-FC0C1C98921D}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|ARM
+		{B10B2E2A-85CD-4289-8649-FC0C1C98921D}.Debug|x86 (For local).ActiveCfg = Debug|x86
+		{B10B2E2A-85CD-4289-8649-FC0C1C98921D}.Debug|x86 (For local).Build.0 = Debug|x86
+		{B10B2E2A-85CD-4289-8649-FC0C1C98921D}.Release|Any CPU (For Cloud Components).ActiveCfg = Release|Any CPU
+		{B10B2E2A-85CD-4289-8649-FC0C1C98921D}.Release|Any CPU (For Cloud Components).Build.0 = Release|Any CPU
+		{B10B2E2A-85CD-4289-8649-FC0C1C98921D}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|Any CPU
+		{B10B2E2A-85CD-4289-8649-FC0C1C98921D}.Release|ARM (For Raspberry Pi).Build.0 = Release|Any CPU
+		{B10B2E2A-85CD-4289-8649-FC0C1C98921D}.Release|x86 (For local).ActiveCfg = Release|Any CPU
+		{B10B2E2A-85CD-4289-8649-FC0C1C98921D}.Release|x86 (For local).Build.0 = Release|Any CPU
+		{1D5441C2-B934-4563-A11C-A617475564AE}.Debug|Any CPU (For Cloud Components).ActiveCfg = Debug|Any CPU
+		{1D5441C2-B934-4563-A11C-A617475564AE}.Debug|Any CPU (For Cloud Components).Build.0 = Debug|Any CPU
+		{1D5441C2-B934-4563-A11C-A617475564AE}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|x86
 		{1D5441C2-B934-4563-A11C-A617475564AE}.Debug|x86 (For local).ActiveCfg = Debug|x86
 		{1D5441C2-B934-4563-A11C-A617475564AE}.Debug|x86 (For local).Build.0 = Debug|x86
-		{1D5441C2-B934-4563-A11C-A617475564AE}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|x86
-		{1D5441C2-B934-4563-A11C-A617475564AE}.Release|x86 (For local).ActiveCfg = Release|x86
+		{1D5441C2-B934-4563-A11C-A617475564AE}.Debug|x86 (For local).Deploy.0 = Debug|x86
+		{1D5441C2-B934-4563-A11C-A617475564AE}.Release|Any CPU (For Cloud Components).ActiveCfg = Release|Any CPU
+		{1D5441C2-B934-4563-A11C-A617475564AE}.Release|Any CPU (For Cloud Components).Build.0 = Release|Any CPU
+		{1D5441C2-B934-4563-A11C-A617475564AE}.Release|Any CPU (For Cloud Components).Deploy.0 = Release|Any CPU
+		{1D5441C2-B934-4563-A11C-A617475564AE}.Release|ARM (For Raspberry Pi).ActiveCfg = Release|Any CPU
+		{1D5441C2-B934-4563-A11C-A617475564AE}.Release|x86 (For local).ActiveCfg = Release|Any CPU
+		{1D5441C2-B934-4563-A11C-A617475564AE}.Release|x86 (For local).Build.0 = Release|Any CPU
+		{1D5441C2-B934-4563-A11C-A617475564AE}.Release|x86 (For local).Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{D3634558-2746-441F-BC09-454B1EC7DC1D} = {CD5D2CCD-44D0-46E5-BE14-3B377048E0A2}
-		{2ECC3769-3EDB-4646-86EE-91FBDACBA972} = {CD5D2CCD-44D0-46E5-BE14-3B377048E0A2}
-		{02CBC16A-2BDA-4789-AE84-BC2679C1185B} = {C66A0C8B-0AAA-40C0-8D27-BD5B7BF1EF46}
+		{D3634558-2746-441F-BC09-454B1EC7DC1D} = {CED3E271-EE23-4B30-936C-B709F4D176FD}
 		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63} = {982ABB4E-A5DC-4C78-87A3-30BF49DD5764}
-		{238AD610-4F9B-4652-81DB-A8FC215F61A5} = {C66A0C8B-0AAA-40C0-8D27-BD5B7BF1EF46}
-		{1948D9A6-707C-463B-8A16-D0A4020C4896} = {36BA1D34-CA76-47F1-97FC-F8386D09AAC3}
 		{0E8A3855-D428-4CA2-B752-486B61056933} = {20B098BA-1C68-4602-8BBA-902E7E3CA0B4}
-		{C9683C4E-1A20-4C29-961D-7D5C89D13678} = {C66A0C8B-0AAA-40C0-8D27-BD5B7BF1EF46}
-		{25C33CC4-07E7-41AA-B2DC-299AFBB9DE25} = {982ABB4E-A5DC-4C78-87A3-30BF49DD5764}
-		{2B4A23E4-96DC-49A5-A364-CD922CFFD80A} = {36BA1D34-CA76-47F1-97FC-F8386D09AAC3}
-		{7BB52E78-4753-4353-B5F6-D34A790F98A9} = {36BA1D34-CA76-47F1-97FC-F8386D09AAC3}
-		{E1EDAC4B-83B9-46F4-9F6A-3BAE97D79F29} = {982ABB4E-A5DC-4C78-87A3-30BF49DD5764}
 		{F931A02F-DCAD-4301-8DAD-B7D722A9C410} = {20B098BA-1C68-4602-8BBA-902E7E3CA0B4}
 		{56F4E6B0-8C46-4715-A9F3-00A6573C2CF4} = {CD5D2CCD-44D0-46E5-BE14-3B377048E0A2}
 		{F46489CF-4D81-40DD-8EFB-9B4073898A85} = {CD5D2CCD-44D0-46E5-BE14-3B377048E0A2}
-		{38B1BC5D-21DD-4BAB-8CA1-6008518D21F1} = {36BA1D34-CA76-47F1-97FC-F8386D09AAC3}
-		{15C79C50-497E-40EF-840E-65B0464417CF} = {AF6D96DE-60FE-4711-A888-3F6A06AF1628}
-		{287A9BD0-4037-4ADD-986F-54056F059EAE} = {982ABB4E-A5DC-4C78-87A3-30BF49DD5764}
-		{1792CCEF-9F6C-4535-BE20-BAA777243980} = {982ABB4E-A5DC-4C78-87A3-30BF49DD5764}
 		{C034EC4D-46CC-490A-A045-E4D4D1F49C31} = {982ABB4E-A5DC-4C78-87A3-30BF49DD5764}
-		{1D5441C2-B934-4563-A11C-A617475564AE} = {C66A0C8B-0AAA-40C0-8D27-BD5B7BF1EF46}
+		{C4619FEF-F44F-45EE-9473-5C80BC72E866} = {AF6D96DE-60FE-4711-A888-3F6A06AF1628}
+		{B10B2E2A-85CD-4289-8649-FC0C1C98921D} = {982ABB4E-A5DC-4C78-87A3-30BF49DD5764}
+		{CED3E271-EE23-4B30-936C-B709F4D176FD} = {CD5D2CCD-44D0-46E5-BE14-3B377048E0A2}
+		{1D5441C2-B934-4563-A11C-A617475564AE} = {982ABB4E-A5DC-4C78-87A3-30BF49DD5764}
 	EndGlobalSection
 EndGlobal
