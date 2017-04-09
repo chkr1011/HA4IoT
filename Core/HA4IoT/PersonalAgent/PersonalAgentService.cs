@@ -217,6 +217,11 @@ namespace HA4IoT.PersonalAgent
                 return $"{Emoji.Confused} Das was du möchtest hat nicht funktioniert.";
             }
 
+            if (messageContext.Kind == MessageContextKind.Speech)
+            {
+                return "Habe ich erledigt.";
+            }
+
             return $"{Emoji.ThumbsUp} Habe ich erledigt.";
         }
 
