@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using Windows.Web.Http;
 using HA4IoT.Networking.Http;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -12,7 +13,7 @@ namespace HA4IoT.Tests.Networking
         public void Http_ParseHttpRequest()
         {
             var buffer = Encoding.UTF8.GetBytes(GetRequestText());
-            var parser = new HttpRequestParser(buffer, buffer.Length);
+            var parser = new HttpRequestReader(buffer, buffer.Length);
 
             HttpRequest request;
             Assert.AreEqual(true, parser.TryParse(out request), "Parse failed.");

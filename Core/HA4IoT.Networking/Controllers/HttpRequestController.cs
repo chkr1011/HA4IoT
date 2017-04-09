@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
+using Windows.Web.Http;
+using HA4IoT.Networking.Http;
+using HttpStatusCode = System.Net.HttpStatusCode;
 
-namespace HA4IoT.Networking.Http.Controllers
+namespace HA4IoT.Networking.Controllers
 {
     public class HttpRequestController
     {
@@ -11,10 +13,9 @@ namespace HA4IoT.Networking.Http.Controllers
 
         public HttpRequestController(string name, HttpServer server)
         {
-            if (name == null) throw new ArgumentNullException(nameof(name));
             if (server == null) throw new ArgumentNullException(nameof(server));
 
-            _baseUri = name;
+            _baseUri = name ?? throw new ArgumentNullException(nameof(name));
             server.HttpRequestReceived += ExecuteActions;
         }
 

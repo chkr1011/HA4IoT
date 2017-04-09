@@ -118,7 +118,6 @@
   <ItemGroup>
     <Compile Include="ClientSession.cs" />
     <Compile Include="Http\HttpContext.cs" />
-    <Compile Include="Http\HttpMethod.cs" />
     <Compile Include="Http\HttpRequest.cs" />
     <Compile Include="Http\HttpResponse.cs" />
     <Compile Include="Http\BadRequestException.cs" />
@@ -140,12 +139,12 @@
     <Compile Include="Http\HttpClientSession.cs" />
     <Compile Include="Http\HttpHeaderExtensions.cs" />
     <Compile Include="Http\HttpHeaderNames.cs" />
-    <Compile Include="Http\HttpResponseSerializer.cs" />
+    <Compile Include="Http\HttpResponseWriter.cs" />
     <Compile Include="Json\JsonSerializer.cs" />
-    <Compile Include="Http\Controllers\HttpDirectoryController.cs" />
-    <Compile Include="Http\Controllers\HttpRequestController.cs" />
-    <Compile Include="Http\Controllers\HttpRequestControllerAction.cs" />
-    <Compile Include="Http\HttpRequestParser.cs" />
+    <Compile Include="Controllers\HttpDirectoryController.cs" />
+    <Compile Include="Controllers\HttpRequestController.cs" />
+    <Compile Include="Controllers\HttpRequestControllerAction.cs" />
+    <Compile Include="Http\HttpRequestReader.cs" />
     <Compile Include="Http\HttpServer.cs" />
     <Compile Include="Json\JsonBody.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

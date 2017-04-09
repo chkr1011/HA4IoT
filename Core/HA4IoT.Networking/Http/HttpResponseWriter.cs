@@ -6,7 +6,7 @@ using System.Text;
 
 namespace HA4IoT.Networking.Http
 {
-    public class HttpResponseSerializer
+    public class HttpResponseWriter
     {
         public byte[] SerializeResponse(HttpContext context)
         {
@@ -72,7 +72,7 @@ namespace HA4IoT.Networking.Http
         {
             using (var outputStream = new MemoryStream())
             {
-                using (var zipStream = new GZipStream(outputStream, CompressionLevel.Optimal))
+                using (var zipStream = new GZipStream(outputStream, CompressionLevel.Fastest))
                 {
                     zipStream.Write(content, 0, content.Length);
                 }

@@ -20,7 +20,7 @@ namespace HA4IoT.Networking.Http
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly byte[] _buffer = new byte[RequestBufferSize];
 
-        private readonly HttpResponseSerializer _responseSerializer = new HttpResponseSerializer();
+        private readonly HttpResponseWriter _responseSerializer = new HttpResponseWriter();
 
         private readonly StreamSocket _client;
         private readonly Stream _inputStream;
@@ -99,7 +99,7 @@ namespace HA4IoT.Networking.Http
                 }
 
                 HttpRequest httpRequest;
-                if (!new HttpRequestParser(_buffer, receivedBytes).TryParse(out httpRequest))
+                if (!new HttpRequestReader(_buffer, receivedBytes).TryParse(out httpRequest))
                 {
                     return null;
                 }
@@ -114,7 +114,7 @@ namespace HA4IoT.Networking.Http
 
                     receivedBytes += additionalReceivedBytes;
 
-                    if (!new HttpRequestParser(_buffer, receivedBytes).TryParse(out httpRequest))
+                    if (!new HttpRequestReader(_buffer, receivedBytes).TryParse(out httpRequest))
                     {
                         return null;
                     }

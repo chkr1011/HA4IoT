@@ -1,17 +1,18 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using Windows.Web.Http;
 
 namespace HA4IoT.Networking.Http
 {
-    public class HttpRequestParser
+    public class HttpRequestReader
     {
         private readonly byte[] _buffer;
         private readonly int _bufferLength;
 
         private readonly HttpRequest _request = new HttpRequest();
 
-        public HttpRequestParser(byte[] buffer, int bufferLength)
+        public HttpRequestReader(byte[] buffer, int bufferLength)
         {
             _buffer = buffer;
             _bufferLength = bufferLength;
@@ -48,7 +49,7 @@ namespace HA4IoT.Networking.Http
             }
         }
 
-        private string ReadLine(MemoryStream memoryStream)
+        private string ReadLine(Stream memoryStream)
         {
             if (memoryStream.Position == memoryStream.Length)
             {
@@ -59,7 +60,7 @@ namespace HA4IoT.Networking.Http
             {
                 while (memoryStream.Position != memoryStream.Length)
                 {
-                    var @byte = (byte) memoryStream.ReadByte();
+                    var @byte = (byte)memoryStream.ReadByte();
                     if (@byte == '\n')
                     {
                         break;
@@ -78,10 +79,34 @@ namespace HA4IoT.Networking.Http
         private void ParsePrefix(string source)
         {
             var items = source.Split(' ');
-
-            _request.Method = (HttpMethod)Enum.Parse(typeof(HttpMethod), items[0], true);
+            _request.Method = ParseHttpMethod(items[0]);
             _request.Uri = items[1];
-            _request.HttpVersion = Version.Parse(items[2].Substring(5)); // Remove HTTP/ from HTTP/1.1
+
+            if (items[2] != "HTTP/1.1")
+            {
+                throw new NotSupportedException("HTTP version not supported.");
+            }
+
+            _request.HttpVersion = new Version(1, 1);
+        }
+
+        private HttpMethod ParseHttpMethod(string source)
+        {
+            switch (source.ToUpperInvariant())
+            {
+                case "GET": return HttpMethod.Get;
+                case "POST": return HttpMethod.Post;
+                case "DELETE": return HttpMethod.Delete;
+                case "PUT": return HttpMethod.Put;
+                case "PATCH": return HttpMethod.Patch;
+                case "OPTIONS": return HttpMethod.Options;
+                case "HEAD": return HttpMethod.Head;
+
+                default:
+                    {
+                        throw new NotSupportedException("HTTP method not supported.");
+                    }
+            }
         }
 
         private void ParseHeader(string source)
@@ -110,6 +135,8 @@ namespace HA4IoT.Networking.Http
             var indexOfQuestionMark = _request.Uri.IndexOf('?');
 
             _request.Query = _request.Uri.Substring(indexOfQuestionMark + 1);
+            _request.Query = Uri.UnescapeDataString(_request.Query);
+
             _request.Uri = _request.Uri.Substring(0, indexOfQuestionMark);
         }
     }

@@ -132,7 +132,7 @@ namespace HA4IoT.Api
                 // Parse a special query parameter.
                 if (!string.IsNullOrEmpty(httpContext.Request.Query) && httpContext.Request.Query.StartsWith("body=", StringComparison.OrdinalIgnoreCase))
                 {
-                    bodyText = Uri.UnescapeDataString(httpContext.Request.Query.Substring("body=".Length));
+                    bodyText = httpContext.Request.Query.Substring("body=".Length);
                 }
                 else
                 {

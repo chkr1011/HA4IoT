@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.Net;
+using Windows.Web.Http;
+using HA4IoT.Networking.Http;
+using HttpStatusCode = System.Net.HttpStatusCode;
 
-namespace HA4IoT.Networking.Http.Controllers
+namespace HA4IoT.Networking.Controllers
 {
     public class HttpDirectoryController : HttpRequestController
     {
