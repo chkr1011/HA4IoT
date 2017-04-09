@@ -15,7 +15,7 @@ namespace HA4IoT.Networking.Http.Controllers
             if (server == null) throw new ArgumentNullException(nameof(server));
 
             _baseUri = name;
-            server.RequestReceived += ExecuteActions;
+            server.HttpRequestReceived += ExecuteActions;
         }
 
         public HttpRequestControllerAction Handle(HttpMethod method, string uri)

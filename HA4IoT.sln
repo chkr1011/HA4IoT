@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Controllers", "Controllers", "{CD5D2CCD-44D0-46E5-BE14-3B377048E0A2}"
 EndProject
@@ -64,6 +64,7 @@ Global
 		{D3634558-2746-441F-BC09-454B1EC7DC1D}.Release|x86 (For local).ActiveCfg = Release|x86
 		{D3634558-2746-441F-BC09-454B1EC7DC1D}.Release|x86 (For local).Build.0 = Release|x86
 		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}.Debug|Any CPU (For Cloud Components).ActiveCfg = Debug|Any CPU
+		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}.Debug|Any CPU (For Cloud Components).Build.0 = Debug|Any CPU
 		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
 		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|ARM
 		{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}.Debug|x86 (For local).ActiveCfg = Debug|x86
@@ -116,6 +117,7 @@ Global
 		{F46489CF-4D81-40DD-8EFB-9B4073898A85}.Release|x86 (For local).Build.0 = Release|x86
 		{F46489CF-4D81-40DD-8EFB-9B4073898A85}.Release|x86 (For local).Deploy.0 = Release|x86
 		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Debug|Any CPU (For Cloud Components).ActiveCfg = Debug|Any CPU
+		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Debug|Any CPU (For Cloud Components).Build.0 = Debug|Any CPU
 		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
 		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|ARM
 		{C034EC4D-46CC-490A-A045-E4D4D1F49C31}.Debug|x86 (For local).ActiveCfg = Debug|x86
@@ -138,6 +140,7 @@ Global
 		{C4619FEF-F44F-45EE-9473-5C80BC72E866}.Release|x86 (For local).ActiveCfg = Release|Any CPU
 		{C4619FEF-F44F-45EE-9473-5C80BC72E866}.Release|x86 (For local).Build.0 = Release|Any CPU
 		{B10B2E2A-85CD-4289-8649-FC0C1C98921D}.Debug|Any CPU (For Cloud Components).ActiveCfg = Debug|Any CPU
+		{B10B2E2A-85CD-4289-8649-FC0C1C98921D}.Debug|Any CPU (For Cloud Components).Build.0 = Debug|Any CPU
 		{B10B2E2A-85CD-4289-8649-FC0C1C98921D}.Debug|Any CPU (For Cloud Components).Deploy.0 = Debug|Any CPU
 		{B10B2E2A-85CD-4289-8649-FC0C1C98921D}.Debug|ARM (For Raspberry Pi).ActiveCfg = Debug|ARM
 		{B10B2E2A-85CD-4289-8649-FC0C1C98921D}.Debug|ARM (For Raspberry Pi).Build.0 = Debug|ARM

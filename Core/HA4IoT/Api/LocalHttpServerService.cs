@@ -30,7 +30,7 @@ namespace HA4IoT.Api
 
         public override void Startup()
         {
-            _httpServer.RequestReceived += DispatchHttpRequest;
+            _httpServer.HttpRequestReceived += DispatchHttpRequest;
             _httpServer.WebSocketConnected += AttachWebSocket;
 
             _apiDispatcherService.RegisterAdapter(this);
