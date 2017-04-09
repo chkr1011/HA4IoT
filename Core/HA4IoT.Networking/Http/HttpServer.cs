@@ -31,7 +31,7 @@ namespace HA4IoT.Networking.Http
             _log.Info($"Binded HTTP server to port {port}");
         }
 
-        public event EventHandler<HttpRequestReceivedEventArgs> RequestReceived;
+        public event EventHandler<HttpRequestReceivedEventArgs> HttpRequestReceived;
         public event EventHandler<WebSocketConnectedEventArgs> WebSocketConnected;
 
         public void Dispose()
@@ -42,11 +42,7 @@ namespace HA4IoT.Networking.Http
 
         private void HandleConnection(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
-            Task.Factory.StartNew(
-                async () => await HandleConnectionAsync(args.Socket),
-                _cancellationTokenSource.Token,
-                TaskCreationOptions.LongRunning, 
-                TaskScheduler.Default);
+            Task.Run(() => HandleConnectionAsync(args.Socket), _cancellationTokenSource.Token);
         }
 
         private async Task HandleConnectionAsync(StreamSocket clientSocket)
@@ -85,7 +81,7 @@ namespace HA4IoT.Networking.Http
 
         private void HandleHttpRequest(object sender, HttpRequestReceivedEventArgs eventArgs)
         {
-            var handlerCollection = RequestReceived;
+            var handlerCollection = HttpRequestReceived;
             if (handlerCollection == null)
             {
                 return;
