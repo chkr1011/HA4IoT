@@ -42,7 +42,8 @@ namespace HA4IoT.Networking.Controllers
 
             if (File.Exists(filename))
             {
-                httpContext.Response.Body = LoadFile(filename);
+                httpContext.Response.Body = File.ReadAllBytes(filename);
+                httpContext.Response.MimeType = MimeTypeProvider.GetMimeTypeFromFile(filename);
             }
             else
             {
@@ -67,15 +68,7 @@ namespace HA4IoT.Networking.Controllers
 
             File.WriteAllBytes(filename, httpContext.Request.Body ?? new byte[0]);
         }
-
-        private BinaryBody LoadFile(string filename)
-        {
-            var mimeType = MimeTypeProvider.GetMimeTypeFromFile(filename);
-            var fileContent = File.ReadAllBytes(filename);
-
-            return new BinaryBody { Content = fileContent, MimeType = mimeType };
-        }
-
+        
         private bool TryGetFilename(HttpContext httpContext, out string filename)
         {
             filename = null;

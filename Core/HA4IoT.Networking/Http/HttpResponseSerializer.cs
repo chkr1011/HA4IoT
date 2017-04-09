@@ -6,7 +6,7 @@ using System.Text;
 
 namespace HA4IoT.Networking.Http
 {
-    public class HttpResponseWriter
+    public class HttpResponseSerializer
     {
         public byte[] SerializeResponse(HttpContext context)
         {
@@ -14,13 +14,12 @@ namespace HA4IoT.Networking.Http
 
             var body = GetBody(context);
 
+            context.Response.Headers[HttpHeaderName.ContentLength] = body.Length.ToString();
+
             if (body.Length == 0 && context.Response.StatusCode == HttpStatusCode.OK)
             {
-                context.Response.StatusCode = HttpStatusCode.NoContent;
                 return GeneratePrefix(context.Response);
             }
-
-            context.Response.Headers[HttpHeaderNames.ContentLength] = body.Length.ToString();
 
             var prefix = GeneratePrefix(context.Response);
             var buffer = new byte[prefix.Length + body.Length];
@@ -40,13 +39,17 @@ namespace HA4IoT.Networking.Http
             var content = new byte[0];
             if (context.Response.Body != null)
             {
-                content = context.Response.Body.ToByteArray();
-                context.Response.Headers[HttpHeaderNames.ContentType] = context.Response.Body.MimeType;
+                content = context.Response.Body;
+
+                if (context.Response.MimeType != null)
+                {
+                    context.Response.Headers[HttpHeaderName.ContentType] = context.Response.MimeType;
+                }
 
                 if (context.Request.Headers.ClientSupportsGzipCompression())
                 {
                     content = Compress(content);
-                    context.Response.Headers[HttpHeaderNames.ContentEncoding] = "gzip";
+                    context.Response.Headers[HttpHeaderName.ContentEncoding] = "gzip";
                 }
             }
 

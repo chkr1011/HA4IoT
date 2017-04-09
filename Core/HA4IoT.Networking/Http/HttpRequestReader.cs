@@ -1,84 +1,49 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Windows.Web.Http;
 
 namespace HA4IoT.Networking.Http
 {
     public class HttpRequestReader
     {
-        private readonly byte[] _buffer;
-        private readonly int _bufferLength;
+        private readonly MemoryStream _buffer = new MemoryStream();
+        private readonly byte[] _chunkBuffer = new byte[64 * 1024]; // 64 KB
+        private readonly Stream _stream;
 
         private readonly HttpRequest _request = new HttpRequest();
+        private long? _bodyLength;
 
-        public HttpRequestReader(byte[] buffer, int bufferLength)
+        public HttpRequestReader(Stream stream)
         {
-            _buffer = buffer;
-            _bufferLength = bufferLength;
+            _stream = stream ?? throw new ArgumentNullException(nameof(stream));
         }
 
-        public bool TryParse(out HttpRequest request)
+        public async Task<HttpRequest> TryReadAsync()
         {
             try
             {
-                using (var memoryStream = new MemoryStream(_buffer, 0, _bufferLength))
-                {
-                    ParsePrefix(ReadLine(memoryStream));
+                await ReadChunckFromStreamAsync();
 
-                    var line = ReadLine(memoryStream);
-                    while (!string.IsNullOrEmpty(line))
-                    {
-                        ParseHeader(line);
-                        line = ReadLine(memoryStream);
-                    }
+                ParsePrefix();
+                ParseHeaders();
+                await ParseBody();
 
-                    _request.Body = new byte[memoryStream.Length - memoryStream.Position];
-                    memoryStream.Read(_request.Body, 0, _request.Body.Length);
-                }
-
-                ParseQuery();
-
-                request = _request;
-                return true;
+                return _request;
             }
             catch (Exception)
             {
-                request = null;
-                return false;
-            }
-        }
-
-        private string ReadLine(Stream memoryStream)
-        {
-            if (memoryStream.Position == memoryStream.Length)
-            {
                 return null;
             }
-
-            using (var buffer = new MemoryStream())
-            {
-                while (memoryStream.Position != memoryStream.Length)
-                {
-                    var @byte = (byte)memoryStream.ReadByte();
-                    if (@byte == '\n')
-                    {
-                        break;
-                    }
-
-                    if (@byte != '\r')
-                    {
-                        buffer.WriteByte(@byte);
-                    }
-                }
-
-                return Encoding.UTF8.GetString(buffer.ToArray());
-            }
         }
 
-        private void ParsePrefix(string source)
+        private void ParsePrefix()
         {
-            var items = source.Split(' ');
+            var line = ReadLine();
+            var items = line.Split(' ');
+
             _request.Method = ParseHttpMethod(items[0]);
             _request.Uri = items[1];
 
@@ -88,9 +53,19 @@ namespace HA4IoT.Networking.Http
             }
 
             _request.HttpVersion = new Version(1, 1);
+
+            if (!_request.Uri.Contains("?"))
+            {
+                return;
+            }
+
+            var indexOfQuestionMark = _request.Uri.IndexOf('?');
+            _request.Query = _request.Uri.Substring(indexOfQuestionMark + 1);
+            _request.Query = Uri.UnescapeDataString(_request.Query);
+            _request.Uri = _request.Uri.Substring(0, indexOfQuestionMark);
         }
 
-        private HttpMethod ParseHttpMethod(string source)
+        private static HttpMethod ParseHttpMethod(string source)
         {
             switch (source.ToUpperInvariant())
             {
@@ -103,41 +78,114 @@ namespace HA4IoT.Networking.Http
                 case "HEAD": return HttpMethod.Head;
 
                 default:
-                    {
-                        throw new NotSupportedException("HTTP method not supported.");
-                    }
+                {
+                    throw new NotSupportedException("HTTP method not supported.");
+                }
             }
         }
 
-        private void ParseHeader(string source)
+        private static KeyValuePair<string, string> ParseHeader(string source)
         {
             var delimiterIndex = source.IndexOf(':');
             if (delimiterIndex == -1)
             {
-                _request.Headers.Add(source, string.Empty);
+                return  new KeyValuePair<string, string>(source, null);
             }
-            else
-            {
-                var name = source.Substring(0, delimiterIndex).Trim();
-                var value = source.Substring(delimiterIndex + 1).Trim();
 
-                _request.Headers.Add(name, value);
+            var name = source.Substring(0, delimiterIndex).Trim();
+            var value = source.Substring(delimiterIndex + 1).Trim();
+
+            return new KeyValuePair<string, string>(name, value);
+        }
+
+        private void ParseHeaders()
+        {
+            var line = ReadLine();
+            while (!string.IsNullOrEmpty(line))
+            {
+                var header = ParseHeader(line);
+                if (string.Compare(header.Key, HttpHeaderName.ContentLength, StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    _bodyLength = long.Parse(header.Value);
+                }
+
+                _request.Headers.Add(header.Key, header.Value);
+                line = ReadLine();
             }
         }
 
-        private void ParseQuery()
+        private async Task ParseBody()
         {
-            if (!_request.Uri.Contains("?"))
+            if (!_bodyLength.HasValue)
             {
-                return;
+                _request.Body = ReadRemainingData();
+            }
+            else if (_bodyLength.Value == 0)
+            {
+                _request.Body = new byte[0];
+            }
+            else
+            {
+                var previousRemainingDataLength = RemainingDataLength();
+                while (RemainingDataLength() < _bodyLength.Value)
+                {
+                    // TODO: Consider timeout here!
+                    await ReadChunckFromStreamAsync();
+
+                    if (previousRemainingDataLength == RemainingDataLength())
+                    {
+                        throw new InvalidOperationException();
+                    }
+                }
+
+                _request.Body = ReadRemainingData();
+            }
+        }
+
+        private async Task ReadChunckFromStreamAsync()
+        {
+            var size = await _stream.ReadAsync(_chunkBuffer, 0, _chunkBuffer.Length);
+            _buffer.Write(_chunkBuffer, 0, size);
+            _buffer.Position -= size;
+        }
+
+        private string ReadLine()
+        {
+            var buffer = new StringBuilder();
+
+            while (!IsEndOfStream())
+            {
+                var @byte = _buffer.ReadByte();
+                if (@byte == '\n')
+                {
+                    break;
+                }
+
+                if (@byte != '\r')
+                {
+                    buffer.Append((char)@byte);
+                }
             }
 
-            var indexOfQuestionMark = _request.Uri.IndexOf('?');
+            return buffer.ToString();
+        }
 
-            _request.Query = _request.Uri.Substring(indexOfQuestionMark + 1);
-            _request.Query = Uri.UnescapeDataString(_request.Query);
+        private long RemainingDataLength()
+        {
+            return _buffer.Length - _buffer.Position;
+        }
 
-            _request.Uri = _request.Uri.Substring(0, indexOfQuestionMark);
+        private byte[] ReadRemainingData()
+        {
+            var buffer = new byte[_buffer.Length - _buffer.Position];
+            _buffer.Read(buffer, 0, buffer.Length);
+
+            return buffer;
+        }
+
+        private bool IsEndOfStream()
+        {
+            return _buffer.Position == _buffer.Length;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Commands;
@@ -41,21 +42,13 @@ namespace HA4IoT.PersonalAgent
             IOutdoorHumidityService outdoorHumidityService,
             ILogService logService)
         {
-            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-            if (componentRegistry == null) throw new ArgumentNullException(nameof(componentRegistry));
-            if (areaService == null) throw new ArgumentNullException(nameof(areaService));
-            if (weatherService == null) throw new ArgumentNullException(nameof(weatherService));
-            if (outdoorTemperatureService == null) throw new ArgumentNullException(nameof(outdoorTemperatureService));
-            if (outdoorHumidityService == null) throw new ArgumentNullException(nameof(outdoorHumidityService));
-            if (logService == null) throw new ArgumentNullException(nameof(logService));
-
-            _settingsService = settingsService;
-            _componentsRegistry = componentRegistry;
-            _areaService = areaService;
-            _weatherService = weatherService;
-            _outdoorTemperatureService = outdoorTemperatureService;
-            _outdoorHumidityService = outdoorHumidityService;
-            _log = logService.CreatePublisher(nameof(PersonalAgentService));
+            _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
+            _componentsRegistry = componentRegistry ?? throw new ArgumentNullException(nameof(componentRegistry));
+            _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
+            _weatherService = weatherService ?? throw new ArgumentNullException(nameof(weatherService));
+            _outdoorTemperatureService = outdoorTemperatureService ?? throw new ArgumentNullException(nameof(outdoorTemperatureService));
+            _outdoorHumidityService = outdoorHumidityService ?? throw new ArgumentNullException(nameof(outdoorHumidityService));
+            _log = logService?.CreatePublisher(nameof(PersonalAgentService)) ?? throw new ArgumentNullException(nameof(logService));
         }
 
         [ApiMethod]
@@ -69,7 +62,7 @@ namespace HA4IoT.PersonalAgent
             ProcessMessage(messageContext);
 
             var response = new SkillServiceResponse();
-            response.Response.OutputSpeech.Text = messageContext.Answer;
+            response.Response.OutputSpeech.Text = messageContext.Reply;
 
             apiContext.Result = JObject.FromObject(response);
         }
@@ -77,7 +70,7 @@ namespace HA4IoT.PersonalAgent
         [ApiMethod]
         public void Ask(IApiContext apiContext)
         {
-            var text = (string) apiContext.Parameter["Message"];
+            var text = (string)apiContext.Parameter["Message"];
             if (string.IsNullOrEmpty(text))
             {
                 apiContext.ResultCode = ApiResultCode.InvalidParameter;
@@ -95,7 +88,7 @@ namespace HA4IoT.PersonalAgent
             var messageContext = messageContextFactory.Create(text);
 
             ProcessMessage(messageContext);
-            return messageContext.Answer;
+            return messageContext.Reply;
         }
 
         [ApiMethod]
@@ -114,34 +107,37 @@ namespace HA4IoT.PersonalAgent
             try
             {
                 _latestMessageContext = messageContext;
-                messageContext.Answer = ProcessMessageInternal(messageContext);
+                messageContext.Reply = ProcessMessageInternal(messageContext);
             }
             catch (Exception exception)
             {
-                messageContext.Answer =
-                    $"{Emoji.Scream} Mist! Da ist etwas total schief gelaufen! Bitte stelle mir nie wieder solche Fragen!";
-                _log.Error(exception, $"Error while processing message '{messageContext.Text}'.");
+                _log.Error(exception, $"Error while processing personal agent message '{messageContext.Text}'.");
             }
         }
 
         private string ProcessMessageInternal(MessageContext messageContext)
         {
-            if (messageContext.GetPatternMatch("Hi").Success)
+            if (GetPatternMatch(messageContext, "Hi").Success)
             {
+                if (messageContext.Kind == MessageContextKind.Speech)
+                {
+                    return "Hi, was kann ich für Dich tun?";
+                }
+
                 return $"{Emoji.VictoryHand} Hi, was kann ich für Dich tun?";
             }
 
-            if (messageContext.GetPatternMatch("Danke").Success)
+            if (GetPatternMatch(messageContext, "Danke").Success)
             {
                 return $"{Emoji.Wink} Habe ich doch gerne gemacht.";
             }
 
-            if (messageContext.GetPatternMatch("Wetter").Success)
+            if (GetPatternMatch(messageContext, "Wetter").Success)
             {
                 return GetWeatherStatus();
             }
 
-            if (messageContext.GetPatternMatch("Fenster").Success)
+            if (GetPatternMatch(messageContext, "Fenster").Success)
             {
                 return GetWindowStatus();
             }
@@ -150,16 +146,25 @@ namespace HA4IoT.PersonalAgent
             {
                 if (messageContext.IdentifiedComponentIds.Count > 0)
                 {
-                    return
-                        $"{Emoji.Confused} Mit so vielen Anfragen kann ich nicht umgehen. Bitte nenne mir nur eine eindeutige Komponente.";
+                    if (messageContext.Kind == MessageContextKind.Speech)
+                    {
+                        return "Auf deine Beschreibung passen mehrere Geräte. Bitte stelle deine Anfrage präziser.";
+                    }
+
+                    return $"{Emoji.Confused} Auf deine Beschreibung passen mehrere Geräte. Bitte stelle deine Anfrage präziser.";
                 }
 
-                return $"{Emoji.Confused} Du musst mir schon einen Sensor oder Aktor nennen.";
+                if (messageContext.Kind == MessageContextKind.Speech)
+                {
+                    return "Ich konnte kein Gerät finden, dass auf deine Beschreibung passt. Bitte stelle deine Anfrage präziser.";
+                }
+
+                return $"{Emoji.Confused} Ich konnte kein Gerät finden, dass auf deine Beschreibung passt. Bitte stelle deine Anfrage präziser.";
             }
 
             if (messageContext.AffectedComponentIds.Count > 1)
             {
-                return $"{Emoji.Flushed} Bitte nicht mehrere Komponenten auf einmal.";
+                return $"{Emoji.Flushed} Bitte nicht mehrere Geräte auf einmal.";
             }
 
             if (messageContext.AffectedComponentIds.Count == 1)
@@ -184,6 +189,13 @@ namespace HA4IoT.PersonalAgent
             return $"{Emoji.Confused} Das habe ich leider nicht verstanden. Bitte stelle Deine Anfrage präziser.";
         }
 
+        public Match GetPatternMatch(MessageContext messageContext, string pattern)
+        {
+            if (pattern == null) throw new ArgumentNullException(nameof(pattern));
+
+            return Regex.Match(messageContext.Text ?? string.Empty, pattern, RegexOptions.IgnoreCase);
+        }
+
         private string InvokeCommand(IComponent component, MessageContext messageContext)
         {
             if (messageContext.IdentifiedCommands.Count == 0)
@@ -204,7 +216,7 @@ namespace HA4IoT.PersonalAgent
             {
                 return $"{Emoji.Confused} Das was du möchtest hat nicht funktioniert.";
             }
-            
+
             return $"{Emoji.ThumbsUp} Habe ich erledigt.";
         }
 

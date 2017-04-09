@@ -122,9 +122,7 @@
     <Compile Include="Http\HttpResponse.cs" />
     <Compile Include="Http\BadRequestException.cs" />
     <Compile Include="Http\BinaryBody.cs" />
-    <Compile Include="Http\HttpRequestExtensions.cs" />
     <Compile Include="Http\MimeTypeProvider.cs" />
-    <Compile Include="Http\PlainTextBody.cs" />
     <Compile Include="Http\UpgradedToWebSocketSessionEventArgs.cs" />
     <Compile Include="Http\IHttpBody.cs" />
     <Compile Include="WebSockets\IWebSocketClientSession.cs" />
@@ -138,8 +136,8 @@
     <Compile Include="WebSockets\WebSocketOpcode.cs" />
     <Compile Include="Http\HttpClientSession.cs" />
     <Compile Include="Http\HttpHeaderExtensions.cs" />
-    <Compile Include="Http\HttpHeaderNames.cs" />
-    <Compile Include="Http\HttpResponseWriter.cs" />
+    <Compile Include="Http\HttpHeaderName.cs" />
+    <Compile Include="Http\HttpResponseSerializer.cs" />
     <Compile Include="Json\JsonSerializer.cs" />
     <Compile Include="Controllers\HttpDirectoryController.cs" />
     <Compile Include="Controllers\HttpRequestController.cs" />

@@ -8,6 +8,7 @@ namespace HA4IoT.Networking.Http
     {
         public HttpStatusCode StatusCode { get; set; } = HttpStatusCode.OK;
         public Dictionary<string, string> Headers { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        public IHttpBody Body { get; set; }
+        public byte[] Body { get; set; }
+        public string MimeType { get; set; }
     }
 }

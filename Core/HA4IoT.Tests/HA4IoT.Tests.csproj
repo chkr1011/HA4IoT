@@ -144,7 +144,7 @@
     <Compile Include="Mockups\Services\TestStorageService.cs" />
     <Compile Include="Mockups\TestWeatherStation.cs" />
     <Compile Include="Mqtt\MqttTests.cs" />
-    <Compile Include="Networking\HttpRequestParserTests.cs" />
+    <Compile Include="Networking\HttpRequestReaderTests.cs" />
     <Compile Include="Networking\HttpResponseSerializerTests.cs" />
     <Compile Include="Networking\WebSocketFrameTests.cs" />
     <Compile Include="PersonalAgent\MessageContextTests.cs" />

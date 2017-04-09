@@ -8,6 +8,7 @@ using HA4IoT.Contracts.Services;
 using HA4IoT.Networking.Http;
 using HA4IoT.Networking.Json;
 using HA4IoT.Networking.WebSockets;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Api
@@ -82,7 +83,9 @@ namespace HA4IoT.Api
                 ResultHash = apiContext.ResultHash
             };
 
-            httpContext.Response.Body = new JsonBody(JObject.FromObject(apiResponse));
+            var json = JsonConvert.SerializeObject(apiResponse);
+            httpContext.Response.Body = Encoding.UTF8.GetBytes(json);
+            httpContext.Response.MimeType = MimeTypeProvider.Json;
         }
 
         private void AttachWebSocket(object sender, WebSocketConnectedEventArgs eventArgs)
