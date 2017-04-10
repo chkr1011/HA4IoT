@@ -1,30 +1,29 @@
 ﻿using System;
-using System.Net;
 using System.Text;
+using Windows.Web.Http;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Networking.Http;
-using HA4IoT.Networking.Json;
 using HA4IoT.Networking.WebSockets;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Api
 {
-    public class LocalHttpServerService : ServiceBase, IApiAdapter
+    public class HttpServerService : ServiceBase, IApiAdapter
     {
         private readonly IApiDispatcherService _apiDispatcherService;
         private readonly HttpServer _httpServer;
         private readonly ILogger _log;
 
-        public LocalHttpServerService(IApiDispatcherService apiDispatcherService, HttpServer httpServer, ILogService logService)
+        public HttpServerService(IApiDispatcherService apiDispatcherService, HttpServer httpServer, ILogService logService)
         {
             _apiDispatcherService = apiDispatcherService ?? throw new ArgumentNullException(nameof(apiDispatcherService));
             _httpServer = httpServer ?? throw new ArgumentNullException(nameof(httpServer));
 
-            _log = logService?.CreatePublisher(nameof(LocalHttpServerService)) ?? throw new ArgumentNullException(nameof(logService));
+            _log = logService?.CreatePublisher(nameof(HttpServerService)) ?? throw new ArgumentNullException(nameof(logService));
         }
 
         public event EventHandler<ApiRequestReceivedEventArgs> RequestReceived;
@@ -70,7 +69,7 @@ namespace HA4IoT.Api
                 return;
             }
 
-            httpContext.Response.StatusCode = HttpStatusCode.OK;
+            httpContext.Response.StatusCode = HttpStatusCode.Ok;
             if (eventArgs.ApiContext.Result == null)
             {
                 eventArgs.ApiContext.Result = new JObject();

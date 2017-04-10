@@ -11,13 +11,13 @@ namespace HA4IoT.Hardware.RemoteSwitch.Adapters
 
         public I2CHardwareBridgeLdp433MhzBridgeAdapter(I2CHardwareBridge i2CHardwareBridge, byte pin)
         {
-            if (i2CHardwareBridge == null) throw new ArgumentNullException(nameof(i2CHardwareBridge));
-
-            _i2CHardwareBridge = i2CHardwareBridge;
+            _i2CHardwareBridge = i2CHardwareBridge ?? throw new ArgumentNullException(nameof(i2CHardwareBridge));
             _pin = pin;
         }
 
+#pragma warning disable 0067
         public event EventHandler<Ldp433MhzCodeReceivedEventArgs> CodeReceived;
+#pragma warning restore 0067
 
         public void SendCode(Lpd433MhzCode code)
         {

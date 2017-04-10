@@ -30,13 +30,6 @@ namespace HA4IoT.Networking.Http
                 string.Equals(value, "100-Continue", StringComparison.OrdinalIgnoreCase);
         }
 
-        public static bool HasBodyContent(this Dictionary<string, string> headers)
-        {
-            string value;
-            return headers.TryGetValue(HttpHeaderName.ContentLength, out value) &&
-                !string.Equals(value, "0", StringComparison.OrdinalIgnoreCase);
-        }
-
         public static bool ValueEquals(this Dictionary<string, string> headers, string headerName, string expectedValue)
         {
             if (headers == null) throw new ArgumentNullException(nameof(headers));

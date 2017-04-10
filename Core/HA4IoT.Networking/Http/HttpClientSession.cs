@@ -1,14 +1,13 @@
 ﻿using System;
 using System.IO;
-using System.Net;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking.Sockets;
 using Windows.Security.Cryptography.Core;
+using Windows.Web.Http;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Networking.Json;
 
 namespace HA4IoT.Networking.Http
 {
@@ -18,6 +17,7 @@ namespace HA4IoT.Networking.Http
         private readonly CancellationTokenSource _cancellationTokenSource;
 
         private readonly HttpResponseSerializer _responseWriter = new HttpResponseSerializer();
+        private readonly HttpRequestReader _httpRequestReader;
 
         private readonly StreamSocket _client;
         private readonly Stream _inputStream;
@@ -35,7 +35,10 @@ namespace HA4IoT.Networking.Http
             ILogger log)
         {
             _client = client ?? throw new ArgumentNullException(nameof(client));
+
             _inputStream = client.InputStream.AsStreamForRead();
+            _httpRequestReader = new HttpRequestReader(_inputStream);
+
             _outputStream = client.OutputStream.AsStreamForWrite();
 
             _cancellationTokenSource = cancellationTokenSource;
@@ -47,7 +50,7 @@ namespace HA4IoT.Networking.Http
 
         public async Task WaitForRequestAsync()
         {
-            var httpRequest = await new HttpRequestReader(_inputStream).TryReadAsync();
+            var httpRequest = await _httpRequestReader.TryReadAsync();
             if (httpRequest == null)
             {
                 _cancellationTokenSource.Cancel();
@@ -100,13 +103,11 @@ namespace HA4IoT.Networking.Http
                     context.Response.StatusCode = HttpStatusCode.NotFound;
                 }
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 if (context != null)
                 {
                     context.Response.StatusCode = HttpStatusCode.InternalServerError;
-                    context.Response.Body = Encoding.UTF8.GetBytes(JsonSerializer.SerializeException(exception).ToString());
-                    context.Response.MimeType = MimeTypeProvider.Json;
                 }
             }
         }

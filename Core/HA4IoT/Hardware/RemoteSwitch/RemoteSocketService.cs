@@ -6,6 +6,7 @@ using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.RemoteSwitch.Codes;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Hardware.RemoteSwitch
 {
@@ -15,6 +16,9 @@ namespace HA4IoT.Hardware.RemoteSwitch
         private readonly object _syncRoot = new object();
         private readonly Dictionary<string, RemoteSocketOutputPort> _ports = new Dictionary<string, RemoteSocketOutputPort>();
         private readonly ILogger _log;
+
+        private ILdp433MhzBridgeAdapter _adapter;
+        private Lpd433MhzCode _lastReceivedLpd433MhzCode;
 
         public RemoteSocketService(ISchedulerService schedulerService, ILogService logService)
         {
@@ -27,11 +31,24 @@ namespace HA4IoT.Hardware.RemoteSwitch
 
             _log = logService.CreatePublisher(nameof(RemoteSocketService));
         }
-        
-        public ILdp433MhzBridgeAdapter Adapter { get; set; }
+
+        public ILdp433MhzBridgeAdapter Adapter
+        {
+            get => _adapter;
+            set
+            {
+                if (_adapter != null)
+                {
+                    throw new InvalidOperationException("The Lpd433MhzAdapter can be set only once.");
+                }
+
+                _adapter = value;
+                _adapter.CodeReceived += OnCodeReceived;
+            }
+        }
 
         [ApiMethod]
-        public void SendCode(IApiContext apiContext)
+        public void Send(IApiContext apiContext)
         {
             var code = apiContext.Parameter.ToObject<Lpd433MhzCode>();
             if (code == null)
@@ -41,6 +58,17 @@ namespace HA4IoT.Hardware.RemoteSwitch
             }
 
             SendCode(code);
+        }
+
+        [ApiMethod]
+        public void GetLastReceivedCode(IApiContext apiContext)
+        {
+            if (_lastReceivedLpd433MhzCode == null)
+            {
+                return;
+            }
+
+            apiContext.Result = JObject.FromObject(apiContext);
         }
 
         public RemoteSocketOutputPort RegisterRemoteSocket(string id, Lpd433MhzCodePair codePair)
@@ -93,6 +121,13 @@ namespace HA4IoT.Hardware.RemoteSwitch
             {
                 port.Write(port.Read());
             }
+        }
+
+        private void OnCodeReceived(object sender, Ldp433MhzCodeReceivedEventArgs e)
+        {
+            _lastReceivedLpd433MhzCode = e.Code;
+
+
         }
     }
 }

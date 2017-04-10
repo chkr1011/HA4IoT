@@ -72,9 +72,9 @@ namespace HA4IoT.Hardware.RaspberryPi
             }
         }
 
-        IBinaryOutput IBinaryOutput.WithInvertedState(bool value)
+        IBinaryOutput IBinaryOutput.WithInvertedState(bool isInverted)
         {
-            _isStateInverted = value;
+            _isStateInverted = isInverted;
             return this;
         }
 

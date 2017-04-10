@@ -44,15 +44,15 @@ namespace HA4IoT.Networking
 
                 if (_webSocketClientSession != null)
                 {
-                    await _webSocketClientSession?.WaitForFrameAsync();
+                    await _webSocketClientSession.WaitForFrameAsync();
                 }
             }
         }
 
         public void Dispose()
         {
-            _cancellationTokenSource.Cancel();
-            _clientSocket.Dispose();
+            _cancellationTokenSource?.Cancel();
+            _clientSocket?.Dispose();
         }
 
         private void UpgradeToWebSocketSession(UpgradedToWebSocketSessionEventArgs eventArgs)

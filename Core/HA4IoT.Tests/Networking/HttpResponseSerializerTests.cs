@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
 using System.Text;
+using Windows.Web.Http;
 using HA4IoT.Networking.Http;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 

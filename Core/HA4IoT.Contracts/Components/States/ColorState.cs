@@ -23,5 +23,10 @@
 
             return Hue.Equals(other.Hue) && Saturation.Equals(other.Saturation) && Value.Equals(other.Value);
         }
+
+        public override int GetHashCode()
+        {
+            return Hue.GetHashCode() ^ Saturation.GetHashCode() ^ Value.GetHashCode();
+        }
     }
 }

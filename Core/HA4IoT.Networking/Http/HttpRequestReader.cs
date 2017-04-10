@@ -13,7 +13,7 @@ namespace HA4IoT.Networking.Http
         private readonly byte[] _chunkBuffer = new byte[64 * 1024]; // 64 KB
         private readonly Stream _stream;
 
-        private readonly HttpRequest _request = new HttpRequest();
+        private HttpRequest _request;
         private long? _bodyLength;
 
         public HttpRequestReader(Stream stream)
@@ -25,6 +25,8 @@ namespace HA4IoT.Networking.Http
         {
             try
             {
+                Reset();
+
                 await ReadChunckFromStreamAsync();
 
                 ParsePrefix();
@@ -186,6 +188,14 @@ namespace HA4IoT.Networking.Http
         private bool IsEndOfStream()
         {
             return _buffer.Position == _buffer.Length;
+        }
+
+        private void Reset()
+        {
+            _request = new HttpRequest();
+
+            _buffer.Position = 0;
+            _buffer.SetLength(0);
         }
     }
 }

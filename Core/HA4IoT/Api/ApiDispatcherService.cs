@@ -7,7 +7,6 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Networking.Json;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Api
@@ -206,7 +205,7 @@ namespace HA4IoT.Api
             catch (Exception exception)
             {
                 e.ApiContext.ResultCode = ApiResultCode.UnhandledException;
-                e.ApiContext.Result = JsonSerializer.SerializeException(exception);
+                e.ApiContext.Result = ExceptionSerializer.SerializeException(exception);
             }
             finally
             {

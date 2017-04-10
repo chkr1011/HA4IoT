@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Storage;
+using HA4IoT.Api;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
@@ -12,7 +13,6 @@ using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services.Notifications;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Networking.Controllers;
 using HA4IoT.Networking.Http;
 using HA4IoT.Settings;
 using Newtonsoft.Json.Linq;
@@ -102,8 +102,8 @@ namespace HA4IoT.Core
         {
             var httpServer = _container.GetInstance<HttpServer>();
             
-            new HttpDirectoryController("App", StoragePath.AppRoot, httpServer).Enable();
-            new HttpDirectoryController("ManagementApp", StoragePath.ManagementAppRoot, httpServer).Enable();
+            new HttpDirectoryController("app", StoragePath.AppRoot, httpServer).Enable();
+            new HttpDirectoryController("managementApp", StoragePath.ManagementAppRoot, httpServer).Enable();
 
             httpServer.Bind(_options.HttpServerPort);
         }

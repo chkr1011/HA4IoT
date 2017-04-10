@@ -1,9 +1,9 @@
 ﻿using System;
 using Newtonsoft.Json.Linq;
 
-namespace HA4IoT.Networking.Json
+namespace HA4IoT.Api
 {
-    public static class JsonSerializer
+    public static class ExceptionSerializer
     {
         public static JObject SerializeException(Exception exception)
         {

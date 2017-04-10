@@ -6,9 +6,7 @@ namespace HA4IoT.Networking.Http
     {
         public UpgradedToWebSocketSessionEventArgs(HttpRequest httpRequest)
         {
-            if (httpRequest == null) throw new ArgumentNullException(nameof(httpRequest));
-
-            HttpRequest = httpRequest;
+            HttpRequest = httpRequest ?? throw new ArgumentNullException(nameof(httpRequest));
         }
 
         public HttpRequest HttpRequest { get; }
