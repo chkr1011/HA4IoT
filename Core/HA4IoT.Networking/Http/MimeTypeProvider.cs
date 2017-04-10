@@ -15,7 +15,7 @@ namespace HA4IoT.Networking.Http
         public const string PlainText = "text/plain; charset=utf-8";
         public const string OctetStream = "application/octet-stream";
 
-        public static string GetMimeTypeFromFile(string filename)
+        public static string GetMimeTypeFromFilename(string filename)
         {
             string extension = Path.GetExtension(filename).ToLower();
             switch (extension)

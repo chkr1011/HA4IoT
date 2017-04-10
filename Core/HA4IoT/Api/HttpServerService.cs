@@ -1,8 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 using Windows.Web.Http;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Networking.Http;
@@ -18,19 +20,22 @@ namespace HA4IoT.Api
         private readonly HttpServer _httpServer;
         private readonly ILogger _log;
 
+        private const string ApiBaseUri = "/api/";
+        private const string AppBaseUri = "/app/";
+        private const string ManagementAppBaseUri = "/managementApp/";
+
         public HttpServerService(IApiDispatcherService apiDispatcherService, HttpServer httpServer, ILogService logService)
         {
             _apiDispatcherService = apiDispatcherService ?? throw new ArgumentNullException(nameof(apiDispatcherService));
             _httpServer = httpServer ?? throw new ArgumentNullException(nameof(httpServer));
-
-            _log = logService?.CreatePublisher(nameof(HttpServerService)) ?? throw new ArgumentNullException(nameof(logService));
+            _log = logService.CreatePublisher(nameof(HttpServerService)) ?? throw new ArgumentNullException(nameof(logService));
         }
 
         public event EventHandler<ApiRequestReceivedEventArgs> RequestReceived;
 
         public override void Startup()
         {
-            _httpServer.HttpRequestReceived += DispatchHttpRequest;
+            _httpServer.HttpRequestReceived += OnHttpRequestReceived;
             _httpServer.WebSocketConnected += AttachWebSocket;
 
             _apiDispatcherService.RegisterAdapter(this);
@@ -40,23 +45,31 @@ namespace HA4IoT.Api
         {
         }
 
-        private void DispatchHttpRequest(object sender, HttpRequestReceivedEventArgs eventArgs)
+        private void OnHttpRequestReceived(object sender, HttpRequestReceivedEventArgs e)
         {
-            if (!eventArgs.Context.Request.Uri.StartsWith("/api/"))
+            if (e.Context.Request.Uri.StartsWith(ApiBaseUri, StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                e.IsHandled = true;
+                OnApiRequestReceived(e.Context);
             }
-
-            DispatchHttpRequest(eventArgs.Context);
-            eventArgs.IsHandled = true;
+            else if (e.Context.Request.Uri.StartsWith(AppBaseUri, StringComparison.OrdinalIgnoreCase))
+            {
+                e.IsHandled = true;
+                OnAppRequestReceived(e.Context, StoragePath.AppRoot);
+            }
+            else if (e.Context.Request.Uri.StartsWith(ManagementAppBaseUri, StringComparison.OrdinalIgnoreCase))
+            {
+                e.IsHandled = true;
+                OnAppRequestReceived(e.Context, StoragePath.ManagementAppRoot);
+            }
         }
 
-        private void DispatchHttpRequest(HttpContext httpContext)
+        private void OnApiRequestReceived(HttpContext context)
         {
-            IApiContext apiContext = CreateApiContext(httpContext);
+            IApiContext apiContext = CreateApiContext(context);
             if (apiContext == null)
             {
-                httpContext.Response.StatusCode = HttpStatusCode.BadRequest;
+                context.Response.StatusCode = HttpStatusCode.BadRequest;
                 return;
             }
 
@@ -65,11 +78,11 @@ namespace HA4IoT.Api
 
             if (!eventArgs.IsHandled)
             {
-                httpContext.Response.StatusCode = HttpStatusCode.BadRequest;
+                context.Response.StatusCode = HttpStatusCode.BadRequest;
                 return;
             }
 
-            httpContext.Response.StatusCode = HttpStatusCode.Ok;
+            context.Response.StatusCode = HttpStatusCode.Ok;
             if (eventArgs.ApiContext.Result == null)
             {
                 eventArgs.ApiContext.Result = new JObject();
@@ -83,30 +96,63 @@ namespace HA4IoT.Api
             };
 
             var json = JsonConvert.SerializeObject(apiResponse);
-            httpContext.Response.Body = Encoding.UTF8.GetBytes(json);
-            httpContext.Response.MimeType = MimeTypeProvider.Json;
+            context.Response.Body = Encoding.UTF8.GetBytes(json);
+            context.Response.MimeType = MimeTypeProvider.Json;
         }
 
-        private void AttachWebSocket(object sender, WebSocketConnectedEventArgs eventArgs)
+        private static void OnAppRequestReceived(HttpContext context, string rootDirectory)
+        {
+            string filename;
+            if (!TryGetFilename(context, rootDirectory, out filename))
+            {
+                context.Response.StatusCode = HttpStatusCode.BadRequest;
+                return;
+            }
+
+            if (File.Exists(filename))
+            {
+                context.Response.Body = File.ReadAllBytes(filename);
+                context.Response.MimeType = MimeTypeProvider.GetMimeTypeFromFilename(filename);
+            }
+            else
+            {
+                context.Response.StatusCode = HttpStatusCode.NotFound;
+            }
+        }
+
+        private static bool TryGetFilename(HttpContext context, string rootDirectory, out string filename)
+        {
+            var relativeUrl = context.Request.Uri.Substring(AppBaseUri.Length);
+            relativeUrl = relativeUrl.TrimStart('/');
+
+            if (relativeUrl.EndsWith("/"))
+            {
+                relativeUrl += "Index.html";
+            }
+
+            relativeUrl = relativeUrl.Trim('/');
+            relativeUrl = relativeUrl.Replace("/", @"\");
+
+            filename = Path.Combine(rootDirectory, relativeUrl);
+            return true;
+        }
+
+        private void AttachWebSocket(object sender, WebSocketConnectedEventArgs e)
         {
             // Accept each URI at the moment.
-            eventArgs.IsHandled = true;
+            e.IsHandled = true;
 
-            AttachWebSocket(eventArgs.WebSocketClientSession);
+            e.WebSocketClientSession.MessageReceived += OnWebSocketMessageReceived;
+            e.WebSocketClientSession.Closed += (_, __) => e.WebSocketClientSession.MessageReceived -= OnWebSocketMessageReceived;
         }
 
-        private void AttachWebSocket(IWebSocketClientSession webSocketClientSession)
-        {
-            webSocketClientSession.MessageReceived += DispatchWebSocketMessage;
-            webSocketClientSession.Closed += (s, e) => webSocketClientSession.MessageReceived -= DispatchWebSocketMessage;
-        }
-
-        private void DispatchWebSocketMessage(object sender, WebSocketMessageReceivedEventArgs e)
+        private void OnWebSocketMessageReceived(object sender, WebSocketMessageReceivedEventArgs e)
         {
             var requestMessage = JObject.Parse(((WebSocketTextMessage)e.Message).Text);
             var apiRequest = requestMessage.ToObject<ApiRequest>();
 
             var context = new ApiContext(apiRequest.Action, apiRequest.Parameter, apiRequest.ResultHash);
+
             var eventArgs = new ApiRequestReceivedEventArgs(context);
             RequestReceived?.Invoke(this, eventArgs);
 
@@ -115,33 +161,36 @@ namespace HA4IoT.Api
                 context.ResultCode = ApiResultCode.ActionNotSupported;
             }
 
-            var responseMessage = new JObject
+            var apiResponse = new ApiResponse
             {
-                ["CorrelationId"] = requestMessage["CorrelationId"].Value<string>(),
-                ["ResultCode"] = context.ResultCode.ToString(),
-                ["Content"] = context.Result
+                ResultCode = context.ResultCode,
+                Result = context.Result,
+                ResultHash = context.ResultHash
             };
 
-            e.WebSocketClientSession.SendAsync(responseMessage.ToString()).Wait();
+            var jsonResponse = JObject.FromObject(apiResponse);
+            jsonResponse["CorrelationId"] = requestMessage["CorrelationId"];
+
+            e.WebSocketClientSession.SendAsync(jsonResponse.ToString()).Wait();
         }
 
-        private ApiContext CreateApiContext(HttpContext httpContext)
+        private ApiContext CreateApiContext(HttpContext context)
         {
             try
             {
                 string bodyText;
 
                 // Parse a special query parameter.
-                if (!string.IsNullOrEmpty(httpContext.Request.Query) && httpContext.Request.Query.StartsWith("body=", StringComparison.OrdinalIgnoreCase))
+                if (!string.IsNullOrEmpty(context.Request.Query) && context.Request.Query.StartsWith("body=", StringComparison.OrdinalIgnoreCase))
                 {
-                    bodyText = httpContext.Request.Query.Substring("body=".Length);
+                    bodyText = context.Request.Query.Substring("body=".Length);
                 }
                 else
                 {
-                    bodyText = Encoding.UTF8.GetString(httpContext.Request.Body ?? new byte[0]);
+                    bodyText = Encoding.UTF8.GetString(context.Request.Body ?? new byte[0]);
                 }
 
-                var action = httpContext.Request.Uri.Substring("/api/".Length);
+                var action = context.Request.Uri.Substring("/api/".Length);
                 var parameter = string.IsNullOrEmpty(bodyText) ? new JObject() : JObject.Parse(bodyText);
 
                 return new ApiContext(action, parameter, null);

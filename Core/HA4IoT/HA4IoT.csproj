@@ -134,7 +134,6 @@
     <Compile Include="Adapters\PortBasedRollerShutterAdapter.cs" />
     <Compile Include="Adapters\PortBasedWindowAdapter.cs" />
     <Compile Include="Adapters\VirtualButtonAdapter.cs" />
-    <Compile Include="Api\HttpDirectoryController.cs" />
     <Compile Include="Api\ExceptionSerializer.cs" />
     <Compile Include="Commands\CommandInvoker.cs" />
     <Compile Include="Commands\CommandResolver.cs" />

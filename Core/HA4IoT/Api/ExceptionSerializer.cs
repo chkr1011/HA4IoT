@@ -9,7 +9,7 @@ namespace HA4IoT.Api
         {
             if (exception == null) throw new ArgumentNullException(nameof(exception));
 
-            // Do not use a generic serializer because sometines not all propterties are readable
+            // Do not use a generic serializer because sometines not all properties are readable
             // and throwing exceptions in the getter.
             var json = new JObject
             {

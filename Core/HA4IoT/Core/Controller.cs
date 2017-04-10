@@ -54,7 +54,7 @@ namespace HA4IoT.Core
 
         public event EventHandler StartupCompleted;
         public event EventHandler StartupFailed;
-        public event EventHandler Shutdown; 
+        public event EventHandler Shutdown;
 
         private void Startup()
         {
@@ -69,7 +69,7 @@ namespace HA4IoT.Core
                 _container.ExposeRegistrationsToApi();
 
                 TryConfigure();
-                
+
                 StartupCompleted?.Invoke(this, EventArgs.Empty);
                 stopwatch.Stop();
 
@@ -101,19 +101,14 @@ namespace HA4IoT.Core
         private void StartHttpServer()
         {
             var httpServer = _container.GetInstance<HttpServer>();
-            
-            new HttpDirectoryController("app", StoragePath.AppRoot, httpServer).Enable();
-            new HttpDirectoryController("managementApp", StoragePath.ManagementAppRoot, httpServer).Enable();
-
             httpServer.Bind(_options.HttpServerPort);
         }
-
 
         private void RegisterServices()
         {
             _container.RegisterSingleton<IController>(() => this);
             _container.RegisterSingleton(() => _options);
-            
+
             _container.RegisterServices();
             _options.ContainerConfigurator?.ConfigureContainer(_container);
 
@@ -122,7 +117,7 @@ namespace HA4IoT.Core
 
             _log.Info("Services registered.");
         }
-        
+
         private void TryConfigure()
         {
             try

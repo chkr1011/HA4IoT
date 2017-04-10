@@ -18,7 +18,7 @@ namespace HA4IoT.Api
         private readonly List<IApiAdapter> _adapters = new List<IApiAdapter>();
         private readonly Dictionary<string, Action<IApiContext>> _actions = new Dictionary<string, Action<IApiContext>>(StringComparer.OrdinalIgnoreCase);
         private readonly ILogger _log;
-        
+
         public ApiDispatcherService(ILogService logService)
         {
             if (logService == null) throw new ArgumentNullException(nameof(logService));
