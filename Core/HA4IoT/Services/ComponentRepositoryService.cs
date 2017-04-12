@@ -34,41 +34,43 @@ namespace HA4IoT.Services
             ILogService logService)
         {
             if (systemEventsService == null) throw new ArgumentNullException(nameof(systemEventsService));
-            if (systemInformationService == null) throw new ArgumentNullException(nameof(systemInformationService));
-            if (apiService == null) throw new ArgumentNullException(nameof(apiService));
-            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-
             _log = logService.CreatePublisher(nameof(ComponentRegistryService));
 
-            _systemInformationService = systemInformationService;
-            _apiService = apiService;
-            _settingsService = settingsService;
+            _systemInformationService = systemInformationService ?? throw new ArgumentNullException(nameof(systemInformationService));
+            _apiService = apiService ?? throw new ArgumentNullException(nameof(apiService));
+            _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
 
             apiService.StatusRequested += HandleApiStatusRequest;
         }
 
         public override void Startup()
         {
-            foreach (var actuator in _components.Values)
+            lock (_components)
             {
-                try
+                foreach (var actuator in _components.Values)
                 {
-                    actuator.ExecuteCommand(new ResetCommand());
+                    try
+                    {
+                        actuator.ExecuteCommand(new ResetCommand());
+                    }
+                    catch (Exception exception)
+                    {
+                        _log.Warning(exception, $"Error while initially reset of state for actuator '{actuator.Id}'.");
+                    }
                 }
-                catch (Exception exception)
-                {
-                    _log.Warning(exception, $"Error while initially reset of state for actuator '{actuator.Id}'.");
-                }
-            }
 
-            _systemInformationService.Set("Components/Count", _components.Count);
+                _systemInformationService.Set("Components/Count", _components.Count);
+            }
         }
 
         public void RegisterComponent(IComponent component)
         {
             if (component == null) throw new ArgumentNullException(nameof(component));
 
-            _components.Add(component.Id, component);
+            lock (_components)
+            {
+                _components.Add(component.Id, component);
+            }
 
             component.StateChanged += (s, e) =>
             {
@@ -85,24 +87,36 @@ namespace HA4IoT.Services
         {
             if (!ContainsComponent(id)) throw new ComponentNotFoundException(id);
 
-            return _components[id];
+            lock (_components)
+            {
+                return _components[id];
+            }
         }
 
         public IList<TComponent> GetComponents<TComponent>() where TComponent : IComponent
         {
-            return _components.OfType<TComponent>().ToList();
+            lock (_components)
+            {
+                return _components.Values.OfType<TComponent>().ToList();
+            }
         }
 
         public IList<IComponent> GetComponents()
         {
-            return _components.Values.ToList();
+            lock (_components)
+            {
+                return _components.Values.ToList();
+            }
         }
 
         public bool ContainsComponent(string id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
-            return _components.ContainsKey(id);
+            lock (_components)
+            {
+                return _components.ContainsKey(id);
+            }
         }
 
         public TComponent GetComponent<TComponent>(string id) where TComponent : IComponent
@@ -111,7 +125,10 @@ namespace HA4IoT.Services
 
             if (!ContainsComponent(id)) throw new ComponentNotFoundException(id);
 
-            return (TComponent)_components[id];
+            lock (_components)
+            {
+                return (TComponent)_components[id];
+            }
         }
 
         [ApiMethod]
@@ -119,7 +136,7 @@ namespace HA4IoT.Services
         {
             var componentId = apiContext.Parameter["ComponentId"].Value<string>();
             var commandType = apiContext.Parameter["CommandType"].Value<string>();
-            
+
             var commandResolver = new CommandResolver();
             ICommand command;
             try
@@ -132,14 +149,14 @@ namespace HA4IoT.Services
                 apiContext.ResultCode = ApiResultCode.InvalidParameter;
                 return;
             }
-            
+
             GetComponent(componentId).ExecuteCommand(command);
         }
 
         private void HandleApiStatusRequest(object sender, ApiRequestReceivedEventArgs e)
         {
             var components = new JObject();
-            foreach (var component in _components.Values.ToList())
+            foreach (var component in GetComponents().ToList())
             {
                 var status = new JObject
                 {

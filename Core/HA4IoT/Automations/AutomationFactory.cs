@@ -62,7 +62,7 @@ namespace HA4IoT.Automations
                     _dateTimeService,
                     _daylightService);
 
-            area.AddAutomation(automation);
+            area.RegisterAutomation(automation);
 
             return automation;
         }
@@ -82,7 +82,7 @@ namespace HA4IoT.Automations
                 _settingsService,
                 _resourceService);
 
-            area.AddAutomation(automation);
+            area.RegisterAutomation(automation);
 
             return automation;
         }
@@ -99,7 +99,7 @@ namespace HA4IoT.Automations
                     _settingsService,
                     _daylightService);
 
-            area.AddAutomation(automation);
+            area.RegisterAutomation(automation);
 
             return automation;
         }

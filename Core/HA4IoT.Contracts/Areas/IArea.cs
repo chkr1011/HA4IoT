@@ -22,7 +22,7 @@ namespace HA4IoT.Contracts.Areas
 
         IList<TComponent> GetComponents<TComponent>() where TComponent : IComponent;
         
-        void AddAutomation(IAutomation automation);
+        void RegisterAutomation(IAutomation automation);
 
         IList<IAutomation> GetAutomations();
     }

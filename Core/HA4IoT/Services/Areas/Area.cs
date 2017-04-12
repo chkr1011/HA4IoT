@@ -37,45 +37,68 @@ namespace HA4IoT.Services.Areas
         {
             if (component == null) throw new ArgumentNullException(nameof(component));
 
-            _components.Add(component.Id, component);
+            lock (_components)
+            {
+                _components.Add(component.Id, component);
+            }
+
             _componentService.RegisterComponent(component);
+        }
+
+        public void RegisterAutomation(IAutomation automation)
+        {
+            lock (_automations)
+            {
+                _automations.Add(automation.Id, automation);
+            }
+            
+            _automationService.AddAutomation(automation);
         }
 
         public IList<IComponent> GetComponents()
         {
-            return _components.Values.ToList();
+            lock (_components)
+            {
+                return _components.Values.ToList();
+            }
         }
 
         public IList<TComponent> GetComponents<TComponent>() where TComponent : IComponent
         {
-            return _components.OfType<TComponent>().ToList();
+            lock (_components)
+            {
+                return _components.Values.OfType<TComponent>().ToList();
+            }
         }
         
         public bool ContainsComponent(string id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
-            return _components.ContainsKey(id);
+            lock (_components)
+            {
+                return _components.ContainsKey(id);
+            }
         }
 
         public IComponent GetComponent(string id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
-            return _components[id];
+            lock (_components)
+            {
+                return _components[id];
+            }
         }
 
         public TComponent GetComponent<TComponent>(string id) where TComponent : IComponent
         {
             if (!ContainsComponent(id)) throw new ComponentNotFoundException(id);
 
-            return (TComponent)_components[id];
-        }
-
-        public void AddAutomation(IAutomation automation)
-        {
-            _automations.Add(automation.Id, automation);
-            _automationService.AddAutomation(automation);
+            lock (_components)
+            {
+                return (TComponent) _components[id];
+            }
         }
 
         public IList<IAutomation> GetAutomations()
