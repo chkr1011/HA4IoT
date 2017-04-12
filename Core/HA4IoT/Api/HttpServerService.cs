@@ -122,8 +122,9 @@ namespace HA4IoT.Api
 
         private static bool TryGetFilename(HttpContext context, string rootDirectory, out string filename)
         {
-            var relativeUrl = context.Request.Uri.Substring(AppBaseUri.Length);
+            var relativeUrl = context.Request.Uri;
             relativeUrl = relativeUrl.TrimStart('/');
+            relativeUrl = relativeUrl.Substring(relativeUrl.IndexOf('/') + 1);
 
             if (relativeUrl.EndsWith("/"))
             {

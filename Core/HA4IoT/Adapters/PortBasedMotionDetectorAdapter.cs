@@ -17,6 +17,10 @@ namespace HA4IoT.Adapters
 
         public event EventHandler MotionDetectionEnd;
 
+        public void Refresh()
+        {
+        }
+
         private void DispatchEvents(object sender, BinaryStateChangedEventArgs eventArgs)
         {
             // The relay at the motion detector is awlays held to high.

@@ -15,26 +15,54 @@ namespace HA4IoT.Actuators.StateMachines
 {
     public class StateMachine : ComponentBase, IStateMachine
     {
+        private readonly object _syncRoot = new object();
+
+        private readonly CommandExecutor _commandExecutor = new CommandExecutor();
         private readonly Dictionary<string, IStateMachineState> _states = new Dictionary<string, IStateMachineState>();
         private IStateMachineState _activeState;
 
         public StateMachine(string id) : base(id)
         {
+            _commandExecutor.Register<ResetCommand>(c => ResetState());
+            _commandExecutor.Register<SetStateCommand>(c => SetState(c.Id));
+
+            if (SupportsState(StateMachineStateExtensions.OnStateId))
+            {
+                _commandExecutor.Register<TurnOnCommand>(c => SetState(StateMachineStateExtensions.OnStateId));
+            }
+
+            if (SupportsState(StateMachineStateExtensions.OffStateId))
+            {
+                _commandExecutor.Register<TurnOffCommand>(c => SetState(StateMachineStateExtensions.OffStateId));
+            }
         }
 
         public string AlternativeStateId { get; set; }
 
         public string ResetStateId { get; set; }
 
+        public void RegisterState(IStateMachineState state)
+        {
+            if (state == null) throw new ArgumentNullException(nameof(state));
+
+            lock (_syncRoot)
+            {
+                _states.Add(state.Id, state);
+            }
+        }
+
         public void ResetState()
         {
-            if (SupportsState(ResetStateId))
+            lock (_syncRoot)
             {
-                SetState(ResetStateId, new ForceUpdateStateParameter());
-            }
-            else
-            {
-                Log.Default.Warning("Reset stat of StateMachine is not supported.");
+                if (SupportsState(ResetStateId))
+                {
+                    SetState(ResetStateId, new ForceUpdateStateParameter());
+                }
+                else
+                {
+                    Log.Default.Warning("Reset stat of StateMachine is not supported.");
+                }
             }
         }
 
@@ -68,33 +96,18 @@ namespace HA4IoT.Actuators.StateMachines
 
         public override void ExecuteCommand(ICommand command)
         {
-            var commandExecutor = new CommandExecutor();
-            commandExecutor.Register<ResetCommand>(c => ResetState());
-            commandExecutor.Register<SetStateCommand>(c => SetState(c.Id));
-
-            if (SupportsState(StateMachineStateExtensions.OnStateId))
+            lock (_syncRoot)
             {
-                commandExecutor.Register<TurnOnCommand>(c => SetState(StateMachineStateExtensions.OnStateId));
+                _commandExecutor.Execute(command);
             }
-
-            if (SupportsState(StateMachineStateExtensions.OffStateId))
-            {
-                commandExecutor.Register<TurnOffCommand>(c => SetState(StateMachineStateExtensions.OffStateId));
-            }
-
-            commandExecutor.Execute(command);
-        }
-
-        public void AddState(IStateMachineState state)
-        {
-            if (state == null) throw new ArgumentNullException(nameof(state));
-
-            _states.Add(state.Id, state);
         }
 
         public bool SupportsState(string id)
         {
-            return _states.ContainsKey(id);
+            lock (_syncRoot)
+            {
+                return _states.ContainsKey(id);
+            }
         }
 
         private void SetState(string id, params IHardwareParameter[] parameters)

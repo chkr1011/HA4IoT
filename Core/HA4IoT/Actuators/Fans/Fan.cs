@@ -7,7 +7,6 @@ using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Components.Features;
 using HA4IoT.Contracts.Components.States;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Services.Settings;
 
@@ -15,9 +14,11 @@ namespace HA4IoT.Actuators.Fans
 {
     public class Fan : ComponentBase, IFan
     {
-        private readonly ISettingsService _settingsService;
         private readonly object _syncRoot = new object();
+
+        private readonly CommandExecutor _commandExecutor = new CommandExecutor();
         private readonly IFanAdapter _adapter;
+        private readonly ISettingsService _settingsService;
 
         private int _currentLevel;
 
@@ -25,6 +26,13 @@ namespace HA4IoT.Actuators.Fans
         {
             _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
+
+            _commandExecutor.Register<ResetCommand>(c => ResetState());
+            _commandExecutor.Register<TurnOffCommand>(c => SetLevelInternal(0));
+            _commandExecutor.Register<TurnOnCommand>(c => SetLevelInternal(GetLevelFeature().DefaultActiveLevel));
+            _commandExecutor.Register<SetLevelCommand>(c => SetLevelInternal(c.Level));
+            _commandExecutor.Register<IncreaseLevelCommand>(c => SetLevelInternal(_currentLevel + 1));
+            _commandExecutor.Register<DecreaseLevelCommand>(c => SetLevelInternal(_currentLevel - 1));
         }
 
         public override IComponentFeatureStateCollection GetState()
@@ -53,19 +61,18 @@ namespace HA4IoT.Actuators.Fans
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
 
-            var commandExecutor = new CommandExecutor();
-            commandExecutor.Register<ResetCommand>(c => ResetState());
-            commandExecutor.Register<TurnOffCommand>(c => SetLevelInternal(0));
-            commandExecutor.Register<TurnOnCommand>(c => SetLevelInternal(GetLevelFeature().DefaultActiveLevel));
-            commandExecutor.Register<SetLevelCommand>(c => SetLevelInternal(c.Level));
-            commandExecutor.Register<IncreaseLevelCommand>(c => SetLevelInternal(_currentLevel + 1));
-            commandExecutor.Register<DecreaseLevelCommand>(c => SetLevelInternal(_currentLevel - 1));
-            commandExecutor.Execute(command);
+            lock (_syncRoot)
+            {
+                _commandExecutor.Execute(command);
+            }
         }
 
         public void ResetState()
         {
-            SetLevelInternal(0, true);
+            lock (_syncRoot)
+            {
+                SetLevelInternal(0, true);
+            }
         }
 
         private LevelFeature GetLevelFeature()

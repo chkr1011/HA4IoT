@@ -11,13 +11,15 @@ namespace HA4IoT.Simulator.Controls
 
         public UIMotionDetectorAdapter(CheckBox checkBox)
         {
-            if (checkBox == null) throw new ArgumentNullException(nameof(checkBox));
-
-            _checkBox = checkBox;
+            _checkBox = checkBox ?? throw new ArgumentNullException(nameof(checkBox));
         }
 
         public event EventHandler MotionDetectionBegin;
         public event EventHandler MotionDetectionEnd;
+
+        public void Refresh()
+        {
+        }
 
         public void Connect()
         {

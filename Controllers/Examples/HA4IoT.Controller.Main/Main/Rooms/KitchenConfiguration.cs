@@ -22,6 +22,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 {
     internal class KitchenConfiguration
     {
+        private readonly ISystemEventsService _systemEventsService;
         private readonly IAreaRegistryService _areaService;
         private readonly IDeviceRegistryService _deviceService;
         private readonly CCToolsDeviceService _ccToolsBoardService;
@@ -64,6 +65,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         }
 
         public KitchenConfiguration(
+            ISystemEventsService systemEventsService,
             IAreaRegistryService areaService,
             IDeviceRegistryService deviceService,
             CCToolsDeviceService ccToolsDeviceService,
@@ -72,6 +74,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)
         {
+            _systemEventsService = systemEventsService ?? throw new ArgumentNullException(nameof(systemEventsService));
             _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
             _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
             _ccToolsBoardService = ccToolsDeviceService ?? throw new ArgumentNullException(nameof(ccToolsDeviceService));
@@ -118,6 +121,11 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             _actuatorFactory.RegisterSocket(area, Kitchen.SocketCeiling1, hspe8[HSPE8Pin.GPIO3].WithInvertedState());
             _actuatorFactory.RegisterSocket(area, Kitchen.SocketCeiling2, hspe8[HSPE8Pin.GPIO4].WithInvertedState());
 
+            _systemEventsService.StartupCompleted += (s, e) =>
+            {
+                area.GetComponent(Kitchen.SocketCeiling1).TryTurnOn();
+            };
+
             _actuatorFactory.RegisterRollerShutter(area, Kitchen.RollerShutter, hsrel5[HSREL5Pin.Relay4], hsrel5[HSREL5Pin.Relay3]);
 
             _sensorFactory.RegisterButton(area, Kitchen.ButtonKitchenette, input1.GetInput(11));
@@ -134,7 +142,12 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             area.GetRollerShutter(Kitchen.RollerShutter).ConnectWith(
                 area.GetButton(Kitchen.RollerShutterButtonUp), area.GetButton(Kitchen.RollerShutterButtonDown));
 
-            area.GetButton(Kitchen.RollerShutterButtonUp).PressedLongTrigger.Attach(() => area.GetComponent(Kitchen.LightKitchenette).TryTogglePowerState());
+            area.GetButton(Kitchen.RollerShutterButtonUp).PressedLongTrigger.Attach(() =>
+            {
+                var light = area.GetComponent(Kitchen.LightKitchenette);
+                light.TryTogglePowerState();
+                light.TrySetColor(0D, 0D, 1D);
+            });
 
             _actuatorFactory.RegisterLogicalComponent(area, Kitchen.CombinedAutomaticLights)
                 .WithComponent(area.GetLamp(Kitchen.LightCeilingWall))

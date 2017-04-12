@@ -162,6 +162,7 @@ namespace HA4IoT.Networking.Http
 
         public void Dispose()
         {
+            _httpRequestReader?.Dispose();
             _inputStream?.Dispose();
             _outputStream?.Dispose();
             _client?.Dispose();

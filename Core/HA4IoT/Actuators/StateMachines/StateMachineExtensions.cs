@@ -49,7 +49,7 @@ namespace HA4IoT.Actuators.StateMachines
             if (id == null) throw new ArgumentNullException(nameof(id));
 
             var state = new StateMachineState(id);
-            stateMachine.AddState(state);
+            stateMachine.RegisterState(state);
             return state;
         }
 

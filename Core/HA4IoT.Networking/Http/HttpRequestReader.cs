@@ -7,10 +7,10 @@ using Windows.Web.Http;
 
 namespace HA4IoT.Networking.Http
 {
-    public class HttpRequestReader
+    public sealed class HttpRequestReader : IDisposable
     {
         private readonly MemoryStream _buffer = new MemoryStream();
-        private readonly byte[] _chunkBuffer = new byte[64 * 1024]; // 64 KB
+        private readonly byte[] _chunkBuffer = new byte[8 * 1024]; // 8 KB
         private readonly Stream _stream;
 
         private HttpRequest _request;
@@ -196,6 +196,11 @@ namespace HA4IoT.Networking.Http
 
             _buffer.Position = 0;
             _buffer.SetLength(0);
+        }
+
+        public void Dispose()
+        {
+            _buffer.Dispose();
         }
     }
 }

@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Storage;
-using HA4IoT.Api;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;

@@ -67,6 +67,12 @@ namespace HA4IoT.Components
             return component.TryInvokeCommand(new SetStateCommand { Id = state });
         }
 
+        public static bool TrySetColor(this IComponent component, double hue, double saturation, double value)
+        {
+            if (component == null) throw new ArgumentNullException(nameof(component));
+            return component.TryInvokeCommand(new SetColorCommand { Hue = hue, Saturation = saturation, Value = value });
+        }
+
         public static bool TryInvokeCommand(this IComponent component, ICommand command)
         {
             if (component == null) throw new ArgumentNullException(nameof(component));
