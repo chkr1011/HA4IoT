@@ -1,8 +1,11 @@
 ﻿using HA4IoT.Actuators.Fans;
 using HA4IoT.Components;
+using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components.Features;
 using HA4IoT.Contracts.Components.States;
+using HA4IoT.Contracts.Services.Settings;
+using HA4IoT.Tests.Mockups;
 using HA4IoT.Tests.Mockups.Adapters;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -20,10 +23,10 @@ namespace HA4IoT.Tests.Components
                 CurrentLevel = -1
             };
 
-            var fan = new Fan("Fan1", adapter);
-            Assert.AreEqual(3, fan.GetFeatures().Extract<LevelStateFeature>().MaxLevel);
+            var fan = CreateFan(adapter);
+            Assert.AreEqual(3, fan.GetFeatures().Extract<LevelFeature>().MaxLevel);
             Assert.IsTrue(fan.GetFeatures().Supports<PowerStateFeature>());
-            Assert.IsTrue(fan.GetFeatures().Supports<LevelStateFeature>());
+            Assert.IsTrue(fan.GetFeatures().Supports<LevelFeature>());
         }
 
         [TestMethod]
@@ -35,7 +38,7 @@ namespace HA4IoT.Tests.Components
                 CurrentLevel = -1
             };
 
-            var fan = new Fan("Fan1", adapter);
+            var fan = CreateFan(adapter);
             fan.ResetState();
             Assert.AreEqual(0, fan.GetState().Extract<LevelState>().Value);
             Assert.AreEqual(0, adapter.CurrentLevel);
@@ -50,12 +53,12 @@ namespace HA4IoT.Tests.Components
                 CurrentLevel = -1
             };
 
-            var fan = new Fan("Fan1", adapter);
+            var fan = CreateFan(adapter);
             fan.ResetState();
             Assert.AreEqual(0, fan.GetState().Extract<LevelState>().Value);
             Assert.AreEqual(0, adapter.CurrentLevel);
 
-            fan.SetNextLevelAction.Execute();
+            fan.TryIncreaseLevel();
             Assert.AreEqual(1, fan.GetState().Extract<LevelState>().Value);
             Assert.AreEqual(1, adapter.CurrentLevel);
         }
@@ -69,14 +72,14 @@ namespace HA4IoT.Tests.Components
                 CurrentLevel = -1
             };
 
-            var fan = new Fan("Fan1", adapter);
+            var fan = CreateFan(adapter);
             fan.ResetState();
             Assert.AreEqual(0, fan.GetState().Extract<LevelState>().Value);
             Assert.AreEqual(0, adapter.CurrentLevel);
 
             fan.TryTurnOn();
-            Assert.AreEqual(3, fan.GetState().Extract<LevelState>().Value);
-            Assert.AreEqual(3, adapter.CurrentLevel);
+            Assert.AreEqual(1, fan.GetState().Extract<LevelState>().Value);
+            Assert.AreEqual(1, adapter.CurrentLevel);
         }
 
         [TestMethod]
@@ -88,7 +91,7 @@ namespace HA4IoT.Tests.Components
                 CurrentLevel = -1
             };
 
-            var fan = new Fan("Fan1", adapter);
+            var fan = CreateFan(adapter);
             fan.ResetState();
             Assert.AreEqual(0, fan.GetState().Extract<LevelState>().Value);
             Assert.AreEqual(0, adapter.CurrentLevel);
@@ -107,7 +110,7 @@ namespace HA4IoT.Tests.Components
                 CurrentLevel = -1
             };
 
-            var fan = new Fan("Fan1", adapter);
+            var fan = CreateFan(adapter);
             fan.ResetState();
             Assert.AreEqual(0, fan.GetState().Extract<LevelState>().Value);
             Assert.AreEqual(0, adapter.CurrentLevel);
@@ -130,7 +133,7 @@ namespace HA4IoT.Tests.Components
                 CurrentLevel = -1
             };
 
-            var fan = new Fan("Fan1", adapter);
+            var fan = CreateFan(adapter);
             fan.ResetState();
             Assert.AreEqual(0, fan.GetState().Extract<LevelState>().Value);
             Assert.AreEqual(0, adapter.CurrentLevel);
@@ -153,7 +156,7 @@ namespace HA4IoT.Tests.Components
                 CurrentLevel = -1
             };
 
-            var fan = new Fan("Fan1", adapter);
+            var fan = CreateFan(adapter);
             fan.ResetState();
             Assert.AreEqual(0, fan.GetState().Extract<LevelState>().Value);
             Assert.AreEqual(0, adapter.CurrentLevel);
@@ -161,6 +164,15 @@ namespace HA4IoT.Tests.Components
             fan.ExecuteCommand(new DecreaseLevelCommand());
             Assert.AreEqual(3, fan.GetState().Extract<LevelState>().Value);
             Assert.AreEqual(3, adapter.CurrentLevel);
+        }
+
+        private Fan CreateFan(IFanAdapter adapter)
+        {
+            var testController = new TestController();
+            var settingsService = testController.GetInstance<ISettingsService>();
+
+            var fan = new Fan("Fan1", adapter, settingsService);
+            return fan;
         }
     }
 }

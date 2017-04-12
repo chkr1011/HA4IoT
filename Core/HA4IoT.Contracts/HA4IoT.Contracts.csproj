@@ -133,7 +133,7 @@
     <Compile Include="Components\ComponentSettings.cs" />
     <Compile Include="Components\Features\ButtonFeature.cs" />
     <Compile Include="Components\Features\ColorFeature.cs" />
-    <Compile Include="Components\Features\LevelStateFeature.cs" />
+    <Compile Include="Components\Features\LevelFeature.cs" />
     <Compile Include="Components\Features\StateMachineFeature.cs" />
     <Compile Include="Components\Features\HumidityMeasurementFeature.cs" />
     <Compile Include="Components\Features\VerticalMovingFeature.cs" />

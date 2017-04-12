@@ -77,8 +77,6 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             var area = _areaService.RegisterArea(Room.UpperBathroom);
 
-            area.RegisterComponent(new Fan($"{area.Id}.{UpperBathroom.Fan}", new UpperBathroomFanAdapter(hsrel5)));
-
             _sensorFactory.RegisterTemperatureSensor(area, UpperBathroom.TemperatureSensor,
                 i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
 
@@ -86,6 +84,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
                 i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
 
             _sensorFactory.RegisterMotionDetector(area, UpperBathroom.MotionDetector, input5.GetInput(15));
+
+            _actuatorFactory.RegisterFan(area, UpperBathroom.Fan, new UpperBathroomFanAdapter(hsrel5));
 
             _actuatorFactory.RegisterLamp(area, UpperBathroom.LightCeilingDoor, hsrel5.GetOutput(0));
             _actuatorFactory.RegisterLamp(area, UpperBathroom.LightCeilingEdge, hsrel5.GetOutput(1));

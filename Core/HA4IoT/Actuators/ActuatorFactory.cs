@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Actuators.Fans;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Actuators.Sockets;
@@ -85,6 +86,13 @@ namespace HA4IoT.Actuators
             if (output == null) throw new ArgumentNullException(nameof(output));
 
             return RegisterLamp(area, id, new BinaryOutputAdapter(output));
+        }
+
+        public IFan RegisterFan(IArea area, Enum id, IFanAdapter adapter)
+        {
+            var fan = new Fan($"{area.Id}.{id}", adapter, _settingsService);
+            area.RegisterComponent(fan);
+            return fan;
         }
 
         public LogicalComponent RegisterLogicalComponent(IArea area, Enum id)

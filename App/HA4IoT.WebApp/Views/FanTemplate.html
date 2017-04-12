@@ -3,7 +3,7 @@
         <span class="glyphicon glyphicon-arrow-down"></span>
     </a>
     
-    <a href="#" class="btn btn-default" ng-repeat="i in getNumbers(component.Features.LevelStateFeature.MaxLevel)" ng-class="component.State.LevelState.Value===0 && i===0 ? 'btn-success' : component.State.LevelState.Value===i ? 'btn-danger' : 'btn-default'" ng-click="ctrl.componentService.setLevel(component, i)">
+    <a href="#" class="btn btn-default" ng-repeat="i in getNumbers(component.Features.LevelFeature.MaxLevel)" ng-class="component.State.LevelState.Value===0 && i===0 ? 'btn-success' : component.State.LevelState.Value===i ? 'btn-danger' : 'btn-default'" ng-click="ctrl.componentService.setLevel(component, i)">
         <span>{{i}}</span>
     </a>
     

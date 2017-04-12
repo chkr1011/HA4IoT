@@ -1,7 +1,6 @@
 ﻿using System;
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
-using HA4IoT.Actuators.Fans;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Adapters;
@@ -181,16 +180,16 @@ namespace HA4IoT.Controller.Main.Main.Rooms
                 .WithEnabledAtNight()
                 .WithSkipIfAnyIsAlreadyOn(area.GetLamp(Bedroom.LampBedLeft), area.GetLamp(Bedroom.LampBedRight));
 
-            area.RegisterComponent(new Fan($"{area.Id}.{Bedroom.Fan}", new BedroomFanAdapter(hsrel8)));
+            _actuatorFactory.RegisterFan(area, Bedroom.Fan, new BedroomFanAdapter(hsrel8));
             
             area.GetButton(Bedroom.ButtonBedLeftInner).PressedShortTrigger.Attach(() => area.GetComponent(Bedroom.LampBedLeft).TryTogglePowerState());
             area.GetButton(Bedroom.ButtonBedLeftInner).PressedLongTrigger.Attach(() => area.GetComponent(Bedroom.CombinedCeilingLights).TryTogglePowerState());
-            area.GetButton(Bedroom.ButtonBedLeftOuter).PressedShortTrigger.Attach(area.GetFan(Bedroom.Fan).SetNextLevelAction);
+            area.GetButton(Bedroom.ButtonBedLeftOuter).PressedShortTrigger.Attach(() => area.GetComponent(Bedroom.Fan).TryIncreaseLevel());
             area.GetButton(Bedroom.ButtonBedLeftOuter).PressedLongTrigger.Attach(() => area.GetComponent(Bedroom.Fan).TryTurnOff());
 
             area.GetButton(Bedroom.ButtonBedRightInner).PressedShortTrigger.Attach(() => area.GetComponent(Bedroom.LampBedRight).TryTogglePowerState());
             area.GetButton(Bedroom.ButtonBedRightInner).PressedLongTrigger.Attach(() => area.GetComponent(Bedroom.CombinedCeilingLights).TryTogglePowerState());
-            area.GetButton(Bedroom.ButtonBedRightOuter).PressedShortTrigger.Attach(area.GetFan(Bedroom.Fan).SetNextLevelAction);
+            area.GetButton(Bedroom.ButtonBedRightOuter).PressedShortTrigger.Attach(() => area.GetComponent(Bedroom.Fan).TryIncreaseLevel());
             area.GetButton(Bedroom.ButtonBedRightOuter).PressedLongTrigger.Attach(() => area.GetComponent(Bedroom.Fan).TryTurnOff());
         }
 

@@ -114,6 +114,7 @@
     <Compile Include="Actuators\Connectors\StateMachineWithButtonConnector.cs" />
     <Compile Include="Actuators\Fans\Fan.cs" />
     <Compile Include="Actuators\Fans\FanExtensions.cs" />
+    <Compile Include="Actuators\Fans\FanSettings.cs" />
     <Compile Include="Actuators\Lamps\ColorConverter.cs" />
     <Compile Include="Actuators\Lamps\Lamp.cs" />
     <Compile Include="Actuators\Lamps\LampExtensions.cs" />
