@@ -8,6 +8,7 @@ using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Conditions;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.Settings;
@@ -24,6 +25,7 @@ namespace HA4IoT.Automations
 
         private readonly ConditionsValidator _enablingConditionsValidator = new ConditionsValidator().WithDefaultState(ConditionState.NotFulfilled);
         private readonly ConditionsValidator _disablingConditionsValidator = new ConditionsValidator().WithDefaultState(ConditionState.NotFulfilled);
+        private readonly ConditionsValidator _turnOffConditionsValidator = new ConditionsValidator().WithDefaultState(ConditionState.NotFulfilled);
 
         private readonly IDateTimeService _dateTimeService;
         private readonly ISchedulerService _schedulerService;
@@ -35,7 +37,7 @@ namespace HA4IoT.Automations
         private IDelayedAction _turnOffTimeout;
         private bool _turnOffIfButtonPressedWhileAlreadyOn;
         private bool _isOn;
-        
+
         public TurnOnAndOffAutomation(string id, IDateTimeService dateTimeService, ISchedulerService schedulerService, ISettingsService settingsService, IDaylightService daylightService)
             : base(id)
         {
@@ -224,7 +226,7 @@ namespace HA4IoT.Automations
             _turnOffTimeout?.Cancel();
 
             _components.ForEach(c => c.TryTurnOn());
-            
+
             _isOn = true;
             _lastTurnedOn.Restart();
         }
@@ -232,12 +234,16 @@ namespace HA4IoT.Automations
         private void TurnOff()
         {
             _turnOffTimeout?.Cancel();
+            if (GetTurnOffConditionsAreFulfilled())
+            {
 
-            _components.ForEach(c => c.TryTurnOff());
+                _components.ForEach(c => c.TryTurnOff());
 
-            _isOn = false;
-            _lastTurnedOn.Stop();
+                _isOn = false;
+                _lastTurnedOn.Stop();
+            }
         }
+
 
         private bool GetConditionsAreFulfilled()
         {
@@ -247,6 +253,29 @@ namespace HA4IoT.Automations
             }
 
             if (_enablingConditionsValidator.Conditions.Any() && _enablingConditionsValidator.Validate() == ConditionState.NotFulfilled)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public TurnOnAndOffAutomation WithTurnOffCondition(ConditionRelation relation, ICondition condition)
+        {
+            if (condition == null) throw new ArgumentNullException(nameof(condition));
+
+            _turnOffConditionsValidator.WithCondition(relation, condition);
+            return this;
+        }
+
+        public TurnOnAndOffAutomation WithDisableTurnOffWhenBinaryStateEnabled(IBinaryInput input)
+        {
+            return WithTurnOffCondition(ConditionRelation.Or, new BinaryInputStateCondition(input, BinaryState.High));
+        }
+
+        private bool GetTurnOffConditionsAreFulfilled()
+        {
+            if (_turnOffConditionsValidator.Conditions.Any() && _turnOffConditionsValidator.Validate() == ConditionState.Fulfilled)
             {
                 return false;
             }
