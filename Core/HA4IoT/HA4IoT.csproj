@@ -136,6 +136,7 @@
     <Compile Include="Adapters\PortBasedWindowAdapter.cs" />
     <Compile Include="Adapters\VirtualButtonAdapter.cs" />
     <Compile Include="Api\ExceptionSerializer.cs" />
+    <Compile Include="Conditions\Specialized\BinaryInputStateCondition.cs" />
     <Compile Include="Commands\CommandInvoker.cs" />
     <Compile Include="Commands\CommandResolver.cs" />
     <Compile Include="Components\CommandInvokerAction.cs" />
