@@ -7,8 +7,9 @@ namespace HA4IoT.Contracts.Components
     {
         TComponentFeatureState Extract<TComponentFeatureState>() where TComponentFeatureState : IComponentFeatureState;
         bool Has(IComponentFeatureState state);
-        Dictionary<string, JToken> Serialize();
         bool Supports<TComponentFeatureState>() where TComponentFeatureState : IComponentFeatureState;
         IComponentFeatureStateCollection With(IComponentFeatureState state);
+
+        Dictionary<string, JToken> Serialize();
     }
 }

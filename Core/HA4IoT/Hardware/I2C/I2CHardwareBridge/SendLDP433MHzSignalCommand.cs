@@ -8,9 +8,9 @@ namespace HA4IoT.Hardware.I2C.I2CHardwareBridge
         private const byte I2C_ACTION_433MHz = 2;
 
         private uint _code;
-        private byte _length = 24;
-        private byte _pin;
-        private byte _repeats = 10;
+        private int _length = 24;
+        private int _pin;
+        private int _repeats = 10;
 
         public SendLDP433MhzSignalCommand WithCode(uint code)
         {
@@ -18,19 +18,19 @@ namespace HA4IoT.Hardware.I2C.I2CHardwareBridge
             return this;
         }
 
-        public SendLDP433MhzSignalCommand WithLength(byte length)
+        public SendLDP433MhzSignalCommand WithLength(int length)
         {
             _length = length;
             return this;
         }
 
-        public SendLDP433MhzSignalCommand WithPin(byte pin)
+        public SendLDP433MhzSignalCommand WithPin(int pin)
         {
             _pin = pin;
             return this;
         }
 
-        public SendLDP433MhzSignalCommand WithRepeats(byte count)
+        public SendLDP433MhzSignalCommand WithRepeats(int count)
         {
             _repeats = count;
             return this;
@@ -49,9 +49,9 @@ namespace HA4IoT.Hardware.I2C.I2CHardwareBridge
             var code = BitConverter.GetBytes(_code);
             Array.Copy(code, 0, package, 1, 4);
 
-            package[5] = _length;
-            package[6] = _repeats;
-            package[7] = _pin;
+            package[5] = (byte)_length;
+            package[6] = (byte)_repeats;
+            package[7] = (byte)_pin;
 
             return package;
         }

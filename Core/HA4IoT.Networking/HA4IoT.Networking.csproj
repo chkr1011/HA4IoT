@@ -118,16 +118,11 @@
   <ItemGroup>
     <Compile Include="ClientSession.cs" />
     <Compile Include="Http\HttpContext.cs" />
-    <Compile Include="Http\HttpMethod.cs" />
     <Compile Include="Http\HttpRequest.cs" />
     <Compile Include="Http\HttpResponse.cs" />
     <Compile Include="Http\BadRequestException.cs" />
-    <Compile Include="Http\BinaryBody.cs" />
-    <Compile Include="Http\HttpRequestExtensions.cs" />
     <Compile Include="Http\MimeTypeProvider.cs" />
-    <Compile Include="Http\PlainTextBody.cs" />
     <Compile Include="Http\UpgradedToWebSocketSessionEventArgs.cs" />
-    <Compile Include="Http\IHttpBody.cs" />
     <Compile Include="WebSockets\IWebSocketClientSession.cs" />
     <Compile Include="WebSockets\WebSocketBinaryMessage.cs" />
     <Compile Include="WebSockets\WebSocketClientSession.cs" />
@@ -139,15 +134,10 @@
     <Compile Include="WebSockets\WebSocketOpcode.cs" />
     <Compile Include="Http\HttpClientSession.cs" />
     <Compile Include="Http\HttpHeaderExtensions.cs" />
-    <Compile Include="Http\HttpHeaderNames.cs" />
+    <Compile Include="Http\HttpHeaderName.cs" />
     <Compile Include="Http\HttpResponseSerializer.cs" />
-    <Compile Include="Json\JsonSerializer.cs" />
-    <Compile Include="Http\Controllers\HttpDirectoryController.cs" />
-    <Compile Include="Http\Controllers\HttpRequestController.cs" />
-    <Compile Include="Http\Controllers\HttpRequestControllerAction.cs" />
-    <Compile Include="Http\HttpRequestParser.cs" />
+    <Compile Include="Http\HttpRequestReader.cs" />
     <Compile Include="Http\HttpServer.cs" />
-    <Compile Include="Json\JsonBody.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Http\HttpRequestReceivedEventArgs.cs" />
     <Compile Include="WebSockets\WebSocketTextMessage.cs" />

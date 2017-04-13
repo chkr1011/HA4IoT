@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using HA4IoT.Conditions;
+﻿using HA4IoT.Conditions;
 using HA4IoT.Contracts.Conditions;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -16,7 +15,7 @@ namespace HA4IoT.Tests.Actuators
                 .WithCondition(ConditionRelation.Or, new FulfilledTestCondition())
                 .WithDefaultState(ConditionState.NotFulfilled);
 
-            conditionsValidator.Validate().ShouldBeEquivalentTo(ConditionState.Fulfilled);
+            Assert.AreEqual(ConditionState.Fulfilled, conditionsValidator.Validate());
         }
     }
 }

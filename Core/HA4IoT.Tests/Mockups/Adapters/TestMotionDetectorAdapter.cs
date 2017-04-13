@@ -8,6 +8,10 @@ namespace HA4IoT.Tests.Mockups.Adapters
         public event EventHandler MotionDetectionBegin;
         public event EventHandler MotionDetectionEnd;
 
+        public void Refresh()
+        {            
+        }
+
         public void Begin()
         {
             MotionDetectionBegin?.Invoke(this, EventArgs.Empty);

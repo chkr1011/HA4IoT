@@ -1,9 +1,7 @@
 ﻿using System;
-using FluentAssertions;
 using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Conditions;
-using HA4IoT.Tests.Mockups;
 using HA4IoT.Tests.Mockups.Services;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -16,7 +14,7 @@ namespace HA4IoT.Tests.Actuators
         public void NightRange_ShouldBeFulfilled()
         {
             var condition = new Condition().WithExpression(() => true);
-            condition.Validate().ShouldBeEquivalentTo(ConditionState.Fulfilled);
+            Assert.AreEqual(ConditionState.Fulfilled, condition.Validate());
         }
 
         [TestMethod]
@@ -28,8 +26,8 @@ namespace HA4IoT.Tests.Actuators
             var condition = new TimeRangeCondition(dateTimeService)
                 .WithStart(TimeSpan.Parse("08:00"))
                 .WithEnd(TimeSpan.Parse("18:00"));
-                
-            condition.Validate().ShouldBeEquivalentTo(ConditionState.Fulfilled);
+
+            Assert.AreEqual(ConditionState.Fulfilled, condition.Validate());
         }
 
         [TestMethod]
@@ -42,7 +40,7 @@ namespace HA4IoT.Tests.Actuators
                 .WithStart(TimeSpan.Parse("08:00"))
                 .WithEnd(TimeSpan.Parse("18:00"));
 
-            condition.Validate().ShouldBeEquivalentTo(ConditionState.NotFulfilled);
+            Assert.AreEqual(ConditionState.NotFulfilled, condition.Validate());
         }
 
         [TestMethod]
@@ -55,7 +53,7 @@ namespace HA4IoT.Tests.Actuators
                 .WithStart(TimeSpan.Parse("18:00"))
                 .WithEnd(TimeSpan.Parse("08:00"));
 
-            condition.Validate().ShouldBeEquivalentTo(ConditionState.Fulfilled);
+            Assert.AreEqual(ConditionState.Fulfilled, condition.Validate());
         }
 
         [TestMethod]
@@ -68,7 +66,7 @@ namespace HA4IoT.Tests.Actuators
                 .WithStart(TimeSpan.Parse("18:00"))
                 .WithEnd(TimeSpan.Parse("08:00"));
 
-            condition.Validate().ShouldBeEquivalentTo(ConditionState.NotFulfilled);
+            Assert.AreEqual(ConditionState.NotFulfilled, condition.Validate());
         }
 
         [TestMethod]
@@ -83,7 +81,7 @@ namespace HA4IoT.Tests.Actuators
                 .WithEnd(TimeSpan.Parse("18:00"))
                 .WithStartAdjustment(TimeSpan.FromHours(6));
 
-            condition.Validate().ShouldBeEquivalentTo(ConditionState.NotFulfilled);
+            Assert.AreEqual(ConditionState.NotFulfilled, condition.Validate());
         }
 
         [TestMethod]
@@ -98,7 +96,7 @@ namespace HA4IoT.Tests.Actuators
                 .WithEnd(TimeSpan.Parse("18:00"))
                 .WithStartAdjustment(TimeSpan.FromHours(6));
 
-            condition.Validate().ShouldBeEquivalentTo(ConditionState.Fulfilled);
+            Assert.AreEqual(ConditionState.Fulfilled, condition.Validate());
         }
     }
 }

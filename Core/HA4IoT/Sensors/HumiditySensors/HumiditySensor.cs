@@ -13,6 +13,9 @@ namespace HA4IoT.Sensors.HumiditySensors
 {
     public class HumiditySensor : ComponentBase, IHumiditySensor
     {
+        private readonly object _syncRoot = new object();
+
+        private readonly CommandExecutor _commandExecutor = new CommandExecutor();
         private readonly INumericSensorAdapter _adapter;
         private float? _value;
 
@@ -24,7 +27,9 @@ namespace HA4IoT.Sensors.HumiditySensors
             _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
             settingsService.CreateSettingsMonitor<SingleValueSensorSettings>(this, s => Settings = s.NewSettings);
 
-            adapter.ValueChanged += (s, e) => Update(e.Value);
+            _adapter.ValueChanged += (s, e) => Update(e.Value);
+
+            _commandExecutor.Register<ResetCommand>(c => _adapter.Refresh());
         }
 
         public SingleValueSensorSettings Settings { get; private set; }
@@ -43,9 +48,12 @@ namespace HA4IoT.Sensors.HumiditySensors
 
         public override void ExecuteCommand(ICommand command)
         {
-            var commandExecutor = new CommandExecutor();
-            commandExecutor.Register<ResetCommand>(c => _adapter.Refresh());
-            commandExecutor.Execute(command);
+            if (command == null) throw new ArgumentNullException(nameof(command));
+
+            lock (_syncRoot)
+            {
+                _commandExecutor.Execute(command);
+            }
         }
 
         private void Update(float? newValue)

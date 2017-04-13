@@ -13,6 +13,7 @@ namespace HA4IoT.Sensors.TemperatureSensors
 {
     public class TemperatureSensor : ComponentBase, ITemperatureSensor
     {
+        private readonly CommandExecutor _commandExecutor = new CommandExecutor();
         private readonly INumericSensorAdapter _adapter;
         private float? _value;
 
@@ -25,6 +26,8 @@ namespace HA4IoT.Sensors.TemperatureSensors
             settingsService.CreateSettingsMonitor<SingleValueSensorSettings>(this, s => Settings = s.NewSettings);
 
             adapter.ValueChanged += (s, e) => Update(e.Value);
+
+            _commandExecutor.Register<ResetCommand>(c => _adapter.Refresh());
         }
 
         public SingleValueSensorSettings Settings { get; private set; }
@@ -43,9 +46,9 @@ namespace HA4IoT.Sensors.TemperatureSensors
 
         public override void ExecuteCommand(ICommand command)
         {
-            var commandExecutor = new CommandExecutor();
-            commandExecutor.Register<ResetCommand>(c => _adapter.Refresh());
-            commandExecutor.Execute(command);
+            if (command == null) throw new ArgumentNullException(nameof(command));
+
+            _commandExecutor.Execute(command);
         }
 
         private void Update(float? newValue)

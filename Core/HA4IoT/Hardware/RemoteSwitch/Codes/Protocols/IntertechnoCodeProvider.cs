@@ -4,8 +4,9 @@ namespace HA4IoT.Hardware.RemoteSwitch.Codes.Protocols
 {
     public class IntertechnoCodeProvider
     {
-        private const byte LENGTH = 24;
-        private const byte REPEATS = 3;
+        private const byte Length = 24;
+        private const byte Protocol = 2;
+        private const byte Repeats = 3;
 
         public Lpd433MhzCodePair GetCodePair(IntertechnoSystemCode systemCode, IntertechnoUnitCode unitCode)
         {
@@ -19,24 +20,24 @@ namespace HA4IoT.Hardware.RemoteSwitch.Codes.Protocols
             switch (systemCode)
             {
                 case IntertechnoSystemCode.A:
-                {
-                    return GetCodeA(unitCode, command);
-                }
+                    {
+                        return GetCodeA(unitCode, command);
+                    }
 
                 case IntertechnoSystemCode.B:
-                {
-                    return GetCodeB(unitCode, command);
-                }
+                    {
+                        return GetCodeB(unitCode, command);
+                    }
 
                 case IntertechnoSystemCode.C:
-                {
-                    return GetCodeC(unitCode, command);
-                }
+                    {
+                        return GetCodeC(unitCode, command);
+                    }
 
                 case IntertechnoSystemCode.D:
-                {
-                    return GetCodeD(unitCode, command);
-                }
+                    {
+                        return GetCodeD(unitCode, command);
+                    }
             }
 
             throw new NotSupportedException();
@@ -47,30 +48,30 @@ namespace HA4IoT.Hardware.RemoteSwitch.Codes.Protocols
             switch (unitCode)
             {
                 case IntertechnoUnitCode.Unit1:
-                {
-                    return command == RemoteSocketCommand.TurnOn
-                        ? new Lpd433MhzCode(21U, LENGTH, REPEATS)
-                        : new Lpd433MhzCode(20U, LENGTH, REPEATS);
-                }
+                    {
+                        return command == RemoteSocketCommand.TurnOn
+                            ? new Lpd433MhzCode(21U, Length, Protocol, Repeats)
+                            : new Lpd433MhzCode(20U, Length, Protocol, Repeats);
+                    }
 
                 case IntertechnoUnitCode.Unit2:
                     {
                         return command == RemoteSocketCommand.TurnOn
-                            ? new Lpd433MhzCode(16405U, LENGTH, REPEATS)
-                            : new Lpd433MhzCode(16404U, LENGTH, REPEATS);
+                            ? new Lpd433MhzCode(16405U, Length, Protocol, Repeats)
+                            : new Lpd433MhzCode(16404U, Length, Protocol, Repeats);
                     }
 
                 case IntertechnoUnitCode.Unit3:
                     {
                         return command == RemoteSocketCommand.TurnOn
-                            ? new Lpd433MhzCode(4117U, LENGTH, REPEATS)
-                            : new Lpd433MhzCode(4116U, LENGTH, REPEATS);
+                            ? new Lpd433MhzCode(4117U, Length, Protocol, Repeats)
+                            : new Lpd433MhzCode(4116U, Length, Protocol, Repeats);
                     }
 
                 default:
-                {
-                    throw new NotSupportedException();
-                }
+                    {
+                        throw new NotSupportedException();
+                    }
             }
         }
 
@@ -81,22 +82,22 @@ namespace HA4IoT.Hardware.RemoteSwitch.Codes.Protocols
                 case IntertechnoUnitCode.Unit1:
                     {
                         return command == RemoteSocketCommand.TurnOn
-                            ? new Lpd433MhzCode(4194325U, LENGTH, REPEATS)
-                            : new Lpd433MhzCode(4194324U, LENGTH, REPEATS);
+                            ? new Lpd433MhzCode(4194325U, Length, Protocol, Repeats)
+                            : new Lpd433MhzCode(4194324U, Length, Protocol, Repeats);
                     }
 
                 case IntertechnoUnitCode.Unit2:
                     {
                         return command == RemoteSocketCommand.TurnOn
-                            ? new Lpd433MhzCode(4210709U, LENGTH, REPEATS)
-                            : new Lpd433MhzCode(4210708U, LENGTH, REPEATS);
+                            ? new Lpd433MhzCode(4210709U, Length, Protocol, Repeats)
+                            : new Lpd433MhzCode(4210708U, Length, Protocol, Repeats);
                     }
 
                 case IntertechnoUnitCode.Unit3:
                     {
                         return command == RemoteSocketCommand.TurnOn
-                            ? new Lpd433MhzCode(4198421U, LENGTH, REPEATS)
-                            : new Lpd433MhzCode(4198420U, LENGTH, REPEATS);
+                            ? new Lpd433MhzCode(4198421U, Length, Protocol, Repeats)
+                            : new Lpd433MhzCode(4198420U, Length, Protocol, Repeats);
                     }
 
                 default:
@@ -113,22 +114,22 @@ namespace HA4IoT.Hardware.RemoteSwitch.Codes.Protocols
                 case IntertechnoUnitCode.Unit1:
                     {
                         return command == RemoteSocketCommand.TurnOn
-                            ? new Lpd433MhzCode(1048597U, LENGTH, REPEATS)
-                            : new Lpd433MhzCode(1048596U, LENGTH, REPEATS);
+                            ? new Lpd433MhzCode(1048597U, Length, Protocol, Repeats)
+                            : new Lpd433MhzCode(1048596U, Length, Protocol, Repeats);
                     }
 
                 case IntertechnoUnitCode.Unit2:
                     {
                         return command == RemoteSocketCommand.TurnOn
-                            ? new Lpd433MhzCode(1064981U, LENGTH, REPEATS)
-                            : new Lpd433MhzCode(1064980U, LENGTH, REPEATS);
+                            ? new Lpd433MhzCode(1064981U, Length, Protocol, Repeats)
+                            : new Lpd433MhzCode(1064980U, Length, Protocol, Repeats);
                     }
 
                 case IntertechnoUnitCode.Unit3:
                     {
                         return command == RemoteSocketCommand.TurnOn
-                            ? new Lpd433MhzCode(1052693U, LENGTH, REPEATS)
-                            : new Lpd433MhzCode(1052692U, LENGTH, REPEATS);
+                            ? new Lpd433MhzCode(1052693U, Length, Protocol, Repeats)
+                            : new Lpd433MhzCode(1052692U, Length, Protocol, Repeats);
                     }
 
                 default:
@@ -145,22 +146,22 @@ namespace HA4IoT.Hardware.RemoteSwitch.Codes.Protocols
                 case IntertechnoUnitCode.Unit1:
                     {
                         return command == RemoteSocketCommand.TurnOn
-                            ? new Lpd433MhzCode(5242901U, LENGTH, REPEATS)
-                            : new Lpd433MhzCode(5242900U, LENGTH, REPEATS);
+                            ? new Lpd433MhzCode(5242901U, Length, Protocol, Repeats)
+                            : new Lpd433MhzCode(5242900U, Length, Protocol, Repeats);
                     }
 
                 case IntertechnoUnitCode.Unit2:
                     {
                         return command == RemoteSocketCommand.TurnOn
-                            ? new Lpd433MhzCode(5259285U, LENGTH, REPEATS)
-                            : new Lpd433MhzCode(5259284U, LENGTH, REPEATS);
+                            ? new Lpd433MhzCode(5259285U, Length, Protocol, Repeats)
+                            : new Lpd433MhzCode(5259284U, Length, Protocol, Repeats);
                     }
 
                 case IntertechnoUnitCode.Unit3:
                     {
                         return command == RemoteSocketCommand.TurnOn
-                            ? new Lpd433MhzCode(5246997U, LENGTH, REPEATS)
-                            : new Lpd433MhzCode(5246996U, LENGTH, REPEATS);
+                            ? new Lpd433MhzCode(5246997U, Length, Protocol, Repeats)
+                            : new Lpd433MhzCode(5246996U, Length, Protocol, Repeats);
                     }
 
                 default:

@@ -1,15 +1,15 @@
 ﻿using System;
 using Newtonsoft.Json.Linq;
 
-namespace HA4IoT.Networking.Json
+namespace HA4IoT.Api
 {
-    public static class JsonSerializer
+    public static class ExceptionSerializer
     {
         public static JObject SerializeException(Exception exception)
         {
             if (exception == null) throw new ArgumentNullException(nameof(exception));
 
-            // Do not use a generic serializer because sometines not all propterties are readable
+            // Do not use a generic serializer because sometines not all properties are readable
             // and throwing exceptions in the getter.
             var json = new JObject
             {

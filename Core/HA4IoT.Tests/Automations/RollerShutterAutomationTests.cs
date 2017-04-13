@@ -1,5 +1,4 @@
 ﻿using System;
-using FluentAssertions;
 using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Automations;
 using HA4IoT.Contracts.Commands;

@@ -6,9 +6,7 @@ namespace HA4IoT.Networking.Http
     {
         public HttpRequestReceivedEventArgs(HttpContext context)
         {
-            if (context == null) throw new ArgumentNullException(nameof(context));
-
-            Context = context;
+            Context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public HttpContext Context { get; }

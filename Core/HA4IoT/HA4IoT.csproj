@@ -80,6 +80,7 @@
     <PlatformTarget>ARM</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <PlatformTarget>x64</PlatformTarget>
@@ -113,6 +114,7 @@
     <Compile Include="Actuators\Connectors\StateMachineWithButtonConnector.cs" />
     <Compile Include="Actuators\Fans\Fan.cs" />
     <Compile Include="Actuators\Fans\FanExtensions.cs" />
+    <Compile Include="Actuators\Fans\FanSettings.cs" />
     <Compile Include="Actuators\Lamps\ColorConverter.cs" />
     <Compile Include="Actuators\Lamps\Lamp.cs" />
     <Compile Include="Actuators\Lamps\LampExtensions.cs" />
@@ -133,6 +135,8 @@
     <Compile Include="Adapters\PortBasedRollerShutterAdapter.cs" />
     <Compile Include="Adapters\PortBasedWindowAdapter.cs" />
     <Compile Include="Adapters\VirtualButtonAdapter.cs" />
+    <Compile Include="Api\ExceptionSerializer.cs" />
+    <Compile Include="Conditions\Specialized\BinaryInputStateCondition.cs" />
     <Compile Include="Commands\CommandInvoker.cs" />
     <Compile Include="Commands\CommandResolver.cs" />
     <Compile Include="Components\CommandInvokerAction.cs" />
@@ -164,7 +168,7 @@
     <Compile Include="Api\Cloud\CloudConnector\CloudConnectorServiceSettings.cs" />
     <Compile Include="Api\Cloud\CloudConnector\ReceivePendingMessagesAsyncResult.cs" />
     <Compile Include="Api\Cloud\CloudConnector\TaskExtensions.cs" />
-    <Compile Include="Api\LocalHttpServerService.cs" />
+    <Compile Include="Api\HttpServerService.cs" />
     <Compile Include="Automations\Automation.cs" />
     <Compile Include="Automations\AutomationBase.cs" />
     <Compile Include="Automations\AutomationFactory.cs" />

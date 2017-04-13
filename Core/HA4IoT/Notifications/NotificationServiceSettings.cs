@@ -4,7 +4,7 @@ namespace HA4IoT.Notifications
 {
     public class NotificationServiceSettings
     {
-        public TimeSpan InformationTimeToLive { get; set; } = TimeSpan.FromHours(1);
+        public TimeSpan InformationTimeToLive { get; set; } = TimeSpan.FromHours(8);
 
         public TimeSpan WarningTimeToLive { get; set; } = TimeSpan.FromHours(24);
 

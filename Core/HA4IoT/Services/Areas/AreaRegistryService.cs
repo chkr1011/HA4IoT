@@ -50,8 +50,11 @@ namespace HA4IoT.Services.Areas
             if (id == null) throw new ArgumentNullException(nameof(id));
 
             var area = new Area(id, _componentService, _automationService, _settingsService);
-            _areas.Add(area.Id, area);
-
+            lock (_areas)
+            {
+                _areas.Add(area.Id, area);
+            }
+            
             return area;
         }
 
@@ -59,18 +62,24 @@ namespace HA4IoT.Services.Areas
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
-            return _areas[id];
+            lock (_areas)
+            {
+                return _areas[id];
+            }
         }
 
         public IList<IArea> GetAreas()
         {
-            return _areas.Values.ToList();
+            lock (_areas)
+            {
+                return _areas.Values.ToList();
+            }
         }
 
         private void HandleApiConfigurationRequest(object sender, ApiRequestReceivedEventArgs e)
         {
             var areas = new JObject();
-            foreach (var area in _areas.Values)
+            foreach (var area in GetAreas())
             {
                 areas[area.Id] = ExportAreaConfiguration(area);
             }

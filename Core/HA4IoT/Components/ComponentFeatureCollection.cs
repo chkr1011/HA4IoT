@@ -54,7 +54,7 @@ namespace HA4IoT.Components
 
         public Dictionary<string, JToken> Serialize()
         {
-            return _features.ToDictionary(i => i.GetType().Name, i => i.Serialize());
+            return _features.ToDictionary(i => i.GetType().Name, JToken.FromObject);
         }
     }
 }

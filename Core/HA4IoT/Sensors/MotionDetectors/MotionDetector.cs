@@ -16,6 +16,11 @@ namespace HA4IoT.Sensors.MotionDetectors
 {
     public class MotionDetector : ComponentBase, IMotionDetector
     {
+        private readonly IMotionDetectorAdapter _adapter;
+        private readonly object _syncRoot = new object();
+
+        private readonly CommandExecutor _commandExecutor = new CommandExecutor();
+
         private readonly ISettingsService _settingsService;
         private readonly ISchedulerService _schedulerService;
 
@@ -25,7 +30,7 @@ namespace HA4IoT.Sensors.MotionDetectors
         public MotionDetector(string id, IMotionDetectorAdapter adapter, ISchedulerService schedulerService, ISettingsService settingsService)
             : base(id)
         {
-            if (adapter == null) throw new ArgumentNullException(nameof(adapter));
+            _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
             _schedulerService = schedulerService ?? throw new ArgumentNullException(nameof(schedulerService));
 
@@ -41,6 +46,8 @@ namespace HA4IoT.Sensors.MotionDetectors
                     HandleIsEnabledStateChanged();
                 }
             });
+
+            _commandExecutor.Register<ResetCommand>(c => _adapter.Refresh());
         }
 
         public MotionDetectorSettings Settings { get; private set; }
@@ -63,9 +70,9 @@ namespace HA4IoT.Sensors.MotionDetectors
 
         public override void ExecuteCommand(ICommand command)
         {
-            var commandExecutor = new CommandExecutor();
-            commandExecutor.Register<ResetCommand>();
-            commandExecutor.Execute(command);
+            if (command == null) throw new ArgumentNullException(nameof(command));
+
+            _commandExecutor.Execute(command);
         }
 
         private void UpdateState(MotionDetectionStateValue state)

@@ -17,9 +17,12 @@ namespace HA4IoT.Sensors.Buttons
 {
     public class Button : ComponentBase, IButton
     {
+        private readonly object _syncRoot = new object();
+
+        private readonly CommandExecutor _commandExecutor = new CommandExecutor();
         private readonly ISettingsService _settingsService;
         private readonly Timeout _pressedLongTimeout;
-
+        
         private ButtonStateValue _state = ButtonStateValue.Released;
 
         public Button(string id, IButtonAdapter adapter, ITimerService timerService, ISettingsService settingsService)
@@ -34,6 +37,9 @@ namespace HA4IoT.Sensors.Buttons
 
             adapter.Pressed += (s, e) => ProcessChangedInputState(ButtonStateValue.Pressed);
             adapter.Released += (s, e) => ProcessChangedInputState(ButtonStateValue.Released);
+
+            _commandExecutor.Register<ResetCommand>();
+            _commandExecutor.Register<PressCommand>(c => PressInternal(c.Duration));
         }
 
         public ButtonSettings Settings => _settingsService.GetSettings<ButtonSettings>(this);
@@ -57,10 +63,10 @@ namespace HA4IoT.Sensors.Buttons
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
 
-            var commandExecutor = new CommandExecutor();
-            commandExecutor.Register<ResetCommand>();
-            commandExecutor.Register<PressCommand>(c => PressInternal(c.Duration));
-            commandExecutor.Execute(command);
+            lock (_syncRoot)
+            {
+                _commandExecutor.Execute(command);
+            }
         }
 
         private void PressInternal(ButtonPressedDuration duration)

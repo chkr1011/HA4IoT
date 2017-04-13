@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
+using System.Text;
+using Windows.Web.Http;
 using HA4IoT.Networking.Http;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -16,7 +17,8 @@ namespace HA4IoT.Tests.Networking
             var response = new HttpResponse
             {
                 StatusCode = HttpStatusCode.BadRequest,
-                Body = new PlainTextBody {Content = "{\"text\":1234}"}
+                Body = Encoding.UTF8.GetBytes("{\"text\":1234}"),
+                MimeType = MimeTypeProvider.PlainText
             };
 
             response.Headers["A"] = 1.ToString();

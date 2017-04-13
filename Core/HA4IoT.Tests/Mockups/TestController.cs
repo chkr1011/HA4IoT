@@ -38,11 +38,11 @@ namespace HA4IoT.Tests.Mockups
         {
             _container.RegisterSingleton<IController>(() => this);
             _container.RegisterSingleton<ILogService, LogService>();
+            _container.RegisterSingleton<IBackupService, BackupService>();
+            _container.RegisterSingleton<IStorageService, TestStorageService>();
             _container.RegisterSingleton<ISettingsService, SettingsService>();
             _container.RegisterSingleton<IApiDispatcherService, ApiDispatcherService>();
             _container.RegisterSingleton<ISystemInformationService, SystemInformationService>();
-            _container.RegisterSingleton<IBackupService, BackupService>();
-            _container.RegisterSingleton<IStorageService, TestStorageService>();
             _container.RegisterSingleton<ITimerService, TestTimerService>();
             _container.RegisterSingleton<IDaylightService, TestDaylightService>();
             _container.RegisterSingleton<IDateTimeService, TestDateTimeService>();

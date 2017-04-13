@@ -122,7 +122,7 @@ namespace HA4IoT.Core
 
             _container.RegisterSingleton<IApiDispatcherService, ApiDispatcherService>();
             _container.RegisterSingleton<HttpServer>();
-            _container.RegisterSingleton<LocalHttpServerService>();
+            _container.RegisterSingleton<HttpServerService>();
             _container.RegisterSingleton<AzureCloudService>();
             _container.RegisterSingleton<CloudConnectorService>();
 

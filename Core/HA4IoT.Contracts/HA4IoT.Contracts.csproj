@@ -29,9 +29,11 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <PlatformTarget>x86</PlatformTarget>
@@ -131,7 +133,7 @@
     <Compile Include="Components\ComponentSettings.cs" />
     <Compile Include="Components\Features\ButtonFeature.cs" />
     <Compile Include="Components\Features\ColorFeature.cs" />
-    <Compile Include="Components\Features\LevelStateFeature.cs" />
+    <Compile Include="Components\Features\LevelFeature.cs" />
     <Compile Include="Components\Features\StateMachineFeature.cs" />
     <Compile Include="Components\Features\HumidityMeasurementFeature.cs" />
     <Compile Include="Components\Features\VerticalMovingFeature.cs" />

@@ -13,8 +13,11 @@ namespace HA4IoT.Actuators.Lamps
 {
     public class Lamp : ComponentBase, ILamp
     {
-        private readonly ILampAdapter _adapter;
+        private readonly object _syncRoot = new object();
 
+        private readonly CommandExecutor _commandExecutor = new CommandExecutor();
+        private readonly ILampAdapter _adapter;
+        
         private PowerStateValue _powerState = PowerStateValue.Off;
         private ColorState _colorState;
 
@@ -26,6 +29,16 @@ namespace HA4IoT.Actuators.Lamps
             if (adapter.SupportsColor)
             {
                 _colorState = new ColorState();
+            }
+
+            _commandExecutor.Register<ResetCommand>(c => ResetState());
+            _commandExecutor.Register<TurnOnCommand>(c => SetStateInternal(PowerStateValue.On, _colorState));
+            _commandExecutor.Register<TurnOffCommand>(c => SetStateInternal(PowerStateValue.Off, _colorState));
+            _commandExecutor.Register<TogglePowerStateCommand>(c => TogglePowerState());
+
+            if (_adapter.SupportsColor)
+            {
+                _commandExecutor.Register<SetColorCommand>(c => SetStateInternal(_powerState, GenerateColorState(c)));
             }
         }
 
@@ -59,23 +72,18 @@ namespace HA4IoT.Actuators.Lamps
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
 
-            var commandExecutor = new CommandExecutor();
-            commandExecutor.Register<ResetCommand>(c => ResetState());
-            commandExecutor.Register<TurnOnCommand>(c => SetStateInternal(PowerStateValue.On, _colorState));
-            commandExecutor.Register<TurnOffCommand>(c => SetStateInternal(PowerStateValue.Off, _colorState));
-            commandExecutor.Register<TogglePowerStateCommand>(c => TogglePowerState());
-
-            if (_adapter.SupportsColor)
+            lock (_syncRoot)
             {
-                commandExecutor.Register<SetColorCommand>(c => SetStateInternal(_powerState, GenerateColorState(c)));
+                _commandExecutor.Execute(command);
             }
-
-            commandExecutor.Execute(command);
         }
 
         public void ResetState()
         {
-            SetStateInternal(PowerStateValue.Off, _colorState, true);
+            lock (_syncRoot)
+            {
+                SetStateInternal(PowerStateValue.Off, _colorState, true);
+            }
         }
 
         private void TogglePowerState()

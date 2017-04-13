@@ -18,6 +18,7 @@ namespace HA4IoT.Actuators.RollerShutters
     public class RollerShutter : ComponentBase, IRollerShutter
     {
         private readonly object _syncRoot = new object();
+        private readonly CommandExecutor _commandExecutor = new CommandExecutor();
         private readonly IRollerShutterAdapter _adapter;
         private readonly Timeout _autoOffTimeout;
 
@@ -42,6 +43,11 @@ namespace HA4IoT.Actuators.RollerShutters
             timerService.Tick += (s, e) => TrackPosition(e);
 
             settingsService.CreateSettingsMonitor<RollerShutterSettings>(this, s => Settings = s.NewSettings);
+
+            _commandExecutor.Register<MoveUpCommand>(c => MoveUp());
+            _commandExecutor.Register<MoveDownCommand>(c => MoveDown());
+            _commandExecutor.Register<TurnOffCommand>(c => Stop());
+            _commandExecutor.Register<ResetCommand>(c => MoveUp(true));
         }
 
         public RollerShutterSettings Settings { get; set; }
@@ -68,12 +74,7 @@ namespace HA4IoT.Actuators.RollerShutters
 
             lock (_syncRoot)
             {
-                var commandExecutor = new CommandExecutor();
-                commandExecutor.Register<MoveUpCommand>(c => MoveUp());
-                commandExecutor.Register<MoveDownCommand>(c => MoveDown());
-                commandExecutor.Register<TurnOffCommand>(c => Stop());
-                commandExecutor.Register<ResetCommand>(c => MoveUp(true));
-                commandExecutor.Execute(command);
+                _commandExecutor.Execute(command);
             }
         }
         

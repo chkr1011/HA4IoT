@@ -14,9 +14,7 @@ namespace HA4IoT.Services.System
         public SystemEventsService(IController controller, INotificationService notificationService, IResourceService resourceService)
         {
             if (controller == null) throw new ArgumentNullException(nameof(controller));
-            if (notificationService == null) throw new ArgumentNullException(nameof(notificationService));
-
-            _notificationService = notificationService;
+            _notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
 
             controller.StartupCompleted += OnStartupCompleted;
             controller.StartupFailed += (s, e) => StartupFailed?.Invoke(this, EventArgs.Empty);

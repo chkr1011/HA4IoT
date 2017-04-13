@@ -22,6 +22,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 {
     internal class KitchenConfiguration
     {
+        private readonly ISystemEventsService _systemEventsService;
         private readonly IAreaRegistryService _areaService;
         private readonly IDeviceRegistryService _deviceService;
         private readonly CCToolsDeviceService _ccToolsBoardService;
@@ -57,10 +58,14 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             SocketWall,
             SocketKitchenette,
 
+            SocketCeiling1, // Über Hängeschrank
+            SocketCeiling2, // Bei Dunsabzug
+
             Window
         }
 
         public KitchenConfiguration(
+            ISystemEventsService systemEventsService,
             IAreaRegistryService areaService,
             IDeviceRegistryService deviceService,
             CCToolsDeviceService ccToolsDeviceService,
@@ -69,6 +74,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)
         {
+            _systemEventsService = systemEventsService ?? throw new ArgumentNullException(nameof(systemEventsService));
             _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
             _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
             _ccToolsBoardService = ccToolsDeviceService ?? throw new ArgumentNullException(nameof(ccToolsDeviceService));
@@ -102,18 +108,26 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             _sensorFactory.RegisterMotionDetector(area, Kitchen.MotionDetector, input1.GetInput(8));
 
-            var rgb = _outpostDeviceService.GetRgbAdapter("RGBSK1");
+            _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingMiddle, hsrel5[HSREL5Pin.GPIO0].WithInvertedState());
+            _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingWindow, hsrel5[HSREL5Pin.GPIO1].WithInvertedState());
+            _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingWall, hsrel5[HSREL5Pin.GPIO2].WithInvertedState());
+            _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingDoor, hspe8[HSPE8Pin.GPIO0].WithInvertedState());
+            _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingPassageInner, hspe8[HSPE8Pin.GPIO1].WithInvertedState());
+            _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingPassageOuter, hspe8[HSPE8Pin.GPIO2].WithInvertedState());
+            _actuatorFactory.RegisterLamp(area, Kitchen.LightKitchenette, _outpostDeviceService.GetRgbAdapter("RGBSK1"));
 
-            _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingPassageOuter, hspe8.GetOutput(2).WithInvertedState());
-            _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingMiddle, hsrel5.GetOutput(5).WithInvertedState());
-            _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingWindow, hsrel5.GetOutput(6).WithInvertedState());
-            _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingWall, hsrel5.GetOutput(7).WithInvertedState());
-            _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingDoor, hspe8.GetOutput(0).WithInvertedState());
-            _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingPassageInner, hspe8.GetOutput(1).WithInvertedState());
-            _actuatorFactory.RegisterLamp(area, Kitchen.LightKitchenette, rgb);
+            _actuatorFactory.RegisterSocket(area, Kitchen.SocketKitchenette, hsrel5[HSREL5Pin.Relay1]); // 0?
+            _actuatorFactory.RegisterSocket(area, Kitchen.SocketWall, hsrel5[HSREL5Pin.Relay2]);
+            _actuatorFactory.RegisterSocket(area, Kitchen.SocketCeiling1, hspe8[HSPE8Pin.GPIO3].WithInvertedState());
+            _actuatorFactory.RegisterSocket(area, Kitchen.SocketCeiling2, hspe8[HSPE8Pin.GPIO4].WithInvertedState());
 
-            _actuatorFactory.RegisterSocket(area, Kitchen.SocketWall, hsrel5.GetOutput(2));
-            _actuatorFactory.RegisterRollerShutter(area, Kitchen.RollerShutter, hsrel5.GetOutput(4), hsrel5.GetOutput(3));
+            _systemEventsService.StartupCompleted += (s, e) =>
+            {
+                area.GetComponent(Kitchen.SocketCeiling1).TryTurnOn();
+            };
+
+            _actuatorFactory.RegisterRollerShutter(area, Kitchen.RollerShutter, hsrel5[HSREL5Pin.Relay4], hsrel5[HSREL5Pin.Relay3]);
+
             _sensorFactory.RegisterButton(area, Kitchen.ButtonKitchenette, input1.GetInput(11));
             _sensorFactory.RegisterButton(area, Kitchen.ButtonPassage, input1.GetInput(9));
             _sensorFactory.RegisterRollerShutterButtons(area, Kitchen.RollerShutterButtonUp, input2.GetInput(15),
@@ -128,7 +142,12 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             area.GetRollerShutter(Kitchen.RollerShutter).ConnectWith(
                 area.GetButton(Kitchen.RollerShutterButtonUp), area.GetButton(Kitchen.RollerShutterButtonDown));
 
-            area.GetButton(Kitchen.RollerShutterButtonUp).PressedLongTrigger.Attach(() => area.GetComponent(Kitchen.LightKitchenette).TryTogglePowerState());
+            area.GetButton(Kitchen.RollerShutterButtonUp).PressedLongTrigger.Attach(() =>
+            {
+                var light = area.GetComponent(Kitchen.LightKitchenette);
+                light.TryTogglePowerState();
+                light.TrySetColor(0D, 0D, 1D);
+            });
 
             _actuatorFactory.RegisterLogicalComponent(area, Kitchen.CombinedAutomaticLights)
                 .WithComponent(area.GetLamp(Kitchen.LightCeilingWall))

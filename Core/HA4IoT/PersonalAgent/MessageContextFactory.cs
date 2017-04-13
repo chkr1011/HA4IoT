@@ -16,12 +16,19 @@ namespace HA4IoT.PersonalAgent
         {
             { "ein", new TurnOnCommand() },
             { "an", new TurnOnCommand() },
+            { "on", new TurnOnCommand() },
+            { "activate", new TurnOnCommand() },
+
             { "ab", new TurnOffCommand() },
             { "aus", new TurnOffCommand() },
+            { "off", new TurnOnCommand() },
+            { "deactivate", new TurnOnCommand() },
+
             { "öffne", new MoveUpCommand() },
             { "auf", new MoveUpCommand() },
             { "hoch", new MoveUpCommand() },
             { "rauf", new MoveUpCommand() },
+
             { "runter", new MoveDownCommand() },
             { "herunter", new MoveDownCommand() },
             { "zu", new MoveDownCommand() },
@@ -36,20 +43,16 @@ namespace HA4IoT.PersonalAgent
 
         public MessageContextFactory(IAreaRegistryService areaService, IComponentRegistryService componentRegistry, ISettingsService settingsService)
         {
-            if (areaService == null) throw new ArgumentNullException(nameof(areaService));
-            if (componentRegistry == null) throw new ArgumentNullException(nameof(componentRegistry));
-            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-
-            _areaService = areaService;
-            _componentRegistry = componentRegistry;
-            _settingsService = settingsService;
+            _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
+            _componentRegistry = componentRegistry ?? throw new ArgumentNullException(nameof(componentRegistry));
+            _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
         }
 
         public MessageContext Create(string text)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
-            _currentContext = new MessageContext { Text = text };
+            _currentContext = new MessageContext { Kind = MessageContextKind.Text, Text = text };
 
             IdentifyAreas(text);
             IdentifyComponents(text);
@@ -65,6 +68,7 @@ namespace HA4IoT.PersonalAgent
 
             _currentContext = new MessageContext
             {
+                Kind = MessageContextKind.Speech,
                 Text = GetText(skillServiceRequest),
                 Intent = skillServiceRequest.Request.Intent.Name
             };
@@ -133,7 +137,7 @@ namespace HA4IoT.PersonalAgent
         {
             foreach (var component in _componentRegistry.GetComponents())
             {
-                var componentSettings = _settingsService.GetSettings<ComponentSettings>(component.Id);
+                var componentSettings = _settingsService.GetComponentSettings<ComponentSettings>(component.Id);
 
                 if (IsCaptionOrKeywordMatch(input, componentSettings.Caption, componentSettings.Keywords))
                 {

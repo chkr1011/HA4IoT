@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using HA4IoT.Contracts.Hardware;
+﻿using HA4IoT.Contracts.Hardware;
 using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
@@ -13,7 +12,7 @@ namespace HA4IoT.Tests.Hardware
         {
             var dummyPort = new TestInputPort();
             dummyPort.SetInternalState(BinaryState.Low);
-            dummyPort.Read().ShouldBeEquivalentTo(BinaryState.Low);
+            Assert.AreEqual(BinaryState.Low, dummyPort.Read());
         }
 
         [TestMethod]
@@ -21,7 +20,7 @@ namespace HA4IoT.Tests.Hardware
         {
             var dummyPort = new TestInputPort();
             dummyPort.SetInternalState(BinaryState.High);
-            dummyPort.Read().ShouldBeEquivalentTo(BinaryState.High);
+            Assert.AreEqual(BinaryState.High, dummyPort.Read());
         }
 
         [TestMethod]
@@ -30,7 +29,7 @@ namespace HA4IoT.Tests.Hardware
             var dummyPort = new TestInputPort();
             dummyPort = (TestInputPort)dummyPort.WithInvertedState();
             dummyPort.SetInternalState(BinaryState.Low);
-            dummyPort.Read().ShouldBeEquivalentTo(BinaryState.High);
+            Assert.AreEqual(BinaryState.High, dummyPort.Read());
         }
 
         [TestMethod]
@@ -39,7 +38,7 @@ namespace HA4IoT.Tests.Hardware
             var dummyPort = new TestInputPort();
             dummyPort = (TestInputPort)dummyPort.WithInvertedState();
             dummyPort.SetInternalState(BinaryState.High);
-            dummyPort.Read().ShouldBeEquivalentTo(BinaryState.Low);
+            Assert.AreEqual(BinaryState.Low, dummyPort.Read());
         }
         
         [TestMethod]
@@ -47,7 +46,7 @@ namespace HA4IoT.Tests.Hardware
         {
             var dummyPort = new TestOutputPort();
             dummyPort.Write(BinaryState.Low);
-            dummyPort.GetInternalState().ShouldBeEquivalentTo(BinaryState.Low);
+            Assert.AreEqual(BinaryState.Low, dummyPort.GetInternalState());
         }
 
         [TestMethod]
@@ -55,7 +54,7 @@ namespace HA4IoT.Tests.Hardware
         {
             var dummyPort = new TestOutputPort();
             dummyPort.Write(BinaryState.High);
-            dummyPort.GetInternalState().ShouldBeEquivalentTo(BinaryState.High);
+            Assert.AreEqual(BinaryState.High, dummyPort.GetInternalState());
         }
 
         [TestMethod]
@@ -64,7 +63,7 @@ namespace HA4IoT.Tests.Hardware
             var dummyPort = new TestOutputPort();
             dummyPort = (TestOutputPort)dummyPort.WithInvertedState();
             dummyPort.Write(BinaryState.Low);
-            dummyPort.GetInternalState().ShouldBeEquivalentTo(BinaryState.High);
+            Assert.AreEqual(BinaryState.High, dummyPort.GetInternalState());
         }
 
         [TestMethod]
@@ -73,7 +72,7 @@ namespace HA4IoT.Tests.Hardware
             var dummyPort = new TestOutputPort();
             dummyPort = (TestOutputPort)dummyPort.WithInvertedState();
             dummyPort.Write(BinaryState.High);
-            dummyPort.GetInternalState().ShouldBeEquivalentTo(BinaryState.Low);
+            Assert.AreEqual(BinaryState.Low, dummyPort.GetInternalState());
         }
     }
 }

@@ -8,14 +8,14 @@ namespace HA4IoT.Networking.Http
         public static bool ConnectionMustBeClosed(this Dictionary<string, string> headers)
         {
             string value;
-            return headers.TryGetValue(HttpHeaderNames.Connection, out value) &&
+            return headers.TryGetValue(HttpHeaderName.Connection, out value) &&
                 string.Equals(value, "Close", StringComparison.OrdinalIgnoreCase);
         }
 
         public static bool ClientSupportsGzipCompression(this Dictionary<string, string> headers)
         {
             string headerValue;
-            if (headers.TryGetValue(HttpHeaderNames.AcceptEncoding, out headerValue))
+            if (headers.TryGetValue(HttpHeaderName.AcceptEncoding, out headerValue))
             {
                 return headerValue.IndexOf("gzip", StringComparison.OrdinalIgnoreCase) > -1;
             }
@@ -26,15 +26,8 @@ namespace HA4IoT.Networking.Http
         public static bool RequiresContinue(this Dictionary<string, string> headers)
         {
             string value;
-            return headers.TryGetValue(HttpHeaderNames.Expect, out value) &&
+            return headers.TryGetValue(HttpHeaderName.Expect, out value) &&
                 string.Equals(value, "100-Continue", StringComparison.OrdinalIgnoreCase);
-        }
-
-        public static bool HasBodyContent(this Dictionary<string, string> headers)
-        {
-            string value;
-            return headers.TryGetValue(HttpHeaderNames.ContentLength, out value) &&
-                !string.Equals(value, "0", StringComparison.OrdinalIgnoreCase);
         }
 
         public static bool ValueEquals(this Dictionary<string, string> headers, string headerName, string expectedValue)

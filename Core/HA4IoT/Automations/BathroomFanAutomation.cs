@@ -44,7 +44,7 @@ namespace HA4IoT.Automations
 
             _delayedAction = _schedulerService.In(Settings.SlowDuration, () =>
             {
-                if (_fan.GetFeatures().Extract<LevelStateFeature>().MaxLevel > 1)
+                if (_fan.GetFeatures().Extract<LevelFeature>().MaxLevel > 1)
                 {
                     _fan.TrySetLevel(2);
                     _delayedAction = _schedulerService.In(Settings.FastDuration, () => _fan.TryTurnOff());

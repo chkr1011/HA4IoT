@@ -6,6 +6,6 @@
 
         BinaryState Read();
 
-        IBinaryOutput WithInvertedState(bool value = true);
+        IBinaryOutput WithInvertedState(bool isInverted = true);
     }
 }

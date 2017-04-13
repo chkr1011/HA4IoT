@@ -1,6 +1,6 @@
 ﻿namespace HA4IoT.Networking.Http
 {
-    public static class HttpHeaderNames
+    public static class HttpHeaderName
     {
         public static string AccessControlAllowOrigin = "Access-Control-Allow-Origin";
 
