@@ -24,18 +24,18 @@ namespace HA4IoT.Hardware.CCTools
             return CoerceState(Board.GetPortState(Number));
         }
 
-        IBinaryInput IBinaryInput.WithInvertedState(bool value)
+        IBinaryInput IBinaryInput.WithInvertedState(bool isInverted)
         {
-            InvertValue = value;
+            InvertValue = isInverted;
             return this;
         }
 
-        public void Write(BinaryState state, bool commit)
+        public void Write(BinaryState state, WriteBinaryStateMode mode)
         {
             state = CoerceState(state);
             Board.SetPortState(Number, state);
 
-            if (commit)
+            if (mode == WriteBinaryStateMode.Commit)
             {
                 Board.CommitChanges();
             }

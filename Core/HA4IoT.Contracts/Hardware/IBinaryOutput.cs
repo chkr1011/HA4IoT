@@ -2,9 +2,9 @@
 {
     public interface IBinaryOutput
     {
-        void Write(BinaryState state, bool commit = true);
-
         BinaryState Read();
+
+        void Write(BinaryState state, WriteBinaryStateMode mode = WriteBinaryStateMode.Commit);
 
         IBinaryOutput WithInvertedState(bool isInverted = true);
     }

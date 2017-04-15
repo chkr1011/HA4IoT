@@ -192,6 +192,7 @@
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Hardware\DeviceMessaging\IDeviceMessageBrokerService.cs" />
     <Compile Include="Hardware\Services\MqttQosLevel.cs" />
+    <Compile Include="Hardware\WriteBinaryStateMode.cs" />
     <Compile Include="IContainer.cs" />
     <Compile Include="Logging\GetLogEntriesRequest.cs" />
     <Compile Include="Logging\GetLogEntriesResponse.cs" />

@@ -11,13 +11,12 @@ namespace HA4IoT.Hardware
         private readonly ILogger _log;
         private readonly Timer _timer;
 
+        private bool _isDetected;
+        
         public InterruptMonitor(IBinaryInput pin, ILogService logService)
         {
-            if (pin == null) throw new ArgumentNullException(nameof(pin));
-            if (logService == null) throw new ArgumentNullException(nameof(logService));
-
-            _pin = pin;
-            _log = logService.CreatePublisher(nameof(InterruptMonitor));
+            _pin = pin ?? throw new ArgumentNullException(nameof(pin));
+            _log = logService?.CreatePublisher(nameof(InterruptMonitor)) ?? throw new ArgumentNullException(nameof(logService));
 
             // The server-based Timer is designed for use with worker threads in a multithreaded environment.
             // Server timers can move among threads to handle the raised Elapsed event, resulting in more accuracy
@@ -36,17 +35,22 @@ namespace HA4IoT.Hardware
         {
             try
             {
-                if (_pin.Read() == BinaryState.Low)
+                var interruptState = _pin.Read();
+                if (interruptState == BinaryState.Low && !_isDetected)
                 {
                     InterruptDetected?.Invoke(this, EventArgs.Empty);
+                }
+                else if (interruptState == BinaryState.High)
+                {
+                    _isDetected = false;
                 }
             }
             catch (Exception ex)
             {
-                _log.Error(ex, "Error while polling interrupt pin '" + _pin + "'");
-
                 // Ensure that a persistent error will not flood the trace.
                 _timer.Change(2000, Timeout.Infinite);
+
+                _log.Error(ex, "Error while polling interrupt pin '" + _pin + "'");
             }
             finally
             {

@@ -11,14 +11,12 @@ namespace HA4IoT.Actuators.StateMachines
     public class StateMachineState : IStateMachineState
     {
         private readonly List<Action<IHardwareParameter[]>> _actions = new List<Action<IHardwareParameter[]>>();
-        private readonly List<PendingComponentCommand> _pendingComponentCommands = new List<PendingComponentCommand>();
-        private readonly List<Tuple<IBinaryOutput, BinaryState>> _pendingBinaryOutputStates = new List<Tuple<IBinaryOutput, BinaryState>>();
+        private readonly List<PendingComponentCommand> _commands = new List<PendingComponentCommand>();
+        private readonly List<PendingBinaryOutputState> _binaryOutputs = new List<PendingBinaryOutputState>();
 
         public StateMachineState(string id)
         {
-            if (id == null) throw new ArgumentNullException(nameof(id));
-
-            Id = id;
+            Id = id ?? throw new ArgumentNullException(nameof(id));
         }
 
         public string Id { get; }
@@ -31,12 +29,20 @@ namespace HA4IoT.Actuators.StateMachines
             return this;
         }
 
+        public StateMachineState WithAction(Action action)
+        {
+            if (action == null) throw new ArgumentNullException(nameof(action));
+
+            _actions.Add(_ => action());
+            return this;
+        }
+
         public StateMachineState WithCommand(IComponent component, ICommand command)
         {
             if (component == null) throw new ArgumentNullException(nameof(component));
             if (command == null) throw new ArgumentNullException(nameof(command));
 
-            _pendingComponentCommands.Add(new PendingComponentCommand { Component = component, Command = command });
+            _commands.Add(new PendingComponentCommand { Component = component, Command = command });
             return this;
         }
 
@@ -44,27 +50,29 @@ namespace HA4IoT.Actuators.StateMachines
         {
             if (output == null) throw new ArgumentNullException(nameof(output));
 
-            _pendingBinaryOutputStates.Add(new Tuple<IBinaryOutput, BinaryState>(output, state));
+            _binaryOutputs.Add(new PendingBinaryOutputState { BinaryOutput = output, State = state });
             return this;
         }
 
         public void Activate(params IHardwareParameter[] parameters)
         {
-            foreach (var port in _pendingBinaryOutputStates)
+            foreach (var binaryOutput in _binaryOutputs)
             {
-                port.Item1.Write(port.Item2, false);
+                binaryOutput.Execute(WriteBinaryStateMode.NoCommit);
             }
 
-            if (!parameters.Any(p => p is IsPartOfPartialUpdateParameter))
+            var isPartOfPartialUpdate = parameters.Any(p => p is IsPartOfPartialUpdateParameter);
+
+            if (!isPartOfPartialUpdate)
             {
-                foreach (var port in _pendingBinaryOutputStates)
+                foreach (var binaryOutput in _binaryOutputs)
                 {
-                    port.Item1.Write(port.Item2);
+                    binaryOutput.Execute(WriteBinaryStateMode.Commit);
                 }
 
-                foreach (var pendingActuatorState in _pendingComponentCommands)
+                foreach (var pendingActuatorState in _commands)
                 {
-                    pendingActuatorState.Invoke();
+                    pendingActuatorState.Execute();
                 }
             }
 

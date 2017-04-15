@@ -13,16 +13,13 @@ namespace HA4IoT.Hardware.RemoteSwitch
 
         public RemoteSocketOutputPort(Lpd433MhzCodePair codePair, RemoteSocketService remoteSocketService)
         {
-            if (codePair == null) throw new ArgumentNullException(nameof(codePair));
-            if (remoteSocketService == null) throw new ArgumentNullException(nameof(remoteSocketService));
-
-            _codePair = codePair;
-            _remoteSocketService = remoteSocketService;
+            _codePair = codePair ?? throw new ArgumentNullException(nameof(codePair));
+            _remoteSocketService = remoteSocketService ?? throw new ArgumentNullException(nameof(remoteSocketService));
         }
 
-        public void Write(BinaryState state, bool commit = true)
+        public void Write(BinaryState state, WriteBinaryStateMode mode = WriteBinaryStateMode.Commit)
         {
-            if (commit == false)
+            if (mode != WriteBinaryStateMode.Commit)
             {
                 return;
             }

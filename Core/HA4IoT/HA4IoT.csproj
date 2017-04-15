@@ -118,6 +118,7 @@
     <Compile Include="Actuators\Lamps\ColorConverter.cs" />
     <Compile Include="Actuators\Lamps\Lamp.cs" />
     <Compile Include="Actuators\Lamps\LampExtensions.cs" />
+    <Compile Include="Actuators\StateMachines\PendingBinaryOutputState.cs" />
     <Compile Include="Actuators\StateMachines\PendingComponentCommand.cs" />
     <Compile Include="Actuators\StateMachines\StateMachineStateExtensions.cs" />
     <Compile Include="Actuators\RollerShutters\RollerShutter.cs" />
@@ -350,6 +351,9 @@
       <Project>{d4e0a3f9-6521-4aee-815a-e2a60323fb63}</Project>
       <Name>HA4IoT.Networking</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Net\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
