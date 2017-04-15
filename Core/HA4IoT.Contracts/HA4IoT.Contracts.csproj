@@ -124,6 +124,7 @@
     <Compile Include="Commands\ResetCommand.cs" />
     <Compile Include="Commands\SetColorCommand.cs" />
     <Compile Include="Commands\SetLevelCommand.cs" />
+    <Compile Include="Commands\SetNextStateCommand.cs" />
     <Compile Include="Commands\SetStateCommand.cs" />
     <Compile Include="Commands\TogglePowerStateCommand.cs" />
     <Compile Include="Commands\TriggerMotionDetectionCommand.cs" />
@@ -192,6 +193,7 @@
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Hardware\DeviceMessaging\IDeviceMessageBrokerService.cs" />
     <Compile Include="Hardware\Services\MqttQosLevel.cs" />
+    <Compile Include="Hardware\WriteBinaryStateMode.cs" />
     <Compile Include="IContainer.cs" />
     <Compile Include="Logging\GetLogEntriesRequest.cs" />
     <Compile Include="Logging\GetLogEntriesResponse.cs" />

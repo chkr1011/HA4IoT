@@ -16,7 +16,7 @@ namespace HA4IoT.Hardware.CCTools
         public event EventHandler<BinaryStateChangedEventArgs> StateChanged;
 
         public int Number { get; }
-        public bool InvertValue { get; set; }
+        public bool IsStateInverted { get; set; }
         public CCToolsDeviceBase Board { get; }
 
         public BinaryState Read()
@@ -24,18 +24,18 @@ namespace HA4IoT.Hardware.CCTools
             return CoerceState(Board.GetPortState(Number));
         }
 
-        IBinaryInput IBinaryInput.WithInvertedState(bool value)
+        IBinaryInput IBinaryInput.WithInvertedState(bool isInverted)
         {
-            InvertValue = value;
+            IsStateInverted = isInverted;
             return this;
         }
 
-        public void Write(BinaryState state, bool commit)
+        public void Write(BinaryState state, WriteBinaryStateMode mode)
         {
             state = CoerceState(state);
             Board.SetPortState(Number, state);
 
-            if (commit)
+            if (mode == WriteBinaryStateMode.Commit)
             {
                 Board.CommitChanges();
             }
@@ -43,19 +43,19 @@ namespace HA4IoT.Hardware.CCTools
 
         IBinaryOutput IBinaryOutput.WithInvertedState(bool value)
         {
-            InvertValue = true;
+            IsStateInverted = true;
             return this;
         }
 
         public CCToolsDevicePort WithInvertedState()
         {
-            InvertValue = true;
+            IsStateInverted = true;
             return this;
         }
 
         private BinaryState CoerceState(BinaryState state)
         {
-            if (InvertValue)
+            if (IsStateInverted)
             {
                 return state == BinaryState.High ? BinaryState.Low : BinaryState.High;
             }
@@ -65,6 +65,12 @@ namespace HA4IoT.Hardware.CCTools
 
         private void OnControllerStateChanged(object sender, CCToolsDeviceStateChangedEventArgs e)
         {
+            var stateChangedEvent = StateChanged;
+            if (stateChangedEvent == null)
+            {
+                return;
+            }
+
             var oldState = e.OldState.GetBit(Number);
             var newState = e.NewState.GetBit(Number);
 
@@ -80,7 +86,7 @@ namespace HA4IoT.Hardware.CCTools
                 oldBinaryState = BinaryState.Low;
             }
 
-            StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(oldBinaryState, newBinaryState));
+            stateChangedEvent.Invoke(this, new BinaryStateChangedEventArgs(oldBinaryState, newBinaryState));
         }
     }
 }

@@ -13,9 +13,7 @@ namespace HA4IoT.Hardware.RaspberryPi
 
         public GpioPort(GpioPin pin)
         {
-            if (pin == null) throw new ArgumentNullException(nameof(pin));
-
-            Pin = pin;
+            Pin = pin ?? throw new ArgumentNullException(nameof(pin));
         }
 
         public GpioPin Pin { get; }
@@ -32,12 +30,12 @@ namespace HA4IoT.Hardware.RaspberryPi
         {
             lock (_syncRoot)
             {
-                BinaryState currentState = CoerceState(Pin.Read() == GpioPinValue.High ? BinaryState.High : BinaryState.Low);
+                var currentState = CoerceState(Pin.Read() == GpioPinValue.High ? BinaryState.High : BinaryState.Low);
                 if (currentState != _previousState)
                 {
                     var oldState = _previousState;
-
                     _previousState = currentState;
+
                     StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(oldState, currentState));
                 }
 
@@ -45,7 +43,7 @@ namespace HA4IoT.Hardware.RaspberryPi
             }
         }
 
-        public void Write(BinaryState state, bool commit = true)
+        public void Write(BinaryState state, WriteBinaryStateMode mode = WriteBinaryStateMode.Commit)
         {
             lock (_syncRoot)
             {
@@ -60,7 +58,7 @@ namespace HA4IoT.Hardware.RaspberryPi
 
                 var oldState = _previousState;
                 _previousState = state;
-                StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(_previousState, state));
+                StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(oldState, state));
             }
         }
 

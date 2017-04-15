@@ -19,7 +19,7 @@ namespace HA4IoT.Tests.Hardware.CCTools
             var i2CBus = new TestI2CBusService();
             var deviceMessageBrokerService = new DeviceMessageBrokerService(new LogService(new DateTimeService()));
             var hsrel5 = new HSREL5("Test", new I2CSlaveAddress(66), i2CBus, deviceMessageBrokerService, new TestLogger());
-            hsrel5[HSREL5Pin.Relay0].Write(BinaryState.High);
+            hsrel5[HSREL5Pin.Relay0].Write(BinaryState.High, WriteBinaryStateMode.Commit);
 
             Assert.AreEqual(new I2CSlaveAddress(66), i2CBus.LastUsedI2CSlaveAddress);
             Assert.AreEqual(1, i2CBus.I2CDevice.LastWrittenBytes.Length);
@@ -28,7 +28,7 @@ namespace HA4IoT.Tests.Hardware.CCTools
             // against inverted values too.
             Assert.AreEqual(254, i2CBus.I2CDevice.LastWrittenBytes[0]);
 
-            hsrel5[HSREL5Pin.Relay4].Write(BinaryState.High);
+            hsrel5[HSREL5Pin.Relay4].Write(BinaryState.High, WriteBinaryStateMode.Commit);
 
             Assert.AreEqual(new I2CSlaveAddress(66), i2CBus.LastUsedI2CSlaveAddress);
             Assert.AreEqual(1, i2CBus.I2CDevice.LastWrittenBytes.Length);

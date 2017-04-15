@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text;
-using HA4IoT.Networking.WebSockets;
+using HA4IoT.Net.WebSockets;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using Newtonsoft.Json.Linq;
 

@@ -111,13 +111,13 @@
   <ItemGroup>
     <Compile Include="Actuators\ActuatorFactory.cs" />
     <Compile Include="Actuators\Connectors\RollerShutterWithRollerShutterButtonsConnector.cs" />
-    <Compile Include="Actuators\Connectors\StateMachineWithButtonConnector.cs" />
     <Compile Include="Actuators\Fans\Fan.cs" />
     <Compile Include="Actuators\Fans\FanExtensions.cs" />
     <Compile Include="Actuators\Fans\FanSettings.cs" />
     <Compile Include="Actuators\Lamps\ColorConverter.cs" />
     <Compile Include="Actuators\Lamps\Lamp.cs" />
     <Compile Include="Actuators\Lamps\LampExtensions.cs" />
+    <Compile Include="Actuators\StateMachines\PendingBinaryOutputState.cs" />
     <Compile Include="Actuators\StateMachines\PendingComponentCommand.cs" />
     <Compile Include="Actuators\StateMachines\StateMachineStateExtensions.cs" />
     <Compile Include="Actuators\RollerShutters\RollerShutter.cs" />
@@ -157,6 +157,30 @@
     <Compile Include="Hardware\Sonoff\SonoffDeviceService.cs" />
     <Compile Include="Logging\LogService.cs" />
     <Compile Include="Logging\LogServicePublisher.cs" />
+    <Compile Include="Net\ClientSession.cs" />
+    <Compile Include="Net\Http\BadRequestException.cs" />
+    <Compile Include="Net\Http\HttpClientSession.cs" />
+    <Compile Include="Net\Http\HttpContext.cs" />
+    <Compile Include="Net\Http\HttpHeaderExtensions.cs" />
+    <Compile Include="Net\Http\HttpHeaderName.cs" />
+    <Compile Include="Net\Http\HttpRequest.cs" />
+    <Compile Include="Net\Http\HttpRequestReader.cs" />
+    <Compile Include="Net\Http\HttpRequestReceivedEventArgs.cs" />
+    <Compile Include="Net\Http\HttpResponse.cs" />
+    <Compile Include="Net\Http\HttpResponseSerializer.cs" />
+    <Compile Include="Net\Http\HttpServer.cs" />
+    <Compile Include="Net\Http\MimeTypeProvider.cs" />
+    <Compile Include="Net\Http\UpgradedToWebSocketSessionEventArgs.cs" />
+    <Compile Include="Net\WebSockets\IWebSocketClientSession.cs" />
+    <Compile Include="Net\WebSockets\WebSocketBinaryMessage.cs" />
+    <Compile Include="Net\WebSockets\WebSocketClientSession.cs" />
+    <Compile Include="Net\WebSockets\WebSocketConnectedEventArgs.cs" />
+    <Compile Include="Net\WebSockets\WebSocketFrame.cs" />
+    <Compile Include="Net\WebSockets\WebSocketFrameParseResult.cs" />
+    <Compile Include="Net\WebSockets\WebSocketMessage.cs" />
+    <Compile Include="Net\WebSockets\WebSocketMessageReceivedEventArgs.cs" />
+    <Compile Include="Net\WebSockets\WebSocketOpcode.cs" />
+    <Compile Include="Net\WebSockets\WebSocketTextMessage.cs" />
     <Compile Include="Services\Areas\AreaExtensions.cs" />
     <Compile Include="Services\System\DelayedAction.cs" />
     <Compile Include="Triggers\ConditionalTrigger.cs" />
@@ -346,11 +370,8 @@
       <Project>{b10b2e2a-85cd-4289-8649-fc0c1c98921d}</Project>
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HA4IoT.Networking\HA4IoT.Networking.csproj">
-      <Project>{d4e0a3f9-6521-4aee-815a-e2a60323fb63}</Project>
-      <Name>HA4IoT.Networking</Name>
-    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

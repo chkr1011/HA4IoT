@@ -151,7 +151,7 @@ function createAppController($http, $scope, modalService, apiService, localizati
             c.appConfiguration.showWindowsOverview = c.windows.length > 0;
 
             if (c.areas.length === 1) {
-                c.setActivePanel(c.Areas[0].id);
+                c.setActivePanel(c.areas[0].Id);
             }
 
             c.apiService.newStatusReceivedCallback = c.applyNewStatus;

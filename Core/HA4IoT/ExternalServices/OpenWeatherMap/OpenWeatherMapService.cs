@@ -21,6 +21,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
     {
         private const string StorageFilename = "OpenWeatherMapCache.json";
 
+        private readonly ISchedulerService _schedulerService;
         private readonly IOutdoorTemperatureService _outdoorTemperatureService;
         private readonly IOutdoorHumidityService _outdoorHumidityService;
         private readonly IDaylightService _daylightService;
@@ -51,7 +52,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             ILogService logService)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-
+            _schedulerService = schedulerService ?? throw new ArgumentNullException(nameof(schedulerService));
             _outdoorTemperatureService = outdoorTemperatureService ?? throw new ArgumentNullException(nameof(outdoorTemperatureService));
             _outdoorHumidityService = outdoorHumidityService ?? throw new ArgumentNullException(nameof(outdoorHumidityService));
             _daylightService = daylightService ?? throw new ArgumentNullException(nameof(daylightService));
@@ -62,14 +63,22 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
 
             _log = logService?.CreatePublisher(nameof(OpenWeatherMapService)) ?? throw new ArgumentNullException(nameof(logService));
 
-            settingsService.CreateSettingsMonitor<OpenWeatherMapServiceSettings>(s => Settings = s.NewSettings);
-
-            LoadPersistedData();
-            
-            schedulerService.RegisterSchedule("OpenWeatherMapServiceUpdater", TimeSpan.FromMinutes(5), RefreshAsync);
+            settingsService.CreateSettingsMonitor<OpenWeatherMapServiceSettings>(s => Settings = s.NewSettings);           
         }
 
         public OpenWeatherMapServiceSettings Settings { get; private set; }
+
+        public override void Startup()
+        {
+            if (!Settings.IsEnabled)
+            {
+                _log.Info("Open Weather Map Service is disabled.");
+                return;
+            }
+
+            LoadPersistedData();
+            _schedulerService.RegisterSchedule("OpenWeatherMapServiceUpdater", TimeSpan.FromMinutes(5), RefreshAsync);
+        }
 
         [ApiMethod]
         public void Status(IApiContext apiContext)

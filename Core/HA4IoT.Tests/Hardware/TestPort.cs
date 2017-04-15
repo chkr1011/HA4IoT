@@ -29,7 +29,7 @@ namespace HA4IoT.Tests.Hardware
             }
         }
 
-        public void Write(BinaryState state, bool commit = true)
+        public void Write(BinaryState state, WriteBinaryStateMode mode = WriteBinaryStateMode.Commit)
         {
             lock (_syncRoot)
             {

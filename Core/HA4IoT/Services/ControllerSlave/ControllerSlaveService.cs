@@ -9,6 +9,7 @@ using HA4IoT.Contracts.Services.OutdoorHumidity;
 using HA4IoT.Contracts.Services.OutdoorTemperature;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Services.ControllerSlave
@@ -135,7 +136,7 @@ namespace HA4IoT.Services.ControllerSlave
 
         private JObject PullValue(string serviceName)
         {
-            var uri = new Uri($"http://{Settings.MasterAddress}:80/api/Service/{serviceName}");
+            var uri = new Uri($"http://{Settings.MasterAddress}:80/api/Service/{serviceName}/GetStatus");
             using (var webClient = new HttpClient())
             {
                 var body = webClient.GetStringAsync(uri).Result;
@@ -143,8 +144,19 @@ namespace HA4IoT.Services.ControllerSlave
                 {
                     throw new Exception($"Received no response from '{uri}'.");
                 }
+                
+                var response = JsonConvert.DeserializeObject<ApiResponse>(body);
+                if (response == null)
+                {
+                    throw new Exception("Response has an invalid format.");    
+                }
 
-                return JObject.Parse(body);
+                if (response.ResultCode != ApiResultCode.Success)
+                {
+                    throw new Exception("API call failed.");
+                }
+
+                return response.Result;
             }
         }
     }

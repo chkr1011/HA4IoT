@@ -26,7 +26,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\ARM\Debug\</OutputPath>
-    <DefineConstants>DEBUG;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS;CODE_ANALYSIS;CODE_ANALYSIS</DefineConstants>
+    <DefineConstants>DEBUG;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS</DefineConstants>
     <NoWarn>;2008</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>ARM</PlatformTarget>
@@ -38,7 +38,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
     <OutputPath>bin\ARM\Release\</OutputPath>
-    <DefineConstants>NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS</DefineConstants>
+    <DefineConstants>NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS;CODE_ANALYSIS</DefineConstants>
     <Optimize>true</Optimize>
     <NoWarn>;2008</NoWarn>
     <DebugType>pdbonly</DebugType>
@@ -103,8 +103,6 @@
   <ItemGroup>
     <Compile Include="Cellar\Configuration.cs" />
     <Compile Include="Cellar\Garden.cs" />
-    <Compile Include="Cellar\InstalledDevice.cs" />
-    <Compile Include="Cellar\Room.cs" />
     <Compile Include="Main\Configuration.cs" />
     <Compile Include="Main\InstalledDevice.cs" />
     <Compile Include="Main\Rooms\BedroomConfiguration.cs" />
@@ -141,10 +139,6 @@
     <ProjectReference Include="..\..\..\Core\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{b10b2e2a-85cd-4289-8649-fc0c1c98921d}</Project>
       <Name>HA4IoT.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Core\HA4IoT.Networking\HA4IoT.Networking.csproj">
-      <Project>{D4E0A3F9-6521-4AEE-815A-E2A60323FB63}</Project>
-      <Name>HA4IoT.Networking</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Core\HA4IoT\HA4IoT.csproj">
       <Project>{c034ec4d-46cc-490a-a045-e4d4d1f49c31}</Project>

@@ -15,14 +15,14 @@
         }
 
         ctrl.$onInit = function () {
-            controllerProxyService.get("Service/ISettingsService/GetSettings", { "Uri": "ControllerSlaveSettings" }, function (response) {
+            controllerProxyService.get("Service/ISettingsService/GetSettings", { "Uri": "ControllerSlaveServiceSettings" }, function (response) {
                 ctrl.Model = response;
             });
         }
 
         ctrl.save = function () {
             var payload = {
-                Uri: "Service/ControllerSlaveServiceSettings",
+                Uri: "ControllerSlaveServiceSettings",
                 Settings: ctrl.Model
             }
 

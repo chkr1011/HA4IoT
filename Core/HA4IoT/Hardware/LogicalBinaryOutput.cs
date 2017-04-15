@@ -18,21 +18,21 @@ namespace HA4IoT.Hardware
 
         public bool InvertValue { get; set; }
         
-        public void Write(BinaryState state, bool commit = true)
+        public void Write(BinaryState state, WriteBinaryStateMode mode)
         {
             state = CoerceState(state);
 
             // TODO: Implement animations here.
             foreach (var output in _outputs)
             {
-                output.Write(state, false);
+                output.Write(state, WriteBinaryStateMode.NoCommit);
             }
 
-            if (commit)
+            if (mode == WriteBinaryStateMode.Commit)
             {
                 foreach (var output in _outputs)
                 {
-                    output.Write(state);
+                    output.Write(state, WriteBinaryStateMode.Commit);
                 }
             }
 

@@ -25,7 +25,7 @@ namespace HA4IoT.Adapters
             var commit = !parameters.Any(p => p is IsPartOfPartialUpdateParameter);
             lock (_output)
             {
-                _output.Write(powerState == AdapterPowerState.On ? BinaryState.High : BinaryState.Low, commit);
+                _output.Write(powerState == AdapterPowerState.On ? BinaryState.High : BinaryState.Low, commit ? WriteBinaryStateMode.Commit : WriteBinaryStateMode.NoCommit);
             }
         }
 

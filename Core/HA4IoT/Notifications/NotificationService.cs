@@ -9,7 +9,7 @@ using HA4IoT.Contracts.Services.Resources;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.Storage;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Networking.Http;
+using HA4IoT.Net.Http;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Notifications

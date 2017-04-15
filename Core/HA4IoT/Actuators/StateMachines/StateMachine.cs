@@ -17,24 +17,15 @@ namespace HA4IoT.Actuators.StateMachines
     {
         private readonly object _syncRoot = new object();
 
-        private readonly CommandExecutor _commandExecutor = new CommandExecutor();
-        private readonly Dictionary<string, IStateMachineState> _states = new Dictionary<string, IStateMachineState>();
+        private readonly List<IStateMachineState> _states = new List<IStateMachineState>();
+        private readonly ILogger _log;
+
         private IStateMachineState _activeState;
 
-        public StateMachine(string id) : base(id)
+        public StateMachine(string id, ILogService logService) 
+            : base(id)
         {
-            _commandExecutor.Register<ResetCommand>(c => ResetState());
-            _commandExecutor.Register<SetStateCommand>(c => SetState(c.Id));
-
-            if (SupportsState(StateMachineStateExtensions.OnStateId))
-            {
-                _commandExecutor.Register<TurnOnCommand>(c => SetState(StateMachineStateExtensions.OnStateId));
-            }
-
-            if (SupportsState(StateMachineStateExtensions.OffStateId))
-            {
-                _commandExecutor.Register<TurnOffCommand>(c => SetState(StateMachineStateExtensions.OffStateId));
-            }
+            _log = logService.CreatePublisher(nameof(StateMachine));
         }
 
         public string AlternativeStateId { get; set; }
@@ -47,7 +38,8 @@ namespace HA4IoT.Actuators.StateMachines
 
             lock (_syncRoot)
             {
-                _states.Add(state.Id, state);
+                ThrowIfStateAlreadySupported(state.Id);
+                _states.Add(state);
             }
         }
 
@@ -55,13 +47,19 @@ namespace HA4IoT.Actuators.StateMachines
         {
             lock (_syncRoot)
             {
+                if (string.IsNullOrEmpty(ResetStateId))
+                {
+                    _log.Warning($"Reset state not supported for component '{Id}'.");
+                    return;
+                }
+
                 if (SupportsState(ResetStateId))
                 {
                     SetState(ResetStateId, new ForceUpdateStateParameter());
                 }
                 else
                 {
-                    Log.Default.Warning("Reset stat of StateMachine is not supported.");
+                    _log.Warning($"Defined reset state of component '{Id}' is not supported.");
                 }
             }
         }
@@ -85,20 +83,43 @@ namespace HA4IoT.Actuators.StateMachines
         public override IComponentFeatureCollection GetFeatures()
         {
             var stateMachineFeature = new StateMachineFeature();
-            foreach (var stateId in _states.Keys)
+            foreach (var state in _states)
             {
-                stateMachineFeature.SupportedStates.Add(stateId);
+                stateMachineFeature.SupportedStates.Add(state.Id);
+            }
+            
+            var features = new ComponentFeatureCollection()
+                .With(stateMachineFeature);
+
+            if (SupportsState(StateMachineStateExtensions.OffStateId) &&
+                SupportsState(StateMachineStateExtensions.OnStateId))
+            {
+                features.With(new PowerStateFeature());
             }
 
-            return new ComponentFeatureCollection()
-                .With(stateMachineFeature);
+            return features;
         }
 
         public override void ExecuteCommand(ICommand command)
         {
             lock (_syncRoot)
             {
-                _commandExecutor.Execute(command);
+                var commandExecutor = new CommandExecutor();
+                commandExecutor.Register<ResetCommand>(c => ResetState());
+                commandExecutor.Register<SetStateCommand>(c => SetState(c.Id));
+                commandExecutor.Register<SetNextStateCommand>(c => SetNextState());
+
+                if (SupportsState(StateMachineStateExtensions.OnStateId))
+                {
+                    commandExecutor.Register<TurnOnCommand>(c => SetState(StateMachineStateExtensions.OnStateId));
+                }
+
+                if (SupportsState(StateMachineStateExtensions.OffStateId))
+                {
+                    commandExecutor.Register<TurnOffCommand>(c => SetState(StateMachineStateExtensions.OffStateId));
+                }
+
+                commandExecutor.Execute(command);
             }
         }
 
@@ -106,7 +127,7 @@ namespace HA4IoT.Actuators.StateMachines
         {
             lock (_syncRoot)
             {
-                return _states.ContainsKey(id);
+                return _states.Any(s => s.Id.Equals(id));
             }
         }
 
@@ -114,7 +135,7 @@ namespace HA4IoT.Actuators.StateMachines
         {
             ThrowIfNoStatesAvailable();
             ThrowIfStateNotSupported(id);
-
+            
             var oldState = GetState();
 
             if (AlternativeStateId != null && id == _activeState?.Id)
@@ -123,10 +144,23 @@ namespace HA4IoT.Actuators.StateMachines
             }
 
             _activeState?.Deactivate(parameters);
-            _activeState = _states[id];
+            _activeState = _states.First(s => s.Id.Equals(id));
             _activeState.Activate(parameters);
 
             OnStateChanged(oldState);
+        }
+
+        private void SetNextState(params IHardwareParameter[] parameters)
+        {
+            var index = _states.FindIndex(s => s.Id.Equals(_activeState.Id));
+            index++;
+
+            if (index >= _states.Count)
+            {
+                index = 0;
+            }
+
+            SetState(_states[index].Id, parameters);
         }
 
         private void ThrowIfNoStatesAvailable()
@@ -134,6 +168,14 @@ namespace HA4IoT.Actuators.StateMachines
             if (!_states.Any())
             {
                 throw new InvalidOperationException("StateMachine does not support any state.");
+            }
+        }
+
+        private void ThrowIfStateAlreadySupported(string id)
+        {
+            if (SupportsState(id))
+            {
+                throw new InvalidOperationException($"StateMachine state '{id}' is aleady supported.");
             }
         }
 

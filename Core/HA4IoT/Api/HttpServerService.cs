@@ -7,8 +7,8 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Networking.Http;
-using HA4IoT.Networking.WebSockets;
+using HA4IoT.Net.Http;
+using HA4IoT.Net.WebSockets;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

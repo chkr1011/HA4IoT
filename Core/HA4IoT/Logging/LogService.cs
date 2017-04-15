@@ -19,8 +19,8 @@ namespace HA4IoT.Logging
         
         private readonly Guid _sessionId = Guid.NewGuid();
         private readonly Queue<LogEntry> _logEntries = new Queue<LogEntry>();
-        private readonly Queue<LogEntry> _logErrorEntries = new Queue<LogEntry>();
-        private readonly Queue<LogEntry> _logWarningEntries = new Queue<LogEntry>();
+        private readonly Queue<LogEntry> _errorLogEntries = new Queue<LogEntry>();
+        private readonly Queue<LogEntry> _warningLogEntries = new Queue<LogEntry>();
 
         private readonly IDateTimeService _dateTimeService;
 
@@ -103,12 +103,12 @@ namespace HA4IoT.Logging
         [ApiMethod]
         public void GetWarningLogEntries(IApiContext apiContext)
         {
-            lock (_logErrorEntries)
+            lock (_warningLogEntries)
             {
                 var response = new GetLogEntriesResponse
                 {
                     SessionId = _sessionId,
-                    LogEntries = _logWarningEntries.ToList()
+                    LogEntries = _warningLogEntries.ToList()
                 };
 
                 apiContext.Result = JObject.FromObject(response);
@@ -118,12 +118,12 @@ namespace HA4IoT.Logging
         [ApiMethod]
         public void GetErrorLogEntries(IApiContext apiContext)
         {
-            lock (_logErrorEntries)
+            lock (_errorLogEntries)
             {
                 var response = new GetLogEntriesResponse
                 {
                     SessionId = _sessionId,
-                    LogEntries = _logErrorEntries.ToList()
+                    LogEntries = _errorLogEntries.ToList()
                 };
 
                 apiContext.Result = JObject.FromObject(response);
@@ -180,16 +180,16 @@ namespace HA4IoT.Logging
 
             if (severity == LogEntrySeverity.Warning)
             {
-                lock (_logWarningEntries)
+                lock (_warningLogEntries)
                 {
-                    EnqueueLogEntry(logEntry, _logWarningEntries, LogWarningHistorySize);
+                    EnqueueLogEntry(logEntry, _warningLogEntries, LogWarningHistorySize);
                 }
             }
             else if (severity == LogEntrySeverity.Error)
             {
-                lock (_logErrorEntries)
+                lock (_errorLogEntries)
                 {
-                    EnqueueLogEntry(logEntry, _logErrorEntries, LogErrorHistorySize);
+                    EnqueueLogEntry(logEntry, _errorLogEntries, LogErrorHistorySize);
                 }
             }
 
@@ -207,7 +207,8 @@ namespace HA4IoT.Logging
         private void EnqueueLogEntry(LogEntry logEntry, Queue<LogEntry> target, int maxLogEntriesCount)
         {
             target.Enqueue(logEntry);
-            while (target.Count > maxLogEntriesCount)
+
+            while (target.Count > 0 && target.Count > maxLogEntriesCount)
             {
                 _logEntries.Dequeue();
             }
