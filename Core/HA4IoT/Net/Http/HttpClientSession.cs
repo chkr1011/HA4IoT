@@ -78,6 +78,10 @@ namespace HA4IoT.Net.Http
             {
                 await HandleHttpRequestAsync(context);
             }
+
+
+            // TODO: TEST!
+            _cancellationTokenSource.Cancel();
         }
 
         private async Task HandleHttpRequestAsync(HttpContext context)

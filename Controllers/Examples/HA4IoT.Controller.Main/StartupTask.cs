@@ -7,12 +7,9 @@ namespace HA4IoT.Controller.Main
     {
         public void Run(IBackgroundTaskInstance taskInstance)
         {
-#if CELLAR
-            var configurationType = typeof(Cellar.Configuration);
-#else
+            //var configurationType = typeof(Cellar.Configuration);
             var configurationType = typeof(Main.Configuration);
-#endif
-            
+
             var options = new ControllerOptions
             {
                 StatusLedGpio = 22,

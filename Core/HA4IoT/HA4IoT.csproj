@@ -111,7 +111,6 @@
   <ItemGroup>
     <Compile Include="Actuators\ActuatorFactory.cs" />
     <Compile Include="Actuators\Connectors\RollerShutterWithRollerShutterButtonsConnector.cs" />
-    <Compile Include="Actuators\Connectors\StateMachineWithButtonConnector.cs" />
     <Compile Include="Actuators\Fans\Fan.cs" />
     <Compile Include="Actuators\Fans\FanExtensions.cs" />
     <Compile Include="Actuators\Fans\FanSettings.cs" />

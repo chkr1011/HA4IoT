@@ -1,6 +1,4 @@
-﻿using HA4IoT.Contracts.Services.Settings;
-
-namespace HA4IoT.Services.ControllerSlave
+﻿namespace HA4IoT.Services.ControllerSlave
 {
     public class ControllerSlaveServiceSettings
     {

@@ -30,12 +30,12 @@ namespace HA4IoT.Hardware.RaspberryPi
         {
             lock (_syncRoot)
             {
-                BinaryState currentState = CoerceState(Pin.Read() == GpioPinValue.High ? BinaryState.High : BinaryState.Low);
+                var currentState = CoerceState(Pin.Read() == GpioPinValue.High ? BinaryState.High : BinaryState.Low);
                 if (currentState != _previousState)
                 {
                     var oldState = _previousState;
-
                     _previousState = currentState;
+
                     StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(oldState, currentState));
                 }
 

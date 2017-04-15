@@ -10,6 +10,7 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 
@@ -17,26 +18,24 @@ namespace HA4IoT.Actuators
 {
     public class ActuatorFactory
     {
+        private readonly ILogService _logService;
         private readonly ITimerService _timerService;
         private readonly ISettingsService _settingsService;
 
-        public ActuatorFactory(ITimerService timerService, ISettingsService settingsService)
+        public ActuatorFactory(ITimerService timerService, ISettingsService settingsService, ILogService logService)
         {
-            if (timerService == null) throw new ArgumentNullException(nameof(timerService));
-            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-
-            _timerService = timerService;
-            _settingsService = settingsService;
+            _logService = logService ?? throw new ArgumentNullException(nameof(logService));
+            _timerService = timerService ?? throw new ArgumentNullException(nameof(timerService));
+            _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
         }
 
-        public IStateMachine RegisterStateMachine(IArea area, Enum id, Action<StateMachine, IArea> initializer)
+        public IStateMachine RegisterStateMachine(IArea area, Enum id, Action<StateMachine, IArea> initializer = null)
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
-            if (initializer == null) throw new ArgumentNullException(nameof(initializer));
+            
+            var stateMachine = new StateMachine($"{area.Id}.{id}", _logService);
+            initializer?.Invoke(stateMachine, area);
 
-            var stateMachine = new StateMachine($"{area.Id}.{id}");
-
-            initializer(stateMachine, area);
             area.RegisterComponent(stateMachine);
             return stateMachine;
         }

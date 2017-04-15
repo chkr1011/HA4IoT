@@ -140,8 +140,8 @@
     <Content Include="Settings\CloudConnectorServiceSettings.component.js" />
     <Content Include="Settings\ControllerSettings.component.html" />
     <Content Include="Settings\ControllerSettings.component.js" />
-    <Content Include="Settings\OpenWeatherMapSettings.component.html" />
-    <Content Include="Settings\OpenWeatherMapSettings.component.js" />
+    <Content Include="Settings\OpenWeatherMapServiceSettings.component.html" />
+    <Content Include="Settings\OpenWeatherMapServiceSettings.component.js" />
     <Content Include="Settings\Settings.component.html" />
     <Content Include="Settings\Settings.component.js" />
     <Content Include="Settings\SlaveServiceSettings.component.html" />

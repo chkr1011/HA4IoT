@@ -2,7 +2,7 @@
 {
     public class OpenWeatherMapServiceSettings
     {
-        public bool IsEnabled { get; set; } = true;
+        public bool IsEnabled { get; set; }
 
         public int Latitude { get; set; }
 

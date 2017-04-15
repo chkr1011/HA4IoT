@@ -15,9 +15,7 @@ namespace HA4IoT.Services.Environment
 
         public OutdoorTemperatureService(IDateTimeService dateTimeService, IApiDispatcherService apiService)
         {
-            if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
-
-            _dateTimeService = dateTimeService;
+            _dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
 
             apiService.StatusRequested += (s, e) =>
             {
@@ -30,17 +28,17 @@ namespace HA4IoT.Services.Environment
         [JsonIgnore]
         public DateTime? Timestamp { get; private set; }
 
+        [ApiMethod]
+        public void GetStatus(IApiContext apiContext)
+        {
+            apiContext.Result = JObject.FromObject(this);
+        }
+
         public void Update(float outdoorTemperature)
         {
             // TODO: Check for significant changes and round value.
             OutdoorTemperature = (float)Math.Round(Convert.ToDouble(outdoorTemperature), 1);
             Timestamp = _dateTimeService.Now;
-        }
-
-        [ApiMethod]
-        public void Status(IApiContext apiContext)
-        {
-            apiContext.Result = JObject.FromObject(this);
         }
     }
 }

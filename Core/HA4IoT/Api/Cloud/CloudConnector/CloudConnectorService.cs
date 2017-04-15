@@ -47,7 +47,7 @@ namespace HA4IoT.Api.Cloud.CloudConnector
         {
             if (!_settings.IsEnabled)
             {
-                _log.Info("Cloud Connector service is not enabled.");
+                _log.Info("Cloud Connector service is disabled.");
                 return;
             }
 

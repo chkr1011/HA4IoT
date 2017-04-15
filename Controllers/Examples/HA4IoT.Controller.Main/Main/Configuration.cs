@@ -37,23 +37,14 @@ namespace HA4IoT.Controller.Main.Main
             IContainer containerService,
             ILogService logService)
         {
-            if (ccToolsBoardService == null) throw new ArgumentNullException(nameof(ccToolsBoardService));
-            if (pi2GpioService == null) throw new ArgumentNullException(nameof(pi2GpioService));
-            if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
-            if (i2CBusService == null) throw new ArgumentNullException(nameof(i2CBusService));
-            if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
-            if (remoteSocketService == null) throw new ArgumentNullException(nameof(remoteSocketService));
-            if (containerService == null) throw new ArgumentNullException(nameof(containerService));
-            if (logService == null) throw new ArgumentNullException(nameof(logService));
-
-            _ccToolsBoardService = ccToolsBoardService;
-            _pi2GpioService = pi2GpioService;
-            _deviceService = deviceService;
-            _i2CBusService = i2CBusService;
-            _schedulerService = schedulerService;
-            _remoteSocketService = remoteSocketService;
-            _containerService = containerService;
-            _logService = logService;
+            _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
+            _pi2GpioService = pi2GpioService ?? throw new ArgumentNullException(nameof(pi2GpioService));
+            _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
+            _i2CBusService = i2CBusService ?? throw new ArgumentNullException(nameof(i2CBusService));
+            _schedulerService = schedulerService ?? throw new ArgumentNullException(nameof(schedulerService));
+            _remoteSocketService = remoteSocketService ?? throw new ArgumentNullException(nameof(remoteSocketService));
+            _containerService = containerService ?? throw new ArgumentNullException(nameof(containerService));
+            _logService = logService ?? throw new ArgumentNullException(nameof(logService));
         }
 
         public Task ApplyAsync()
@@ -84,7 +75,7 @@ namespace HA4IoT.Controller.Main.Main
             _containerService.GetInstance<LivingRoomConfiguration>().Apply();
 
             var ioBoardsInterruptMonitor = new InterruptMonitor(_pi2GpioService.GetInput(4), _logService);
-            ioBoardsInterruptMonitor.InterruptDetected += (s, e) => _ccToolsBoardService.PollInputBoardStates();
+            ioBoardsInterruptMonitor.AddCallback(_ccToolsBoardService.PollInputBoardStates);
             ioBoardsInterruptMonitor.Start();
 
             return Task.FromResult(0);

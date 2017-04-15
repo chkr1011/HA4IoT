@@ -16,9 +16,7 @@ namespace HA4IoT.Services.Environment
 
         public WeatherService(IDateTimeService dateTimeService, IApiDispatcherService apiService)
         {
-            if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
-
-            _dateTimeService = dateTimeService;
+            _dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
 
             apiService.StatusRequested += (s, e) =>
             {
@@ -32,7 +30,7 @@ namespace HA4IoT.Services.Environment
         public DateTime? Timestamp { get; private set; }
         
         [ApiMethod]
-        public void Status(IApiContext apiContext)
+        public void GetStatus(IApiContext apiContext)
         {
             apiContext.Result = JObject.FromObject(this);
         }
