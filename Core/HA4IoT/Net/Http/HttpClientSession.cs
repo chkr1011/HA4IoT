@@ -9,7 +9,7 @@ using Windows.Security.Cryptography.Core;
 using Windows.Web.Http;
 using HA4IoT.Contracts.Logging;
 
-namespace HA4IoT.Networking.Http
+namespace HA4IoT.Net.Http
 {
     public sealed class HttpClientSession : IDisposable
     {

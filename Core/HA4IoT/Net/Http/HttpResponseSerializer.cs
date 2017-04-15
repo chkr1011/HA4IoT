@@ -4,7 +4,7 @@ using System.IO.Compression;
 using System.Text;
 using Windows.Web.Http;
 
-namespace HA4IoT.Networking.Http
+namespace HA4IoT.Net.Http
 {
     public class HttpResponseSerializer
     {

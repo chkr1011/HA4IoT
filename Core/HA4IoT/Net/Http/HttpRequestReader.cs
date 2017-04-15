@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Web.Http;
 
-namespace HA4IoT.Networking.Http
+namespace HA4IoT.Net.Http
 {
     public sealed class HttpRequestReader : IDisposable
     {

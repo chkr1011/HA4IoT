@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HA4IoT.Networking.WebSockets
+namespace HA4IoT.Net.WebSockets
 {
     public class WebSocketTextMessage : WebSocketMessage
     {

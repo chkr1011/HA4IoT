@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 using Windows.Web.Http;
-using HA4IoT.Networking.Http;
+using HA4IoT.Net.Http;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace HA4IoT.Tests.Networking

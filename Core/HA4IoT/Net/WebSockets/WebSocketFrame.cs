@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace HA4IoT.Networking.WebSockets
+namespace HA4IoT.Net.WebSockets
 {
     public class WebSocketFrame
     {

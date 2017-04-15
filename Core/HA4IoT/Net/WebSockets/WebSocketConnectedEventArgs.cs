@@ -1,7 +1,7 @@
 ﻿using System;
-using HA4IoT.Networking.Http;
+using HA4IoT.Net.Http;
 
-namespace HA4IoT.Networking.WebSockets
+namespace HA4IoT.Net.WebSockets
 {
     public class WebSocketConnectedEventArgs : EventArgs
     {

@@ -10,7 +10,7 @@ using HA4IoT.Contracts.Logging;
 using Newtonsoft.Json.Linq;
 using Buffer = Windows.Storage.Streams.Buffer;
 
-namespace HA4IoT.Networking.WebSockets
+namespace HA4IoT.Net.WebSockets
 {
     public class WebSocketClientSession : IWebSocketClientSession
     {

@@ -1,4 +1,4 @@
-﻿namespace HA4IoT.Networking.WebSockets
+﻿namespace HA4IoT.Net.WebSockets
 {
     public enum WebSocketOpcode : byte
     {

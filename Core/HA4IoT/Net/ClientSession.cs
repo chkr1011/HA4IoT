@@ -3,10 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking.Sockets;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Networking.Http;
-using HA4IoT.Networking.WebSockets;
+using HA4IoT.Net.Http;
+using HA4IoT.Net.WebSockets;
 
-namespace HA4IoT.Networking
+namespace HA4IoT.Net
 {
     public sealed class ClientSession : IDisposable
     {

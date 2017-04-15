@@ -1,6 +1,6 @@
 using System;
 
-namespace HA4IoT.Networking.Http
+namespace HA4IoT.Net.Http
 {
     public class HttpContext
     {

@@ -4,9 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking.Sockets;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Networking.WebSockets;
+using HA4IoT.Net.WebSockets;
 
-namespace HA4IoT.Networking.Http
+namespace HA4IoT.Net.Http
 {
     public sealed class HttpServer : IDisposable
     {

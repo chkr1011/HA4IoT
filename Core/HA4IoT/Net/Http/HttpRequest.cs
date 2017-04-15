@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Windows.Web.Http;
 
-namespace HA4IoT.Networking.Http
+namespace HA4IoT.Net.Http
 {
     public class HttpRequest
     {

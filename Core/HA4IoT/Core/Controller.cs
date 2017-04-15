@@ -12,7 +12,7 @@ using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services.Notifications;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Networking.Http;
+using HA4IoT.Net.Http;
 using HA4IoT.Settings;
 using Newtonsoft.Json.Linq;
 

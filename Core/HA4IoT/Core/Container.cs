@@ -37,7 +37,7 @@ using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.Services;
 using HA4IoT.Hardware.Sonoff;
 using HA4IoT.Logging;
-using HA4IoT.Networking.Http;
+using HA4IoT.Net.Http;
 using HA4IoT.Notifications;
 using HA4IoT.PersonalAgent;
 using HA4IoT.Sensors;
