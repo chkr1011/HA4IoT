@@ -94,7 +94,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             var input4 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input4.ToString());
             var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
 
-            const int SensorPin = 5;
+            const int SensorPin = 3;
 
             var area = _areaService.RegisterArea(Room.Floor);
 

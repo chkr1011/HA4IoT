@@ -9,6 +9,7 @@ using HA4IoT.Contracts.Services;
 using MQTTnet;
 using MQTTnet.Core;
 using MQTTnet.Core.Client;
+using MQTTnet.Core.Diagnostics;
 using MQTTnet.Core.Packets;
 using MQTTnet.Core.Protocol;
 using MQTTnet.Core.Server;
@@ -28,6 +29,18 @@ namespace HA4IoT.Hardware.Services
             if (logService == null) throw new ArgumentNullException(nameof(logService));
 
             _log = logService.CreatePublisher(nameof(DeviceMessageBrokerService));
+
+            MqttTrace.TraceMessagePublished += (s, e) =>
+            {
+                if (e.Level == MqttTraceLevel.Warning)
+                {
+                    _log.Warning(e.Exception, e.Message);
+                }
+                else if (e.Level == MqttTraceLevel.Error)
+                {
+                    _log.Error(e.Exception, e.Message);
+                }
+            };
 
             var channelA = new MqttCommunicationAdapter();
             _clientCommunicationAdapter = new MqttCommunicationAdapter();
@@ -65,8 +78,17 @@ namespace HA4IoT.Hardware.Services
 
         public void Publish(string topic, byte[] payload, MqttQosLevel qosLevel)
         {
-            _client.PublishAsync(new MqttApplicationMessage(topic, payload, (MqttQualityOfServiceLevel)qosLevel, false)).Wait();
-            _log.Verbose($"Published message '{topic}' [{Encoding.UTF8.GetString(payload)}].");
+            try
+            {
+                var message = new MqttApplicationMessage(topic, payload, (MqttQualityOfServiceLevel)qosLevel, false);
+                _client.PublishAsync(message).Wait();
+
+                _log.Verbose($"Published message '{topic}' [{Encoding.UTF8.GetString(payload)}].");
+            }
+            catch (Exception exception)
+            {
+                _log.Error(exception, $"Failed to publish message '{topic}' [{Encoding.UTF8.GetString(payload)}].");
+            }
         }
 
         public void Subscribe(string topicPattern, Action<DeviceMessage> callback)

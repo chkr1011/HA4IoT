@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:iot="http://schemas.microsoft.com/appx/manifest/iot/windows10" IgnorableNamespaces="uap mp iot">
-  <Identity Name="HA4IoT.Controller.Default-uwp" Publisher="CN=chris" Version="1.0.0.0" />
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:iot="http://schemas.microsoft.com/appx/manifest/iot/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" IgnorableNamespaces="uap mp iot uap3">
+  <Identity Name="HA4IoT.Controller-uwp" Publisher="CN=chris" Version="1.0.0.0" />
   <mp:PhoneIdentity PhoneProductId="59b47afc-e5dd-47cd-9e65-f5dc1a98c3fd" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>HA4IoT.Controller.Default</DisplayName>
+    <DisplayName>HA4IoT Controller</DisplayName>
     <PublisherDisplayName>chris</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App">
-      <uap:VisualElements DisplayName="HA4IoT.Controller.Default" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="HA4IoT.Controller.Default" BackgroundColor="transparent" AppListEntry="none">
+      <uap:VisualElements DisplayName="HA4IoT.Controller" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="HA4IoT.Controller" BackgroundColor="transparent" AppListEntry="none">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png">
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
@@ -33,5 +33,29 @@
     <Capability Name="internetClient" />
     <Capability Name="internetClientServer" />
     <Capability Name="privateNetworkClientServer" />
+    <Capability Name="allJoyn" />
+    <Capability Name="codeGeneration" />
+    <uap:Capability Name="appointments" />
+    <uap3:Capability Name="backgroundMediaPlayback" />
+    <uap:Capability Name="blockedChatMessages" />
+    <uap:Capability Name="chat" />
+    <uap:Capability Name="contacts" />
+    <uap:Capability Name="enterpriseAuthentication" />
+    <uap:Capability Name="musicLibrary" />
+    <uap:Capability Name="objects3D" />
+    <uap:Capability Name="phoneCall" />
+    <uap:Capability Name="picturesLibrary" />
+    <uap3:Capability Name="remoteSystem" />
+    <uap:Capability Name="removableStorage" />
+    <uap:Capability Name="videosLibrary" />
+    <uap:Capability Name="userAccountInformation" />
+    <uap:Capability Name="sharedUserCertificates" />
+    <uap:Capability Name="voipCall" />
+    <uap3:Capability Name="userNotificationListener" />
+    <DeviceCapability Name="bluetooth" />
+    <DeviceCapability Name="microphone" />
+    <DeviceCapability Name="location" />
+    <DeviceCapability Name="proximity" />
+    <DeviceCapability Name="webcam" />
   </Capabilities>
 </Package>

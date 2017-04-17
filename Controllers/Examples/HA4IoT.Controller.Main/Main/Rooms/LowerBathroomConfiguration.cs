@@ -71,7 +71,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             var input3 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input3.ToString());
             var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
 
-            const int SensorPin = 3;
+            const int SensorPin = 5;
 
             var area = _areaService.RegisterArea(Room.LowerBathroom);
 
@@ -122,7 +122,11 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             bathroom.GetLamp(LowerBathroom.LampMirror).TryTurnOff();
 
             _bathmodeResetDelayedAction?.Cancel();
-            _bathmodeResetDelayedAction = _schedulerService.In(TimeSpan.FromHours(1), () => _settingsService.SetComponentEnabledState(motionDetector, true));
+            _bathmodeResetDelayedAction = _schedulerService.In(TimeSpan.FromHours(1), () =>
+            {
+                bathroom.GetLamp(LowerBathroom.LightCeilingDoor).TryTurnOff();
+                _settingsService.SetComponentEnabledState(motionDetector, true);
+            });
         }
     }
 }

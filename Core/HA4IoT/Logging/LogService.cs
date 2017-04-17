@@ -105,13 +105,7 @@ namespace HA4IoT.Logging
         {
             lock (_warningLogEntries)
             {
-                var response = new GetLogEntriesResponse
-                {
-                    SessionId = _sessionId,
-                    LogEntries = _warningLogEntries.ToList()
-                };
-
-                apiContext.Result = JObject.FromObject(response);
+                CreateGetLogEntriesResponse(_warningLogEntries, apiContext);
             }
         }
 
@@ -120,13 +114,7 @@ namespace HA4IoT.Logging
         {
             lock (_errorLogEntries)
             {
-                var response = new GetLogEntriesResponse
-                {
-                    SessionId = _sessionId,
-                    LogEntries = _errorLogEntries.ToList()
-                };
-
-                apiContext.Result = JObject.FromObject(response);
+                CreateGetLogEntriesResponse(_errorLogEntries, apiContext);
             }
         }
 
@@ -208,10 +196,21 @@ namespace HA4IoT.Logging
         {
             target.Enqueue(logEntry);
 
-            while (target.Count > 0 && target.Count > maxLogEntriesCount)
+            while (target.Count > maxLogEntriesCount)
             {
                 _logEntries.Dequeue();
             }
+        }
+
+        private void CreateGetLogEntriesResponse(Queue<LogEntry> source, IApiContext apiContext)
+        {
+            var response = new GetLogEntriesResponse
+            {
+                SessionId = _sessionId,
+                LogEntries = source.ToList()
+            };
+
+            apiContext.Result = JObject.FromObject(response);
         }
     }
 }
