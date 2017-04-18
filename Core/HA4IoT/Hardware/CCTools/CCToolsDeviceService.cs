@@ -18,14 +18,10 @@ namespace HA4IoT.Hardware.CCTools
 
         public CCToolsDeviceService(IDeviceRegistryService deviceService, II2CBusService i2CBusService, IDeviceMessageBrokerService deviceMessageBrokerService, ILogService log)
         {
-            if (i2CBusService == null) throw new ArgumentNullException(nameof(i2CBusService));
-            if (log == null) throw new ArgumentNullException(nameof(log));
-            if (deviceService == null) throw new ArgumentNullException(nameof(deviceService));
-
-            _deviceService = deviceService;
-            _i2CBusService = i2CBusService;
+            _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
+            _i2CBusService = i2CBusService ?? throw new ArgumentNullException(nameof(i2CBusService));
             _deviceMessageBrokerService = deviceMessageBrokerService;
-            _log = log.CreatePublisher(nameof(CCToolsDeviceService));
+            _log = log?.CreatePublisher(nameof(CCToolsDeviceService)) ?? throw new ArgumentNullException(nameof(log));
         }
 
         public HSPE16InputOnly RegisterHSPE16InputOnly(string id, I2CSlaveAddress address)
@@ -35,7 +31,7 @@ namespace HA4IoT.Hardware.CCTools
                 AutomaticallyFetchState = true
             };
 
-            _deviceService.AddDevice(device);
+            _deviceService.RegisterDevice(device);
 
             return device;
         }
@@ -43,7 +39,7 @@ namespace HA4IoT.Hardware.CCTools
         public HSPE16OutputOnly RegisterHSPE16OutputOnly(string id, I2CSlaveAddress address)
         {
             var device = new HSPE16OutputOnly(id, address, _i2CBusService, _deviceMessageBrokerService, _log);
-            _deviceService.AddDevice(device);
+            _deviceService.RegisterDevice(device);
 
             return device;
         }
@@ -51,15 +47,19 @@ namespace HA4IoT.Hardware.CCTools
         public HSPE8OutputOnly RegisterHSPE8OutputOnly(string id, I2CSlaveAddress i2CAddress)
         {
             var device = new HSPE8OutputOnly(id, i2CAddress, _i2CBusService, _deviceMessageBrokerService, _log);
-            _deviceService.AddDevice(device);
+            _deviceService.RegisterDevice(device);
 
             return device;
         }
 
         public HSPE8InputOnly RegisterHSPE8InputOnly(string id, I2CSlaveAddress i2CAddress)
         {
-            var device = new HSPE8InputOnly(id, i2CAddress, _i2CBusService, _deviceMessageBrokerService, _log);
-            _deviceService.AddDevice(device);
+            var device = new HSPE8InputOnly(id, i2CAddress, _i2CBusService, _deviceMessageBrokerService, _log)
+            {
+                AutomaticallyFetchState = true
+            };
+
+            _deviceService.RegisterDevice(device);
 
             return device;
         }
@@ -67,7 +67,7 @@ namespace HA4IoT.Hardware.CCTools
         public HSREL5 RegisterHSREL5(string id, I2CSlaveAddress i2CAddress)
         {
             var device = new HSREL5(id, i2CAddress, _i2CBusService, _deviceMessageBrokerService, _log);
-            _deviceService.AddDevice(device);
+            _deviceService.RegisterDevice(device);
 
             return device;
         }
@@ -75,7 +75,7 @@ namespace HA4IoT.Hardware.CCTools
         public HSREL8 RegisterHSREL8(string id, I2CSlaveAddress i2CAddress)
         {
             var device = new HSREL8(id, i2CAddress, _i2CBusService, _deviceMessageBrokerService, _log);
-            _deviceService.AddDevice(device);
+            _deviceService.RegisterDevice(device);
 
             return device;
         }
@@ -83,7 +83,7 @@ namespace HA4IoT.Hardware.CCTools
         public HSRT16 RegisterHSRT16(string id, I2CSlaveAddress address)
         {
             var device = new HSRT16(id, address, _i2CBusService, _deviceMessageBrokerService, _log);
-            _deviceService.AddDevice(device);
+            _deviceService.RegisterDevice(device);
 
             return device;
         }
@@ -94,25 +94,25 @@ namespace HA4IoT.Hardware.CCTools
 
             var inputDevices = _deviceService.GetDevices<CCToolsInputDeviceBase>();
 
-            foreach (var portExpanderController in inputDevices)
+            foreach (var device in inputDevices)
             {
-                if (portExpanderController.AutomaticallyFetchState)
+                if (device.AutomaticallyFetchState)
                 {
-                    portExpanderController.PeekState();
+                    device.PeekState();
                 }
             }
 
             stopwatch.Stop();
-            if (stopwatch.ElapsedMilliseconds > 25)
+            if (stopwatch.ElapsedMilliseconds > 100)
             {
                 _log.Warning($"Fetching inputs took {stopwatch.ElapsedMilliseconds}ms.");
             }
 
-            foreach (var portExpanderController in inputDevices)
+            foreach (var device in inputDevices)
             {
-                if (portExpanderController.AutomaticallyFetchState)
+                if (device.AutomaticallyFetchState)
                 {
-                    portExpanderController.FetchState();
+                    device.FetchState();
                 }
             }
         }

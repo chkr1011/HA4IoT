@@ -24,29 +24,36 @@ namespace HA4IoT.Services
             };
         }
 
-        public void AddDevice(IDevice device)
+        public void RegisterDevice(IDevice device)
         {
-            _devices.Add(device.Id, device);
+            lock (_devices)
+            {
+                _devices.Add(device.Id, device);
+            }
         }
 
         public TDevice GetDevice<TDevice>(string id) where TDevice : IDevice
         {
-            return (TDevice)_devices[id];
+            lock (_devices)
+            {
+                return (TDevice) _devices[id];
+            }
         }
 
         public TDevice GetDevice<TDevice>() where TDevice : IDevice
         {
-            return _devices.Values.OfType<TDevice>().SingleOrDefault();
+            lock (_devices)
+            {
+                return _devices.Values.OfType<TDevice>().SingleOrDefault();
+            }
         }
 
         public IList<TDevice> GetDevices<TDevice>() where TDevice : IDevice
         {
-            return _devices.Values.OfType<TDevice>().ToList();
-        }
-
-        public IList<IDevice> GetDevices()
-        {
-            return _devices.Values.ToList();
+            lock (_devices)
+            {
+                return _devices.Values.OfType<TDevice>().ToList();
+            }
         }
     }
 }

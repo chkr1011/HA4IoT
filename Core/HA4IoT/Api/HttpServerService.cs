@@ -126,7 +126,7 @@ namespace HA4IoT.Api
             relativeUrl = relativeUrl.TrimStart('/');
             relativeUrl = relativeUrl.Substring(relativeUrl.IndexOf('/') + 1);
 
-            if (relativeUrl.EndsWith("/"))
+            if (relativeUrl.EndsWith("/") || relativeUrl == string.Empty)
             {
                 relativeUrl += "Index.html";
             }

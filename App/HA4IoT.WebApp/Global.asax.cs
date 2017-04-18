@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Web;
 using System.Web.Http;
-using HA4IoT.WebApp.App_Start;
 
 namespace HA4IoT.WebApp
 {

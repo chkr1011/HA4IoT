@@ -151,6 +151,7 @@
     <Compile Include="Hardware\Outpost\OutpostDeviceService.cs" />
     <Compile Include="Hardware\Services\DeviceMessageBrokerService.cs" />
     <Compile Include="Hardware\RemoteSwitch\Lpd433MhzCodeReceivedEventArgs.cs" />
+    <Compile Include="Hardware\Services\InterruptMonitor.cs" />
     <Compile Include="Hardware\Services\InterruptMonitorService.cs" />
     <Compile Include="Hardware\Services\MqttCommunicationAdapter.cs" />
     <Compile Include="Hardware\Sonoff\SonoffBinaryOutputAdapter.cs" />
@@ -276,7 +277,6 @@
     <Compile Include="Hardware\I2C\I2CHardwareBridge\ReadDHT22SensorCommandResponse.cs" />
     <Compile Include="Hardware\I2C\I2CHardwareBridge\SendInfraredSignalCommand.cs" />
     <Compile Include="Hardware\I2C\I2CHardwareBridge\SendLDP433MHzSignalCommand.cs" />
-    <Compile Include="Hardware\InterruptMonitor.cs" />
     <Compile Include="Hardware\Knx\KnxClient.cs" />
     <Compile Include="Hardware\Knx\KnxController.cs" />
     <Compile Include="Hardware\Knx\KnxDigitalJoinEnpoint.cs" />

@@ -4,37 +4,40 @@ using HA4IoT.Contracts.Hardware.I2C;
 
 namespace HA4IoT.Hardware.I2C
 {
-    public class I2CDeviceWrapper : II2CDevice
+    public sealed class I2CDeviceWrapper : II2CDevice, IDisposable
     {
-        private readonly I2cDevice _i2CDevice;
+        private readonly I2cDevice _device;
 
-        public I2CDeviceWrapper(I2cDevice i2cDevice)
+        public I2CDeviceWrapper(I2cDevice device)
         {
-            if (i2cDevice == null) throw new ArgumentNullException(nameof(i2cDevice));
-
-            _i2CDevice = i2cDevice;
+            _device = device ?? throw new ArgumentNullException(nameof(device));
         }
 
         public void Write(byte[] writeBuffer)
         {
             if (writeBuffer == null) throw new ArgumentNullException(nameof(writeBuffer));
 
-            _i2CDevice.Write(writeBuffer);
+            _device.Write(writeBuffer);
         }
 
         public void Read(byte[] readBuffer)
         {
             if (readBuffer == null) throw new ArgumentNullException(nameof(readBuffer));
 
-            _i2CDevice.Read(readBuffer);
+            _device.Read(readBuffer);
         }
 
         public void WriteRead(byte[] writeBuffer, byte[] readBuffer)
         {
             if (readBuffer == null) throw new ArgumentNullException(nameof(readBuffer));
             if (writeBuffer == null) throw new ArgumentNullException(nameof(writeBuffer));
-            
-            _i2CDevice.WriteRead(writeBuffer, readBuffer);
+
+            _device.WriteRead(writeBuffer, readBuffer);
+        }
+
+        public void Dispose()
+        {
+            _device?.Dispose();
         }
     }
 }

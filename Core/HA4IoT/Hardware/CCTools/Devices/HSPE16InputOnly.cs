@@ -9,11 +9,11 @@ namespace HA4IoT.Hardware.CCTools.Devices
 {
     public class HSPE16InputOnly : CCToolsInputDeviceBase, IBinaryInputController
     {
-        public HSPE16InputOnly(string id, I2CSlaveAddress address, II2CBusService i2cBusService, IDeviceMessageBrokerService deviceMessageBrokerService, ILogger log)
-            : base(id, new MAX7311Driver(address, i2cBusService), deviceMessageBrokerService, log)
+        public HSPE16InputOnly(string id, I2CSlaveAddress address, II2CBusService i2CBusService, IDeviceMessageBrokerService deviceMessageBrokerService, ILogger log)
+            : base(id, new MAX7311Driver(address, i2CBusService), deviceMessageBrokerService, log)
         {
             byte[] setupAsInputs = { 0x06, 0xFF, 0xFF };
-            i2cBusService.Execute(address, b => b.Write(setupAsInputs));
+            i2CBusService.Execute(address, b => b.Write(setupAsInputs));
 
             FetchState();
         }
@@ -21,7 +21,7 @@ namespace HA4IoT.Hardware.CCTools.Devices
         public IBinaryInput GetInput(int number)
         {
             // All ports have a pullup resistor.
-            return GetPort(number).WithInvertedState();
+            return ((IBinaryInput)GetPort(number)).WithInvertedState();
         }
 
         public IBinaryInput this[HSPE16Pin pin] => GetInput((int)pin);

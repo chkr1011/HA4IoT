@@ -143,11 +143,11 @@ namespace HA4IoT.Hardware.CCTools
             }
         }
 
-        internal BinaryState GetPortState(int pinNumber)
+        internal BinaryState GetPortState(int id)
         {
             lock (_syncRoot)
             {
-                return _state.GetBit(pinNumber) ? BinaryState.High : BinaryState.Low;
+                return _state.GetBit(id) ? BinaryState.High : BinaryState.Low;
             }
         }
 

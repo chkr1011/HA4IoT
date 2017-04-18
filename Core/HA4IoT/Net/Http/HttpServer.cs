@@ -26,7 +26,7 @@ namespace HA4IoT.Net.Http
 
         public void Bind(int port)
         {
-            _serverSocket.BindServiceNameAsync(port.ToString()).AsTask().Wait();
+            _serverSocket.BindServiceNameAsync(port.ToString()).GetAwaiter().GetResult();
 
             _log.Info($"Binded HTTP server to port {port}");
         }

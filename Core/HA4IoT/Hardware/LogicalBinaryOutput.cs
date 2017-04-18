@@ -16,7 +16,7 @@ namespace HA4IoT.Hardware
             _outputs.AddRange(outputs);
         }
 
-        public bool InvertValue { get; set; }
+        public bool IsStateInverted { get; set; }
         
         public void Write(BinaryState state, WriteBinaryStateMode mode)
         {
@@ -32,7 +32,7 @@ namespace HA4IoT.Hardware
             {
                 foreach (var output in _outputs)
                 {
-                    output.Write(state, WriteBinaryStateMode.Commit);
+                    output.Write(state);
                 }
             }
 
@@ -42,12 +42,6 @@ namespace HA4IoT.Hardware
         public BinaryState Read()
         {
             return CoerceState(_state);
-        }
-
-        public IBinaryOutput WithInvertedState(bool value = true)
-        {
-            InvertValue = value;
-            return this;
         }
 
         public LogicalBinaryOutput WithOutput(IBinaryOutput output)
@@ -60,7 +54,7 @@ namespace HA4IoT.Hardware
 
         private BinaryState CoerceState(BinaryState state)
         {
-            if (InvertValue)
+            if (IsStateInverted)
             {
                 return state == BinaryState.High ? BinaryState.Low : BinaryState.High;
             }

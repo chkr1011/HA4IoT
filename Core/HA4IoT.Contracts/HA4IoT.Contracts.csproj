@@ -59,13 +59,15 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
     <OutputPath>bin\ARM\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
+    <DefineConstants>
+    </DefineConstants>
+    <Optimize>false</Optimize>
     <NoStdLib>true</NoStdLib>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>ARM</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <None Include="project.json" />
@@ -179,6 +181,8 @@
     <Compile Include="Hardware\I2C\I2CSlaveAddress.cs" />
     <Compile Include="Hardware\IBinaryInput.cs" />
     <Compile Include="Hardware\IBinaryInputController.cs" />
+    <Compile Include="Hardware\BinaryOutputExtensions.cs" />
+    <Compile Include="Hardware\BinaryInputExtensions.cs" />
     <Compile Include="Hardware\IBinaryOutput.cs" />
     <Compile Include="Hardware\IBinaryOutputController.cs" />
     <Compile Include="Hardware\IDevice.cs" />

@@ -27,7 +27,7 @@ namespace HA4IoT.Hardware.CCTools.Devices
             if (number <= 4)
             {
                 // The 4 relays have an hardware inverter. Invert here again to ensure that high means "on".
-                return port.WithInvertedState();
+                return ((IBinaryOutput)port).WithInvertedState();
             }
 
             return port;

@@ -13,19 +13,17 @@ namespace HA4IoT.Hardware.I2C
     public class BuiltInI2CBusService : ServiceBase, II2CBusService
     {
         private readonly object _syncRoot = new object();
-        private readonly Dictionary<int, I2cDevice> _deviceCache = new Dictionary<int, I2cDevice>();
+        private readonly Dictionary<int, I2CDeviceWrapper> _deviceCache = new Dictionary<int, I2CDeviceWrapper>();
         private readonly string _i2CBusId;
         private readonly ILogger _log;
 
         public BuiltInI2CBusService(ILogService logService)
         {
-            if (logService == null) throw new ArgumentNullException(nameof(logService));
-
-            _log = logService.CreatePublisher(nameof(BuiltInI2CBusService));
+            _log = logService?.CreatePublisher(nameof(BuiltInI2CBusService)) ?? throw new ArgumentNullException(nameof(logService));
 
             var deviceSelector = I2cDevice.GetDeviceSelector();
             
-            var deviceInformation = DeviceInformation.FindAllAsync(deviceSelector).AsTask().Result;
+            var deviceInformation = DeviceInformation.FindAllAsync(deviceSelector).GetAwaiter().GetResult();
             if (deviceInformation.Count == 0)
             {
                 _log.Warning("No I2C bus found.");
@@ -43,11 +41,11 @@ namespace HA4IoT.Hardware.I2C
 
             lock (_syncRoot)
             {
-                I2cDevice device = null;
+                I2CDeviceWrapper device = null;
                 try
                 {
                     device = GetI2CDevice(address.Value, useCache);
-                    action(new I2CDeviceWrapper(device));
+                    action(device);
                 }
                 catch (Exception exception)
                 {
@@ -64,13 +62,13 @@ namespace HA4IoT.Hardware.I2C
             }
         }
 
-        private I2cDevice GetI2CDevice(int address, bool useCache)
+        private I2CDeviceWrapper GetI2CDevice(int address, bool useCache)
         {
             // TODO: The cache is required because using the I2cDevice.FromIdAsync method every time tooks a very long time.
             // Polling the inputs can take up to 300ms (for all) which is too slow (some very short pressed buttons are missed).
             // The Arduino Nano T&H bridge does not work correctly when reusing the device. More investigation is required!
             // At this time, the cache can be disabled for certain devices.
-            I2cDevice device;
+            I2CDeviceWrapper device;
             if (!useCache || !_deviceCache.TryGetValue(address, out device))
             {
                 var settings = new I2cConnectionSettings(address)
@@ -79,7 +77,7 @@ namespace HA4IoT.Hardware.I2C
                     SharingMode = I2cSharingMode.Exclusive
                 };
 
-                device = I2cDevice.FromIdAsync(_i2CBusId, settings).AsTask().Result;
+                device = new I2CDeviceWrapper(I2cDevice.FromIdAsync(_i2CBusId, settings).GetAwaiter().GetResult());
 
                 if (useCache)
                 {

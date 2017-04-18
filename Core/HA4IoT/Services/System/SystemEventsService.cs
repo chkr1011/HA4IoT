@@ -18,14 +18,12 @@ namespace HA4IoT.Services.System
 
             controller.StartupCompleted += OnStartupCompleted;
             controller.StartupFailed += (s, e) => StartupFailed?.Invoke(this, EventArgs.Empty);
-            controller.Shutdown += (s, e) => Shutdown?.Invoke(this, EventArgs.Empty);
 
             resourceService.RegisterText(SystemEventNotification.Booted, "System is booted.");
         }
 
         public event EventHandler StartupCompleted;
         public event EventHandler StartupFailed;
-        public event EventHandler Shutdown;
 
         private void OnStartupCompleted(object sender, EventArgs eventArgs)
         {

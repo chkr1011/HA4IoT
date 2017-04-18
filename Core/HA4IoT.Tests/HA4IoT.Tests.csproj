@@ -133,10 +133,8 @@
     <Compile Include="Mockups\Services\TestI2CBusService.cs" />
     <Compile Include="Hardware\TestI2CDevice.cs" />
     <Compile Include="Mockups\TestInboundMessage.cs" />
-    <Compile Include="Hardware\TestInputPort.cs" />
     <Compile Include="Mockups\TestLogger.cs" />
     <Compile Include="Mockups\Adapters\TestMotionDetectorAdapter.cs" />
-    <Compile Include="Mockups\TestOutputPort.cs" />
     <Compile Include="Hardware\TestPort.cs" />
     <Compile Include="Hardware\TestPortTests.cs" />
     <Compile Include="Mockups\Adapters\TestRollerShutterAdapter.cs" />

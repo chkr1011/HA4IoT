@@ -1,12 +1,12 @@
-﻿namespace HA4IoT.WebApp.App_Start
-{
-    using System.Web.Http;
+﻿using System.Web.Http;
 
+namespace HA4IoT.WebApp
+{
     public class WebApiConfig
     {
         public static void Register(HttpConfiguration configuration)
         {
-            configuration.Routes.MapHttpRoute("API Default", "api/{controller}/{id}",
+            configuration.Routes.MapHttpRoute("API Default", "{controller}/{id}",
                 new { id = RouteParameter.Optional });
         }
     }

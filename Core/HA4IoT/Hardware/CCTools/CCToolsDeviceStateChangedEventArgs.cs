@@ -6,11 +6,8 @@ namespace HA4IoT.Hardware.CCTools
     {
         public CCToolsDeviceStateChangedEventArgs(byte[] oldState, byte[] newState)
         {
-            if (oldState == null) throw new ArgumentNullException(nameof(oldState));
-            if (newState == null) throw new ArgumentNullException(nameof(newState));
-
-            OldState = oldState;
-            NewState = newState;
+            OldState = oldState ?? throw new ArgumentNullException(nameof(oldState));
+            NewState = newState ?? throw new ArgumentNullException(nameof(newState));
         }
 
         public byte[] OldState { get; }

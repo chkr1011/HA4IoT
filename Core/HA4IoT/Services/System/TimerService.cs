@@ -12,41 +12,42 @@ namespace HA4IoT.Services.System
     {
         private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
         private readonly ILogger _log;
+        // ReSharper disable once NotAccessedField.Local
+        private readonly Timer _timer;
+
+        private int _runningThreads;
 
         public TimerService(ILogService logService)
         {
-            if (logService == null) throw new ArgumentNullException(nameof(logService));
+            _log = logService?.CreatePublisher(nameof(TimerService)) ?? throw new ArgumentNullException(nameof(logService));
 
-            _log = logService.CreatePublisher(nameof(TimerService));
+            _timer = new Timer(TickInternal, null, 0, 10);
         }
 
         public event EventHandler<TimerTickEventArgs> Tick;
 
-        public void Run()
-        {
-            var threadId = global::System.Environment.CurrentManagedThreadId;
-            _log.Verbose($"Timer is running on thread {threadId}");
-
-            while (true)
-            {
-                SpinWait.SpinUntil(() => _stopwatch.ElapsedMilliseconds >= 50);
-                
-                TimeSpan elapsedTime = _stopwatch.Elapsed;
-                _stopwatch.Restart();
-
-                InvokeTickEvent(elapsedTime);
-            }
-        }
-
-        private void InvokeTickEvent(TimeSpan elapsedTime)
+        private void TickInternal(object state)
         {
             try
             {
+                if (Interlocked.Increment(ref _runningThreads) > 1)
+                {
+                    return;
+                }
+                
+                _stopwatch.Stop();
+                var elapsedTime = _stopwatch.Elapsed;
+                _stopwatch.Restart();
+
                 Tick?.Invoke(this, new TimerTickEventArgs(elapsedTime));
             }
             catch (Exception exception)
             {
-                _log.Error(exception, "Timer tick has catched an unhandled exception");
+                _log.Error(exception, "Timer tick has catched an unhandled exception.");
+            }
+            finally
+            {
+                Interlocked.Decrement(ref _runningThreads);
             }
         }
     }

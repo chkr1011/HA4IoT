@@ -6,6 +6,5 @@ namespace HA4IoT.Contracts.Services.System
     {
         event EventHandler StartupCompleted;
         event EventHandler StartupFailed;
-        event EventHandler Shutdown;
     }
 }

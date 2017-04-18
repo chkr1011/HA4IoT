@@ -1,5 +1,4 @@
 ﻿using System;
-using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.I2C;
 
 namespace HA4IoT.Contracts.Services.System

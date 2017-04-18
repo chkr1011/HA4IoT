@@ -8,9 +8,9 @@ using HA4IoT.Components;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.I2C;
 using HA4IoT.Contracts.Hardware.Services;
-using HA4IoT.Contracts.Logging;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.CCTools.Devices;
@@ -22,29 +22,26 @@ namespace HA4IoT.Controller.Main.Cellar
     internal sealed class Configuration : IConfiguration
     {
         private readonly CCToolsDeviceService _ccToolsBoardService;
-        private readonly IGpioService _pi2GpioService;
+        private readonly IGpioService _gpioService;
         private readonly IAreaRegistryService _areaService;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
         private readonly AutomationFactory _automationFactory;
-        private readonly ILogService _logService;
 
         public Configuration(
             CCToolsDeviceService ccToolsBoardService,
-            IGpioService pi2GpioService,
+            IGpioService gpioService,
             IAreaRegistryService areaService,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory,
-            AutomationFactory automationFactory,
-            ILogService logService)
+            AutomationFactory automationFactory)
         {
             _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
-            _pi2GpioService = pi2GpioService ?? throw new ArgumentNullException(nameof(pi2GpioService));
+            _gpioService = gpioService ?? throw new ArgumentNullException(nameof(gpioService));
             _areaService = areaService;
             _actuatorFactory = actuatorFactory ?? throw new ArgumentNullException(nameof(actuatorFactory));
             _sensorFactory = sensorFactory ?? throw new ArgumentNullException(nameof(sensorFactory));
             _automationFactory = automationFactory ?? throw new ArgumentNullException(nameof(automationFactory));
-            _logService = logService;
         }
 
         public Task ApplyAsync()
@@ -64,7 +61,7 @@ namespace HA4IoT.Controller.Main.Cellar
             _actuatorFactory.RegisterLamp(garden, Garden.LampTerrace, hsrt16[HSRT16Pin.Relay15]);
             var stateMachine = _actuatorFactory.RegisterStateMachine(garden, Garden.StateMachine, InitializeStateMachine);
             
-            var button = _sensorFactory.RegisterButton(garden, Garden.Button, _pi2GpioService.GetInput(4).WithInvertedState());
+            var button = _sensorFactory.RegisterButton(garden, Garden.Button, _gpioService.GetInput(4).WithInvertedState());
 
             button.PressedShortTrigger.Attach(() => stateMachine.TrySetNextState());
             button.PressedLongTrigger.Attach(() => stateMachine.TryTurnOff());
@@ -73,10 +70,6 @@ namespace HA4IoT.Controller.Main.Cellar
                 .WithComponent(garden.GetLamp(Garden.LampParkingLot))
                 .WithOnAtNightRange()
                 .WithOffBetweenRange(TimeSpan.Parse("22:30:00"), TimeSpan.Parse("05:00:00"));
-
-            var ioBoardsInterruptMonitor = new InterruptMonitor(_pi2GpioService.GetInput(4), _logService);
-            ioBoardsInterruptMonitor.AddCallback(_ccToolsBoardService.PollInputBoardStates);
-            ioBoardsInterruptMonitor.Start();
 
             return Task.FromResult(0);
         }

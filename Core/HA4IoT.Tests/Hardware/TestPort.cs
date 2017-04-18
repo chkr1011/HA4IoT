@@ -3,13 +3,14 @@ using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Tests.Hardware
 {
-    public class TestPort
+    public class TestPort : IBinaryInput, IBinaryOutput
     {
         private readonly object _syncRoot = new object();
         private BinaryState _state = BinaryState.Low;
-        private bool _stateIsInverted;
 
         public event EventHandler<BinaryStateChangedEventArgs> StateChanged;
+
+        public bool IsStateInverted { get; set; }
 
         public BinaryState GetInternalState()
         {
@@ -45,15 +46,9 @@ namespace HA4IoT.Tests.Hardware
             }
         }
         
-        public TestPort WithInvertedState(bool value = true)
-        {
-            _stateIsInverted = value;
-            return this;
-        }
-
         private BinaryState CoerceState(BinaryState state)
         {
-            if (!_stateIsInverted)
+            if (!IsStateInverted)
             {
                 return state;
             }

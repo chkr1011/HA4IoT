@@ -53,8 +53,7 @@ namespace HA4IoT.Core
 
         public event EventHandler StartupCompleted;
         public event EventHandler StartupFailed;
-        public event EventHandler Shutdown;
-
+        
         private void Startup()
         {
             try
@@ -82,17 +81,12 @@ namespace HA4IoT.Core
 
                 _container.GetInstance<ISystemInformationService>().Set("Health/StartupDuration", stopwatch.Elapsed);
                 _container.GetInstance<ISystemInformationService>().Set("Health/StartupTimestamp", _container.GetInstance<IDateTimeService>().Now);
-
-                _container.GetInstance<ITimerService>().Run();
             }
             catch (Exception exception)
             {
                 _log?.Error(exception, "Failed to initialize.");
                 StartupFailed?.Invoke(this, EventArgs.Empty);
-            }
-            finally
-            {
-                Shutdown?.Invoke(this, EventArgs.Empty);
+
                 _deferral?.Complete();
             }
         }

@@ -7,30 +7,24 @@ namespace HA4IoT.Hardware.RaspberryPi
     public class GpioPort : IBinaryOutput, IBinaryInput
     {
         private readonly object _syncRoot = new object();
+        private readonly GpioPin _pin;
 
-        private bool _isStateInverted;
         private BinaryState _previousState;
 
         public GpioPort(GpioPin pin)
         {
-            Pin = pin ?? throw new ArgumentNullException(nameof(pin));
+            _pin = pin ?? throw new ArgumentNullException(nameof(pin));
         }
 
-        public GpioPin Pin { get; }
+        public bool IsStateInverted { get; set; }
 
         public event EventHandler<BinaryStateChangedEventArgs> StateChanged;
-
-        IBinaryInput IBinaryInput.WithInvertedState(bool value)
-        {
-            _isStateInverted = value;
-            return this;
-        }
 
         BinaryState IBinaryInput.Read()
         {
             lock (_syncRoot)
             {
-                var currentState = CoerceState(Pin.Read() == GpioPinValue.High ? BinaryState.High : BinaryState.Low);
+                var currentState = CoerceState(_pin.Read() == GpioPinValue.High ? BinaryState.High : BinaryState.Low);
                 if (currentState != _previousState)
                 {
                     var oldState = _previousState;
@@ -54,7 +48,7 @@ namespace HA4IoT.Hardware.RaspberryPi
                     return;
                 }
 
-                Pin.Write(state == BinaryState.High ? GpioPinValue.High : GpioPinValue.Low);
+                _pin.Write(state == BinaryState.High ? GpioPinValue.High : GpioPinValue.Low);
 
                 var oldState = _previousState;
                 _previousState = state;
@@ -66,19 +60,13 @@ namespace HA4IoT.Hardware.RaspberryPi
         {
             lock (_syncRoot)
             {
-                return CoerceState(Pin.Read() == GpioPinValue.High ? BinaryState.High : BinaryState.Low);
+                return CoerceState(_pin.Read() == GpioPinValue.High ? BinaryState.High : BinaryState.Low);
             }
-        }
-
-        IBinaryOutput IBinaryOutput.WithInvertedState(bool isInverted)
-        {
-            _isStateInverted = isInverted;
-            return this;
         }
 
         private BinaryState CoerceState(BinaryState state)
         {
-            if (!_isStateInverted)
+            if (!IsStateInverted)
             {
                 return state;
             }

@@ -14,48 +14,46 @@ namespace HA4IoT.Services.System
 {
     public sealed class DiscoveryServerService : ServiceBase, IDisposable
     {
-        private int DEFAULT_PORT = 19228;
+        private const int Port = 19228;
 
-        private readonly ISettingsService _settingsService;
         private readonly DatagramSocket _socket = new DatagramSocket();
-
+        private readonly ISettingsService _settingsService;
+        
         public DiscoveryServerService(ISettingsService settingsService)
         {
-            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-            
-            _settingsService = settingsService;
+            _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
 
-            _socket.MessageReceived += SendResponse;
+            _socket.MessageReceived += SendResponseAsync;
         }
 
         public override void Startup()
         {
-            _socket.BindServiceNameAsync(DEFAULT_PORT.ToString()).AsTask().Wait();
+            _socket.BindServiceNameAsync(Port.ToString()).GetAwaiter().GetResult();
         }
 
-        private void SendResponse(DatagramSocket sender, DatagramSocketMessageReceivedEventArgs args)
+        public void Dispose()
+        {
+            _socket?.Dispose();
+        }
+
+        private async void SendResponseAsync(DatagramSocket sender, DatagramSocketMessageReceivedEventArgs args)
         {
             var controllerSettings = _settingsService.GetSettings<ControllerSettings>();
 
             var response = new DiscoveryResponse(controllerSettings.Caption, controllerSettings.Description);
-            SendResponseAsync(args.RemoteAddress, response).Wait();
+            await SendResponseAsync(args.RemoteAddress, response);
         }
 
-        private async Task SendResponseAsync(HostName target, DiscoveryResponse response)
+        private static async Task SendResponseAsync(HostName target, DiscoveryResponse response)
         {
             var buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response));
 
             using (var socket = new DatagramSocket())
             {
-                await socket.ConnectAsync(target, DEFAULT_PORT.ToString());
+                await socket.ConnectAsync(target, Port.ToString());
                 await socket.OutputStream.WriteAsync(buffer.AsBuffer());
                 await socket.OutputStream.FlushAsync();
             }
-        }
-
-        public void Dispose()
-        {
-            _socket.Dispose();
         }
     }
 }
