@@ -4,16 +4,21 @@ using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Hardware.RaspberryPi
 {
-    public class GpioPort : IBinaryOutput, IBinaryInput
+    public sealed class GpioPort : IBinaryOutput, IBinaryInput, IDisposable
     {
         private readonly object _syncRoot = new object();
         private readonly GpioPin _pin;
 
-        private BinaryState _previousState;
+        private BinaryState _latestState;
 
         public GpioPort(GpioPin pin)
         {
             _pin = pin ?? throw new ArgumentNullException(nameof(pin));
+
+            if (pin.GetDriveMode() == GpioPinDriveMode.Input)
+            {
+                _pin.ValueChanged += HandleInterrupt;
+            }
         }
 
         public bool IsStateInverted { get; set; }
@@ -24,35 +29,7 @@ namespace HA4IoT.Hardware.RaspberryPi
         {
             lock (_syncRoot)
             {
-                var currentState = CoerceState(_pin.Read() == GpioPinValue.High ? BinaryState.High : BinaryState.Low);
-                if (currentState != _previousState)
-                {
-                    var oldState = _previousState;
-                    _previousState = currentState;
-
-                    StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(oldState, currentState));
-                }
-
-                return currentState;
-            }
-        }
-
-        public void Write(BinaryState state, WriteBinaryStateMode mode = WriteBinaryStateMode.Commit)
-        {
-            lock (_syncRoot)
-            {
-                state = CoerceState(state);
-
-                if (state == _previousState)
-                {
-                    return;
-                }
-
-                _pin.Write(state == BinaryState.High ? GpioPinValue.High : GpioPinValue.Low);
-
-                var oldState = _previousState;
-                _previousState = state;
-                StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(oldState, state));
+                return ReadInternal(_pin.Read() == GpioPinValue.High ? BinaryState.High : BinaryState.Low);
             }
         }
 
@@ -60,8 +37,50 @@ namespace HA4IoT.Hardware.RaspberryPi
         {
             lock (_syncRoot)
             {
-                return CoerceState(_pin.Read() == GpioPinValue.High ? BinaryState.High : BinaryState.Low);
+                return _latestState;
             }
+        }
+
+        public void Write(BinaryState state, WriteBinaryStateMode mode = WriteBinaryStateMode.Commit)
+        {
+            lock (_syncRoot)
+            {
+                if (state == _latestState)
+                {
+                    return;
+                }
+
+                var effectiveState = CoerceState(state);
+                _pin.Write(effectiveState == BinaryState.High ? GpioPinValue.High : GpioPinValue.Low);
+
+                var oldState = _latestState;
+                _latestState = state;
+                StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(oldState, state));
+            }
+        }
+
+        private void HandleInterrupt(GpioPin sender, GpioPinValueChangedEventArgs args)
+        {
+            lock (_syncRoot)
+            {
+                ReadInternal(args.Edge == GpioPinEdge.RisingEdge ? BinaryState.High : BinaryState.Low);
+            }
+        }
+
+        private BinaryState ReadInternal(BinaryState state)
+        {
+            var effectiveState = CoerceState(state);
+            if (_latestState == effectiveState)
+            {
+                return _latestState;
+            }
+            
+            var oldState = _latestState;
+            _latestState = effectiveState;
+
+            StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(oldState, effectiveState));
+
+            return _latestState;
         }
 
         private BinaryState CoerceState(BinaryState state)
@@ -77,6 +96,16 @@ namespace HA4IoT.Hardware.RaspberryPi
             }
 
             return BinaryState.High;
+        }
+
+        public void Dispose()
+        {
+            if (_pin != null && _pin.GetDriveMode() == GpioPinDriveMode.Input)
+            {
+                _pin.ValueChanged -= HandleInterrupt;
+            }
+
+            _pin?.Dispose();
         }
     }
 }

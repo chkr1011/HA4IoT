@@ -20,19 +20,19 @@ namespace HA4IoT.Hardware
         
         public void Write(BinaryState state, WriteBinaryStateMode mode)
         {
-            state = CoerceState(state);
+            var effectiveState = CoerceState(state);
 
             // TODO: Implement animations here.
             foreach (var output in _outputs)
             {
-                output.Write(state, WriteBinaryStateMode.NoCommit);
+                output.Write(effectiveState, WriteBinaryStateMode.NoCommit);
             }
 
             if (mode == WriteBinaryStateMode.Commit)
             {
                 foreach (var output in _outputs)
                 {
-                    output.Write(state);
+                    output.Write(effectiveState);
                 }
             }
 

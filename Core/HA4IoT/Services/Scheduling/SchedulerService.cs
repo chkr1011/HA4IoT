@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Logging;
@@ -10,7 +9,6 @@ using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Services.System;
 using Newtonsoft.Json.Linq;
-using Timeout = System.Threading.Timeout;
 
 namespace HA4IoT.Services.Scheduling
 {
@@ -19,7 +17,6 @@ namespace HA4IoT.Services.Scheduling
     {
         private readonly object _syncRoot = new object();
         private readonly List<Schedule> _schedules = new List<Schedule>();
-        private readonly Timer _timer;
         private readonly ITimerService _timerService;
         private readonly IDateTimeService _dateTimeService;
         private readonly ILogger _log;
@@ -31,12 +28,7 @@ namespace HA4IoT.Services.Scheduling
 
             _log = logService?.CreatePublisher(nameof(SchedulerService)) ?? throw new ArgumentNullException(nameof(logService));
 
-            _timer = new Timer(e => ExecuteSchedules(), null, -1, Timeout.Infinite);
-        }
-
-        public override void Startup()
-        {
-            _timer.Change(100, 0);
+            _timerService.Tick += (s, e) => ExecuteSchedules();
         }
 
         public IDelayedAction In(TimeSpan delay, Action action)
@@ -83,37 +75,31 @@ namespace HA4IoT.Services.Scheduling
 
         private void ExecuteSchedules()
         {
-            lock (_syncRoot)
-            {
-                var deletedSchedules = new List<Schedule>();
+            var now = _dateTimeService.Now;
 
-                var now = _dateTimeService.Now;
-                foreach (var schedule in _schedules)
+            lock (_syncRoot)
+            { 
+                for (var i = _schedules.Count - 1; i >= 0; i--)
                 {
+                    var schedule = _schedules[i];
+
                     if (schedule.Status == ScheduleStatus.Running || now < schedule.NextExecution)
                     {
                         continue;
                     }
 
+                    schedule.Status = ScheduleStatus.Running;
+                    Task.Run(() => TryExecuteSchedule(schedule));
+
                     if (schedule.IsOneTimeSchedule)
                     {
-                        deletedSchedules.Add(schedule);
+                        _schedules.RemoveAt(i);
                     }
-
-                    schedule.Status = ScheduleStatus.Running;
-                    Task.Run(() => ExecuteSchedule(schedule));
                 }
-
-                foreach (var deletedSchedule in deletedSchedules)
-                {
-                    _schedules.Remove(deletedSchedule);
-                }
-
-                _timer.Change(100, 0);
             }
         }
 
-        private async Task ExecuteSchedule(Schedule schedule)
+        private async Task TryExecuteSchedule(Schedule schedule)
         {
             var stopwatch = Stopwatch.StartNew();
             try

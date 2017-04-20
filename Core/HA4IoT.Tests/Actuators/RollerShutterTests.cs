@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Components.States;

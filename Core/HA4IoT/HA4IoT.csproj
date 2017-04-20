@@ -183,6 +183,7 @@
     <Compile Include="Net\WebSockets\WebSocketOpcode.cs" />
     <Compile Include="Net\WebSockets\WebSocketTextMessage.cs" />
     <Compile Include="Services\Areas\AreaExtensions.cs" />
+    <Compile Include="Services\Health\StatusLed.cs" />
     <Compile Include="Services\System\DelayedAction.cs" />
     <Compile Include="Triggers\ConditionalTrigger.cs" />
     <Compile Include="Triggers\IntervalTrigger.cs" />

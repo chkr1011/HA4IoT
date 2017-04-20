@@ -28,8 +28,8 @@ namespace HA4IoT.Hardware.CCTools
 
         public void Write(BinaryState state, WriteBinaryStateMode mode)
         {
-            state = CoerceState(state);
-            _board.SetPortState(_id, state);
+            var effectiveState = CoerceState(state);
+            _board.SetPortState(_id, effectiveState);
 
             if (mode == WriteBinaryStateMode.Commit)
             {

@@ -88,11 +88,11 @@ namespace HA4IoT.Hardware.CCTools
             return device;
         }
 
-        public void PollInputBoardStates()
+        public void PollInputs()
         {
-            var stopwatch = Stopwatch.StartNew();
-
             var inputDevices = _deviceService.GetDevices<CCToolsInputDeviceBase>();
+
+            var stopwatch = Stopwatch.StartNew();
 
             foreach (var device in inputDevices)
             {
@@ -103,10 +103,6 @@ namespace HA4IoT.Hardware.CCTools
             }
 
             stopwatch.Stop();
-            if (stopwatch.ElapsedMilliseconds > 100)
-            {
-                _log.Warning($"Fetching inputs took {stopwatch.ElapsedMilliseconds}ms.");
-            }
 
             foreach (var device in inputDevices)
             {
@@ -114,6 +110,11 @@ namespace HA4IoT.Hardware.CCTools
                 {
                     device.FetchState();
                 }
+            }
+
+            if (stopwatch.ElapsedMilliseconds > 100)
+            {
+                _log.Warning($"Fetching inputs took {stopwatch.ElapsedMilliseconds}ms.");
             }
         }
     }

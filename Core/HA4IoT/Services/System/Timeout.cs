@@ -5,7 +5,6 @@ namespace HA4IoT.Services.System
 {
     public class Timeout
     {
-        private TimeSpan _duration;
         private TimeSpan _timeLeft;
         
         public Timeout(ITimerService timerService)
@@ -20,23 +19,29 @@ namespace HA4IoT.Services.System
 
         public event EventHandler Elapsed; 
 
-        public TimeSpan Duration => _duration;
+        public TimeSpan Duration { get; private set; }
 
-        public bool IsEnabled { get; set; }
+        public bool IsEnabled { get; private set; }
 
         public bool IsElapsed => _timeLeft == TimeSpan.Zero;
 
         public void Start(TimeSpan duration)
         {
-            _duration = duration;
+            Duration = duration;
             _timeLeft = duration;
 
             IsEnabled = true;
         }
 
+        public void Stop()
+        {
+            IsEnabled = false;
+            _timeLeft = TimeSpan.Zero;
+        }
+
         public void Restart()
         {
-            Start(_duration);
+            Start(Duration);
         }
 
         private void Tick(TimeSpan elapsedTime)
@@ -51,13 +56,7 @@ namespace HA4IoT.Services.System
             {
                 Stop();
                 Elapsed?.Invoke(this, EventArgs.Empty);
-            }       
-        }
-
-        public void Stop()
-        {
-            IsEnabled = false;
-            _timeLeft = TimeSpan.Zero;
+            }      
         }
     }
 }

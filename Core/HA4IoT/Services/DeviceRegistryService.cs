@@ -12,16 +12,11 @@ namespace HA4IoT.Services
         private readonly Dictionary<string, IDevice> _devices = new Dictionary<string, IDevice>();
 
         public DeviceRegistryService(
-            ISystemEventsService systemEventsService,
             ISystemInformationService systemInformationService)
         {
-            if (systemEventsService == null) throw new ArgumentNullException(nameof(systemEventsService));
             if (systemInformationService == null) throw new ArgumentNullException(nameof(systemInformationService));
 
-            systemEventsService.StartupCompleted += (s, e) =>
-            {
-                systemInformationService.Set("Devices/Count", _devices.Count);
-            };
+            systemInformationService.Set("Devices/Count", () => _devices.Count);
         }
 
         public void RegisterDevice(IDevice device)

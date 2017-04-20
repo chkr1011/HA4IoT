@@ -24,25 +24,20 @@ namespace HA4IoT.Services.Areas
         public AreaRegistryService(
             IComponentRegistryService componentService,
             IAutomationRegistryService automationService,
-            ISystemEventsService systemEventsService,
             ISystemInformationService systemInformationService,
             IApiDispatcherService apiService,
             ISettingsService settingsService)
         {
-            if (systemEventsService == null) throw new ArgumentNullException(nameof(systemEventsService));
             if (systemInformationService == null) throw new ArgumentNullException(nameof(systemInformationService));
             if (apiService == null) throw new ArgumentNullException(nameof(apiService));
 
             _componentService = componentService ?? throw new ArgumentNullException(nameof(componentService));
             _automationService = automationService ?? throw new ArgumentNullException(nameof(automationService));
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
-
-            systemEventsService.StartupCompleted += (s, e) =>
-            {
-                systemInformationService.Set("Areas/Count", _areas.Count);
-            };
-
+            
             apiService.ConfigurationRequested += HandleApiConfigurationRequest;
+
+            systemInformationService.Set("Areas/Count", () => _areas.Count);
         }
 
         public IArea RegisterArea(string id)

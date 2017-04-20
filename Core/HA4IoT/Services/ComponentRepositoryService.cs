@@ -21,26 +21,25 @@ namespace HA4IoT.Services
     {
         private readonly Dictionary<string, IComponent> _components = new Dictionary<string, IComponent>();
 
-        private readonly ISystemInformationService _systemInformationService;
         private readonly IApiDispatcherService _apiService;
         private readonly ISettingsService _settingsService;
         private readonly ILogger _log;
 
         public ComponentRegistryService(
-            ISystemEventsService systemEventsService,
             ISystemInformationService systemInformationService,
             IApiDispatcherService apiService,
             ISettingsService settingsService,
             ILogService logService)
         {
-            if (systemEventsService == null) throw new ArgumentNullException(nameof(systemEventsService));
-            _log = logService.CreatePublisher(nameof(ComponentRegistryService));
+            if (systemInformationService == null) throw new ArgumentNullException(nameof(systemInformationService));
 
-            _systemInformationService = systemInformationService ?? throw new ArgumentNullException(nameof(systemInformationService));
+            _log = logService.CreatePublisher(nameof(ComponentRegistryService));
             _apiService = apiService ?? throw new ArgumentNullException(nameof(apiService));
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
 
             apiService.StatusRequested += HandleApiStatusRequest;
+
+            systemInformationService.Set("Components/Count", () => _components.Count);
         }
 
         public override void Startup()
@@ -58,8 +57,6 @@ namespace HA4IoT.Services
                         _log.Warning(exception, $"Error while initially reset of state for actuator '{actuator.Id}'.");
                     }
                 }
-
-                _systemInformationService.Set("Components/Count", _components.Count);
             }
         }
 

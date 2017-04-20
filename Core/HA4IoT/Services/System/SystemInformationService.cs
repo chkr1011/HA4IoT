@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
@@ -36,10 +38,21 @@ namespace HA4IoT.Services.System
         [ApiMethod]
         public void GetStatus(IApiContext apiContext)
         {
-            var json = new JObject();
+            Dictionary<string, Func<object>> values;
             lock (_values)
             {
-                foreach (var value in _values)
+                values = new Dictionary<string, Func<object>>(_values);
+            }
+
+            var json = new JObject();
+            foreach (var value in values.OrderBy(v => v.Key))
+            {
+                var effectiveValue = value.Value();
+                if (effectiveValue == null)
+                {
+                    json[value.Key] = JValue.CreateNull();
+                }
+                else
                 {
                     json[value.Key] = JToken.FromObject(value.Value());
                 }

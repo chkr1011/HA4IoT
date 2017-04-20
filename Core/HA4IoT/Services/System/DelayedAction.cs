@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Services.System;
 
@@ -29,7 +30,7 @@ namespace HA4IoT.Services.System
             
             try
             {
-                _action?.Invoke();
+                Task.Run(() => _action?.Invoke());
             }
             finally
             {

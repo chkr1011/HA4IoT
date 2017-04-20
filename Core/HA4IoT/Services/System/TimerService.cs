@@ -10,18 +10,19 @@ namespace HA4IoT.Services.System
 {
     public class TimerService : ServiceBase, ITimerService
     {
+        private readonly TimerTickEventArgs _timerTickEventArgs = new TimerTickEventArgs();
         private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
         private readonly ILogger _log;
         // ReSharper disable once NotAccessedField.Local
         private readonly Timer _timer;
-
+        
         private int _runningThreads;
 
         public TimerService(ILogService logService)
         {
             _log = logService?.CreatePublisher(nameof(TimerService)) ?? throw new ArgumentNullException(nameof(logService));
 
-            _timer = new Timer(TickInternal, null, 0, 10);
+            _timer = new Timer(TickInternal, null, 0, 50);
         }
 
         public event EventHandler<TimerTickEventArgs> Tick;
@@ -36,14 +37,19 @@ namespace HA4IoT.Services.System
                 }
                 
                 _stopwatch.Stop();
-                var elapsedTime = _stopwatch.Elapsed;
+                _timerTickEventArgs.ElapsedTime = _stopwatch.Elapsed;
                 _stopwatch.Restart();
 
-                Tick?.Invoke(this, new TimerTickEventArgs(elapsedTime));
+                if (_timerTickEventArgs.ElapsedTime.TotalMilliseconds > 1000)
+                {
+                    _log.Warning($"Tick took {_timerTickEventArgs.ElapsedTime.TotalMilliseconds}ms.");
+                }
+
+                Tick?.Invoke(this, _timerTickEventArgs);
             }
             catch (Exception exception)
             {
-                _log.Error(exception, "Timer tick has catched an unhandled exception.");
+                _log.Error(exception, "Tick has catched an unhandled exception.");
             }
             finally
             {

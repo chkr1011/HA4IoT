@@ -42,12 +42,10 @@ namespace HA4IoT.Controller.Main.Main
         public CatLitterBoxTwitterSender(ITimerService timerService, ITwitterClientService twitterClientService, ILogService logService)
         {
             if (timerService == null) throw new ArgumentNullException(nameof(timerService));
-            if (twitterClientService == null) throw new ArgumentNullException(nameof(twitterClientService));
-            if (logService == null) throw new ArgumentNullException(nameof(logService));
 
-            _twitterClientService = twitterClientService;
+            _twitterClientService = twitterClientService ?? throw new ArgumentNullException(nameof(twitterClientService));
 
-            _log = logService.CreatePublisher(nameof(logService));
+            _log = logService?.CreatePublisher(nameof(logService)) ?? throw new ArgumentNullException(nameof(logService));
 
             _timeout = new Timeout(timerService);
             _timeout.Elapsed += (s, e) =>

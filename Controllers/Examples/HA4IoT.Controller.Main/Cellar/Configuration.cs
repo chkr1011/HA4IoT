@@ -50,8 +50,8 @@ namespace HA4IoT.Controller.Main.Cellar
 
             var garden = _areaService.RegisterArea("Garden");
 
-            var parkingLotLamp = new LogicalBinaryOutput(hsrt16[HSRT16Pin.Relay6], hsrt16[HSRT16Pin.Relay7], hsrt16[HSRT16Pin.Relay8]);
-            _actuatorFactory.RegisterLamp(garden, Garden.LampParkingLot, parkingLotLamp);
+            var parkingLotOutput = new LogicalBinaryOutput(hsrt16[HSRT16Pin.Relay6], hsrt16[HSRT16Pin.Relay7], hsrt16[HSRT16Pin.Relay8]);
+            _actuatorFactory.RegisterLamp(garden, Garden.LampParkingLot, parkingLotOutput);
             // Relay 9 is free.
             _actuatorFactory.RegisterSocket(garden, Garden.SocketPavillion, hsrt16[HSRT16Pin.Relay10]);
             _actuatorFactory.RegisterLamp(garden, Garden.LampRearArea, hsrt16[HSRT16Pin.Relay11]);
