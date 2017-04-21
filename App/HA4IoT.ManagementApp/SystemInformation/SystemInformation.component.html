@@ -1,0 +1,16 @@
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Key</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+
+        <tr ng-repeat="value in siCtrl.values | orderBy:'key'">
+            <td>{{value.key}}</td>
+            <td>{{value.value}}</td>
+        </tr>
+    </table>
+
+</div>

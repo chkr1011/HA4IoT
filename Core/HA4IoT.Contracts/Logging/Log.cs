@@ -8,9 +8,9 @@ namespace HA4IoT.Contracts.Logging
 
         public static ILogger Default { get; set; }
 
-        public static void ForwardPublishedLogEntry(LogEntry logEntry)
+        public static void ForwardPublishedLogEntry(LogEntryPublishedEventArgs eventArgs)
         {
-            LogEntryPublished?.Invoke(null, new LogEntryPublishedEventArgs(logEntry));
+            LogEntryPublished?.Invoke(null, eventArgs);
         }
     }
 }

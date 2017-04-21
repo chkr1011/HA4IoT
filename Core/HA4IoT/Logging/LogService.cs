@@ -16,8 +16,10 @@ namespace HA4IoT.Logging
         private const int LogHistorySize = 1000;
         private const int LogErrorHistorySize = 250;
         private const int LogWarningHistorySize = 250;
-        
+
         private readonly Guid _sessionId = Guid.NewGuid();
+
+        private readonly object _syncRoot = new object();
         private readonly Queue<LogEntry> _logEntries = new Queue<LogEntry>();
         private readonly Queue<LogEntry> _errorLogEntries = new Queue<LogEntry>();
         private readonly Queue<LogEntry> _warningLogEntries = new Queue<LogEntry>();
@@ -26,11 +28,14 @@ namespace HA4IoT.Logging
 
         private long _id;
 
-        public LogService(IDateTimeService dateTimeService)
+        public LogService(IDateTimeService dateTimeService, ISystemInformationService systemInformationService)
         {
             _dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
 
             Log.Default = CreatePublisher(null);
+
+            systemInformationService.Set("Log/Errors/Count", () => _errorLogEntries.Count);
+            systemInformationService.Set("Log/Warnings/Count", () => _warningLogEntries.Count);
         }
 
         public event EventHandler<LogEntryPublishedEventArgs> LogEntryPublished;
@@ -101,18 +106,36 @@ namespace HA4IoT.Logging
         }
 
         [ApiMethod]
+        public void ResetWarningLogEntries(IApiContext apiContext)
+        {
+            lock (_syncRoot)
+            {
+                _warningLogEntries.Clear();
+            }
+        }
+
+        [ApiMethod]
         public void GetWarningLogEntries(IApiContext apiContext)
         {
-            lock (_warningLogEntries)
+            lock (_syncRoot)
             {
                 CreateGetLogEntriesResponse(_warningLogEntries, apiContext);
             }
         }
 
         [ApiMethod]
+        public void ResetErrorLogEntries(IApiContext apiContext)
+        {
+            lock (_syncRoot)
+            {
+                _errorLogEntries.Clear();
+            }
+        }
+
+        [ApiMethod]
         public void GetErrorLogEntries(IApiContext apiContext)
         {
-            lock (_errorLogEntries)
+            lock (_syncRoot)
             {
                 CreateGetLogEntriesResponse(_errorLogEntries, apiContext);
             }
@@ -134,7 +157,7 @@ namespace HA4IoT.Logging
             }
 
             List<LogEntry> logEntries;
-            lock (_logEntries)
+            lock (_syncRoot)
             {
                 if (request.SessionId != _sessionId)
                 {
@@ -158,31 +181,26 @@ namespace HA4IoT.Logging
         private void Add(LogEntrySeverity severity, string source, string message, Exception exception)
         {
             LogEntry logEntry;
-            lock (_logEntries)
+            lock (_syncRoot)
             {
                 _id += 1L;
                 logEntry = new LogEntry(_id, _dateTimeService.Now, Environment.CurrentManagedThreadId, severity, source, message, exception?.ToString());
 
                 EnqueueLogEntry(logEntry, _logEntries, LogHistorySize);
-            }
 
-            if (severity == LogEntrySeverity.Warning)
-            {
-                lock (_warningLogEntries)
+                if (severity == LogEntrySeverity.Warning)
                 {
                     EnqueueLogEntry(logEntry, _warningLogEntries, LogWarningHistorySize);
                 }
-            }
-            else if (severity == LogEntrySeverity.Error)
-            {
-                lock (_errorLogEntries)
+                else if (severity == LogEntrySeverity.Error)
                 {
                     EnqueueLogEntry(logEntry, _errorLogEntries, LogErrorHistorySize);
                 }
             }
 
-            LogEntryPublished?.Invoke(this, new LogEntryPublishedEventArgs(logEntry));
-            Log.ForwardPublishedLogEntry(logEntry);
+            var eventArgs = new LogEntryPublishedEventArgs(logEntry);
+            LogEntryPublished?.Invoke(this, eventArgs);
+            Log.ForwardPublishedLogEntry(eventArgs);
 
             if (!Debugger.IsAttached)
             {

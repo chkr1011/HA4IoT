@@ -8,7 +8,7 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    
+
     <link rel="icon" href="favicon.ico" type="image/vnd.microsoft.icon">
 
     <title>Management Console - HA4IoT</title>
@@ -29,24 +29,25 @@
     <script type="text/javascript" src="Automations/AutomationsOverview.component.js"></script>
     <script type="text/javascript" src="Backup/Backup.component.js"></script>
     <script type="text/javascript" src="Log/Log.component.js"></script>
+    <script type="text/javascript" src="SystemInformation/SystemInformation.component.js"></script>
 
     <script type="text/javascript" src="Settings/Settings.component.js"></script>
     <script type="text/javascript" src="Settings/ControllerSettings.component.js"></script>
-    <script type="text/javascript" src="Settings/OpenWeatherMapSettings.component.js"></script>
+    <script type="text/javascript" src="Settings/OpenWeatherMapServiceSettings.component.js"></script>
     <script type="text/javascript" src="Settings/TwitterClientSettings.component.js"></script>
     <script type="text/javascript" src="Settings/SlaveServiceSettings.component.js"></script>
     <script type="text/javascript" src="Settings/TelegramBotSettings.component.js"></script>
     <script type="text/javascript" src="Settings/CloudConnectorServiceSettings.component.js"></script>
     <script type="text/javascript" src="Settings/AzureCloudServiceSettings.component.js"></script>
-    
+
     <link href="Content/font-awesome.min.css" rel="stylesheet">
     <link href="Content/bootstrap.min.css" rel="stylesheet">
     <link href="Content/Style.css" rel="stylesheet">
 </head>
 
 <body ng-app="app">
-<div ng-include="'Views/ModalTemplate.html'"></div>
-<main-page></main-page>
+    <div ng-include="'Views/ModalTemplate.html'"></div>
+    <main-page></main-page>
 </body>
 
 </html>

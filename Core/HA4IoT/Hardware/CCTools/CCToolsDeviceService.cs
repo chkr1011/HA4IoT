@@ -11,6 +11,7 @@ namespace HA4IoT.Hardware.CCTools
 {
     public class CCToolsDeviceService : ServiceBase
     {
+        private readonly object _syncRoot = new object();
         private readonly II2CBusService _i2CBusService;
         private readonly IDeviceMessageBrokerService _deviceMessageBrokerService;
         private readonly IDeviceRegistryService _deviceService;
@@ -44,14 +45,6 @@ namespace HA4IoT.Hardware.CCTools
             return device;
         }
 
-        public HSPE8OutputOnly RegisterHSPE8OutputOnly(string id, I2CSlaveAddress i2CAddress)
-        {
-            var device = new HSPE8OutputOnly(id, i2CAddress, _i2CBusService, _deviceMessageBrokerService, _log);
-            _deviceService.RegisterDevice(device);
-
-            return device;
-        }
-
         public HSPE8InputOnly RegisterHSPE8InputOnly(string id, I2CSlaveAddress i2CAddress)
         {
             var device = new HSPE8InputOnly(id, i2CAddress, _i2CBusService, _deviceMessageBrokerService, _log)
@@ -59,6 +52,14 @@ namespace HA4IoT.Hardware.CCTools
                 AutomaticallyFetchState = true
             };
 
+            _deviceService.RegisterDevice(device);
+
+            return device;
+        }
+
+        public HSPE8OutputOnly RegisterHSPE8OutputOnly(string id, I2CSlaveAddress i2CAddress)
+        {
+            var device = new HSPE8OutputOnly(id, i2CAddress, _i2CBusService, _deviceMessageBrokerService, _log);
             _deviceService.RegisterDevice(device);
 
             return device;
@@ -91,24 +92,26 @@ namespace HA4IoT.Hardware.CCTools
         public void PollInputs()
         {
             var inputDevices = _deviceService.GetDevices<CCToolsInputDeviceBase>();
-
             var stopwatch = Stopwatch.StartNew();
 
-            foreach (var device in inputDevices)
+            lock (_syncRoot)
             {
-                if (device.AutomaticallyFetchState)
+                foreach (var device in inputDevices)
                 {
-                    device.PeekState();
+                    if (device.AutomaticallyFetchState)
+                    {
+                        device.PeekState();
+                    }
                 }
-            }
 
-            stopwatch.Stop();
+                stopwatch.Stop();
 
-            foreach (var device in inputDevices)
-            {
-                if (device.AutomaticallyFetchState)
+                foreach (var device in inputDevices)
                 {
-                    device.FetchState();
+                    if (device.AutomaticallyFetchState)
+                    {
+                        device.FetchState();
+                    }
                 }
             }
 

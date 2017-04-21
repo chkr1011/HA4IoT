@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Services;
@@ -45,7 +44,7 @@ namespace HA4IoT.Services.System
             }
 
             var json = new JObject();
-            foreach (var value in values.OrderBy(v => v.Key))
+            foreach (var value in values)
             {
                 var effectiveValue = value.Value();
                 if (effectiveValue == null)

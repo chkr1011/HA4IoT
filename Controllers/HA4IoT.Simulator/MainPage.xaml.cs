@@ -20,8 +20,9 @@ namespace HA4IoT.Simulator
 
             Log.LogEntryPublished += (s, e) =>
             {
-                string message =
+                var message =
                     $"[{e.LogEntry.Id}] [{e.LogEntry.Timestamp}] [{e.LogEntry.Source}] [{e.LogEntry.ThreadId}] [{e.LogEntry.Severity}]: {e.LogEntry.Message}";
+
                 if (!string.IsNullOrEmpty(e.LogEntry.Exception))
                 {
                     message += Environment.NewLine;
@@ -44,7 +45,7 @@ namespace HA4IoT.Simulator
                 HttpServerPort = 1025
             };
 
-            var controller = new Core.Controller(options);
+            var controller = new Controller(options);
 
             // The app is only available from other machines. https://msdn.microsoft.com/en-us/library/windows/apps/Hh780593.aspx
             StoragePathTextBox.Text = StoragePath.StorageRoot;
@@ -60,9 +61,7 @@ namespace HA4IoT.Simulator
 
             public ContainerConfigurator(MainPage mainPage)
             {
-                if (mainPage == null) throw new ArgumentNullException(nameof(mainPage));
-
-                _mainPage = mainPage;
+                _mainPage = mainPage ?? throw new ArgumentNullException(nameof(mainPage));
             }
 
             public void ConfigureContainer(IContainer containerService)

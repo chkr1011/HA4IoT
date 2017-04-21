@@ -2,14 +2,12 @@
 using System.Collections.Concurrent;
 using System.Net.Http;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.PersonalAgent;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.ExternalServices.TelegramBot;
 using HA4IoT.Contracts.Services.Settings;
-using HA4IoT.Logging;
 using Newtonsoft.Json.Linq;
 using HttpClient = System.Net.Http.HttpClient;
 
@@ -28,9 +26,8 @@ namespace HA4IoT.ExternalServices.TelegramBot
         public TelegramBotService(ISettingsService settingsService, IPersonalAgentService personalAgentService, ILogService logService)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-            if (personalAgentService == null) throw new ArgumentNullException(nameof(personalAgentService));
 
-            _personalAgentService = personalAgentService;
+            _personalAgentService = personalAgentService ?? throw new ArgumentNullException(nameof(personalAgentService));
 
             _log = logService.CreatePublisher(nameof(TelegramBotService));
 
@@ -62,17 +59,8 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
         public override void Startup()
         {
-            Task.Factory.StartNew(
-                async () => await ProcessPendingMessagesAsync(),
-                CancellationToken.None,
-                TaskCreationOptions.LongRunning,
-                TaskScheduler.Default);
-
-            Task.Factory.StartNew(
-                async () => await WaitForUpdates(),
-                CancellationToken.None,
-                TaskCreationOptions.LongRunning,
-                TaskScheduler.Default);
+            Task.Run(ProcessPendingMessagesAsync);
+            Task.Factory.StartNew(WaitForUpdates);
         }
 
         public void EnqueueMessage(TelegramOutboundMessage message)

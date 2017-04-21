@@ -17,7 +17,7 @@ namespace HA4IoT.Tests.Hardware.CCTools
         public void CCTools_Write_HSRel5_State()
         {
             var i2CBus = new TestI2CBusService();
-            var deviceMessageBrokerService = new DeviceMessageBrokerService(new LogService(new DateTimeService()));
+            var deviceMessageBrokerService = new DeviceMessageBrokerService(new LogService(new DateTimeService(), new SystemInformationService()));
             var hsrel5 = new HSREL5("Test", new I2CSlaveAddress(66), i2CBus, deviceMessageBrokerService, new TestLogger());
             hsrel5[HSREL5Pin.Relay0].Write(BinaryState.High, WriteBinaryStateMode.Commit);
 

@@ -7,6 +7,7 @@
 
         ctrl.Model = {
             IsEnabled: false,
+            ServerAddress: "",
             ControllerId: "",
             ApiKey: ""
         }
@@ -34,5 +35,4 @@
         controllerAs: "ccsCtrl",
         controller: ["controllerProxyService", "modalService", createController]
     });
-    
 })();
