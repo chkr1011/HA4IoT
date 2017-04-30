@@ -3,9 +3,7 @@
 OneWire _oneWire = OneWire(14);
 DallasTemperature _dallasSensors = DallasTemperature(&_oneWire);
 
-void setupOneWireSensors() {
-  _dallasSensors.begin();
-}
+void setupOneWireSensors() { _dallasSensors.begin(); }
 
 void loopOneWireSensors() {
   return;

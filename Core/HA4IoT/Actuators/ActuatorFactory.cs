@@ -5,6 +5,7 @@ using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Adapters;
+using HA4IoT.Adapters.PortBased;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Adapters;
@@ -62,7 +63,7 @@ namespace HA4IoT.Actuators
             if (area == null) throw new ArgumentNullException(nameof(area));
             if (output == null) throw new ArgumentNullException(nameof(output));
 
-            var socket = new Socket($"{area.Id}.{id}", new BinaryOutputAdapter(output));
+            var socket = new Socket($"{area.Id}.{id}", new PortBasedBinaryOutputAdapter(output));
             area.RegisterComponent(socket);
 
             return socket;
@@ -84,7 +85,7 @@ namespace HA4IoT.Actuators
             if (area == null) throw new ArgumentNullException(nameof(area));
             if (output == null) throw new ArgumentNullException(nameof(output));
 
-            return RegisterLamp(area, id, new BinaryOutputAdapter(output));
+            return RegisterLamp(area, id, new PortBasedBinaryOutputAdapter(output));
         }
 
         public IFan RegisterFan(IArea area, Enum id, IFanAdapter adapter)

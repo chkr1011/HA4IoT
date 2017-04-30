@@ -1,5 +1,6 @@
 ﻿using System;
 using HA4IoT.Adapters;
+using HA4IoT.Adapters.PortBased;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
@@ -66,7 +67,7 @@ namespace HA4IoT.Sensors
 
             var button = new Button(
                 $"{area.Id}.{id}",
-                new BinaryInputButtonAdapter(input),
+                new PortBasedButtonAdapter(input),
                 _timerService,
                 _settingsService);
 
@@ -87,7 +88,7 @@ namespace HA4IoT.Sensors
 
             var upButton = new Button(
                 $"{area.Id}.{upId}",
-                new BinaryInputButtonAdapter(upInput),
+                new PortBasedButtonAdapter(upInput),
                 _timerService,
                 _settingsService);
 
@@ -95,7 +96,7 @@ namespace HA4IoT.Sensors
 
             var downButton = new Button(
                 $"{area.Id}.{downId}",
-                new BinaryInputButtonAdapter(downInput),
+                new PortBasedButtonAdapter(downInput),
                 _timerService,
                 _settingsService);
 

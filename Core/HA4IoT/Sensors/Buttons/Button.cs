@@ -20,7 +20,6 @@ namespace HA4IoT.Sensors.Buttons
         private readonly object _syncRoot = new object();
 
         private readonly CommandExecutor _commandExecutor = new CommandExecutor();
-        private readonly ISettingsService _settingsService;
         private readonly Timeout _pressedLongTimeout;
         
         private ButtonStateValue _state = ButtonStateValue.Released;
@@ -29,20 +28,20 @@ namespace HA4IoT.Sensors.Buttons
             : base(id)
         {
             if (adapter == null) throw new ArgumentNullException(nameof(adapter));
-
-            _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
+            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
+            
+            settingsService.CreateSettingsMonitor<ButtonSettings>(this, s => Settings = s.NewSettings);
 
             _pressedLongTimeout = new Timeout(timerService);
             _pressedLongTimeout.Elapsed += (s, e) => ((Trigger)PressedLongTrigger).Execute();
 
-            adapter.Pressed += (s, e) => ProcessChangedInputState(ButtonStateValue.Pressed);
-            adapter.Released += (s, e) => ProcessChangedInputState(ButtonStateValue.Released);
+            adapter.StateChanged += UpdateState;
 
             _commandExecutor.Register<ResetCommand>();
             _commandExecutor.Register<PressCommand>(c => PressInternal(c.Duration));
         }
 
-        public ButtonSettings Settings => _settingsService.GetSettings<ButtonSettings>(this);
+        public ButtonSettings Settings { get; private set; }
 
         public ITrigger PressedShortTrigger { get; } = new Trigger();
         public ITrigger PressedLongTrigger { get; } = new Trigger();
@@ -81,23 +80,28 @@ namespace HA4IoT.Sensors.Buttons
             }
         }
         
-        private void ProcessChangedInputState(ButtonStateValue state)
+        private void UpdateState(object sender, ButtonAdapterStateChangedEventArgs e)
         {
-            if (!Settings.IsEnabled)
+            var state = e.State == AdapterButtonState.Pressed ? ButtonStateValue.Pressed : ButtonStateValue.Released;
+            
+            lock (_syncRoot)
             {
-                return;
+                if (!Settings.IsEnabled)
+                {
+                    return;
+                }
+
+                if (_state == state)
+                {
+                    return;
+                }
+
+                var oldState = GetState();
+                _state = state;
+
+                OnStateChanged(oldState);
+                InvokeTriggers(state);
             }
-
-            if (_state == state)
-            {
-                return;
-            }
-
-            var oldState = GetState();
-            _state = state;
-
-            OnStateChanged(oldState);
-            InvokeTriggers(state);
         }
 
         private void InvokeTriggers(ButtonStateValue state)
@@ -118,6 +122,7 @@ namespace HA4IoT.Sensors.Buttons
                 if (!_pressedLongTimeout.IsElapsed)
                 {
                     _pressedLongTimeout.Stop();
+
                     ((Trigger)PressedShortTrigger).Execute();
                 }
             }

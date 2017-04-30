@@ -4,6 +4,7 @@ using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Adapters;
+using HA4IoT.Adapters.PortBased;
 using HA4IoT.Automations;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Areas;
@@ -115,7 +116,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingDoor, hspe8[HSPE8Pin.GPIO0].WithInvertedState());
             _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingPassageInner, hspe8[HSPE8Pin.GPIO1].WithInvertedState());
             _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingPassageOuter, hspe8[HSPE8Pin.GPIO2].WithInvertedState());
-            _actuatorFactory.RegisterLamp(area, Kitchen.LightKitchenette, _outpostDeviceService.GetRgbAdapter("RGBSK1"));
+            _actuatorFactory.RegisterLamp(area, Kitchen.LightKitchenette, _outpostDeviceService.GetRgbStripAdapter("RGBSK1"));
 
             _actuatorFactory.RegisterSocket(area, Kitchen.SocketKitchenette, hsrel5[HSREL5Pin.Relay1]); // 0?
             _actuatorFactory.RegisterSocket(area, Kitchen.SocketWall, hsrel5[HSREL5Pin.Relay2]);

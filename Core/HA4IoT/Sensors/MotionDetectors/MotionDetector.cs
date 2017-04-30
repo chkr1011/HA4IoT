@@ -16,7 +16,6 @@ namespace HA4IoT.Sensors.MotionDetectors
 {
     public class MotionDetector : ComponentBase, IMotionDetector
     {
-        private readonly IMotionDetectorAdapter _adapter;
         private readonly object _syncRoot = new object();
 
         private readonly CommandExecutor _commandExecutor = new CommandExecutor();
@@ -30,12 +29,12 @@ namespace HA4IoT.Sensors.MotionDetectors
         public MotionDetector(string id, IMotionDetectorAdapter adapter, ISchedulerService schedulerService, ISettingsService settingsService)
             : base(id)
         {
-            _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
+            if (adapter == null) throw new ArgumentNullException(nameof(adapter));
+
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
             _schedulerService = schedulerService ?? throw new ArgumentNullException(nameof(schedulerService));
 
-            adapter.MotionDetectionBegin += (s, e) => UpdateState(MotionDetectionStateValue.MotionDetected);
-            adapter.MotionDetectionEnd += (s, e) => UpdateState(MotionDetectionStateValue.Idle);
+            adapter.StateChanged += UpdateState;
 
             settingsService.CreateSettingsMonitor<MotionDetectorSettings>(this, s =>
             {
@@ -47,7 +46,7 @@ namespace HA4IoT.Sensors.MotionDetectors
                 }
             });
 
-            _commandExecutor.Register<ResetCommand>(c => _adapter.Refresh());
+            _commandExecutor.Register<ResetCommand>(c => adapter.Refresh());
         }
 
         public MotionDetectorSettings Settings { get; private set; }
@@ -72,32 +71,42 @@ namespace HA4IoT.Sensors.MotionDetectors
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
 
-            _commandExecutor.Execute(command);
+            lock (_syncRoot)
+            {
+                _commandExecutor.Execute(command);
+            }
         }
 
-        private void UpdateState(MotionDetectionStateValue state)
+        private void UpdateState(object sender, MotionDetectorAdapterStateChangedEventArgs e)
         {
-            if (state == _motionDetectionState)
-            {
-                return;
-            }
+            var state = e.State == AdapterMotionDetectionState.MotionDetected
+                ? MotionDetectionStateValue.MotionDetected
+                : MotionDetectionStateValue.Idle;
 
-            if (state == MotionDetectionStateValue.MotionDetected && !Settings.IsEnabled)
+            lock (_syncRoot)
             {
-                return;
-            }
+                if (state == _motionDetectionState)
+                {
+                    return;
+                }
 
-            var oldState = GetState();
-            _motionDetectionState = state;
-            OnStateChanged(oldState);
+                if (state == MotionDetectionStateValue.MotionDetected && !Settings.IsEnabled)
+                {
+                    return;
+                }
 
-            if (state == MotionDetectionStateValue.MotionDetected)
-            {
-                ((Trigger)MotionDetectedTrigger).Execute();
-            }
-            else if (state == MotionDetectionStateValue.Idle)
-            {
-                ((Trigger)MotionDetectionCompletedTrigger).Execute();
+                var oldState = GetState();
+                _motionDetectionState = state;
+                OnStateChanged(oldState);
+
+                if (state == MotionDetectionStateValue.MotionDetected)
+                {
+                    ((Trigger) MotionDetectedTrigger).Execute();
+                }
+                else if (state == MotionDetectionStateValue.Idle)
+                {
+                    ((Trigger) MotionDetectionCompletedTrigger).Execute();
+                }
             }
         }
 

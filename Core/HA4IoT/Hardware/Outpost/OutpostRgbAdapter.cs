@@ -9,12 +9,12 @@ namespace HA4IoT.Hardware.Outpost
 {
     public class OutpostRgbAdapter : IBinaryOutputAdapter, ILampAdapter
     {
-        private readonly string _deviceName;
+        private readonly string _topic;
         private readonly IDeviceMessageBrokerService _deviceMessageBroker;
 
-        public OutpostRgbAdapter(string deviceName, IDeviceMessageBrokerService deviceMessageBroker)
+        public OutpostRgbAdapter(string topic, IDeviceMessageBrokerService deviceMessageBroker)
         {
-            _deviceName = deviceName ?? throw new ArgumentNullException(nameof(deviceName));
+            _topic = topic ?? throw new ArgumentNullException(nameof(topic));
             _deviceMessageBroker = deviceMessageBroker ?? throw new ArgumentNullException(nameof(deviceMessageBroker));
         }
 
@@ -51,7 +51,7 @@ namespace HA4IoT.Hardware.Outpost
                 b = color.Blue;
             }
 
-            _deviceMessageBroker.Publish($"HA4IoT/Device/{_deviceName}/Command/RGB/Set", Encoding.UTF8.GetBytes(r + "," + g + "," + b), MqttQosLevel.AtMostOnce);
+            _deviceMessageBroker.Publish(_topic, Encoding.UTF8.GetBytes(r + "," + g + "," + b), MqttQosLevel.AtMostOnce);
         }
     }
 }

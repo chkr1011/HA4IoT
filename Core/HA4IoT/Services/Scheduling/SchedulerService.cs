@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
@@ -28,7 +29,7 @@ namespace HA4IoT.Services.Scheduling
 
             _log = logService?.CreatePublisher(nameof(SchedulerService)) ?? throw new ArgumentNullException(nameof(logService));
 
-            _timerService.Tick += (s, e) => ExecuteSchedules();
+            _timerService.Tick += OnTick;
         }
 
         public IDelayedAction In(TimeSpan delay, Action action)
@@ -73,7 +74,7 @@ namespace HA4IoT.Services.Scheduling
             }
         }
 
-        private void ExecuteSchedules()
+        private void OnTick(object sender, TimerTickEventArgs e)
         {
             var now = _dateTimeService.Now;
 
@@ -107,6 +108,7 @@ namespace HA4IoT.Services.Scheduling
                 _log.Verbose($"Executing schedule '{schedule.Name}'.");
 
                 await schedule.Action();
+
                 schedule.LastErrorMessage = null;
                 schedule.Status = ScheduleStatus.Idle;
             }

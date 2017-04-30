@@ -81,7 +81,11 @@
     <Compile Include="Actuators\IStateMachine.cs" />
     <Compile Include="Actuators\IStateMachineState.cs" />
     <Compile Include="Actuators\StateChangedEventArgs.cs" />
+    <Compile Include="Adapters\AdapterButtonState.cs" />
     <Compile Include="Adapters\AdapterColor.cs" />
+    <Compile Include="Adapters\AdapterMotionDetectionState.cs" />
+    <Compile Include="Adapters\MotionDetectorAdapterStateChangedEventArgs.cs" />
+    <Compile Include="Adapters\ButtonAdapterStateChangedEventArgs.cs" />
     <Compile Include="Adapters\IBinaryOutputAdapter.cs" />
     <Compile Include="Adapters\IButtonAdapter.cs" />
     <Compile Include="Adapters\IFanAdapter.cs" />
@@ -89,7 +93,6 @@
     <Compile Include="Adapters\IMotionDetectorAdapter.cs" />
     <Compile Include="Adapters\INumericSensorAdapter.cs" />
     <Compile Include="Adapters\IRollerShutterAdapter.cs" />
-    <Compile Include="Adapters\IStateMachineStateAdapter.cs" />
     <Compile Include="Adapters\IWindowAdapter.cs" />
     <Compile Include="Adapters\NumericSensorAdapterValueChangedEventArgs.cs" />
     <Compile Include="Adapters\AdapterPowerState.cs" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Triggers;
 
@@ -25,6 +26,14 @@ namespace HA4IoT.Triggers
             if (action == null) throw new ArgumentNullException(nameof(action));
 
             _actions.Add(action.Execute);
+        }
+
+        public Task ExecuteAsync()
+        {
+            return Task.Run(() =>
+            {
+                Execute();
+            });
         }
 
         public void Execute()

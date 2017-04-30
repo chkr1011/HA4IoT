@@ -50,7 +50,7 @@ namespace HA4IoT.Simulator
             area.RegisterComponent(new Lamp("Lamp4", await _mainPage.CreateUIBinaryOutputAdapter("Lamp 4")));
             area.RegisterComponent(new Lamp("Lamp5", await _mainPage.CreateUIBinaryOutputAdapter("Lamp 5")));
 
-            area.RegisterComponent(new Lamp("RGBS1", outpostDeviceService.GetRgbAdapter("RGBS1")));
+            area.RegisterComponent(new Lamp("RGBS1", outpostDeviceService.GetRgbStripAdapter("RGBS1")));
 
             area.RegisterComponent(new Socket("Socket1", await _mainPage.CreateUIBinaryOutputAdapter("Socket 1")));
             area.RegisterComponent(new Socket("Socket2", await _mainPage.CreateUIBinaryOutputAdapter("Socket 2")));

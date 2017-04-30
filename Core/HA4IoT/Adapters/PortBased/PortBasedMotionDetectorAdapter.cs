@@ -2,7 +2,7 @@
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Hardware;
 
-namespace HA4IoT.Adapters
+namespace HA4IoT.Adapters.PortBased
 {
     public class PortBasedMotionDetectorAdapter : IMotionDetectorAdapter
     {
@@ -13,10 +13,8 @@ namespace HA4IoT.Adapters
             input.StateChanged += DispatchEvents;
         }
 
-        public event EventHandler MotionDetectionBegin;
-
-        public event EventHandler MotionDetectionEnd;
-
+        public event EventHandler<MotionDetectorAdapterStateChangedEventArgs> StateChanged;
+        
         public void Refresh()
         {
         }
@@ -27,11 +25,11 @@ namespace HA4IoT.Adapters
             // The signal is set to false if motion is detected.
             if (eventArgs.NewState == BinaryState.Low)
             {
-                MotionDetectionBegin?.Invoke(this, EventArgs.Empty);
+                StateChanged?.Invoke(this, new MotionDetectorAdapterStateChangedEventArgs(AdapterMotionDetectionState.MotionDetected));
             }
             else
             {
-                MotionDetectionEnd?.Invoke(this, EventArgs.Empty);
+                StateChanged?.Invoke(this, new MotionDetectorAdapterStateChangedEventArgs(AdapterMotionDetectionState.Idle));
             }
         }
     }

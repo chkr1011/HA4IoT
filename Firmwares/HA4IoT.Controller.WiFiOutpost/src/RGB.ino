@@ -65,7 +65,7 @@ void processMqttMessageRgbSet(String message) {
 
   setRgb(r, g, b);
 
-  //if (scanf(message.c_str(), "%d,%d,%d", &r, &g, &b) == 3) {
+  // if (scanf(message.c_str(), "%d,%d,%d", &r, &g, &b) == 3) {
   //  setRgb(r, g, b);
   //}
 }
@@ -77,8 +77,7 @@ void publishMqttRgbStatusNotification() {
 
   String topic = generateMqttNotificationTopic("RGBS/Status");
 
-  String message = String(_outputR) + "," + String(_outputG) + "," +
-                   String(_outputB);
+  String message = String(_outputR) + "," + String(_outputG) + "," + String(_outputB);
 
   publishMqttMessage(topic.c_str(), message.c_str());
 }

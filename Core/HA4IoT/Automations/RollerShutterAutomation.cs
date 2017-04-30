@@ -58,21 +58,12 @@ namespace HA4IoT.Automations
 
             settingsService.CreateSettingsMonitor<RollerShutterAutomationSettings>(this, s => Settings = s.NewSettings);
 
-            // TODO: Consider timer service here.
-            schedulerService.RegisterSchedule("RollerShutterAutomation-" + Guid.NewGuid(), TimeSpan.FromMinutes(1), () => PerformPendingActions());
+            schedulerService.RegisterSchedule(id, TimeSpan.FromMinutes(1), () => PerformPendingActions());
         }
 
         public RollerShutterAutomationSettings Settings { get; private set; }
 
         public RollerShutterAutomation WithRollerShutters(params IRollerShutter[] rollerShutters)
-        {
-            if (rollerShutters == null) throw new ArgumentNullException(nameof(rollerShutters));
-
-            _rollerShutters.AddRange(rollerShutters.Select(rs => rs.Id));
-            return this;
-        }
-
-        public RollerShutterAutomation WithRollerShutters(IList<IRollerShutter> rollerShutters)
         {
             if (rollerShutters == null) throw new ArgumentNullException(nameof(rollerShutters));
 
@@ -101,11 +92,12 @@ namespace HA4IoT.Automations
             var autoOpenIsInRange = GetIsDayCondition().IsFulfilled();
             var autoCloseIsInRange = !autoOpenIsInRange;
 
-            if (!_autoOpenIsApplied && autoOpenIsInRange)
+            if (Settings.AutoOpenIsEnabled && !_autoOpenIsApplied && autoOpenIsInRange)
             {
                 PerformPendingSunriseActions();
             }
-            else if (!_autoCloseIsApplied && autoCloseIsInRange)
+
+            if (Settings.AutoCloseIsEnabled && !_autoCloseIsApplied && autoCloseIsInRange)
             {
                 PerformPendingSunsetActions();
             }

@@ -4,10 +4,8 @@ namespace HA4IoT.Contracts.Adapters
 {
     public interface IMotionDetectorAdapter
     {
-        event EventHandler MotionDetectionBegin;
+        event EventHandler<MotionDetectorAdapterStateChangedEventArgs> StateChanged;
 
-        event EventHandler MotionDetectionEnd;
-        
         void Refresh();
     }
 }

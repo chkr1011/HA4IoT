@@ -37,7 +37,7 @@ void loopLpd() {
   _lastReceivedProtocol = _rcSwitch.getReceivedProtocol();
   _rcSwitch.resetAvailable();
 
-  Serial.printf("Received LPD signal: Value=%d, Length=%d, Protocol=%d\n", _lastReceivedValue, _lastReceivedLength, _lastReceivedProtocol);
+  Serial.printf("RX LPD: V=%d, L=%d, P=%d\n", _lastReceivedValue, _lastReceivedLength, _lastReceivedProtocol);
 
   publishMqttReceivedLpdCode();
 }
@@ -59,11 +59,9 @@ void handleHttpPostLpd() {}
 void publishMqttReceivedLpdCode() {
   String topic = generateMqttNotificationTopic("LPD/Received");
 
-  String message = String(_lastReceivedValue) + "," +
-                   String(_lastReceivedLength) + "," +
-                   String(_lastReceivedProtocol);
+  String message = String(_lastReceivedValue) + "," + String(_lastReceivedLength) + "," + String(_lastReceivedProtocol);
 
-  publishMqttMessage(topic.c_str(), message.c_str());
+  publishMqttMessage(topic, message);
 }
 
 void processMqttMessageLpdSend(String message) {

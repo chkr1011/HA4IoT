@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Services.System
@@ -11,10 +12,7 @@ namespace HA4IoT.Services.System
         {
             if (timerService == null) throw new ArgumentNullException(nameof(timerService));
 
-            timerService.Tick += (s, e) =>
-            {
-                Tick(e.ElapsedTime);
-            };
+            timerService.Tick += OnTick;
         }
 
         public event EventHandler Elapsed; 
@@ -44,14 +42,14 @@ namespace HA4IoT.Services.System
             Start(Duration);
         }
 
-        private void Tick(TimeSpan elapsedTime)
+        private void OnTick(object sender, TimerTickEventArgs e)
         {
             if (!IsEnabled)
             {
                 return;
             }
 
-            _timeLeft -= elapsedTime;
+            _timeLeft -= e.ElapsedTime;
             if (_timeLeft <= TimeSpan.Zero)
             {
                 Stop();

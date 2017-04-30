@@ -16,7 +16,11 @@ The core application of this project is running under Windows 10 IoT Core which 
   <img src="https://github.com/chkr1011/HA4IoT/blob/master/Media/Images/Echo.jpg?raw=true" width="256">
 </p>
 
-This project contains a _Custom Skill_ for Amazon Alexa (Echo and Echo Dot) which allows controlling actuators via speech commands and ask for sensor status like open windows etc. A demonstration is available here: https://www.youtube.com/watch?v=9089vAgu2pQ.
+This project contains a _Custom Skill_ for Amazon Alexa (Echo and Echo Dot) which allows controlling actuators via speech commands and ask for sensor status like open windows etc. 
+
+### Demos
+* Turn lamp on and off: https://www.youtube.com/watch?v=9089vAgu2pQ
+* Turn device on and off: https://youtu.be/RaIP7T-nLUs
 
 ## CCTools support
 <p align="center">

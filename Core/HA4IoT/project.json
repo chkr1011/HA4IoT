@@ -1,9 +1,9 @@
 ﻿{
   "dependencies": {
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.3.3",
     "MQTTnet": "2.1.1",
     "Newtonsoft.Json": "10.0.2",
-    "SimpleInjector": "4.0.0"
+    "SimpleInjector": "4.0.3"
   },
   "frameworks": {
     "uap10.0": {}

@@ -4,8 +4,7 @@ void setupSystem();
 void loopSystem(uint16_t elapsedMillis);
 void reboot();
 
-void clearError();
-void setError();
+void clearInfo();
+void setInfo();
 
 String getFirmwareVersion();
-void startSystemUpdate(String firmwareUrl);

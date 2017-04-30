@@ -11,13 +11,10 @@ namespace HA4IoT.Simulator.Controls
 
         public UIButtonAdapter(Button button)
         {
-            if (button == null) throw new ArgumentNullException(nameof(button));
-
-            _button = button;
+            _button = button ?? throw new ArgumentNullException(nameof(button));
         }
 
-        public event EventHandler Pressed;
-        public event EventHandler Released;
+        public event EventHandler<ButtonAdapterStateChangedEventArgs> StateChanged;
 
         public void Connect()
         {
@@ -28,20 +25,20 @@ namespace HA4IoT.Simulator.Controls
 
         private void Press()
         {
-            Task.Run(() => Pressed?.Invoke(this, EventArgs.Empty));
+            Task.Run(() => StateChanged?.Invoke(this, new ButtonAdapterStateChangedEventArgs(AdapterButtonState.Pressed)));
         }
 
         private void Release()
         {
-            Task.Run(() => Released?.Invoke(this, EventArgs.Empty));
+            Task.Run(() => StateChanged?.Invoke(this, new ButtonAdapterStateChangedEventArgs(AdapterButtonState.Released)));
         }
 
         private void PressAndRelease()
         {
             Task.Run(() =>
             {
-                Pressed?.Invoke(this, EventArgs.Empty);
-                Released?.Invoke(this, EventArgs.Empty);
+                StateChanged?.Invoke(this, new ButtonAdapterStateChangedEventArgs(AdapterButtonState.Pressed));
+                StateChanged?.Invoke(this, new ButtonAdapterStateChangedEventArgs(AdapterButtonState.Released));
             });
         }
     }

@@ -3,13 +3,13 @@ using System.Linq;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Hardware;
 
-namespace HA4IoT.Adapters
+namespace HA4IoT.Adapters.PortBased
 {
-    public class BinaryOutputAdapter : IBinaryOutputAdapter, ILampAdapter
+    public class PortBasedBinaryOutputAdapter : IBinaryOutputAdapter, ILampAdapter
     {
         private readonly IBinaryOutput _output;
 
-        public BinaryOutputAdapter(IBinaryOutput output)
+        public PortBasedBinaryOutputAdapter(IBinaryOutput output)
         {
             _output = output ?? throw new ArgumentNullException(nameof(output));
         }

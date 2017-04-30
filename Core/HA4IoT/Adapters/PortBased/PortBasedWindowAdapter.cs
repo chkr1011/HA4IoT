@@ -2,7 +2,7 @@
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Hardware;
 
-namespace HA4IoT.Adapters
+namespace HA4IoT.Adapters.PortBased
 {
     public class PortBasedWindowAdapter : IWindowAdapter
     {

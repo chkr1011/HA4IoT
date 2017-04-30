@@ -5,17 +5,16 @@ namespace HA4IoT.Tests.Mockups.Adapters
 {
     public class TestButtonAdapter : IButtonAdapter
     {
-        public event EventHandler Pressed;
-        public event EventHandler Released;
+        public event EventHandler<ButtonAdapterStateChangedEventArgs> StateChanged;
 
         public void Press()
         {
-            Pressed?.Invoke(this, EventArgs.Empty);
+            StateChanged?.Invoke(this, new ButtonAdapterStateChangedEventArgs(AdapterButtonState.Pressed));
         }
 
         public void Release()
         {
-            Released?.Invoke(this, EventArgs.Empty);
+            StateChanged?.Invoke(this, new ButtonAdapterStateChangedEventArgs(AdapterButtonState.Released));
         }
 
         public void Touch()

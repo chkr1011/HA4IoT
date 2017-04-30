@@ -5,8 +5,7 @@ namespace HA4IoT.Tests.Mockups.Adapters
 {
     public class TestMotionDetectorAdapter : IMotionDetectorAdapter
     {
-        public event EventHandler MotionDetectionBegin;
-        public event EventHandler MotionDetectionEnd;
+        public event EventHandler<MotionDetectorAdapterStateChangedEventArgs> StateChanged;
 
         public void Refresh()
         {            
@@ -14,12 +13,12 @@ namespace HA4IoT.Tests.Mockups.Adapters
 
         public void Begin()
         {
-            MotionDetectionBegin?.Invoke(this, EventArgs.Empty);
+            StateChanged?.Invoke(this, new MotionDetectorAdapterStateChangedEventArgs(AdapterMotionDetectionState.MotionDetected));
         }
 
         public void End()
         {
-            MotionDetectionEnd?.Invoke(this, EventArgs.Empty);
+            StateChanged?.Invoke(this, new MotionDetectorAdapterStateChangedEventArgs(AdapterMotionDetectionState.Idle));
         }
 
         public void Invoke()

@@ -1,12 +1,9 @@
 #include <Arduino.h>
-#include <ArduinoJson.h>
 #include <EEPROM.h>
-
 #include <ESP8266WiFi.h>
-#include <ESP8266mDNS.h>
 #include <ESP8266HTTPUpdate.h>
 #include <ESP8266WebServer.h>
-
+#include <ArduinoJson.h>
 #include <PubSubClient.h>
 
 #include "Config.h"
@@ -15,10 +12,13 @@
 #include "WebServer.h"
 #include "WiFi.h"
 
+#define SLEEP_DURATION 100
+
 // Comment out to disable features.
 #define FEATURE_RGB
 //#define FEATURE_LPD
 //#define FEATURE_ONEWIRE_SENSORS
+//#define FEATURE_DHT_SENSOR
 
 // nodemcuv2 Pins:
 // D0=16 D1=5 D2=4 D3=0 D4=2 D5=14 D6=12 D7=13 D8=15
@@ -26,27 +26,28 @@
 #ifdef FEATURE_RGB
 #include "Rgb.h"
 #endif
+
 #ifdef FEATURE_LPD
-#include <RCSwitch.h>
 #include "Lpd.h"
+#include <RCSwitch.h>
 #endif
+
 #ifdef FEATURE_ONEWIRE_SENSORS
+#include "OneWireSensors.h"
 #include <DallasTemperature.h>
 #include <OneWire.h>
-#include "OneWireSensors.h"
+#endif
+
+#ifdef FEATURE_DHT_SENSOR
+#include "DhtSensor.h"
+#include <DHT.h>
 #endif
 
 uint16_t _previousMillis = millis();
 
 void setup() {
   Serial.begin(115200);
-  Serial.println();
-  Serial.println("[HA4IoT-Outpost-RGB] (www.ha4iot.de)");
-  Serial.printf("+ FIRMWARE_VERSION=%s\n", getFirmwareVersion().c_str());
-  Serial.printf("+ ResetReason=%s\n", ESP.getResetReason().c_str());
-  Serial.printf("+ SketchSize=%d\n", ESP.getSketchSize());
-  Serial.printf("+ FreeSketchSpace=%d\n", ESP.getFreeSketchSpace());
-  Serial.printf("+ FreeHeap=%d\n", ESP.getFreeHeap());
+  Serial.println("\n[HA4IoT-SmartDevice] (www.ha4iot.de)");
 
   setupConfig();
   setupSystem();
@@ -60,6 +61,9 @@ void setup() {
 #ifdef FEATURE_ONEWIRE_SENSORS
   setupOneWireSensors();
 #endif
+#ifdef FEATURE_DHT_SENSOR
+  setupDhtSensor();
+#endif
 
   setupWiFi();
   setupWebServer();
@@ -69,8 +73,6 @@ void setup() {
 }
 
 void loop() {
-  delay(50);
-
   uint16_t now = millis();
   uint16_t elapsedMillis = now - _previousMillis;
   _previousMillis = now;
@@ -88,4 +90,9 @@ void loop() {
 #ifdef FEATURE_ONEWIRE_SENSORS
   loopOneWireSensors();
 #endif
+#ifdef FEATURE_DHT_SENSOR
+  loopDhtSensor(elapsedMillis);
+#endif
+
+  delay(SLEEP_DURATION);
 }

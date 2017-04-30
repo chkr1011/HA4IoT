@@ -8,7 +8,7 @@ using HA4IoT.Contracts.Hardware.I2C;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.CCTools.Devices;
-using HA4IoT.Hardware.I2C.I2CHardwareBridge;
+using HA4IoT.Hardware.Outpost;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
@@ -18,6 +18,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 {
     internal class OfficeConfiguration
     {
+        private readonly OutpostDeviceService _outpostDeviceService;
         private readonly IDeviceRegistryService _deviceService;
         private readonly IAreaRegistryService _areaService;
         private readonly CCToolsDeviceService _ccToolsBoardService;
@@ -58,11 +59,13 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         public OfficeConfiguration(
             IDeviceRegistryService deviceService,
             IAreaRegistryService areaService,
+            OutpostDeviceService outpostDeviceService,
             CCToolsDeviceService ccToolsBoardService,
             RemoteSocketService remoteSocketService,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory)
         {
+            _outpostDeviceService = outpostDeviceService ?? throw new ArgumentNullException(nameof(outpostDeviceService));
             _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
             _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
             _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
@@ -77,23 +80,23 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             var hspe8 = _ccToolsBoardService.RegisterHSPE8OutputOnly(InstalledDevice.UpperFloorAndOfficeHSPE8.ToString(), new I2CSlaveAddress(37));
             var input4 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input4.ToString());
             var input5 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input5.ToString());
-            var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
-
-            const int SensorPin = 2;
 
             var area = _areaService.RegisterArea(Room.Office);
+
+            //var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
+            //const int SensorPin = 2;
+            //_sensorFactory.RegisterTemperatureSensor(area, Office.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
+            //_sensorFactory.RegisterHumiditySensor(area, Office.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
 
             _sensorFactory.RegisterWindow(area, Office.WindowLeftL, input4.GetInput(11));
             _sensorFactory.RegisterWindow(area, Office.WindowLeftR, input4.GetInput(12), input4.GetInput(10));
             _sensorFactory.RegisterWindow(area, Office.WindowRightL, input4.GetInput(8));
             _sensorFactory.RegisterWindow(area, Office.WindowRightR, input4.GetInput(9), input5.GetInput(8));
 
-            _sensorFactory.RegisterTemperatureSensor(area, Office.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
-
-            _sensorFactory.RegisterHumiditySensor(area, Office.HumiditySensor,
-                i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
-
             _sensorFactory.RegisterMotionDetector(area, Office.MotionDetector, input4.GetInput(13));
+
+            _sensorFactory.RegisterTemperatureSensor(area, Office.TemperatureSensor, _outpostDeviceService.GetDhtTemperatureSensorAdapter("OFFICETHSENSOR"));
+            _sensorFactory.RegisterHumiditySensor(area, Office.HumiditySensor, _outpostDeviceService.GetDhtHumiditySensorAdapter("OFFICETHSENSOR"));
 
             _actuatorFactory.RegisterSocket(area, Office.SocketFrontLeft, hsrel8.GetOutput(0));
             _actuatorFactory.RegisterSocket(area, Office.SocketFrontRight, hsrel8.GetOutput(6));

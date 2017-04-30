@@ -11,7 +11,7 @@
     <AssemblyName>HA4IoT</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
+    <TargetPlatformVersion>10.0.15063.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
@@ -129,11 +129,14 @@
     <Compile Include="Actuators\StateMachines\StateMachineApiCallRequest.cs" />
     <Compile Include="Actuators\StateMachines\StateMachineExtensions.cs" />
     <Compile Include="Actuators\StateMachines\StateMachineState.cs" />
-    <Compile Include="Adapters\BinaryInputButtonAdapter.cs" />
-    <Compile Include="Adapters\BinaryOutputAdapter.cs" />
-    <Compile Include="Adapters\PortBasedMotionDetectorAdapter.cs" />
-    <Compile Include="Adapters\PortBasedRollerShutterAdapter.cs" />
-    <Compile Include="Adapters\PortBasedWindowAdapter.cs" />
+    <Compile Include="Adapters\MqttBased\MqttBasedBinaryOutputAdapter.cs" />
+    <Compile Include="Adapters\MqttBased\MqttBasedButtonAdapter.cs" />
+    <Compile Include="Adapters\MqttBased\MqttBasedNumericSensorAdapter.cs" />
+    <Compile Include="Adapters\PortBased\PortBasedButtonAdapter.cs" />
+    <Compile Include="Adapters\PortBased\PortBasedBinaryOutputAdapter.cs" />
+    <Compile Include="Adapters\PortBased\PortBasedMotionDetectorAdapter.cs" />
+    <Compile Include="Adapters\PortBased\PortBasedRollerShutterAdapter.cs" />
+    <Compile Include="Adapters\PortBased\PortBasedWindowAdapter.cs" />
     <Compile Include="Adapters\VirtualButtonAdapter.cs" />
     <Compile Include="Api\ExceptionSerializer.cs" />
     <Compile Include="Conditions\Specialized\BinaryInputStateCondition.cs" />
@@ -372,7 +375,11 @@
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <SDKReference Include="WindowsIoT, Version=10.0.15063.0">
+      <Name>Windows IoT Extensions for the UWP</Name>
+    </SDKReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

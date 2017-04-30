@@ -86,9 +86,8 @@ void loadConfig() {
   EEPROM.begin(EEPROM_SIZE);
 
   bool isFirstRun = EEPROM.read(0) == 0xFF;
-  if (isFirstRun)
-  {
-    Serial.println(F("Resetting config due to first run."));
+  if (isFirstRun) {
+    Serial.println(F("Config reset (FR)"));
     resetConfig();
     saveConfig();
     return;
@@ -117,6 +116,4 @@ void loadConfig() {
   Serial.println(F("Config loaded"));
 }
 
-void setupConfig() {
-  loadConfig();
-}
+void setupConfig() { loadConfig(); }
