@@ -13,6 +13,7 @@ using MQTTnet.Core.Diagnostics;
 using MQTTnet.Core.Packets;
 using MQTTnet.Core.Protocol;
 using MQTTnet.Core.Server;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Hardware.Services
 {
@@ -26,9 +27,7 @@ namespace HA4IoT.Hardware.Services
 
         public DeviceMessageBrokerService(ILogService logService)
         {
-            if (logService == null) throw new ArgumentNullException(nameof(logService));
-
-            _log = logService.CreatePublisher(nameof(DeviceMessageBrokerService));
+            _log = logService?.CreatePublisher(nameof(DeviceMessageBrokerService)) ?? throw new ArgumentNullException(nameof(logService));
 
             MqttTrace.TraceMessagePublished += (s, e) =>
             {
@@ -47,7 +46,7 @@ namespace HA4IoT.Hardware.Services
             channelA.Partner = _clientCommunicationAdapter;
             _clientCommunicationAdapter.Partner = channelA;
 
-            var mqttClientOptions = new MqttClientOptions { ClientId = "HA4IoT.Loopback" };
+            var mqttClientOptions = new MqttClientOptions { ClientId = "HA4IoT.Loopback", KeepAlivePeriod = TimeSpan.FromHours(1) };
             _client = new MqttClient(mqttClientOptions, channelA);
             _client.ApplicationMessageReceived += ProcessIncomingMessage;
 
@@ -67,6 +66,13 @@ namespace HA4IoT.Hardware.Services
             _client.SubscribeAsync(new TopicFilter("#", MqttQualityOfServiceLevel.AtMostOnce)).Wait();
 
             _log.Info("MQTT client (loopback) connected.");
+        }
+
+        [ApiMethod]
+        public void GetConnectedClients(IApiContext apiContext)
+        {
+            var connectedClients = _server.GetConnectedClients();
+            apiContext.Result["ConnectedClients"] = JToken.FromObject(connectedClients);
         }
 
         [ApiMethod]

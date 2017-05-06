@@ -25,17 +25,16 @@ uint16_t getHttpParamUInt(String headerName, uint16_t defaultValue) {
 void sendHttpOK() { _webServer.send(200, F(""), F("")); }
 
 void sendHttpOK(JsonObject *json) {
-  size_t size = json->measureLength() + 1;
-  char jsonText[size];
-  json->printTo(jsonText, size);
+  char buffer[256];
+  json->printTo(buffer, sizeof(buffer));
 
-  _webServer.send(200, F("application/json"), jsonText);
+  _webServer.send(200, F("application/json"), buffer);
 }
 
 void sendHttpBadRequest() { _webServer.send(400, F(""), F("")); }
 
 void handleHttpGetInfo() {
-  StaticJsonBuffer<1024> jsonBuffer;
+  DynamicJsonBuffer jsonBuffer;
   JsonObject &json = jsonBuffer.createObject();
 
   JsonObject &sys = jsonBuffer.createObject();
@@ -73,10 +72,6 @@ void handleHttpPostConfig() {
   _mqttSettings.server = getHttpParamString(F("mqttServer"), _mqttSettings.server);
   _mqttSettings.user = getHttpParamString(F("mqttUser"), _mqttSettings.user);
   _mqttSettings.password = getHttpParamString(F("mqttPassword"), _mqttSettings.password);
-
-  // Feature settings
-  _featureSettings.isRgbEnabled = getHttpParamBool(F("rgbIsEnabled"), _featureSettings.isRgbEnabled);
-  _featureSettings.isLpdEnabled = getHttpParamBool(F("lpdIsEnabled"), _featureSettings.isLpdEnabled);
 
   sendHttpOK();
   saveConfig();

@@ -2,14 +2,15 @@
 using System.Threading.Tasks;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.I2C;
 using HA4IoT.Contracts.Hardware.Services;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Controller.Main.Main.Rooms;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2C.I2CHardwareBridge;
+using HA4IoT.Hardware.Outpost;
 using HA4IoT.Hardware.RemoteSwitch;
-using HA4IoT.Hardware.RemoteSwitch.Adapters;
 using HA4IoT.Hardware.RemoteSwitch.Codes.Protocols;
 using HA4IoT.Hardware.Services;
 
@@ -25,6 +26,7 @@ namespace HA4IoT.Controller.Main.Main
         private readonly ISchedulerService _schedulerService;
         private readonly RemoteSocketService _remoteSocketService;
         private readonly IContainer _containerService;
+        private readonly OutpostDeviceService _outpostDeviceService;
 
         public Configuration(
             CCToolsDeviceService ccToolsBoardService,
@@ -34,7 +36,8 @@ namespace HA4IoT.Controller.Main.Main
             ISchedulerService schedulerService,
             RemoteSocketService remoteSocketService,
             InterruptMonitorService interruptMonitorService,
-            IContainer containerService)
+            IContainer containerService,
+            OutpostDeviceService outpostDeviceService)
         {
             _interruptMonitorService = interruptMonitorService ?? throw new ArgumentNullException(nameof(interruptMonitorService));
             _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
@@ -44,11 +47,12 @@ namespace HA4IoT.Controller.Main.Main
             _schedulerService = schedulerService ?? throw new ArgumentNullException(nameof(schedulerService));
             _remoteSocketService = remoteSocketService ?? throw new ArgumentNullException(nameof(remoteSocketService));
             _containerService = containerService ?? throw new ArgumentNullException(nameof(containerService));
+            _outpostDeviceService = outpostDeviceService ?? throw new ArgumentNullException(nameof(outpostDeviceService));
         }
 
         public Task ApplyAsync()
         {
-            _interruptMonitorService.RegisterInterrupt("Default", _gpioService.GetInput(4));
+            _interruptMonitorService.RegisterInterrupt("Default", _gpioService.GetInput(4).WithInvertedState());
             _interruptMonitorService.RegisterCallback("Default", _ccToolsBoardService.PollInputs);
 
             _ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input0.ToString(), new I2CSlaveAddress(42));
@@ -61,7 +65,8 @@ namespace HA4IoT.Controller.Main.Main
             var i2CHardwareBridge = new I2CHardwareBridge(new I2CSlaveAddress(50), _i2CBusService, _schedulerService);
             _deviceService.RegisterDevice(i2CHardwareBridge);
 
-            _remoteSocketService.Adapter = new I2CHardwareBridgeLdp433MhzBridgeAdapter(i2CHardwareBridge, 10);
+            _remoteSocketService.Adapter = _outpostDeviceService.GetLpdBridgeAdapter("LPDB1");
+
             var codeSequenceProvider = new DipswitchCodeProvider();
             _remoteSocketService.RegisterRemoteSocket("OFFICE_0", codeSequenceProvider.GetCodePair(DipswitchSystemCode.AllOn, DipswitchUnitCode.A));
 

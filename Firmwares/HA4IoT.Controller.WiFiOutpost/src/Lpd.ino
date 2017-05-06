@@ -1,7 +1,11 @@
 #ifdef FEATURE_LPD
 
-#define LDP_TRANSMIT_PIN 2
-#define LDP_RECEIVE_PIN 0
+#if !defined(LDP_TRANSMIT_PIN)
+#define LDP_TRANSMIT_PIN 15
+#endif
+#if !defined(LDP_RECEIVE_PIN)
+#define LDP_RECEIVE_PIN 5
+#endif
 
 RCSwitch _rcSwitch;
 uint16_t _lastReceivedValue = 0;
@@ -9,25 +13,17 @@ uint8_t _lastReceivedLength = 0;
 uint8_t _lastReceivedProtocol = 0;
 
 void setupLpd() {
-  if (!_featureSettings.isLpdEnabled) {
-    return;
-  }
-
   _rcSwitch = RCSwitch();
   _rcSwitch.enableTransmit(LDP_TRANSMIT_PIN);
   _rcSwitch.enableReceive(LDP_RECEIVE_PIN);
 
-  _webServer.on("/ldp", HTTP_POST, handleHttpPostLpd);
-  _webServer.on("/ldp", HTTP_GET, handleHttpGetLpd);
+  _webServer.on("/lpd", HTTP_POST, handleHttpPostLpd);
+  _webServer.on("/lpd", HTTP_GET, handleHttpGetLpd);
 
   onMqttMessage(generateMqttCommandTopic("LPD/Send"), processMqttMessageLpdSend);
 }
 
 void loopLpd() {
-  if (!_featureSettings.isLpdEnabled) {
-    return;
-  }
-
   if (!_rcSwitch.available()) {
     return;
   }
@@ -37,52 +33,59 @@ void loopLpd() {
   _lastReceivedProtocol = _rcSwitch.getReceivedProtocol();
   _rcSwitch.resetAvailable();
 
+#ifdef DEBUG
   Serial.printf("RX LPD: V=%d, L=%d, P=%d\n", _lastReceivedValue, _lastReceivedLength, _lastReceivedProtocol);
+#endif
 
   publishMqttReceivedLpdCode();
 }
 
 void handleHttpGetLpd() {
-  StaticJsonBuffer<128> jsonBuffer;
+  DynamicJsonBuffer jsonBuffer;
   JsonObject &json = jsonBuffer.createObject();
 
-  json[F("isEnabled")] = _featureSettings.isLpdEnabled;
-  json[F("lValue")] = _lastReceivedValue;
-  json[F("lLength")] = _lastReceivedLength;
-  json[F("lProtocol")] = _lastReceivedProtocol;
+  json[F("value")] = _lastReceivedValue;
+  json[F("length")] = _lastReceivedLength;
+  json[F("protocol")] = _lastReceivedProtocol;
 
   sendHttpOK(&json);
 }
 
-void handleHttpPostLpd() {}
+void handleHttpPostLpd() {
+  uint16_t value = getHttpParamUInt(F("value"), 0);
+  uint16_t length = getHttpParamUInt(F("length"), 24);
+  uint16_t protocol = getHttpParamUInt(F("protocol"), 1);
+  uint16_t repeats = getHttpParamUInt(F("repeats"), 10);
+
+  _rcSwitch.setRepeatTransmit(repeats);
+  _rcSwitch.setProtocol(protocol);
+  _rcSwitch.send(value, length);
+
+  sendHttpOK();
+}
 
 void publishMqttReceivedLpdCode() {
   String topic = generateMqttNotificationTopic("LPD/Received");
 
-  String message = String(_lastReceivedValue) + "," + String(_lastReceivedLength) + "," + String(_lastReceivedProtocol);
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject &json = jsonBuffer.createObject();
+  json["value"] = _lastReceivedValue;
+  json["length"] = _lastReceivedLength;
+  json["protocol"] = _lastReceivedProtocol;
 
-  publishMqttMessage(topic, message);
+  publishMqttMessage(topic, &json);
 }
 
 void processMqttMessageLpdSend(String message) {
-  uint8_t c1 = message.indexOf(',');
-  if (c1 == -1)
-    return;
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject &json = jsonBuffer.parseObject(message);
 
-  uint8_t c2 = message.indexOf(',', c1 + 1);
-  if (c2 == -1)
-    return;
+  uint16_t value = json["value"];
+  uint16_t length = json["length"];
+  uint16_t protocol = json["protocol"];
+  uint16_t repeats = json["repeats"];
 
-  String valueText = message.substring(0, c1);
-  String lengthText = message.substring(c1 + 1, c2);
-  String protocolText = message.substring(c2 + 1);
-
-  uint16_t value = valueText.toInt();
-  uint16_t length = lengthText.toInt();
-  uint16_t protocol = protocolText.toInt();
-
-  //_rcSwitch.setRepeatTransmit(3);
-  //_rcSwitch.setPulseLength()
+  _rcSwitch.setRepeatTransmit(repeats);
   _rcSwitch.setProtocol(protocol);
   _rcSwitch.send(value, length);
 }

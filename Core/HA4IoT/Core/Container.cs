@@ -61,6 +61,12 @@ namespace HA4IoT.Core
     public class Container : IContainer
     {
         private readonly SimpleInjector.Container _container = new SimpleInjector.Container();
+        private readonly ControllerOptions _options;
+
+        public Container(ControllerOptions options)
+        {
+            _options = options ?? throw new ArgumentNullException(nameof(options));
+        }
 
         public void Verify()
         {
@@ -87,6 +93,13 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<TService, TImplementation>();
         }
 
+        public void RegisterSingletonCollection<TItem>(IEnumerable<TItem> items) where TItem : class
+        {
+            if (items == null) throw new ArgumentNullException(nameof(items));
+
+            _container.RegisterCollection(items);
+        }
+
         public void RegisterSingleton<TService>(Func<TService> instanceCreator) where TService : class
         {
             _container.RegisterSingleton(instanceCreator);
@@ -103,8 +116,12 @@ namespace HA4IoT.Core
         {
             _container.RegisterSingleton<IContainer>(() => this);
 
-            _container.RegisterSingleton<ControllerSettings>();
+            foreach (var customService in _options.CustomServices)
+            {
+                _container.RegisterSingleton(customService);
+            }
 
+            _container.RegisterCollection<ILogAdapter>(_options.LogAdapters);
             _container.RegisterSingleton<ILogService, LogService>();
             _container.RegisterSingleton<IHealthService, HealthService>();
             _container.RegisterSingleton<IDateTimeService, DateTimeService>();

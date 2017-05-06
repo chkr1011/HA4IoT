@@ -9,37 +9,40 @@ namespace HA4IoT.Hardware.RaspberryPi
     public class GpioService : ServiceBase, IGpioService
     {
         private readonly GpioController _gpioController = GpioController.GetDefault();
-        private readonly Dictionary<int, GpioPort> _openPorts = new Dictionary<int, GpioPort>();
+
+        private readonly Dictionary<int, GpioInputPort> _openInputPorts = new Dictionary<int, GpioInputPort>();
+        private readonly Dictionary<int, GpioOutputPort> _openOutputPorts = new Dictionary<int, GpioOutputPort>();
 
         public IBinaryInput GetInput(int number)
         {
-            return OpenPort(number, GpioPinDriveMode.Input);
-        }
-
-        public IBinaryOutput GetOutput(int number)
-        {
-            return OpenPort(number, GpioPinDriveMode.Output);
-        }
-
-        private GpioPort OpenPort(int number, GpioPinDriveMode mode)
-        {
-            GpioPort port;
-
-            lock (_openPorts)
-            {   
-                if (_openPorts.TryGetValue(number, out port))
+            lock (_openInputPorts)
+            {
+                GpioInputPort port;
+                if (_openInputPorts.TryGetValue(number, out port))
                 {
                     return port;
                 }
 
-                var pin = _gpioController.OpenPin(number, GpioSharingMode.Exclusive);
-                pin.SetDriveMode(mode);
-
-                port = new GpioPort(pin);
-                _openPorts.Add(number, port);
+                port = new GpioInputPort(_gpioController.OpenPin(number, GpioSharingMode.Exclusive));
+                _openInputPorts.Add(number, port);
+                return port;
             }
+        }
 
-            return port;
+        public IBinaryOutput GetOutput(int number)
+        {
+            lock (_openOutputPorts)
+            {
+                GpioOutputPort port;
+                if (_openOutputPorts.TryGetValue(number, out port))
+                {
+                    return port;
+                }
+
+                port = new GpioOutputPort(_gpioController.OpenPin(number, GpioSharingMode.Exclusive));
+                _openOutputPorts.Add(number, port);
+                return port;
+            }
         }
     }
 }

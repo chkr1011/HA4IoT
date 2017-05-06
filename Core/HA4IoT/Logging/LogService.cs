@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
@@ -17,19 +18,20 @@ namespace HA4IoT.Logging
         private const int LogErrorHistorySize = 250;
         private const int LogWarningHistorySize = 250;
 
-        private readonly Guid _sessionId = Guid.NewGuid();
-
         private readonly object _syncRoot = new object();
+        private readonly Guid _sessionId = Guid.NewGuid();
         private readonly Queue<LogEntry> _logEntries = new Queue<LogEntry>();
         private readonly Queue<LogEntry> _errorLogEntries = new Queue<LogEntry>();
         private readonly Queue<LogEntry> _warningLogEntries = new Queue<LogEntry>();
 
         private readonly IDateTimeService _dateTimeService;
+        private readonly IEnumerable<ILogAdapter> _adapters;
 
         private long _id;
 
-        public LogService(IDateTimeService dateTimeService, ISystemInformationService systemInformationService)
+        public LogService(IDateTimeService dateTimeService, ISystemInformationService systemInformationService, IEnumerable<ILogAdapter> adapters)
         {
+            _adapters = adapters ?? throw new ArgumentNullException(nameof(adapters));
             _dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
 
             Log.Default = CreatePublisher(null);
@@ -37,8 +39,6 @@ namespace HA4IoT.Logging
             systemInformationService.Set("Log/Errors/Count", () => _errorLogEntries.Count);
             systemInformationService.Set("Log/Warnings/Count", () => _warningLogEntries.Count);
         }
-
-        public event EventHandler<LogEntryPublishedEventArgs> LogEntryPublished;
 
         public ILogger CreatePublisher(string source)
         {
@@ -180,12 +180,11 @@ namespace HA4IoT.Logging
 
         private void Add(LogEntrySeverity severity, string source, string message, Exception exception)
         {
-            LogEntry logEntry;
+            var id = Interlocked.Increment(ref _id);
+            var logEntry = new LogEntry(id, _dateTimeService.Now, Environment.CurrentManagedThreadId, severity, source, message, exception?.ToString());
+
             lock (_syncRoot)
             {
-                _id += 1L;
-                logEntry = new LogEntry(_id, _dateTimeService.Now, Environment.CurrentManagedThreadId, severity, source, message, exception?.ToString());
-
                 EnqueueLogEntry(logEntry, _logEntries, LogHistorySize);
 
                 if (severity == LogEntrySeverity.Warning)
@@ -198,16 +197,15 @@ namespace HA4IoT.Logging
                 }
             }
 
-            var eventArgs = new LogEntryPublishedEventArgs(logEntry);
-            LogEntryPublished?.Invoke(this, eventArgs);
-            Log.ForwardPublishedLogEntry(eventArgs);
-
-            if (!Debugger.IsAttached)
+            foreach (var adapter in _adapters)
             {
-                return;
+                adapter.ProcessLogEntry(logEntry);
             }
-            
-            Debug.WriteLine($"[{logEntry.Severity}] [{logEntry.Source}] [{logEntry.ThreadId}]: {message}");
+
+            if (Debugger.IsAttached)
+            {
+                Debug.WriteLine($"[{logEntry.Severity}] [{logEntry.Source}] [{logEntry.ThreadId}]: {message}");
+            }
         }
 
         private void EnqueueLogEntry(LogEntry logEntry, Queue<LogEntry> target, int maxLogEntriesCount)
@@ -216,7 +214,7 @@ namespace HA4IoT.Logging
 
             while (target.Count > maxLogEntriesCount)
             {
-                _logEntries.Dequeue();
+                target.Dequeue();
             }
         }
 

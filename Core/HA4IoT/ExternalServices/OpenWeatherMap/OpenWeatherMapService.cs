@@ -153,7 +153,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             try
             {
                 using (var httpClient = new HttpClient())
-                using (HttpResponseMessage result = await httpClient.GetAsync(uri))
+                using (var result = await httpClient.GetAsync(uri))
                 {
                     return await result.Content.ReadAsStringAsync();
                 }

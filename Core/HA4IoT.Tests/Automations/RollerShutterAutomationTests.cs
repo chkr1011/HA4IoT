@@ -29,14 +29,16 @@ namespace HA4IoT.Tests.Automations
             Setup();
 
             _weatherStation.OutdoorTemperature = 1.5F;
-            _automation.WithDoNotOpenIfOutsideTemperatureIsBelowThan(2);
+            _automation.Settings.SkipIfFrozenIsEnabled = true;
+            _automation.Settings.SkipIfFrozenTemperature = 2;
             _automation.PerformPendingActions();
             _rollerShutter.GetState().Has(PowerState.Off);
 
             Setup();
 
             _weatherStation.OutdoorTemperature = 2.5F;
-            _automation.WithDoNotOpenIfOutsideTemperatureIsBelowThan(2);
+            _automation.Settings.SkipIfFrozenIsEnabled = true;
+            _automation.Settings.SkipIfFrozenTemperature = 2;
             _automation.PerformPendingActions();
             _rollerShutter.GetState().Has(VerticalMovingState.MovingUp);
             _rollerShutter.GetState().Has(PowerState.Off);
@@ -49,7 +51,8 @@ namespace HA4IoT.Tests.Automations
             SkipOpenDueToSunrise();
 
             _weatherStation.OutdoorTemperature = 20F;
-            _automation.WithCloseIfOutsideTemperatureIsGreaterThan(25);
+            _automation.Settings.AutoCloseIfTooHotIsEnabled = true;
+            _automation.Settings.AutoCloseIfTooHotTemperaure = 25;
             _automation.PerformPendingActions();
             _rollerShutter.GetState().Has(PowerState.Off);
 

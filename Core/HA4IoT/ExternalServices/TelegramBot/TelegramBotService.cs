@@ -32,27 +32,6 @@ namespace HA4IoT.ExternalServices.TelegramBot
             _log = logService.CreatePublisher(nameof(TelegramBotService));
 
             settingsService.CreateSettingsMonitor<TelegramBotServiceSettings>(s => Settings = s.NewSettings);
-
-            logService.LogEntryPublished += (s, e) =>
-            {
-                if (e.LogEntry.Severity == LogEntrySeverity.Warning)
-                {
-                    EnqueueMessageForAdministrators($"{Emoji.WarningSign} {e.LogEntry.Message}\r\n{e.LogEntry.Exception}",
-                        TelegramMessageFormat.PlainText);
-                }
-                else if (e.LogEntry.Severity == LogEntrySeverity.Error)
-                {
-                    if (e.LogEntry.Message.StartsWith("Sending Telegram message failed"))
-                    {
-                        // Prevent recursive send of sending failures.
-                        return;
-                    }
-
-                    EnqueueMessageForAdministrators(
-                        $"{Emoji.HeavyExclamationMark} {e.LogEntry.Message}\r\n{e.LogEntry.Exception}",
-                        TelegramMessageFormat.PlainText);
-                }
-            };
         }
 
         public TelegramBotServiceSettings Settings { get; private set; }

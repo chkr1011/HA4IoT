@@ -9,7 +9,10 @@ String getWiFiIpAddress() { return _ip; }
 bool getWiFiIsConnected() { return _status == WL_CONNECTED; }
 
 void openAccessPoint() {
-  Serial.println(F("Opening AP"));
+#ifdef DEBUG
+  Serial.println(F("WiFi: Opening AP"));
+#endif
+
   _hostname = F("HA4IoT-SmartDevice");
 
   WiFi.mode(WIFI_AP);
@@ -20,7 +23,10 @@ void openAccessPoint() {
 }
 
 void connectWithAccessPoint() {
-  Serial.printf("Connecting to AP '%s' (%s)\n", _wiFiSettings.ssid.c_str(), _wiFiSettings.password.c_str());
+#ifdef DEBUG
+  Serial.printf("WiFi: Connecting to '%s' (%s)...\n", _wiFiSettings.ssid.c_str(), _wiFiSettings.password.c_str());
+#endif
+
   _hostname = "HA4IoT-SmartDevice-" + _sysSettings.name;
 
   WiFi.mode(WIFI_STA);
@@ -38,9 +44,13 @@ void loopWiFi() {
   _ip = WiFi.localIP().toString();
 
   if (_status == WL_CONNECTED) {
-    Serial.printf("Connected with AP '%s'. IP=%s\n", _wiFiSettings.ssid.c_str(), _ip.c_str());
+#ifdef DEBUG
+    Serial.printf("WiFi: Connected (IP=%s)\n", _ip.c_str());
+#endif
   } else {
-    Serial.println(F("WiFi disconnected."));
+#ifdef DEBUG
+    Serial.println(F("WiFi: Disconnected"));
+#endif
   }
 }
 

@@ -3,11 +3,9 @@ using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
-using HA4IoT.Adapters;
 using HA4IoT.Adapters.PortBased;
 using HA4IoT.Automations;
 using HA4IoT.Components;
-using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
@@ -170,16 +168,10 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             });
 
             _automationFactory.RegisterRollerShutterAutomation(area, Bedroom.RollerShutterLeftAutomation)
-                .WithRollerShutters(area.GetRollerShutter(Bedroom.RollerShutterLeft))
-                .WithDoNotOpenBefore(TimeSpan.FromHours(7).Add(TimeSpan.FromMinutes(15)))
-                .WithCloseIfOutsideTemperatureIsGreaterThan(24)
-                .WithDoNotOpenIfOutsideTemperatureIsBelowThan(3);
+                .WithRollerShutters(area.GetRollerShutter(Bedroom.RollerShutterLeft));
 
             _automationFactory.RegisterRollerShutterAutomation(area, Bedroom.RollerShutterRightAutomation)
-                .WithRollerShutters(area.GetRollerShutter(Bedroom.RollerShutterRight))
-                .WithDoNotOpenBefore(TimeSpan.FromHours(7).Add(TimeSpan.FromMinutes(15)))
-                .WithCloseIfOutsideTemperatureIsGreaterThan(24)
-                .WithDoNotOpenIfOutsideTemperatureIsBelowThan(3);
+                .WithRollerShutters(area.GetRollerShutter(Bedroom.RollerShutterRight));
 
             _automationFactory.RegisterTurnOnAndOffAutomation(area, Bedroom.LightCeilingAutomation)
                 .WithTrigger(area.GetMotionDetector(Bedroom.MotionDetector))

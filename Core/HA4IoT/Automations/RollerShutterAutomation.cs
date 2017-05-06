@@ -30,7 +30,7 @@ namespace HA4IoT.Automations
         private bool _maxOutsideTemperatureApplied;
         private bool _autoOpenIsApplied;
         private bool _autoCloseIsApplied;
-        
+
         public RollerShutterAutomation(
             string id, 
             INotificationService notificationService,
@@ -92,12 +92,11 @@ namespace HA4IoT.Automations
             var autoOpenIsInRange = GetIsDayCondition().IsFulfilled();
             var autoCloseIsInRange = !autoOpenIsInRange;
 
-            if (Settings.AutoOpenIsEnabled && !_autoOpenIsApplied && autoOpenIsInRange)
+            if (!_autoOpenIsApplied && autoOpenIsInRange)
             {
                 PerformPendingSunriseActions();
             }
-
-            if (Settings.AutoCloseIsEnabled && !_autoCloseIsApplied && autoCloseIsInRange)
+            else if (!_autoCloseIsApplied && autoCloseIsInRange)
             {
                 PerformPendingSunsetActions();
             }
@@ -139,8 +138,11 @@ namespace HA4IoT.Automations
             }
             else
             {
-                InvokeCommand(new MoveUpCommand());
-                _notificationService.CreateInformation($"Opening '{GetRollerShutterNames()}' due to sunrise.");
+                if (Settings.AutoOpenIsEnabled)
+                {
+                    InvokeCommand(new MoveUpCommand());
+                    _notificationService.CreateInformation($"Opening '{GetRollerShutterNames()}' due to sunrise.");
+                }
             }
 
             _autoOpenIsApplied = true;
@@ -177,8 +179,11 @@ namespace HA4IoT.Automations
                 }
                 else
                 {
-                    InvokeCommand(new MoveDownCommand());
-                    _notificationService.CreateInformation($"Closed '{GetRollerShutterNames()}' due to sunset.");
+                    if (Settings.AutoCloseIsEnabled)
+                    {
+                        InvokeCommand(new MoveDownCommand());
+                        _notificationService.CreateInformation($"Closed '{GetRollerShutterNames()}' due to sunset.");
+                    }
                 }
             }
 
@@ -232,7 +237,7 @@ namespace HA4IoT.Automations
         {
             foreach (var rollerShutter in _rollerShutters)
             {
-                _componentRegistry.GetComponent<IRollerShutter>(rollerShutter).ExecuteCommand(command);
+                _componentRegistry.GetComponent(rollerShutter).ExecuteCommand(command);
             }
         }
     }

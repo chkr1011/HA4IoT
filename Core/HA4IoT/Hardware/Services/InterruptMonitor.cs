@@ -18,16 +18,7 @@ namespace HA4IoT.Hardware.Services
             _id = id ?? throw new ArgumentNullException(nameof(id));
             _log = logService?.CreatePublisher(nameof(InterruptMonitor)) ?? throw new ArgumentNullException(nameof(logService));
 
-            input.StateChanged += (s, e) =>
-            {
-                if (e.OldState != BinaryState.High || e.NewState != BinaryState.Low)
-                {
-                    return;
-                }
-
-                _log.Info($"Detected interrupt at monitor '{id}.'");
-                TryExecuteCallbacksAsync();
-            };
+            input.StateChanged += HandleInterrupt;
         }
 
         public void AddCallback(Action callback)
@@ -38,9 +29,14 @@ namespace HA4IoT.Hardware.Services
             }
         }
 
-        private Task TryExecuteCallbacksAsync()
+        private void HandleInterrupt(object sender, BinaryStateChangedEventArgs e)
         {
-            return Task.Run(() => TryExecuteCallbacks());
+            if (e.OldState == e.NewState || e.NewState == BinaryState.Low)
+            {
+                return;
+            }
+
+            Task.Run(() => TryExecuteCallbacks());
         }
 
         private void TryExecuteCallbacks()
@@ -53,6 +49,8 @@ namespace HA4IoT.Hardware.Services
 
             try
             {
+                _log.Info($"Detected interrupt at monitor '{_id}.'");
+
                 foreach (var action in actions)
                 {
                     action();

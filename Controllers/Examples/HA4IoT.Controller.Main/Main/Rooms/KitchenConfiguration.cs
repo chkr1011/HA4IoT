@@ -3,7 +3,6 @@ using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
-using HA4IoT.Adapters;
 using HA4IoT.Adapters.PortBased;
 using HA4IoT.Automations;
 using HA4IoT.Components;

@@ -9,9 +9,12 @@ void loopOneWireSensors() {
   return;
 
   int deviceCount = _dallasSensors.getDeviceCount();
+
+#ifdef DEBUG
   Serial.print("Found ");
   Serial.print(deviceCount, DEC);
   Serial.println(" devices.");
+#endif
 
   _dallasSensors.requestTemperatures();
 
@@ -20,10 +23,13 @@ void loopOneWireSensors() {
     _dallasSensors.getAddress(address, i);
 
     float temp = _dallasSensors.getTempC(address);
+
+#ifdef DEBUG
     Serial.print("D");
     Serial.print(i);
     Serial.print("=");
     Serial.println(temp);
+#endif
   }
 }
 

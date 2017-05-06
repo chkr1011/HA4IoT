@@ -90,19 +90,9 @@ namespace HA4IoT.Controller.Main.Main
             UpdateCounter();
 
             var message = GenerateMessage();
-            _log.Verbose("Trying to tweet '" + message + "'.");
-
-            try
+            if (await _twitterClientService.TryTweet(message))
             {
-                
-                await _twitterClientService.Tweet(message);
-
                 _lastTweetTimestamp = DateTime.Now;
-                _log.Info("Successfully tweeted: " + message);
-            }
-            catch (Exception exception)
-            {
-                _log.Warning("Failed to tweet. " + exception.Message);
             }
         }
 

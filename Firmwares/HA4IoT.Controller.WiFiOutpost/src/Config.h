@@ -21,13 +21,6 @@ struct wiFiSettings {
 
 wiFiSettings _wiFiSettings;
 
-struct featureSettings {
-  bool isRgbEnabled;
-  bool isLpdEnabled;
-};
-
-featureSettings _featureSettings;
-
 void setupConfig();
 void resetConfig();
 void saveConfig();

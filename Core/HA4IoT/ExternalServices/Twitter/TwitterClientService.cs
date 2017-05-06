@@ -32,35 +32,48 @@ namespace HA4IoT.ExternalServices.Twitter
 
         public TwitterClientServiceSettings Settings { get; private set; }
 
-        public async Task Tweet(string message)
+        public async Task<bool> TryTweet(string message)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
             
             if (!Settings.IsEnabled)
             {
                 _log.Verbose("Twitter client service is disabled.");
-                return;
+                return false;
             }
-            
-            _nonce = GetNonce();
-            _timestamp = GetTimeStamp();
 
-            var signature = GetSignatureForRequest(message);
-            var oAuthToken = GetAuthorizationToken(signature);
-                
-            using (var httpClient = new HttpClient())
+            try
             {
-                var url = "https://api.twitter.com/1.1/statuses/update.json?status=" + Uri.EscapeDataString(message);
+                _log.Verbose("Trying to tweet '" + message + "'.");
+                
+                _nonce = GetNonce();
+                _timestamp = GetTimeStamp();
 
-                var request = new HttpRequestMessage(HttpMethod.Post, url);
-                request.Headers.Add("Authorization", oAuthToken);
-         
-                var response = await httpClient.SendAsync(request);
+                var signature = GetSignatureForRequest(message);
+                var oAuthToken = GetAuthorizationToken(signature);
 
-                if (response.StatusCode != HttpStatusCode.OK)
+                using (var httpClient = new HttpClient())
                 {
-                    throw new HttpRequestException(response.StatusCode.ToString());
+                    var url = "https://api.twitter.com/1.1/statuses/update.json?status=" + Uri.EscapeDataString(message);
+
+                    var request = new HttpRequestMessage(HttpMethod.Post, url);
+                    request.Headers.Add("Authorization", oAuthToken);
+
+                    var response = await httpClient.SendAsync(request);
+
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        throw new HttpRequestException(response.StatusCode.ToString());
+                    }
+
+                    _log.Info("Tweet successfully sent.");
+                    return true;
                 }
+            }
+            catch (Exception exception)
+            {
+                _log.Error(exception, "Error while trying to send tweet.");
+                return false;
             }
         }
 

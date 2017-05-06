@@ -2,6 +2,7 @@
 using HA4IoT.Adapters.MqttBased;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Hardware.DeviceMessaging;
+using HA4IoT.Contracts.Hardware.Outpost;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 
@@ -22,7 +23,7 @@ namespace HA4IoT.Hardware.Outpost
         {
             if (deviceName == null) throw new ArgumentNullException(nameof(deviceName));
 
-            var topic = $"HA4IoT/Device/{deviceName}/Notification/DHT/Temperature";
+            var topic = OutpostTopicBuilder.BuildNotificationTopic(deviceName, "DHT/Temperature");
             return new MqttBasedNumericSensorAdapter(topic, _deviceMessageBroker, _logService);
         }
 
@@ -30,7 +31,7 @@ namespace HA4IoT.Hardware.Outpost
         {
             if (deviceName == null) throw new ArgumentNullException(nameof(deviceName));
 
-            var topic = $"HA4IoT/Device/{deviceName}/Notification/DHT/Humidity";
+            var topic = OutpostTopicBuilder.BuildNotificationTopic(deviceName, "DHT/Humidity");
             return new MqttBasedNumericSensorAdapter(topic, _deviceMessageBroker, _logService);
         }
 
@@ -38,15 +39,14 @@ namespace HA4IoT.Hardware.Outpost
         {
             if (deviceName == null) throw new ArgumentNullException(nameof(deviceName));
 
-            var topic = $"HA4IoT/Device/{deviceName}/Command/RGB/Set";
-            return new OutpostRgbAdapter(topic, _deviceMessageBroker);
+            return new OutpostRgbAdapter(deviceName, _deviceMessageBroker);
         }
 
-        public OutpostLpdAdapter GetLpdAdapter(string deviceName)
+        public OutpostLpdBridgeAdapter GetLpdBridgeAdapter(string deviceName)
         {
             if (deviceName == null) throw new ArgumentNullException(nameof(deviceName));
 
-            throw new NotImplementedException();
+            return new OutpostLpdBridgeAdapter(deviceName, _deviceMessageBroker);
         }
     }
 }

@@ -34,10 +34,9 @@ namespace HA4IoT.Services.Environment
             apiContext.Result = JObject.FromObject(this);
         }
 
-        public void Update(float outdoorTemperature)
+        public void Update(float value)
         {
-            // TODO: Check for significant changes and round value.
-            OutdoorTemperature = (float)Math.Round(Convert.ToDouble(outdoorTemperature), 1);
+            OutdoorTemperature = (float)Math.Round(Convert.ToDouble(value), 1);
             Timestamp = _dateTimeService.Now;
         }
     }

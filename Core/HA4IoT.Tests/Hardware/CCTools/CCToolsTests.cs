@@ -1,5 +1,7 @@
-﻿using HA4IoT.Contracts.Hardware;
+﻿using System.Collections.Generic;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.I2C;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Hardware.CCTools.Devices;
 using HA4IoT.Hardware.Services;
 using HA4IoT.Logging;
@@ -17,7 +19,7 @@ namespace HA4IoT.Tests.Hardware.CCTools
         public void CCTools_Write_HSRel5_State()
         {
             var i2CBus = new TestI2CBusService();
-            var deviceMessageBrokerService = new DeviceMessageBrokerService(new LogService(new DateTimeService(), new SystemInformationService()));
+            var deviceMessageBrokerService = new DeviceMessageBrokerService(new LogService(new DateTimeService(), new SystemInformationService(), new List<ILogAdapter>()));
             var hsrel5 = new HSREL5("Test", new I2CSlaveAddress(66), i2CBus, deviceMessageBrokerService, new TestLogger());
             hsrel5[HSREL5Pin.Relay0].Write(BinaryState.High, WriteBinaryStateMode.Commit);
 

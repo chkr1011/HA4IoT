@@ -1,9 +1,9 @@
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #include <EEPROM.h>
-#include <ESP8266WiFi.h>
 #include <ESP8266HTTPUpdate.h>
 #include <ESP8266WebServer.h>
-#include <ArduinoJson.h>
+#include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 
 #include "Config.h"
@@ -12,16 +12,16 @@
 #include "WebServer.h"
 #include "WiFi.h"
 
-#define SLEEP_DURATION 100
+#define SLEEP_DURATION 10
+#define MAX_JSON_SIZE 256
+
+//#define DEBUG
 
 // Comment out to disable features.
-#define FEATURE_RGB
+//#define FEATURE_RGB
 //#define FEATURE_LPD
 //#define FEATURE_ONEWIRE_SENSORS
 //#define FEATURE_DHT_SENSOR
-
-// nodemcuv2 Pins:
-// D0=16 D1=5 D2=4 D3=0 D4=2 D5=14 D6=12 D7=13 D8=15
 
 #ifdef FEATURE_RGB
 #include "Rgb.h"
@@ -46,8 +46,10 @@
 uint16_t _previousMillis = millis();
 
 void setup() {
+#ifdef DEBUG
   Serial.begin(115200);
   Serial.println("\n[HA4IoT-SmartDevice] (www.ha4iot.de)");
+#endif
 
   setupConfig();
   setupSystem();
@@ -69,7 +71,9 @@ void setup() {
   setupWebServer();
   setupMqtt();
 
+#ifdef DEBUG
   Serial.printf("Boot done. Name=%s\n", _sysSettings.name.c_str());
+#endif
 }
 
 void loop() {

@@ -51,9 +51,6 @@ void resetConfig() {
   _mqttSettings.server = F("");
   _mqttSettings.user = F("");
   _mqttSettings.password = F("");
-
-  _featureSettings.isRgbEnabled = false;
-  _featureSettings.isLpdEnabled = false;
 }
 
 void saveConfig() {
@@ -74,12 +71,11 @@ void saveConfig() {
   writeConfigString(_mqttSettings.user, 24);
   writeConfigString(_mqttSettings.password, 32);
 
-  writeConfigBool(_featureSettings.isRgbEnabled);
-  writeConfigBool(_featureSettings.isLpdEnabled);
-
   EEPROM.end();
 
+#ifdef DEBUG
   Serial.printf("Saved config. Length=%s\n", _eepromOffset);
+#endif
 }
 
 void loadConfig() {
@@ -87,7 +83,10 @@ void loadConfig() {
 
   bool isFirstRun = EEPROM.read(0) == 0xFF;
   if (isFirstRun) {
+#ifdef DEBUG
     Serial.println(F("Config reset (FR)"));
+#endif
+
     resetConfig();
     saveConfig();
     return;
@@ -108,12 +107,11 @@ void loadConfig() {
   _mqttSettings.user = readConfigString(24);
   _mqttSettings.password = readConfigString(32);
 
-  _featureSettings.isRgbEnabled = readConfigBool();
-  _featureSettings.isLpdEnabled = readConfigBool();
-
   EEPROM.end();
 
+#ifdef DEBUG
   Serial.println(F("Config loaded"));
+#endif
 }
 
 void setupConfig() { loadConfig(); }

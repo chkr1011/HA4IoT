@@ -12,38 +12,20 @@ using HA4IoT.Simulator.Controls;
 
 namespace HA4IoT.Simulator
 {
-    public sealed partial class MainPage
+    public sealed partial class MainPage : ILogAdapter
     {
         public MainPage()
         {
             InitializeComponent();
-
-            Log.LogEntryPublished += (s, e) =>
-            {
-                var message =
-                    $"[{e.LogEntry.Id}] [{e.LogEntry.Timestamp}] [{e.LogEntry.Source}] [{e.LogEntry.ThreadId}] [{e.LogEntry.Severity}]: {e.LogEntry.Message}";
-
-                if (!string.IsNullOrEmpty(e.LogEntry.Exception))
-                {
-                    message += Environment.NewLine;
-                    message += e.LogEntry.Exception;
-                }
-
-                LogTextBox.Dispatcher.RunAsync(
-                    CoreDispatcherPriority.Normal,
-                    () =>
-                    {
-                        LogTextBox.Text += message + Environment.NewLine;
-
-                    }).AsTask().Wait();
-            };
-
+            
             var options = new ControllerOptions
             {
                 ConfigurationType = typeof(Configuration),
                 ContainerConfigurator = new ContainerConfigurator(this),
                 HttpServerPort = 1025
             };
+
+            options.LogAdapters.Add(this);
 
             var controller = new Controller(options);
 
@@ -143,6 +125,26 @@ namespace HA4IoT.Simulator
         private void ClearLog(object sender, RoutedEventArgs e)
         {
             LogTextBox.Text = string.Empty;
+        }
+
+        public void ProcessLogEntry(LogEntry logEntry)
+        {
+            var message =
+                $"[{logEntry.Id}] [{logEntry.Timestamp}] [{logEntry.Source}] [{logEntry.ThreadId}] [{logEntry.Severity}]: {logEntry.Message}";
+
+            if (!string.IsNullOrEmpty(logEntry.Exception))
+            {
+                message += Environment.NewLine;
+                message += logEntry.Exception;
+            }
+
+            LogTextBox.Dispatcher.RunAsync(
+                CoreDispatcherPriority.Normal,
+                () =>
+                {
+                    LogTextBox.Text += message + Environment.NewLine;
+
+                }).AsTask().Wait();
         }
     }
 }

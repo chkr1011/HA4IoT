@@ -2,7 +2,7 @@
 {
     public interface IBinaryOutput
     {
-        bool IsStateInverted { get; set; }
+        bool IsStateInverted { set; }
 
         BinaryState Read();
         

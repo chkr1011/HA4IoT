@@ -47,7 +47,7 @@ namespace HA4IoT.Hardware.RemoteSwitch.Codes.Protocols
             code = SetUnitCode(code, unitCode);
             code = SetCommand(code, command);
 
-            return new Lpd433MhzCode(code, 24, -1, 3);
+            return new Lpd433MhzCode(code, 24, 1, 3);
         }
 
         private uint SetSystemCode(uint code, DipswitchSystemCode systemCode)

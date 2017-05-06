@@ -47,6 +47,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             ButtonLowerLeft,
             ButtonLowerRight,
 
+            RgbLight,
             CombinedCeilingLights,
 
             WindowLeftL,
@@ -97,6 +98,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             _sensorFactory.RegisterTemperatureSensor(area, Office.TemperatureSensor, _outpostDeviceService.GetDhtTemperatureSensorAdapter("OFFICETHSENSOR"));
             _sensorFactory.RegisterHumiditySensor(area, Office.HumiditySensor, _outpostDeviceService.GetDhtHumiditySensorAdapter("OFFICETHSENSOR"));
+
+            _actuatorFactory.RegisterLamp(area, Office.RgbLight, _outpostDeviceService.GetRgbStripAdapter("RGBSO1"));
 
             _actuatorFactory.RegisterSocket(area, Office.SocketFrontLeft, hsrel8.GetOutput(0));
             _actuatorFactory.RegisterSocket(area, Office.SocketFrontRight, hsrel8.GetOutput(6));

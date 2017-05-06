@@ -20,7 +20,7 @@ namespace HA4IoT.Core
 {
     public class Controller : IController
     {
-        private readonly Container _container = new Container();
+        private readonly Container _container;
         private readonly ControllerOptions _options;
 
         private BackgroundTaskDeferral _deferral;
@@ -29,6 +29,7 @@ namespace HA4IoT.Core
         public Controller(ControllerOptions options)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
+            _container = new Container(options);
 
             StoragePath.Initialize(ApplicationData.Current.LocalFolder.Path, ApplicationData.Current.LocalFolder.Path);
         }

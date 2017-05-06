@@ -49,7 +49,7 @@ namespace HA4IoT.Adapters.PortBased
             _powerOutput.Write(BinaryState.Low);
 
             // Ensure that the relay is completely fallen off before switching the direction.
-            Task.Delay(25).Wait();
+            Task.Delay(100).Wait();
         }
 
         private void Start()

@@ -149,9 +149,11 @@
     <Compile Include="Components\ICommandInvokerAction.cs" />
     <Compile Include="Components\LogicalComponent.cs" />
     <Compile Include="Conditions\Specialized\TemperatureIsLowerThanCondition.cs" />
-    <Compile Include="Hardware\Outpost\OutpostLpdAdapter.cs" />
+    <Compile Include="Hardware\I2C\I2CHardwareBridge\Dht22State.cs" />
+    <Compile Include="Hardware\Outpost\OutpostLpdBridgeAdapter.cs" />
     <Compile Include="Hardware\Outpost\OutpostRgbAdapter.cs" />
     <Compile Include="Hardware\Outpost\OutpostDeviceService.cs" />
+    <Compile Include="Hardware\RaspberryPi\GpioOutputPort.cs" />
     <Compile Include="Hardware\Services\DeviceMessageBrokerService.cs" />
     <Compile Include="Hardware\RemoteSwitch\Lpd433MhzCodeReceivedEventArgs.cs" />
     <Compile Include="Hardware\Services\InterruptMonitor.cs" />
@@ -205,7 +207,6 @@
     <Compile Include="Automations\BathroomFanAutomationSettings.cs" />
     <Compile Include="Automations\ConditionalOnAutomation.cs" />
     <Compile Include="Automations\RollerShutterAutomation.cs" />
-    <Compile Include="Automations\RollerShutterAutomationExtensions.cs" />
     <Compile Include="Automations\RollerShutterAutomationNotification.cs" />
     <Compile Include="Automations\RollerShutterAutomationSettings.cs" />
     <Compile Include="Automations\TurnOnAndOffAutomation.cs" />
@@ -285,7 +286,7 @@
     <Compile Include="Hardware\Knx\KnxController.cs" />
     <Compile Include="Hardware\Knx\KnxDigitalJoinEnpoint.cs" />
     <Compile Include="Hardware\LogicalBinaryOutput.cs" />
-    <Compile Include="Hardware\RaspberryPi\GpioPort.cs" />
+    <Compile Include="Hardware\RaspberryPi\GpioInputPort.cs" />
     <Compile Include="Hardware\RaspberryPi\GpioService.cs" />
     <Compile Include="Hardware\I2C\I2CPortExpanderDrivers\AddressPinState.cs" />
     <Compile Include="Hardware\I2C\I2CPortExpanderDrivers\MAX7311AddressGenerator.cs" />

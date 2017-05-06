@@ -1,20 +1,21 @@
 ﻿using System;
-using System.Text;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.DeviceMessaging;
+using HA4IoT.Contracts.Hardware.Outpost;
 using HA4IoT.Contracts.Hardware.Services;
+using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Hardware.Outpost
 {
     public class OutpostRgbAdapter : IBinaryOutputAdapter, ILampAdapter
     {
-        private readonly string _topic;
+        private readonly string _deviceName;
         private readonly IDeviceMessageBrokerService _deviceMessageBroker;
 
-        public OutpostRgbAdapter(string topic, IDeviceMessageBrokerService deviceMessageBroker)
+        public OutpostRgbAdapter(string deviceName, IDeviceMessageBrokerService deviceMessageBroker)
         {
-            _topic = topic ?? throw new ArgumentNullException(nameof(topic));
+            _deviceName = deviceName ?? throw new ArgumentNullException(nameof(deviceName));
             _deviceMessageBroker = deviceMessageBroker ?? throw new ArgumentNullException(nameof(deviceMessageBroker));
         }
 
@@ -51,7 +52,15 @@ namespace HA4IoT.Hardware.Outpost
                 b = color.Blue;
             }
 
-            _deviceMessageBroker.Publish(_topic, Encoding.UTF8.GetBytes(r + "," + g + "," + b), MqttQosLevel.AtMostOnce);
+            var topic = OutpostTopicBuilder.BuildCommandTopic(_deviceName, "RGB/Set");
+            var json = new JObject
+            {
+                ["r"] = r,
+                ["g"] = g,
+                ["b"] = b
+            };
+
+            _deviceMessageBroker.Publish(topic, json, MqttQosLevel.AtMostOnce);
         }
     }
 }

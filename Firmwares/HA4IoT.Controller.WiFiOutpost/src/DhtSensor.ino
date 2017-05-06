@@ -1,7 +1,10 @@
 #ifdef FEATURE_DHT_SENSOR
 
 #define DHT_SENSOR_REFRESH_TIMEOUT 5000 // 5 Sec.
+
+#if !defined(DHT_SENSOR_PIN)
 #define DHT_SENSOR_PIN 5
+#endif
 
 DHT _dht(DHT_SENSOR_PIN, DHT22);
 

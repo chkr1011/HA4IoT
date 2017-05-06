@@ -4,6 +4,6 @@ namespace HA4IoT.Contracts.Services.ExternalServices.Twitter
 {
     public interface ITwitterClientService : IService
     {
-        Task Tweet(string message);
+        Task<bool> TryTweet(string message);
     }
 }

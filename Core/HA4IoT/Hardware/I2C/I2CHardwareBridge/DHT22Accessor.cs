@@ -6,68 +6,99 @@ namespace HA4IoT.Hardware.I2C.I2CHardwareBridge
 {
     public class DHT22Accessor
     {
+        private readonly object _syncRoot = new object();
+        private readonly Dictionary<int, Dht22State> _dht22States = new Dictionary<int, Dht22State>();
         private readonly I2CHardwareBridge _i2CHardwareBridge;
 
-        private readonly HashSet<byte> _openPins = new HashSet<byte>();
-        private readonly Dictionary<byte, float> _humidities = new Dictionary<byte, float>();
-        private readonly Dictionary<byte, float> _temperatures = new Dictionary<byte, float>();
-        
         public DHT22Accessor(I2CHardwareBridge i2CHardwareBridge, ISchedulerService schedulerService)
         {
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
             
             _i2CHardwareBridge = i2CHardwareBridge ?? throw new ArgumentNullException(nameof(i2CHardwareBridge));
+
             schedulerService.RegisterSchedule("DHT22Updater", TimeSpan.FromSeconds(10), () => FetchValues());
         }
 
         public event EventHandler ValuesUpdated;
 
-        public DHT22TemperatureSensor GetTemperatureSensor(byte pin)
+        public DHT22TemperatureSensor GetTemperatureSensor(int pin)
         {
-            _openPins.Add(pin);
-            _temperatures[pin] = 0.0F;
-
+            lock (_syncRoot)
+            {
+                if (!_dht22States.ContainsKey(pin))
+                {
+                    _dht22States[pin] = new Dht22State();
+                }
+            }
+            
             return new DHT22TemperatureSensor(pin, this);
         }
 
         public float GetTemperature(byte pin)
         {
-            return _temperatures[pin];
+            lock (_syncRoot)
+            {
+                return _dht22States[pin].Temperature;
+            }
         }
 
         public DHT22HumiditySensor GetHumiditySensor(byte pin)
         {
-            _openPins.Add(pin);
-            _humidities[pin] = 0.0F;
+            lock (_syncRoot)
+            {
+                if (!_dht22States.ContainsKey(pin))
+                {
+                    _dht22States[pin] = new Dht22State();
+                }
+            }
 
             return new DHT22HumiditySensor(pin, this);
         }
 
         public float GetHumidity(byte pin)
         {
-            return _humidities[pin];
+            lock (_syncRoot)
+            {
+                return _dht22States[pin].Humidity;
+            }
         }
 
         private void FetchValues()
         {
-            foreach (var openPin in _openPins)
+            lock (_syncRoot)
             {
-                FetchValues(openPin);
+                foreach (var sensor in _dht22States)
+                {
+                    float temperature;
+                    float humidity;
+                    if (TryFetchValues(sensor.Key, out temperature, out humidity))
+                    {
+                        sensor.Value.Temperature = temperature;
+                        sensor.Value.Humidity = humidity;
+                    }
+
+                }
             }
-            
+
             ValuesUpdated?.Invoke(this, EventArgs.Empty);
         }
 
-        private void FetchValues(byte pin)
+        private bool TryFetchValues(int pin, out float temperature, out float humidity)
         {
-            var command = new ReadDHT22SensorCommand().WithPin(pin);
+            temperature = 0;
+            humidity = 0;
+
+            var command = new ReadDHT22SensorCommand().WithPin((byte)pin);
             _i2CHardwareBridge.ExecuteCommand(command);
 
-            if (command.Response != null && command.Response.Succeeded)
+            if (command.Response == null || !command.Response.Succeeded)
             {
-                _temperatures[pin] = command.Response.Temperature;
-                _humidities[pin] = command.Response.Humidity;
+                return false;
             }
+
+            temperature = command.Response.Temperature;
+            humidity = command.Response.Humidity;
+            return true;
         }
     }
 }

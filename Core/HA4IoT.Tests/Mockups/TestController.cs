@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using HA4IoT.Api;
 using HA4IoT.Core;
 using HA4IoT.Contracts.Api;
@@ -32,10 +33,13 @@ namespace HA4IoT.Tests.Mockups
     public class TestController : IController
     {
         private readonly TestApiAdapter _apiAdapter = new TestApiAdapter();
-        private readonly Container _container = new Container();
+        private readonly Container _container;
 
         public TestController()
         {
+            var options = new ControllerOptions();
+            _container = new Container(options);
+            _container.RegisterSingletonCollection(options.LogAdapters);
             _container.RegisterSingleton<IController>(() => this);
             _container.RegisterSingleton<ILogService, LogService>();
             _container.RegisterSingleton<IBackupService, BackupService>();
