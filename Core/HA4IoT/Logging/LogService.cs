@@ -159,13 +159,13 @@ namespace HA4IoT.Logging
             List<LogEntry> logEntries;
             lock (_syncRoot)
             {
-                if (request.SessionId != _sessionId)
+                if (!request.SessionId.HasValue || request.SessionId.Value != _sessionId)
                 {
                     logEntries = _logEntries.Take(request.MaxCount).ToList();
                 }
                 else
                 {
-                    logEntries = _logEntries.Where(e => e.Id > request.Offset).Take(request.MaxCount).ToList();
+                    logEntries = _logEntries.SkipWhile(e => e.Id <= request.Offset).Take(request.MaxCount).ToList();
                 }
             }
 

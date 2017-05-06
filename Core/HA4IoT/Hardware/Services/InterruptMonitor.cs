@@ -36,10 +36,10 @@ namespace HA4IoT.Hardware.Services
                 return;
             }
 
-            Task.Run(() => TryExecuteCallbacks());
+            Task.Run(() => HandleInterrupt());
         }
 
-        private void TryExecuteCallbacks()
+        private void HandleInterrupt()
         {
             List<Action> actions;
             lock (_callbacks)
@@ -49,7 +49,7 @@ namespace HA4IoT.Hardware.Services
 
             try
             {
-                _log.Info($"Detected interrupt at monitor '{_id}.'");
+                _log.Info("Detected interrupt at monitor '" + _id + "'.");
 
                 foreach (var action in actions)
                 {
