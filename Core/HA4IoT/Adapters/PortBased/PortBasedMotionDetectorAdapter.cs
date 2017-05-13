@@ -10,7 +10,7 @@ namespace HA4IoT.Adapters.PortBased
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
 
-            input.StateChanged += DispatchEvents;
+            input.StateChanged += ForwardState;
         }
 
         public event EventHandler<MotionDetectorAdapterStateChangedEventArgs> StateChanged;
@@ -19,7 +19,7 @@ namespace HA4IoT.Adapters.PortBased
         {
         }
 
-        private void DispatchEvents(object sender, BinaryStateChangedEventArgs eventArgs)
+        private void ForwardState(object sender, BinaryStateChangedEventArgs eventArgs)
         {
             // The relay at the motion detector is awlays held to high.
             // The signal is set to false if motion is detected.

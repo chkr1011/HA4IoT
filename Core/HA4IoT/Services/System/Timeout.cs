@@ -34,6 +34,7 @@ namespace HA4IoT.Services.System
         public void Stop()
         {
             IsEnabled = false;
+
             _timeLeft = TimeSpan.Zero;
         }
 

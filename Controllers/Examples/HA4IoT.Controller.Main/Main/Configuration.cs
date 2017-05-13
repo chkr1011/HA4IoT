@@ -55,12 +55,12 @@ namespace HA4IoT.Controller.Main.Main
             _interruptMonitorService.RegisterInterrupt("Default", _gpioService.GetInput(4).WithInvertedState());
             _interruptMonitorService.RegisterCallback("Default", _ccToolsBoardService.PollInputs);
 
-            _ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input0.ToString(), new I2CSlaveAddress(42));
-            _ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input1.ToString(), new I2CSlaveAddress(43));
-            _ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input2.ToString(), new I2CSlaveAddress(47));
-            _ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input3.ToString(), new I2CSlaveAddress(45));
-            _ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input4.ToString(), new I2CSlaveAddress(46));
-            _ccToolsBoardService.RegisterHSPE16InputOnly(InstalledDevice.Input5.ToString(), new I2CSlaveAddress(44));
+            _ccToolsBoardService.RegisterDevice(CCToolsDevice.HSPE16_InputOnly, InstalledDevice.Input0.ToString(), 42);
+            _ccToolsBoardService.RegisterDevice(CCToolsDevice.HSPE16_InputOnly, InstalledDevice.Input1.ToString(), 43);
+            _ccToolsBoardService.RegisterDevice(CCToolsDevice.HSPE16_InputOnly, InstalledDevice.Input2.ToString(), 47);
+            _ccToolsBoardService.RegisterDevice(CCToolsDevice.HSPE16_InputOnly, InstalledDevice.Input3.ToString(), 45);
+            _ccToolsBoardService.RegisterDevice(CCToolsDevice.HSPE16_InputOnly, InstalledDevice.Input4.ToString(), 46);
+            _ccToolsBoardService.RegisterDevice(CCToolsDevice.HSPE16_InputOnly, InstalledDevice.Input5.ToString(), 44);
 
             var i2CHardwareBridge = new I2CHardwareBridge(new I2CSlaveAddress(50), _i2CBusService, _schedulerService);
             _deviceService.RegisterDevice(i2CHardwareBridge);

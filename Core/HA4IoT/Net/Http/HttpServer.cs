@@ -12,6 +12,7 @@ namespace HA4IoT.Net.Http
     {
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private readonly StreamSocketListener _serverSocket = new StreamSocketListener();
+        
         private readonly ILogger _log;
 
         public HttpServer(ILogService logService)
@@ -20,19 +21,17 @@ namespace HA4IoT.Net.Http
 
             _serverSocket.Control.KeepAlive = true;
             _serverSocket.Control.NoDelay = true;
-
             _serverSocket.ConnectionReceived += HandleConnection;
-        }
-
-        public void Bind(int port)
-        {
-            _serverSocket.BindServiceNameAsync(port.ToString()).GetAwaiter().GetResult();
-
-            _log.Info($"Binded HTTP server to port {port}");
         }
 
         public event EventHandler<HttpRequestReceivedEventArgs> HttpRequestReceived;
         public event EventHandler<WebSocketConnectedEventArgs> WebSocketConnected;
+
+        public async Task BindAsync(int port)
+        {
+            await _serverSocket.BindServiceNameAsync(port.ToString(), SocketProtectionLevel.PlainSocket);
+            _log.Info($"Binded HTTP server to port {port}");
+        }
 
         public void Dispose()
         {

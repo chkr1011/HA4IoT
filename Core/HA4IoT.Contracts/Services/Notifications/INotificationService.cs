@@ -6,7 +6,7 @@ namespace HA4IoT.Contracts.Services.Notifications
     {
         void Create(NotificationType type, string text, TimeSpan timeToLive);
 
-        void CreateInformation(string text);
+        void CreateInfo(string text);
 
         void CreateInformation(Enum resourceId, params object[] formatParameterObjects);
 

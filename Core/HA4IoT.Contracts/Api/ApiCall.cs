@@ -3,17 +3,14 @@ using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Contracts.Api
 {
-    public class ApiContext : IApiContext
+    public class ApiCall : IApiCall
     {
-        public ApiContext(string action, JObject parameter, string resultHash)
+        public ApiCall(string action, JObject parameter, string resultHash)
         {
-            if (action == null) throw new ArgumentNullException(nameof(action));
-            if (parameter == null) throw new ArgumentNullException(nameof(parameter));
-
             ResultCode = ApiResultCode.Success;
 
-            Action = action;
-            Parameter = parameter;
+            Action = action ?? throw new ArgumentNullException(nameof(action));
+            Parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
             ResultHash = resultHash;
         }
 

@@ -167,12 +167,12 @@ namespace HA4IoT.Api.Cloud.CloudConnector
             }
         }
 
-        private async Task SendResponse(CloudConnectorApiContext apiContext)
+        private async Task SendResponse(CloudConnectorApiContext apiCall)
         {
             try
             {
                 using (var httpClient = new HttpClient())
-                using (var content = CreateContent(apiContext))
+                using (var content = CreateContent(apiCall))
                 {
                     httpClient.DefaultRequestHeaders.Authorization = CreateAuthorizationHeader();
 
@@ -195,25 +195,25 @@ namespace HA4IoT.Api.Cloud.CloudConnector
 
         private CloudConnectorApiContext ProcessCloudMessage(CloudRequestMessage cloudMessage)
         {
-            var apiContext = new CloudConnectorApiContext(cloudMessage);
-            var eventArgs = new ApiRequestReceivedEventArgs(apiContext);
+            var apiCall = new CloudConnectorApiContext(cloudMessage);
+            var eventArgs = new ApiRequestReceivedEventArgs(apiCall);
 
             RequestReceived?.Invoke(this, eventArgs);
 
             if (!eventArgs.IsHandled)
             {
-                apiContext.ResultCode = ApiResultCode.ActionNotSupported;
+                apiCall.ResultCode = ApiResultCode.ActionNotSupported;
             }
 
-            return apiContext;
+            return apiCall;
         }
 
-        private static StringContent CreateContent(CloudConnectorApiContext apiContext)
+        private static StringContent CreateContent(CloudConnectorApiContext apiCall)
         {
             var cloudMessage = new CloudResponseMessage();
-            cloudMessage.Header.CorrelationId = apiContext.RequestMessage.Header.CorrelationId;
-            cloudMessage.Response.ResultCode = apiContext.ResultCode;
-            cloudMessage.Response.Result = apiContext.Result;
+            cloudMessage.Header.CorrelationId = apiCall.RequestMessage.Header.CorrelationId;
+            cloudMessage.Response.ResultCode = apiCall.ResultCode;
+            cloudMessage.Response.Result = apiCall.Result;
 
             var stringContent = new StringContent(JsonConvert.SerializeObject(cloudMessage));
             stringContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");

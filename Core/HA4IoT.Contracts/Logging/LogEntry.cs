@@ -6,9 +6,8 @@ namespace HA4IoT.Contracts.Logging
 {
     public sealed class LogEntry
     {
-        public LogEntry(long id, DateTime timestamp, int threadId, LogEntrySeverity severity, string source, string message, string exception)
+        public LogEntry(DateTime timestamp, int threadId, LogEntrySeverity severity, string source, string message, string exception)
         {
-            Id = id;
             Timestamp = timestamp;
             ThreadId = threadId;
             Severity = severity;
@@ -18,7 +17,7 @@ namespace HA4IoT.Contracts.Logging
             Exception = exception;
         }
 
-        public long Id { get; }
+        public long? Id { get; set; }
 
         public DateTime Timestamp { get; }
 

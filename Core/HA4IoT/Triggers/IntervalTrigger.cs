@@ -1,5 +1,6 @@
 ﻿using System;
 using HA4IoT.Contracts.Services.System;
+using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Triggers
 {
@@ -9,7 +10,7 @@ namespace HA4IoT.Triggers
         {
             if (scheduleService == null) throw new ArgumentNullException(nameof(scheduleService));
 
-            scheduleService.RegisterSchedule("IntervalTrigger-" + Guid.NewGuid(), interval, () => Execute());
+            scheduleService.Register("IntervalTrigger-" + Guid.NewGuid(), interval, () => Execute());
         }
     }
 }

@@ -66,14 +66,14 @@ namespace HA4IoT.Api
 
         private void OnApiRequestReceived(HttpContext context)
         {
-            IApiContext apiContext = CreateApiContext(context);
-            if (apiContext == null)
+            IApiCall apiCall = CreateApiContext(context);
+            if (apiCall == null)
             {
                 context.Response.StatusCode = HttpStatusCode.BadRequest;
                 return;
             }
 
-            var eventArgs = new ApiRequestReceivedEventArgs(apiContext);
+            var eventArgs = new ApiRequestReceivedEventArgs(apiCall);
             RequestReceived?.Invoke(this, eventArgs);
 
             if (!eventArgs.IsHandled)
@@ -90,9 +90,9 @@ namespace HA4IoT.Api
 
             var apiResponse = new ApiResponse
             {
-                ResultCode = apiContext.ResultCode,
-                Result = apiContext.Result,
-                ResultHash = apiContext.ResultHash
+                ResultCode = apiCall.ResultCode,
+                Result = apiCall.Result,
+                ResultHash = apiCall.ResultHash
             };
 
             var json = JsonConvert.SerializeObject(apiResponse);
@@ -152,7 +152,7 @@ namespace HA4IoT.Api
             var requestMessage = JObject.Parse(((WebSocketTextMessage)e.Message).Text);
             var apiRequest = requestMessage.ToObject<ApiRequest>();
 
-            var context = new ApiContext(apiRequest.Action, apiRequest.Parameter, apiRequest.ResultHash);
+            var context = new ApiCall(apiRequest.Action, apiRequest.Parameter, apiRequest.ResultHash);
 
             var eventArgs = new ApiRequestReceivedEventArgs(context);
             RequestReceived?.Invoke(this, eventArgs);
@@ -175,7 +175,7 @@ namespace HA4IoT.Api
             e.WebSocketClientSession.SendAsync(jsonResponse.ToString()).Wait();
         }
 
-        private ApiContext CreateApiContext(HttpContext context)
+        private ApiCall CreateApiContext(HttpContext context)
         {
             try
             {
@@ -194,7 +194,7 @@ namespace HA4IoT.Api
                 var action = context.Request.Uri.Substring("/api/".Length);
                 var parameter = string.IsNullOrEmpty(bodyText) ? new JObject() : JObject.Parse(bodyText);
 
-                return new ApiContext(action, parameter, null);
+                return new ApiCall(action, parameter, null);
             }
             catch (Exception)
             {

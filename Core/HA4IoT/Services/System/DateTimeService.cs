@@ -16,9 +16,9 @@ namespace HA4IoT.Services.System
         public DateTime Now => DateTime.Now;
     
         [ApiMethod]
-        public void Status(IApiContext apiContext)
+        public void Status(IApiCall apiCall)
         {
-            apiContext.Result = JObject.FromObject(this);
+            apiCall.Result = JObject.FromObject(this);
         }
     }
 }

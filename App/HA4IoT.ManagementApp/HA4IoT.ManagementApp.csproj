@@ -77,7 +77,9 @@
     <Content Include="Content\Images\WeatherSituation.png" />
     <Content Include="Content\Images\Wifi.png" />
     <Content Include="Content\Images\Window.png" />
-    <Content Include="Content\Style.css" />
+    <Content Include="Content\log.css" />
+    <Content Include="Content\script-editor.css" />
+    <Content Include="Content\style.css" />
     <Content Include="Content\ui-bootstrap-csp.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\fontawesome-webfont.svg" />
@@ -95,6 +97,12 @@
     <Content Include="fonts\fontawesome-webfont.woff" />
     <Content Include="fonts\fontawesome-webfont.woff2" />
     <Content Include="fonts\FontAwesome.otf" />
+    <Content Include="ScriptEditor\ScriptEditor.component.html" />
+    <Content Include="ScriptEditor\ScriptEditor.component.js" />
+    <Content Include="Scripts\ace\ace.js" />
+    <Content Include="Scripts\ace\mode-lua.js" />
+    <Content Include="Scripts\ace\theme-monokai.js" />
+    <Content Include="Scripts\ace\worker-lua.js" />
     <Content Include="Scripts\angular-mocks.js" />
     <Content Include="Scripts\angular-ui\ui-bootstrap-tpls.js" />
     <Content Include="Scripts\angular-ui\ui-bootstrap-tpls.min.js" />

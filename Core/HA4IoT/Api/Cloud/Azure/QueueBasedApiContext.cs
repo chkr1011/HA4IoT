@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Api.Cloud.Azure
 {
-    public class QueueBasedApiContext : ApiContext
+    public class QueueBasedApiContext : ApiCall
     {
         public QueueBasedApiContext(string correlationId, string action, JObject parameter, string resultHash) 
             : base(action, parameter, resultHash)

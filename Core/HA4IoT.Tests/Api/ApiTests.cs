@@ -13,8 +13,8 @@ namespace HA4IoT.Tests.Api
         {
             var testController = new TestController();
             
-            var apiContext = testController.InvokeApi("XXX", new JObject());
-            Assert.AreEqual(ApiResultCode.ActionNotSupported, apiContext.ResultCode);
+            var apiCall = testController.InvokeApi("XXX", new JObject());
+            Assert.AreEqual(ApiResultCode.ActionNotSupported, apiCall.ResultCode);
         }
 
         [TestMethod]
@@ -33,9 +33,9 @@ namespace HA4IoT.Tests.Api
                 Parameter = parameter
             };
 
-            var apiContext = testController.InvokeApi("Execute", JObject.FromObject(apiRequest));
-            Assert.AreEqual(ApiResultCode.Success, apiContext.ResultCode);
-            Assert.AreEqual("World", apiContext.Result["Hello"]);
+            var apiCall = testController.InvokeApi("Execute", JObject.FromObject(apiRequest));
+            Assert.AreEqual(ApiResultCode.Success, apiCall.ResultCode);
+            Assert.AreEqual("World", apiCall.Result["Hello"]);
         }
 
         [TestMethod]
@@ -55,20 +55,20 @@ namespace HA4IoT.Tests.Api
                 ResultHash = ""
             };
 
-            var apiContext = testController.InvokeApi("Execute", JObject.FromObject(apiRequest));
-            Assert.AreEqual(ApiResultCode.Success, apiContext.ResultCode);
-            Assert.AreEqual("World", apiContext.Result["Hello"]);
+            var apiCall = testController.InvokeApi("Execute", JObject.FromObject(apiRequest));
+            Assert.AreEqual(ApiResultCode.Success, apiCall.ResultCode);
+            Assert.AreEqual("World", apiCall.Result["Hello"]);
 
             // Repeat same request with hash!
 
-            apiRequest.ResultHash = apiContext.ResultHash;
-            apiContext = testController.InvokeApi("Execute", JObject.FromObject(apiRequest));
+            apiRequest.ResultHash = apiCall.ResultHash;
+            apiCall = testController.InvokeApi("Execute", JObject.FromObject(apiRequest));
 
-            Assert.AreEqual(ApiResultCode.Success, apiContext.ResultCode);
-            Assert.AreEqual(apiContext.ResultHash, apiRequest.ResultHash);
+            Assert.AreEqual(ApiResultCode.Success, apiCall.ResultCode);
+            Assert.AreEqual(apiCall.ResultHash, apiRequest.ResultHash);
 
             // Result should be empty to decrease size.
-            Assert.AreEqual(apiContext.Result.ToString(), new JObject().ToString());
+            Assert.AreEqual(apiCall.Result.ToString(), new JObject().ToString());
         }
     }
 }

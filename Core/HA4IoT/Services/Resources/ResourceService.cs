@@ -131,14 +131,14 @@ namespace HA4IoT.Services.Resources
         }
         
         [ApiMethod]
-        public void SetTexts(IApiContext apiContext)
+        public void SetTexts(IApiCall apiCall)
         {
             lock (_syncRoot)
             {
-                var request = apiContext.Parameter.ToObject<SetTextsRequest>();
+                var request = apiCall.Parameter.ToObject<SetTextsRequest>();
                 if (request?.Resources == null || !request.Resources.Any())
                 {
-                    apiContext.ResultCode = ApiResultCode.InvalidParameter;
+                    apiCall.ResultCode = ApiResultCode.InvalidParameter;
                     return;
                 }
 
@@ -158,11 +158,11 @@ namespace HA4IoT.Services.Resources
         }
 
         [ApiMethod]
-        public void GetTexts(IApiContext apiContext)
+        public void GetTexts(IApiCall apiCall)
         {
             lock (_syncRoot)
             {
-                var request = apiContext.Parameter.ToObject<GetTextsRequest>();
+                var request = apiCall.Parameter.ToObject<GetTextsRequest>();
 
                 var matchingResources = _resources;
                 if (!string.IsNullOrEmpty(request.Category))
@@ -170,7 +170,7 @@ namespace HA4IoT.Services.Resources
                     matchingResources = _resources.Where(r => r.Uri.StartsWith(request.Category + ".")).ToList();
                 }
 
-                apiContext.Result["Resources"] = JToken.FromObject(matchingResources);
+                apiCall.Result["Resources"] = JToken.FromObject(matchingResources);
             }
         }
 

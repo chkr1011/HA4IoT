@@ -52,9 +52,9 @@ namespace HA4IoT.PersonalAgent
         }
 
         [ApiMethod]
-        public void ProcessSkillServiceRequest(IApiContext apiContext)
+        public void ProcessSkillServiceRequest(IApiCall apiCall)
         {
-            var request = apiContext.Parameter.ToObject<SkillServiceRequest>();
+            var request = apiCall.Parameter.ToObject<SkillServiceRequest>();
 
             var messageContextFactory = new MessageContextFactory(_areaService, _componentsRegistry, _settingsService);
             var messageContext = messageContextFactory.Create(request);
@@ -64,20 +64,20 @@ namespace HA4IoT.PersonalAgent
             var response = new SkillServiceResponse();
             response.Response.OutputSpeech.Text = messageContext.Reply;
 
-            apiContext.Result = JObject.FromObject(response);
+            apiCall.Result = JObject.FromObject(response);
         }
 
         [ApiMethod]
-        public void Ask(IApiContext apiContext)
+        public void Ask(IApiCall apiCall)
         {
-            var text = (string)apiContext.Parameter["Message"];
+            var text = (string)apiCall.Parameter["Message"];
             if (string.IsNullOrEmpty(text))
             {
-                apiContext.ResultCode = ApiResultCode.InvalidParameter;
+                apiCall.ResultCode = ApiResultCode.InvalidParameter;
                 return;
             }
 
-            apiContext.Result["Answer"] = ProcessTextMessage(text);
+            apiCall.Result["Answer"] = ProcessTextMessage(text);
         }
 
         public string ProcessTextMessage(string text)
@@ -92,14 +92,14 @@ namespace HA4IoT.PersonalAgent
         }
 
         [ApiMethod]
-        public void GetLatestMessageContext(IApiContext apiContext)
+        public void GetLatestMessageContext(IApiCall apiCall)
         {
             if (_latestMessageContext == null)
             {
                 return;
             }
 
-            apiContext.Result = JObject.FromObject(_latestMessageContext);
+            apiCall.Result = JObject.FromObject(_latestMessageContext);
         }
 
         private void ProcessMessage(MessageContext messageContext)

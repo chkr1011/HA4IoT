@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Triggers;
 
-namespace HA4IoT.Triggers
+namespace HA4IoT.Contracts.Triggers
 {
     public class Trigger : ITrigger
     {

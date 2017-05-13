@@ -49,6 +49,7 @@ function createAppController($http, $scope, modalService, apiService, localizati
 
     c.areas = [];
 
+    c.notifications = [];
     c.weatherStation = {}
 
     c.sensors = [];
@@ -184,6 +185,8 @@ function createAppController($http, $scope, modalService, apiService, localizati
             c.updateComponentState(id, component);
         });
 
+        c.notifications = status.Notifications;
+        
         c.weatherStation.temperature = status.OutdoorTemperature;
         c.weatherStation.humidity = status.OutdoorHumidity;
         c.weatherStation.sunrise = status.Sunrise;

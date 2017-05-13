@@ -4,6 +4,7 @@ using HA4IoT.Adapters.PortBased;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
@@ -17,12 +18,14 @@ namespace HA4IoT.Sensors
 {
     public class SensorFactory
     {
+        private readonly IMessageBrokerService _messageBroker;
         private readonly ITimerService _timerService;
         private readonly ISchedulerService _schedulerService;
         private readonly ISettingsService _settingsService;
 
-        public SensorFactory(ITimerService timerService, ISchedulerService schedulerService, ISettingsService settingsService)
+        public SensorFactory(ITimerService timerService, ISchedulerService schedulerService, ISettingsService settingsService, IMessageBrokerService messageBroker)
         {
+            _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
             _timerService = timerService ?? throw new ArgumentNullException(nameof(timerService));
             _schedulerService = schedulerService ?? throw new ArgumentNullException(nameof(schedulerService));
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
@@ -50,16 +53,6 @@ namespace HA4IoT.Sensors
             return humditySensor;
         }
 
-        public IButton RegisterVirtualButton(IArea area, Enum id)
-        {
-            if (area == null) throw new ArgumentNullException(nameof(area));
-
-            var virtualButton = new Button($"{area.Id}.{id}", new VirtualButtonAdapter(), _timerService, _settingsService);
-            area.RegisterComponent(virtualButton);
-
-            return virtualButton;
-        }
-
         public IButton RegisterButton(IArea area, Enum id, IBinaryInput input)
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
@@ -69,38 +62,21 @@ namespace HA4IoT.Sensors
                 $"{area.Id}.{id}",
                 new PortBasedButtonAdapter(input),
                 _timerService,
-                _settingsService);
+                _settingsService,
+                _messageBroker);
 
             area.RegisterComponent(button);
             return button;
         }
 
-        public void RegisterRollerShutterButtons(
-            IArea area,
-            Enum upId,
-            IBinaryInput upInput,
-            Enum downId,
-            IBinaryInput downInput)
+        public IButton RegisterVirtualButton(IArea area, Enum id)
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
-            if (upInput == null) throw new ArgumentNullException(nameof(upInput));
-            if (downInput == null) throw new ArgumentNullException(nameof(downInput));
 
-            var upButton = new Button(
-                $"{area.Id}.{upId}",
-                new PortBasedButtonAdapter(upInput),
-                _timerService,
-                _settingsService);
+            var virtualButton = new Button($"{area.Id}.{id}", new VirtualButtonAdapter(), _timerService, _settingsService, _messageBroker);
+            area.RegisterComponent(virtualButton);
 
-            area.RegisterComponent(upButton);
-
-            var downButton = new Button(
-                $"{area.Id}.{downId}",
-                new PortBasedButtonAdapter(downInput),
-                _timerService,
-                _settingsService);
-
-            area.RegisterComponent(downButton);
+            return virtualButton;
         }
 
         public IMotionDetector RegisterMotionDetector(IArea area, Enum id, IBinaryInput input)
@@ -112,7 +88,8 @@ namespace HA4IoT.Sensors
                 $"{area.Id}.{id}",
                 new PortBasedMotionDetectorAdapter(input),
                 _schedulerService,
-                _settingsService);
+                _settingsService,
+                _messageBroker);
 
             area.RegisterComponent(motionDetector);
 
@@ -124,7 +101,7 @@ namespace HA4IoT.Sensors
             if (area == null) throw new ArgumentNullException(nameof(area));
             if (adapter == null) throw new ArgumentNullException(nameof(adapter));
 
-            var window = new Window($"{area.Id}.{id}", adapter, _settingsService);
+            var window = new Window($"{area.Id}.{id}", adapter, _settingsService, _messageBroker);
             area.RegisterComponent(window);
             return window;
         }
@@ -135,7 +112,7 @@ namespace HA4IoT.Sensors
             if (fullOpenReedSwitch == null) throw new ArgumentNullException(nameof(fullOpenReedSwitch));
 
             var adapter = new PortBasedWindowAdapter(fullOpenReedSwitch, tildOpenReedSwitch);
-            var window = new Window($"{area.Id}.{id}", adapter, _settingsService);
+            var window = new Window($"{area.Id}.{id}", adapter, _settingsService, _messageBroker);
             area.RegisterComponent(window);
             return window;
         }

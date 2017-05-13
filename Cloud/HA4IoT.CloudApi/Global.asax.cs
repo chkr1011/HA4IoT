@@ -17,7 +17,7 @@ namespace HA4IoT.CloudApi
             var container = new Container();
             container.Options.DefaultScopedLifestyle = new WebRequestLifestyle();
 
-            container.RegisterSingleton<ControllerMessageDispatcher>();
+            container.RegisterSingleton<ControllermessageBroker>();
             container.RegisterSingleton<SecurityService>();
             
             //// This is an extension method from the integration package.

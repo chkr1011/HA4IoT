@@ -1,5 +1,5 @@
 ﻿<div class="row">
-    <div ng-repeat="notification in ctrl.Status.Notifications" class="alert" ng-class="{'alert-success' : notification.Type==='Information', 'alert-warning': notification.Type==='Warning', 'alert-danger' : notification.Type==='Error' }">
+    <div ng-repeat="notification in ctrl.notifications" class="alert" ng-class="{'alert-success' : notification.Type==='Information', 'alert-warning': notification.Type==='Warning', 'alert-danger' : notification.Type==='Error' }">
         <a href="#" ng-click="ctrl.notificationService.delete(notification.Uid)" class="close" data-dismiss="alert" aria-label="close">&times;</a>
         <strong>{{notification.Timestamp | date : "fullDate"}} {{notification.Timestamp | date : "mediumTime"}}</strong><br/>{{notification.Message}}
     </div>

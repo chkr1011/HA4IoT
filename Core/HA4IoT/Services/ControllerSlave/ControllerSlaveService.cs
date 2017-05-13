@@ -50,16 +50,16 @@ namespace HA4IoT.Services.ControllerSlave
 
             settingsService.CreateSettingsMonitor<ControllerSlaveServiceSettings>(s => Settings = s.NewSettings);
 
-            scheduler.RegisterSchedule("ControllerSlavePolling", TimeSpan.FromMinutes(5), () => PullValues());
+            scheduler.Register("ControllerSlavePolling", TimeSpan.FromMinutes(5), () => PullValues());
         }
 
         public ControllerSlaveServiceSettings Settings { get; private set; }
 
         [ApiMethod]
-        public void Status(IApiContext apiContext)
+        public void Status(IApiCall apiCall)
         {
-            apiContext.Result["LastPull"] = _lastPull;
-            apiContext.Result["LastSuccessfulPull"] = _lastSuccessfulPull;
+            apiCall.Result["LastPull"] = _lastPull;
+            apiCall.Result["LastSuccessfulPull"] = _lastSuccessfulPull;
         }
 
         private void PullValues()

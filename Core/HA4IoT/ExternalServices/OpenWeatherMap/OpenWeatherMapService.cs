@@ -77,17 +77,17 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             }
 
             LoadPersistedData();
-            _schedulerService.RegisterSchedule("OpenWeatherMapServiceUpdater", TimeSpan.FromMinutes(5), RefreshAsync);
+            _schedulerService.Register("OpenWeatherMapServiceUpdater", TimeSpan.FromMinutes(5), RefreshAsync);
         }
 
         [ApiMethod]
-        public void Status(IApiContext apiContext)
+        public void Status(IApiCall apiCall)
         {
-            apiContext.Result = JObject.FromObject(this);
+            apiCall.Result = JObject.FromObject(this);
         }
 
         [ApiMethod]
-        public void Refresh(IApiContext apiContext)
+        public void Refresh(IApiCall apiCall)
         {
             RefreshAsync().Wait();
         }

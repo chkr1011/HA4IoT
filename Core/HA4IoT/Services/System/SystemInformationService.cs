@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
@@ -13,29 +12,39 @@ namespace HA4IoT.Services.System
     {
         private readonly Dictionary<string, Func<object>> _values = new Dictionary<string, Func<object>>();
         
-        public void Set(string name, object value)
+        public void Set(string key, object value)
         {
-            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (key == null) throw new ArgumentNullException(nameof(key));
 
             lock (_values)
             {
-                _values[name] = () => value;
+                _values[key] = () => value;
             }
         }
 
-        public void Set(string name, Func<object> valueProvider)
+        public void Set(string key, Func<object> valueProvider)
         {
-            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (key == null) throw new ArgumentNullException(nameof(key));
             if (valueProvider == null) throw new ArgumentNullException(nameof(valueProvider));
 
             lock (_values)
             {
-                _values[name] = valueProvider;
+                _values[key] = valueProvider;
+            }
+        }
+
+        public void Delete(string key)
+        {
+            if (key == null) throw new ArgumentNullException(nameof(key));
+
+            lock (_values)
+            {
+                _values.Remove(key);
             }
         }
 
         [ApiMethod]
-        public void GetStatus(IApiContext apiContext)
+        public void GetStatus(IApiCall apiCall)
         {
             Dictionary<string, Func<object>> values;
             lock (_values)
@@ -57,7 +66,7 @@ namespace HA4IoT.Services.System
                 }
             }
 
-            apiContext.Result = json;
+            apiCall.Result = json;
         }
     }
 }

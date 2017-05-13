@@ -6,30 +6,29 @@ using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Components.Features;
 using HA4IoT.Contracts.Components.States;
+using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Sensors.Events;
 using HA4IoT.Contracts.Services.Settings;
-using HA4IoT.Contracts.Triggers;
-using HA4IoT.Triggers;
 
 namespace HA4IoT.Sensors.Windows
 {
     public class Window : ComponentBase, IWindow
     {
+        private readonly IMessageBrokerService _messageBroker;
         private readonly IWindowAdapter _adapter;
         private readonly ISettingsService _settingsService;
         private WindowStateValue _state;
 
-        public Window(string id, IWindowAdapter adapter, ISettingsService settingsService)
+        public Window(string id, IWindowAdapter adapter, ISettingsService settingsService, IMessageBrokerService messageBroker)
             : base(id)
         {
+            _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
             _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
+
             adapter.StateChanged += (s, e) => Update(e);
         }
-
-        public ITrigger OpenedTrigger { get; } = new Trigger();
-
-        public ITrigger ClosedTrigger { get; } = new Trigger();
 
         public override IComponentFeatureCollection GetFeatures()
         {
@@ -83,11 +82,11 @@ namespace HA4IoT.Sensors.Windows
 
             if (_state == WindowStateValue.Closed)
             {
-                ((Trigger)ClosedTrigger).Execute();
+                _messageBroker.Publish(Id, new WindowClosedEvent());
             }
             else
             {
-                ((Trigger)OpenedTrigger).Execute();
+                _messageBroker.Publish(Id, new WindowOpenedEvent());
             }
         }
     }

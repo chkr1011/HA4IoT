@@ -3,7 +3,7 @@ using HA4IoT.Actuators;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Hardware.I2C;
+using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.CCTools.Devices;
@@ -21,6 +21,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         private readonly CCToolsDeviceService _ccToolsBoardService;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
+        private readonly IMessageBrokerService _messageBroker;
 
         private enum LivingRoom
         {
@@ -64,8 +65,10 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             IAreaRegistryService areaService,
             CCToolsDeviceService ccToolsBoardService,
             ActuatorFactory actuatorFactory,
-            SensorFactory sensorFactory)
+            SensorFactory sensorFactory,
+            IMessageBrokerService messageBroker)
         {
+            _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
             _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
             _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
             _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
@@ -75,8 +78,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
         public void Apply()
         {
-            var hsrel8 = _ccToolsBoardService.RegisterHSREL8(InstalledDevice.LivingRoomHSREL8.ToString(), new I2CSlaveAddress(18));
-            var hsrel5 = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.LivingRoomHSREL5.ToString(), new I2CSlaveAddress(57));
+            var hsrel8 = (HSREL8)_ccToolsBoardService.RegisterDevice(CCToolsDevice.HSRel8, InstalledDevice.LivingRoomHSREL8.ToString(), 18);
+            var hsrel5 = (HSREL5)_ccToolsBoardService.RegisterDevice(CCToolsDevice.HSRel5, InstalledDevice.LivingRoomHSREL5.ToString(), 57);
 
             var input0 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input0.ToString());
             var input1 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input1.ToString());
@@ -113,16 +116,16 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             _sensorFactory.RegisterButton(area, LivingRoom.ButtonLower, input0.GetInput(13));
             _sensorFactory.RegisterButton(area, LivingRoom.ButtonPassage, input1.GetInput(10));
 
-            area.GetButton(LivingRoom.ButtonUpper).PressedShortTrigger.Attach(
+            area.GetButton(LivingRoom.ButtonUpper).CreatePressedShortTrigger(_messageBroker).Attach(
                 () => area.GetComponent(LivingRoom.LampDiningTable).TryTogglePowerState());
 
-            area.GetButton(LivingRoom.ButtonMiddle).PressedShortTrigger.Attach(() =>
+            area.GetButton(LivingRoom.ButtonMiddle).CreatePressedShortTrigger(_messageBroker).Attach(() =>
                 area.GetComponent(LivingRoom.LampCouch).TryTogglePowerState());
             
-            area.GetButton(LivingRoom.ButtonLower).PressedShortTrigger.Attach(() => 
+            area.GetButton(LivingRoom.ButtonLower).CreatePressedShortTrigger(_messageBroker).Attach(() => 
                 area.GetComponent(LivingRoom.SocketWallRightEdgeRight).TryTogglePowerState());
 
-            area.GetButton(LivingRoom.ButtonPassage).PressedShortTrigger.Attach(
+            area.GetButton(LivingRoom.ButtonPassage).CreatePressedShortTrigger(_messageBroker).Attach(
                 () => area.GetComponent(LivingRoom.LampDiningTable).TryTogglePowerState());
         }
     }

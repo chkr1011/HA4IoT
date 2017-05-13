@@ -4,7 +4,7 @@ using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Hardware.I2C;
+using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.CCTools.Devices;
@@ -25,6 +25,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         private readonly RemoteSocketService _remoteSocketService;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
+        private readonly IMessageBrokerService _messageBroker;
 
         private enum Office
         {
@@ -64,8 +65,10 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             CCToolsDeviceService ccToolsBoardService,
             RemoteSocketService remoteSocketService,
             ActuatorFactory actuatorFactory,
-            SensorFactory sensorFactory)
+            SensorFactory sensorFactory,
+            IMessageBrokerService messageBroker)
         {
+            _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
             _outpostDeviceService = outpostDeviceService ?? throw new ArgumentNullException(nameof(outpostDeviceService));
             _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
             _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
@@ -77,8 +80,9 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
         public void Apply()
         {
-            var hsrel8 = _ccToolsBoardService.RegisterHSREL8(InstalledDevice.OfficeHSREL8.ToString(), new I2CSlaveAddress(20));
-            var hspe8 = _ccToolsBoardService.RegisterHSPE8OutputOnly(InstalledDevice.UpperFloorAndOfficeHSPE8.ToString(), new I2CSlaveAddress(37));
+            var hsrel8 = (HSREL8)_ccToolsBoardService.RegisterDevice(CCToolsDevice.HSRel8, InstalledDevice.OfficeHSREL8.ToString(), 20);
+            var hspe8 = (HSPE8OutputOnly)_ccToolsBoardService.RegisterDevice(CCToolsDevice.HSPE8_OutputOnly, InstalledDevice.UpperFloorAndOfficeHSPE8.ToString(), 37);
+
             var input4 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input4.ToString());
             var input5 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input5.ToString());
 
@@ -120,10 +124,10 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             stateMachine.ResetStateId = StateMachineStateExtensions.OffStateId;
 
             area.GetButton(Office.ButtonUpperLeft)
-                .PressedShortTrigger
+                .CreatePressedShortTrigger(_messageBroker)
                 .Attach(() => area.GetComponent(Office.CombinedCeilingLights).TrySetState(StateMachineStateExtensions.OnStateId));
 
-            area.GetButton(Office.ButtonUpperLeft).PressedLongTrigger.Attach(() =>
+            area.GetButton(Office.ButtonUpperLeft).CreatePressedLongTrigger(_messageBroker).Attach(() =>
             {
                 area.GetComponent(Office.CombinedCeilingLights).TryTurnOff();
                 area.GetComponent(Office.SocketRearLeftEdge).TryTurnOff();
@@ -132,11 +136,11 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             });
 
             area.GetButton(Office.ButtonLowerLeft)
-                .PressedShortTrigger
+                .CreatePressedShortTrigger(_messageBroker)
                 .Attach(() => area.GetComponent(Office.CombinedCeilingLights).TrySetState("DeskOnly"));
 
             area.GetButton(Office.ButtonLowerRight)
-                .PressedShortTrigger
+                .CreatePressedShortTrigger(_messageBroker)
                 .Attach(() => area.GetComponent(Office.CombinedCeilingLights).TrySetState("CouchOnly"));
         }
 

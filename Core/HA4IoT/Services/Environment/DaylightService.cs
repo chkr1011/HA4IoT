@@ -30,9 +30,9 @@ namespace HA4IoT.Services.Environment
         public DateTime? Timestamp { get; private set; }
 
         [ApiMethod]
-        public void GetStatus(IApiContext apiContext)
+        public void GetStatus(IApiCall apiCall)
         {
-            apiContext.Result = JObject.FromObject(this);
+            apiCall.Result = JObject.FromObject(this);
         }
 
         public void Update(TimeSpan sunrise, TimeSpan sunset)

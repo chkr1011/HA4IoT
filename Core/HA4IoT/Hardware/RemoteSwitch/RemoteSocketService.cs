@@ -27,7 +27,7 @@ namespace HA4IoT.Hardware.RemoteSwitch
 
             // Ensure that the state of the remote switch is restored if the original remote is used
             // or the switch has been removed from the socket and plugged in at another place.
-            schedulerService.RegisterSchedule("RCSocketStateSender", TimeSpan.FromMinutes(1), () => RefreshStates());
+            schedulerService.Register("RCSocketStateSender", TimeSpan.FromMinutes(1), () => RefreshStates());
 
             _log = logService.CreatePublisher(nameof(RemoteSocketService));
         }
@@ -48,12 +48,12 @@ namespace HA4IoT.Hardware.RemoteSwitch
         }
 
         [ApiMethod]
-        public void Send(IApiContext apiContext)
+        public void Send(IApiCall apiCall)
         {
-            var code = apiContext.Parameter.ToObject<Lpd433MhzCode>();
+            var code = apiCall.Parameter.ToObject<Lpd433MhzCode>();
             if (code == null)
             {
-                apiContext.ResultCode = ApiResultCode.InvalidParameter;
+                apiCall.ResultCode = ApiResultCode.InvalidParameter;
                 return;
             }
 
@@ -61,7 +61,7 @@ namespace HA4IoT.Hardware.RemoteSwitch
         }
 
         [ApiMethod]
-        public void GetLastReceivedCode(IApiContext apiContext)
+        public void GetLastReceivedCode(IApiCall apiCall)
         {
             if (_lastReceivedLpd433MhzCode == null)
             {
@@ -70,7 +70,7 @@ namespace HA4IoT.Hardware.RemoteSwitch
 
             lock (_syncRoot)
             {
-                apiContext.Result = JObject.FromObject(_lastReceivedLpd433MhzCode);
+                apiCall.Result = JObject.FromObject(_lastReceivedLpd433MhzCode);
             }
         }
 

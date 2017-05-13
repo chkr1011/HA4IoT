@@ -14,6 +14,8 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Hardware.DeviceMessaging;
 using HA4IoT.Contracts.Hardware.Services;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Messaging;
+using HA4IoT.Contracts.Scripting;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.Backup;
 using HA4IoT.Contracts.Services.Daylight;
@@ -33,13 +35,17 @@ using HA4IoT.ExternalServices.Twitter;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2C;
 using HA4IoT.Hardware.Outpost;
+using HA4IoT.Hardware.RaspberryPi;
 using HA4IoT.Hardware.RemoteSwitch;
 using HA4IoT.Hardware.Services;
 using HA4IoT.Hardware.Sonoff;
 using HA4IoT.Logging;
+using HA4IoT.Messaging;
 using HA4IoT.Net.Http;
 using HA4IoT.Notifications;
 using HA4IoT.PersonalAgent;
+using HA4IoT.Scripting;
+using HA4IoT.Scripting.Proxies;
 using HA4IoT.Sensors;
 using HA4IoT.Services;
 using HA4IoT.Services.Areas;
@@ -54,7 +60,6 @@ using HA4IoT.Services.StorageService;
 using HA4IoT.Services.System;
 using HA4IoT.Settings;
 using SimpleInjector;
-using GpioService = HA4IoT.Hardware.RaspberryPi.GpioService;
 
 namespace HA4IoT.Core
 {
@@ -127,7 +132,7 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<IDateTimeService, DateTimeService>();
             _container.RegisterSingleton<ISchedulerService, SchedulerService>();
             _container.RegisterSingleton<DiscoveryServerService>();
-            
+
             _container.RegisterSingleton<IStorageService, StorageService>();
             _container.RegisterSingleton<ITimerService, TimerService>();
             _container.RegisterSingleton<ISystemEventsService, SystemEventsService>();
@@ -153,6 +158,7 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<IGpioService, GpioService>();
             _container.RegisterSingleton<IDeviceMessageBrokerService, DeviceMessageBrokerService>();
             _container.RegisterInitializer<DeviceMessageBrokerService>(s => s.Initialize());
+            _container.RegisterSingleton<IMessageBrokerService, MessageBrokerService>();
             _container.RegisterSingleton<InterruptMonitorService>(); // TODO: Add interface for testing etc.
 
             _container.RegisterSingleton<CCToolsDeviceService>();
@@ -164,6 +170,18 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<IAreaRegistryService, AreaRegistryService>();
             _container.RegisterSingleton<IComponentRegistryService, ComponentRegistryService>();
             _container.RegisterSingleton<IAutomationRegistryService, AutomationRegistryService>();
+            _container.RegisterSingleton<IScriptingService, ScriptingService>();
+            _container.RegisterCollection<IScriptProxy>(new List<Type>
+            {
+                typeof(NotificationScriptProxy),
+                typeof(TelegramBotScriptProxy),
+                typeof(TwitterClientScriptProxy),
+                typeof(OutdoorScriptProxy),
+                typeof(CCToolsScriptProxy),
+                typeof(SystemInformationScriptProxy),
+                typeof(AreaScriptProxy),
+                typeof(DateTimeScriptProxy)
+            });
 
             _container.RegisterSingleton<ActuatorFactory>();
             _container.RegisterSingleton<SensorFactory>();

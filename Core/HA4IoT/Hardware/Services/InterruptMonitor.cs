@@ -31,11 +31,6 @@ namespace HA4IoT.Hardware.Services
 
         private void HandleInterrupt(object sender, BinaryStateChangedEventArgs e)
         {
-            if (e.OldState == e.NewState || e.NewState == BinaryState.Low)
-            {
-                return;
-            }
-
             Task.Run(() => HandleInterrupt());
         }
 

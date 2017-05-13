@@ -28,9 +28,9 @@ namespace HA4IoT.Services.Status
         }
 
         [ApiMethod]
-        public void GetStatus(IApiContext apiContext)
+        public void GetStatus(IApiCall apiCall)
         {
-            apiContext.Result = JObject.FromObject(CollectStatus());
+            apiCall.Result = JObject.FromObject(CollectStatus());
         }
 
         private Status CollectStatus()

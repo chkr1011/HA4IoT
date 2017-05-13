@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading;
+using System.IO;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Storage;
@@ -9,6 +9,7 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Scripting;
 using HA4IoT.Contracts.Services.Notifications;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
@@ -34,6 +35,11 @@ namespace HA4IoT.Core
             StoragePath.Initialize(ApplicationData.Current.LocalFolder.Path, ApplicationData.Current.LocalFolder.Path);
         }
 
+        public static bool IsRunningInUnitTest { get; set; }
+
+        public event EventHandler StartupCompleted;
+        public event EventHandler StartupFailed;
+
         public Task RunAsync(IBackgroundTaskInstance taskInstance)
         {
             _deferral = taskInstance?.GetDeferral() ?? throw new ArgumentNullException(nameof(taskInstance));
@@ -42,40 +48,31 @@ namespace HA4IoT.Core
 
         public Task RunAsync()
         {
-            var task = Task.Factory.StartNew(
-                Startup,
-                CancellationToken.None,
-                TaskCreationOptions.LongRunning,
-                TaskScheduler.Default);
-
-            task.ConfigureAwait(false);
-            return task;
+            return Task.Run(() => StartupAsync());
         }
 
-        public event EventHandler StartupCompleted;
-        public event EventHandler StartupFailed;
-        
-        private void Startup()
+        private async void StartupAsync()
         {
             try
             {
                 var stopwatch = Stopwatch.StartNew();
 
                 RegisterServices();
-                StartHttpServer();
+
+                var httpServer = _container.GetInstance<HttpServer>();
+                await httpServer.BindAsync(_options.HttpServerPort);
 
                 _container.StartupServices(_log);
                 _container.ExposeRegistrationsToApi();
 
-                TryConfigure();
+                await TryConfigureAsync();
 
                 StartupCompleted?.Invoke(this, EventArgs.Empty);
                 stopwatch.Stop();
 
                 _container.GetInstance<IApiDispatcherService>().ConfigurationRequested += (s, e) =>
                 {
-                    var controllerSettings = _container.GetInstance<ISettingsService>().GetSettings<ControllerSettings>();
-                    e.ApiContext.Result["Controller"] = JObject.FromObject(controllerSettings);
+                    e.ApiContext.Result["Controller"] = JObject.FromObject(_container.GetInstance<ISettingsService>().GetSettings<ControllerSettings>());
                 };
 
                 _log.Info("Startup completed after " + stopwatch.Elapsed);
@@ -92,12 +89,6 @@ namespace HA4IoT.Core
             }
         }
 
-        private void StartHttpServer()
-        {
-            var httpServer = _container.GetInstance<HttpServer>();
-            httpServer.Bind(_options.HttpServerPort);
-        }
-
         private void RegisterServices()
         {
             _container.RegisterSingleton<IController>(() => this);
@@ -112,13 +103,34 @@ namespace HA4IoT.Core
             _log.Info("Services registered.");
         }
 
-        private void TryConfigure()
+        private async Task TryConfigureAsync()
+        {
+            try
+            {
+                await TryApplyCodeConfigurationAsync();
+                TryApplyScriptConfiguration();
+                
+                _log.Info("Resetting all components");
+                var componentRegistry = _container.GetInstance<IComponentRegistryService>();
+                foreach (var component in componentRegistry.GetComponents())
+                {
+                    component.TryReset();
+                }
+            }
+            catch (Exception exception)
+            {
+                _log.Error(exception, "Error while configuring");
+                _container.GetInstance<INotificationService>().CreateError("Error while configuring.");
+            }
+        }
+
+        private async Task TryApplyCodeConfigurationAsync()
         {
             try
             {
                 if (_options.ConfigurationType == null)
                 {
-                    _log.Warning("No configuration is set.");
+                    _log.Verbose("No configuration type is set.");
                     return;
                 }
 
@@ -130,20 +142,33 @@ namespace HA4IoT.Core
                 }
 
                 _log.Info("Applying configuration");
-                configuration.ApplyAsync().Wait();
-
-                _log?.Info("Resetting all components");
-                var componentService = _container.GetInstance<IComponentRegistryService>();
-                foreach (var component in componentService.GetComponents())
-                {
-                    component.TryReset();
-                }
+                await configuration.ApplyAsync();
             }
             catch (Exception exception)
             {
-                _log?.Error(exception, "Error while configuring");
+                _log.Error(exception, "Error while applying code configuration");
+                _container.GetInstance<INotificationService>().CreateError("Configuration code has failed.");
+            }
+        }
 
-                _container.GetInstance<INotificationService>().CreateError("Configuration is invalid");
+        private void TryApplyScriptConfiguration()
+        {
+            try
+            {
+                var configurationScriptFile = Path.Combine(StoragePath.StorageRoot, "Configuration.lua");
+                if (!File.Exists(configurationScriptFile))
+                {
+                    _log.Verbose("Configuration script not found.");
+                    return;
+                }
+
+                var scriptCode = File.ReadAllText(configurationScriptFile);
+                _container.GetInstance<IScriptingService>().ExecuteScript(scriptCode, "applyConfiguration");
+            }
+            catch (Exception exception)
+            {
+                _log.Error(exception, "Error while applying script configuration");
+                _container.GetInstance<INotificationService>().CreateError("Configuration script has failed.");
             }
         }
     }

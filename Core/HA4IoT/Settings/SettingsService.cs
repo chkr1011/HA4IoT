@@ -115,18 +115,18 @@ namespace HA4IoT.Settings
         }
 
         [ApiMethod]
-        public void Replace(IApiContext apiContext)
+        public void Replace(IApiCall apiCall)
         {
-            var request = apiContext.Parameter.ToObject<SettingsServiceApiRequest>();
+            var request = apiCall.Parameter.ToObject<SettingsServiceApiRequest>();
             SetRawSettings(request.Uri, request.Settings);
         }
 
         [ApiMethod]
-        public void Import(IApiContext apiContext)
+        public void Import(IApiCall apiCall)
         {
-            if (apiContext.Parameter.Type == JTokenType.Object)
+            if (apiCall.Parameter.Type == JTokenType.Object)
             {
-                var request = apiContext.Parameter.ToObject<SettingsServiceApiRequest>();
+                var request = apiCall.Parameter.ToObject<SettingsServiceApiRequest>();
                 ImportRawSettings(request.Uri, request.Settings);
             }
             else
@@ -136,11 +136,11 @@ namespace HA4IoT.Settings
         }
 
         [ApiMethod]
-        public void ImportMultiple(IApiContext apiContext)
+        public void ImportMultiple(IApiCall apiCall)
         {
-            if (apiContext.Parameter.Type == JTokenType.Object)
+            if (apiCall.Parameter.Type == JTokenType.Object)
             {
-                var request = apiContext.Parameter.ToObject<Dictionary<string, JObject>>();
+                var request = apiCall.Parameter.ToObject<Dictionary<string, JObject>>();
                 foreach (var item in request)
                 {
                     ImportSettings(item.Key, item.Value);
@@ -153,12 +153,12 @@ namespace HA4IoT.Settings
         }
 
         [ApiMethod]
-        public void GetSettings(IApiContext apiContext)
+        public void GetSettings(IApiCall apiCall)
         {
-            if (apiContext.Parameter.Type == JTokenType.Object)
+            if (apiCall.Parameter.Type == JTokenType.Object)
             {
-                var request = apiContext.Parameter.ToObject<SettingsServiceApiRequest>();
-                apiContext.Result = GetSettings(request.Uri);
+                var request = apiCall.Parameter.ToObject<SettingsServiceApiRequest>();
+                apiCall.Result = GetSettings(request.Uri);
             }
             else
             {

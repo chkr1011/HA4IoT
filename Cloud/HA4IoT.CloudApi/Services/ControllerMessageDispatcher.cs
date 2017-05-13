@@ -8,7 +8,7 @@ using HA4IoT.Contracts.Api.Cloud;
 
 namespace HA4IoT.CloudApi.Services
 {
-    public class ControllerMessageDispatcher
+    public class ControllermessageBroker
     {
         private readonly Dictionary<Guid, ControllerContext> _controllerContexts = new Dictionary<Guid, ControllerContext>();
 

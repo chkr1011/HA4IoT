@@ -47,7 +47,6 @@ namespace HA4IoT.Services.System
         private static async Task SendResponseAsync(HostName target, DiscoveryResponse response)
         {
             var buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response));
-
             using (var socket = new DatagramSocket())
             {
                 await socket.ConnectAsync(target, Port.ToString());

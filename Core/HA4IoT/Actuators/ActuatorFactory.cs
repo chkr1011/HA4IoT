@@ -4,7 +4,6 @@ using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
-using HA4IoT.Adapters;
 using HA4IoT.Adapters.PortBased;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;

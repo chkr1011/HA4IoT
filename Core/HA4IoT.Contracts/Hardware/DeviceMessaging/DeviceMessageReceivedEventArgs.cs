@@ -6,9 +6,7 @@ namespace HA4IoT.Contracts.Hardware.DeviceMessaging
     {
         public DeviceMessageReceivedEventArgs(DeviceMessage message)
         {
-            if (message == null) throw new ArgumentNullException(nameof(message));
-
-            Message = message;
+            Message = message ?? throw new ArgumentNullException(nameof(message));
         }
 
         public DeviceMessage Message { get; }

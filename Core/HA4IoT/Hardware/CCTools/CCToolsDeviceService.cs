@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.DeviceMessaging;
 using HA4IoT.Contracts.Hardware.I2C;
 using HA4IoT.Contracts.Logging;
@@ -25,68 +26,65 @@ namespace HA4IoT.Hardware.CCTools
             _log = log?.CreatePublisher(nameof(CCToolsDeviceService)) ?? throw new ArgumentNullException(nameof(log));
         }
 
-        public HSPE16InputOnly RegisterHSPE16InputOnly(string id, I2CSlaveAddress address)
+        public IDevice RegisterDevice(CCToolsDevice device, string id, int address)
         {
-            var device = new HSPE16InputOnly(id, address, _i2CBusService, _deviceMessageBrokerService, _log)
+            var i2CSlaveAddress = new I2CSlaveAddress(address);
+            IDevice deviceInstance;
+            switch (device)
             {
-                AutomaticallyFetchState = true
-            };
+                case CCToolsDevice.HSPE16_InputOnly:
+                    {
+                        deviceInstance = new HSPE16InputOnly(id, i2CSlaveAddress, _i2CBusService, _deviceMessageBrokerService, _log)
+                        {
+                            AutomaticallyFetchState = true
+                        };
+                        break;
+                    }
 
-            _deviceService.RegisterDevice(device);
+                case CCToolsDevice.HSPE16_OutputOnly:
+                    {
+                        deviceInstance = new HSPE16OutputOnly(id, i2CSlaveAddress, _i2CBusService, _deviceMessageBrokerService, _log);
+                        break;
+                    }
 
-            return device;
-        }
+                case CCToolsDevice.HSPE8_InputOnly:
+                    {
+                        deviceInstance = new HSPE8InputOnly(id, i2CSlaveAddress, _i2CBusService, _deviceMessageBrokerService, _log)
+                        {
+                            AutomaticallyFetchState = true
+                        };
+                        break;
+                    }
 
-        public HSPE16OutputOnly RegisterHSPE16OutputOnly(string id, I2CSlaveAddress address)
-        {
-            var device = new HSPE16OutputOnly(id, address, _i2CBusService, _deviceMessageBrokerService, _log);
-            _deviceService.RegisterDevice(device);
+                case CCToolsDevice.HSPE8_OutputOnly:
+                    {
+                        deviceInstance = new HSPE8OutputOnly(id, i2CSlaveAddress, _i2CBusService, _deviceMessageBrokerService, _log);
+                        break;
+                    }
 
-            return device;
-        }
+                case CCToolsDevice.HSRel5:
+                    {
+                        deviceInstance = new HSREL5(id, i2CSlaveAddress, _i2CBusService, _deviceMessageBrokerService, _log);
+                        break;
+                    }
 
-        public HSPE8InputOnly RegisterHSPE8InputOnly(string id, I2CSlaveAddress i2CAddress)
-        {
-            var device = new HSPE8InputOnly(id, i2CAddress, _i2CBusService, _deviceMessageBrokerService, _log)
-            {
-                AutomaticallyFetchState = true
-            };
+                case CCToolsDevice.HSRel8:
+                    {
+                        deviceInstance = new HSREL8(id, i2CSlaveAddress, _i2CBusService, _deviceMessageBrokerService, _log);
+                        break;
+                    }
 
-            _deviceService.RegisterDevice(device);
+                case CCToolsDevice.HSRT16:
+                {
+                    deviceInstance = new HSRT16(id, i2CSlaveAddress, _i2CBusService, _deviceMessageBrokerService, _log);
+                    break;
+                }
 
-            return device;
-        }
+                default: throw new NotSupportedException();
+            }
 
-        public HSPE8OutputOnly RegisterHSPE8OutputOnly(string id, I2CSlaveAddress i2CAddress)
-        {
-            var device = new HSPE8OutputOnly(id, i2CAddress, _i2CBusService, _deviceMessageBrokerService, _log);
-            _deviceService.RegisterDevice(device);
-
-            return device;
-        }
-
-        public HSREL5 RegisterHSREL5(string id, I2CSlaveAddress i2CAddress)
-        {
-            var device = new HSREL5(id, i2CAddress, _i2CBusService, _deviceMessageBrokerService, _log);
-            _deviceService.RegisterDevice(device);
-
-            return device;
-        }
-
-        public HSREL8 RegisterHSREL8(string id, I2CSlaveAddress i2CAddress)
-        {
-            var device = new HSREL8(id, i2CAddress, _i2CBusService, _deviceMessageBrokerService, _log);
-            _deviceService.RegisterDevice(device);
-
-            return device;
-        }
-
-        public HSRT16 RegisterHSRT16(string id, I2CSlaveAddress address)
-        {
-            var device = new HSRT16(id, address, _i2CBusService, _deviceMessageBrokerService, _log);
-            _deviceService.RegisterDevice(device);
-
-            return device;
+            _deviceService.RegisterDevice(deviceInstance);
+            return deviceInstance;
         }
 
         public void PollInputs()

@@ -129,21 +129,21 @@ namespace HA4IoT.Services
         }
 
         [ApiMethod]
-        public void ExecuteCommand(IApiContext apiContext)
+        public void ExecuteCommand(IApiCall apiCall)
         {
-            var componentId = apiContext.Parameter["ComponentId"].Value<string>();
-            var commandType = apiContext.Parameter["CommandType"].Value<string>();
+            var componentId = apiCall.Parameter["ComponentId"].Value<string>();
+            var commandType = apiCall.Parameter["CommandType"].Value<string>();
 
             var commandResolver = new CommandResolver();
             ICommand command;
             try
             {
-                command = commandResolver.Resolve(commandType, apiContext.Parameter);
+                command = commandResolver.Resolve(commandType, apiCall.Parameter);
             }
             catch (CommandUnknownException exception)
             {
                 _log.Warning(exception, $"Tried to invoke unknown command '{commandType}'.");
-                apiContext.ResultCode = ApiResultCode.InvalidParameter;
+                apiCall.ResultCode = ApiResultCode.InvalidParameter;
                 return;
             }
 

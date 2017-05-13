@@ -2,24 +2,29 @@
 using HA4IoT.Components;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Components.Features;
+using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Sensors.Events;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
+using HA4IoT.Triggers;
 
 namespace HA4IoT.Automations
 {
     public class BathroomFanAutomation : AutomationBase
     {
+        private readonly IMessageBrokerService _messageBroker;
         private readonly ISchedulerService _schedulerService;
         
         private readonly IFan _fan;
         private IDelayedAction _delayedAction;
 
-        public BathroomFanAutomation(string id, IFan fan, ISchedulerService schedulerService, ISettingsService settingsService)
+        public BathroomFanAutomation(string id, IFan fan, ISchedulerService schedulerService, ISettingsService settingsService, IMessageBrokerService messageBroker)
             : base(id)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-
+            _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
+            
             _fan = fan ?? throw new ArgumentNullException(nameof(fan));
             _schedulerService = schedulerService ?? throw new ArgumentNullException(nameof(schedulerService));
 
@@ -32,8 +37,8 @@ namespace HA4IoT.Automations
         {
             if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
 
-            motionDetector.MotionDetectedTrigger.Triggered += (_, __) => TurnOnSlow();
-            motionDetector.MotionDetectionCompletedTrigger.Triggered += (_, __) => StartTimeout();
+            _messageBroker.CreateTrigger<MotionDetectedEvent>(motionDetector.Id).Attach(TurnOnSlow);
+            _messageBroker.CreateTrigger<MotionDetectionCompletedEvent>(motionDetector.Id).Attach(StartTimeout);
 
             return this;
         }

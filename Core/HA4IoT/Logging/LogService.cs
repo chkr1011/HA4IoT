@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
@@ -14,15 +15,13 @@ namespace HA4IoT.Logging
     [ApiServiceClass(typeof(ILogService))]
     public class LogService : ServiceBase, ILogService
     {
-        private const int LogHistorySize = 1000;
-        private const int LogErrorHistorySize = 250;
-        private const int LogWarningHistorySize = 250;
-
         private readonly object _syncRoot = new object();
         private readonly Guid _sessionId = Guid.NewGuid();
-        private readonly Queue<LogEntry> _logEntries = new Queue<LogEntry>();
-        private readonly Queue<LogEntry> _errorLogEntries = new Queue<LogEntry>();
-        private readonly Queue<LogEntry> _warningLogEntries = new Queue<LogEntry>();
+
+        private readonly List<LogEntry> _pendingLogEntries = new List<LogEntry>();
+        private readonly RollingCollection<LogEntry> _logEntries = new RollingCollection<LogEntry>(1000);
+        private readonly RollingCollection<LogEntry> _errorLogEntries = new RollingCollection<LogEntry>(250);
+        private readonly RollingCollection<LogEntry> _warningLogEntries = new RollingCollection<LogEntry>(250);
 
         private readonly IDateTimeService _dateTimeService;
         private readonly IEnumerable<ILogAdapter> _adapters;
@@ -38,6 +37,8 @@ namespace HA4IoT.Logging
 
             systemInformationService.Set("Log/Errors/Count", () => _errorLogEntries.Count);
             systemInformationService.Set("Log/Warnings/Count", () => _warningLogEntries.Count);
+
+            Task.Factory.StartNew(ProcessPendingLogEntries, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
         public ILogger CreatePublisher(string source)
@@ -52,7 +53,7 @@ namespace HA4IoT.Logging
 
         public void Verbose(string source, string message)
         {
-            Add(LogEntrySeverity.Verbose, source, message, null);
+            Publish(LogEntrySeverity.Verbose, source, message, null);
         }
 
         public void Info(string message)
@@ -62,7 +63,7 @@ namespace HA4IoT.Logging
 
         public void Info(string source, string message)
         {
-            Add(LogEntrySeverity.Info, source, message, null);
+            Publish(LogEntrySeverity.Info, source, message, null);
         }
 
         public void Warning(string message)
@@ -82,7 +83,7 @@ namespace HA4IoT.Logging
 
         public void Warning(string source, Exception exception, string message)
         {
-            Add(LogEntrySeverity.Warning, source, message, exception);
+            Publish(LogEntrySeverity.Warning, source, message, exception);
         }
 
         public void Error(string message)
@@ -92,7 +93,7 @@ namespace HA4IoT.Logging
 
         public void Error(string source, string message)
         {
-            Error(source, null, message);    
+            Error(source, null, message);
         }
 
         public void Error(Exception exception, string message)
@@ -102,11 +103,20 @@ namespace HA4IoT.Logging
 
         public void Error(string source, Exception exception, string message)
         {
-            Add(LogEntrySeverity.Error, source, message, exception);
+            Publish(LogEntrySeverity.Error, source, message, exception);
+        }
+
+        public void Publish(LogEntrySeverity severity, string source, string message, Exception exception)
+        {
+            var logEntry = new LogEntry(_dateTimeService.Now, Environment.CurrentManagedThreadId, severity, source ?? "System", message, exception?.ToString());
+            lock (_pendingLogEntries)
+            {
+                _pendingLogEntries.Add(logEntry);
+            }
         }
 
         [ApiMethod]
-        public void ResetWarningLogEntries(IApiContext apiContext)
+        public void ResetWarningLogEntries(IApiCall apiCall)
         {
             lock (_syncRoot)
             {
@@ -115,16 +125,16 @@ namespace HA4IoT.Logging
         }
 
         [ApiMethod]
-        public void GetWarningLogEntries(IApiContext apiContext)
+        public void GetWarningLogEntries(IApiCall apiCall)
         {
             lock (_syncRoot)
             {
-                CreateGetLogEntriesResponse(_warningLogEntries, apiContext);
+                CreateGetLogEntriesResponse(_warningLogEntries, apiCall);
             }
         }
 
         [ApiMethod]
-        public void ResetErrorLogEntries(IApiContext apiContext)
+        public void ResetErrorLogEntries(IApiCall apiCall)
         {
             lock (_syncRoot)
             {
@@ -133,21 +143,21 @@ namespace HA4IoT.Logging
         }
 
         [ApiMethod]
-        public void GetErrorLogEntries(IApiContext apiContext)
+        public void GetErrorLogEntries(IApiCall apiCall)
         {
             lock (_syncRoot)
             {
-                CreateGetLogEntriesResponse(_errorLogEntries, apiContext);
+                CreateGetLogEntriesResponse(_errorLogEntries, apiCall);
             }
         }
 
         [ApiMethod]
-        public void GetLogEntries(IApiContext apiContext)
+        public void GetLogEntries(IApiCall apiCall)
         {
-            var request = apiContext.Parameter.ToObject<GetLogEntriesRequest>();
+            var request = apiCall.Parameter.ToObject<GetLogEntriesRequest>();
             if (request == null)
             {
-                apiContext.ResultCode = ApiResultCode.InvalidParameter;
+                apiCall.ResultCode = ApiResultCode.InvalidParameter;
                 return;
             }
 
@@ -175,50 +185,45 @@ namespace HA4IoT.Logging
                 LogEntries = logEntries
             };
 
-            apiContext.Result = JObject.FromObject(response);
+            apiCall.Result = JObject.FromObject(response);
         }
 
-        private void Add(LogEntrySeverity severity, string source, string message, Exception exception)
+        private void PublishInternal(LogEntry logEntry)
         {
-            var id = Interlocked.Increment(ref _id);
-            var logEntry = new LogEntry(id, _dateTimeService.Now, Environment.CurrentManagedThreadId, severity, source, message, exception?.ToString());
-
             lock (_syncRoot)
             {
-                EnqueueLogEntry(logEntry, _logEntries, LogHistorySize);
+                logEntry.Id = Interlocked.Increment(ref _id);
+                _logEntries.Add(logEntry);
 
-                if (severity == LogEntrySeverity.Warning)
+                if (logEntry.Severity == LogEntrySeverity.Warning)
                 {
-                    EnqueueLogEntry(logEntry, _warningLogEntries, LogWarningHistorySize);
+                    _warningLogEntries.Add(logEntry);
                 }
-                else if (severity == LogEntrySeverity.Error)
+                else if (logEntry.Severity == LogEntrySeverity.Error)
                 {
-                    EnqueueLogEntry(logEntry, _errorLogEntries, LogErrorHistorySize);
+                    _errorLogEntries.Add(logEntry);
                 }
             }
 
             foreach (var adapter in _adapters)
             {
-                adapter.ProcessLogEntry(logEntry);
+                try
+                {
+                    adapter.ProcessLogEntry(logEntry);
+                }
+                catch
+                {
+                    // Do nothing here. Otherwise the app will crash when trying to log a broken log component.
+                }
             }
 
             if (Debugger.IsAttached)
             {
-                Debug.WriteLine($"[{logEntry.Severity}] [{logEntry.Source}] [{logEntry.ThreadId}]: {message}");
+                Debug.WriteLine($"[{logEntry.Severity}] [{logEntry.Source}] [{logEntry.ThreadId}]: {logEntry.Message}");
             }
         }
 
-        private void EnqueueLogEntry(LogEntry logEntry, Queue<LogEntry> target, int maxLogEntriesCount)
-        {
-            target.Enqueue(logEntry);
-
-            while (target.Count > maxLogEntriesCount)
-            {
-                target.Dequeue();
-            }
-        }
-
-        private void CreateGetLogEntriesResponse(Queue<LogEntry> source, IApiContext apiContext)
+        private void CreateGetLogEntriesResponse(IEnumerable<LogEntry> source, IApiCall apiCall)
         {
             var response = new GetLogEntriesResponse
             {
@@ -226,7 +231,29 @@ namespace HA4IoT.Logging
                 LogEntries = source.ToList()
             };
 
-            apiContext.Result = JObject.FromObject(response);
+            apiCall.Result = JObject.FromObject(response);
+        }
+
+        private void ProcessPendingLogEntries()
+        {
+            var buffer = new List<LogEntry>();
+            while (true)
+            {
+                Task.Delay(100).Wait();
+
+                lock (_pendingLogEntries)
+                {
+                    buffer.AddRange(_pendingLogEntries);
+                    _pendingLogEntries.Clear();
+                }
+
+                foreach (var pendingLogEntry in buffer)
+                {
+                    PublishInternal(pendingLogEntry);
+                }
+
+                buffer.Clear();
+            }
         }
     }
 }

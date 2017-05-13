@@ -13,7 +13,7 @@ namespace HA4IoT.Services.Backup
         public event EventHandler<BackupEventArgs> RestoringBackup;
 
         [ApiMethod]
-        public void CreateBackup(IApiContext apiContext)
+        public void CreateBackup(IApiCall apiCall)
         {
             var backup = new JObject
             {
@@ -25,18 +25,18 @@ namespace HA4IoT.Services.Backup
             var eventArgs = new BackupEventArgs(backup);
             CreatingBackup?.Invoke(this, eventArgs);
 
-            apiContext.Result = backup;
+            apiCall.Result = backup;
         }
 
         [ApiMethod]
-        public void RestoreBackup(IApiContext apiContext)
+        public void RestoreBackup(IApiCall apiCall)
         {
-            if (apiContext.Parameter.Type != JTokenType.Object)
+            if (apiCall.Parameter.Type != JTokenType.Object)
             {
                 throw new NotSupportedException();
             }
 
-            var eventArgs = new BackupEventArgs(apiContext.Parameter);
+            var eventArgs = new BackupEventArgs(apiCall.Parameter);
             RestoringBackup?.Invoke(this, eventArgs);
         }
     }

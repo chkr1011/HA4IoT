@@ -5,6 +5,7 @@ using HA4IoT.Components;
 using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Components.States;
+using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Sensors.Buttons;
@@ -23,11 +24,11 @@ namespace HA4IoT.Tests.Automations
             var testController = new TestController();
 
             var buttonAdapter = new TestButtonAdapter();
-            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>());
+            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>(), testController.GetInstance<IMessageBrokerService>());
             var testOutput = new Lamp("Test", new TestLampAdapter());
             
             new Automation("Test")
-                .WithTrigger(button.PressedShortTrigger)
+                .WithTrigger(button.CreatePressedShortTrigger(testController.GetInstance<IMessageBrokerService>()))
                 .WithActionIfConditionsFulfilled(() => testOutput.TryTogglePowerState());
 
             Assert.IsTrue(testOutput.GetState().Has(PowerState.Off));
@@ -45,11 +46,11 @@ namespace HA4IoT.Tests.Automations
             var testController = new TestController();
 
             var buttonAdapter = new TestButtonAdapter();
-            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>());
+            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>(), testController.GetInstance<IMessageBrokerService>());
             var testOutput = new Lamp("Test", new TestLampAdapter());
 
             new Automation("Test")
-                .WithTrigger(button.PressedShortTrigger)
+                .WithTrigger(button.CreatePressedShortTrigger(testController.GetInstance<IMessageBrokerService>()))
                 .WithCondition(ConditionRelation.And, new TimeRangeCondition(testController.GetInstance<IDateTimeService>()).WithStart(TimeSpan.FromHours(1)).WithEnd(TimeSpan.FromHours(2)))
                 .WithActionIfConditionsFulfilled(() => testOutput.TryTogglePowerState());
 

@@ -9,16 +9,20 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Conditions;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Sensors.Events;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Contracts.Triggers;
+using HA4IoT.Triggers;
 
 namespace HA4IoT.Automations
 {
     public class TurnOnAndOffAutomation : AutomationBase
     {
+        private readonly IMessageBrokerService _messageBroker;
         private readonly ISettingsService _settingsService;
         private readonly object _syncRoot = new object();
         private readonly List<IComponent> _components = new List<IComponent>();
@@ -38,9 +42,16 @@ namespace HA4IoT.Automations
         private bool _turnOffIfButtonPressedWhileAlreadyOn;
         private bool _isOn;
 
-        public TurnOnAndOffAutomation(string id, IDateTimeService dateTimeService, ISchedulerService schedulerService, ISettingsService settingsService, IDaylightService daylightService)
+        public TurnOnAndOffAutomation(
+            string id,
+            IDateTimeService dateTimeService, 
+            ISchedulerService schedulerService,
+            ISettingsService settingsService, 
+            IDaylightService daylightService,
+            IMessageBrokerService messageBroker)
             : base(id)
         {
+            _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
             _dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
             _schedulerService = schedulerService ?? throw new ArgumentNullException(nameof(schedulerService));
@@ -55,8 +66,8 @@ namespace HA4IoT.Automations
         {
             if (motionDetector == null) throw new ArgumentNullException(nameof(motionDetector));
 
-            motionDetector.MotionDetectedTrigger.Attach(ExecuteAutoTrigger);
-            motionDetector.MotionDetectionCompletedTrigger.Attach(StartTimeout);
+            _messageBroker.CreateTrigger<MotionDetectedEvent>(motionDetector.Id).Attach(ExecuteAutoTrigger);
+            _messageBroker.CreateTrigger<MotionDetectionCompletedEvent>(motionDetector.Id).Attach(StartTimeout);
 
             _settingsService.CreateSettingsMonitor<MotionDetectorSettings>(motionDetector, CancelTimeoutIfMotionDetectorDeactivated);
 

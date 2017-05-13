@@ -27,9 +27,9 @@ namespace HA4IoT.Tests.Api
                 ["CommandType"] = "TurnOnCommand"
             };
 
-            var apiContext = testController.InvokeApi("Service/IComponentRegistryService/ExecuteCommand", parameter);
+            var apiCall = testController.InvokeApi("Service/IComponentRegistryService/ExecuteCommand", parameter);
 
-            Assert.AreEqual(ApiResultCode.Success, apiContext.ResultCode);
+            Assert.AreEqual(ApiResultCode.Success, apiCall.ResultCode);
             Assert.IsTrue(socket.GetState().Has(PowerState.On));
         }
 
@@ -44,8 +44,8 @@ namespace HA4IoT.Tests.Api
                 ["CommandType"] = "TurnOnCommandXXX"
             };
 
-            var apiContext = testController.InvokeApi("Service/IComponentRegistryService/ExecuteCommand", parameter);
-            Assert.AreEqual(ApiResultCode.InvalidParameter, apiContext.ResultCode);
+            var apiCall = testController.InvokeApi("Service/IComponentRegistryService/ExecuteCommand", parameter);
+            Assert.AreEqual(ApiResultCode.InvalidParameter, apiCall.ResultCode);
         }
     }
 }

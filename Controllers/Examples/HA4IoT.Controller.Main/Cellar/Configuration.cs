@@ -9,12 +9,13 @@ using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Hardware.I2C;
 using HA4IoT.Contracts.Hardware.Services;
+using HA4IoT.Contracts.Messaging;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.CCTools.Devices;
 using HA4IoT.Sensors;
+using HA4IoT.Sensors.Buttons;
 using HA4IoT.Services.Areas;
 
 namespace HA4IoT.Controller.Main.Cellar
@@ -27,6 +28,7 @@ namespace HA4IoT.Controller.Main.Cellar
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
         private readonly AutomationFactory _automationFactory;
+        private readonly IMessageBrokerService _messageBroker;
 
         public Configuration(
             CCToolsDeviceService ccToolsBoardService,
@@ -34,11 +36,13 @@ namespace HA4IoT.Controller.Main.Cellar
             IAreaRegistryService areaService,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory,
-            AutomationFactory automationFactory)
+            AutomationFactory automationFactory,
+            IMessageBrokerService messageBroker)
         {
             _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
             _gpioService = gpioService ?? throw new ArgumentNullException(nameof(gpioService));
-            _areaService = areaService;
+            _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
+            _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
             _actuatorFactory = actuatorFactory ?? throw new ArgumentNullException(nameof(actuatorFactory));
             _sensorFactory = sensorFactory ?? throw new ArgumentNullException(nameof(sensorFactory));
             _automationFactory = automationFactory ?? throw new ArgumentNullException(nameof(automationFactory));
@@ -46,7 +50,7 @@ namespace HA4IoT.Controller.Main.Cellar
 
         public Task ApplyAsync()
         {
-            var hsrt16 = _ccToolsBoardService.RegisterHSRT16("HSRT16", new I2CSlaveAddress(32));
+            var hsrt16 = (HSRT16)_ccToolsBoardService.RegisterDevice(CCToolsDevice.HSRT16, "HSRT16", 32);
 
             var garden = _areaService.RegisterArea("Garden");
 
@@ -63,8 +67,8 @@ namespace HA4IoT.Controller.Main.Cellar
             
             var button = _sensorFactory.RegisterButton(garden, Garden.Button, _gpioService.GetInput(4).WithInvertedState());
 
-            button.PressedShortTrigger.Attach(() => stateMachine.TrySetNextState());
-            button.PressedLongTrigger.Attach(() => stateMachine.TryTurnOff());
+            button.CreatePressedShortTrigger(_messageBroker).Attach(() => stateMachine.TrySetNextState());
+            button.CreatePressedLongTrigger(_messageBroker).Attach(() => stateMachine.TryTurnOff());
 
             _automationFactory.RegisterConditionalOnAutomation(garden, Garden.LampParkingLotAutomation)
                 .WithComponent(garden.GetLamp(Garden.LampParkingLot))

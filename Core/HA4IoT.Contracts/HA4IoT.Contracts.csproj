@@ -100,14 +100,14 @@
     <Compile Include="Adapters\AdapterRollerShutterState.cs" />
     <Compile Include="Adapters\WindowStateChangedEventArgs.cs" />
     <Compile Include="Api\ApiClassAttribute.cs" />
-    <Compile Include="Api\ApiContext.cs" />
+    <Compile Include="Api\ApiCall.cs" />
     <Compile Include="Api\ApiMethodAttribute.cs" />
     <Compile Include="Api\ApiRequestReceivedEventArgs.cs" />
     <Compile Include="Api\ApiResultCode.cs" />
     <Compile Include="Api\ApiRequest.cs" />
     <Compile Include="Api\ApiResponse.cs" />
     <Compile Include="Api\Cloud\CloudResponseMessage.cs" />
-    <Compile Include="Api\IApiContext.cs" />
+    <Compile Include="Api\IApiCall.cs" />
     <Compile Include="Api\IApiAdapter.cs" />
     <Compile Include="Api\IApiDispatcherService.cs" />
     <Compile Include="Areas\AreaSettings.cs" />
@@ -176,6 +176,7 @@
     <Compile Include="Core\StoragePath.cs" />
     <Compile Include="Core\TimerTickEventArgs.cs" />
     <Compile Include="Daylight.cs" />
+    <Compile Include="Messaging\IMessageBrokerService.cs" />
     <Compile Include="Hardware\BinaryState.cs" />
     <Compile Include="Hardware\BinaryStateChangedEventArgs.cs" />
     <Compile Include="Hardware\DeviceMessaging\DeviceMessageBrokerServiceExtensions.cs" />
@@ -211,6 +212,10 @@
     <Compile Include="Logging\Log.cs" />
     <Compile Include="Logging\LogEntry.cs" />
     <Compile Include="Logging\LogEntrySeverity.cs" />
+    <Compile Include="Messaging\Message.cs" />
+    <Compile Include="Messaging\MessageBrokerServiceExtensions.cs" />
+    <Compile Include="Messaging\MessagePayload.cs" />
+    <Compile Include="Messaging\MessageSubscription.cs" />
     <Compile Include="Notifications\ApiParameterForCreate.cs" />
     <Compile Include="PersonalAgent\AmazonEcho\SkillServiceRequest.cs" />
     <Compile Include="PersonalAgent\AmazonEcho\SkillServiceRequestRequest.cs" />
@@ -226,8 +231,21 @@
     <Compile Include="PersonalAgent\IInboundTextMessage.cs" />
     <Compile Include="PersonalAgent\IOutboundTextMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scripting\ExecuteScriptCodeRequest.cs" />
+    <Compile Include="Scripting\IScriptingSession.cs" />
+    <Compile Include="Scripting\IScriptProxy.cs" />
+    <Compile Include="Scripting\IScriptingService.cs" />
+    <Compile Include="Scripting\ScriptExecutionResult.cs" />
+    <Compile Include="Scripting\ScriptingException.cs" />
+    <Compile Include="Scripting\ScriptingServiceExtensions.cs" />
     <Compile Include="Sensors\ButtonPressedDuration.cs" />
     <Compile Include="Sensors\ButtonSettings.cs" />
+    <Compile Include="Sensors\Events\ButtonPressedLongEvent.cs" />
+    <Compile Include="Sensors\Events\ButtonPressedShortEvent.cs" />
+    <Compile Include="Sensors\Events\MotionDetectionCompletedEvent.cs" />
+    <Compile Include="Sensors\Events\MotionDetectedEvent.cs" />
+    <Compile Include="Sensors\Events\WindowClosedEvent.cs" />
+    <Compile Include="Sensors\Events\WindowOpenedEvent.cs" />
     <Compile Include="Sensors\IButton.cs" />
     <Compile Include="Sensors\IHumiditySensor.cs" />
     <Compile Include="Sensors\IMotionDetector.cs" />
@@ -285,8 +303,15 @@
     <Compile Include="Components\States\PowerStateValue.cs" />
     <Compile Include="Components\States\TemperatureState.cs" />
     <Compile Include="Triggers\ITrigger.cs" />
+    <Compile Include="Triggers\Trigger.cs" />
     <Compile Include="Triggers\TriggeredEventArgs.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MoonSharp.Interpreter">
+      <HintPath>..\..\..\..\..\.nuget\packages\MoonSharp\1.8.0\lib\portable-net4+sl5+wp8+win8\MoonSharp.Interpreter.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

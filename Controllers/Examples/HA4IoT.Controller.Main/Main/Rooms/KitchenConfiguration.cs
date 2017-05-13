@@ -8,7 +8,7 @@ using HA4IoT.Automations;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Hardware.I2C;
+using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.CCTools.Devices;
@@ -31,6 +31,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         private readonly AutomationFactory _automationFactory;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
+        private readonly IMessageBrokerService _messageBroker;
 
         public enum Kitchen
         {
@@ -73,8 +74,10 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             OutpostDeviceService outpostDeviceService,
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
-            SensorFactory sensorFactory)
+            SensorFactory sensorFactory,
+            IMessageBrokerService messageBroker)
         {
+            _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
             _systemEventsService = systemEventsService ?? throw new ArgumentNullException(nameof(systemEventsService));
             _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
             _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
@@ -87,8 +90,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
         public void Apply()
         {
-            var hsrel5 = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.KitchenHSREL5.ToString(), new I2CSlaveAddress(58));
-            var hspe8 = _ccToolsBoardService.RegisterHSPE8OutputOnly(InstalledDevice.KitchenHSPE8.ToString(), new I2CSlaveAddress(39));
+            var hsrel5 = (HSREL5)_ccToolsBoardService.RegisterDevice(CCToolsDevice.HSRel5, InstalledDevice.KitchenHSREL5.ToString(), 58);
+            var hspe8 = (HSPE8OutputOnly)_ccToolsBoardService.RegisterDevice(CCToolsDevice.HSPE8_OutputOnly, InstalledDevice.KitchenHSPE8.ToString(), 39);
 
             var input0 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input0.ToString());
             var input1 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input1.ToString());
@@ -131,19 +134,19 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             _sensorFactory.RegisterButton(area, Kitchen.ButtonKitchenette, input1.GetInput(11));
             _sensorFactory.RegisterButton(area, Kitchen.ButtonPassage, input1.GetInput(9));
-            _sensorFactory.RegisterRollerShutterButtons(area, Kitchen.RollerShutterButtonUp, input2.GetInput(15),
-                Kitchen.RollerShutterButtonDown, input2.GetInput(14));
+            _sensorFactory.RegisterButton(area, Kitchen.RollerShutterButtonUp, input2.GetInput(15));
+            _sensorFactory.RegisterButton(area, Kitchen.RollerShutterButtonDown, input2.GetInput(14));
 
-            area.GetButton(Kitchen.ButtonKitchenette).PressedShortTrigger.Attach(() => area.GetLamp(Kitchen.LightCeilingMiddle).TryTogglePowerState());
-            area.GetButton(Kitchen.ButtonPassage).PressedShortTrigger.Attach(() => area.GetLamp(Kitchen.LightCeilingMiddle).TryTogglePowerState());
+            area.GetButton(Kitchen.ButtonKitchenette).CreatePressedShortTrigger(_messageBroker).Attach(() => area.GetLamp(Kitchen.LightCeilingMiddle).TryTogglePowerState());
+            area.GetButton(Kitchen.ButtonPassage).CreatePressedShortTrigger(_messageBroker).Attach(() => area.GetLamp(Kitchen.LightCeilingMiddle).TryTogglePowerState());
 
             _automationFactory.RegisterRollerShutterAutomation(area, Kitchen.RollerShutterAutomation)
                 .WithRollerShutters(area.GetRollerShutter(Kitchen.RollerShutter));
 
             area.GetRollerShutter(Kitchen.RollerShutter).ConnectWith(
-                area.GetButton(Kitchen.RollerShutterButtonUp), area.GetButton(Kitchen.RollerShutterButtonDown));
+                area.GetButton(Kitchen.RollerShutterButtonUp), area.GetButton(Kitchen.RollerShutterButtonDown), _messageBroker);
 
-            area.GetButton(Kitchen.RollerShutterButtonUp).PressedLongTrigger.Attach(() =>
+            area.GetButton(Kitchen.RollerShutterButtonUp).CreatePressedLongTrigger(_messageBroker).Attach(() =>
             {
                 var light = area.GetComponent(Kitchen.LightKitchenette);
                 light.TryTogglePowerState();

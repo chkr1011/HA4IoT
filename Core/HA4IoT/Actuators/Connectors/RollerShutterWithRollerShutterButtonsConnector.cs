@@ -2,7 +2,9 @@
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components.States;
+using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Sensors.Buttons;
 
 namespace HA4IoT.Actuators.Connectors
 {
@@ -11,14 +13,16 @@ namespace HA4IoT.Actuators.Connectors
         public static IRollerShutter ConnectWith(
             this IRollerShutter rollerShutter, 
             IButton upButton,
-            IButton downButton)
+            IButton downButton,
+            IMessageBrokerService messageBroker)
         {
             if (rollerShutter == null) throw new ArgumentNullException(nameof(rollerShutter));
             if (upButton == null) throw new ArgumentNullException(nameof(upButton));
             if (downButton == null) throw new ArgumentNullException(nameof(downButton));
+            if (messageBroker == null) throw new ArgumentNullException(nameof(messageBroker));
 
-            upButton.PressedShortTrigger.Attach(() => HandleBlindButtonPressedEvent(rollerShutter, VerticalMovingStateValue.MovingUp));
-            downButton.PressedShortTrigger.Attach(() => HandleBlindButtonPressedEvent(rollerShutter, VerticalMovingStateValue.MovingDown));
+            upButton.CreatePressedShortTrigger(messageBroker).Attach(() => HandleBlindButtonPressedEvent(rollerShutter, VerticalMovingStateValue.MovingUp));
+            downButton.CreatePressedShortTrigger(messageBroker).Attach(() => HandleBlindButtonPressedEvent(rollerShutter, VerticalMovingStateValue.MovingDown));
 
             return rollerShutter;
         }

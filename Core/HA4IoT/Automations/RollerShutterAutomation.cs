@@ -58,7 +58,7 @@ namespace HA4IoT.Automations
 
             settingsService.CreateSettingsMonitor<RollerShutterAutomationSettings>(this, s => Settings = s.NewSettings);
 
-            schedulerService.RegisterSchedule(id, TimeSpan.FromMinutes(1), () => PerformPendingActions());
+            schedulerService.Register(id, TimeSpan.FromMinutes(1), () => PerformPendingActions());
         }
 
         public RollerShutterAutomationSettings Settings { get; private set; }
@@ -111,7 +111,7 @@ namespace HA4IoT.Automations
 
             if (TooColdIsAffected())
             {
-                _notificationService.CreateInformation($"Cancelling opening '{GetRollerShutterNames()}' because outside temperature is lower than {Settings.SkipIfFrozenTemperature}°C'.");
+                _notificationService.CreateInfo($"Cancelling opening '{GetRollerShutterNames()}' because outside temperature is lower than {Settings.SkipIfFrozenTemperature}°C'.");
 
                 _autoOpenIsApplied = true;
                 _autoCloseIsApplied = false;
@@ -121,7 +121,7 @@ namespace HA4IoT.Automations
 
             if (TooHotIsAffected())
             {
-                _notificationService.CreateInformation($"Cancelling opening '{GetRollerShutterNames()}' because outside temperature is higher than {Settings.AutoCloseIfTooHotTemperaure}°C.");
+                _notificationService.CreateInfo($"Cancelling opening '{GetRollerShutterNames()}' because outside temperature is higher than {Settings.AutoCloseIfTooHotTemperaure}°C.");
 
                 _autoOpenIsApplied = true;
                 _autoCloseIsApplied = false;
@@ -134,14 +134,14 @@ namespace HA4IoT.Automations
             {
                 Settings.SkipNextOpenOnSunrise = false;
                 _settingsService.SetSettings(this, Settings);
-                _notificationService.CreateInformation($"Skipped opening '{GetRollerShutterNames()}' due to sunrise this time.");
+                _notificationService.CreateInfo($"Skipped opening '{GetRollerShutterNames()}' due to sunrise this time.");
             }
             else
             {
                 if (Settings.AutoOpenIsEnabled)
                 {
                     InvokeCommand(new MoveUpCommand());
-                    _notificationService.CreateInformation($"Opening '{GetRollerShutterNames()}' due to sunrise.");
+                    _notificationService.CreateInfo($"Opening '{GetRollerShutterNames()}' due to sunrise.");
                 }
             }
 
@@ -167,7 +167,7 @@ namespace HA4IoT.Automations
         {
             if (TooColdIsAffected())
             {
-                _notificationService.CreateInformation($"Cancelling closing '{GetRollerShutterNames()}' because outside temperature is lower than {Settings.SkipIfFrozenTemperature}°C.");
+                _notificationService.CreateInfo($"Cancelling closing '{GetRollerShutterNames()}' because outside temperature is lower than {Settings.SkipIfFrozenTemperature}°C.");
             }
             else
             {
@@ -175,14 +175,14 @@ namespace HA4IoT.Automations
                 {
                     Settings.SkipNextCloseOnSunset = false;
                     _settingsService.SetSettings(this, Settings);
-                    _notificationService.CreateInformation($"Skipped closing '{GetRollerShutterNames()}' due to sunrise this time.");
+                    _notificationService.CreateInfo($"Skipped closing '{GetRollerShutterNames()}' due to sunrise this time.");
                 }
                 else
                 {
                     if (Settings.AutoCloseIsEnabled)
                     {
                         InvokeCommand(new MoveDownCommand());
-                        _notificationService.CreateInformation($"Closed '{GetRollerShutterNames()}' due to sunset.");
+                        _notificationService.CreateInfo($"Closed '{GetRollerShutterNames()}' due to sunset.");
                     }
                 }
             }

@@ -1,7 +1,7 @@
 ﻿using System;
 using HA4IoT.Contracts.Areas;
-using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.Notifications;
 using HA4IoT.Contracts.Services.OutdoorTemperature;
@@ -13,6 +13,7 @@ namespace HA4IoT.Automations
 {
     public class AutomationFactory
     {
+        private readonly IMessageBrokerService _messageBroker;
         private readonly ISchedulerService _schedulerService;
         private readonly INotificationService _notificationService;
         private readonly IDateTimeService _dateTimeService;
@@ -30,25 +31,18 @@ namespace HA4IoT.Automations
             IOutdoorTemperatureService outdoorTemperatureService,
             IComponentRegistryService componentService,
             ISettingsService settingsService,
-            IResourceService resourceService)
+            IResourceService resourceService,
+            IMessageBrokerService messageBroker)
         {
-            if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
-            if (notificationService == null) throw new ArgumentNullException(nameof(notificationService));
-            if (dateTimeService == null) throw new ArgumentNullException(nameof(dateTimeService));
-            if (daylightService == null) throw new ArgumentNullException(nameof(daylightService));
-            if (outdoorTemperatureService == null) throw new ArgumentNullException(nameof(outdoorTemperatureService));
-            if (componentService == null) throw new ArgumentNullException(nameof(componentService));
-            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-            if (resourceService == null) throw new ArgumentNullException(nameof(resourceService));
-
-            _schedulerService = schedulerService;
-            _notificationService = notificationService;
-            _dateTimeService = dateTimeService;
-            _daylightService = daylightService;
-            _outdoorTemperatureService = outdoorTemperatureService;
-            _componentService = componentService;
-            _settingsService = settingsService;
-            _resourceService = resourceService;
+            _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
+            _schedulerService = schedulerService ?? throw new ArgumentNullException(nameof(schedulerService));
+            _notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
+            _dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
+            _daylightService = daylightService ?? throw new ArgumentNullException(nameof(daylightService));
+            _outdoorTemperatureService = outdoorTemperatureService ?? throw new ArgumentNullException(nameof(outdoorTemperatureService));
+            _componentService = componentService ?? throw new ArgumentNullException(nameof(componentService));
+            _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
+            _resourceService = resourceService ?? throw new ArgumentNullException(nameof(resourceService));
         }
 
         public ConditionalOnAutomation RegisterConditionalOnAutomation(IArea area, Enum id)
@@ -97,7 +91,8 @@ namespace HA4IoT.Automations
                     _dateTimeService,
                     _schedulerService,
                     _settingsService,
-                    _daylightService);
+                    _daylightService,
+                    _messageBroker);
 
             area.RegisterAutomation(automation);
 

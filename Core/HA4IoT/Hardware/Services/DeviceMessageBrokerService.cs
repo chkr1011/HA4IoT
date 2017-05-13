@@ -69,16 +69,16 @@ namespace HA4IoT.Hardware.Services
         }
 
         [ApiMethod]
-        public void GetConnectedClients(IApiContext apiContext)
+        public void GetConnectedClients(IApiCall apiCall)
         {
             var connectedClients = _server.GetConnectedClients();
-            apiContext.Result["ConnectedClients"] = JToken.FromObject(connectedClients);
+            apiCall.Result["ConnectedClients"] = JToken.FromObject(connectedClients);
         }
 
         [ApiMethod]
-        public void Publish(IApiContext apiContext)
+        public void Publish(IApiCall apiCall)
         {
-            var deviceMessage = apiContext.Parameter.ToObject<DeviceMessage>();
+            var deviceMessage = apiCall.Parameter.ToObject<DeviceMessage>();
             Publish(deviceMessage.Topic, deviceMessage.Payload, deviceMessage.QosLevel);
         }
 

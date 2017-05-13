@@ -6,7 +6,7 @@ using HA4IoT.Automations;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Hardware.I2C;
+using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
@@ -20,6 +20,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 {
     internal class UpperBathroomConfiguration
     {
+        private readonly IMessageBrokerService _messageBroker;
         private readonly CCToolsDeviceService _ccToolsBoardService;
         private readonly IDeviceRegistryService _deviceService;
         private readonly ISchedulerService _schedulerService;
@@ -55,8 +56,10 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             ISettingsService settingsService,
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
-            SensorFactory sensorFactory)
+            SensorFactory sensorFactory,
+            IMessageBrokerService messageBroker)
         {
+            _messageBroker = messageBroker;
             _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
             _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
             _schedulerService = schedulerService ?? throw new ArgumentNullException(nameof(schedulerService));
@@ -65,11 +68,12 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             _automationFactory = automationFactory ?? throw new ArgumentNullException(nameof(automationFactory));
             _actuatorFactory = actuatorFactory ?? throw new ArgumentNullException(nameof(actuatorFactory));
             _sensorFactory = sensorFactory ?? throw new ArgumentNullException(nameof(sensorFactory));
+            _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(sensorFactory));
         }
 
         public void Apply()
         {
-            var hsrel5 = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.UpperBathroomHSREL5.ToString(), new I2CSlaveAddress(61));
+            var hsrel5 = (HSREL5)_ccToolsBoardService.RegisterDevice(CCToolsDevice.HSRel5, InstalledDevice.UpperBathroomHSREL5.ToString(), 61);
             var input5 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input5.ToString());
             var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
 
@@ -106,7 +110,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
                 $"{area.Id}.{UpperBathroom.FanAutomation}",
                 area.GetFan(UpperBathroom.Fan),
                 _schedulerService,
-                _settingsService)
+                _settingsService,
+                _messageBroker)
                 .WithTrigger(area.GetMotionDetector(UpperBathroom.MotionDetector));
         }
 

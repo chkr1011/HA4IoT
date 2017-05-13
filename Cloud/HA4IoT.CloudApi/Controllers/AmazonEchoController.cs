@@ -17,12 +17,12 @@ namespace HA4IoT.CloudApi.Controllers
     [ExceptionFilter]
     public class AmazonEchoController : ApiController
     {
-        private readonly ControllerMessageDispatcher _messageDispatcher;
+        private readonly ControllermessageBroker _messageBroker;
         private readonly SecurityService _securityService;
 
-        public AmazonEchoController(ControllerMessageDispatcher messageDispatcher, SecurityService securityService)
+        public AmazonEchoController(ControllermessageBroker messageBroker, SecurityService securityService)
         {
-            _messageDispatcher = messageDispatcher ?? throw new ArgumentNullException(nameof(messageDispatcher));
+            _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
             _securityService = securityService ?? throw new ArgumentNullException(nameof(securityService));
         }
 
@@ -42,7 +42,7 @@ namespace HA4IoT.CloudApi.Controllers
                     Parameter = JObject.FromObject(request)
                 };
 
-                var apiResponse = await _messageDispatcher.SendRequestAsync(controllerId.Value, apiRequest, TimeSpan.FromSeconds(5));
+                var apiResponse = await _messageBroker.SendRequestAsync(controllerId.Value, apiRequest, TimeSpan.FromSeconds(5));
                 if (apiResponse.ResultCode == ApiResultCode.Success)
                 {
                     return CreateJsonResponse(apiResponse.Result.ToObject<SkillServiceResponse>());

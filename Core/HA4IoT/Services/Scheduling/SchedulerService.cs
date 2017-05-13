@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using HA4IoT.Contracts.Api;
-using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Services.System;
@@ -16,20 +16,20 @@ namespace HA4IoT.Services.Scheduling
     [ApiServiceClass(typeof(ISchedulerService))]
     public class SchedulerService : ServiceBase, ISchedulerService
     {
+        private readonly ITimerService _timerService;
         private readonly object _syncRoot = new object();
         private readonly List<Schedule> _schedules = new List<Schedule>();
-        private readonly ITimerService _timerService;
         private readonly IDateTimeService _dateTimeService;
         private readonly ILogger _log;
 
-        public SchedulerService(ITimerService timerService, IDateTimeService dateTimeService, ILogService logService)
+        public SchedulerService(IDateTimeService dateTimeService, ITimerService timerService, ILogService logService)
         {
             _timerService = timerService ?? throw new ArgumentNullException(nameof(timerService));
             _dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
 
             _log = logService?.CreatePublisher(nameof(SchedulerService)) ?? throw new ArgumentNullException(nameof(logService));
 
-            _timerService.Tick += OnTick;
+            Task.Factory.StartNew(ExecuteScheduleds, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
         public IDelayedAction In(TimeSpan delay, Action action)
@@ -38,24 +38,24 @@ namespace HA4IoT.Services.Scheduling
         }
 
         [ApiMethod]
-        public void GetSchedules(IApiContext apiContext)
+        public void GetSchedules(IApiCall apiCall)
         {
             lock (_syncRoot)
             {
-                apiContext.Result = JObject.FromObject(_schedules);
+                apiCall.Result = JObject.FromObject(_schedules);
             }
         }
 
-        public void RegisterSchedule(string name, TimeSpan interval, Action action)
+        public void Register(string name, TimeSpan interval, Action action)
         {
-            RegisterSchedule(name, interval, () =>
+            Register(name, interval, () =>
             {
                 action();
                 return Task.FromResult(0);
             });
         }
 
-        public void RegisterSchedule(string name, TimeSpan interval, Func<Task> action)
+        public void Register(string name, TimeSpan interval, Func<Task> action)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
             if (action == null) throw new ArgumentNullException(nameof(action));
@@ -74,27 +74,43 @@ namespace HA4IoT.Services.Scheduling
             }
         }
 
-        private void OnTick(object sender, TimerTickEventArgs e)
+        public void Remove(string name)
         {
-            var now = _dateTimeService.Now;
+            if (name == null) throw new ArgumentNullException(nameof(name));
 
             lock (_syncRoot)
-            { 
-                for (var i = _schedules.Count - 1; i >= 0; i--)
+            {
+                _schedules.RemoveAll(s => s.Name.Equals(name));
+
+                _log.Info($"Removed schedule '{name}'.");
+            }
+        }
+
+        private void ExecuteScheduleds()
+        {
+            while (true)
+            {
+                Task.Delay(100).Wait();
+                var now = _dateTimeService.Now;
+
+                lock (_syncRoot)
                 {
-                    var schedule = _schedules[i];
-
-                    if (schedule.Status == ScheduleStatus.Running || now < schedule.NextExecution)
+                    for (var i = _schedules.Count - 1; i >= 0; i--)
                     {
-                        continue;
-                    }
+                        var schedule = _schedules[i];
 
-                    schedule.Status = ScheduleStatus.Running;
-                    Task.Run(() => TryExecuteSchedule(schedule));
+                        if (schedule.Status == ScheduleStatus.Running || now < schedule.NextExecution)
+                        {
+                            continue;
+                        }
 
-                    if (schedule.IsOneTimeSchedule)
-                    {
-                        _schedules.RemoveAt(i);
+                        schedule.Status = ScheduleStatus.Running;
+                        Task.Run(() => TryExecuteSchedule(schedule));
+
+                        if (schedule.IsOneTimeSchedule)
+                        {
+                            _schedules.RemoveAt(i);
+                        }
                     }
                 }
             }

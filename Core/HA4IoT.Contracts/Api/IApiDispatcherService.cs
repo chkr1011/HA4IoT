@@ -16,7 +16,7 @@ namespace HA4IoT.Contracts.Api
 
         void RegisterAdapter(IApiAdapter endpoint);
         
-        void Route(string uri, Action<IApiContext> handler);
+        void Route(string uri, Action<IApiCall> handler);
 
         void Expose(object controller);
         

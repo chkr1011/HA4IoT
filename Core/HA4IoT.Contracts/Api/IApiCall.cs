@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Contracts.Api
 {
-    public interface IApiContext
+    public interface IApiCall
     {
         string Action { get; }
         JObject Parameter { get; }

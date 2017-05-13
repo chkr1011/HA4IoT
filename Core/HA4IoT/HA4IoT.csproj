@@ -12,7 +12,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.15063.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -46,6 +46,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <PlatformTarget>x86</PlatformTarget>
@@ -149,6 +150,11 @@
     <Compile Include="Components\ICommandInvokerAction.cs" />
     <Compile Include="Components\LogicalComponent.cs" />
     <Compile Include="Conditions\Specialized\TemperatureIsLowerThanCondition.cs" />
+    <Compile Include="Hardware\RaspberryPi\GpioInputMonitoringMode.cs" />
+    <Compile Include="Logging\RollingCollection.cs" />
+    <Compile Include="Messaging\MessageBrokerService.cs" />
+    <Compile Include="Scripting\Proxies\DateTimeScriptProxy.cs" />
+    <Compile Include="Hardware\CCTools\CCToolsDevice.cs" />
     <Compile Include="Hardware\I2C\I2CHardwareBridge\Dht22State.cs" />
     <Compile Include="Hardware\Outpost\OutpostLpdBridgeAdapter.cs" />
     <Compile Include="Hardware\Outpost\OutpostRgbAdapter.cs" />
@@ -187,12 +193,25 @@
     <Compile Include="Net\WebSockets\WebSocketMessageReceivedEventArgs.cs" />
     <Compile Include="Net\WebSockets\WebSocketOpcode.cs" />
     <Compile Include="Net\WebSockets\WebSocketTextMessage.cs" />
+    <Compile Include="Scripting\Proxies\AreaScriptProxy.cs" />
+    <Compile Include="Scripting\Proxies\CCToolsScriptProxy.cs" />
+    <Compile Include="Scripting\Proxies\ComponentScriptProxy.cs" />
+    <Compile Include="Scripting\Proxies\DebuggingScriptProxy.cs" />
+    <Compile Include="Scripting\Proxies\MessageBusProxy.cs" />
+    <Compile Include="Scripting\Proxies\MqttScriptProxy.cs" />
+    <Compile Include="Scripting\Proxies\NotificationScriptProxy.cs" />
+    <Compile Include="Scripting\Proxies\OutdoorScriptProxy.cs" />
+    <Compile Include="Scripting\Proxies\SchedulerScriptProxy.cs" />
+    <Compile Include="Scripting\Proxies\SystemInformationScriptProxy.cs" />
+    <Compile Include="Scripting\Proxies\TelegramBotScriptProxy.cs" />
+    <Compile Include="Scripting\Proxies\TwitterClientScriptProxy.cs" />
+    <Compile Include="Scripting\ScriptingService.cs" />
+    <Compile Include="Scripting\ScriptingSession.cs" />
     <Compile Include="Services\Areas\AreaExtensions.cs" />
     <Compile Include="Services\Health\StatusLed.cs" />
     <Compile Include="Services\System\DelayedAction.cs" />
     <Compile Include="Triggers\ConditionalTrigger.cs" />
     <Compile Include="Triggers\IntervalTrigger.cs" />
-    <Compile Include="Triggers\Trigger.cs" />
     <Compile Include="Api\ApiDispatcherService.cs" />
     <Compile Include="Api\Cloud\CloudConnector\CloudConnectorApiContext.cs" />
     <Compile Include="Api\Cloud\CloudConnector\CloudConnectorService.cs" />

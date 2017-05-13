@@ -26,8 +26,15 @@ namespace HA4IoT.Hardware.RaspberryPi
             return _latestState;
         }
 
-        public void Write(BinaryState state, WriteBinaryStateMode mode = WriteBinaryStateMode.Commit)
+        public void Write(BinaryState state, WriteBinaryStateMode mode)
         {
+            if (mode != WriteBinaryStateMode.Commit)
+            {
+                return;
+            }
+
+            BinaryState oldState;
+            
             lock (_syncRoot)
             {
                 if (state == _latestState)
@@ -38,10 +45,11 @@ namespace HA4IoT.Hardware.RaspberryPi
                 var effectiveState = CoerceState(state);
                 _pin.Write(effectiveState == BinaryState.High ? GpioPinValue.High : GpioPinValue.Low);
 
-                var oldState = _latestState;
+                oldState = _latestState;
                 _latestState = state;
-                StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(oldState, state));
             }
+
+            StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(oldState, state));
         }
 
         public void Dispose()
@@ -56,12 +64,7 @@ namespace HA4IoT.Hardware.RaspberryPi
                 return state;
             }
 
-            if (state == BinaryState.High)
-            {
-                return BinaryState.Low;
-            }
-
-            return BinaryState.High;
+            return state == BinaryState.High ? BinaryState.Low : BinaryState.High;
         }
     }
 }

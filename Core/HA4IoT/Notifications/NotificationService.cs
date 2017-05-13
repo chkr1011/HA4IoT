@@ -48,7 +48,7 @@ namespace HA4IoT.Notifications
 
             apiService.StatusRequested += HandleApiStatusRequest;
 
-            schedulerService.RegisterSchedule("NotificationCleanup", TimeSpan.FromMinutes(15), () => Cleanup());
+            schedulerService.Register("NotificationCleanup", TimeSpan.FromMinutes(15), () => Cleanup());
         }
 
         public NotificationServiceSettings Settings { get; private set; }
@@ -74,14 +74,14 @@ namespace HA4IoT.Notifications
             }
         }
 
-        public void CreateInformation(string text)
+        public void CreateInfo(string text)
         {
             Create(NotificationType.Information, text, Settings.InformationTimeToLive);
         }
 
         public void CreateInformation(Enum resourceId, params object[] formatParameterObjects)
         {
-            CreateInformation(_resourceService.GetText(resourceId, formatParameterObjects));
+            CreateInfo(_resourceService.GetText(resourceId, formatParameterObjects));
         }
 
         public void CreateWarning(string text)
@@ -95,12 +95,12 @@ namespace HA4IoT.Notifications
         }
 
         [ApiMethod]
-        public void Create(IApiContext apiContext)
+        public void Create(IApiCall apiCall)
         {
-            var parameter = apiContext.Parameter.ToObject<ApiParameterForCreate>();
+            var parameter = apiCall.Parameter.ToObject<ApiParameterForCreate>();
             if (parameter == null)
             {
-                apiContext.ResultCode = ApiResultCode.InvalidParameter;
+                apiCall.ResultCode = ApiResultCode.InvalidParameter;
                 return;
             }
 
@@ -108,9 +108,9 @@ namespace HA4IoT.Notifications
         }
 
         [ApiMethod]
-        public void Delete(IApiContext apiContext)
+        public void Delete(IApiCall apiCall)
         {
-            var notificationUid = (string)apiContext.Parameter["Uid"];
+            var notificationUid = (string)apiCall.Parameter["Uid"];
             if (string.IsNullOrEmpty(notificationUid))
             {
                 throw new BadRequestException("Parameter 'Uid' is not specified.");

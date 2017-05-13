@@ -4,6 +4,7 @@ using HA4IoT.Automations;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Components.States;
+using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
@@ -27,14 +28,16 @@ namespace HA4IoT.Tests.Actuators
                 "Test", 
                 adapter, 
                 testController.GetInstance<ISchedulerService>(),
-                testController.GetInstance<ISettingsService>());
+                testController.GetInstance<ISettingsService>(),
+                testController.GetInstance<IMessageBrokerService>());
 
             var automation = new TurnOnAndOffAutomation(
                 "Test",
                 testController.GetInstance<IDateTimeService>(), 
                 testController.GetInstance<ISchedulerService>(),
                 testController.GetInstance<ISettingsService>(),
-                testController.GetInstance<IDaylightService>());
+                testController.GetInstance<IDaylightService>(),
+                testController.GetInstance<IMessageBrokerService>());
 
             var output = new Lamp("Test", new TestLampAdapter());
             Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
@@ -57,14 +60,15 @@ namespace HA4IoT.Tests.Actuators
                 testController.GetInstance<IDateTimeService>(),
                 testController.GetInstance<ISchedulerService>(),
                 testController.GetInstance<ISettingsService>(),
-                testController.GetInstance<IDaylightService>());
+                testController.GetInstance<IDaylightService>(),
+                testController.GetInstance<IMessageBrokerService>());
 
             var buttonAdapter = new TestButtonAdapter();
-            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>());
+            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>(), testController.GetInstance<IMessageBrokerService>());
             var output = new Lamp("Test", new TestLampAdapter());
             Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
 
-            automation.WithTrigger(button.PressedShortTrigger);
+            automation.WithTrigger(button.CreatePressedShortTrigger(testController.GetInstance<IMessageBrokerService>()));
             automation.WithTarget(output);
 
             buttonAdapter.Touch();
@@ -82,14 +86,16 @@ namespace HA4IoT.Tests.Actuators
                 "Test",
                 adapter,
                 testController.GetInstance<ISchedulerService>(),
-                testController.GetInstance<ISettingsService>());
+                testController.GetInstance<ISettingsService>(),
+                testController.GetInstance<IMessageBrokerService>());
 
             var automation = new TurnOnAndOffAutomation(
                 "Test",
                 testController.GetInstance<IDateTimeService>(),
                 testController.GetInstance<ISchedulerService>(),
                 testController.GetInstance<ISettingsService>(),
-                testController.GetInstance<IDaylightService>());
+                testController.GetInstance<IDaylightService>(),
+                testController.GetInstance<IMessageBrokerService>());
 
             var output = new Lamp("Test", new TestLampAdapter());
             Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
@@ -114,15 +120,16 @@ namespace HA4IoT.Tests.Actuators
                 testController.GetInstance<IDateTimeService>(),
                 testController.GetInstance<ISchedulerService>(),
                 testController.GetInstance<ISettingsService>(),
-                testController.GetInstance<IDaylightService>());
+                testController.GetInstance<IDaylightService>(),
+                testController.GetInstance<IMessageBrokerService>());
 
             var buttonAdapter = new TestButtonAdapter();
-            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>());
+            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>(), testController.GetInstance<IMessageBrokerService>());
             var output = new Lamp("Test", new TestLampAdapter());
             Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
 
             automation.WithTurnOnWithinTimeRange(() => TimeSpan.Parse("10:00:00"), () => TimeSpan.Parse("15:00:00"));
-            automation.WithTrigger(button.PressedShortTrigger);
+            automation.WithTrigger(button.CreatePressedShortTrigger(testController.GetInstance<IMessageBrokerService>()));
             automation.WithTarget(output);
 
             buttonAdapter.Touch();
@@ -140,14 +147,16 @@ namespace HA4IoT.Tests.Actuators
                 "Test",
                 adapter,
                 testController.GetInstance<ISchedulerService>(),
-                testController.GetInstance<ISettingsService>());
+                testController.GetInstance<ISettingsService>(),
+                testController.GetInstance<IMessageBrokerService>());
 
             var automation = new TurnOnAndOffAutomation(
                 "Test",
                 testController.GetInstance<IDateTimeService>(),
                 testController.GetInstance<ISchedulerService>(),
                 testController.GetInstance<ISettingsService>(),
-                testController.GetInstance<IDaylightService>());
+                testController.GetInstance<IDaylightService>(),
+                testController.GetInstance<IMessageBrokerService>());
 
             var output = new Lamp("Test", new TestLampAdapter());
             Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
@@ -181,14 +190,16 @@ namespace HA4IoT.Tests.Actuators
                 "Test",
                 adapter,
                 testController.GetInstance<ISchedulerService>(),
-                testController.GetInstance<ISettingsService>());
+                testController.GetInstance<ISettingsService>(),
+                testController.GetInstance<IMessageBrokerService>());
 
             var automation = new TurnOnAndOffAutomation(
                 "Test",
                 testController.GetInstance<IDateTimeService>(),
                 testController.GetInstance<ISchedulerService>(),
                 testController.GetInstance<ISettingsService>(),
-                testController.GetInstance<IDaylightService>());
+                testController.GetInstance<IDaylightService>(),
+                testController.GetInstance<IMessageBrokerService>());
 
             var output = new Lamp("Test", new TestLampAdapter());
             Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
@@ -220,14 +231,15 @@ namespace HA4IoT.Tests.Actuators
                 testController.GetInstance<IDateTimeService>(),
                 testController.GetInstance<ISchedulerService>(),
                 testController.GetInstance<ISettingsService>(),
-                testController.GetInstance<IDaylightService>());
+                testController.GetInstance<IDaylightService>(),
+                testController.GetInstance<IMessageBrokerService>());
 
             var buttonAdapter = new TestButtonAdapter();
-            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>());
+            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>(), testController.GetInstance<IMessageBrokerService>());
             var output = new Lamp("Test", new TestLampAdapter());
             Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
 
-            automation.WithTrigger(button.PressedShortTrigger);
+            automation.WithTrigger(button.CreatePressedShortTrigger(testController.GetInstance<IMessageBrokerService>()));
             automation.WithTarget(output);
 
             IComponent[] otherActuators =

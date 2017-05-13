@@ -1,0 +1,56 @@
+
+<div class="row">
+    <div class="col-md-8">
+        <pre id="editor" class="script-editor" ng-model="seCtrl.scriptCode">log.traceLine("Script start...")
+return "Hello World"</pre>
+
+        <script>
+            var editor = ace.edit("editor");
+            editor.setTheme("ace/theme/monokai");
+            editor.session.setMode("ace/mode/lua");
+            editor.setShowPrintMargin(false);
+        </script>
+
+        <div>
+            <a href="#" class="btn btn-success" ng-click="seCtrl.executeScript()">Execute</a>
+            <span class="label label-default pull-right">{{ seCtrl.result.Duration }} ms</span>
+        </div>
+
+        <div>
+            <h2>Result</h2>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div ng-show="seCtrl.result.Exception !== null" class="alert alert-danger" role="alert">
+                        <span class="code"><strong>Failed:</strong> {{ seCtrl.result.Exception.Message }}</span>
+                    </div>
+                    <div ng-show="seCtrl.result.Exception === null" class="alert alert-success" role="alert">
+                        <span class="code"><strong>Success:</strong> {{ seCtrl.result.Value }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel panel-default">
+                <div class="panel-heading">Trace</div>
+                <div class="panel-body">
+                    <span class="code">{{ seCtrl.result.Trace }}</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">API reference</div>
+            <div class="panel-body">
+                <ul>
+                    <li ng-repeat="method in seCtrl.proxyMethods">
+                        <span class="code">{{method}}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>

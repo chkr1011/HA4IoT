@@ -6,17 +6,18 @@ using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Components.Features;
 using HA4IoT.Contracts.Components.States;
+using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Sensors.Events;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Contracts.Triggers;
-using HA4IoT.Triggers;
 
 namespace HA4IoT.Sensors.MotionDetectors
 {
     public class MotionDetector : ComponentBase, IMotionDetector
     {
         private readonly object _syncRoot = new object();
+        private readonly IMessageBrokerService _messageBroker;
 
         private readonly CommandExecutor _commandExecutor = new CommandExecutor();
 
@@ -26,10 +27,11 @@ namespace HA4IoT.Sensors.MotionDetectors
         private IDelayedAction _autoEnableAction;
         private MotionDetectionStateValue _motionDetectionState = MotionDetectionStateValue.Idle;
 
-        public MotionDetector(string id, IMotionDetectorAdapter adapter, ISchedulerService schedulerService, ISettingsService settingsService)
+        public MotionDetector(string id, IMotionDetectorAdapter adapter, ISchedulerService schedulerService, ISettingsService settingsService, IMessageBrokerService messageBroker)
             : base(id)
         {
             if (adapter == null) throw new ArgumentNullException(nameof(adapter));
+            _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
 
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
             _schedulerService = schedulerService ?? throw new ArgumentNullException(nameof(schedulerService));
@@ -50,10 +52,6 @@ namespace HA4IoT.Sensors.MotionDetectors
         }
 
         public MotionDetectorSettings Settings { get; private set; }
-
-        public ITrigger MotionDetectedTrigger { get; } = new Trigger();
-
-        public ITrigger MotionDetectionCompletedTrigger { get; } = new Trigger();
 
         public override IComponentFeatureCollection GetFeatures()
         {
@@ -101,11 +99,11 @@ namespace HA4IoT.Sensors.MotionDetectors
 
                 if (state == MotionDetectionStateValue.MotionDetected)
                 {
-                    ((Trigger) MotionDetectedTrigger).Execute();
+                    _messageBroker.Publish(Id, new MotionDetectedEvent());
                 }
                 else if (state == MotionDetectionStateValue.Idle)
                 {
-                    ((Trigger) MotionDetectionCompletedTrigger).Execute();
+                    _messageBroker.Publish(Id, new MotionDetectionCompletedEvent());
                 }
             }
         }

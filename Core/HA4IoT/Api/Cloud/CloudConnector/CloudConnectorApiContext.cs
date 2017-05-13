@@ -4,7 +4,7 @@ using HA4IoT.Contracts.Api.Cloud;
 
 namespace HA4IoT.Api.Cloud.CloudConnector
 {
-    public class CloudConnectorApiContext : ApiContext
+    public class CloudConnectorApiContext : ApiCall
     {
         public CloudConnectorApiContext(CloudRequestMessage requestMessage) 
             : base(requestMessage.Request.Action, requestMessage.Request.Parameter, requestMessage.Request.ResultHash)

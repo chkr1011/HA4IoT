@@ -1,6 +1,7 @@
 ﻿{
   "dependencies": {
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.3.3",
+    "MoonSharp": "1.8.0",
     "MQTTnet": "2.1.2",
     "Newtonsoft.Json": "10.0.2",
     "SimpleInjector": "4.0.6"

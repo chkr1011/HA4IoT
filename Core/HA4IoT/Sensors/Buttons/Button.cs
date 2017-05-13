@@ -6,34 +6,39 @@ using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Components.Features;
 using HA4IoT.Contracts.Components.States;
+using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Sensors;
+using HA4IoT.Contracts.Sensors.Events;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
-using HA4IoT.Contracts.Triggers;
 using HA4IoT.Services.System;
-using HA4IoT.Triggers;
 
 namespace HA4IoT.Sensors.Buttons
 {
     public class Button : ComponentBase, IButton
     {
         private readonly object _syncRoot = new object();
+        private readonly IMessageBrokerService _messageBroker;
 
         private readonly CommandExecutor _commandExecutor = new CommandExecutor();
         private readonly Timeout _pressedLongTimeout;
-        
+
         private ButtonStateValue _state = ButtonStateValue.Released;
 
-        public Button(string id, IButtonAdapter adapter, ITimerService timerService, ISettingsService settingsService)
+        public Button(string id, IButtonAdapter adapter, ITimerService timerService, ISettingsService settingsService, IMessageBrokerService messageBroker)
             : base(id)
         {
             if (adapter == null) throw new ArgumentNullException(nameof(adapter));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-            
+            _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
+
             settingsService.CreateSettingsMonitor<ButtonSettings>(this, s => Settings = s.NewSettings);
 
             _pressedLongTimeout = new Timeout(timerService);
-            _pressedLongTimeout.Elapsed += (s, e) => ((Trigger)PressedLongTrigger).Execute();
+            _pressedLongTimeout.Elapsed += (s, e) =>
+            {
+                _messageBroker.Publish(Id, new ButtonPressedLongEvent());
+            };
 
             adapter.StateChanged += UpdateState;
 
@@ -42,9 +47,6 @@ namespace HA4IoT.Sensors.Buttons
         }
 
         public ButtonSettings Settings { get; private set; }
-
-        public ITrigger PressedShortTrigger { get; } = new Trigger();
-        public ITrigger PressedLongTrigger { get; } = new Trigger();
 
         public override IComponentFeatureStateCollection GetState()
         {
@@ -72,18 +74,18 @@ namespace HA4IoT.Sensors.Buttons
         {
             if (duration == ButtonPressedDuration.Short)
             {
-                ((Trigger)PressedShortTrigger).Execute();
+                _messageBroker.Publish(Id, new ButtonPressedShortEvent());
             }
             else
             {
-                ((Trigger)PressedLongTrigger).Execute();
+                _messageBroker.Publish(Id, new ButtonPressedLongEvent());
             }
         }
-        
+
         private void UpdateState(object sender, ButtonAdapterStateChangedEventArgs e)
         {
             var state = e.State == AdapterButtonState.Pressed ? ButtonStateValue.Pressed : ButtonStateValue.Released;
-            
+
             lock (_syncRoot)
             {
                 if (!Settings.IsEnabled)
@@ -100,17 +102,17 @@ namespace HA4IoT.Sensors.Buttons
                 _state = state;
 
                 OnStateChanged(oldState);
-                InvokeTriggers(state);
+                PublishEvents(state);
             }
         }
 
-        private void InvokeTriggers(ButtonStateValue state)
+        private void PublishEvents(ButtonStateValue state)
         {
             if (state == ButtonStateValue.Pressed)
             {
-                if (!PressedLongTrigger.IsAnyAttached)
+                if (!_messageBroker.HasSubscribers<ButtonPressedLongEvent>(Id))
                 {
-                    ((Trigger)PressedShortTrigger).Execute();
+                    _messageBroker.Publish(Id, new ButtonPressedShortEvent());
                 }
                 else
                 {
@@ -119,11 +121,10 @@ namespace HA4IoT.Sensors.Buttons
             }
             else if (state == ButtonStateValue.Released)
             {
-                if (!_pressedLongTimeout.IsElapsed)
+                if (_pressedLongTimeout.IsEnabled && !_pressedLongTimeout.IsElapsed)
                 {
                     _pressedLongTimeout.Stop();
-
-                    ((Trigger)PressedShortTrigger).Execute();
+                    _messageBroker.Publish(Id, new ButtonPressedShortEvent());
                 }
             }
         }

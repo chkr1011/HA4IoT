@@ -45,7 +45,7 @@ namespace HA4IoT.Services.Health
         }
 
         [ApiMethod]
-        public void Reset(IApiContext apiContext)
+        public void Reset(IApiCall apiCall)
         {
             ResetStatistics();
         }
