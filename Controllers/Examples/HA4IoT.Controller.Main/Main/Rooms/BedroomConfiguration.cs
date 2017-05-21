@@ -122,6 +122,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             _sensorFactory.RegisterButton(area, Bedroom.ButtonWindowUpper, input5.GetInput(10));
             _sensorFactory.RegisterButton(area, Bedroom.ButtonWindowLower, input5.GetInput(13));
+            _sensorFactory.RegisterButton(area, Bedroom.ButtonDoor, input5.GetInput(11));
+
             _sensorFactory.RegisterButton(area, Bedroom.ButtonBedLeftInner, input4.GetInput(2));
             _sensorFactory.RegisterButton(area, Bedroom.ButtonBedLeftOuter, input4.GetInput(0));
             _sensorFactory.RegisterButton(area, Bedroom.ButtonBedRightInner, input4.GetInput(1));
