@@ -72,10 +72,12 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
         public void Apply()
         {
-            var hsrel8 = _ccToolsBoardService.RegisterHSREL8(InstalledDevice.OfficeHSREL8.ToString(), new I2CSlaveAddress(20));
-            var hspe8 = _ccToolsBoardService.RegisterHSPE8OutputOnly(InstalledDevice.UpperFloorAndOfficeHSPE8.ToString(), new I2CSlaveAddress(37));
             var input4 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input4.ToString());
             var input5 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input5.ToString());
+
+            var hsrel8 = _ccToolsBoardService.RegisterHSREL8(InstalledDevice.OfficeHSREL8.ToString(), new I2CSlaveAddress(20));
+            var hspe8 = _ccToolsBoardService.RegisterHSPE8OutputOnly(InstalledDevice.UpperFloorAndOfficeHSPE8.ToString(), new I2CSlaveAddress(37));
+            
             var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
 
             const int SensorPin = 2;
@@ -104,10 +106,10 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             _actuatorFactory.RegisterSocket(area, Office.RemoteSocketDesk, _remoteSocketService.GetRemoteSocket("OFFICE_0"));
 
             _sensorFactory.RegisterButton(area, Office.ButtonUpperLeft, input5.GetInput(0));
+            _sensorFactory.RegisterButton(area, Office.ButtonUpperRight, input4.GetInput(15));
             _sensorFactory.RegisterButton(area, Office.ButtonLowerLeft, input5.GetInput(1));
             _sensorFactory.RegisterButton(area, Office.ButtonLowerRight, input4.GetInput(14));
-            _sensorFactory.RegisterButton(area, Office.ButtonUpperRight, input4.GetInput(15));
-
+            
             var stateMachine = _actuatorFactory.RegisterStateMachine(area, Office.CombinedCeilingLights, (s, a) => SetupLight(s, hsrel8, hspe8));
             stateMachine.AlternativeStateId = StateMachineStateExtensions.OffStateId;
             stateMachine.ResetStateId = StateMachineStateExtensions.OffStateId;

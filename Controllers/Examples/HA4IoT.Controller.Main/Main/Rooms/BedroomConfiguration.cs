@@ -96,10 +96,11 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
         public void Apply()
         {
-            var hsrel5 = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.BedroomHSREL5.ToString(), new I2CSlaveAddress(38));
-            var hsrel8 = _ccToolsBoardService.RegisterHSREL8(InstalledDevice.BedroomHSREL8.ToString(), new I2CSlaveAddress(21));
             var input5 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input5.ToString());
             var input4 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input4.ToString());
+
+            var hsrel5 = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.BedroomHSREL5.ToString(), new I2CSlaveAddress(38));
+            var hsrel8 = _ccToolsBoardService.RegisterHSREL8(InstalledDevice.BedroomHSREL8.ToString(), new I2CSlaveAddress(21));
             var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
 
             const int SensorPin = 6;
@@ -119,12 +120,13 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             _sensorFactory.RegisterButton(area, Bedroom.ButtonWindowUpper, input5.GetInput(10));
             _sensorFactory.RegisterButton(area, Bedroom.ButtonWindowLower, input5.GetInput(13));
+            _sensorFactory.RegisterButton(area, Bedroom.ButtonDoor, input5.GetInput(11));
+
             _sensorFactory.RegisterButton(area, Bedroom.ButtonBedLeftInner, input4.GetInput(2));
             _sensorFactory.RegisterButton(area, Bedroom.ButtonBedLeftOuter, input4.GetInput(0));
             _sensorFactory.RegisterButton(area, Bedroom.ButtonBedRightInner, input4.GetInput(1));
             _sensorFactory.RegisterButton(area, Bedroom.ButtonBedRightOuter, input4.GetInput(3));
-            _sensorFactory.RegisterButton(area, Bedroom.ButtonDoor, input5.GetInput(11));
-
+            
             _sensorFactory.RegisterRollerShutterButtons(area, Bedroom.RollerShutterButtonsUpperUp, input5.GetInput(6),
                 Bedroom.RollerShutterButtonsUpperDown, input5.GetInput(7));
 
