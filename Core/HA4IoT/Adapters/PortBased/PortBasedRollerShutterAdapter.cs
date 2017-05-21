@@ -16,17 +16,17 @@ namespace HA4IoT.Adapters.PortBased
             _directionOutput = directionOutput ?? throw new ArgumentNullException(nameof(directionOutput));
         }
 
-        public void SetState(AdapterRollerShutterState state, params IHardwareParameter[] parameters)
+        public async Task SetState(AdapterRollerShutterState state, params IHardwareParameter[] parameters)
         {
             if (state == AdapterRollerShutterState.MoveUp)
             {
-                StopAndWait();
+                await StopAndWait();
                 _directionOutput.Write(BinaryState.Low);
                 Start();
             }
             else if (state == AdapterRollerShutterState.MoveDown)
             {
-                StopAndWait();
+                await StopAndWait();
                 _directionOutput.Write(BinaryState.High);
                 Start();
             }
@@ -39,17 +39,17 @@ namespace HA4IoT.Adapters.PortBased
             }
         }
 
-        private void StopAndWait()
+        private Task StopAndWait()
         {
             if (_powerOutput.Read() == BinaryState.Low)
             {
-                return;
+                return Task.FromResult(0);
             }
 
             _powerOutput.Write(BinaryState.Low);
 
             // Ensure that the relay is completely fallen off before switching the direction.
-            Task.Delay(100).Wait();
+            return Task.Delay(100);
         }
 
         private void Start()

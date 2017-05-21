@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Hardware;
 
@@ -18,7 +19,7 @@ namespace HA4IoT.Adapters.PortBased
 
         public int ColorResolutionBits => 0;
 
-        public void SetState(AdapterPowerState powerState, params IHardwareParameter[] parameters)
+        public Task SetState(AdapterPowerState powerState, params IHardwareParameter[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
@@ -27,9 +28,11 @@ namespace HA4IoT.Adapters.PortBased
             {
                 _output.Write(powerState == AdapterPowerState.On ? BinaryState.High : BinaryState.Low, commit ? WriteBinaryStateMode.Commit : WriteBinaryStateMode.NoCommit);
             }
+
+            return Task.FromResult(0);
         }
 
-        public void SetState(AdapterPowerState powerState, AdapterColor color, params IHardwareParameter[] hardwareParameters)
+        public Task SetState(AdapterPowerState powerState, AdapterColor color, params IHardwareParameter[] hardwareParameters)
         {
             if (color != null)
             {
@@ -37,6 +40,8 @@ namespace HA4IoT.Adapters.PortBased
             }
 
             SetState(powerState, hardwareParameters);
+
+            return Task.FromResult(0);
         }
     }
 }

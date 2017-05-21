@@ -1,7 +1,6 @@
 ﻿using System;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Triggers;
-using HA4IoT.Triggers;
 
 namespace HA4IoT.Sensors.Triggers
 {
@@ -14,11 +13,10 @@ namespace HA4IoT.Sensors.Triggers
         public SensorValueThresholdTrigger(IComponent component, Func<IComponent, float?> valueResolver, SensorValueThresholdMode mode)
         {
             if (component == null) throw new ArgumentNullException(nameof(component));
-            if (valueResolver == null) throw new ArgumentNullException(nameof(valueResolver));
-
             component.StateChanged += (s, e) => CheckValue(component);
+
             _mode = mode;
-            _valueResolver = valueResolver;
+            _valueResolver = valueResolver ?? throw new ArgumentNullException(nameof(valueResolver));
         }
 
         public float Target { get; set; }

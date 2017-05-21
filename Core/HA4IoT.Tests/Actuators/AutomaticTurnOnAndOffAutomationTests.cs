@@ -4,6 +4,7 @@ using HA4IoT.Automations;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Components.States;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Services.Daylight;
 using HA4IoT.Contracts.Services.Settings;
@@ -64,7 +65,7 @@ namespace HA4IoT.Tests.Actuators
                 testController.GetInstance<IMessageBrokerService>());
 
             var buttonAdapter = new TestButtonAdapter();
-            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>(), testController.GetInstance<IMessageBrokerService>());
+            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>(), testController.GetInstance<IMessageBrokerService>(), testController.GetInstance<ILogService>());
             var output = new Lamp("Test", new TestLampAdapter());
             Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
 
@@ -124,7 +125,7 @@ namespace HA4IoT.Tests.Actuators
                 testController.GetInstance<IMessageBrokerService>());
 
             var buttonAdapter = new TestButtonAdapter();
-            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>(), testController.GetInstance<IMessageBrokerService>());
+            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>(), testController.GetInstance<IMessageBrokerService>(), testController.GetInstance<ILogService>());
             var output = new Lamp("Test", new TestLampAdapter());
             Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
 
@@ -235,7 +236,7 @@ namespace HA4IoT.Tests.Actuators
                 testController.GetInstance<IMessageBrokerService>());
 
             var buttonAdapter = new TestButtonAdapter();
-            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>(), testController.GetInstance<IMessageBrokerService>());
+            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>(), testController.GetInstance<IMessageBrokerService>(), testController.GetInstance<ILogService>());
             var output = new Lamp("Test", new TestLampAdapter());
             Assert.AreEqual(true, output.GetState().Has(PowerState.Off));
 

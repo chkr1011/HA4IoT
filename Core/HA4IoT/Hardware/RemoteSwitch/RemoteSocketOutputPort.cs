@@ -17,7 +17,7 @@ namespace HA4IoT.Hardware.RemoteSwitch
             _remoteSocketService = remoteSocketService ?? throw new ArgumentNullException(nameof(remoteSocketService));
         }
 
-        public bool IsStateInverted { get; set; }
+        public event EventHandler<BinaryStateChangedEventArgs> StateChanged;
 
         public void Write(BinaryState state, WriteBinaryStateMode mode = WriteBinaryStateMode.Commit)
         {
@@ -41,7 +41,10 @@ namespace HA4IoT.Hardware.RemoteSwitch
                     throw new NotSupportedException();
                 }
 
+                var oldState = state;
                 _state = state;
+
+                StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(oldState, state));
             }
         }
 

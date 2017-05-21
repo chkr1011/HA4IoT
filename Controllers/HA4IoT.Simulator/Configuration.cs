@@ -9,6 +9,7 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware.DeviceMessaging;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Scripting;
 using HA4IoT.Contracts.Sensors;
@@ -44,6 +45,7 @@ namespace HA4IoT.Simulator
             var outpostDeviceService = _containerService.GetInstance<OutpostDeviceService>();
             var scriptingService = _containerService.GetInstance<IScriptingService>();
             var messageBroker = _containerService.GetInstance<IMessageBrokerService>();
+            var logService = _containerService.GetInstance<ILogService>();
 
             var area = areaRepository.RegisterArea("TestArea");
 
@@ -63,12 +65,12 @@ namespace HA4IoT.Simulator
 
             area.RegisterComponent(new Socket("Socket_POW_01", sonoffDeviceService.GetAdapterForPow("SonoffPow_01")));
 
-            area.RegisterComponent(new Button("Button1", await _mainPage.CreateUIButtonAdapter("Button 1"), timerService, settingsService, messageBroker));
-            area.RegisterComponent(new Button("Button2", await _mainPage.CreateUIButtonAdapter("Button 2"), timerService, settingsService, messageBroker));
-            area.RegisterComponent(new Button("Button3", await _mainPage.CreateUIButtonAdapter("Button 3"), timerService, settingsService, messageBroker));
-            area.RegisterComponent(new Button("Button4", await _mainPage.CreateUIButtonAdapter("Button 4"), timerService, settingsService, messageBroker));
-            area.RegisterComponent(new Button("Button5_SONOFF", new VirtualButtonAdapter(), timerService, settingsService, messageBroker));
-            area.RegisterComponent(new Button("Button6", await _mainPage.CreateUIButtonAdapter("Button 6"), timerService, settingsService, messageBroker));
+            area.RegisterComponent(new Button("Button1", await _mainPage.CreateUIButtonAdapter("Button 1"), timerService, settingsService, messageBroker, logService));
+            area.RegisterComponent(new Button("Button2", await _mainPage.CreateUIButtonAdapter("Button 2"), timerService, settingsService, messageBroker, logService));
+            area.RegisterComponent(new Button("Button3", await _mainPage.CreateUIButtonAdapter("Button 3"), timerService, settingsService, messageBroker, logService));
+            area.RegisterComponent(new Button("Button4", await _mainPage.CreateUIButtonAdapter("Button 4"), timerService, settingsService, messageBroker, logService));
+            area.RegisterComponent(new Button("Button5_SONOFF", new VirtualButtonAdapter(), timerService, settingsService, messageBroker, logService));
+            area.RegisterComponent(new Button("Button6", await _mainPage.CreateUIButtonAdapter("Button 6"), timerService, settingsService, messageBroker, logService));
 
             area.RegisterComponent(new MotionDetector("Motion1", await _mainPage.CreateUIMotionDetectorAdapter("Motion Detector 1"),  schedulerService,  settingsService, messageBroker));
             

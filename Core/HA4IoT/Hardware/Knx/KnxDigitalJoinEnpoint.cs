@@ -1,6 +1,7 @@
 ﻿using HA4IoT.Contracts.Hardware;
 using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using HA4IoT.Contracts.Adapters;
 
 namespace HA4IoT.Hardware.Knx
@@ -19,7 +20,7 @@ namespace HA4IoT.Hardware.Knx
             _knxController = knxController ?? throw new ArgumentNullException(nameof(knxController));
         }
 
-        public void SetState(AdapterPowerState powerState, params IHardwareParameter[] parameters)
+        public Task SetState(AdapterPowerState powerState, params IHardwareParameter[] parameters)
         {
             if (powerState == AdapterPowerState.On)
             {
@@ -29,6 +30,8 @@ namespace HA4IoT.Hardware.Knx
             {
                 _knxController.SendDigitalJoinOff(_identifier);
             }
+
+            return Task.FromResult(0);
         }
 
         private bool ValidationJoin(string join)

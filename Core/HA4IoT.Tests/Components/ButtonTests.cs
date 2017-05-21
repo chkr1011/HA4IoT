@@ -1,6 +1,7 @@
 ﻿using System;
 using HA4IoT.Contracts.Components.Features;
 using HA4IoT.Contracts.Components.States;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Services.Settings;
 using HA4IoT.Contracts.Services.System;
@@ -17,10 +18,10 @@ namespace HA4IoT.Tests.Components
         [TestMethod]
         public void Button_FeatureAvailable()
         {
-            var testController = new TestController();
+            var c = new TestController();
 
             var buttonAdapter = new TestButtonAdapter();
-            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>(), testController.GetInstance<IMessageBrokerService>());
+            var button = new Button("Test", buttonAdapter, c.GetInstance<ITimerService>(), c.GetInstance<ISettingsService>(), c.GetInstance<IMessageBrokerService>(), c.GetInstance<ILogService>());
 
             Assert.IsTrue(button.GetFeatures().Supports<ButtonFeature>());
         }
@@ -28,10 +29,10 @@ namespace HA4IoT.Tests.Components
         [TestMethod]
         public void Button_StateAvailable()
         {
-            var testController = new TestController();
+            var c = new TestController();
 
             var buttonAdapter = new TestButtonAdapter();
-            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>(), testController.GetInstance<IMessageBrokerService>());
+            var button = new Button("Test", buttonAdapter, c.GetInstance<ITimerService>(), c.GetInstance<ISettingsService>(), c.GetInstance<IMessageBrokerService>(), c.GetInstance<ILogService>());
 
             Assert.IsTrue(button.GetState().Supports<ButtonState>());
         }
@@ -39,10 +40,10 @@ namespace HA4IoT.Tests.Components
         [TestMethod]
         public void Button_PressShort()
         {
-            var testController = new TestController();
+            var c = new TestController();
 
             var buttonAdapter = new TestButtonAdapter();
-            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>(), testController.GetInstance<IMessageBrokerService>());
+            var button = new Button("Test", buttonAdapter, c.GetInstance<ITimerService>(), c.GetInstance<ISettingsService>(), c.GetInstance<IMessageBrokerService>(), c.GetInstance<ILogService>());
 
             Assert.IsTrue(button.GetState().Has(ButtonState.Released));
             buttonAdapter.Press();
@@ -54,13 +55,13 @@ namespace HA4IoT.Tests.Components
         [TestMethod]
         public void Button_PressedShortTrigger()
         {
-            var testController = new TestController();
+            var c = new TestController();
 
             var buttonAdapter = new TestButtonAdapter();
-            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>(), testController.GetInstance<IMessageBrokerService>());
+            var button = new Button("Test", buttonAdapter, c.GetInstance<ITimerService>(), c.GetInstance<ISettingsService>(), c.GetInstance<IMessageBrokerService>(), c.GetInstance<ILogService>());
 
             var triggerRaised = false;
-            button.CreatePressedShortTrigger(testController.GetInstance<IMessageBrokerService>()).Attach(() => triggerRaised = true);
+            button.CreatePressedShortTrigger(c.GetInstance<IMessageBrokerService>()).Attach(() => triggerRaised = true);
 
             Assert.IsTrue(button.GetState().Has(ButtonState.Released));
             buttonAdapter.Touch();
@@ -70,13 +71,13 @@ namespace HA4IoT.Tests.Components
         [TestMethod]
         public void Button_PressedLongTrigger()
         {
-            var testController = new TestController();
+            var c = new TestController();
 
             var buttonAdapter = new TestButtonAdapter();
-            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>(), testController.GetInstance<IMessageBrokerService>());
+            var button = new Button("Test", buttonAdapter, c.GetInstance<ITimerService>(), c.GetInstance<ISettingsService>(), c.GetInstance<IMessageBrokerService>(), c.GetInstance<ILogService>());
 
             var triggerRaised = false;
-            button.CreatePressedLongTrigger(testController.GetInstance<IMessageBrokerService>()).Attach(() => triggerRaised = true);
+            button.CreatePressedLongTrigger(c.GetInstance<IMessageBrokerService>()).Attach(() => triggerRaised = true);
 
             Assert.IsTrue(button.GetState().Has(ButtonState.Released));
             buttonAdapter.Press();
@@ -85,25 +86,25 @@ namespace HA4IoT.Tests.Components
             Assert.IsFalse(triggerRaised);
 
             // 1h is only for test. Enough to test with default settings.
-            testController.Tick(TimeSpan.FromHours(1));
+            c.Tick(TimeSpan.FromHours(1));
             Assert.IsTrue(triggerRaised);
         }
 
         [TestMethod]
         public void Button_NoDoublePressedLongTrigger()
         {
-            var testController = new TestController();
+            var c = new TestController();
 
             var buttonAdapter = new TestButtonAdapter();
-            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>(), testController.GetInstance<IMessageBrokerService>());
+            var button = new Button("Test", buttonAdapter, c.GetInstance<ITimerService>(), c.GetInstance<ISettingsService>(), c.GetInstance<IMessageBrokerService>(), c.GetInstance<ILogService>());
 
             var triggerRaisedCount = 0;
-            button.CreatePressedLongTrigger(testController.GetInstance<IMessageBrokerService>()).Attach(() => triggerRaisedCount++);
+            button.CreatePressedLongTrigger(c.GetInstance<IMessageBrokerService>()).Attach(() => triggerRaisedCount++);
 
             buttonAdapter.Press();
 
             // 1h is only for test. Enough to test with default settings.
-            testController.Tick(TimeSpan.FromHours(1));
+            c.Tick(TimeSpan.FromHours(1));
             
             Assert.AreEqual(1, triggerRaisedCount);
 

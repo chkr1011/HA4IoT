@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.DeviceMessaging;
@@ -17,9 +18,10 @@ namespace HA4IoT.Hardware.Sonoff
             _deviceMessageBrokerService = deviceMessageBrokerService ?? throw new ArgumentNullException(nameof(deviceMessageBrokerService));
         }
 
-        public void SetState(AdapterPowerState powerState, params IHardwareParameter[] parameters)
+        public Task SetState(AdapterPowerState powerState, params IHardwareParameter[] parameters)
         {
             _deviceMessageBrokerService.Publish(_topic, powerState == AdapterPowerState.On ? "ON" : "OFF", MqttQosLevel.ExactlyOnce);
+            return Task.FromResult(0);
         }
     }
 }

@@ -4,6 +4,7 @@ using HA4IoT.Adapters.PortBased;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services.Settings;
@@ -18,13 +19,15 @@ namespace HA4IoT.Sensors
 {
     public class SensorFactory
     {
+        private readonly ILogService _logService;
         private readonly IMessageBrokerService _messageBroker;
         private readonly ITimerService _timerService;
         private readonly ISchedulerService _schedulerService;
         private readonly ISettingsService _settingsService;
 
-        public SensorFactory(ITimerService timerService, ISchedulerService schedulerService, ISettingsService settingsService, IMessageBrokerService messageBroker)
+        public SensorFactory(ITimerService timerService, ISchedulerService schedulerService, ISettingsService settingsService, IMessageBrokerService messageBroker, ILogService logService)
         {
+            _logService = logService ?? throw new ArgumentNullException(nameof(logService));
             _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
             _timerService = timerService ?? throw new ArgumentNullException(nameof(timerService));
             _schedulerService = schedulerService ?? throw new ArgumentNullException(nameof(schedulerService));
@@ -58,12 +61,8 @@ namespace HA4IoT.Sensors
             if (area == null) throw new ArgumentNullException(nameof(area));
             if (input == null) throw new ArgumentNullException(nameof(input));
 
-            var button = new Button(
-                $"{area.Id}.{id}",
-                new PortBasedButtonAdapter(input),
-                _timerService,
-                _settingsService,
-                _messageBroker);
+            var adapter = new PortBasedButtonAdapter(input);
+            var button = new Button($"{area.Id}.{id}", adapter, _timerService, _settingsService, _messageBroker, _logService);
 
             area.RegisterComponent(button);
             return button;
@@ -73,10 +72,11 @@ namespace HA4IoT.Sensors
         {
             if (area == null) throw new ArgumentNullException(nameof(area));
 
-            var virtualButton = new Button($"{area.Id}.{id}", new VirtualButtonAdapter(), _timerService, _settingsService, _messageBroker);
-            area.RegisterComponent(virtualButton);
+            var adapter = new VirtualButtonAdapter();
+            var button = new Button($"{area.Id}.{id}", adapter, _timerService, _settingsService, _messageBroker, _logService);
 
-            return virtualButton;
+            area.RegisterComponent(button);
+            return button;
         }
 
         public IMotionDetector RegisterMotionDetector(IArea area, Enum id, IBinaryInput input)

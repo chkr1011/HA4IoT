@@ -16,32 +16,33 @@ namespace HA4IoT.Hardware
             _outputs.AddRange(outputs);
         }
 
-        public bool IsStateInverted { get; set; }
-        
+        public event EventHandler<BinaryStateChangedEventArgs> StateChanged;
+
         public void Write(BinaryState state, WriteBinaryStateMode mode)
         {
-            var effectiveState = CoerceState(state);
-
             // TODO: Implement animations here.
             foreach (var output in _outputs)
             {
-                output.Write(effectiveState, WriteBinaryStateMode.NoCommit);
+                output.Write(state, WriteBinaryStateMode.NoCommit);
             }
 
             if (mode == WriteBinaryStateMode.Commit)
             {
                 foreach (var output in _outputs)
                 {
-                    output.Write(effectiveState);
+                    output.Write(state);
                 }
             }
 
+            var oldState = _state;
             _state = state;
+
+            StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(oldState, _state));
         }
 
         public BinaryState Read()
         {
-            return CoerceState(_state);
+            return _state;
         }
 
         public LogicalBinaryOutput WithOutput(IBinaryOutput output)
@@ -50,16 +51,6 @@ namespace HA4IoT.Hardware
 
             _outputs.Add(output);
             return this;
-        }
-
-        private BinaryState CoerceState(BinaryState state)
-        {
-            if (IsStateInverted)
-            {
-                return state == BinaryState.High ? BinaryState.Low : BinaryState.High;
-            }
-
-            return state;
         }
     }
 }

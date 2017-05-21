@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.DeviceMessaging;
@@ -23,12 +24,12 @@ namespace HA4IoT.Hardware.Outpost
 
         public int ColorResolutionBits => 10;
 
-        public void SetState(AdapterPowerState powerState, params IHardwareParameter[] parameters)
+        public Task SetState(AdapterPowerState powerState, params IHardwareParameter[] parameters)
         {
-            SetState(powerState, null, parameters);
+            return SetState(powerState, null, parameters);
         }
 
-        public void SetState(AdapterPowerState powerState, AdapterColor color, params IHardwareParameter[] hardwareParameters)
+        public Task SetState(AdapterPowerState powerState, AdapterColor color, params IHardwareParameter[] hardwareParameters)
         {
             if (!SupportsColor && color != null)
             {
@@ -61,6 +62,7 @@ namespace HA4IoT.Hardware.Outpost
             };
 
             _deviceMessageBroker.Publish(topic, json, MqttQosLevel.AtMostOnce);
+            return Task.FromResult(0);
         }
     }
 }

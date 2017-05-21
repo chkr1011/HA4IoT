@@ -11,11 +11,8 @@ namespace HA4IoT.Hardware.I2C.I2CPortExpanderDrivers
 
         public PCF8574Driver(I2CSlaveAddress address, II2CBusService i2CBus)
         {
-            if (address == null) throw new ArgumentNullException(nameof(address));
-            if (i2CBus == null) throw new ArgumentNullException(nameof(i2CBus));
-
-            _address = address;
-            _i2CBus = i2CBus;
+            _address = address ?? throw new ArgumentNullException(nameof(address));
+            _i2CBus = i2CBus ?? throw new ArgumentNullException(nameof(i2CBus));
         }
 
         public int StateSize { get; } = 1;

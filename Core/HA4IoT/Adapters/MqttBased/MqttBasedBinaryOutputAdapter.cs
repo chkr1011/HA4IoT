@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Threading.Tasks;
 using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.DeviceMessaging;
@@ -22,9 +23,10 @@ namespace HA4IoT.Adapters.MqttBased
             _topic = topic ?? throw new ArgumentNullException(nameof(topic));
         }
 
-        public void SetState(AdapterPowerState powerState, params IHardwareParameter[] parameters)
+        public Task SetState(AdapterPowerState powerState, params IHardwareParameter[] parameters)
         {
             _deviceMessageBrokerService.Publish(_topic, Encoding.UTF8.GetBytes(powerState.ToString()), MqttQosLevel.AtMostOnce);
+            return Task.FromResult(0);
         }
     }
 }

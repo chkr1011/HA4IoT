@@ -11,9 +11,7 @@ namespace HA4IoT.Hardware.CCTools
     public abstract class CCToolsDeviceBase : IDevice
     {
         private readonly object _syncRoot = new object();
-
         private readonly Dictionary<int, CCToolsDevicePort> _openPorts = new Dictionary<int, CCToolsDevicePort>();
-
         private readonly I2CIPortExpanderDriver _portExpanderDriver;
         private readonly IDeviceMessageBrokerService _deviceMessageBrokerService;
         private readonly ILogger _log;
@@ -33,8 +31,6 @@ namespace HA4IoT.Hardware.CCTools
             _state = new byte[portExpanderDriver.StateSize];
         }
 
-        public event EventHandler<CCToolsDeviceStateChangedEventArgs> StateChanged;
-
         public string Id { get; }
 
         public byte[] GetState()
@@ -45,16 +41,10 @@ namespace HA4IoT.Hardware.CCTools
             }
         }
 
-        public byte[] GetCommittedState()
-        {
-            lock (_syncRoot)
-            {
-                return _committedState.ToArray();
-            }
-        }
-
         public void SetState(byte[] state)
         {
+            if (state == null) throw new ArgumentNullException(nameof(state));
+
             lock (_syncRoot)
             {
                 Array.Copy(state, _state, state.Length);
@@ -88,7 +78,7 @@ namespace HA4IoT.Hardware.CCTools
                 _portExpanderDriver.Write(_state);
                 Array.Copy(_state, _committedState, _state.Length);
 
-                _log.Verbose(Id + ": Committed state");
+                _log.Verbose($"Board '{Id}' committed state '{BitConverter.ToString(_state)}'.");
             }
         }
 
@@ -138,8 +128,12 @@ namespace HA4IoT.Hardware.CCTools
                 var statesText = $"{BitConverter.ToString(oldState)},{BitConverter.ToString(newState)}";
                 _log.Info($"'{Id}' fetched different state ({statesText})");
 
+                foreach (var openPort in _openPorts)
+                {
+                    openPort.Value.OnBoardStateChanged(oldState, newState);
+                }
+
                 _deviceMessageBrokerService.PublishDeviceMessage(Id, "StateChanged", statesText);
-                StateChanged?.Invoke(this, new CCToolsDeviceStateChangedEventArgs(oldState, newState));
             }
         }
 

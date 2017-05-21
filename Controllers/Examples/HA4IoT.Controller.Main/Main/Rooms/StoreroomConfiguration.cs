@@ -77,7 +77,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             _actuatorFactory.RegisterLamp(room, Storeroom.LightCeiling, hsrel5Stairway[HSREL5Pin.GPIO1]);
 
             _sensorFactory.RegisterMotionDetector(room, Storeroom.MotionDetector, input3.GetInput(12));
-            _sensorFactory.RegisterMotionDetector(room, Storeroom.MotionDetectorCatLitterBox, input3.GetInput(11).WithInvertedState());
+            _sensorFactory.RegisterMotionDetector(room, Storeroom.MotionDetectorCatLitterBox, input3.GetInput(11));
 
             _actuatorFactory.RegisterSocket(room, Storeroom.CatLitterBoxFan, hsrel5Stairway[HSREL5Pin.GPIO2]);
             _actuatorFactory.RegisterSocket(room, Storeroom.CirculatingPump, hsrel5UpperHeatingValves[HSREL5Pin.Relay3]);

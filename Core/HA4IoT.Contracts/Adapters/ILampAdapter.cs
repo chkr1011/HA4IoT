@@ -1,4 +1,5 @@
-﻿using HA4IoT.Contracts.Hardware;
+﻿using System.Threading.Tasks;
+using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Contracts.Adapters
 {
@@ -8,6 +9,6 @@ namespace HA4IoT.Contracts.Adapters
 
         int ColorResolutionBits { get; }
 
-        void SetState(AdapterPowerState powerState, AdapterColor color, params IHardwareParameter[] hardwareParameters);
+        Task SetState(AdapterPowerState powerState, AdapterColor color, params IHardwareParameter[] hardwareParameters);
     }
 }

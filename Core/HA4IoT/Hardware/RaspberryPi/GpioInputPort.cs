@@ -8,9 +8,9 @@ namespace HA4IoT.Hardware.RaspberryPi
 {
     public sealed class GpioInputPort : IBinaryInput, IDisposable
     {
-        public const int PollInterval = 25;
+        private const int PollInterval = 15;
+        private const long DebounceTimeoutTicks = 1000;
 
-        private readonly object _syncRoot = new object();
         private readonly GpioPin _pin;
         // ReSharper disable once NotAccessedField.Local
         private readonly Timer _timer;
@@ -21,7 +21,7 @@ namespace HA4IoT.Hardware.RaspberryPi
         {
             _pin = pin ?? throw new ArgumentNullException(nameof(pin));
             _pin.SetDriveMode(GpioPinDriveMode.Input);
-            _latestState = ReadAndConvert();
+            //_pin.DebounceTimeout = TimeSpan.FromTicks(DebounceTimeoutTicks);
 
             if (mode == GpioInputMonitoringMode.Polling)
             {
@@ -31,9 +31,9 @@ namespace HA4IoT.Hardware.RaspberryPi
             {
                 _pin.ValueChanged += HandleInterrupt;
             }
-        }
 
-        public bool IsStateInverted { get; set; }
+            _latestState = ReadAndConvert();
+        }
 
         public event EventHandler<BinaryStateChangedEventArgs> StateChanged;
 
@@ -50,18 +50,10 @@ namespace HA4IoT.Hardware.RaspberryPi
 
         private void HandleInterrupt(GpioPin sender, GpioPinValueChangedEventArgs args)
         {
+            var newState = ReadAndConvert();
+
             Log.Default.Verbose("Interrupt raised for GPIO" + _pin.PinNumber + ".");
-
-            var newState1 = ReadAndConvert();
-            //Task.Delay(PollInterval).Wait();
-            //var newState2 = ReadAndConvert();
-
-            //if (newState1 != newState2)
-            //{
-            //    return;
-            //}
-
-            Update(newState1);
+            Update(newState);
         }
 
         private void PollState(object state)
@@ -80,43 +72,21 @@ namespace HA4IoT.Hardware.RaspberryPi
             }
         }
 
-        private BinaryState CoerceState(BinaryState state)
-        {
-            if (!IsStateInverted)
-            {
-                return state;
-            }
-
-            return state == BinaryState.High ? BinaryState.Low : BinaryState.High;
-        }
-
         private BinaryState ReadAndConvert()
         {
-            var gpioPinValue = _pin.Read();
-            var state = gpioPinValue == GpioPinValue.High ? BinaryState.High : BinaryState.Low;
-            return CoerceState(state);
+            return _pin.Read() == GpioPinValue.High ? BinaryState.High : BinaryState.Low;
         }
 
         private BinaryState Update(BinaryState newState)
         {
-            BinaryState oldState;
+            var oldState = _latestState;
 
-            // Use double lock pattern here!
-            if (_latestState == newState)
+            if (oldState == newState)
             {
-                return _latestState;
+                return oldState;
             }
 
-            lock (_syncRoot)
-            {
-                if (_latestState == newState)
-                {
-                    return _latestState;
-                }
-
-                oldState = _latestState;
-                _latestState = newState;
-            }
+            _latestState = newState;
 
             try
             {

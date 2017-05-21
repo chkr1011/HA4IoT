@@ -176,6 +176,8 @@
     <Compile Include="Core\StoragePath.cs" />
     <Compile Include="Core\TimerTickEventArgs.cs" />
     <Compile Include="Daylight.cs" />
+    <Compile Include="Hardware\InvertedBinaryOutput.cs" />
+    <Compile Include="Hardware\InvertedBinaryInput.cs" />
     <Compile Include="Messaging\IMessageBrokerService.cs" />
     <Compile Include="Hardware\BinaryState.cs" />
     <Compile Include="Hardware\BinaryStateChangedEventArgs.cs" />

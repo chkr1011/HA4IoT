@@ -1,4 +1,5 @@
-﻿using HA4IoT.Contracts.Adapters;
+﻿using System.Threading.Tasks;
+using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Tests.Mockups.Adapters
@@ -11,11 +12,13 @@ namespace HA4IoT.Tests.Mockups.Adapters
 
         public int StartMoveDownCalledCount { get; set; }
 
-        public void SetState(AdapterRollerShutterState state, params IHardwareParameter[] parameters)
+        public Task SetState(AdapterRollerShutterState state, params IHardwareParameter[] parameters)
         {
             if (state == AdapterRollerShutterState.Stop) StopCalledCount++;
             if (state == AdapterRollerShutterState.MoveUp) StartMoveUpCalledCount++;
             if (state == AdapterRollerShutterState.MoveDown) StartMoveDownCalledCount++;
+
+            return Task.FromResult(0);
         }
     }
 }

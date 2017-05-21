@@ -276,7 +276,6 @@
     <Compile Include="Hardware\CCTools\CCToolsDeviceBase.cs" />
     <Compile Include="Hardware\CCTools\CCToolsDevicePort.cs" />
     <Compile Include="Hardware\CCTools\CCToolsDeviceService.cs" />
-    <Compile Include="Hardware\CCTools\CCToolsDeviceStateChangedEventArgs.cs" />
     <Compile Include="Hardware\CCTools\CCToolsInputDeviceBase.cs" />
     <Compile Include="Hardware\CCTools\Devices\HSPE16InputOnly.cs" />
     <Compile Include="Hardware\CCTools\Devices\HSPE16OutputOnly.cs" />

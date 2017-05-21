@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using HA4IoT.Contracts.Adapters;
@@ -18,7 +19,7 @@ namespace HA4IoT.Simulator.Controls
         public bool SupportsColor => false;
         public int ColorResolutionBits => 0;
 
-        public async void SetState(AdapterPowerState powerState, params IHardwareParameter[] parameters)
+        public async Task SetState(AdapterPowerState powerState, params IHardwareParameter[] parameters)
         {
             await _checkBox.Dispatcher.RunAsync(
                 CoreDispatcherPriority.Normal,
@@ -28,7 +29,7 @@ namespace HA4IoT.Simulator.Controls
                 });
         }
         
-        public async void SetState(AdapterPowerState powerState, AdapterColor color, params IHardwareParameter[] hardwareParameters)
+        public async Task SetState(AdapterPowerState powerState, AdapterColor color, params IHardwareParameter[] hardwareParameters)
         {
             await _checkBox.Dispatcher.RunAsync(
                 CoreDispatcherPriority.Normal,

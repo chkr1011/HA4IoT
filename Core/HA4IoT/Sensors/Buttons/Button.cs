@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using HA4IoT.Commands;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Adapters;
@@ -6,6 +7,7 @@ using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Components.Features;
 using HA4IoT.Contracts.Components.States;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Sensors.Events;
@@ -19,19 +21,21 @@ namespace HA4IoT.Sensors.Buttons
     {
         private readonly object _syncRoot = new object();
         private readonly IMessageBrokerService _messageBroker;
-
         private readonly CommandExecutor _commandExecutor = new CommandExecutor();
+        private readonly Stopwatch _pressedDurationStopwatch = new Stopwatch();
         private readonly Timeout _pressedLongTimeout;
-
+        private readonly ILogger _log;
+        
         private ButtonStateValue _state = ButtonStateValue.Released;
 
-        public Button(string id, IButtonAdapter adapter, ITimerService timerService, ISettingsService settingsService, IMessageBrokerService messageBroker)
+        public Button(string id, IButtonAdapter adapter, ITimerService timerService, ISettingsService settingsService, IMessageBrokerService messageBroker, ILogService logService)
             : base(id)
         {
             if (adapter == null) throw new ArgumentNullException(nameof(adapter));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
 
+            _log = logService?.CreatePublisher(id) ?? throw new ArgumentNullException(nameof(logService));
             settingsService.CreateSettingsMonitor<ButtonSettings>(this, s => Settings = s.NewSettings);
 
             _pressedLongTimeout = new Timeout(timerService);
@@ -110,6 +114,8 @@ namespace HA4IoT.Sensors.Buttons
         {
             if (state == ButtonStateValue.Pressed)
             {
+                _pressedDurationStopwatch.Restart();
+
                 if (!_messageBroker.HasSubscribers<ButtonPressedLongEvent>(Id))
                 {
                     _messageBroker.Publish(Id, new ButtonPressedShortEvent());
@@ -121,11 +127,15 @@ namespace HA4IoT.Sensors.Buttons
             }
             else if (state == ButtonStateValue.Released)
             {
+                _pressedDurationStopwatch.Stop();
+
                 if (_pressedLongTimeout.IsEnabled && !_pressedLongTimeout.IsElapsed)
                 {
                     _pressedLongTimeout.Stop();
                     _messageBroker.Publish(Id, new ButtonPressedShortEvent());
                 }
+
+                _log.Verbose($"Button '{Id}' pressed for {_pressedDurationStopwatch.ElapsedMilliseconds} ms.");
             }
         }
     }

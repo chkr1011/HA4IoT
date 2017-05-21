@@ -1,4 +1,5 @@
-﻿using HA4IoT.Contracts.Adapters;
+﻿using System.Threading.Tasks;
+using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Tests.Mockups.Adapters
@@ -11,7 +12,7 @@ namespace HA4IoT.Tests.Mockups.Adapters
         public int TurnOnCalledCount { get; set; }
         public int TurnOffCalledCount { get; set; }
 
-        public void SetState(AdapterPowerState powerState, AdapterColor color, params IHardwareParameter[] hardwareParameters)
+        public Task SetState(AdapterPowerState powerState, AdapterColor color, params IHardwareParameter[] hardwareParameters)
         {
             if (powerState == AdapterPowerState.On)
             {
@@ -21,6 +22,8 @@ namespace HA4IoT.Tests.Mockups.Adapters
             {
                 TurnOffCalledCount++;
             }
+
+            return Task.FromResult(0);
         }
     }
 }

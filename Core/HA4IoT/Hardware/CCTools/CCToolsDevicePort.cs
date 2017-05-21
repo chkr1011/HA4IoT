@@ -4,7 +4,7 @@ using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Hardware.CCTools
 {
-    public class CCToolsDevicePort : IBinaryInput, IBinaryOutput
+    public class CCToolsDevicePort : IBinaryOutput
     {
         private readonly int _id;
         private readonly CCToolsDeviceBase _board;
@@ -13,23 +13,18 @@ namespace HA4IoT.Hardware.CCTools
         {
             _id = id;
             _board = board ?? throw new ArgumentNullException(nameof(board));
-
-            board.StateChanged += OnBoardStateChanged;
         }
 
         public event EventHandler<BinaryStateChangedEventArgs> StateChanged;
-
-        public bool IsStateInverted { get; set; }
-
+        
         public BinaryState Read()
         {
-            return CoerceState(_board.GetPortState(_id));
+            return _board.GetPortState(_id);
         }
 
         public void Write(BinaryState state, WriteBinaryStateMode mode)
         {
-            var effectiveState = CoerceState(state);
-            _board.SetPortState(_id, effectiveState);
+            _board.SetPortState(_id, state);
 
             if (mode == WriteBinaryStateMode.Commit)
             {
@@ -37,17 +32,7 @@ namespace HA4IoT.Hardware.CCTools
             }
         }
 
-        private BinaryState CoerceState(BinaryState state)
-        {
-            if (IsStateInverted)
-            {
-                return state == BinaryState.High ? BinaryState.Low : BinaryState.High;
-            }
-
-            return state;
-        }
-
-        private void OnBoardStateChanged(object sender, CCToolsDeviceStateChangedEventArgs e)
+        public void OnBoardStateChanged(byte[] oldState, byte[] newState)
         {
             var stateChangedEvent = StateChanged;
             if (stateChangedEvent == null)
@@ -55,10 +40,10 @@ namespace HA4IoT.Hardware.CCTools
                 return;
             }
 
-            var oldState = new BitArray(e.OldState).Get(_id);
-            var newState = new BitArray(e.NewState).Get(_id);
+            var oldPinState = new BitArray(oldState).Get(_id);
+            var newPinState = new BitArray(newState).Get(_id);
 
-            if (oldState == newState)
+            if (oldPinState == newPinState)
             {
                 return;
             }

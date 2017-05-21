@@ -161,7 +161,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             area.GetButton(Bedroom.ButtonDoor).CreatePressedShortTrigger(_messageBroker).Attach(() => ceilingLights.TryTogglePowerState());
             area.GetButton(Bedroom.ButtonWindowUpper).CreatePressedShortTrigger(_messageBroker).Attach(() => ceilingLights.TryTogglePowerState());
-
+            
             area.GetButton(Bedroom.ButtonDoor).CreatePressedLongTrigger(_messageBroker).Attach(() =>
             {
                 area.GetComponent(Bedroom.LampBedLeft).TryTurnOff();
@@ -182,7 +182,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
                 .WithEnabledAtNight()
                 .WithSkipIfAnyIsAlreadyOn(area.GetLamp(Bedroom.LampBedLeft), area.GetLamp(Bedroom.LampBedRight));
 
-            _actuatorFactory.RegisterFan(area, Bedroom.Fan, new BedroomFanAdapter(hsrel8));
+            var fan = _actuatorFactory.RegisterFan(area, Bedroom.Fan, new BedroomFanAdapter(hsrel8));
+            area.GetButton(Bedroom.ButtonWindowLower).CreatePressedShortTrigger(_messageBroker).Attach(() => fan.TryIncreaseLevel());
 
             area.GetButton(Bedroom.ButtonBedLeftInner).CreatePressedShortTrigger(_messageBroker).Attach(() => area.GetComponent(Bedroom.LampBedLeft).TryTogglePowerState());
             area.GetButton(Bedroom.ButtonBedLeftInner).CreatePressedLongTrigger(_messageBroker).Attach(() => area.GetComponent(Bedroom.CombinedCeilingLights).TryTogglePowerState());

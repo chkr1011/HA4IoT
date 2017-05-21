@@ -26,7 +26,7 @@ namespace HA4IoT.Components
 
         protected void OnStateChanged(IComponentFeatureStateCollection oldState)
         {
-            OnStateChanged(oldState, GetState());
+            StateChanged?.Invoke(this, new ComponentFeatureStateChangedEventArgs(oldState, GetState()));;
         }
 
         protected void OnStateChanged(IComponentFeatureStateCollection oldState, IComponentFeatureStateCollection newState)

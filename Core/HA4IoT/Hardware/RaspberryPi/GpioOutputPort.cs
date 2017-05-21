@@ -17,8 +17,6 @@ namespace HA4IoT.Hardware.RaspberryPi
             _pin.SetDriveMode(GpioPinDriveMode.Output);
         }
 
-        public bool IsStateInverted { get; set; }
-
         public event EventHandler<BinaryStateChangedEventArgs> StateChanged;
         
         public BinaryState Read()
@@ -42,8 +40,7 @@ namespace HA4IoT.Hardware.RaspberryPi
                     return;
                 }
 
-                var effectiveState = CoerceState(state);
-                _pin.Write(effectiveState == BinaryState.High ? GpioPinValue.High : GpioPinValue.Low);
+                _pin.Write(state == BinaryState.High ? GpioPinValue.High : GpioPinValue.Low);
 
                 oldState = _latestState;
                 _latestState = state;
@@ -55,16 +52,6 @@ namespace HA4IoT.Hardware.RaspberryPi
         public void Dispose()
         {
             _pin?.Dispose();
-        }
-
-        private BinaryState CoerceState(BinaryState state)
-        {
-            if (!IsStateInverted)
-            {
-                return state;
-            }
-
-            return state == BinaryState.High ? BinaryState.Low : BinaryState.High;
         }
     }
 }
