@@ -17,18 +17,29 @@ namespace HA4IoT.Hardware.RaspberryPi
 
         private BinaryState _latestState;
 
-        public GpioInputPort(GpioPin pin, GpioInputMonitoringMode mode = GpioInputMonitoringMode.Interrupt)
+        public GpioInputPort(GpioPin pin, GpioInputMonitoringMode mode = GpioInputMonitoringMode.Interrupt, GpioPullMode pullMode = GpioPullMode.None)
         {
             _pin = pin ?? throw new ArgumentNullException(nameof(pin));
-            _pin.SetDriveMode(GpioPinDriveMode.Input);
-            //_pin.DebounceTimeout = TimeSpan.FromTicks(DebounceTimeoutTicks);
-
+            if (pullMode == GpioPullMode.High)
+            {
+                _pin.SetDriveMode(GpioPinDriveMode.InputPullUp);
+            }
+            else if (pullMode == GpioPullMode.Low)
+            {
+                _pin.SetDriveMode(GpioPinDriveMode.InputPullDown);
+            }
+            else
+            {
+                _pin.SetDriveMode(GpioPinDriveMode.Input);
+            }
+            
             if (mode == GpioInputMonitoringMode.Polling)
             {
                 _timer = new Timer(PollState, null, 0, Timeout.Infinite);
             }
             else if (mode == GpioInputMonitoringMode.Interrupt)
             {
+                //_pin.DebounceTimeout = TimeSpan.FromTicks(DebounceTimeoutTicks);
                 _pin.ValueChanged += HandleInterrupt;
             }
 
