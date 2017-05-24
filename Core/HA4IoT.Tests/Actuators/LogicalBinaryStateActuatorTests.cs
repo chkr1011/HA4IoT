@@ -1,6 +1,6 @@
 ﻿using HA4IoT.Actuators.Lamps;
 using HA4IoT.Components;
-using HA4IoT.Contracts.Commands;
+using HA4IoT.Contracts.Components.Commands;
 using HA4IoT.Contracts.Components.States;
 using HA4IoT.Tests.Mockups.Adapters;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;

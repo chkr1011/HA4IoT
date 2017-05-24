@@ -1,6 +1,6 @@
 ﻿using System;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware.I2C;
-using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Hardware.I2C.I2CPortExpanderDrivers
 {
@@ -22,13 +22,13 @@ namespace HA4IoT.Hardware.I2C.I2CPortExpanderDrivers
             if (state == null) throw new ArgumentNullException(nameof(state));
             if (state.Length != StateSize) throw new ArgumentException("Length is invalid.", nameof(state));
 
-            _i2CBus.Execute(_address, bus => bus.Write(state));
+            _i2CBus.Write(_address, state);
         }
 
         public byte[] Read()
         {
             var buffer = new byte[StateSize];
-            _i2CBus.Execute(_address, bus => bus.Read(buffer));
+            _i2CBus.Read(_address, buffer);
 
             return buffer;
         }

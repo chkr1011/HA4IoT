@@ -6,10 +6,11 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
+using HA4IoT.Contracts.ExternalServices.Twitter;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Scripting;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Contracts.Services.ExternalServices.Twitter;
-using HA4IoT.Contracts.Services.Settings;
+using HA4IoT.Contracts.Settings;
 
 namespace HA4IoT.ExternalServices.Twitter
 {
@@ -20,14 +21,17 @@ namespace HA4IoT.ExternalServices.Twitter
         private string _nonce;
         private string _timestamp;
 
-        public TwitterClientService(ISettingsService settingsService, ILogService logService)
+        public TwitterClientService(ISettingsService settingsService, ILogService logService, IScriptingService scriptingService)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             if (logService == null) throw new ArgumentNullException(nameof(logService));
+            if (scriptingService == null) throw new ArgumentNullException(nameof(scriptingService));
 
             settingsService.CreateSettingsMonitor<TwitterClientServiceSettings>(s => Settings = s.NewSettings);
 
             _log = logService.CreatePublisher(nameof(TwitterClientService));
+
+            scriptingService.RegisterScriptProxy(s => new TwitterClientScriptProxy(this));
         }
 
         public TwitterClientServiceSettings Settings { get; private set; }

@@ -1,6 +1,6 @@
 ﻿using System;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware.I2C;
-using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Hardware.I2C.I2CPortExpanderDrivers
 {
@@ -26,33 +26,18 @@ namespace HA4IoT.Hardware.I2C.I2CPortExpanderDrivers
         {
             if (state == null) throw new ArgumentNullException(nameof(state));
             if (state.Length != StateSize) throw new ArgumentException("Length is invalid.", nameof(state));
-
-            byte[] setConfigurationToOutput = { ConfigurationRegisterA, 0, 0 };
-            byte[] setState = { OutputPortRegisterA, state[0], state[1] };
-
-            _i2CBus.Execute(_address, bus =>
-            {
-                bus.Write(setConfigurationToOutput);
-                bus.Write(setState);
-            });
+            
+            // TODO: Create one long buffer for all registers.
+            _i2CBus.Write(_address, new byte[] { ConfigurationRegisterA, 0x0, 0x0 });
+            _i2CBus.Write(_address, new[] { OutputPortRegisterA, state[0], state[1] });
         }
 
         public byte[] Read()
         {
-            byte[] readState = { InputPortRegisterA };
             var buffer = new byte[StateSize];
-            _i2CBus.Execute(_address, bus => bus.WriteRead(readState, buffer));
+            _i2CBus.WriteRead(_address, new[] { InputPortRegisterA }, buffer);
 
             return buffer;
-        }
-
-        public void SetPolarityInversion(byte[] polarityInversion)
-        {
-            if (polarityInversion == null) throw new ArgumentNullException(nameof(polarityInversion));
-            if (polarityInversion.Length != StateSize) throw new ArgumentException("Length is invalid.", nameof(polarityInversion));
-
-            byte[] polarityInversionRegister = { PolarityInversionRegisterA };
-            _i2CBus.Execute(_address, bus => bus.WriteRead(polarityInversionRegister, polarityInversion));
         }
     }
 }

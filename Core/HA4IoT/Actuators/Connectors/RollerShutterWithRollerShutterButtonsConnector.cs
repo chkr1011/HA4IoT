@@ -1,6 +1,6 @@
 ﻿using System;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Commands;
+using HA4IoT.Contracts.Components.Commands;
 using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Sensors;

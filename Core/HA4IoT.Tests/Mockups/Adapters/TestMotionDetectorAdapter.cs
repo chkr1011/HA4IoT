@@ -1,5 +1,5 @@
 ﻿using System;
-using HA4IoT.Contracts.Adapters;
+using HA4IoT.Contracts.Components.Adapters;
 
 namespace HA4IoT.Tests.Mockups.Adapters
 {

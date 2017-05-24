@@ -50,7 +50,7 @@ void handleHttpGetInfo() {
 
   JsonObject &mqttConfig = jsonBuffer.createObject();
   mqttConfig[F("isEnabled")] = _mqttSettings.isEnabled;
-  mqttConfig[F("isConnected")] = getMqttIsConnected();
+  mqttConfig[F("isConnected")] = mqttIsConnected();
   mqttConfig[F("server")] = _mqttSettings.server;
   mqttConfig[F("user")] = _mqttSettings.user;
   json[F("mqtt")] = mqttConfig;

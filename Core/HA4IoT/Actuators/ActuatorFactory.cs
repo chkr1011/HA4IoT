@@ -4,15 +4,15 @@ using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Actuators.Sockets;
 using HA4IoT.Actuators.StateMachines;
-using HA4IoT.Adapters.PortBased;
 using HA4IoT.Components;
+using HA4IoT.Components.Adapters.PortBased;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Adapters;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Components.Adapters;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Services.Settings;
-using HA4IoT.Contracts.Services.System;
+using HA4IoT.Contracts.Settings;
 
 namespace HA4IoT.Actuators
 {

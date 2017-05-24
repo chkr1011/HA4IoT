@@ -3,15 +3,12 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Web.Http;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Environment;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Contracts.Services.Daylight;
-using HA4IoT.Contracts.Services.OutdoorHumidity;
-using HA4IoT.Contracts.Services.OutdoorTemperature;
-using HA4IoT.Contracts.Services.Settings;
-using HA4IoT.Contracts.Services.Storage;
-using HA4IoT.Contracts.Services.System;
-using HA4IoT.Contracts.Services.Weather;
+using HA4IoT.Contracts.Settings;
+using HA4IoT.Contracts.Storage;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.ExternalServices.OpenWeatherMap
@@ -22,10 +19,8 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
         private const string StorageFilename = "OpenWeatherMapCache.json";
 
         private readonly ISchedulerService _schedulerService;
-        private readonly IOutdoorTemperatureService _outdoorTemperatureService;
-        private readonly IOutdoorHumidityService _outdoorHumidityService;
+        private readonly IOutdoorService _outdoorService;
         private readonly IDaylightService _daylightService;
-        private readonly IWeatherService _weatherService;
         private readonly IDateTimeService _dateTimeService;
         private readonly ISystemInformationService _systemInformationService;
         private readonly IStorageService _storageService;
@@ -37,13 +32,11 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
         public float Humidity { get; private set; }
         public TimeSpan Sunrise { get; private set; }
         public TimeSpan Sunset { get; private set; }
-        public Weather Weather { get; private set; }
+        public WeatherCondition Weather { get; private set; }
         
         public OpenWeatherMapService(
-            IOutdoorTemperatureService outdoorTemperatureService,
-            IOutdoorHumidityService outdoorHumidityService,
+            IOutdoorService outdoorService,
             IDaylightService daylightService,
-            IWeatherService weatherService,
             IDateTimeService dateTimeService, 
             ISchedulerService schedulerService, 
             ISystemInformationService systemInformationService,
@@ -53,10 +46,8 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             _schedulerService = schedulerService ?? throw new ArgumentNullException(nameof(schedulerService));
-            _outdoorTemperatureService = outdoorTemperatureService ?? throw new ArgumentNullException(nameof(outdoorTemperatureService));
-            _outdoorHumidityService = outdoorHumidityService ?? throw new ArgumentNullException(nameof(outdoorHumidityService));
+            _outdoorService = outdoorService ?? throw new ArgumentNullException(nameof(outdoorService));
             _daylightService = daylightService ?? throw new ArgumentNullException(nameof(daylightService));
-            _weatherService = weatherService ?? throw new ArgumentNullException(nameof(weatherService));
             _dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
             _systemInformationService = systemInformationService ?? throw new ArgumentNullException(nameof(systemInformationService));
             _storageService = storageService ?? throw new ArgumentNullException(nameof(storageService));
@@ -124,12 +115,12 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
         {
             if (Settings.UseTemperature)
             {
-                _outdoorTemperatureService.Update(Temperature);
+                _outdoorService.UpdateTemperature(Temperature);
             }
 
             if (Settings.UseHumidity)
             {
-                _outdoorHumidityService.Update(Humidity);
+                _outdoorService.UpdateHumidity(Humidity);
             }
 
             if (Settings.UseSunriseSunset)
@@ -139,7 +130,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
 
             if (Settings.UseWeather)
             {
-                _weatherService.Update(Weather);
+                _outdoorService.UpdateWeather(Weather);
             }
         }
 

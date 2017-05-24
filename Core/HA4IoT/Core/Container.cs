@@ -1,64 +1,61 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using HA4IoT.Actuators;
 using HA4IoT.Api;
 using HA4IoT.Api.Cloud.Azure;
 using HA4IoT.Api.Cloud.CloudConnector;
+using HA4IoT.Areas;
 using HA4IoT.Automations;
+using HA4IoT.Backup;
+using HA4IoT.Components;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
+using HA4IoT.Contracts.Backup;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Environment;
+using HA4IoT.Contracts.ExternalServices.TelegramBot;
+using HA4IoT.Contracts.ExternalServices.Twitter;
 using HA4IoT.Contracts.Hardware.DeviceMessaging;
 using HA4IoT.Contracts.Hardware.Services;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Messaging;
+using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.PersonalAgent;
+using HA4IoT.Contracts.Resources;
 using HA4IoT.Contracts.Scripting;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Contracts.Services.Backup;
-using HA4IoT.Contracts.Services.Daylight;
-using HA4IoT.Contracts.Services.ExternalServices.TelegramBot;
-using HA4IoT.Contracts.Services.ExternalServices.Twitter;
-using HA4IoT.Contracts.Services.Notifications;
-using HA4IoT.Contracts.Services.OutdoorHumidity;
-using HA4IoT.Contracts.Services.OutdoorTemperature;
-using HA4IoT.Contracts.Services.Resources;
-using HA4IoT.Contracts.Services.Settings;
-using HA4IoT.Contracts.Services.Storage;
-using HA4IoT.Contracts.Services.System;
-using HA4IoT.Contracts.Services.Weather;
+using HA4IoT.Contracts.Settings;
+using HA4IoT.Contracts.Storage;
+using HA4IoT.Devices;
+using HA4IoT.Environment;
 using HA4IoT.ExternalServices.OpenWeatherMap;
 using HA4IoT.ExternalServices.TelegramBot;
 using HA4IoT.ExternalServices.Twitter;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.I2C;
+using HA4IoT.Hardware.Interrupts;
 using HA4IoT.Hardware.Outpost;
 using HA4IoT.Hardware.RaspberryPi;
 using HA4IoT.Hardware.RemoteSwitch;
-using HA4IoT.Hardware.Services;
 using HA4IoT.Hardware.Sonoff;
+using HA4IoT.Health;
 using HA4IoT.Logging;
 using HA4IoT.Messaging;
 using HA4IoT.Net.Http;
 using HA4IoT.Notifications;
 using HA4IoT.PersonalAgent;
+using HA4IoT.Resources;
+using HA4IoT.Scheduling;
 using HA4IoT.Scripting;
-using HA4IoT.Scripting.Proxies;
 using HA4IoT.Sensors;
-using HA4IoT.Services;
-using HA4IoT.Services.Areas;
-using HA4IoT.Services.Backup;
-using HA4IoT.Services.ControllerSlave;
-using HA4IoT.Services.Environment;
-using HA4IoT.Services.Health;
-using HA4IoT.Services.Resources;
-using HA4IoT.Services.Scheduling;
-using HA4IoT.Services.Status;
-using HA4IoT.Services.StorageService;
-using HA4IoT.Services.System;
 using HA4IoT.Settings;
+using HA4IoT.Status;
+using HA4IoT.Storage;
 using SimpleInjector;
 
 namespace HA4IoT.Core
@@ -83,19 +80,34 @@ namespace HA4IoT.Core
             return _container.GetCurrentRegistrations().ToList();
         }
 
-        public TInstance GetInstance<TInstance>() where TInstance : class
+        public TContract GetInstance<TContract>() where TContract : class
         {
-            return _container.GetInstance<TInstance>();
+            return _container.GetInstance<TContract>();
         }
 
-        public void RegisterSingleton<TConcrete>() where TConcrete : class
+        public IList<TContract> GetInstances<TContract>() where TContract : class
         {
-            _container.RegisterSingleton<TConcrete>();
+            var services = new List<TContract>();
+
+            foreach (var registration in _container.GetCurrentRegistrations())
+            {
+                if (typeof(TContract).IsAssignableFrom(registration.ServiceType))
+                {
+                    services.Add((TContract)registration.GetInstance());
+                }
+            }
+
+            return services;
         }
 
-        public void RegisterSingleton<TService, TImplementation>() where TService : class where TImplementation : class, TService
+        public void RegisterSingleton<TImplementation>() where TImplementation : class
         {
-            _container.RegisterSingleton<TService, TImplementation>();
+            _container.RegisterSingleton<TImplementation>();
+        }
+
+        public void RegisterSingleton<TContract, TImplementation>() where TContract : class where TImplementation : class, TContract
+        {
+            _container.RegisterSingleton<TContract, TImplementation>();
         }
 
         public void RegisterSingletonCollection<TItem>(IEnumerable<TItem> items) where TItem : class
@@ -105,8 +117,10 @@ namespace HA4IoT.Core
             _container.RegisterCollection(items);
         }
 
-        public void RegisterSingleton<TService>(Func<TService> instanceCreator) where TService : class
+        public void RegisterSingleton<TContract>(Func<TContract> instanceCreator) where TContract : class
         {
+            if (instanceCreator == null) throw new ArgumentNullException(nameof(instanceCreator));
+
             _container.RegisterSingleton(instanceCreator);
         }
 
@@ -154,7 +168,7 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<ISettingsService, SettingsService>();
             _container.RegisterInitializer<SettingsService>(s => s.Initialize());
 
-            _container.RegisterSingleton<II2CBusService, BuiltInI2CBusService>();
+            _container.RegisterSingleton<II2CBusService, I2CBusService>();
             _container.RegisterSingleton<IGpioService, GpioService>();
             _container.RegisterSingleton<IDeviceMessageBrokerService, DeviceMessageBrokerService>();
             _container.RegisterInitializer<DeviceMessageBrokerService>(s => s.Initialize());
@@ -171,17 +185,6 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<IComponentRegistryService, ComponentRegistryService>();
             _container.RegisterSingleton<IAutomationRegistryService, AutomationRegistryService>();
             _container.RegisterSingleton<IScriptingService, ScriptingService>();
-            _container.RegisterCollection<IScriptProxy>(new List<Type>
-            {
-                typeof(NotificationScriptProxy),
-                typeof(TelegramBotScriptProxy),
-                typeof(TwitterClientScriptProxy),
-                typeof(OutdoorScriptProxy),
-                typeof(CCToolsScriptProxy),
-                typeof(SystemInformationScriptProxy),
-                typeof(AreaScriptProxy),
-                typeof(DateTimeScriptProxy)
-            });
 
             _container.RegisterSingleton<ActuatorFactory>();
             _container.RegisterSingleton<SensorFactory>();
@@ -189,10 +192,8 @@ namespace HA4IoT.Core
 
             _container.RegisterSingleton<IPersonalAgentService, PersonalAgentService>();
 
-            _container.RegisterSingleton<IOutdoorTemperatureService, OutdoorTemperatureService>();
-            _container.RegisterSingleton<IOutdoorHumidityService, OutdoorHumidityService>();
+            _container.RegisterSingleton<IOutdoorService, OutdoorService>();
             _container.RegisterSingleton<IDaylightService, DaylightService>();
-            _container.RegisterSingleton<IWeatherService, WeatherService>();
             _container.RegisterSingleton<OpenWeatherMapService>();
             _container.RegisterSingleton<ControllerSlaveService>();
 

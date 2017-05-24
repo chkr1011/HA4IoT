@@ -1,5 +1,5 @@
 void setupWiFi();
 void loopWiFi();
 
-bool getWiFiIsConnected();
+bool wiFiIsConnected();
 String getWiFiIpAddress();

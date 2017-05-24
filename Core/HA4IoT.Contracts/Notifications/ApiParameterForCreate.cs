@@ -1,5 +1,4 @@
 ﻿using System;
-using HA4IoT.Contracts.Services.Notifications;
 
 namespace HA4IoT.Contracts.Notifications
 {

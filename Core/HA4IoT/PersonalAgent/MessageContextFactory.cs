@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using HA4IoT.Contracts.Areas;
-using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Components.Commands;
 using HA4IoT.Contracts.PersonalAgent.AmazonEcho;
-using HA4IoT.Contracts.Services.Settings;
+using HA4IoT.Contracts.Settings;
 
 namespace HA4IoT.PersonalAgent
 {

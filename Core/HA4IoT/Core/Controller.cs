@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Storage;
 using HA4IoT.Components;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Notifications;
 using HA4IoT.Contracts.Scripting;
-using HA4IoT.Contracts.Services.Notifications;
-using HA4IoT.Contracts.Services.Settings;
-using HA4IoT.Contracts.Services.System;
+using HA4IoT.Contracts.Settings;
 using HA4IoT.Net.Http;
 using HA4IoT.Settings;
 using Newtonsoft.Json.Linq;
@@ -37,8 +37,10 @@ namespace HA4IoT.Core
 
         public static bool IsRunningInUnitTest { get; set; }
 
-        public event EventHandler StartupCompleted;
-        public event EventHandler StartupFailed;
+        public IContainer Container => _container;
+
+        public event EventHandler<StartupCompletedEventArgs> StartupCompleted;
+        public event EventHandler<StartupFailedEventArgs> StartupFailed;
 
         public Task RunAsync(IBackgroundTaskInstance taskInstance)
         {
@@ -53,10 +55,9 @@ namespace HA4IoT.Core
 
         private async void StartupAsync()
         {
+            var stopwatch = Stopwatch.StartNew();
             try
             {
-                var stopwatch = Stopwatch.StartNew();
-
                 RegisterServices();
 
                 var httpServer = _container.GetInstance<HttpServer>();
@@ -67,24 +68,11 @@ namespace HA4IoT.Core
 
                 await TryConfigureAsync();
 
-                StartupCompleted?.Invoke(this, EventArgs.Empty);
-                stopwatch.Stop();
-
-                _container.GetInstance<IApiDispatcherService>().ConfigurationRequested += (s, e) =>
-                {
-                    e.ApiContext.Result["Controller"] = JObject.FromObject(_container.GetInstance<ISettingsService>().GetSettings<ControllerSettings>());
-                };
-
-                _log.Info("Startup completed after " + stopwatch.Elapsed);
-
-                _container.GetInstance<ISystemInformationService>().Set("Health/StartupDuration", stopwatch.Elapsed);
-                _container.GetInstance<ISystemInformationService>().Set("Health/StartupTimestamp", _container.GetInstance<IDateTimeService>().Now);
+                StartupCompleted?.Invoke(this, new StartupCompletedEventArgs(stopwatch.Elapsed));
             }
             catch (Exception exception)
             {
-                _log?.Error(exception, "Failed to initialize.");
-                StartupFailed?.Invoke(this, EventArgs.Empty);
-
+                StartupFailed?.Invoke(this, new StartupFailedEventArgs(stopwatch.Elapsed, exception));
                 _deferral?.Complete();
             }
         }
@@ -99,17 +87,20 @@ namespace HA4IoT.Core
 
             _container.Verify();
             _log = _container.GetInstance<ILogService>().CreatePublisher(nameof(Controller));
-
-            _log.Info("Services registered.");
         }
 
         private async Task TryConfigureAsync()
         {
             try
             {
+                _container.GetInstance<IApiDispatcherService>().ConfigurationRequested += (s, e) =>
+                {
+                    e.ApiContext.Result["Controller"] = JObject.FromObject(_container.GetInstance<ISettingsService>().GetSettings<ControllerSettings>());
+                };
+
                 await TryApplyCodeConfigurationAsync();
                 TryApplyScriptConfiguration();
-                
+
                 _log.Info("Resetting all components");
                 var componentRegistry = _container.GetInstance<IComponentRegistryService>();
                 foreach (var component in componentRegistry.GetComponents())

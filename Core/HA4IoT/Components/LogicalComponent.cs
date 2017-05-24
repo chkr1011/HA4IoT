@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Components.Commands;
 
 namespace HA4IoT.Components
 {

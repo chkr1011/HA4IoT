@@ -1,5 +1,5 @@
 ﻿using System;
-using HA4IoT.Contracts.Services.System;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Triggers;
 
 namespace HA4IoT.Triggers

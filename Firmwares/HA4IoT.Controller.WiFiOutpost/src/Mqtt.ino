@@ -47,7 +47,7 @@ void callback(char *topic, byte *payload, uint16_t length) {
   }
 }
 
-bool getMqttIsConnected() { return _isConnected; }
+bool mqttIsConnected() { return _isConnected; }
 
 void setupMqtt() {
   if (!_mqttSettings.isEnabled) {
@@ -62,7 +62,8 @@ void loopMqtt(uint16_t elapsedMillis) {
     return;
   }
 
-  if (!getWiFiIsConnected()) {
+  if (!wiFiIsConnected()) {
+    _isConnected = false;
     setInfo();
     return;
   }
@@ -90,7 +91,7 @@ void loopMqtt(uint16_t elapsedMillis) {
   _isConnected = _mqttClient.connect(_sysSettings.name.c_str(), _mqttSettings.user.c_str(), _mqttSettings.password.c_str());
 
   if (_isConnected) {
-    _mqttClient.subscribe(("HA4IoT/Device/" + _sysSettings.name + "/#").c_str());
+    _mqttClient.subscribe(("HA4IoT/Device/" + _sysSettings.name + "/Command/#").c_str());
 
     for (uint8_t i = 0; i < _onConnectedCallbacksIndex; i++) {
       _onConnectedCallbacks[i].callback();

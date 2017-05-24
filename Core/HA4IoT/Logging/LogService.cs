@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Contracts.Services.System;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Logging
@@ -23,23 +22,20 @@ namespace HA4IoT.Logging
         private readonly RollingCollection<LogEntry> _errorLogEntries = new RollingCollection<LogEntry>(250);
         private readonly RollingCollection<LogEntry> _warningLogEntries = new RollingCollection<LogEntry>(250);
 
-        private readonly IDateTimeService _dateTimeService;
         private readonly IEnumerable<ILogAdapter> _adapters;
 
         private long _id;
 
-        public LogService(IDateTimeService dateTimeService, ISystemInformationService systemInformationService, IEnumerable<ILogAdapter> adapters)
+        public LogService(IEnumerable<ILogAdapter> adapters)
         {
             _adapters = adapters ?? throw new ArgumentNullException(nameof(adapters));
-            _dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
 
             Log.Default = CreatePublisher(null);
-
-            systemInformationService.Set("Log/Errors/Count", () => _errorLogEntries.Count);
-            systemInformationService.Set("Log/Warnings/Count", () => _warningLogEntries.Count);
-
             Task.Factory.StartNew(ProcessPendingLogEntries, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
+
+        public int ErrorsCount => _errorLogEntries.Count;
+        public int WarningsCount => _warningLogEntries.Count;
 
         public ILogger CreatePublisher(string source)
         {
@@ -108,7 +104,7 @@ namespace HA4IoT.Logging
 
         public void Publish(LogEntrySeverity severity, string source, string message, Exception exception)
         {
-            var logEntry = new LogEntry(_dateTimeService.Now, Environment.CurrentManagedThreadId, severity, source ?? "System", message, exception?.ToString());
+            var logEntry = new LogEntry(DateTime.Now, global::System.Environment.CurrentManagedThreadId, severity, source ?? "System", message, exception?.ToString());
             lock (_pendingLogEntries)
             {
                 _pendingLogEntries.Add(logEntry);

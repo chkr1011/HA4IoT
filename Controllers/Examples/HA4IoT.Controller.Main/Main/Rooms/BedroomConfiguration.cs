@@ -3,21 +3,21 @@ using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
-using HA4IoT.Adapters.PortBased;
+using HA4IoT.Areas;
 using HA4IoT.Automations;
 using HA4IoT.Components;
-using HA4IoT.Contracts.Adapters;
+using HA4IoT.Components.Adapters.PortBased;
 using HA4IoT.Contracts.Areas;
+using HA4IoT.Contracts.Components.Adapters;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Messaging;
-using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.CCTools.Devices;
 using HA4IoT.Hardware.I2C.I2CHardwareBridge;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.MotionDetectors;
-using HA4IoT.Services.Areas;
 
 namespace HA4IoT.Controller.Main.Main.Rooms
 {
@@ -120,20 +120,19 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             _sensorFactory.RegisterMotionDetector(area, Bedroom.MotionDetector, input5.GetInput(12));
 
-            _sensorFactory.RegisterButton(area, Bedroom.ButtonWindowUpper, input5.GetInput(10));
-            _sensorFactory.RegisterButton(area, Bedroom.ButtonWindowLower, input5.GetInput(13));
-            _sensorFactory.RegisterButton(area, Bedroom.ButtonDoor, input5.GetInput(11));
-
-            _sensorFactory.RegisterButton(area, Bedroom.ButtonBedLeftInner, input4.GetInput(2));
             _sensorFactory.RegisterButton(area, Bedroom.ButtonBedLeftOuter, input4.GetInput(0));
             _sensorFactory.RegisterButton(area, Bedroom.ButtonBedRightInner, input4.GetInput(1));
+            _sensorFactory.RegisterButton(area, Bedroom.ButtonBedLeftInner, input4.GetInput(2));
             _sensorFactory.RegisterButton(area, Bedroom.ButtonBedRightOuter, input4.GetInput(3));
-            _sensorFactory.RegisterButton(area, Bedroom.ButtonDoor, input5.GetInput(11));
-
-            _sensorFactory.RegisterButton(area, Bedroom.RollerShutterButtonsUpperUp, input5.GetInput(6));
-            _sensorFactory.RegisterButton(area, Bedroom.RollerShutterButtonsUpperDown, input5.GetInput(7));
+            
             _sensorFactory.RegisterButton(area, Bedroom.RollerShutterButtonsLowerUp, input5.GetInput(4));
             _sensorFactory.RegisterButton(area, Bedroom.RollerShutterButtonsLowerDown, input5.GetInput(5));
+            _sensorFactory.RegisterButton(area, Bedroom.RollerShutterButtonsUpperUp, input5.GetInput(6));
+            _sensorFactory.RegisterButton(area, Bedroom.RollerShutterButtonsUpperDown, input5.GetInput(7));
+
+            _sensorFactory.RegisterButton(area, Bedroom.ButtonWindowUpper, input5.GetInput(10));
+            _sensorFactory.RegisterButton(area, Bedroom.ButtonDoor, input5.GetInput(11));
+            _sensorFactory.RegisterButton(area, Bedroom.ButtonWindowLower, input5.GetInput(13));
 
             _actuatorFactory.RegisterLamp(area, Bedroom.LightCeiling, hsrel5.GetOutput(5).WithInvertedState());
             _actuatorFactory.RegisterLamp(area, Bedroom.LightCeilingWindow, hsrel5.GetOutput(6).WithInvertedState());

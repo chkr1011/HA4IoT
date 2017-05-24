@@ -1,16 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace HA4IoT.Contracts
 {
     public interface IContainer
     {
-        TService GetInstance<TService>() where TService : class;
-        
-        void RegisterSingleton<TConcrete>() where TConcrete : class;
+        TContract GetInstance<TContract>() where TContract : class;
 
-        void RegisterSingleton<TService, TImplementation>() where TService : class
-            where TImplementation : class, TService;
+        IList<TContract> GetInstances<TContract>() where TContract : class;
 
-        void RegisterSingleton<TService>(Func<TService> instanceCreator) where TService : class;
+        void RegisterSingleton<TImplementation>() where TImplementation : class;
+
+        void RegisterSingleton<TImplementation>(Func<TImplementation> instanceCreator) where TImplementation : class;
+
+        void RegisterSingleton<TContract, TImplementation>() where TContract : class
+            where TImplementation : class, TContract;
     }
 }

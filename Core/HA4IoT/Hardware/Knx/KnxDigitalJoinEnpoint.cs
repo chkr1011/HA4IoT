@@ -2,7 +2,7 @@
 using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HA4IoT.Contracts.Adapters;
+using HA4IoT.Contracts.Components.Adapters;
 
 namespace HA4IoT.Hardware.Knx
 {

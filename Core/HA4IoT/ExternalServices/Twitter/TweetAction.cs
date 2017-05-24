@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Services.ExternalServices.Twitter;
+using HA4IoT.Contracts.ExternalServices.Twitter;
 
 namespace HA4IoT.ExternalServices.Twitter
 {

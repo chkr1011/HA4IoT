@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using HA4IoT.Contracts.Commands;
+using HA4IoT.Contracts.Components.Commands;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 

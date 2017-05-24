@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using HA4IoT.Contracts.Services.System;
+using HA4IoT.Contracts.Core;
 
 namespace HA4IoT.Hardware.I2C.I2CHardwareBridge
 {
@@ -76,7 +76,6 @@ namespace HA4IoT.Hardware.I2C.I2CHardwareBridge
                         sensor.Value.Temperature = temperature;
                         sensor.Value.Humidity = humidity;
                     }
-
                 }
             }
 

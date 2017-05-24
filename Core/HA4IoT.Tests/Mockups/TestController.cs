@@ -1,32 +1,32 @@
 ﻿using System;
 using HA4IoT.Api;
-using HA4IoT.Core;
+using HA4IoT.Areas;
+using HA4IoT.Automations;
+using HA4IoT.Backup;
+using HA4IoT.Components;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
+using HA4IoT.Contracts.Backup;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Environment;
 using HA4IoT.Contracts.Hardware.DeviceMessaging;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Messaging;
+using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Resources;
 using HA4IoT.Contracts.Scripting;
-using HA4IoT.Contracts.Services.Backup;
-using HA4IoT.Contracts.Services.Daylight;
-using HA4IoT.Contracts.Services.Notifications;
-using HA4IoT.Contracts.Services.Resources;
-using HA4IoT.Contracts.Services.Settings;
-using HA4IoT.Contracts.Services.Storage;
-using HA4IoT.Contracts.Services.System;
+using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Settings;
+using HA4IoT.Contracts.Storage;
+using HA4IoT.Core;
 using HA4IoT.Logging;
 using HA4IoT.Messaging;
 using HA4IoT.Notifications;
+using HA4IoT.Resources;
+using HA4IoT.Scheduling;
 using HA4IoT.Scripting;
-using HA4IoT.Services;
-using HA4IoT.Services.Areas;
-using HA4IoT.Services.Backup;
-using HA4IoT.Services.Resources;
-using HA4IoT.Services.Scheduling;
-using HA4IoT.Services.System;
 using HA4IoT.Settings;
 using HA4IoT.Tests.Mockups.Services;
 using Newtonsoft.Json.Linq;
@@ -62,7 +62,6 @@ namespace HA4IoT.Tests.Mockups
             _container.RegisterSingleton<IAreaRegistryService, AreaRegistryService>();
             _container.RegisterSingleton<IDeviceMessageBrokerService, TestDeviceMessageBrokerService>();
             _container.RegisterSingleton<IScriptingService, ScriptingService>();
-            _container.RegisterSingletonCollection(new IScriptProxy[0]);
             _container.RegisterSingleton<IMessageBrokerService, MessageBrokerService>();
 
             _container.Verify();
@@ -76,9 +75,18 @@ namespace HA4IoT.Tests.Mockups
             _container.GetInstance<IApiDispatcherService>().RegisterAdapter(_apiAdapter);
         }
 
-        public event EventHandler StartupCompleted;
-        public event EventHandler StartupFailed;
-        public event EventHandler Shutdown;
+        public event EventHandler<StartupCompletedEventArgs> StartupCompleted;
+        public event EventHandler<StartupFailedEventArgs> StartupFailed;
+        
+        public void RaiseStartupCompleted()
+        {
+            StartupCompleted?.Invoke(this, new StartupCompletedEventArgs(TimeSpan.Zero));
+        }
+
+        public void RaiseStartupFailed()
+        {
+            StartupFailed?.Invoke(this, new StartupFailedEventArgs(TimeSpan.Zero, new Exception()));
+        }
 
         public TInstance GetInstance<TInstance>() where TInstance : class
         {

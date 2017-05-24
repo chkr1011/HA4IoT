@@ -1,13 +1,13 @@
 ﻿using System;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Environment;
 using HA4IoT.Contracts.Messaging;
-using HA4IoT.Contracts.Services.Daylight;
-using HA4IoT.Contracts.Services.Notifications;
-using HA4IoT.Contracts.Services.OutdoorTemperature;
-using HA4IoT.Contracts.Services.Resources;
-using HA4IoT.Contracts.Services.Settings;
-using HA4IoT.Contracts.Services.System;
+using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Resources;
+using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Settings;
 
 namespace HA4IoT.Automations
 {
@@ -18,7 +18,7 @@ namespace HA4IoT.Automations
         private readonly INotificationService _notificationService;
         private readonly IDateTimeService _dateTimeService;
         private readonly IDaylightService _daylightService;
-        private readonly IOutdoorTemperatureService _outdoorTemperatureService;
+        private readonly IOutdoorService _outdoorService;
         private readonly IComponentRegistryService _componentService;
         private readonly ISettingsService _settingsService;
         private readonly IResourceService _resourceService;
@@ -28,7 +28,7 @@ namespace HA4IoT.Automations
             INotificationService notificationService,
             IDateTimeService dateTimeService,
             IDaylightService daylightService,
-            IOutdoorTemperatureService outdoorTemperatureService,
+            IOutdoorService outdoorService,
             IComponentRegistryService componentService,
             ISettingsService settingsService,
             IResourceService resourceService,
@@ -39,7 +39,7 @@ namespace HA4IoT.Automations
             _notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
             _dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
             _daylightService = daylightService ?? throw new ArgumentNullException(nameof(daylightService));
-            _outdoorTemperatureService = outdoorTemperatureService ?? throw new ArgumentNullException(nameof(outdoorTemperatureService));
+            _outdoorService = outdoorService ?? throw new ArgumentNullException(nameof(outdoorService));
             _componentService = componentService ?? throw new ArgumentNullException(nameof(componentService));
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
             _resourceService = resourceService ?? throw new ArgumentNullException(nameof(resourceService));
@@ -71,7 +71,7 @@ namespace HA4IoT.Automations
                 _schedulerService,
                 _dateTimeService,
                 _daylightService,
-                _outdoorTemperatureService,
+                _outdoorService,
                 _componentService,
                 _settingsService,
                 _resourceService);

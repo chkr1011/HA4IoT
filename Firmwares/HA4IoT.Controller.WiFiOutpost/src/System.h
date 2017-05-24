@@ -2,8 +2,10 @@
 
 void setupSystem();
 void loopSystem(uint16_t elapsedMillis);
-void reboot();
 
+void finishBoot();
+void reboot();
+void blink(uint8_t);
 void clearInfo();
 void setInfo();
 

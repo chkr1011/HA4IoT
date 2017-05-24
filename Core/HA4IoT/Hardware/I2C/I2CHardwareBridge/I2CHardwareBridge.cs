@@ -1,21 +1,21 @@
 ﻿using System;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.I2C;
-using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Hardware.I2C.I2CHardwareBridge
 {
     public class I2CHardwareBridge : IDevice
     {
         private readonly I2CSlaveAddress _address;
-        private readonly II2CBusService _i2CBus;
+        private readonly II2CBusService _i2CBusService;
 
-        public I2CHardwareBridge(I2CSlaveAddress address, II2CBusService i2CBus, ISchedulerService schedulerService)
+        public I2CHardwareBridge(I2CSlaveAddress address, II2CBusService i2CBusService, ISchedulerService schedulerService)
         {
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
 
             _address = address;
-            _i2CBus = i2CBus ?? throw new ArgumentNullException(nameof(i2CBus));
+            _i2CBusService = i2CBusService ?? throw new ArgumentNullException(nameof(i2CBusService));
 
             DHT22Accessor = new DHT22Accessor(this, schedulerService);
         }
@@ -28,7 +28,7 @@ namespace HA4IoT.Hardware.I2C.I2CHardwareBridge
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
 
-            _i2CBus.Execute(_address, command.Execute, false);
+            command.Execute(_address, _i2CBusService);
         }
     }
 }

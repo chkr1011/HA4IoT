@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.ExternalServices.Twitter;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
-using HA4IoT.Contracts.Services.ExternalServices.Twitter;
-using HA4IoT.Contracts.Services.System;
-using HA4IoT.Services.System;
+using HA4IoT.Core;
 
 namespace HA4IoT.Controller.Main.Main
 {

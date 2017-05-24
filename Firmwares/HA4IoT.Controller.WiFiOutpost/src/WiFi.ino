@@ -6,7 +6,7 @@ uint8_t _status = WL_DISCONNECTED;
 
 String getWiFiIpAddress() { return _ip; }
 
-bool getWiFiIsConnected() { return _status == WL_CONNECTED; }
+bool wiFiIsConnected() { return _status == WL_CONNECTED; }
 
 void openAccessPoint() {
 #ifdef DEBUG

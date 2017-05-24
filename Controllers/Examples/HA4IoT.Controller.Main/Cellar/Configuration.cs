@@ -3,10 +3,11 @@ using System.Threading.Tasks;
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.StateMachines;
+using HA4IoT.Areas;
 using HA4IoT.Automations;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Areas;
-using HA4IoT.Contracts.Commands;
+using HA4IoT.Contracts.Components.Commands;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.Services;
@@ -16,7 +17,6 @@ using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.CCTools.Devices;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
-using HA4IoT.Services.Areas;
 
 namespace HA4IoT.Controller.Main.Cellar
 {

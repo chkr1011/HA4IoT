@@ -10,7 +10,7 @@
 
     <ul class="list-group" ng-show="ctrl.activePanel===area.Id">
         <li class="list-group-item" ng-repeat="component in area.Components | orderBy:['SortValue']">
-            <span><img class="icon" ng-src="Images/{{component.Image}}.png" /></span>
+            <span><img class="icon" ng-src="Content/Images/{{component.Image}}.png" /></span>
             <span>{{component.Caption}}</span>
 
             <div class="container-fluid" style="padding: 0; padding-top: 5px;" ng-include="component.template"></div>

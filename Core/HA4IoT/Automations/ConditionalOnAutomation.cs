@@ -1,10 +1,11 @@
 ﻿using System;
 using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
-using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.Services.Daylight;
-using HA4IoT.Contracts.Services.System;
+using HA4IoT.Contracts.Components.Commands;
+using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Environment;
+using HA4IoT.Contracts.Services;
 using HA4IoT.Triggers;
 
 namespace HA4IoT.Automations

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Messaging;
+using HA4IoT.Contracts.Scripting;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Core;
 using Newtonsoft.Json.Linq;
@@ -18,9 +19,12 @@ namespace HA4IoT.Messaging
         private readonly Dictionary<string, MessageSubscription> _subscriptions = new Dictionary<string, MessageSubscription>();
         private readonly ILogger _log;
 
-        public MessageBrokerService(ILogService logService)
+        public MessageBrokerService(ILogService logService, IScriptingService scriptingService)
         {
+            if (scriptingService == null) throw new ArgumentNullException(nameof(scriptingService));
             _log = logService?.CreatePublisher(nameof(MessageBrokerService)) ?? throw new ArgumentNullException(nameof(logService));
+
+            scriptingService.RegisterScriptProxy(s => new MessageBrokerScriptProxy(this, s));
         }
 
         public Task Publish(Message<JObject> message)

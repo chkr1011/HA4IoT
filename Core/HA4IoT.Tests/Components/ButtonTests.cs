@@ -1,10 +1,10 @@
 ﻿using System;
 using HA4IoT.Contracts.Components.Features;
 using HA4IoT.Contracts.Components.States;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Messaging;
-using HA4IoT.Contracts.Services.Settings;
-using HA4IoT.Contracts.Services.System;
+using HA4IoT.Contracts.Settings;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Tests.Mockups;
 using HA4IoT.Tests.Mockups.Adapters;

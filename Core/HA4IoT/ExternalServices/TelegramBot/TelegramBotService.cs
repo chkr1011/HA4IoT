@@ -3,12 +3,13 @@ using System.Collections.Concurrent;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.ExternalServices.TelegramBot;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.PersonalAgent;
+using HA4IoT.Contracts.Scripting;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Contracts.Services.ExternalServices.TelegramBot;
-using HA4IoT.Contracts.Services.Settings;
-using HA4IoT.Contracts.Services.System;
+using HA4IoT.Contracts.Settings;
 using Newtonsoft.Json.Linq;
 using HttpClient = System.Net.Http.HttpClient;
 
@@ -25,9 +26,15 @@ namespace HA4IoT.ExternalServices.TelegramBot
         private int _latestUpdateId;
         private bool _isConnected;
 
-        public TelegramBotService(ISettingsService settingsService, IPersonalAgentService personalAgentService, ISystemInformationService systemInformationService, ILogService logService)
+        public TelegramBotService(
+            ISettingsService settingsService, 
+            IPersonalAgentService personalAgentService,
+            ISystemInformationService systemInformationService,
+            ILogService logService,
+            IScriptingService scriptingService)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
+            if (scriptingService == null) throw new ArgumentNullException(nameof(scriptingService));
 
             _personalAgentService = personalAgentService ?? throw new ArgumentNullException(nameof(personalAgentService));
 
@@ -35,6 +42,8 @@ namespace HA4IoT.ExternalServices.TelegramBot
 
             settingsService.CreateSettingsMonitor<TelegramBotServiceSettings>(s => Settings = s.NewSettings);
             systemInformationService.Set("TelegramBotService/IsConnected", () => _isConnected);
+
+            scriptingService.RegisterScriptProxy(s => new TelegramBotScriptProxy(this));
         }
 
         public TelegramBotServiceSettings Settings { get; private set; }

@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Api.Cloud;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Contracts.Services.Settings;
-using HA4IoT.Contracts.Services.System;
+using HA4IoT.Contracts.Settings;
 using Newtonsoft.Json;
 
 namespace HA4IoT.Api.Cloud.CloudConnector

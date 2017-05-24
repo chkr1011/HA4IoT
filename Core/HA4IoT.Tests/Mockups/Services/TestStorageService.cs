@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using HA4IoT.Contracts.Services.Storage;
+using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Storage;
 
 namespace HA4IoT.Tests.Mockups.Services
 {
-    public class TestStorageService : IStorageService
+    public class TestStorageService : ServiceBase, IStorageService
     {
         private readonly Dictionary<string, object> _files = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-
-        public void Startup()
-        {
-        }
-
+        
         public bool TryRead<TData>(string filename, out TData data)
         {
             object buffer;

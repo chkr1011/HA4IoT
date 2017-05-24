@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware.I2C;
 
 namespace HA4IoT.Hardware.I2C.I2CHardwareBridge
@@ -44,20 +45,20 @@ namespace HA4IoT.Hardware.I2C.I2CHardwareBridge
             return this;
         }
 
-        public override void Execute(II2CDevice i2CDevice)
+        public override void Execute(I2CSlaveAddress address, II2CBusService i2CBusService)
         {
-            i2CDevice.Write(GenerateClearSignalCachePackage());
+            i2CBusService.Write(address, GenerateClearSignalCachePackage(), false);
 
-            int offset = 0;
+            var offset = 0;
             while (offset < _signal.Length)
             {
                 var buffer = _signal.Skip(offset).Take(30).ToArray();
                 offset += buffer.Length;
 
-                i2CDevice.Write(GenerateFillSignalCachePackage(buffer));
+                i2CBusService.Write(address, GenerateFillSignalCachePackage(buffer), false);
             }
 
-            i2CDevice.Write(GenerateSendCachedSignalPackage());
+            i2CBusService.Write(address, GenerateSendCachedSignalPackage(), false);
         }
 
         private byte[] GenerateSendCachedSignalPackage()
@@ -72,17 +73,20 @@ namespace HA4IoT.Hardware.I2C.I2CHardwareBridge
                 };
         }
 
-        private byte[] GenerateFillSignalCachePackage(byte[] data)
+        private static byte[] GenerateFillSignalCachePackage(byte[] data)
         {
-            var buffer = new List<byte>();
-            buffer.Add(I2C_ACTION_Infrared);
-            buffer.Add(ACTION_FILL_SIGNAL_CACHE);
+            var buffer = new List<byte>
+            {
+                I2C_ACTION_Infrared,
+                ACTION_FILL_SIGNAL_CACHE
+            };
+
             buffer.AddRange(data);
 
             return buffer.ToArray();
         }
 
-        private byte[] GenerateClearSignalCachePackage()
+        private static byte[] GenerateClearSignalCachePackage()
         {
             return new[]
             {

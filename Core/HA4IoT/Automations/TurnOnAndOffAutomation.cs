@@ -8,13 +8,14 @@ using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Conditions;
+using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Environment;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Sensors.Events;
-using HA4IoT.Contracts.Services.Daylight;
-using HA4IoT.Contracts.Services.Settings;
-using HA4IoT.Contracts.Services.System;
+using HA4IoT.Contracts.Services;
+using HA4IoT.Contracts.Settings;
 using HA4IoT.Contracts.Triggers;
 using HA4IoT.Triggers;
 

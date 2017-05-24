@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.DeviceMessaging;
 using HA4IoT.Contracts.Hardware.I2C;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Scripting;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.CCTools.Devices;
 
 namespace HA4IoT.Hardware.CCTools
@@ -18,12 +19,19 @@ namespace HA4IoT.Hardware.CCTools
         private readonly IDeviceRegistryService _deviceService;
         private readonly ILogger _log;
 
-        public CCToolsDeviceService(IDeviceRegistryService deviceService, II2CBusService i2CBusService, IDeviceMessageBrokerService deviceMessageBrokerService, ILogService log)
+        public CCToolsDeviceService(
+            IDeviceRegistryService deviceService, 
+            II2CBusService i2CBusService, 
+            IDeviceMessageBrokerService deviceMessageBrokerService,
+            IScriptingService scriptingService,
+            ILogService log)
         {
+            if (scriptingService == null) throw new ArgumentNullException(nameof(scriptingService));
             _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
             _i2CBusService = i2CBusService ?? throw new ArgumentNullException(nameof(i2CBusService));
             _deviceMessageBrokerService = deviceMessageBrokerService;
             _log = log?.CreatePublisher(nameof(CCToolsDeviceService)) ?? throw new ArgumentNullException(nameof(log));
+            scriptingService.RegisterScriptProxy(s => new CCToolsDeviceScriptProxy(this));
         }
 
         public IDevice RegisterDevice(CCToolsDevice device, string id, int address)

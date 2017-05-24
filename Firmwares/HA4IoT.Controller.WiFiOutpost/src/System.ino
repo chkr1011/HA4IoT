@@ -12,9 +12,13 @@ int16_t _resetConfigTimeout = RESET_SETTINGS_TMEOUT;
 
 String _updateResult = "";
 
-String getFirmwareVersion() { return "1.1.11"; }
+String getFirmwareVersion() { return "1.1.17"; }
 
 void setupSystem() {
+#ifdef DEBUG
+  Serial.println("Sys: Booting v" + getFirmwareVersion());
+#endif
+
   _webServer.on("/update", HTTP_POST, handleHttpPostUpdate);
   _webServer.on("/reboot", HTTP_POST, handleHttpPostReboot);
   _webServer.on("/status", HTTP_GET, handleHttpGetStatus);
@@ -32,6 +36,16 @@ void setupSystem() {
 
   if (SYSTEM_BUTTON != -1) {
     pinMode(SYSTEM_BUTTON, INPUT);
+  }
+}
+
+void blink(uint8_t count) {
+  // TODO: Save current state and restore later.
+  for (uint8_t i = 0; i < count; i++) {
+    digitalWrite(SYSTEM_LED, LOW);
+    delay(150);
+    digitalWrite(SYSTEM_LED, HIGH);
+    delay(150);
   }
 }
 
@@ -65,7 +79,7 @@ void handleHttpGetPin() {
 
   pinMode(pin, INPUT);
 
-  StaticJsonBuffer<32> jsonBuffer;
+  DynamicJsonBuffer jsonBuffer;
   JsonObject &json = jsonBuffer.createObject();
 
   if (mode == F("analog")) {
@@ -82,10 +96,16 @@ void handleHttpGetPinDigital() {
 
   pinMode(pin, INPUT);
 
-  StaticJsonBuffer<32> jsonBuffer;
+  DynamicJsonBuffer jsonBuffer;
   JsonObject &json = jsonBuffer.createObject();
   json[F("value")] = digitalRead(pin);
   sendHttpOK(&json);
+}
+
+void finishBoot() {
+#ifdef DEBUG
+  Serial.printf("Sys: Booted. Name=%s\n", _sysSettings.name.c_str());
+#endif
 }
 
 void loopSystem(uint16_t elapsedMillis) {
@@ -99,7 +119,7 @@ void loopSystem(uint16_t elapsedMillis) {
     _sysButtonPressed = sysButtonPressed;
 
 #ifdef DEBUG
-    Serial.println(_sysButtonPressed ? F("SB pressed") : F("SB released"));
+    Serial.println(_sysButtonPressed ? F("Sys: Button pressed") : F("Sys: Button released"));
 #endif
 
     if (_sysButtonPressed) {

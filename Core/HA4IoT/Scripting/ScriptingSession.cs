@@ -58,15 +58,12 @@ namespace HA4IoT.Scripting
             return result;
         }
 
-        public void RegisterProxies(params IScriptProxy[] scriptProxies)
+        public void RegisterScriptProxy(IScriptProxy scriptProxy)
         {
-            if (scriptProxies == null) throw new ArgumentNullException(nameof(scriptProxies));
+            if (scriptProxy == null) throw new ArgumentNullException(nameof(scriptProxy));
 
-            foreach (var scriptProxy in scriptProxies)
-            {
-                _script.Globals[scriptProxy.Name] = UserData.Create(scriptProxy);
-                Proxies.Add(scriptProxy);
-            }
+            _script.Globals[scriptProxy.Name] = UserData.Create(scriptProxy);
+            Proxies.Add(scriptProxy);
         }
 
         private DynValue ExecuteInternal(string entryFunctionName)
@@ -129,9 +126,9 @@ namespace HA4IoT.Scripting
                 message.Append("Result=" + Convert.ToString(result.Value) + " ; ");
             }
 
-            if (result.Trace.EndsWith(Environment.NewLine))
+            if (result.Trace.EndsWith(global::System.Environment.NewLine))
             {
-                result.Trace = result.Trace.Remove(result.Trace.Length - Environment.NewLine.Length, Environment.NewLine.Length);
+                result.Trace = result.Trace.Remove(result.Trace.Length - global::System.Environment.NewLine.Length, global::System.Environment.NewLine.Length);
             }
 
             if (result.Trace.Length == 0)

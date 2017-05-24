@@ -1,6 +1,6 @@
-﻿using System;
-using HA4IoT.Contracts.Components;
+﻿using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Services;
+using System;
 
 namespace HA4IoT.Contracts.Api
 {

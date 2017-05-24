@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using HA4IoT.Contracts.Api;
-using HA4IoT.Contracts.Components;
-using HA4IoT.Contracts.Hardware.DeviceMessaging;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Scripting;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Contracts.Services.System;
-using HA4IoT.Scripting.Proxies;
 using MoonSharp.Interpreter;
 using Newtonsoft.Json.Linq;
 
@@ -19,46 +13,16 @@ namespace HA4IoT.Scripting
     [ApiServiceClass(typeof(IScriptingService))]
     public class ScriptingService : ServiceBase, IScriptingService
     {
-        private readonly IMessageBrokerService _messageBroker;
-        private readonly IComponentRegistryService _componentRegistryService;
-        private readonly ISchedulerService _schedulerService;
-        private readonly IDeviceMessageBrokerService _deviceMessageBroker;
-        private readonly IEnumerable<IScriptProxy> _scriptProxies;
+        private readonly List<Func<IScriptingSession, IScriptProxy>> _scriptProxyCreators = new List<Func<IScriptingSession, IScriptProxy>>();
         private readonly ILogger _log;
-
-        public ScriptingService(
-            IEnumerable<IScriptProxy> scriptProxies, 
-            IApiDispatcherService apiDispatcherService, 
-            ISchedulerService schedulerService,
-            IComponentRegistryService componentRegistryService,
-            IMessageBrokerService messageBroker,
-            IDeviceMessageBrokerService deviceMessageBroker,
-            ILogService logService)
+        
+        public ScriptingService(ILogService logService)
         {
-            if (apiDispatcherService == null) throw new ArgumentNullException(nameof(apiDispatcherService));
-
-            _deviceMessageBroker = deviceMessageBroker ?? throw new ArgumentNullException(nameof(deviceMessageBroker));
-            _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
-            _componentRegistryService = componentRegistryService ?? throw new ArgumentNullException(nameof(componentRegistryService));
-            _schedulerService = schedulerService ?? throw new ArgumentNullException(nameof(schedulerService));
-            _scriptProxies = scriptProxies ?? throw new ArgumentNullException(nameof(scriptProxies));
             _log = logService?.CreatePublisher(nameof(ScriptingService)) ?? throw new ArgumentNullException(nameof(logService));
 
-            //apiDispatcherService.RegisterAdapter(this);
-
             UserData.RegisterType<DebuggingScriptProxy>();
-            UserData.RegisterType<SchedulerScriptProxy>();
-            UserData.RegisterType<ComponentScriptProxy>();
-            UserData.RegisterType<messageBrokerProxy>();
-            UserData.RegisterType<MqttScriptProxy>();
-
-            foreach (var scriptProxy in scriptProxies)
-            {
-                UserData.RegisterType(scriptProxy.GetType());
-            }
+            RegisterScriptProxy(s => new DebuggingScriptProxy(_log, s));
         }
-
-        //public event EventHandler<ApiRequestReceivedEventArgs> RequestReceived;
 
         public ScriptExecutionResult ExecuteScript(string script, string entryFunctionName)
         {
@@ -81,24 +45,25 @@ namespace HA4IoT.Scripting
             return result.Exception == null;
         }
 
+        public void RegisterScriptProxy<TScriptProxy>(Func<IScriptingSession, TScriptProxy> instanceCreator) where TScriptProxy : IScriptProxy
+        {
+            if (instanceCreator == null) throw new ArgumentNullException(nameof(instanceCreator));
+
+            UserData.RegisterType<TScriptProxy>();
+            _scriptProxyCreators.Add(s => instanceCreator(s));
+        }
+
         public IScriptingSession CreateScriptingSession(string scriptCode)
         {
             var scriptingSession = new ScriptingSession(scriptCode, _log);
-            ////RegisterApiFunctions(scriptingSession.Script);
-
-            scriptingSession.RegisterProxies(new DebuggingScriptProxy(_log, scriptingSession));
-            scriptingSession.RegisterProxies(new SchedulerScriptProxy(_schedulerService, scriptingSession));
-            scriptingSession.RegisterProxies(new ComponentScriptProxy(_componentRegistryService, scriptingSession));
-            scriptingSession.RegisterProxies(new messageBrokerProxy(_messageBroker, scriptingSession));
-            scriptingSession.RegisterProxies(new MqttScriptProxy(_deviceMessageBroker, scriptingSession));
-            scriptingSession.RegisterProxies(_scriptProxies.ToArray());
+            scriptingSession.RegisterScriptProxy(new DebuggingScriptProxy(_log, scriptingSession));
+            foreach (var scriptProxyCreator in _scriptProxyCreators)
+            {
+                scriptingSession.RegisterScriptProxy(scriptProxyCreator(scriptingSession));
+            }
 
             return scriptingSession;
         }
-
-        ////public void NotifyStateChanged(IComponent component)
-        ////{
-        ////}
 
         [ApiMethod]
         public void ExecuteScriptCode(IApiCall apiCall)

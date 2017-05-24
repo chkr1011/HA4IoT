@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware.I2C;
 
 namespace HA4IoT.Hardware.I2C.I2CHardwareBridge
@@ -36,9 +37,9 @@ namespace HA4IoT.Hardware.I2C.I2CHardwareBridge
             return this;
         }
 
-        public override void Execute(II2CDevice i2CDevice)
+        public override void Execute(I2CSlaveAddress address, II2CBusService i2CBusService)
         {
-            i2CDevice.Write(ToPackage());
+            i2CBusService.Write(address, ToPackage(), false);
         }
 
         private byte[] ToPackage()

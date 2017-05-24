@@ -6,22 +6,22 @@
     <div class="container-fluid" style="margin: 10px">
         <div class="row">
             <div class="col-xs-3 text-center">
-                <img class="iconDefault text-center" ng-src="Images/Temperature.png" />
+                <img class="iconDefault text-center" ng-src="Content/Images/Temperature.png" />
                 <br />
                 <span class="text-center">{{(ctrl.weatherStation.temperature | number:1) + '°C' }}</span>
             </div>
             <div class="col-xs-3 text-center">
-                <img class="iconDefault text-center" ng-src="Images/Humidity.png" />
+                <img class="iconDefault text-center" ng-src="Content/Images/Humidity.png" />
                 <br />
-                <span class="text-center">{{(ctrl.weatherStation.humidity | number:1) + '%'}}</span>
+                <span class="text-center">{{(ctrl.weatherStation.humidity | number:0) + '%'}}</span>
             </div>
             <div class="col-xs-3 text-center">
-                <img class="iconDefault" ng-src="Images/Sunrise.png" />
+                <img class="iconDefault" ng-src="Content/Images/Sunrise.png" />
                 <br />
                 <span class="text-center">{{ctrl.weatherStation.sunrise.substring(0, 5)}}</span>
             </div>
             <div class="col-xs-3 text-center">
-                <img class="iconDefault" ng-src="Images/Sunset.png" />
+                <img class="iconDefault" ng-src="Content/Images/Sunset.png" />
                 <br />
                 <span class="text-center">{{ctrl.weatherStation.sunset.substring(0, 5)}}</span>
             </div>
@@ -29,8 +29,8 @@
 
         <div class="row" style="margin-top: 20px;">
             <div class="col-xs-12 text-center">
-                <img class="iconDefault" ng-src="Images/WeatherSituation.png" />
-                <span>{{ctrl.localizationService.get('UI.WeatherStation.Situation.' + ctrl.weatherStation.weather)}}</span>
+                <img class="weather-condition-image" ng-src="{{ctrl.weatherStation.conditionImage}}" />
+                <span class="weather-condition-text">{{ctrl.localizationService.get('UI.WeatherStation.Condition.' + ctrl.weatherStation.condition)}}</span>
             </div>
         </div>
     </div>

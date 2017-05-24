@@ -15,9 +15,8 @@
 #define SLEEP_DURATION 10
 #define MAX_JSON_SIZE 256
 
-//#define DEBUG
-
 // Comment out to disable features.
+//#define DEBUG
 //#define FEATURE_RGB
 //#define FEATURE_LPD
 //#define FEATURE_ONEWIRE_SENSORS
@@ -60,20 +59,18 @@ void setup() {
 #ifdef FEATURE_RGB
   setupRgb();
 #endif
-#ifdef FEATURE_ONEWIRE_SENSORS
-  setupOneWireSensors();
-#endif
 #ifdef FEATURE_DHT_SENSOR
   setupDhtSensor();
+#endif
+#ifdef FEATURE_ONEWIRE_SENSORS
+  setupOneWireSensors();
 #endif
 
   setupWiFi();
   setupWebServer();
   setupMqtt();
 
-#ifdef DEBUG
-  Serial.printf("Boot done. Name=%s\n", _sysSettings.name.c_str());
-#endif
+  finishBoot();
 }
 
 void loop() {

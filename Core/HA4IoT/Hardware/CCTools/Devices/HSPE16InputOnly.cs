@@ -1,8 +1,8 @@
-﻿using HA4IoT.Contracts.Hardware;
+﻿using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.DeviceMessaging;
 using HA4IoT.Contracts.Hardware.I2C;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Services.System;
 using HA4IoT.Hardware.I2C.I2CPortExpanderDrivers;
 
 namespace HA4IoT.Hardware.CCTools.Devices
@@ -13,7 +13,7 @@ namespace HA4IoT.Hardware.CCTools.Devices
             : base(id, new MAX7311Driver(address, i2CBusService), deviceMessageBrokerService, log)
         {
             byte[] setupAsInputs = { 0x06, 0xFF, 0xFF };
-            i2CBusService.Execute(address, b => b.Write(setupAsInputs));
+            i2CBusService.Write(address, setupAsInputs);
 
             FetchState();
         }

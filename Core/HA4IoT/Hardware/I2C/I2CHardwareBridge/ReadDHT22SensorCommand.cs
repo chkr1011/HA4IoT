@@ -1,4 +1,5 @@
 ﻿using System;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware.I2C;
 
 namespace HA4IoT.Hardware.I2C.I2CHardwareBridge
@@ -18,22 +19,22 @@ namespace HA4IoT.Hardware.I2C.I2CHardwareBridge
             return this;
         }
 
-        public override void Execute(II2CDevice i2CDevice)
+        public override void Execute(I2CSlaveAddress address, II2CBusService i2CBusService)
         {
-            i2CDevice.Write(GenerateRegisterSensorPackage());
+            i2CBusService.Write(address, GenerateRegisterSensorPackage(), false);
 
-            byte[] buffer = new byte[9];
-            i2CDevice.Read(buffer);
+            var buffer = new byte[9];
+            i2CBusService.Read(address, buffer, false);
 
             ParseResponse(buffer);
         }
 
         private void ParseResponse(byte[] buffer)
         {
-            float temperature = 0.0F;
-            float humidity = 0.0F;
+            var temperature = 0.0F;
+            var humidity = 0.0F;
 
-            bool succeeded = buffer[0] == 1;
+            var succeeded = buffer[0] == 1;
 
             if (succeeded)
             {

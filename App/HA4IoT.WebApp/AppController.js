@@ -187,11 +187,12 @@ function createAppController($http, $scope, modalService, apiService, localizati
 
         c.notifications = status.Notifications;
         
-        c.weatherStation.temperature = status.OutdoorTemperature;
-        c.weatherStation.humidity = status.OutdoorHumidity;
+        c.weatherStation.temperature = status.Temperature;
+        c.weatherStation.humidity = status.Humidity;
         c.weatherStation.sunrise = status.Sunrise;
         c.weatherStation.sunset = status.Sunset;
-        c.weatherStation.weather = status.Weather;
+        c.weatherStation.condition = status.Weather;
+        c.weatherStation.conditionImage = "Content/Images/WeatherConditions/" + status.Weather + ".png";
 
         updateOnStateCounters(c.areas);
     };

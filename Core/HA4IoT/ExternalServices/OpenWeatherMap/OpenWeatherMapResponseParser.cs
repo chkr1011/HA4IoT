@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Windows.Data.Json;
-using HA4IoT.Contracts.Services.Weather;
+using HA4IoT.Contracts.Environment;
 
 namespace HA4IoT.ExternalServices.OpenWeatherMap
 {
@@ -15,7 +15,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
 
         public TimeSpan Sunset { get; private set; }
 
-        public Weather Weather { get; private set; }
+        public WeatherCondition Weather { get; private set; }
 
         public void Parse(string source)
         {
@@ -32,13 +32,13 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             Sunset = UnixTimeStampToDateTime(sunsetValue).TimeOfDay;
 
             var situationValue = weather.First().GetObject().GetNamedValue("id");
-            Weather = new OpenWeatherMapWeatherSituationParser().Parse(situationValue);
+            Weather = OpenWeatherMapWeatherSituationParser.Parse((int)situationValue.GetNumber());
 
             Temperature = (float) main.GetNamedNumber("temp", 0);
             Humidity = (float) main.GetNamedNumber("humidity", 0);
         }
 
-        private DateTime UnixTimeStampToDateTime(double unixTimeStamp)
+        private static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
         {
             var buffer = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             return buffer.AddSeconds(unixTimeStamp).ToLocalTime();

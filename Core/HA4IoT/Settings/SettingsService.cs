@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Backup;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Contracts.Services.Backup;
-using HA4IoT.Contracts.Services.Settings;
-using HA4IoT.Contracts.Services.Storage;
+using HA4IoT.Contracts.Settings;
+using HA4IoT.Contracts.Storage;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Settings

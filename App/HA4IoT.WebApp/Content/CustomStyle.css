@@ -139,6 +139,16 @@ body {
     float: right
 }
 
+.weather-condition-text {
+    font-size: 12pt;
+    vertical-align: middle;
+}
+
+.weather-condition-image {
+    width: 32px;
+    height: 32px;
+}
+
 .loadingAnimation {
     animation: rotate 1s infinite linear;
     border-bottom: 7px solid white;

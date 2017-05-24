@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Resources;
+using HA4IoT.Contracts.Scripting;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Contracts.Services.Notifications;
-using HA4IoT.Contracts.Services.Resources;
-using HA4IoT.Contracts.Services.Settings;
-using HA4IoT.Contracts.Services.Storage;
-using HA4IoT.Contracts.Services.System;
+using HA4IoT.Contracts.Settings;
+using HA4IoT.Contracts.Storage;
 using HA4IoT.Net.Http;
 using Newtonsoft.Json.Linq;
 
@@ -33,11 +33,13 @@ namespace HA4IoT.Notifications
             ISettingsService settingsService,
             IStorageService storageService,
             IResourceService resourceService,
+            IScriptingService scriptingService,
             ILogService logService)
         {
             if (apiService == null) throw new ArgumentNullException(nameof(apiService));
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
+            if (scriptingService == null) throw new ArgumentNullException(nameof(scriptingService));
 
             _dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
             _storageService = storageService ?? throw new ArgumentNullException(nameof(storageService));
@@ -49,6 +51,8 @@ namespace HA4IoT.Notifications
             apiService.StatusRequested += HandleApiStatusRequest;
 
             schedulerService.Register("NotificationCleanup", TimeSpan.FromMinutes(15), () => Cleanup());
+
+            scriptingService.RegisterScriptProxy(s => new NotificationScriptProxy(this));
         }
 
         public NotificationServiceSettings Settings { get; private set; }

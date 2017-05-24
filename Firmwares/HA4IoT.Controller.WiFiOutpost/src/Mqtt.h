@@ -3,7 +3,7 @@
 void setupMqtt();
 void loopMqtt(uint16_t elapsedMillis);
 
-bool getMqttIsConnected();
+bool mqttIsConnected();
 
 String generateMqttNotificationTopic(String suffix);
 String generateMqttCommandTopic(String suffix);

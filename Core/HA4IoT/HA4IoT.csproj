@@ -127,44 +127,47 @@
     <Compile Include="Actuators\Sockets\Socket.cs" />
     <Compile Include="Actuators\Sockets\SocketExtensions.cs" />
     <Compile Include="Actuators\StateMachines\StateMachine.cs" />
-    <Compile Include="Actuators\StateMachines\StateMachineApiCallRequest.cs" />
+    <Compile Include="Actuators\StateMachines\ApiCallRequest.cs" />
     <Compile Include="Actuators\StateMachines\StateMachineExtensions.cs" />
     <Compile Include="Actuators\StateMachines\StateMachineState.cs" />
-    <Compile Include="Adapters\MqttBased\MqttBasedBinaryOutputAdapter.cs" />
-    <Compile Include="Adapters\MqttBased\MqttBasedButtonAdapter.cs" />
-    <Compile Include="Adapters\MqttBased\MqttBasedNumericSensorAdapter.cs" />
-    <Compile Include="Adapters\PortBased\PortBasedButtonAdapter.cs" />
-    <Compile Include="Adapters\PortBased\PortBasedBinaryOutputAdapter.cs" />
-    <Compile Include="Adapters\PortBased\PortBasedMotionDetectorAdapter.cs" />
-    <Compile Include="Adapters\PortBased\PortBasedRollerShutterAdapter.cs" />
-    <Compile Include="Adapters\PortBased\PortBasedWindowAdapter.cs" />
-    <Compile Include="Adapters\VirtualButtonAdapter.cs" />
+    <Compile Include="Components\Adapters\MqttBased\MqttBasedBinaryOutputAdapter.cs" />
+    <Compile Include="Components\Adapters\MqttBased\MqttBasedButtonAdapter.cs" />
+    <Compile Include="Components\Adapters\MqttBased\MqttBasedNumericSensorAdapter.cs" />
+    <Compile Include="Components\Adapters\PortBased\PortBasedButtonAdapter.cs" />
+    <Compile Include="Components\Adapters\PortBased\PortBasedBinaryOutputAdapter.cs" />
+    <Compile Include="Components\Adapters\PortBased\PortBasedMotionDetectorAdapter.cs" />
+    <Compile Include="Components\Adapters\PortBased\PortBasedRollerShutterAdapter.cs" />
+    <Compile Include="Components\Adapters\PortBased\PortBasedWindowAdapter.cs" />
+    <Compile Include="Components\Adapters\VirtualButtonAdapter.cs" />
     <Compile Include="Api\ExceptionSerializer.cs" />
     <Compile Include="Conditions\Specialized\BinaryInputStateCondition.cs" />
-    <Compile Include="Commands\CommandInvoker.cs" />
-    <Compile Include="Commands\CommandResolver.cs" />
-    <Compile Include="Components\CommandInvokerAction.cs" />
+    <Compile Include="Components\Commands\CommandExecutor.cs" />
+    <Compile Include="Components\Commands\CommandResolver.cs" />
+    <Compile Include="Components\CommandExecutorAction.cs" />
     <Compile Include="Components\ComponentFeatureCollection.cs" />
     <Compile Include="Components\ComponentFeatureStateCollection.cs" />
     <Compile Include="Components\ComponentStateExtensions.cs" />
-    <Compile Include="Components\ICommandInvokerAction.cs" />
+    <Compile Include="Components\ICommandExecutorAction.cs" />
     <Compile Include="Components\LogicalComponent.cs" />
     <Compile Include="Conditions\Specialized\TemperatureIsLowerThanCondition.cs" />
+    <Compile Include="Hardware\I2C\I2CTransferResult.cs" />
     <Compile Include="Hardware\RaspberryPi\GpioInputMonitoringMode.cs" />
+    <Compile Include="Hardware\RaspberryPi\GpioPullMode.cs" />
     <Compile Include="Logging\RollingCollection.cs" />
+    <Compile Include="Logging\RollingCollectionEnumerator.cs" />
     <Compile Include="Messaging\MessageBrokerService.cs" />
-    <Compile Include="Scripting\Proxies\DateTimeScriptProxy.cs" />
+    <Compile Include="Core\DateTimeScriptProxy.cs" />
     <Compile Include="Hardware\CCTools\CCToolsDevice.cs" />
     <Compile Include="Hardware\I2C\I2CHardwareBridge\Dht22State.cs" />
     <Compile Include="Hardware\Outpost\OutpostLpdBridgeAdapter.cs" />
     <Compile Include="Hardware\Outpost\OutpostRgbAdapter.cs" />
     <Compile Include="Hardware\Outpost\OutpostDeviceService.cs" />
     <Compile Include="Hardware\RaspberryPi\GpioOutputPort.cs" />
-    <Compile Include="Hardware\Services\DeviceMessageBrokerService.cs" />
-    <Compile Include="Hardware\RemoteSwitch\Lpd433MhzCodeReceivedEventArgs.cs" />
-    <Compile Include="Hardware\Services\InterruptMonitor.cs" />
-    <Compile Include="Hardware\Services\InterruptMonitorService.cs" />
-    <Compile Include="Hardware\Services\MqttCommunicationAdapter.cs" />
+    <Compile Include="Devices\DeviceMessageBrokerService.cs" />
+    <Compile Include="Hardware\RemoteSwitch\Ldp433MhzCodeReceivedEventArgs.cs" />
+    <Compile Include="Hardware\Interrupts\InterruptMonitor.cs" />
+    <Compile Include="Hardware\Interrupts\InterruptMonitorService.cs" />
+    <Compile Include="Devices\MqttCommunicationAdapter.cs" />
     <Compile Include="Hardware\Sonoff\SonoffBinaryOutputAdapter.cs" />
     <Compile Include="Hardware\Sonoff\SonoffDeviceService.cs" />
     <Compile Include="Logging\LogService.cs" />
@@ -193,23 +196,24 @@
     <Compile Include="Net\WebSockets\WebSocketMessageReceivedEventArgs.cs" />
     <Compile Include="Net\WebSockets\WebSocketOpcode.cs" />
     <Compile Include="Net\WebSockets\WebSocketTextMessage.cs" />
-    <Compile Include="Scripting\Proxies\AreaScriptProxy.cs" />
-    <Compile Include="Scripting\Proxies\CCToolsScriptProxy.cs" />
-    <Compile Include="Scripting\Proxies\ComponentScriptProxy.cs" />
-    <Compile Include="Scripting\Proxies\DebuggingScriptProxy.cs" />
-    <Compile Include="Scripting\Proxies\MessageBusProxy.cs" />
-    <Compile Include="Scripting\Proxies\MqttScriptProxy.cs" />
-    <Compile Include="Scripting\Proxies\NotificationScriptProxy.cs" />
-    <Compile Include="Scripting\Proxies\OutdoorScriptProxy.cs" />
-    <Compile Include="Scripting\Proxies\SchedulerScriptProxy.cs" />
-    <Compile Include="Scripting\Proxies\SystemInformationScriptProxy.cs" />
-    <Compile Include="Scripting\Proxies\TelegramBotScriptProxy.cs" />
-    <Compile Include="Scripting\Proxies\TwitterClientScriptProxy.cs" />
+    <Compile Include="Areas\AreaRegistryScriptProxy.cs" />
+    <Compile Include="Hardware\CCTools\CCToolsDeviceScriptProxy.cs" />
+    <Compile Include="Components\ComponentRegistryScriptProxy.cs" />
+    <Compile Include="Scripting\DebuggingScriptProxy.cs" />
+    <Compile Include="Hardware\I2C\I2CBusScriptProxy.cs" />
+    <Compile Include="Messaging\MessageBrokerScriptProxy.cs" />
+    <Compile Include="Devices\DeviceMessageBrokerScriptProxy.cs" />
+    <Compile Include="Notifications\NotificationScriptProxy.cs" />
+    <Compile Include="Environment\DaylightScriptProxy.cs" />
+    <Compile Include="Scheduling\SchedulerScriptProxy.cs" />
+    <Compile Include="Core\SystemInformationScriptProxy.cs" />
+    <Compile Include="ExternalServices\TelegramBot\TelegramBotScriptProxy.cs" />
+    <Compile Include="ExternalServices\Twitter\TwitterClientScriptProxy.cs" />
     <Compile Include="Scripting\ScriptingService.cs" />
     <Compile Include="Scripting\ScriptingSession.cs" />
-    <Compile Include="Services\Areas\AreaExtensions.cs" />
-    <Compile Include="Services\Health\StatusLed.cs" />
-    <Compile Include="Services\System\DelayedAction.cs" />
+    <Compile Include="Areas\AreaExtensions.cs" />
+    <Compile Include="Health\StatusLed.cs" />
+    <Compile Include="Core\DelayedAction.cs" />
     <Compile Include="Triggers\ConditionalTrigger.cs" />
     <Compile Include="Triggers\IntervalTrigger.cs" />
     <Compile Include="Api\ApiDispatcherService.cs" />
@@ -271,7 +275,7 @@
     <Compile Include="ExternalServices\Twitter\TwitterClientService.cs" />
     <Compile Include="ExternalServices\Twitter\TwitterClientServiceExtensions.cs" />
     <Compile Include="ExternalServices\Twitter\TwitterClientServiceSettings.cs" />
-    <Compile Include="Hardware\I2C\BuiltInI2CBusService.cs" />
+    <Compile Include="Hardware\I2C\I2CBusService.cs" />
     <Compile Include="Hardware\ByteExtensions.cs" />
     <Compile Include="Hardware\CCTools\CCToolsDeviceBase.cs" />
     <Compile Include="Hardware\CCTools\CCToolsDevicePort.cs" />
@@ -289,7 +293,6 @@
     <Compile Include="Hardware\CCTools\Devices\HSREL8Pin.cs" />
     <Compile Include="Hardware\CCTools\Devices\HSRT16.cs" />
     <Compile Include="Hardware\CCTools\Devices\HSRT16Pin.cs" />
-    <Compile Include="Hardware\I2C\I2CDeviceWrapper.cs" />
     <Compile Include="Hardware\I2C\I2CHardwareBridge\DHT22Accessor.cs" />
     <Compile Include="Hardware\I2C\I2CHardwareBridge\DHT22HumiditySensor.cs" />
     <Compile Include="Hardware\I2C\I2CHardwareBridge\DHT22SensorBase.cs" />
@@ -309,7 +312,7 @@
     <Compile Include="Hardware\I2C\I2CPortExpanderDrivers\AddressPinState.cs" />
     <Compile Include="Hardware\I2C\I2CPortExpanderDrivers\MAX7311AddressGenerator.cs" />
     <Compile Include="Hardware\I2C\I2CPortExpanderDrivers\MAX7311Driver.cs" />
-    <Compile Include="Hardware\I2C\I2CPortExpanderDrivers\PCA9555AAddressGenerator.cs" />
+    <Compile Include="Hardware\I2C\I2CPortExpanderDrivers\PCA9555DAddressGenerator.cs" />
     <Compile Include="Hardware\I2C\I2CPortExpanderDrivers\PCA9555AddressGenerator.cs" />
     <Compile Include="Hardware\I2C\I2CPortExpanderDrivers\PCA9555ADriver.cs" />
     <Compile Include="Hardware\I2C\I2CPortExpanderDrivers\PCA9555Driver.cs" />
@@ -351,37 +354,35 @@
     <Compile Include="Sensors\Triggers\SensorValueThresholdMode.cs" />
     <Compile Include="Sensors\Windows\Window.cs" />
     <Compile Include="Sensors\Windows\WindowExtensions.cs" />
-    <Compile Include="Services\Areas\Area.cs" />
-    <Compile Include="Services\Areas\AreaRegistryService.cs" />
-    <Compile Include="Services\Areas\AreaRegistryServiceExtensions.cs" />
-    <Compile Include="Services\AutomationRegistryService.cs" />
-    <Compile Include="Services\Backup\BackupService.cs" />
-    <Compile Include="Services\ComponentRepositoryService.cs" />
-    <Compile Include="Services\ControllerSlave\ControllerSlaveService.cs" />
-    <Compile Include="Services\ControllerSlave\ControllerSlaveServiceSettings.cs" />
-    <Compile Include="Services\DeviceRegistryService.cs" />
-    <Compile Include="Services\Environment\DaylightService.cs" />
-    <Compile Include="Services\Environment\OutdoorHumidityService.cs" />
-    <Compile Include="Services\Environment\OutdoorTemperatureService.cs" />
-    <Compile Include="Services\Environment\WeatherService.cs" />
-    <Compile Include="Services\Health\HealthService.cs" />
-    <Compile Include="Services\Resources\GetTextsRequest.cs" />
-    <Compile Include="Services\Resources\ResourceService.cs" />
-    <Compile Include="Services\Resources\SetTextsRequest.cs" />
-    <Compile Include="Services\Scheduling\Schedule.cs" />
-    <Compile Include="Services\Scheduling\SchedulerService.cs" />
-    <Compile Include="Services\Scheduling\ScheduleStatus.cs" />
-    <Compile Include="Services\Status\ComponentStatus.cs" />
-    <Compile Include="Services\Status\Status.cs" />
-    <Compile Include="Services\Status\StatusService.cs" />
-    <Compile Include="Services\Status\WindowStatus.cs" />
-    <Compile Include="Services\StorageService\StorageService.cs" />
-    <Compile Include="Services\System\DateTimeService.cs" />
-    <Compile Include="Services\System\DiscoveryServerService.cs" />
-    <Compile Include="Services\System\SystemEventsService.cs" />
-    <Compile Include="Services\System\SystemInformationService.cs" />
-    <Compile Include="Services\System\Timeout.cs" />
-    <Compile Include="Services\System\TimerService.cs" />
+    <Compile Include="Areas\Area.cs" />
+    <Compile Include="Areas\AreaRegistryService.cs" />
+    <Compile Include="Areas\AreaRegistryServiceExtensions.cs" />
+    <Compile Include="Automations\AutomationRegistryService.cs" />
+    <Compile Include="Backup\BackupService.cs" />
+    <Compile Include="Components\ComponentRegistryService.cs" />
+    <Compile Include="Environment\ControllerSlaveService.cs" />
+    <Compile Include="Environment\ControllerSlaveServiceSettings.cs" />
+    <Compile Include="Devices\DeviceRegistryService.cs" />
+    <Compile Include="Environment\DaylightService.cs" />
+    <Compile Include="Environment\OutdoorService.cs" />
+    <Compile Include="Health\HealthService.cs" />
+    <Compile Include="Resources\GetTextsRequest.cs" />
+    <Compile Include="Resources\ResourceService.cs" />
+    <Compile Include="Resources\SetTextsRequest.cs" />
+    <Compile Include="Scheduling\Schedule.cs" />
+    <Compile Include="Scheduling\SchedulerService.cs" />
+    <Compile Include="Scheduling\ScheduleStatus.cs" />
+    <Compile Include="Status\ComponentStatus.cs" />
+    <Compile Include="Status\Status.cs" />
+    <Compile Include="Status\StatusService.cs" />
+    <Compile Include="Status\WindowStatus.cs" />
+    <Compile Include="Storage\StorageService.cs" />
+    <Compile Include="Core\DateTimeService.cs" />
+    <Compile Include="Core\DiscoveryServerService.cs" />
+    <Compile Include="Core\SystemEventsService.cs" />
+    <Compile Include="Core\SystemInformationService.cs" />
+    <Compile Include="Core\Timeout.cs" />
+    <Compile Include="Core\TimerService.cs" />
     <Compile Include="Settings\ControllerSettings.cs" />
     <Compile Include="Settings\SettingsChangedEventArgs.cs" />
     <Compile Include="Settings\SettingsService.cs" />
@@ -389,16 +390,17 @@
     <EmbeddedResource Include="Properties\HA4IoT.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <SDKReference Include="WindowsIoT, Version=10.0.15063.0">
+      <Name>Windows IoT Extensions for the UWP</Name>
+    </SDKReference>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\HA4IoT.Contracts\HA4IoT.Contracts.csproj">
       <Project>{b10b2e2a-85cd-4289-8649-fc0c1c98921d}</Project>
       <Name>HA4IoT.Contracts</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <SDKReference Include="WindowsIoT, Version=10.0.15063.0">
-      <Name>Windows IoT Extensions for the UWP</Name>
-    </SDKReference>
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

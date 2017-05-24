@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
-using HA4IoT.Contracts.Adapters;
+using HA4IoT.Contracts.Components.Adapters;
 using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Simulator.Controls

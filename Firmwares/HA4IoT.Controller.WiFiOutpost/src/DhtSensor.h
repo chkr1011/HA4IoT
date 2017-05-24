@@ -1,1 +1,1 @@
-void loopDhtSensor();
+void loopDhtSensor(uint16_t elapsedMillis);

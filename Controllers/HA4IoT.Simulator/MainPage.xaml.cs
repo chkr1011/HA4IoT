@@ -4,9 +4,10 @@ using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using HA4IoT.Contracts;
-using HA4IoT.Contracts.Adapters;
+using HA4IoT.Contracts.Components.Adapters;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Scripting;
 using HA4IoT.Core;
 using HA4IoT.Simulator.Controls;
 
@@ -14,6 +15,8 @@ namespace HA4IoT.Simulator
 {
     public sealed partial class MainPage : ILogAdapter
     {
+        private readonly Controller _controller;
+        
         public MainPage()
         {
             InitializeComponent();
@@ -27,14 +30,14 @@ namespace HA4IoT.Simulator
 
             options.LogAdapters.Add(this);
 
-            var controller = new Controller(options);
+            _controller = new Controller(options);
 
             // The app is only available from other machines. https://msdn.microsoft.com/en-us/library/windows/apps/Hh780593.aspx
             StoragePathTextBox.Text = StoragePath.StorageRoot;
             AppPathTextBox.Text = StoragePath.AppRoot;
             ManagementAppPathTextBox.Text = StoragePath.ManagementAppRoot;
 
-            controller.RunAsync();
+            _controller.RunAsync();
         }
 
         private class ContainerConfigurator : IContainerConfigurator
@@ -134,7 +137,7 @@ namespace HA4IoT.Simulator
 
             if (!string.IsNullOrEmpty(logEntry.Exception))
             {
-                message += Environment.NewLine;
+                message += "\r\n";
                 message += logEntry.Exception;
             }
 
@@ -142,9 +145,30 @@ namespace HA4IoT.Simulator
                 CoreDispatcherPriority.Normal,
                 () =>
                 {
-                    LogTextBox.Text += message + Environment.NewLine;
+                    LogTextBox.Text += message + global::System.Environment.NewLine;
 
                 }).AsTask().Wait();
+        }
+
+        private void ExecuteScript(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var result = _controller.Container.GetInstance<IScriptingService>().ExecuteScript(TextBoxScriptText.Text);
+
+                if (result.Exception != null)
+                {
+                    TextBlockScriptResult.Text = result.Exception.ToString();
+                    return;
+                }
+
+                TextBlockScriptResult.Text = Convert.ToString(result.Value);
+            }
+            catch (Exception exception)
+            {
+                TextBlockScriptResult.Text = exception.ToString();
+            }
+            
         }
     }
 }
