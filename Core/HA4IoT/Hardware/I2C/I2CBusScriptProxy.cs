@@ -26,15 +26,16 @@ namespace HA4IoT.Hardware.I2C
             return result.Status != I2CTransferStatus.SlaveAddressNotAcknowledged;
         }
 
-        public void Write(int address, Table data)
+        public void Write(int address, byte[] buffer)
         {
-            var buffer = new byte[data.Length];
-            for (var i = 0; i < data.Length; i++)
-            {
-                buffer[i] = (byte)data.Get(i).ToObject<int>();
-            }
-
             _i2CBusService.Write(new I2CSlaveAddress(address), buffer);
+        }
+
+        public byte[] WriteRead(int address, byte[] writeBuffer, int length)
+        {
+            var readBuffer = new byte[length];
+            _i2CBusService.WriteRead(new I2CSlaveAddress(address), writeBuffer, readBuffer);
+            return readBuffer;
         }
 
         public byte[] Read(int address, int length)
