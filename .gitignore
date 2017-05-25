@@ -34,3 +34,4 @@ HA4IoT.sdf
 # Ignore other intermediate files that NuGet might create
 project.lock.json
 *.nuget.props
+App/LocalDeployInfo.dat
