@@ -6,28 +6,29 @@ namespace HA4IoT.Tests.Mockups
 {
     public class TestWeatherStation : ServiceBase, IOutdoorService
     {
-        public WeatherCondition Weather { get; set; }
-        public DateTime? WeatherTimestamp { get; set; }
-        public void UpdateWeather(WeatherCondition value)
-        {
-            Weather = value;
-            WeatherTimestamp = DateTime.Now;
-        }
-
+        public WeatherCondition Condition { get; set; }
+        public DateTime? ConditionTimestamp { get; set; }
         public float Humidity { get; set; }
         public DateTime? HumidityTimestamp { get; set; }
         public float Temperature { get; set; }
         public DateTime? TemperatureTimestamp { get; set;  }
-        public void UpdateHumidity(float humidity)
+
+        public void UpdateHumidity(float value)
         {
-            Humidity = humidity;
+            Humidity = value;
             HumidityTimestamp = DateTime.Now;
         }
 
-        public void UpdateTemperature(float temperature)
+        public void UpdateTemperature(float value)
         {
-            Temperature = temperature;
+            Temperature = value;
             TemperatureTimestamp = DateTime.Now;
+        }
+
+        public void UpdateCondition(WeatherCondition value)
+        {
+            Condition = value;
+            ConditionTimestamp = DateTime.Now;
         }
     }
 }

@@ -223,7 +223,7 @@ namespace HA4IoT.PersonalAgent
             response.AppendLine($"{Emoji.BarChart} Das Wetter ist aktuell:");
             response.AppendLine($"Temperatur: {_outdoorService.Temperature}°C");
             response.AppendLine($"Luftfeuchtigkeit: {_outdoorService.Humidity}%");
-            response.AppendLine($"Wetter: {_outdoorService.Weather}");
+            response.AppendLine($"Wetter: {_outdoorService.Condition}");
 
             return response.ToString();
         }

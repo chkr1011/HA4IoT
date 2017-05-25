@@ -32,7 +32,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
         public float Humidity { get; private set; }
         public TimeSpan Sunrise { get; private set; }
         public TimeSpan Sunset { get; private set; }
-        public WeatherCondition Weather { get; private set; }
+        public WeatherCondition Condition { get; private set; }
         
         public OpenWeatherMapService(
             IOutdoorService outdoorService,
@@ -130,7 +130,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
 
             if (Settings.UseWeather)
             {
-                _outdoorService.UpdateWeather(Weather);
+                _outdoorService.UpdateCondition(Condition);
             }
         }
 
@@ -138,7 +138,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
         {
             var uri = new Uri($"http://api.openweathermap.org/data/2.5/weather?lat={Settings.Latitude}&lon={Settings.Longitude}&APPID={Settings.AppId}&units=metric");
 
-            _systemInformationService.Set("OpenWeatherMapService/Uri", uri.ToString());
+            _systemInformationService.Set($"{nameof(OpenWeatherMapService)}/Uri", uri.ToString());
 
             var stopwatch = Stopwatch.StartNew();
             try
@@ -151,7 +151,7 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             }
             finally
             {
-                _systemInformationService.Set("OpenWeatherMapService/LastFetchDuration", stopwatch.Elapsed);
+                _systemInformationService.Set($"{nameof(OpenWeatherMapService)}/LastFetchDuration", stopwatch.Elapsed);
             }
         }
 
@@ -162,7 +162,9 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
                 var parser = new OpenWeatherMapResponseParser();
                 parser.Parse(weatherData);
 
-                Weather = parser.Weather;
+                _systemInformationService.Set($"{nameof(OpenWeatherMapService)}/LastConditionCode", parser.ConditionCode);
+
+                Condition = parser.Condition;
                 Temperature = parser.Temperature;
                 Humidity = parser.Humidity;
 

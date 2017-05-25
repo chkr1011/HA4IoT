@@ -87,7 +87,7 @@ namespace HA4IoT.Environment
 
             if (Settings.UseWeather)
             {
-                _outdoorService.UpdateWeather(weather);
+                _outdoorService.UpdateCondition(weather);
             }
         }
 

@@ -33,9 +33,9 @@ namespace HA4IoT.Environment
         public DateTime? TemperatureTimestamp { get; private set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
-        public WeatherCondition Weather { get; private set; }
+        public WeatherCondition Condition { get; private set; }
 
-        public DateTime? WeatherTimestamp { get; private set; }
+        public DateTime? ConditionTimestamp { get; private set; }
 
         [ApiMethod]
         public void GetStatus(IApiCall apiCall)
@@ -55,10 +55,10 @@ namespace HA4IoT.Environment
             HumidityTimestamp = _dateTimeService.Now;
         }
 
-        public void UpdateWeather(WeatherCondition value)
+        public void UpdateCondition(WeatherCondition value)
         {
-            Weather = value;
-            WeatherTimestamp = _dateTimeService.Now;
+            Condition = value;
+            ConditionTimestamp = _dateTimeService.Now;
         }
     }
 }

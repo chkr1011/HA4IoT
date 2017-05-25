@@ -47,7 +47,7 @@
   "UI.WeatherStation.Humidity": "Luftfeuchtigkeit",
 
   "UI.WeatherStation.Condition.Unknown": "Unbekannt",
-  "UI.WeatherStation.Condition.ClearSky": "Klar",
+  "UI.WeatherStation.Condition.ClearSky": "Klarer Himmel",
   "UI.WeatherStation.Condition.FewClouds": "Wenige Wolken",
   "UI.WeatherStation.Condition.ScatteredClouds": "Zerstreute Wolken",
   "UI.WeatherStation.Condition.BrokenClouds": "Aufgerissene Wolken",

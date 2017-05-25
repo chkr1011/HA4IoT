@@ -11,11 +11,11 @@ namespace HA4IoT.Contracts.Environment
         float Temperature { get; }
         DateTime? TemperatureTimestamp { get; }
 
-        WeatherCondition Weather { get; }
-        DateTime? WeatherTimestamp { get; }
+        WeatherCondition Condition { get; }
+        DateTime? ConditionTimestamp { get; }
 
         void UpdateHumidity(float value);
         void UpdateTemperature(float value);
-        void UpdateWeather(WeatherCondition value);
+        void UpdateCondition(WeatherCondition value);
     }
 }

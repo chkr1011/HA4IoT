@@ -15,27 +15,30 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
 
         public TimeSpan Sunset { get; private set; }
 
-        public WeatherCondition Weather { get; private set; }
+        public WeatherCondition Condition { get; private set; }
+
+        public int ConditionCode { get; private set; }
 
         public void Parse(string source)
         {
             var data = JsonObject.Parse(source);
 
-            var sys = data.GetNamedObject("sys");
             var main = data.GetNamedObject("main");
-            var weather = data.GetNamedArray("weather");
+            Temperature = (float)main.GetNamedNumber("temp", 0);
+            Humidity = (float)main.GetNamedNumber("humidity", 0);
 
+            var sys = data.GetNamedObject("sys");
             var sunriseValue = sys.GetNamedNumber("sunrise", 0);
-            Sunrise = UnixTimeStampToDateTime(sunriseValue).TimeOfDay;
-
             var sunsetValue = sys.GetNamedNumber("sunset", 0);
+
+            Sunrise = UnixTimeStampToDateTime(sunriseValue).TimeOfDay;
             Sunset = UnixTimeStampToDateTime(sunsetValue).TimeOfDay;
 
+            var weather = data.GetNamedArray("weather");
             var situationValue = weather.First().GetObject().GetNamedValue("id");
-            Weather = OpenWeatherMapWeatherSituationParser.Parse((int)situationValue.GetNumber());
+            ConditionCode = (int)situationValue.GetNumber();
 
-            Temperature = (float) main.GetNamedNumber("temp", 0);
-            Humidity = (float) main.GetNamedNumber("humidity", 0);
+            Condition = OpenWeatherMapWeatherSituationParser.Parse(ConditionCode);
         }
 
         private static DateTime UnixTimeStampToDateTime(double unixTimeStamp)

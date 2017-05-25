@@ -157,7 +157,6 @@ function createAppController($http, $scope, modalService, apiService, localizati
 
             c.apiService.newStatusReceivedCallback = c.applyNewStatus;
             c.apiService.pollStatus();
-            c.isInitialized = true;
         },
             function () {
                 modalService.show("Configuration not available", "Unable to load the configuration. Please try again later.");
@@ -191,10 +190,12 @@ function createAppController($http, $scope, modalService, apiService, localizati
         c.weatherStation.humidity = status.Humidity;
         c.weatherStation.sunrise = status.Sunrise;
         c.weatherStation.sunset = status.Sunset;
-        c.weatherStation.condition = status.Weather;
-        c.weatherStation.conditionImage = "Content/Images/WeatherConditions/" + status.Weather + ".png";
+        c.weatherStation.condition = status.Condition;
+        c.weatherStation.conditionImage = "Content/Images/WeatherConditions/" + status.Condition + ".png";
 
         updateOnStateCounters(c.areas);
+
+        c.isInitialized = true;
     };
 
     c.updateComponentState = function (componentId, updatedComponent) {
