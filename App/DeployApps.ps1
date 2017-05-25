@@ -212,7 +212,7 @@ $isStaging = GetIsStaging
 while($true)
 {
 	# Example path: \\minwinpc\c$\Data\Users\DefaultAccount\AppData\Local\Packages\HA4IoT.Controller.Demo-uwp_1.0.0.0_arm__p2wxv0ry6mv8g
-	$package = Get-ChildItem("\\$ipAddress\c$\Data\Users\DefaultAccount\AppData\Local\Packages\HA4IoT.Controller.*") 
+	$package = Get-ChildItem("\\$ipAddress\c$\Data\Users\DefaultAccount\AppData\Local\Packages\HA4IoT.Controller*") 
 	
 	if (!$package)
 	{
