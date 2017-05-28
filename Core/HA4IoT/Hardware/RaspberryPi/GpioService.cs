@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Windows.Devices.Gpio;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Hardware.Services;
+using HA4IoT.Contracts.Hardware.RaspberryPi;
 using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Hardware.RaspberryPi
@@ -13,7 +13,7 @@ namespace HA4IoT.Hardware.RaspberryPi
         private readonly Dictionary<int, GpioInputPort> _openInputPorts = new Dictionary<int, GpioInputPort>();
         private readonly Dictionary<int, GpioOutputPort> _openOutputPorts = new Dictionary<int, GpioOutputPort>();
 
-        public IBinaryInput GetInput(int number)
+        public IBinaryInput GetInput(int number, GpioPullMode pullMode, GpioInputMonitoringMode monitoringMode)
         {
             lock (_openInputPorts)
             {
@@ -23,7 +23,8 @@ namespace HA4IoT.Hardware.RaspberryPi
                     return port;
                 }
 
-                port = new GpioInputPort(_gpioController.OpenPin(number, GpioSharingMode.Exclusive));
+                var pin = _gpioController.OpenPin(number, GpioSharingMode.Exclusive);
+                port = new GpioInputPort(pin, monitoringMode, pullMode);
                 _openInputPorts.Add(number, port);
                 return port;
             }

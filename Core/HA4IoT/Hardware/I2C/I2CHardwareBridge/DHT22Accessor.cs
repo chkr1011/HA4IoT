@@ -6,7 +6,6 @@ namespace HA4IoT.Hardware.I2C.I2CHardwareBridge
 {
     public class DHT22Accessor
     {
-        private readonly object _syncRoot = new object();
         private readonly Dictionary<int, Dht22State> _dht22States = new Dictionary<int, Dht22State>();
         private readonly I2CHardwareBridge _i2CHardwareBridge;
 
@@ -21,9 +20,9 @@ namespace HA4IoT.Hardware.I2C.I2CHardwareBridge
 
         public event EventHandler ValuesUpdated;
 
-        public DHT22TemperatureSensor GetTemperatureSensor(int pin)
+        public Dht22Sensor GetTemperatureSensor(int pin)
         {
-            lock (_syncRoot)
+            lock (_dht22States)
             {
                 if (!_dht22States.ContainsKey(pin))
                 {
@@ -31,20 +30,20 @@ namespace HA4IoT.Hardware.I2C.I2CHardwareBridge
                 }
             }
             
-            return new DHT22TemperatureSensor(pin, this);
+            return new Dht22Sensor(pin, DHT22SensorKind.Temperature, this);
         }
 
         public float GetTemperature(byte pin)
         {
-            lock (_syncRoot)
+            lock (_dht22States)
             {
                 return _dht22States[pin].Temperature;
             }
         }
 
-        public DHT22HumiditySensor GetHumiditySensor(byte pin)
+        public Dht22Sensor GetHumiditySensor(byte pin)
         {
-            lock (_syncRoot)
+            lock (_dht22States)
             {
                 if (!_dht22States.ContainsKey(pin))
                 {
@@ -52,12 +51,12 @@ namespace HA4IoT.Hardware.I2C.I2CHardwareBridge
                 }
             }
 
-            return new DHT22HumiditySensor(pin, this);
+            return new Dht22Sensor(pin, DHT22SensorKind.Humidity, this);
         }
 
         public float GetHumidity(byte pin)
         {
-            lock (_syncRoot)
+            lock (_dht22States)
             {
                 return _dht22States[pin].Humidity;
             }
@@ -65,12 +64,13 @@ namespace HA4IoT.Hardware.I2C.I2CHardwareBridge
 
         private void FetchValues()
         {
-            lock (_syncRoot)
+            lock (_dht22States)
             {
                 foreach (var sensor in _dht22States)
                 {
                     float temperature;
                     float humidity;
+
                     if (TryFetchValues(sensor.Key, out temperature, out humidity))
                     {
                         sensor.Value.Temperature = temperature;
@@ -87,7 +87,7 @@ namespace HA4IoT.Hardware.I2C.I2CHardwareBridge
             temperature = 0;
             humidity = 0;
 
-            var command = new ReadDHT22SensorCommand().WithPin((byte)pin);
+            var command = new ReadDHT22SensorCommand((byte)pin);
             _i2CHardwareBridge.ExecuteCommand(command);
 
             if (command.Response == null || !command.Response.Succeeded)

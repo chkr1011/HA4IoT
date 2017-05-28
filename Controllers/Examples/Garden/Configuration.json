@@ -1,0 +1,77 @@
+{
+  "HealthServiceConfiguration": {
+    "StatusLed": {
+      "Gpio": 22,
+      "IsInverted": true
+    }
+  },
+
+  "HttpServerService": {
+    "Port": 80
+  },
+
+  "ScriptingService": {
+    "StartupScripts": [
+      {
+        "Name": "Startup.lua",
+        "EntryFunction": null
+      }
+    ]
+  },
+
+  "DeviceRegistryService": {
+    "Devices": {
+      "HSRT16": {
+        "Driver": {
+          "Type": "CCTools.HSRT16",
+          "Parameters": {
+            "Address": 32
+          }
+        }
+      }
+    }
+  },
+
+  "AreaRegistryService": {
+    "Areas": {
+      "Garden": {
+        "Components": {
+          "Garden.SocketPavillion": {
+            "Type": "Socket",
+            "Adapter": {
+              "Type": "CCTools.Output",
+              "Parameters": {
+                "DeviceId": "HSRT16",
+                "Port": 10,
+                "IsInverted": false
+              }
+            }
+          },
+          "Garden.Button": {
+            "Type": "Button",
+            "Adapter": {
+              "Type": "Gpio.Input",
+              "Parameters": {
+                "Gpio": 4,
+                "PullMode": "None",
+                "MonitoringMode": "Interrupt",
+                "IsInverted": true
+              }
+            }
+          },
+          "Garden.LampRearArea": {
+            "Type": "Lamp",
+            "Adapter": {
+              "Type": "CCTools.Output",
+              "Parameters": {
+                "DeviceId": "HSRT16",
+                "Port": 11
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+}

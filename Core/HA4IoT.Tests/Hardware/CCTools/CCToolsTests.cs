@@ -1,6 +1,5 @@
 ﻿using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.I2C;
-using HA4IoT.Devices;
 using HA4IoT.Hardware.CCTools.Devices;
 using HA4IoT.Tests.Mockups;
 using HA4IoT.Tests.Mockups.Services;
@@ -14,11 +13,8 @@ namespace HA4IoT.Tests.Hardware.CCTools
         [TestMethod]
         public void CCTools_Write_HSRel5_State()
         {
-            var c = new TestController();
-
             var i2CBus = new TestI2CBusService();
-            var deviceMessageBrokerService = c.GetInstance<DeviceMessageBrokerService>();
-            var hsrel5 = new HSREL5("Test", new I2CSlaveAddress(66), i2CBus, deviceMessageBrokerService, new TestLogger());
+            var hsrel5 = new HSREL5("Test", new I2CSlaveAddress(66), i2CBus, new TestLogger());
             hsrel5[HSREL5Pin.Relay0].Write(BinaryState.High);
 
             Assert.AreEqual(new I2CSlaveAddress(66), i2CBus.LastUsedI2CSlaveAddress);
@@ -46,8 +42,7 @@ namespace HA4IoT.Tests.Hardware.CCTools
             var i2CBus = new TestI2CBusService();
             i2CBus.BufferForNextRead = new byte[] { 255, 255 };
 
-            var deviceMessageBrokerService = new TestDeviceMessageBrokerService();
-            var hspe16 = new HSPE16InputOnly("Test", new I2CSlaveAddress(32), i2CBus, deviceMessageBrokerService, new TestLogger());
+            var hspe16 = new HSPE16InputOnly("Test", new I2CSlaveAddress(32), i2CBus, new TestLogger());
 
             hspe16.FetchState();
 

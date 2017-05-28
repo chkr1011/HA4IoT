@@ -25,7 +25,7 @@ namespace HA4IoT.Simulator
             {
                 ConfigurationType = typeof(Configuration),
                 ContainerConfigurator = new ContainerConfigurator(this),
-                HttpServerPort = 1025
+                //HttpServerPort = 1025
             };
 
             options.LogAdapters.Add(this);

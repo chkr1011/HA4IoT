@@ -23,6 +23,8 @@ namespace HA4IoT.Hardware.Interrupts
 
         public void AddCallback(Action callback)
         {
+            if (callback == null) throw new ArgumentNullException(nameof(callback));
+
             lock (_callbacks)
             {
                 _callbacks.Add(callback);
@@ -31,29 +33,32 @@ namespace HA4IoT.Hardware.Interrupts
 
         private void HandleInterrupt(object sender, BinaryStateChangedEventArgs e)
         {
-            Task.Run(() => HandleInterrupt());
+            Task.Run(() =>
+            {
+                List<Action> callbacks;
+                lock (_callbacks)
+                {
+                    callbacks = new List<Action>(_callbacks);
+                }
+
+                foreach (var callback in callbacks)
+                {
+                    TryExecuteCallback(callback);
+                }
+            });
+
+            _log.Info("Detected interrupt at monitor '" + _id + "'.");
         }
 
-        private void HandleInterrupt()
+        private void TryExecuteCallback(Action callback)
         {
-            List<Action> actions;
-            lock (_callbacks)
-            {
-                actions = new List<Action>(_callbacks);
-            }
-
             try
             {
-                _log.Info("Detected interrupt at monitor '" + _id + "'.");
-
-                foreach (var action in actions)
-                {
-                    action();
-                }
+                callback();
             }
             catch (Exception exception)
             {
-                _log.Error(exception, $"Error while executing callbacks of interrupt '{_id}'.");
+                _log.Error(exception, $"Failed to executing callback of interrupt '{_id}'.");
             }
         }
     }

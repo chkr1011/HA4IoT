@@ -1,4 +1,4 @@
-﻿using HA4IoT.Contracts.Hardware.Services;
+﻿using HA4IoT.Contracts.Hardware.Mqtt;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 

@@ -8,10 +8,10 @@ using HA4IoT.Hardware.I2C.I2CPortExpanderDrivers;
 
 namespace HA4IoT.Hardware.CCTools.Devices
 {
-    public class HSREL5 : CCToolsDeviceBase, IBinaryOutputController
+    public class HSREL5 : CCToolsDeviceBase
     {
-        public HSREL5(string id, I2CSlaveAddress i2CAddress, II2CBusService i2CBusService, IDeviceMessageBrokerService deviceMessageBrokerService, ILogger log)
-            : base(id, new PCF8574Driver(i2CAddress, i2CBusService), deviceMessageBrokerService, log)
+        public HSREL5(string id, I2CSlaveAddress i2CAddress, II2CBusService i2CBusService, ILogger log)
+            : base(id, new PCF8574Driver(i2CAddress, i2CBusService), log)
         {
             // Ensure that all relays are off by default. The first 5 ports are hardware inverted! The other ports are not inverted but the
             // connected relays are inverted.
@@ -27,7 +27,7 @@ namespace HA4IoT.Hardware.CCTools.Devices
             if (number <= 4)
             {
                 // The 4 relays have an hardware inverter. Invert here again to ensure that high means "on".
-                return ((IBinaryOutput)port).WithInvertedState();
+                return port.WithInvertedState();
             }
 
             return port;

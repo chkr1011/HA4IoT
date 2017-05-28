@@ -1,0 +1,101 @@
+{
+  "DeviceRegistryService": {
+    "Devices": {
+      // Input devices ----------------------------------------
+      "Input0": {
+        "Driver": {
+          "Type": "CCTools.HSPE16_InputOnly",
+          "Parameters": {
+            "Address": 42,
+            "Interrupt": "Default",
+            "PollDurationWarningThreshold": 25
+          }
+        }
+      },
+      "Input1": {
+        "Driver": {
+          "Type": "CCTools.HSPE16_InputOnly",
+          "Parameters": {
+            "Address": 43,
+            "Interrupt": "Default",
+            "PollDurationWarningThreshold": 25
+          }
+        }
+      },
+      "Input2": {
+        "Driver": {
+          "Type": "CCTools.HSPE16_InputOnly",
+          "Parameters": {
+            "Address": 47,
+            "Interrupt": "Default",
+            "PollDurationWarningThreshold": 25
+          }
+        }
+      },
+      "Input3": {
+        "Driver": {
+          "Type": "CCTools.HSPE16_InputOnly",
+          "Parameters": {
+            "Address": 45,
+            "Interrupt": "Default",
+            "PollDurationWarningThreshold": 25
+          }
+        }
+      },
+      "Input4": {
+        "Driver": {
+          "Type": "CCTools.HSPE16_InputOnly",
+          "Parameters": {
+            "Address": 46,
+            "Interrupt": "Default",
+            "PollDurationWarningThreshold": 25
+          }
+        }
+      },
+      "Input5": {
+        "Driver": {
+          "Type": "CCTools.HSPE16_InputOnly",
+          "Parameters": {
+            "Address": 44,
+            "Interrupt": "Default",
+            "PollDurationWarningThreshold": 25
+          }
+        }
+      },
+      // Bridge devices ----------------------------------------
+      "I2CHardwareBridge": {
+        "Driver": {
+          "Type": "I2CHardwareBridge",
+          "Parameters": {
+            "Address": 50
+          }
+        }
+      },
+      "LPD-Adapter1": {
+        "Driver": {
+          "Type": "Outpost.LpdBridge",
+          "Parameters": {
+            "DeviceName": "LPDB1"
+          }
+        }
+      },
+      // Office devices ----------------------------------------
+      "OfficeHSREL8": {
+        "Driver": {
+          "Type": "CCTools.HSRel8",
+          "Parameters": {
+            "Address": 20
+          }
+        }
+      },
+      "UpperFloorAndOfficeHSPE8": {
+        "Driver": {
+          "Type": "CCTools.HSPE8_OutputOnly",
+          "Parameters": {
+            "Address": 37
+          }
+        }
+      }
+    }
+  }
+}

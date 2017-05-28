@@ -1,0 +1,18 @@
+{
+  "RemoteSocketService": {
+    "RemoteSockets": {
+      "OFFICE_0": {
+        "Adapter": {
+          "DeviceId": "LPD-Adapter1"
+        },
+        "CodeGenerator": {
+          "Type": "Dipswitch",
+          "Parameters": {
+            "SystemCode": "AllOn",
+            "UnitCode": "A"
+          }
+        }
+      }
+    }
+  }
+}

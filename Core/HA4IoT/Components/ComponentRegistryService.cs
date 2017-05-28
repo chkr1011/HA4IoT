@@ -46,23 +46,24 @@ namespace HA4IoT.Components
             scriptingService.RegisterScriptProxy(s => new ComponentRegistryScriptProxy(this, s));
         }
 
-        public override void Startup()
-        {
-            lock (_components)
-            {
-                foreach (var actuator in _components.Values)
-                {
-                    try
-                    {
-                        actuator.ExecuteCommand(new ResetCommand());
-                    }
-                    catch (Exception exception)
-                    {
-                        _log.Warning(exception, $"Error while initially reset of state for actuator '{actuator.Id}'.");
-                    }
-                }
-            }
-        }
+        // TODO: DELETE
+        ////public override void Startup()
+        ////{
+        ////    lock (_components)
+        ////    {
+        ////        foreach (var actuator in _components.Values)
+        ////        {
+        ////            try
+        ////            {
+        ////                actuator.ExecuteCommand(new ResetCommand());
+        ////            }
+        ////            catch (Exception exception)
+        ////            {
+        ////                _log.Warning(exception, $"Error while initially reset of state for actuator '{actuator.Id}'.");
+        ////            }
+        ////        }
+        ////    }
+        ////}
 
         public void RegisterComponent(IComponent component)
         {

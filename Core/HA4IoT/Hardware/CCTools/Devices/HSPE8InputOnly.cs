@@ -1,17 +1,16 @@
 ﻿using System;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Hardware.DeviceMessaging;
 using HA4IoT.Contracts.Hardware.I2C;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Hardware.I2C.I2CPortExpanderDrivers;
 
 namespace HA4IoT.Hardware.CCTools.Devices
 {
-    public class HSPE8InputOnly : CCToolsInputDeviceBase, IBinaryInputController
+    public class HSPE8InputOnly : CCToolsInputDeviceBase
     {
-        public HSPE8InputOnly(string id, I2CSlaveAddress address, II2CBusService i2CBusService, IDeviceMessageBrokerService deviceMessageBrokerService, ILogger log)
-            : base(id, new PCF8574Driver(address, i2CBusService), deviceMessageBrokerService, log)
+        public HSPE8InputOnly(string id, I2CSlaveAddress address, II2CBusService i2CBusService, ILogger log)
+            : base(id, new PCF8574Driver(address, i2CBusService), log)
         {
             FetchState();
         }

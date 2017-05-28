@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using HA4IoT.Contracts.Devices;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Hardware.DeviceMessaging;
 using HA4IoT.Contracts.Hardware.I2C;
 using HA4IoT.Contracts.Logging;
 
@@ -13,27 +14,26 @@ namespace HA4IoT.Hardware.CCTools
         private readonly object _syncRoot = new object();
         private readonly Dictionary<int, CCToolsDevicePort> _openPorts = new Dictionary<int, CCToolsDevicePort>();
         private readonly I2CIPortExpanderDriver _portExpanderDriver;
-        private readonly IDeviceMessageBrokerService _deviceMessageBrokerService;
         private readonly ILogger _log;
 
         private readonly byte[] _committedState;
         private readonly byte[] _state;
+
         private byte[] _peekedState;
 
-        protected CCToolsDeviceBase(string id, I2CIPortExpanderDriver portExpanderDriver, IDeviceMessageBrokerService deviceMessageBrokerService, ILogger log)
+        protected CCToolsDeviceBase(string id, I2CIPortExpanderDriver portExpanderDriver, ILogger log)
         {
             Id = id ?? throw new ArgumentNullException(nameof(id));
             _log = log ?? throw new ArgumentNullException(nameof(log));
             _portExpanderDriver = portExpanderDriver ?? throw new ArgumentNullException(nameof(portExpanderDriver));
-            _deviceMessageBrokerService = deviceMessageBrokerService ?? throw new ArgumentNullException(nameof(deviceMessageBrokerService));
-
-            _committedState = new byte[portExpanderDriver.StateSize];
+            
             _state = new byte[portExpanderDriver.StateSize];
+            _committedState = new byte[portExpanderDriver.StateSize];
         }
 
         public string Id { get; }
 
-        public byte[] GetState()
+        protected byte[] GetState()
         {
             lock (_syncRoot)
             {
@@ -41,13 +41,13 @@ namespace HA4IoT.Hardware.CCTools
             }
         }
 
-        public void SetState(byte[] state)
+        protected void SetState(byte[] state)
         {
             if (state == null) throw new ArgumentNullException(nameof(state));
 
             lock (_syncRoot)
             {
-                Array.Copy(state, _state, state.Length);
+                Buffer.BlockCopy(state, 0, _state, 0, state.Length);
             }
         }
 
@@ -76,9 +76,9 @@ namespace HA4IoT.Hardware.CCTools
                 }
 
                 _portExpanderDriver.Write(_state);
-                Array.Copy(_state, _committedState, _state.Length);
+                Buffer.BlockCopy(_state, 0,  _committedState, 0, _state.Length);
 
-                _log.Verbose($"Board '{Id}' committed state '{BitConverter.ToString(_state)}'.");
+                _log.Verbose("Board '" + Id + "' committed state '" + BitConverter.ToString(_state) + "'.");
             }
         }
 
@@ -109,31 +109,31 @@ namespace HA4IoT.Hardware.CCTools
             {
                 if (_peekedState == null)
                 {
-                    PeekState();
+                    _peekedState = _portExpanderDriver.Read();
                 }
 
                 var newState = _peekedState;
                 _peekedState = null;
 
-                if (newState.SequenceEqual(_committedState))
+                if (DataHasChanged(_state, newState))
                 {
                     return;
                 }
 
                 var oldState = GetState();
-
-                Array.Copy(newState, _state, _state.Length);
-                Array.Copy(newState, _committedState, _committedState.Length);
-
-                var statesText = $"{BitConverter.ToString(oldState)},{BitConverter.ToString(newState)}";
-                _log.Info($"'{Id}' fetched different state ({statesText})");
-
+                
+                Buffer.BlockCopy(newState, 0, _state, 0, newState.Length);
+                Buffer.BlockCopy(newState, 0, _committedState, 0, newState.Length);
+                
+                var oldStateBits = new BitArray(oldState);
+                var newStateBits = new BitArray(newState);
                 foreach (var openPort in _openPorts)
                 {
-                    openPort.Value.OnBoardStateChanged(oldState, newState);
+                    openPort.Value.OnBoardStateChanged(oldStateBits, newStateBits);
                 }
 
-                _deviceMessageBrokerService.PublishDeviceMessage(Id, "StateChanged", statesText);
+                var statesText = BitConverter.ToString(oldState) + "," + BitConverter.ToString(newState);
+                _log.Info("'" + Id + "' fetched different state (" + statesText + ")");
             }
         }
 
@@ -151,6 +151,24 @@ namespace HA4IoT.Hardware.CCTools
             {
                 _state.SetBit(pinNumber, state == BinaryState.High);
             }
+        }
+
+        private static bool DataHasChanged(byte[] data1, byte[] data2)
+        {
+            if (data1.Length != data2.Length)
+            {
+                return true;
+            }
+
+            for (var i = 0; i < data1.Length; i++)
+            {
+                if (data1[i] != data2[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

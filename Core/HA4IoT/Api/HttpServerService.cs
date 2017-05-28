@@ -2,8 +2,10 @@
 using System.IO;
 using System.Text;
 using Windows.Web.Http;
+using HA4IoT.Api.Configuration;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
@@ -16,7 +18,6 @@ namespace HA4IoT.Api
 {
     public class HttpServerService : ServiceBase, IApiAdapter
     {
-        private readonly IApiDispatcherService _apiDispatcherService;
         private readonly HttpServer _httpServer;
         private readonly ILogger _log;
 
@@ -24,22 +25,24 @@ namespace HA4IoT.Api
         private const string AppBaseUri = "/app/";
         private const string ManagementAppBaseUri = "/managementApp/";
 
-        public HttpServerService(IApiDispatcherService apiDispatcherService, HttpServer httpServer, ILogService logService)
+        public HttpServerService(IConfigurationService configurationService, IApiDispatcherService apiDispatcherService, ILogService logService)
         {
-            _apiDispatcherService = apiDispatcherService ?? throw new ArgumentNullException(nameof(apiDispatcherService));
-            _httpServer = httpServer ?? throw new ArgumentNullException(nameof(httpServer));
+            if (configurationService == null) throw new ArgumentNullException(nameof(configurationService));
+            if (apiDispatcherService == null) throw new ArgumentNullException(nameof(apiDispatcherService));
             _log = logService.CreatePublisher(nameof(HttpServerService)) ?? throw new ArgumentNullException(nameof(logService));
-        }
 
-        public event EventHandler<ApiRequestReceivedEventArgs> RequestReceived;
+            _httpServer = new HttpServer(logService);
 
-        public override void Startup()
-        {
             _httpServer.HttpRequestReceived += OnHttpRequestReceived;
             _httpServer.WebSocketConnected += AttachWebSocket;
 
-            _apiDispatcherService.RegisterAdapter(this);
+            var configuration = configurationService.GetConfiguration<HttpServerServiceConfiguration>("HttpServerService");
+            _httpServer.BindAsync(configuration.Port).GetAwaiter().GetResult();
+
+            apiDispatcherService.RegisterAdapter(this);
         }
+
+        public event EventHandler<ApiRequestReceivedEventArgs> RequestReceived;
 
         public void NotifyStateChanged(IComponent component)
         {

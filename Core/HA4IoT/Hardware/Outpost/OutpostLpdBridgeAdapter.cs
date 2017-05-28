@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Text;
 using HA4IoT.Contracts.Hardware.DeviceMessaging;
+using HA4IoT.Contracts.Hardware.Mqtt;
 using HA4IoT.Contracts.Hardware.Outpost;
-using HA4IoT.Contracts.Hardware.Services;
-using HA4IoT.Hardware.RemoteSwitch;
-using HA4IoT.Hardware.RemoteSwitch.Codes;
+using HA4IoT.Contracts.Hardware.RemoteSockets;
+using HA4IoT.Contracts.Hardware.RemoteSockets.Adapters;
+using HA4IoT.Contracts.Hardware.RemoteSockets.Codes;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Hardware.Outpost
@@ -14,13 +15,16 @@ namespace HA4IoT.Hardware.Outpost
         private readonly string _deviceName;
         private readonly IDeviceMessageBrokerService _deviceMessageBroker;
 
-        public OutpostLpdBridgeAdapter(string deviceName, IDeviceMessageBrokerService deviceMessageBroker)
+        public OutpostLpdBridgeAdapter(string id, string deviceName, IDeviceMessageBrokerService deviceMessageBroker)
         {
             _deviceName = deviceName ?? throw new ArgumentNullException(nameof(deviceName));
             _deviceMessageBroker = deviceMessageBroker ?? throw new ArgumentNullException(nameof(deviceMessageBroker));
 
+            Id = id ?? throw new ArgumentNullException(nameof(id));
             _deviceMessageBroker.Subscribe(OutpostTopicBuilder.BuildNotificationTopic(deviceName, "LPD/Received"), OnLpdCodeReceived);
         }
+
+        public string Id { get; }
 
         public event EventHandler<Ldp433MhzCodeReceivedEventArgs> CodeReceived;
 

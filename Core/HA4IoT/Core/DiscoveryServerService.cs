@@ -24,10 +24,6 @@ namespace HA4IoT.Core
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
 
             _socket.MessageReceived += SendResponseAsync;
-        }
-
-        public override void Startup()
-        {
             _socket.BindServiceNameAsync(Port.ToString()).GetAwaiter().GetResult();
         }
 

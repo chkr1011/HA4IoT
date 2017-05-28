@@ -6,11 +6,12 @@ using HA4IoT.Components;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Hardware.RemoteSockets;
 using HA4IoT.Contracts.Messaging;
 using HA4IoT.Hardware.CCTools;
 using HA4IoT.Hardware.CCTools.Devices;
 using HA4IoT.Hardware.Outpost;
-using HA4IoT.Hardware.RemoteSwitch;
+using HA4IoT.Hardware.RemoteSockets;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 
@@ -21,8 +22,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         private readonly OutpostDeviceService _outpostDeviceService;
         private readonly IDeviceRegistryService _deviceService;
         private readonly IAreaRegistryService _areaService;
-        private readonly CCToolsDeviceService _ccToolsBoardService;
-        private readonly RemoteSocketService _remoteSocketService;
+        private readonly IRemoteSocketService _remoteSocketService;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
         private readonly IMessageBrokerService _messageBroker;
@@ -63,7 +63,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             IAreaRegistryService areaService,
             OutpostDeviceService outpostDeviceService,
             CCToolsDeviceService ccToolsBoardService,
-            RemoteSocketService remoteSocketService,
+            IRemoteSocketService remoteSocketService,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory,
             IMessageBrokerService messageBroker)
@@ -72,7 +72,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             _outpostDeviceService = outpostDeviceService ?? throw new ArgumentNullException(nameof(outpostDeviceService));
             _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
             _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
-            _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
+            //_ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
             _remoteSocketService = remoteSocketService ?? throw new ArgumentNullException(nameof(remoteSocketService));
             _actuatorFactory = actuatorFactory ?? throw new ArgumentNullException(nameof(actuatorFactory));
             _sensorFactory = sensorFactory ?? throw new ArgumentNullException(nameof(sensorFactory));
@@ -80,11 +80,15 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
         public void Apply()
         {
-            var hsrel8 = (HSREL8)_ccToolsBoardService.RegisterDevice(CCToolsDevice.HSRel8, InstalledDevice.OfficeHSREL8.ToString(), 20);
-            var hspe8 = (HSPE8OutputOnly)_ccToolsBoardService.RegisterDevice(CCToolsDevice.HSPE8_OutputOnly, InstalledDevice.UpperFloorAndOfficeHSPE8.ToString(), 37);
-
             var input4 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input4.ToString());
             var input5 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input5.ToString());
+
+            var hsrel8 = _deviceService.GetDevice<HSREL8>(InstalledDevice.OfficeHSREL8.ToString());
+            var hspe8 = _deviceService.GetDevice<HSPE8OutputOnly>(InstalledDevice.UpperFloorAndOfficeHSPE8.ToString());
+
+            //var hsrel8 = (HSREL8)_ccToolsBoardService.RegisterDevice(CCToolsDeviceType.HSRel8, InstalledDevice.OfficeHSREL8.ToString(), 20);
+            //var hspe8 = (HSPE8OutputOnly)_ccToolsBoardService.RegisterDevice(CCToolsDeviceType.HSPE8_OutputOnly, InstalledDevice.UpperFloorAndOfficeHSPE8.ToString(), 37);
+
 
             var area = _areaService.RegisterArea(Room.Office);
 
@@ -100,10 +104,10 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             _sensorFactory.RegisterMotionDetector(area, Office.MotionDetector, input4.GetInput(13));
 
-            _sensorFactory.RegisterTemperatureSensor(area, Office.TemperatureSensor, _outpostDeviceService.GetDhtTemperatureSensorAdapter("OFFICETHSENSOR"));
-            _sensorFactory.RegisterHumiditySensor(area, Office.HumiditySensor, _outpostDeviceService.GetDhtHumiditySensorAdapter("OFFICETHSENSOR"));
+            _sensorFactory.RegisterTemperatureSensor(area, Office.TemperatureSensor, _outpostDeviceService.CreateDhtTemperatureSensorAdapter("OFFICETHSENSOR"));
+            _sensorFactory.RegisterHumiditySensor(area, Office.HumiditySensor, _outpostDeviceService.CreateDhtHumiditySensorAdapter("OFFICETHSENSOR"));
 
-            _actuatorFactory.RegisterLamp(area, Office.RgbLight, _outpostDeviceService.GetRgbStripAdapter("RGBSO1"));
+            _actuatorFactory.RegisterLamp(area, Office.RgbLight, _outpostDeviceService.CreateRgbStripAdapter("RGBSO1"));
 
             _actuatorFactory.RegisterSocket(area, Office.SocketFrontLeft, hsrel8.GetOutput(0));
             _actuatorFactory.RegisterSocket(area, Office.SocketFrontRight, hsrel8.GetOutput(6));
@@ -144,7 +148,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
                 .Attach(() => area.GetComponent(Office.CombinedCeilingLights).TrySetState("CouchOnly"));
         }
 
-        private void SetupLight(StateMachine light, HSREL8 hsrel8, HSPE8OutputOnly hspe8)
+        private static void SetupLight(StateMachine light, HSREL8 hsrel8, HSPE8OutputOnly hspe8)
         {
             // Front lights (left, middle, right)
             var fl = hspe8[HSPE8Pin.GPIO0].WithInvertedState();

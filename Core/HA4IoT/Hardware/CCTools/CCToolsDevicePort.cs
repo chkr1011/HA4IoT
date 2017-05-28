@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Threading.Tasks;
 using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Hardware.CCTools
@@ -32,7 +33,7 @@ namespace HA4IoT.Hardware.CCTools
             }
         }
 
-        public void OnBoardStateChanged(byte[] oldState, byte[] newState)
+        public void OnBoardStateChanged(BitArray oldState, BitArray newState)
         {
             var stateChangedEvent = StateChanged;
             if (stateChangedEvent == null)
@@ -40,8 +41,8 @@ namespace HA4IoT.Hardware.CCTools
                 return;
             }
 
-            var oldPinState = new BitArray(oldState).Get(_id);
-            var newPinState = new BitArray(newState).Get(_id);
+            var oldPinState = oldState.Get(_id);
+            var newPinState = newState.Get(_id);
 
             if (oldPinState == newPinState)
             {
@@ -55,7 +56,8 @@ namespace HA4IoT.Hardware.CCTools
                 oldBinaryState = BinaryState.Low;
             }
 
-            stateChangedEvent.Invoke(this, new BinaryStateChangedEventArgs(oldBinaryState, newBinaryState));
+            // TODO: Create a message bus message instead.
+            Task.Run(() => stateChangedEvent.Invoke(this, new BinaryStateChangedEventArgs(oldBinaryState, newBinaryState)));
         }
     }
 }

@@ -1,19 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
+using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Hardware.Interrupts;
+using HA4IoT.Contracts.Hardware.Interrupts.Configuration;
+using HA4IoT.Contracts.Hardware.RaspberryPi;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Hardware.Interrupts
 {
-    public class InterruptMonitorService : ServiceBase
+    public class InterruptMonitorService : ServiceBase, IInterruptMonitorService
     {
         private readonly Dictionary<string, InterruptMonitor> _interruptMonitors = new Dictionary<string, InterruptMonitor>();
-        private readonly ILogService _logService;
 
-        public InterruptMonitorService(ILogService logService)
+        private readonly IGpioService _gpioService;
+        private readonly IConfigurationService _configurationService;
+        private readonly ILogService _logService;
+        private readonly ILogger _log;
+
+        public InterruptMonitorService(IConfigurationService configurationService, IGpioService gpioService, ILogService logService)
         {
+            _gpioService = gpioService ?? throw new ArgumentNullException(nameof(gpioService));
+            _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
             _logService = logService ?? throw new ArgumentNullException(nameof(logService));
+            _log = logService.CreatePublisher(nameof(InterruptMonitorService));
+        }
+
+        public void RegisterInterrupts()
+        {
+            var configuration = _configurationService.GetConfiguration<InterruptMonitorServiceConfiguration>("InterruptMonitorService");
+            foreach (var interruptConfiguration in configuration.Interrupts)
+            {
+                var gpio = _gpioService.GetInput(interruptConfiguration.Value.Gpio, interruptConfiguration.Value.PullMode, interruptConfiguration.Value.MonitoringMode);
+                if (interruptConfiguration.Value.IsInverted)
+                {
+                    gpio = gpio.WithInvertedState();
+                }
+
+                RegisterInterrupt(interruptConfiguration.Key, gpio);
+            }
         }
 
         public void RegisterInterrupt(string id, IBinaryInput input)
@@ -26,6 +52,8 @@ namespace HA4IoT.Hardware.Interrupts
             {
                 _interruptMonitors.Add(id, interruptMonitor);
             }
+
+            _log.Verbose($"Registered interrupt '{id}'.");
         }
 
         public void RegisterCallback(string interruptMonitorId, Action callback)

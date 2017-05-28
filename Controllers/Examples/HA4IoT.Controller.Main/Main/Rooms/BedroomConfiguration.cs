@@ -99,8 +99,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
         public void Apply()
         {
-            var hsrel5 = (HSREL5)_ccToolsBoardService.RegisterDevice(CCToolsDevice.HSRel5, InstalledDevice.BedroomHSREL5.ToString(), 38);
-            var hsrel8 = (HSREL8)_ccToolsBoardService.RegisterDevice(CCToolsDevice.HSRel8, InstalledDevice.BedroomHSREL8.ToString(), 21);
+            var hsrel5 = (HSREL5)_ccToolsBoardService.RegisterDevice(CCToolsDeviceType.HSRel5, InstalledDevice.BedroomHSREL5.ToString(), 38);
+            var hsrel8 = (HSREL8)_ccToolsBoardService.RegisterDevice(CCToolsDeviceType.HSRel8, InstalledDevice.BedroomHSREL8.ToString(), 21);
             var input5 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input5.ToString());
             var input4 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input4.ToString());
             var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();

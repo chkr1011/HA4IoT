@@ -2,14 +2,14 @@
 using System.Threading;
 using Windows.Devices.Gpio;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Hardware.RaspberryPi;
 using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Hardware.RaspberryPi
 {
     public sealed class GpioInputPort : IBinaryInput, IDisposable
     {
-        private const int PollInterval = 15;
-        private const long DebounceTimeoutTicks = 1000;
+        private const int PollInterval = 15; // TODO: Set from constructor. Consider two classes with "IGpioMonitoringStrategy".
 
         private readonly GpioPin _pin;
         // ReSharper disable once NotAccessedField.Local
@@ -17,7 +17,7 @@ namespace HA4IoT.Hardware.RaspberryPi
 
         private BinaryState _latestState;
 
-        public GpioInputPort(GpioPin pin, GpioInputMonitoringMode mode = GpioInputMonitoringMode.Interrupt, GpioPullMode pullMode = GpioPullMode.None)
+        public GpioInputPort(GpioPin pin, GpioInputMonitoringMode mode, GpioPullMode pullMode)
         {
             _pin = pin ?? throw new ArgumentNullException(nameof(pin));
             if (pullMode == GpioPullMode.High)
@@ -39,7 +39,7 @@ namespace HA4IoT.Hardware.RaspberryPi
             }
             else if (mode == GpioInputMonitoringMode.Interrupt)
             {
-                //_pin.DebounceTimeout = TimeSpan.FromTicks(DebounceTimeoutTicks);
+                //_pin.DebounceTimeout = TimeSpan.FromTicks(DebounceTimeoutTicks); // TODO: Set from constructor.
                 _pin.ValueChanged += HandleInterrupt;
             }
 

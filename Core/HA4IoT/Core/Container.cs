@@ -10,25 +10,28 @@ using HA4IoT.Areas;
 using HA4IoT.Automations;
 using HA4IoT.Backup;
 using HA4IoT.Components;
+using HA4IoT.Configuration;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Backup;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Environment;
 using HA4IoT.Contracts.ExternalServices.TelegramBot;
 using HA4IoT.Contracts.ExternalServices.Twitter;
 using HA4IoT.Contracts.Hardware.DeviceMessaging;
-using HA4IoT.Contracts.Hardware.Services;
+using HA4IoT.Contracts.Hardware.Interrupts;
+using HA4IoT.Contracts.Hardware.RaspberryPi;
+using HA4IoT.Contracts.Hardware.RemoteSockets;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Contracts.PersonalAgent;
 using HA4IoT.Contracts.Resources;
 using HA4IoT.Contracts.Scripting;
-using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Settings;
 using HA4IoT.Contracts.Storage;
 using HA4IoT.Devices;
@@ -41,12 +44,11 @@ using HA4IoT.Hardware.I2C;
 using HA4IoT.Hardware.Interrupts;
 using HA4IoT.Hardware.Outpost;
 using HA4IoT.Hardware.RaspberryPi;
-using HA4IoT.Hardware.RemoteSwitch;
+using HA4IoT.Hardware.RemoteSockets;
 using HA4IoT.Hardware.Sonoff;
 using HA4IoT.Health;
 using HA4IoT.Logging;
 using HA4IoT.Messaging;
-using HA4IoT.Net.Http;
 using HA4IoT.Notifications;
 using HA4IoT.PersonalAgent;
 using HA4IoT.Resources;
@@ -68,6 +70,8 @@ namespace HA4IoT.Core
         public Container(ControllerOptions options)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
+
+            _container.RegisterSingleton(options);
         }
 
         public void Verify()
@@ -147,6 +151,9 @@ namespace HA4IoT.Core
             _container.RegisterSingleton<ISchedulerService, SchedulerService>();
             _container.RegisterSingleton<DiscoveryServerService>();
 
+            _container.RegisterSingleton<IConfigurationService, ConfigurationService>();
+            _container.RegisterInitializer<ConfigurationService>(s => s.Initialize());
+
             _container.RegisterSingleton<IStorageService, StorageService>();
             _container.RegisterSingleton<ITimerService, TimerService>();
             _container.RegisterSingleton<ISystemEventsService, SystemEventsService>();
@@ -157,7 +164,6 @@ namespace HA4IoT.Core
             _container.RegisterInitializer<ResourceService>(s => s.Initialize());
 
             _container.RegisterSingleton<IApiDispatcherService, ApiDispatcherService>();
-            _container.RegisterSingleton<HttpServer>();
             _container.RegisterSingleton<HttpServerService>();
             _container.RegisterSingleton<AzureCloudService>();
             _container.RegisterSingleton<CloudConnectorService>();
@@ -170,13 +176,15 @@ namespace HA4IoT.Core
 
             _container.RegisterSingleton<II2CBusService, I2CBusService>();
             _container.RegisterSingleton<IGpioService, GpioService>();
+            _container.RegisterSingleton<IMessageBrokerService, MessageBrokerService>();
+            _container.RegisterSingleton<IInterruptMonitorService, InterruptMonitorService>();
+
             _container.RegisterSingleton<IDeviceMessageBrokerService, DeviceMessageBrokerService>();
             _container.RegisterInitializer<DeviceMessageBrokerService>(s => s.Initialize());
-            _container.RegisterSingleton<IMessageBrokerService, MessageBrokerService>();
-            _container.RegisterSingleton<InterruptMonitorService>(); // TODO: Add interface for testing etc.
+
+            _container.RegisterSingleton<IRemoteSocketService, RemoteSocketService>();
 
             _container.RegisterSingleton<CCToolsDeviceService>();
-            _container.RegisterSingleton<RemoteSocketService>();
             _container.RegisterSingleton<SonoffDeviceService>();
             _container.RegisterSingleton<OutpostDeviceService>();
 

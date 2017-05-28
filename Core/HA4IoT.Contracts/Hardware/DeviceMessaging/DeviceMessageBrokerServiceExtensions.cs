@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
+using HA4IoT.Contracts.Hardware.Mqtt;
 using HA4IoT.Contracts.Hardware.Outpost;
-using HA4IoT.Contracts.Hardware.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

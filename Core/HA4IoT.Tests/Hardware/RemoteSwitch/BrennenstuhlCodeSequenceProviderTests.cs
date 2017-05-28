@@ -1,5 +1,6 @@
-﻿using HA4IoT.Hardware.RemoteSwitch;
-using HA4IoT.Hardware.RemoteSwitch.Codes.Protocols;
+﻿using HA4IoT.Contracts.Hardware.RemoteSockets.Protocols;
+using HA4IoT.Hardware.RemoteSockets;
+using HA4IoT.Hardware.RemoteSockets.Protocols;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace HA4IoT.Tests.Hardware.RemoteSwitch

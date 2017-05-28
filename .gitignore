@@ -22,6 +22,8 @@ HA4IoT.sdf
 # Ignore NuGet Packages
 *.nupkg
 
+App/LocalDeployInfo.dat
+
 # Ignore the packages folder
 **/packages/*
 
@@ -34,4 +36,3 @@ HA4IoT.sdf
 # Ignore other intermediate files that NuGet might create
 project.lock.json
 *.nuget.props
-App/LocalDeployInfo.dat

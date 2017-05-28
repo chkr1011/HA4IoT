@@ -2,17 +2,10 @@
 {
     public class ReadDHT22SensorCommandResponse
     {
-        public ReadDHT22SensorCommandResponse(bool succeeded, float temperature, float humidity)
-        {
-            Succeeded = succeeded;
-            Temperature = temperature;
-            Humidity = humidity;
-        }
+        public bool Succeeded { get; set; }
 
-        public bool Succeeded { get; }
+        public float Temperature { get; set; }
 
-        public float Temperature { get; }
-
-        public float Humidity { get; }
+        public float Humidity { get; set; }
     }
 }

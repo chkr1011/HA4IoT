@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Hardware.I2C
 {
-    public class I2CTransferResult : II2CTransferResult
+    public struct I2CTransferResult : II2CTransferResult
     {
         public I2CTransferResult(I2CTransferStatus status, int bytesTransferred)
         {

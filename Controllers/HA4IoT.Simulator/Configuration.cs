@@ -54,7 +54,7 @@ namespace HA4IoT.Simulator
             area.RegisterComponent(new Lamp("Lamp4", await _mainPage.CreateUIBinaryOutputAdapter("Lamp 4")));
             area.RegisterComponent(new Lamp("Lamp5", await _mainPage.CreateUIBinaryOutputAdapter("Lamp 5")));
 
-            area.RegisterComponent(new Lamp("RGBS1", outpostDeviceService.GetRgbStripAdapter("RGBS1")));
+            area.RegisterComponent(new Lamp("RGBS1", outpostDeviceService.CreateRgbStripAdapter("RGBS1")));
 
             area.RegisterComponent(new Socket("Socket1", await _mainPage.CreateUIBinaryOutputAdapter("Socket 1")));
             area.RegisterComponent(new Socket("Socket2", await _mainPage.CreateUIBinaryOutputAdapter("Socket 2")));
@@ -92,7 +92,8 @@ namespace HA4IoT.Simulator
                 .CreatePressedShortTrigger(messageBroker)
                 .Attach(() => area.GetComponent<ISocket>("Socket_POW_01").TryTogglePowerState());
 
-            area.GetComponent<IButton>("Button6").CreatePressedShortTrigger(messageBroker).Attach(() => scriptingService.TryExecuteScriptCode("return 'Hello World'"));
+            ScriptExecutionResult result;
+            area.GetComponent<IButton>("Button6").CreatePressedShortTrigger(messageBroker).Attach(() => scriptingService.TryExecuteScript("return 'Hello World'", out result));
         }
     }
 }

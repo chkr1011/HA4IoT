@@ -22,13 +22,9 @@ namespace HA4IoT.Api.Cloud.Azure
 
         public AzureCloudService(IApiDispatcherService apiService, ISettingsService settingsService, ILogService logService)
         {
-            if (apiService == null) throw new ArgumentNullException(nameof(apiService));
-            if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
-            if (logService == null) throw new ArgumentNullException(nameof(logService));
-
-            _apiService = apiService;
-            _settingsService = settingsService;
-            _log = logService.CreatePublisher(nameof(AzureCloudService));
+            _apiService = apiService ?? throw new ArgumentNullException(nameof(apiService));
+            _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
+            _log = logService?.CreatePublisher(nameof(AzureCloudService)) ?? throw new ArgumentNullException(nameof(logService));
         }
 
         public event EventHandler<ApiRequestReceivedEventArgs> RequestReceived;

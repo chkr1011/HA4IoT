@@ -9,6 +9,7 @@ namespace HA4IoT.Contracts.Core
             StorageRoot = storageRoot;
             AppRoot = Path.Combine(localStateRoot, "App");
             ManagementAppRoot = Path.Combine(localStateRoot, "ManagementApp");
+            ScriptsRoot = Path.Combine(localStateRoot, "Scripts");
         }
 
         public static string StorageRoot { get; private set; }
@@ -16,5 +17,7 @@ namespace HA4IoT.Contracts.Core
         public static string AppRoot { get; private set; } 
 
         public static string ManagementAppRoot { get; private set; }
+
+        public static string ScriptsRoot { get; private set; }
     }
 }

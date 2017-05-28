@@ -89,9 +89,9 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
         public void Apply()
         {
-            var hsrel5Stairway = (HSREL5)_ccToolsBoardService.RegisterDevice(CCToolsDevice.HSRel5, InstalledDevice.StairwayHSREL5.ToString(), 60);
+            var hsrel5Stairway = (HSREL5)_ccToolsBoardService.RegisterDevice(CCToolsDeviceType.HSRel5, InstalledDevice.StairwayHSREL5.ToString(), 60);
             var hspe8UpperFloor = _deviceService.GetDevice<HSPE8OutputOnly>(InstalledDevice.UpperFloorAndOfficeHSPE8.ToString());
-            var hspe16FloorAndLowerBathroom = (HSPE16OutputOnly)_ccToolsBoardService.RegisterDevice(CCToolsDevice.HSPE16_OutputOnly, InstalledDevice.LowerFloorAndLowerBathroomHSPE16.ToString(), 17);
+            var hspe16FloorAndLowerBathroom = (HSPE16OutputOnly)_ccToolsBoardService.RegisterDevice(CCToolsDeviceType.HSPE16_OutputOnly, InstalledDevice.LowerFloorAndLowerBathroomHSPE16.ToString(), 17);
 
             var input1 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input1.ToString());
             var input2 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input2.ToString());

@@ -16,11 +16,5 @@ namespace HA4IoT.Hardware.CCTools
 
         [MoonSharpHidden]
         public string Name => "cctools";
-
-        public void Register(string type, string id, int address)
-        {
-            var deviceType = (CCToolsDevice)Enum.Parse(typeof(CCToolsDevice), type, true);
-            _ccToolsDeviceService.RegisterDevice(deviceType, id, address);
-        }
     }
 }

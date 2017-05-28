@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Hardware.DeviceMessaging;
+using HA4IoT.Contracts.Devices;
 using HA4IoT.Contracts.Hardware.I2C;
+using HA4IoT.Contracts.Hardware.Interrupts;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Scripting;
 using HA4IoT.Contracts.Services;
@@ -15,89 +15,95 @@ namespace HA4IoT.Hardware.CCTools
     {
         private readonly object _syncRoot = new object();
         private readonly II2CBusService _i2CBusService;
-        private readonly IDeviceMessageBrokerService _deviceMessageBrokerService;
-        private readonly IDeviceRegistryService _deviceService;
+        private readonly IDeviceRegistryService _deviceRegistryService;
         private readonly ILogger _log;
 
         public CCToolsDeviceService(
-            IDeviceRegistryService deviceService, 
-            II2CBusService i2CBusService, 
-            IDeviceMessageBrokerService deviceMessageBrokerService,
+            IDeviceRegistryService deviceRegistryService,
+            II2CBusService i2CBusService,
+            IInterruptMonitorService interruptMonitorService,
             IScriptingService scriptingService,
             ILogService log)
         {
             if (scriptingService == null) throw new ArgumentNullException(nameof(scriptingService));
-            _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
+            _deviceRegistryService = deviceRegistryService ?? throw new ArgumentNullException(nameof(deviceRegistryService));
             _i2CBusService = i2CBusService ?? throw new ArgumentNullException(nameof(i2CBusService));
-            _deviceMessageBrokerService = deviceMessageBrokerService;
             _log = log?.CreatePublisher(nameof(CCToolsDeviceService)) ?? throw new ArgumentNullException(nameof(log));
+
             scriptingService.RegisterScriptProxy(s => new CCToolsDeviceScriptProxy(this));
+            deviceRegistryService.RegisterDeviceFactory(new CCToolsDeviceFactory(this, interruptMonitorService));
         }
 
-        public IDevice RegisterDevice(CCToolsDevice device, string id, int address)
+        public IDevice RegisterDevice(CCToolsDeviceType type, string id, int address)
+        {
+            var device = CreateDevice(type, id, address);
+            _deviceRegistryService.RegisterDevice(device);
+            return device;
+        }
+
+        public IDevice CreateDevice(CCToolsDeviceType type, string id, int address)
         {
             var i2CSlaveAddress = new I2CSlaveAddress(address);
             IDevice deviceInstance;
-            switch (device)
+            switch (type)
             {
-                case CCToolsDevice.HSPE16_InputOnly:
+                case CCToolsDeviceType.HSPE16_InputOnly:
                     {
-                        deviceInstance = new HSPE16InputOnly(id, i2CSlaveAddress, _i2CBusService, _deviceMessageBrokerService, _log)
+                        deviceInstance = new HSPE16InputOnly(id, i2CSlaveAddress, _i2CBusService, _log)
                         {
                             AutomaticallyFetchState = true
                         };
                         break;
                     }
 
-                case CCToolsDevice.HSPE16_OutputOnly:
+                case CCToolsDeviceType.HSPE16_OutputOnly:
                     {
-                        deviceInstance = new HSPE16OutputOnly(id, i2CSlaveAddress, _i2CBusService, _deviceMessageBrokerService, _log);
+                        deviceInstance = new HSPE16OutputOnly(id, i2CSlaveAddress, _i2CBusService, _log);
                         break;
                     }
 
-                case CCToolsDevice.HSPE8_InputOnly:
+                case CCToolsDeviceType.HSPE8_InputOnly:
                     {
-                        deviceInstance = new HSPE8InputOnly(id, i2CSlaveAddress, _i2CBusService, _deviceMessageBrokerService, _log)
+                        deviceInstance = new HSPE8InputOnly(id, i2CSlaveAddress, _i2CBusService, _log)
                         {
                             AutomaticallyFetchState = true
                         };
                         break;
                     }
 
-                case CCToolsDevice.HSPE8_OutputOnly:
+                case CCToolsDeviceType.HSPE8_OutputOnly:
                     {
-                        deviceInstance = new HSPE8OutputOnly(id, i2CSlaveAddress, _i2CBusService, _deviceMessageBrokerService, _log);
+                        deviceInstance = new HSPE8OutputOnly(id, i2CSlaveAddress, _i2CBusService, _log);
                         break;
                     }
 
-                case CCToolsDevice.HSRel5:
+                case CCToolsDeviceType.HSRel5:
                     {
-                        deviceInstance = new HSREL5(id, i2CSlaveAddress, _i2CBusService, _deviceMessageBrokerService, _log);
+                        deviceInstance = new HSREL5(id, i2CSlaveAddress, _i2CBusService, _log);
                         break;
                     }
 
-                case CCToolsDevice.HSRel8:
+                case CCToolsDeviceType.HSRel8:
                     {
-                        deviceInstance = new HSREL8(id, i2CSlaveAddress, _i2CBusService, _deviceMessageBrokerService, _log);
+                        deviceInstance = new HSREL8(id, i2CSlaveAddress, _i2CBusService, _log);
                         break;
                     }
 
-                case CCToolsDevice.HSRT16:
-                {
-                    deviceInstance = new HSRT16(id, i2CSlaveAddress, _i2CBusService, _deviceMessageBrokerService, _log);
-                    break;
-                }
+                case CCToolsDeviceType.HSRT16:
+                    {
+                        deviceInstance = new HSRT16(id, i2CSlaveAddress, _i2CBusService, _log);
+                        break;
+                    }
 
                 default: throw new NotSupportedException();
             }
 
-            _deviceService.RegisterDevice(deviceInstance);
             return deviceInstance;
         }
 
-        public void PollInputs()
+        public void PollAllInputDevices()
         {
-            var inputDevices = _deviceService.GetDevices<CCToolsInputDeviceBase>();
+            var inputDevices = _deviceRegistryService.GetDevices<CCToolsInputDeviceBase>();
             var stopwatch = Stopwatch.StartNew();
 
             lock (_syncRoot)

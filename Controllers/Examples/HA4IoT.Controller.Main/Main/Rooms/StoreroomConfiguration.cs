@@ -66,8 +66,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
         public void Apply()
         {
-            var hsrel8LowerHeatingValves = (HSREL8)_ccToolsBoardService.RegisterDevice(CCToolsDevice.HSRel8, InstalledDevice.LowerHeatingValvesHSREL8.ToString(), 16);
-            var hsrel5UpperHeatingValves = (HSREL5)_ccToolsBoardService.RegisterDevice(CCToolsDevice.HSRel5, InstalledDevice.UpperHeatingValvesHSREL5.ToString(), 56);
+            var hsrel8LowerHeatingValves = (HSREL8)_ccToolsBoardService.RegisterDevice(CCToolsDeviceType.HSRel8, InstalledDevice.LowerHeatingValvesHSREL8.ToString(), 16);
+            var hsrel5UpperHeatingValves = (HSREL5)_ccToolsBoardService.RegisterDevice(CCToolsDeviceType.HSRel5, InstalledDevice.UpperHeatingValvesHSREL5.ToString(), 56);
 
             var hsrel5Stairway = _deviceService.GetDevice<HSREL5>(InstalledDevice.StairwayHSREL5.ToString());
             var input3 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input3.ToString());

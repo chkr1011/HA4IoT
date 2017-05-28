@@ -26,7 +26,6 @@ namespace HA4IoT.Controller.Main
 
             var options = new ControllerOptions
             {
-                StatusLedGpio = 22,
                 ConfigurationType = configurationType
             };
 

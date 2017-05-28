@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Configuration;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Scripting;
+using HA4IoT.Contracts.Scripting.Configuration;
 using HA4IoT.Contracts.Services;
 using MoonSharp.Interpreter;
 using Newtonsoft.Json.Linq;
@@ -14,14 +18,38 @@ namespace HA4IoT.Scripting
     public class ScriptingService : ServiceBase, IScriptingService
     {
         private readonly List<Func<IScriptingSession, IScriptProxy>> _scriptProxyCreators = new List<Func<IScriptingSession, IScriptProxy>>();
+        private readonly IConfigurationService _configurationService;
         private readonly ILogger _log;
         
-        public ScriptingService(ILogService logService)
+        public ScriptingService(IConfigurationService configurationService, ILogService logService)
         {
+            _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
+            if (configurationService == null) throw new ArgumentNullException(nameof(configurationService));
             _log = logService?.CreatePublisher(nameof(ScriptingService)) ?? throw new ArgumentNullException(nameof(logService));
 
             UserData.RegisterType<DebuggingScriptProxy>();
             RegisterScriptProxy(s => new DebuggingScriptProxy(_log, s));
+        }
+
+        public override void Startup()
+        {
+            if (!Directory.Exists(StoragePath.ScriptsRoot))
+            {
+                Directory.CreateDirectory(StoragePath.ScriptsRoot);
+            }
+        }
+
+        public ScriptExecutionResult ExecuteScriptFile(string name, string entryFunctionName)
+        {
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
+            var result = ExecuteScriptFileInternal(name, entryFunctionName);
+            if (result.Exception != null)
+            {
+                throw new ScriptingException("Error while executing script.", result.Exception);
+            }
+
+            return result;
         }
 
         public ScriptExecutionResult ExecuteScript(string script, string entryFunctionName)
@@ -42,6 +70,14 @@ namespace HA4IoT.Scripting
             if (script == null) throw new ArgumentNullException(nameof(script));
 
             result = ExecuteScriptInternal(script, entryFunctionName);
+            return result.Exception == null;
+        }
+
+        public bool TryExecuteScriptFile(string name, out ScriptExecutionResult result, string entryFunctionName = null)
+        {
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
+            result = ExecuteScriptFileInternal(name, entryFunctionName);
             return result.Exception == null;
         }
 
@@ -122,12 +158,38 @@ namespace HA4IoT.Scripting
             apiCall.Result = rootJson;
         }
 
+        public void TryExecuteStartupScripts()
+        {
+            var configuration = _configurationService.GetConfiguration<ScriptingServiceConfiguration>("ScriptingService");
+            foreach (var startupScript in configuration.StartupScripts)
+            {
+                ScriptExecutionResult result;
+                TryExecuteScriptFile(startupScript.Name, out result, startupScript.EntryFunction);
+            }
+        }
+
         private string ConvertTypeToString(Type type)
         {
             var result = type.Name.ToLower();
 
 
             return result;
+        }
+
+        private ScriptExecutionResult ExecuteScriptFileInternal(string name, string entryFunctionName)
+        {
+            var filename = Path.Combine(StoragePath.ScriptsRoot, name + ".lua");
+            if (!File.Exists(filename))
+            {
+                return new ScriptExecutionResult
+                {
+                    Exception = new ScriptingException("Script file not found.", null)
+                };
+            }
+
+            var scriptCode = File.ReadAllText(filename);
+            var scriptingSession = CreateScriptingSession(scriptCode);
+            return scriptingSession.Execute(entryFunctionName);
         }
 
         private ScriptExecutionResult ExecuteScriptInternal(string scriptCode, string entryFunctionName)

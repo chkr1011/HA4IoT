@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Hardware.DeviceMessaging;
-using HA4IoT.Contracts.Hardware.Services;
+using HA4IoT.Contracts.Hardware.Mqtt;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Scripting;
 using HA4IoT.Contracts.Services;

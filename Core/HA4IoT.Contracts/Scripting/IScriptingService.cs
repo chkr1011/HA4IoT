@@ -11,6 +11,12 @@ namespace HA4IoT.Contracts.Scripting
 
         ScriptExecutionResult ExecuteScript(string scriptCode, string entryFunctionName = null);
 
-        bool TryExecuteScript(string scriptCode, out ScriptExecutionResult result, string entryFunctionName = null);      
+        bool TryExecuteScript(string scriptCode, out ScriptExecutionResult result, string entryFunctionName = null);
+
+        ScriptExecutionResult ExecuteScriptFile(string name, string entryFunctionName = null);
+
+        bool TryExecuteScriptFile(string name, out ScriptExecutionResult result, string entryFunctionName = null);
+
+        void TryExecuteStartupScripts();
     }
 }

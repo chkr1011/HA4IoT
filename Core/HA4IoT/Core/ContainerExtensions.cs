@@ -1,6 +1,7 @@
 ﻿using System;
 using HA4IoT.Contracts;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
 

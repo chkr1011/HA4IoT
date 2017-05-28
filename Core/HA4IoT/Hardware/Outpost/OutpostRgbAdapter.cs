@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using HA4IoT.Contracts.Components.Adapters;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.DeviceMessaging;
+using HA4IoT.Contracts.Hardware.Mqtt;
 using HA4IoT.Contracts.Hardware.Outpost;
-using HA4IoT.Contracts.Hardware.Services;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Hardware.Outpost

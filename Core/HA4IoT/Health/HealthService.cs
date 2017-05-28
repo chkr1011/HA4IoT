@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
 using HA4IoT.Contracts.Api;
+using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Hardware.Services;
+using HA4IoT.Contracts.Hardware.RaspberryPi;
+using HA4IoT.Contracts.Health.Configuration;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Core;
 
 namespace HA4IoT.Health
 {
@@ -23,7 +24,7 @@ namespace HA4IoT.Health
         private readonly ILogger _log;
 
         public HealthService(
-            ControllerOptions controllerOptions, 
+            IConfigurationService configurationService,
             IController controller,
             ITimerService timerService,
             IGpioService gpioService,
@@ -31,6 +32,7 @@ namespace HA4IoT.Health
             ISystemInformationService systemInformationService,
             ILogService logService)
         {
+            if (configurationService == null) throw new ArgumentNullException(nameof(configurationService));
             if (controller == null) throw new ArgumentNullException(nameof(controller));
             if (timerService == null) throw new ArgumentNullException(nameof(timerService));
             if (systemInformationService == null) throw new ArgumentNullException(nameof(systemInformationService));
@@ -58,9 +60,16 @@ namespace HA4IoT.Health
 
             timerService.Tick += UpdateStatistics;
 
-            if (controllerOptions.StatusLedGpio.HasValue)
+            var configuration = configurationService.GetConfiguration<HealthServiceConfiguration>("HealthServiceConfiguration");
+            if (configuration.StatusLed.Gpio.HasValue)
             {
-                var statusLed = new StatusLed(gpioService.GetOutput(controllerOptions.StatusLedGpio.Value).WithInvertedState());
+                var gpio = gpioService.GetOutput(configuration.StatusLed.Gpio.Value);
+                if (configuration.StatusLed.IsInverted)
+                {
+                    gpio = gpio.WithInvertedState();
+                }
+
+                var statusLed = new StatusLed(gpio);
                 timerService.Tick += (s, e) => statusLed.Update();
             }
         }
