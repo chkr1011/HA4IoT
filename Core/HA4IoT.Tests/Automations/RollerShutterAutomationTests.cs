@@ -8,6 +8,7 @@ using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Environment;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Contracts.Resources;
+using HA4IoT.Contracts.Scheduling;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Settings;
 using HA4IoT.Tests.Mockups;

@@ -18,6 +18,7 @@ using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Contracts.Resources;
+using HA4IoT.Contracts.Scheduling;
 using HA4IoT.Contracts.Scripting;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Settings;

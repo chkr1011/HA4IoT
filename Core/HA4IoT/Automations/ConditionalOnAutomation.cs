@@ -5,6 +5,7 @@ using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Components.Commands;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Environment;
+using HA4IoT.Contracts.Scheduling;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Triggers;
 

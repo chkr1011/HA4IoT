@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace HA4IoT.Logging
 {
-    public class RollingCollection<TItem> : IEnumerable<TItem>
+    public sealed class RollingCollection<TItem> : IEnumerable<TItem>
     {
         private readonly TItem[] _items;
 

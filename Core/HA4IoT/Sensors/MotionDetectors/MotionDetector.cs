@@ -8,9 +8,11 @@ using HA4IoT.Contracts.Components.Features;
 using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Messaging;
+using HA4IoT.Contracts.Scheduling;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Sensors.Events;
 using HA4IoT.Contracts.Settings;
+using HA4IoT.Scheduling;
 
 namespace HA4IoT.Sensors.MotionDetectors
 {
@@ -114,7 +116,7 @@ namespace HA4IoT.Sensors.MotionDetectors
 
             if (!Settings.IsEnabled)
             {
-                _autoEnableAction = _schedulerService.In(Settings.AutoEnableAfter, () => _settingsService.SetComponentEnabledState(this, true));
+                _autoEnableAction = new DelayedAction(Settings.AutoEnableAfter, () => _settingsService.SetComponentEnabledState(this, true));
             }
         }
     }

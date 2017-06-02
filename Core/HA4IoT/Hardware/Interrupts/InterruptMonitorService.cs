@@ -10,7 +10,7 @@ using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Hardware.Interrupts
 {
-    public class InterruptMonitorService : ServiceBase, IInterruptMonitorService
+    public sealed class InterruptMonitorService : ServiceBase, IInterruptMonitorService
     {
         private readonly Dictionary<string, InterruptMonitor> _interruptMonitors = new Dictionary<string, InterruptMonitor>();
 
@@ -42,7 +42,18 @@ namespace HA4IoT.Hardware.Interrupts
             }
         }
 
-        public void RegisterInterrupt(string id, IBinaryInput input)
+        public void RegisterCallback(string interruptMonitorId, Action callback)
+        {
+            if (interruptMonitorId == null) throw new ArgumentNullException(nameof(interruptMonitorId));
+            if (callback == null) throw new ArgumentNullException(nameof(callback));
+
+            lock (_interruptMonitors)
+            {
+                _interruptMonitors[interruptMonitorId].AddCallback(callback);
+            }
+        }
+
+        private void RegisterInterrupt(string id, IBinaryInput input)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (input == null) throw new ArgumentNullException(nameof(input));
@@ -54,17 +65,6 @@ namespace HA4IoT.Hardware.Interrupts
             }
 
             _log.Verbose($"Registered interrupt '{id}'.");
-        }
-
-        public void RegisterCallback(string interruptMonitorId, Action callback)
-        {
-            if (interruptMonitorId == null) throw new ArgumentNullException(nameof(interruptMonitorId));
-            if (callback == null) throw new ArgumentNullException(nameof(callback));
-
-            lock (_interruptMonitors)
-            {
-                _interruptMonitors[interruptMonitorId].AddCallback(callback);
-            }
         }
     }
 }

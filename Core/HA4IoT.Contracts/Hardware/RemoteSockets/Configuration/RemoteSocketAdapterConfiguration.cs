@@ -1,6 +1,6 @@
 ﻿namespace HA4IoT.Contracts.Hardware.RemoteSockets.Configuration
 {
-    public class RemoteSocketAdapterConfiguration
+    public sealed class RemoteSocketAdapterConfiguration
     {
         public string DeviceId { get; set; }
     }

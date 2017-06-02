@@ -3,7 +3,7 @@ using HA4IoT.Contracts.Hardware.RemoteSockets.Codes;
 
 namespace HA4IoT.Contracts.Hardware.RemoteSockets
 {
-    public class Ldp433MhzCodeReceivedEventArgs : EventArgs
+    public sealed class Ldp433MhzCodeReceivedEventArgs : EventArgs
     {
         public Ldp433MhzCodeReceivedEventArgs(Lpd433MhzCode code)
         {

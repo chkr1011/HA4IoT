@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Contracts.Hardware.RemoteSockets.Configuration
 {
-    public class RemoteSocketCodeGeneratorConfiguration
+    public sealed class RemoteSocketCodeGeneratorConfiguration
     {
         public string Type { get; set; }
 

@@ -11,7 +11,7 @@ using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Hardware.I2C
 {
-    public class I2CBusService : ServiceBase, II2CBusService
+    public sealed class I2CBusService : ServiceBase, II2CBusService
     {
         private readonly Dictionary<int, I2cDevice> _deviceCache = new Dictionary<int, I2cDevice>();
         private readonly string _busId;
@@ -125,7 +125,7 @@ namespace HA4IoT.Hardware.I2C
             }
 
             I2cDevice device;
-            if (_deviceCache.TryGetValue(address, out device))
+            if (!_deviceCache.TryGetValue(address, out device))
             {
                 device = CreateDevice(address);
                 _deviceCache.Add(address, device);
@@ -148,8 +148,8 @@ namespace HA4IoT.Hardware.I2C
         private string GetBusId()
         {
             var deviceSelector = I2cDevice.GetDeviceSelector();
-
             var deviceInformation = DeviceInformation.FindAllAsync(deviceSelector).GetAwaiter().GetResult();
+
             if (deviceInformation.Count == 0)
             {
                 _log.Warning("No I2C bus found.");

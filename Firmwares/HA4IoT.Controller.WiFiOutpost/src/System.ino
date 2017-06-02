@@ -42,10 +42,13 @@ void setupSystem() {
 void blink(uint8_t count) {
   // TODO: Save current state and restore later.
   for (uint8_t i = 0; i < count; i++) {
+    if (i > 0) {
+      delay(150);
+    }
+
     digitalWrite(SYSTEM_LED, LOW);
     delay(150);
     digitalWrite(SYSTEM_LED, HIGH);
-    delay(150);
   }
 }
 

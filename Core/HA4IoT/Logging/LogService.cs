@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
+using Windows.System.Threading;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
@@ -12,11 +12,11 @@ using Newtonsoft.Json.Linq;
 namespace HA4IoT.Logging
 {
     [ApiServiceClass(typeof(ILogService))]
-    public class LogService : ServiceBase, ILogService
+    public sealed class LogService : ServiceBase, ILogService
     {
         private readonly object _syncRoot = new object();
         private readonly Guid _sessionId = Guid.NewGuid();
-
+        
         private readonly List<LogEntry> _pendingLogEntries = new List<LogEntry>();
         private readonly RollingCollection<LogEntry> _logEntries = new RollingCollection<LogEntry>(1000);
         private readonly RollingCollection<LogEntry> _errorLogEntries = new RollingCollection<LogEntry>(250);
@@ -31,7 +31,7 @@ namespace HA4IoT.Logging
             _adapters = adapters ?? throw new ArgumentNullException(nameof(adapters));
 
             Log.Default = CreatePublisher(null);
-            Task.Factory.StartNew(ProcessPendingLogEntries, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            ThreadPoolTimer.CreatePeriodicTimer(ProcessPendingLogEntries, TimeSpan.FromMilliseconds(100));
         }
 
         public int ErrorsCount => _errorLogEntries.Count;
@@ -42,69 +42,11 @@ namespace HA4IoT.Logging
             return new LogServicePublisher(source, this);
         }
 
-        public void Verbose(string message)
-        {
-            Verbose(null, message);
-        }
-
-        public void Verbose(string source, string message)
-        {
-            Publish(LogEntrySeverity.Verbose, source, message, null);
-        }
-
-        public void Info(string message)
-        {
-            Info(null, message);
-        }
-
-        public void Info(string source, string message)
-        {
-            Publish(LogEntrySeverity.Info, source, message, null);
-        }
-
-        public void Warning(string message)
-        {
-            Warning((string)null, message);
-        }
-
-        public void Warning(string source, string message)
-        {
-            Warning(source, null, message);
-        }
-
-        public void Warning(Exception exception, string message)
-        {
-            Warning(null, exception, message);
-        }
-
-        public void Warning(string source, Exception exception, string message)
-        {
-            Publish(LogEntrySeverity.Warning, source, message, exception);
-        }
-
-        public void Error(string message)
-        {
-            Error((string)null, message);
-        }
-
-        public void Error(string source, string message)
-        {
-            Error(source, null, message);
-        }
-
-        public void Error(Exception exception, string message)
-        {
-            Error(null, exception, message);
-        }
-
-        public void Error(string source, Exception exception, string message)
-        {
-            Publish(LogEntrySeverity.Error, source, message, exception);
-        }
-
         public void Publish(LogEntrySeverity severity, string source, string message, Exception exception)
         {
-            var logEntry = new LogEntry(DateTime.Now, global::System.Environment.CurrentManagedThreadId, severity, source ?? "System", message, exception?.ToString());
+            var id = Interlocked.Increment(ref _id);
+            var logEntry = new LogEntry(id, DateTime.Now, System.Environment.CurrentManagedThreadId, severity, source ?? "System", message, exception?.ToString());
+
             lock (_pendingLogEntries)
             {
                 _pendingLogEntries.Add(logEntry);
@@ -184,11 +126,10 @@ namespace HA4IoT.Logging
             apiCall.Result = JObject.FromObject(response);
         }
 
-        private void PublishInternal(LogEntry logEntry)
+        private void PublishPendingLogEntry(LogEntry logEntry)
         {
             lock (_syncRoot)
             {
-                logEntry.Id = Interlocked.Increment(ref _id);
                 _logEntries.Add(logEntry);
 
                 if (logEntry.Severity == LogEntrySeverity.Warning)
@@ -230,25 +171,19 @@ namespace HA4IoT.Logging
             apiCall.Result = JObject.FromObject(response);
         }
 
-        private void ProcessPendingLogEntries()
+        private void ProcessPendingLogEntries(ThreadPoolTimer timer)
         {
-            var buffer = new List<LogEntry>();
-            while (true)
+            List<LogEntry> buffer;
+
+            lock (_pendingLogEntries)
             {
-                Task.Delay(100).Wait();
+                buffer = new List<LogEntry>(_pendingLogEntries);
+                _pendingLogEntries.Clear();
+            }
 
-                lock (_pendingLogEntries)
-                {
-                    buffer.AddRange(_pendingLogEntries);
-                    _pendingLogEntries.Clear();
-                }
-
-                foreach (var pendingLogEntry in buffer)
-                {
-                    PublishInternal(pendingLogEntry);
-                }
-
-                buffer.Clear();
+            foreach (var pendingLogEntry in buffer)
+            {
+                PublishPendingLogEntry(pendingLogEntry);
             }
         }
     }

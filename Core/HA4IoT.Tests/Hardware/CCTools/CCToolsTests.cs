@@ -1,6 +1,6 @@
 ﻿using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.I2C;
-using HA4IoT.Hardware.CCTools.Devices;
+using HA4IoT.Hardware.Drivers.CCTools.Devices;
 using HA4IoT.Tests.Mockups;
 using HA4IoT.Tests.Mockups.Services;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;

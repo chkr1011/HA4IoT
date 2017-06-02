@@ -4,7 +4,7 @@ using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Hardware
 {
-    public class LogicalBinaryOutput : IBinaryOutput
+    public sealed class LogicalBinaryOutput : IBinaryOutput
     {
         private readonly List<IBinaryOutput> _outputs = new List<IBinaryOutput>();
         private BinaryState _state;

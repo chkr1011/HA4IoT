@@ -5,7 +5,7 @@ using HA4IoT.Contracts.Hardware.RemoteSockets.Codes;
 
 namespace HA4IoT.Hardware.RemoteSockets
 {
-    public class RemoteSocketOutputPort : IBinaryOutput
+    public sealed class RemoteSocketOutputPort : IBinaryOutput
     {
         private readonly object _syncRoot = new object();
         private readonly Lpd433MhzCodePair _codePair;
@@ -20,6 +20,11 @@ namespace HA4IoT.Hardware.RemoteSockets
 
         public event EventHandler<BinaryStateChangedEventArgs> StateChanged;
 
+        public BinaryState Read()
+        {
+            return _state;
+        }
+
         public void Write(BinaryState state, WriteBinaryStateMode mode = WriteBinaryStateMode.Commit)
         {
             if (mode != WriteBinaryStateMode.Commit)
@@ -29,31 +34,23 @@ namespace HA4IoT.Hardware.RemoteSockets
 
             lock (_syncRoot)
             {
-                if (state == BinaryState.High)
-                {
-                    _adapter.SendCode(_codePair.OnCode);
-                }
-                else if (state == BinaryState.Low)
-                {
-                    _adapter.SendCode(_codePair.OffCode);
-                }
-                else
-                {
-                    throw new NotSupportedException();
-                }
-
                 var oldState = state;
                 _state = state;
 
                 StateChanged?.Invoke(this, new BinaryStateChangedEventArgs(oldState, state));
             }
-        }
 
-        public BinaryState Read()
-        {
-            lock (_syncRoot)
+            if (state == BinaryState.High)
             {
-                return _state;
+                _adapter.SendCode(_codePair.OnCode);
+            }
+            else if (state == BinaryState.Low)
+            {
+                _adapter.SendCode(_codePair.OffCode);
+            }
+            else
+            {
+                throw new NotSupportedException();
             }
         }
     }

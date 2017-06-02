@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace HA4IoT.Scheduling
 {
@@ -15,12 +17,17 @@ namespace HA4IoT.Scheduling
 
         public string Name { get; }
         public TimeSpan Interval { get; }
+
+        [JsonConverter(typeof(StringEnumConverter))]
         public ScheduleStatus Status { get; set; }
-        public Func<Task> Action { get; }
+        
         public TimeSpan? LastExecutionDuration { get; set; }
         public DateTime? LastExecution { get; set; }
         public DateTime NextExecution { get; set; }
         public string LastErrorMessage { get; set; }
         public bool IsOneTimeSchedule { get; set; }
+
+        [JsonIgnore]
+        public Func<Task> Action { get; }
     }
 }

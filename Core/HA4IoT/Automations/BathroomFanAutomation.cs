@@ -4,9 +4,11 @@ using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Components.Features;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Messaging;
+using HA4IoT.Contracts.Scheduling;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Sensors.Events;
 using HA4IoT.Contracts.Settings;
+using HA4IoT.Scheduling;
 using HA4IoT.Triggers;
 
 namespace HA4IoT.Automations
@@ -47,12 +49,12 @@ namespace HA4IoT.Automations
         {
             _delayedAction?.Cancel();
 
-            _delayedAction = _schedulerService.In(Settings.SlowDuration, () =>
+            _delayedAction = new DelayedAction(Settings.SlowDuration, () =>
             {
                 if (_fan.GetFeatures().Extract<LevelFeature>().MaxLevel > 1)
                 {
                     _fan.TrySetLevel(2);
-                    _delayedAction = _schedulerService.In(Settings.FastDuration, () => _fan.TryTurnOff());
+                    _delayedAction = new DelayedAction(Settings.FastDuration, () => _fan.TryTurnOff());
                 }
                 else
                 {

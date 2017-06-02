@@ -4,7 +4,7 @@ using Newtonsoft.Json.Converters;
 
 namespace HA4IoT.Contracts.Hardware.RemoteSockets.Configuration
 {
-    public class IntertechnoConfiguration
+    public sealed class IntertechnoConfiguration
     {
         [JsonConverter(typeof(StringEnumConverter))]
         public IntertechnoSystemCode SystemCode { get; set; }

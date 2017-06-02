@@ -1,6 +1,7 @@
 ﻿using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Messaging;
+using HA4IoT.Contracts.Scheduling;
 using HA4IoT.Contracts.Settings;
 using HA4IoT.Sensors.MotionDetectors;
 using HA4IoT.Tests.Mockups;

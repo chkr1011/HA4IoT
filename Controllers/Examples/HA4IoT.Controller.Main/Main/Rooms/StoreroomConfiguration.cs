@@ -9,8 +9,8 @@ using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.ExternalServices.Twitter;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Hardware.CCTools;
-using HA4IoT.Hardware.CCTools.Devices;
+using HA4IoT.Hardware.Drivers.CCTools;
+using HA4IoT.Hardware.Drivers.CCTools.Devices;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.MotionDetectors;
 

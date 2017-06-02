@@ -6,7 +6,7 @@ using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Hardware.Interrupts
 {
-    public class InterruptMonitor
+    public sealed class InterruptMonitor
     {
         private readonly List<Action> _callbacks = new List<Action>();
         private readonly string _id;

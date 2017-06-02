@@ -4,7 +4,7 @@ using Newtonsoft.Json.Converters;
 
 namespace HA4IoT.Contracts.Hardware.RemoteSockets.Configuration
 {
-    public class DipswitchConfiguration
+    public sealed class DipswitchConfiguration
     {
         [JsonConverter(typeof(StringEnumConverter))]
         public DipswitchSystemCode SystemCode { get; set; }

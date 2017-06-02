@@ -9,10 +9,11 @@ using HA4IoT.Contracts.Components.Adapters;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Messaging;
+using HA4IoT.Contracts.Scheduling;
 using HA4IoT.Contracts.Settings;
-using HA4IoT.Hardware.CCTools;
-using HA4IoT.Hardware.CCTools.Devices;
-using HA4IoT.Hardware.I2C.I2CHardwareBridge;
+using HA4IoT.Hardware.Drivers.CCTools;
+using HA4IoT.Hardware.Drivers.CCTools.Devices;
+using HA4IoT.Hardware.Drivers.I2CHardwareBridge;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.MotionDetectors;
 

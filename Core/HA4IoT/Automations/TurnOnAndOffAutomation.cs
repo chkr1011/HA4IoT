@@ -12,11 +12,13 @@ using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Environment;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Messaging;
+using HA4IoT.Contracts.Scheduling;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Sensors.Events;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Settings;
 using HA4IoT.Contracts.Triggers;
+using HA4IoT.Scheduling;
 using HA4IoT.Triggers;
 
 namespace HA4IoT.Automations
@@ -214,7 +216,7 @@ namespace HA4IoT.Automations
                 }
 
                 _turnOffTimeout?.Cancel();
-                _turnOffTimeout = _schedulerService.In(Settings.Duration, TurnOff);
+                _turnOffTimeout = new DelayedAction(Settings.Duration, TurnOff);
             }
         }
 

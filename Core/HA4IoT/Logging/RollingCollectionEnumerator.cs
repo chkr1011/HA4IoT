@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace HA4IoT.Logging
 {
-    public class RollingCollectionEnumerator<TItem> : IEnumerator<TItem>
+    public sealed class RollingCollectionEnumerator<TItem> : IEnumerator<TItem>
     {
         private readonly RollingCollection<TItem> _source;
         private readonly ulong _initialVersion;

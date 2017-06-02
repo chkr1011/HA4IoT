@@ -4,6 +4,7 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Environment;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Scheduling;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Settings;
 using Newtonsoft.Json;

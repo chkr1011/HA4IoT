@@ -42,7 +42,11 @@ void loopDhtSensor(uint16_t elapsedMillis) {
   readSensorValues();
   publishSensorValues();
 
-  blink(2);
+  if (_temperature == NAN || _humidity == NAN) {
+    blink(2);
+  } else {
+    blink(1);
+  }
 
   // TODO: Consider deep sleep here.
   // ESP.deepSleep(DHT_SENSOR_REFRESH_TIMEOUT * 1000);

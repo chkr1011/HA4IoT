@@ -9,14 +9,15 @@ using HA4IoT.Contracts.Hardware.RemoteSockets.Adapters;
 using HA4IoT.Contracts.Hardware.RemoteSockets.Codes;
 using HA4IoT.Contracts.Hardware.RemoteSockets.Configuration;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Scheduling;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Hardware.RemoteSockets.Protocols;
+using HA4IoT.Hardware.Drivers.RemoteSockets;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Hardware.RemoteSockets
 {
     [ApiServiceClass(typeof(IRemoteSocketService))]
-    public class RemoteSocketService : ServiceBase, IRemoteSocketService
+    public sealed class RemoteSocketService : ServiceBase, IRemoteSocketService
     {
         private readonly ISystemInformationService _systemInformationService;
         private readonly IDeviceRegistryService _deviceRegistryService;
@@ -160,13 +161,13 @@ namespace HA4IoT.Hardware.RemoteSockets
                 case "Dipswitch":
                     {
                         var dipswitchConfiguration = codeGeneratorConfiguration.Parameters.ToObject<DipswitchConfiguration>();
-                        return new DipswitchCodeProvider().GetCodePair(dipswitchConfiguration.SystemCode, dipswitchConfiguration.UnitCode);
+                        return DipswitchCodeProvider.GetCodePair(dipswitchConfiguration.SystemCode, dipswitchConfiguration.UnitCode);
                     }
 
                 case "Intertechno":
                     {
                         var intertechnoConfiguration = codeGeneratorConfiguration.Parameters.ToObject<IntertechnoConfiguration>();
-                        return new IntertechnoCodeProvider().GetCodePair(intertechnoConfiguration.SystemCode, intertechnoConfiguration.UnitCode);
+                        return IntertechnoCodeProvider.GetCodePair(intertechnoConfiguration.SystemCode, intertechnoConfiguration.UnitCode);
                     }
 
                 default:

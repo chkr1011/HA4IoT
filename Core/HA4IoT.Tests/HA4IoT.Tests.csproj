@@ -118,7 +118,7 @@
     <Compile Include="Components\TemperatureSensorTests.cs" />
     <Compile Include="Events\MessageBusServiceTests.cs" />
     <Compile Include="Hardware\CCTools\CCToolsTests.cs" />
-    <Compile Include="Hardware\RemoteSwitch\BrennenstuhlCodeSequenceProviderTests.cs" />
+    <Compile Include="Hardware\RemoteSwitch\DipswitchCodeProviderTests.cs" />
     <Compile Include="Logging\RollingCollectionTests.cs" />
     <Compile Include="Mockups\Adapters\TestBinaryOutputAdapter.cs" />
     <Compile Include="Mockups\Adapters\TestButtonAdapter.cs" />

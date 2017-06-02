@@ -13,8 +13,7 @@ using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.RaspberryPi;
 using HA4IoT.Contracts.Messaging;
 using HA4IoT.Hardware;
-using HA4IoT.Hardware.CCTools;
-using HA4IoT.Hardware.CCTools.Devices;
+using HA4IoT.Hardware.Drivers.CCTools.Devices;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 
@@ -22,7 +21,7 @@ namespace HA4IoT.Controller.Main.Cellar
 {
     internal sealed class Configuration : IConfiguration
     {
-        private readonly CCToolsDeviceService _ccToolsBoardService;
+        private readonly IDeviceRegistryService _deviceRegistryService;
         private readonly IGpioService _gpioService;
         private readonly IAreaRegistryService _areaService;
         private readonly ActuatorFactory _actuatorFactory;
@@ -31,7 +30,7 @@ namespace HA4IoT.Controller.Main.Cellar
         private readonly IMessageBrokerService _messageBroker;
 
         public Configuration(
-            CCToolsDeviceService ccToolsBoardService,
+            IDeviceRegistryService deviceRegistryService,
             IGpioService gpioService,
             IAreaRegistryService areaService,
             ActuatorFactory actuatorFactory,
@@ -39,7 +38,7 @@ namespace HA4IoT.Controller.Main.Cellar
             AutomationFactory automationFactory,
             IMessageBrokerService messageBroker)
         {
-            _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
+            _deviceRegistryService = deviceRegistryService ?? throw new ArgumentNullException(nameof(deviceRegistryService));
             _gpioService = gpioService ?? throw new ArgumentNullException(nameof(gpioService));
             _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
             _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
@@ -50,7 +49,7 @@ namespace HA4IoT.Controller.Main.Cellar
 
         public Task ApplyAsync()
         {
-            var hsrt16 = (HSRT16)_ccToolsBoardService.RegisterDevice(CCToolsDeviceType.HSRT16, "HSRT16", 32);
+            var hsrt16 = _deviceRegistryService.GetDevice<HSRT16>("HSRT16");
 
             var garden = _areaService.RegisterArea("Garden");
 

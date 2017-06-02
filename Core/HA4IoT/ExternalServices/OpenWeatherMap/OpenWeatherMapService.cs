@@ -6,6 +6,7 @@ using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Environment;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Scheduling;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Contracts.Settings;
 using HA4IoT.Contracts.Storage;
@@ -16,16 +17,11 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
     [ApiServiceClass(typeof(OpenWeatherMapService))]
     public class OpenWeatherMapService : ServiceBase
     {
-        private const string StorageFilename = "OpenWeatherMapCache.json";
-
         private readonly IOutdoorService _outdoorService;
         private readonly IDaylightService _daylightService;
         private readonly IDateTimeService _dateTimeService;
         private readonly ISystemInformationService _systemInformationService;
-        private readonly IStorageService _storageService;
         private readonly ILogger _log;
-
-        private string _previousResponse;
 
         public float Temperature { get; private set; }
         public float Humidity { get; private set; }
@@ -49,13 +45,11 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             _daylightService = daylightService ?? throw new ArgumentNullException(nameof(daylightService));
             _dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
             _systemInformationService = systemInformationService ?? throw new ArgumentNullException(nameof(systemInformationService));
-            _storageService = storageService ?? throw new ArgumentNullException(nameof(storageService));
-
+            
             _log = logService?.CreatePublisher(nameof(OpenWeatherMapService)) ?? throw new ArgumentNullException(nameof(logService));
 
             settingsService.CreateSettingsMonitor<OpenWeatherMapServiceSettings>(s => Settings = s.NewSettings);
 
-            LoadPersistedData();
             schedulerService.Register("OpenWeatherMapServiceUpdater", TimeSpan.FromMinutes(5), RefreshAsync);
         }
 
@@ -81,24 +75,16 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
                 return;
             }
 
-            _log.Verbose("Fetching Open Weather Map weather data.");
+            _log.Verbose("Fetching OpenWeatherMap data.");
 
             var response = await FetchWeatherDataAsync();
 
-            if (!string.Equals(response, _previousResponse))
+            if (TryParseData(response))
             {
-                if (TryParseData(response))
-                {
-                    _storageService.Write(StorageFilename, response);
-                    PushData();
-                }
-                
-                _previousResponse = response;
-
-                _systemInformationService.Set("OpenWeatherMapService/LastUpdatedTimestamp", _dateTimeService.Now);
+                PushData();
             }
 
-            _systemInformationService.Set("OpenWeatherMapService/LastFetchedTimestamp", _dateTimeService.Now);
+            _systemInformationService.Set("OpenWeatherMapService/Timestamp", _dateTimeService.Now);
         }
 
         private void PushData()
@@ -168,15 +154,6 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
                 _log.Warning(exception, $"Error while parsing Open Weather Map response ({weatherData}).");
 
                 return false;
-            }
-        }
-
-        private void LoadPersistedData()
-        {
-            string cachedResponse;
-            if (_storageService.TryRead(StorageFilename, out cachedResponse))
-            {
-                TryParseData(cachedResponse);
             }
         }
     }

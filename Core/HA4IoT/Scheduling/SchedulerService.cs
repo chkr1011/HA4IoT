@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
+using Windows.System.Threading;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Scheduling;
 using HA4IoT.Contracts.Scripting;
 using HA4IoT.Contracts.Services;
 using HA4IoT.Core;
@@ -17,35 +18,25 @@ namespace HA4IoT.Scheduling
     [ApiServiceClass(typeof(ISchedulerService))]
     public class SchedulerService : ServiceBase, ISchedulerService
     {
-        private readonly ITimerService _timerService;
-        private readonly object _syncRoot = new object();
         private readonly List<Schedule> _schedules = new List<Schedule>();
         private readonly IDateTimeService _dateTimeService;
         private readonly ILogger _log;
 
-        public SchedulerService(IDateTimeService dateTimeService, ITimerService timerService, ILogService logService, IScriptingService scriptingService)
+        public SchedulerService(IDateTimeService dateTimeService, ILogService logService, IScriptingService scriptingService)
         {
             if (scriptingService == null) throw new ArgumentNullException(nameof(scriptingService));
-
-            _timerService = timerService ?? throw new ArgumentNullException(nameof(timerService));
             _dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
 
             _log = logService?.CreatePublisher(nameof(SchedulerService)) ?? throw new ArgumentNullException(nameof(logService));
-
             scriptingService.RegisterScriptProxy(s => new SchedulerScriptProxy(this, s));
 
-            Task.Factory.StartNew(ExecuteScheduleds, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
-        }
-
-        public IDelayedAction In(TimeSpan delay, Action action)
-        {
-            return new DelayedAction(delay, action, _timerService);
+            ThreadPoolTimer.CreatePeriodicTimer(ExecuteSchedules, TimeSpan.FromMilliseconds(250));
         }
 
         [ApiMethod]
         public void GetSchedules(IApiCall apiCall)
         {
-            lock (_syncRoot)
+            lock (_schedules)
             {
                 apiCall.Result = JObject.FromObject(_schedules);
             }
@@ -65,7 +56,7 @@ namespace HA4IoT.Scheduling
             if (name == null) throw new ArgumentNullException(nameof(name));
             if (action == null) throw new ArgumentNullException(nameof(action));
 
-            lock (_syncRoot)
+            lock (_schedules)
             {
                 if (_schedules.Any(s => s.Name.Equals(name)))
                 {
@@ -83,7 +74,7 @@ namespace HA4IoT.Scheduling
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
 
-            lock (_syncRoot)
+            lock (_schedules)
             {
                 _schedules.RemoveAll(s => s.Name.Equals(name));
 
@@ -91,42 +82,38 @@ namespace HA4IoT.Scheduling
             }
         }
 
-        private void ExecuteScheduleds()
+        private void ExecuteSchedules(ThreadPoolTimer timer)
         {
-            while (true)
+            var now = _dateTimeService.Now;
+
+            lock (_schedules)
             {
-                Task.Delay(100).Wait();
-                var now = _dateTimeService.Now;
-
-                lock (_syncRoot)
+                for (var i = _schedules.Count - 1; i >= 0; i--)
                 {
-                    for (var i = _schedules.Count - 1; i >= 0; i--)
+                    var schedule = _schedules[i];
+
+                    if (schedule.Status == ScheduleStatus.Running || now < schedule.NextExecution)
                     {
-                        var schedule = _schedules[i];
+                        continue;
+                    }
 
-                        if (schedule.Status == ScheduleStatus.Running || now < schedule.NextExecution)
-                        {
-                            continue;
-                        }
+                    Task.Run(() => TryExecuteScheduleAsync(schedule));
 
-                        schedule.Status = ScheduleStatus.Running;
-                        Task.Run(() => TryExecuteSchedule(schedule));
-
-                        if (schedule.IsOneTimeSchedule)
-                        {
-                            _schedules.RemoveAt(i);
-                        }
+                    if (schedule.IsOneTimeSchedule)
+                    {
+                        _schedules.RemoveAt(i);
                     }
                 }
             }
         }
 
-        private async Task TryExecuteSchedule(Schedule schedule)
+        private async Task TryExecuteScheduleAsync(Schedule schedule)
         {
             var stopwatch = Stopwatch.StartNew();
             try
             {
                 _log.Verbose($"Executing schedule '{schedule.Name}'.");
+                schedule.Status = ScheduleStatus.Running;
 
                 await schedule.Action();
 
@@ -144,7 +131,7 @@ namespace HA4IoT.Scheduling
             {
                 schedule.LastExecutionDuration = stopwatch.Elapsed;
                 schedule.LastExecution = _dateTimeService.Now;
-                schedule.NextExecution = _dateTimeService.Now + schedule.Interval;
+                schedule.NextExecution = schedule.LastExecution.Value + schedule.Interval;
             }
         }
     }
