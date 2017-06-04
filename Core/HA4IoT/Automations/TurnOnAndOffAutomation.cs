@@ -41,7 +41,7 @@ namespace HA4IoT.Automations
         private readonly Stopwatch _lastTurnedOn = new Stopwatch();
 
         private TimeSpan? _pauseDuration;
-        private IDelayedAction _turnOffTimeout;
+        private IScheduledAction _turnOffTimeout;
         private bool _turnOffIfButtonPressedWhileAlreadyOn;
         private bool _isOn;
 
@@ -216,7 +216,7 @@ namespace HA4IoT.Automations
                 }
 
                 _turnOffTimeout?.Cancel();
-                _turnOffTimeout = new DelayedAction(Settings.Duration, TurnOff);
+                _turnOffTimeout = ScheduledAction.Schedule(Settings.Duration, TurnOff);
             }
         }
 

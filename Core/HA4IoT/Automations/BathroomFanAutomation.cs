@@ -19,7 +19,7 @@ namespace HA4IoT.Automations
         private readonly ISchedulerService _schedulerService;
         
         private readonly IFan _fan;
-        private IDelayedAction _delayedAction;
+        private IScheduledAction _delayedAction;
 
         public BathroomFanAutomation(string id, IFan fan, ISchedulerService schedulerService, ISettingsService settingsService, IMessageBrokerService messageBroker)
             : base(id)
@@ -49,12 +49,12 @@ namespace HA4IoT.Automations
         {
             _delayedAction?.Cancel();
 
-            _delayedAction = new DelayedAction(Settings.SlowDuration, () =>
+            _delayedAction = ScheduledAction.Schedule(Settings.SlowDuration, () =>
             {
                 if (_fan.GetFeatures().Extract<LevelFeature>().MaxLevel > 1)
                 {
                     _fan.TrySetLevel(2);
-                    _delayedAction = new DelayedAction(Settings.FastDuration, () => _fan.TryTurnOff());
+                    _delayedAction = ScheduledAction.Schedule(Settings.FastDuration, () => _fan.TryTurnOff());
                 }
                 else
                 {

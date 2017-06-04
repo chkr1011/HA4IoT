@@ -26,7 +26,7 @@ namespace HA4IoT.Sensors.MotionDetectors
         private readonly ISettingsService _settingsService;
         private readonly ISchedulerService _schedulerService;
 
-        private IDelayedAction _autoEnableAction;
+        private IScheduledAction _autoEnableAction;
         private MotionDetectionStateValue _motionDetectionState = MotionDetectionStateValue.Idle;
 
         public MotionDetector(string id, IMotionDetectorAdapter adapter, ISchedulerService schedulerService, ISettingsService settingsService, IMessageBrokerService messageBroker)
@@ -116,7 +116,7 @@ namespace HA4IoT.Sensors.MotionDetectors
 
             if (!Settings.IsEnabled)
             {
-                _autoEnableAction = new DelayedAction(Settings.AutoEnableAfter, () => _settingsService.SetComponentEnabledState(this, true));
+                _autoEnableAction = ScheduledAction.Schedule(Settings.AutoEnableAfter, () => _settingsService.SetComponentEnabledState(this, true));
             }
         }
     }

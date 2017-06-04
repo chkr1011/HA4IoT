@@ -2,7 +2,7 @@
 
 namespace HA4IoT.ExternalServices.OpenWeatherMap
 {
-    public static class OpenWeatherMapWeatherSituationParser
+    public static class OpenWeatherMapWeatherConditionParser
     {
         public static WeatherCondition Parse(int id)
         {

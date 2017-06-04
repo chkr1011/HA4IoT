@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Threading;
 using Windows.Devices.Gpio;
+using Windows.System.Threading;
 using HA4IoT.Contracts.Hardware;
 using HA4IoT.Contracts.Hardware.RaspberryPi;
 using HA4IoT.Contracts.Logging;
@@ -13,7 +13,7 @@ namespace HA4IoT.Hardware.Drivers.RaspberryPi
 
         private readonly GpioPin _pin;
         // ReSharper disable once NotAccessedField.Local
-        private readonly Timer _timer;
+        //private readonly Timer _timer;
 
         private BinaryState _latestState;
 
@@ -35,7 +35,7 @@ namespace HA4IoT.Hardware.Drivers.RaspberryPi
             
             if (mode == GpioInputMonitoringMode.Polling)
             {
-                _timer = new Timer(PollState, null, 0, Timeout.Infinite);
+                ThreadPoolTimer.CreatePeriodicTimer(PollState, TimeSpan.FromMilliseconds(PollInterval));
             }
             else if (mode == GpioInputMonitoringMode.Interrupt)
             {
@@ -76,10 +76,6 @@ namespace HA4IoT.Hardware.Drivers.RaspberryPi
             catch (Exception exception)
             {
                 Log.Default.Error(exception, $"Error while polling input state of GPIO{_pin.PinNumber}.");
-            }
-            finally
-            {
-                _timer.Change(PollInterval, Timeout.Infinite);
             }
         }
 

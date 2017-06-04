@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Windows.Data.Json;
 using HA4IoT.Contracts.Environment;
 
@@ -30,15 +29,13 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             var sys = data.GetNamedObject("sys");
             var sunriseValue = sys.GetNamedNumber("sunrise", 0);
             var sunsetValue = sys.GetNamedNumber("sunset", 0);
-
             Sunrise = UnixTimeStampToDateTime(sunriseValue).TimeOfDay;
             Sunset = UnixTimeStampToDateTime(sunsetValue).TimeOfDay;
 
             var weather = data.GetNamedArray("weather");
-            var situationValue = weather.First().GetObject().GetNamedValue("id");
-            ConditionCode = (int)situationValue.GetNumber();
-
-            Condition = OpenWeatherMapWeatherSituationParser.Parse(ConditionCode);
+            var weatherId = (int)weather.GetObjectAt(0).GetNamedNumber("id");
+            ConditionCode = weatherId;
+            Condition = OpenWeatherMapWeatherConditionParser.Parse(ConditionCode);
         }
 
         private static DateTime UnixTimeStampToDateTime(double unixTimeStamp)

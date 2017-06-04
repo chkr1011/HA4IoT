@@ -214,7 +214,7 @@
     <Compile Include="Scripting\ScriptingSession.cs" />
     <Compile Include="Areas\AreaExtensions.cs" />
     <Compile Include="Health\StatusLed.cs" />
-    <Compile Include="Scheduling\DelayedAction.cs" />
+    <Compile Include="Scheduling\ScheduledAction.cs" />
     <Compile Include="Triggers\ConditionalTrigger.cs" />
     <Compile Include="Triggers\IntervalTrigger.cs" />
     <Compile Include="Api\ApiDispatcherService.cs" />
@@ -267,7 +267,7 @@
     <Compile Include="ExternalServices\OpenWeatherMap\OpenWeatherMapResponseParser.cs" />
     <Compile Include="ExternalServices\OpenWeatherMap\OpenWeatherMapService.cs" />
     <Compile Include="ExternalServices\OpenWeatherMap\OpenWeatherMapServiceSettings.cs" />
-    <Compile Include="ExternalServices\OpenWeatherMap\OpenWeatherMapWeatherSituationParser.cs" />
+    <Compile Include="ExternalServices\OpenWeatherMap\OpenWeatherMapWeatherConditionParser.cs" />
     <Compile Include="ExternalServices\TelegramBot\TelegramBotExtensions.cs" />
     <Compile Include="ExternalServices\TelegramBot\TelegramBotMessageReceivedEventArgs.cs" />
     <Compile Include="ExternalServices\TelegramBot\TelegramBotService.cs" />

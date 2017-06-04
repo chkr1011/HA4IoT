@@ -78,7 +78,6 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             _log.Verbose("Fetching OpenWeatherMap data.");
 
             var response = await FetchWeatherDataAsync();
-
             if (TryParseData(response))
             {
                 PushData();

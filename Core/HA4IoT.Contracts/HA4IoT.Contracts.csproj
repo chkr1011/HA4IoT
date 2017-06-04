@@ -312,7 +312,7 @@
     <Compile Include="Settings\SettingsChangedEventArgs.cs" />
     <Compile Include="Storage\IStorageService.cs" />
     <Compile Include="Core\IDateTimeService.cs" />
-    <Compile Include="Scheduling\IDelayedAction.cs" />
+    <Compile Include="Scheduling\IScheduledAction.cs" />
     <Compile Include="Core\IDeviceService.cs" />
     <Compile Include="Core\IHealthService.cs" />
     <Compile Include="Core\II2CBusService.cs" />

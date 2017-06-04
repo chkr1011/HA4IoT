@@ -1,6 +1,6 @@
 ﻿namespace HA4IoT.Contracts.Scheduling
 {
-    public interface IDelayedAction
+    public interface IScheduledAction
     {
         void Cancel();
     }
