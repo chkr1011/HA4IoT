@@ -97,6 +97,7 @@ namespace HA4IoT.Scheduling
                         continue;
                     }
 
+                    schedule.Status = ScheduleStatus.Running;
                     Task.Run(() => TryExecuteScheduleAsync(schedule));
 
                     if (schedule.IsOneTimeSchedule)
@@ -113,8 +114,6 @@ namespace HA4IoT.Scheduling
             try
             {
                 _log.Verbose($"Executing schedule '{schedule.Name}'.");
-                schedule.Status = ScheduleStatus.Running;
-
                 await schedule.Action();
 
                 schedule.LastErrorMessage = null;

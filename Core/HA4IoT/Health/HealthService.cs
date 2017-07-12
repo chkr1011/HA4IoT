@@ -39,11 +39,13 @@ namespace HA4IoT.Health
 
             _log = logService?.CreatePublisher(nameof(HealthService)) ?? throw new ArgumentNullException(nameof(logService));
 
+            var startupTimestamp = dateTimeService.Now;
             systemInformationService.Set("Health/SystemTime", () => dateTimeService.Now);
             systemInformationService.Set("Health/TimerDuration/Average", () => _averageTimerDuration);
             systemInformationService.Set("Health/TimerDuration/AverageMax", () => _maxTimerDuration);
             systemInformationService.Set("Health/TimerDuration/AverageMin", () => _minTimerDuration);
-            systemInformationService.Set("Health/StartupTimestamp", dateTimeService.Now);
+            systemInformationService.Set("Health/StartupTimestamp", startupTimestamp);
+            systemInformationService.Set("Health/UpTime", () => dateTimeService.Now - startupTimestamp);
             systemInformationService.Set("Log/Errors/Count", () => logService.ErrorsCount);
             systemInformationService.Set("Log/Warnings/Count", () => logService.WarningsCount);
 

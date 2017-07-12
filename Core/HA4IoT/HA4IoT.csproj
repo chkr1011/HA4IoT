@@ -267,7 +267,7 @@
     <Compile Include="ExternalServices\OpenWeatherMap\OpenWeatherMapResponseParser.cs" />
     <Compile Include="ExternalServices\OpenWeatherMap\OpenWeatherMapService.cs" />
     <Compile Include="ExternalServices\OpenWeatherMap\OpenWeatherMapServiceSettings.cs" />
-    <Compile Include="ExternalServices\OpenWeatherMap\OpenWeatherMapWeatherConditionParser.cs" />
+    <Compile Include="ExternalServices\OpenWeatherMap\OpenWeatherMapConditionParser.cs" />
     <Compile Include="ExternalServices\TelegramBot\TelegramBotExtensions.cs" />
     <Compile Include="ExternalServices\TelegramBot\TelegramBotMessageReceivedEventArgs.cs" />
     <Compile Include="ExternalServices\TelegramBot\TelegramBotService.cs" />

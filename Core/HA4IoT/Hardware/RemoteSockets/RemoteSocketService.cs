@@ -35,7 +35,6 @@ namespace HA4IoT.Hardware.RemoteSockets
             ISystemInformationService systemInformationService,
             ILogService logService)
         {
-
             _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
             _deviceRegistryService = deviceRegistryService ?? throw new ArgumentNullException(nameof(deviceRegistryService));
             if (schedulerService == null) throw new ArgumentNullException(nameof(schedulerService));

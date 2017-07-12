@@ -33,9 +33,8 @@ namespace HA4IoT.ExternalServices.OpenWeatherMap
             Sunset = UnixTimeStampToDateTime(sunsetValue).TimeOfDay;
 
             var weather = data.GetNamedArray("weather");
-            var weatherId = (int)weather.GetObjectAt(0).GetNamedNumber("id");
-            ConditionCode = weatherId;
-            Condition = OpenWeatherMapWeatherConditionParser.Parse(ConditionCode);
+            ConditionCode = (int)weather.GetObjectAt(0).GetNamedNumber("id");
+            Condition = OpenWeatherMapConditionParser.Parse(ConditionCode);
         }
 
         private static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
