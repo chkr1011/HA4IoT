@@ -15,6 +15,7 @@ using MQTTnet.Core.Packets;
 using MQTTnet.Core.Protocol;
 using MQTTnet.Core.Server;
 using Newtonsoft.Json.Linq;
+using MqttApplicationMessageReceivedEventArgs = MQTTnet.Core.Client.MqttApplicationMessageReceivedEventArgs;
 
 namespace HA4IoT.Devices
 {
