@@ -3,46 +3,50 @@ using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Logging
 {
-    public class LogServicePublisher : ILogger
+    public sealed class LogServicePublisher : ILogger
     {
+        private readonly string _source;
         private readonly LogService _logService;
 
         public LogServicePublisher(string source, LogService logService)
         {
             _logService = logService ?? throw new ArgumentNullException(nameof(logService));
-            Source = source;
+            _source = source;
         }
-
-        public string Source { get; }
 
         public void Verbose(string message)
         {
-            _logService.Verbose(Source, message);
+            _logService.Publish(LogEntrySeverity.Verbose, _source, message, null);
         }
 
         public void Info(string message)
         {
-            _logService.Info(Source, message);
+            _logService.Publish(LogEntrySeverity.Info, _source, message, null);
         }
 
         public void Warning(string message)
         {
-            _logService.Warning(Source, message);
+            _logService.Publish(LogEntrySeverity.Warning, _source, message, null);
         }
 
         public void Warning(Exception exception, string message)
         {
-            _logService.Warning(Source, exception, message);
+            _logService.Publish(LogEntrySeverity.Warning, _source, message, exception);
         }
 
         public void Error(string message)
         {
-            _logService.Error(Source, message);
+            _logService.Publish(LogEntrySeverity.Error, _source, message, null);
         }
 
         public void Error(Exception exception, string message)
         {
-            _logService.Error(Source, exception, message);
+            _logService.Publish(LogEntrySeverity.Error, _source, message, exception);
+        }
+
+        public void Publish(LogEntrySeverity severity, string message, Exception exception)
+        {
+            _logService.Publish(severity, _source, message, exception);
         }
     }
 }

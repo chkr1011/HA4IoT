@@ -12,16 +12,23 @@ namespace HA4IoT.CloudApi.Services
 
         public SecurityService()
         {
-            var allowedControllers = ConfigurationManager.AppSettings["AllowedControllers"] ?? string.Empty;
-            if (!string.IsNullOrEmpty(allowedControllers))
+            try
             {
-                _allowedControllers = JsonConvert.DeserializeObject<Dictionary<Guid, string>>(allowedControllers);
-            }
+                var allowedControllers = ConfigurationManager.AppSettings["AllowedControllers"] ?? string.Empty;
+                if (!string.IsNullOrEmpty(allowedControllers))
+                {
+                    _allowedControllers = JsonConvert.DeserializeObject<Dictionary<Guid, string>>(allowedControllers);
+                }
 
-            var amazonUserIdMappings = ConfigurationManager.AppSettings["AmazonUserIdMappings"] ?? string.Empty;
-            if (!string.IsNullOrEmpty(amazonUserIdMappings))
+                var amazonUserIdMappings = ConfigurationManager.AppSettings["AmazonUserIdMappings"] ?? string.Empty;
+                if (!string.IsNullOrEmpty(amazonUserIdMappings))
+                {
+                    _amazonUserIdMappings = JsonConvert.DeserializeObject<Dictionary<string, Guid>>(amazonUserIdMappings);
+                }
+            }
+            catch (Exception e)
             {
-                _amazonUserIdMappings = JsonConvert.DeserializeObject<Dictionary<string, Guid>>(amazonUserIdMappings);
+                Console.WriteLine(e);
             }
         }
         

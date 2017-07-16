@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.ExternalServices.Twitter;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Sensors;
-using HA4IoT.Contracts.Services.ExternalServices.Twitter;
-using HA4IoT.Contracts.Services.System;
-using HA4IoT.Services.System;
+using HA4IoT.Core;
 
 namespace HA4IoT.Controller.Main.Main
 {
@@ -42,12 +42,10 @@ namespace HA4IoT.Controller.Main.Main
         public CatLitterBoxTwitterSender(ITimerService timerService, ITwitterClientService twitterClientService, ILogService logService)
         {
             if (timerService == null) throw new ArgumentNullException(nameof(timerService));
-            if (twitterClientService == null) throw new ArgumentNullException(nameof(twitterClientService));
-            if (logService == null) throw new ArgumentNullException(nameof(logService));
 
-            _twitterClientService = twitterClientService;
+            _twitterClientService = twitterClientService ?? throw new ArgumentNullException(nameof(twitterClientService));
 
-            _log = logService.CreatePublisher(nameof(logService));
+            _log = logService?.CreatePublisher(nameof(logService)) ?? throw new ArgumentNullException(nameof(logService));
 
             _timeout = new Timeout(timerService);
             _timeout.Elapsed += (s, e) =>
@@ -92,19 +90,9 @@ namespace HA4IoT.Controller.Main.Main
             UpdateCounter();
 
             var message = GenerateMessage();
-            _log.Verbose("Trying to tweet '" + message + "'.");
-
-            try
+            if (await _twitterClientService.TryTweet(message))
             {
-                
-                await _twitterClientService.Tweet(message);
-
                 _lastTweetTimestamp = DateTime.Now;
-                _log.Info("Successfully tweeted: " + message);
-            }
-            catch (Exception exception)
-            {
-                _log.Warning("Failed to tweet. " + exception.Message);
             }
         }
 

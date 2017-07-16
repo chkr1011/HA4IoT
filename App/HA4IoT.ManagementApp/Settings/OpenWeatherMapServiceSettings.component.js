@@ -2,10 +2,9 @@
     var module = angular.module("app");
 
     function createController(controllerProxyService, modalService) {
+        var c = this;
 
-        var ctrl = this;
-
-        ctrl.Model = {
+        c.Model = {
             Latitude: "",
             Longitude: "",
             AppId: "",
@@ -16,16 +15,22 @@
             IsEnabled: true
         }
 
-        ctrl.$onInit = function () {
+        c.$onInit = function () {
             controllerProxyService.get("Service/ISettingsService/GetSettings", { "Uri": "OpenWeatherMapServiceSettings" }, function (response) {
-                ctrl.Model = response;
+                c.Model = response;
             });
         }
 
-        ctrl.save = function () {
+        c.openLocation = function ()
+        {
+            var url = "http://maps.google.com/maps?q=" + c.Model.Latitude + "," + c.Model.Longitude;
+            window.open(url);
+        }
+
+        c.save = function () {
             var payload = {
                 Uri: "OpenWeatherMapServiceSettings",
-                Settings: ctrl.Model
+                Settings: c.Model
             }
 
             controllerProxyService.execute("Service/ISettingsService/Replace", payload);
@@ -34,10 +39,10 @@
         }
     }
 
-    module.component("openWeatherMapSettings", {
-        templateUrl: "Settings/OpenWeatherMapSettings.component.html",
+    module.component("openWeatherMapServiceSettings", {
+        templateUrl: "Settings/OpenWeatherMapServiceSettings.component.html",
         controllerAs: "owmsCtrl",
         controller: ["controllerProxyService", "modalService", createController]
     });
-    
+   
 })();

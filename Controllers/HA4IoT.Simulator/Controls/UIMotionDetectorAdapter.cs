@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
-using HA4IoT.Contracts.Adapters;
+using HA4IoT.Contracts.Components.Adapters;
 
 namespace HA4IoT.Simulator.Controls
 {
@@ -14,8 +14,7 @@ namespace HA4IoT.Simulator.Controls
             _checkBox = checkBox ?? throw new ArgumentNullException(nameof(checkBox));
         }
 
-        public event EventHandler MotionDetectionBegin;
-        public event EventHandler MotionDetectionEnd;
+        public event EventHandler<MotionDetectorAdapterStateChangedEventArgs> StateChanged;
 
         public void Refresh()
         {
@@ -29,12 +28,12 @@ namespace HA4IoT.Simulator.Controls
 
         private void OnMotionDetectionBegin()
         {
-            Task.Run(() => MotionDetectionBegin?.Invoke(this, EventArgs.Empty));
+            Task.Run(() => StateChanged?.Invoke(this, new MotionDetectorAdapterStateChangedEventArgs(AdapterMotionDetectionState.MotionDetected)));
         }
 
         private void OnMotionDetectionEnd()
         {
-            Task.Run(() => MotionDetectionEnd?.Invoke(this, EventArgs.Empty));
+            Task.Run(() => StateChanged?.Invoke(this, new MotionDetectorAdapterStateChangedEventArgs(AdapterMotionDetectionState.Idle)));
         }
     }
 }

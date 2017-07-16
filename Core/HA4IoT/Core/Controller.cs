@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Storage;
 using HA4IoT.Components;
+using HA4IoT.Contracts;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Hardware.Interrupts;
+using HA4IoT.Contracts.Hardware.RemoteSockets;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Contracts.Services.Notifications;
-using HA4IoT.Contracts.Services.Settings;
-using HA4IoT.Contracts.Services.System;
-using HA4IoT.Net.Http;
+using HA4IoT.Contracts.Notifications;
+using HA4IoT.Contracts.Scripting;
+using HA4IoT.Contracts.Settings;
+using HA4IoT.Hardware.RemoteSockets;
 using HA4IoT.Settings;
 using Newtonsoft.Json.Linq;
 
@@ -20,7 +22,7 @@ namespace HA4IoT.Core
 {
     public class Controller : IController
     {
-        private readonly Container _container = new Container();
+        private readonly Container _container;
         private readonly ControllerOptions _options;
 
         private BackgroundTaskDeferral _deferral;
@@ -29,9 +31,17 @@ namespace HA4IoT.Core
         public Controller(ControllerOptions options)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
+            _container = new Container(options);
 
             StoragePath.Initialize(ApplicationData.Current.LocalFolder.Path, ApplicationData.Current.LocalFolder.Path);
         }
+
+        public static bool IsRunningInUnitTest { get; set; }
+
+        public IContainer Container => _container;
+
+        public event EventHandler<StartupCompletedEventArgs> StartupCompleted;
+        public event EventHandler<StartupFailedEventArgs> StartupFailed;
 
         public Task RunAsync(IBackgroundTaskInstance taskInstance)
         {
@@ -41,89 +51,74 @@ namespace HA4IoT.Core
 
         public Task RunAsync()
         {
-            var task = Task.Factory.StartNew(
-                Startup,
-                CancellationToken.None,
-                TaskCreationOptions.LongRunning,
-                TaskScheduler.Default);
-
-            task.ConfigureAwait(false);
-            return task;
+            return Task.Run(RunAsyncInternal);
         }
 
-        public event EventHandler StartupCompleted;
-        public event EventHandler StartupFailed;
-        public event EventHandler Shutdown;
-
-        private void Startup()
+        private async Task RunAsyncInternal()
         {
+            var stopwatch = Stopwatch.StartNew();
             try
             {
-                var stopwatch = Stopwatch.StartNew();
+                _container.RegisterSingleton<IController>(() => this);
+                _container.RegisterServices();
+                _options.ContainerConfigurator?.ConfigureContainer(_container);
+                _container.Verify();
 
-                RegisterServices();
-                StartHttpServer();
+                _log = _container.GetInstance<ILogService>().CreatePublisher(nameof(Controller));
+                
+                _container.GetInstance<IInterruptMonitorService>().RegisterInterrupts();
+                _container.GetInstance<IDeviceRegistryService>().RegisterDevices();
+                _container.GetInstance<IRemoteSocketService>().RegisterRemoteSockets();
 
                 _container.StartupServices(_log);
                 _container.ExposeRegistrationsToApi();
 
-                TryConfigure();
+                await TryConfigureAsync();
 
-                StartupCompleted?.Invoke(this, EventArgs.Empty);
-                stopwatch.Stop();
+                StartupCompleted?.Invoke(this, new StartupCompletedEventArgs(stopwatch.Elapsed));
 
-                _container.GetInstance<IApiDispatcherService>().ConfigurationRequested += (s, e) =>
-                {
-                    var controllerSettings = _container.GetInstance<ISettingsService>().GetSettings<ControllerSettings>();
-                    e.ApiContext.Result["Controller"] = JObject.FromObject(controllerSettings);
-                };
-
-                _log.Info("Startup completed after " + stopwatch.Elapsed);
-
-                _container.GetInstance<ISystemInformationService>().Set("Health/StartupDuration", stopwatch.Elapsed);
-                _container.GetInstance<ISystemInformationService>().Set("Health/StartupTimestamp", _container.GetInstance<IDateTimeService>().Now);
-
-                _container.GetInstance<ITimerService>().Run();
+                _container.GetInstance<IScriptingService>().TryExecuteStartupScripts();
             }
             catch (Exception exception)
             {
-                _log?.Error(exception, "Failed to initialize.");
-                StartupFailed?.Invoke(this, EventArgs.Empty);
-            }
-            finally
-            {
-                Shutdown?.Invoke(this, EventArgs.Empty);
+                StartupFailed?.Invoke(this, new StartupFailedEventArgs(stopwatch.Elapsed, exception));
                 _deferral?.Complete();
             }
         }
 
-        private void StartHttpServer()
+        private async Task TryConfigureAsync()
         {
-            var httpServer = _container.GetInstance<HttpServer>();
-            httpServer.Bind(_options.HttpServerPort);
+            try
+            {
+                _container.GetInstance<IApiDispatcherService>().ConfigurationRequested += (s, e) =>
+                {
+                    e.ApiContext.Result["Controller"] = JObject.FromObject(_container.GetInstance<ISettingsService>().GetSettings<ControllerSettings>());
+                };
+
+                await TryApplyCodeConfigurationAsync();
+
+                _log.Info("Resetting all components");
+                var componentRegistry = _container.GetInstance<IComponentRegistryService>();
+                foreach (var component in componentRegistry.GetComponents())
+                {
+                    component.TryReset();
+                }
+
+            }
+            catch (Exception exception)
+            {
+                _log.Error(exception, "Error while configuring");
+                _container.GetInstance<INotificationService>().CreateError("Error while configuring.");
+            }
         }
 
-        private void RegisterServices()
-        {
-            _container.RegisterSingleton<IController>(() => this);
-            _container.RegisterSingleton(() => _options);
-
-            _container.RegisterServices();
-            _options.ContainerConfigurator?.ConfigureContainer(_container);
-
-            _container.Verify();
-            _log = _container.GetInstance<ILogService>().CreatePublisher(nameof(Controller));
-
-            _log.Info("Services registered.");
-        }
-
-        private void TryConfigure()
+        private async Task TryApplyCodeConfigurationAsync()
         {
             try
             {
                 if (_options.ConfigurationType == null)
                 {
-                    _log.Warning("No configuration is set.");
+                    _log.Verbose("No configuration type is set.");
                     return;
                 }
 
@@ -135,20 +130,12 @@ namespace HA4IoT.Core
                 }
 
                 _log.Info("Applying configuration");
-                configuration.ApplyAsync().Wait();
-
-                _log?.Info("Resetting all components");
-                var componentService = _container.GetInstance<IComponentRegistryService>();
-                foreach (var component in componentService.GetComponents())
-                {
-                    component.TryReset();
-                }
+                await configuration.ApplyAsync();
             }
             catch (Exception exception)
             {
-                _log?.Error(exception, "Error while configuring");
-
-                _container.GetInstance<INotificationService>().CreateError("Configuration is invalid");
+                _log.Error(exception, "Error while applying code configuration");
+                _container.GetInstance<INotificationService>().CreateError("Configuration code has failed.");
             }
         }
     }

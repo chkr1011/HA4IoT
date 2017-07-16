@@ -16,15 +16,15 @@ namespace HA4IoT.Tests.Mockups
             NotifyStateChangedCalledCount++;
         }
 
-        public IApiContext Invoke(string action, JObject parameter)
+        public IApiCall Invoke(string action, JObject parameter)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
             if (parameter == null) throw new ArgumentNullException(nameof(parameter));
 
-            var apiContext = new ApiContext(action, parameter, null);
-            RequestReceived?.Invoke(this, new ApiRequestReceivedEventArgs(apiContext));
+            var apiCall = new ApiCall(action, parameter, null);
+            RequestReceived?.Invoke(this, new ApiRequestReceivedEventArgs(apiCall));
 
-            return apiContext;
+            return apiCall;
         }
     }
 }

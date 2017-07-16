@@ -36,7 +36,9 @@ void callback(char *topic, byte *payload, uint16_t length) {
   payload[length] = '\0';
   String message = String((char *)payload);
 
-  Serial.printf("RX MQTT message: T=%s, P=%s\n", topic, (char *)payload);
+#ifdef DEBUG
+  Serial.printf("MQTT: RX T=%s, P=%s\n", topic, (char *)payload);
+#endif
 
   for (uint8_t i = 0; i < _onMessageCallbacksIndex; i++) {
     if (strcmp(_onMessageCallbacks[i].topic.c_str(), topic) == 0) {
@@ -45,7 +47,7 @@ void callback(char *topic, byte *payload, uint16_t length) {
   }
 }
 
-bool getMqttIsConnected() { return _isConnected; }
+bool mqttIsConnected() { return _isConnected; }
 
 void setupMqtt() {
   if (!_mqttSettings.isEnabled) {
@@ -60,17 +62,19 @@ void loopMqtt(uint16_t elapsedMillis) {
     return;
   }
 
-  if (!getWiFiIsConnected()) {
+  if (!wiFiIsConnected()) {
+    _isConnected = false;
+    setInfo();
     return;
   }
 
   if (_mqttClient.connected() && _mqttClient.loop()) {
     _mqttReconnectTimeout = MQTT_RECONNECT_INTERVAL;
-    clearError();
+    clearInfo();
     return;
   }
 
-  setError();
+  setInfo();
 
   _mqttReconnectTimeout -= elapsedMillis;
   if (_mqttReconnectTimeout > 0) {
@@ -78,42 +82,50 @@ void loopMqtt(uint16_t elapsedMillis) {
   }
 
   _mqttReconnectTimeout = MQTT_RECONNECT_INTERVAL;
-  Serial.printf("Connecting with MQTT server %s...\n",
-                _mqttSettings.server.c_str());
+
+#ifdef DEBUG
+  Serial.printf("MQTT: Connecting '%s'...\n", _mqttSettings.server.c_str());
+#endif
 
   _mqttClient.setServer(_mqttSettings.server.c_str(), 1883);
-
-  _isConnected =
-      _mqttClient.connect(_sysSettings.name.c_str(), _mqttSettings.user.c_str(),
-                          _mqttSettings.password.c_str());
+  _isConnected = _mqttClient.connect(_sysSettings.name.c_str(), _mqttSettings.user.c_str(), _mqttSettings.password.c_str());
 
   if (_isConnected) {
-    _mqttClient.subscribe(("HA4IoT/Device/" + _sysSettings.name + "/#").c_str());
+    _mqttClient.subscribe(("HA4IoT/Device/" + _sysSettings.name + "/Command/#").c_str());
 
     for (uint8_t i = 0; i < _onConnectedCallbacksIndex; i++) {
       _onConnectedCallbacks[i].callback();
     }
-
-    Serial.println(F("Connected with MQTT server"));
-  } else {
-    Serial.println(F("MQTT client not connected"));
   }
+
+#ifdef DEBUG
+  Serial.println(_isConnected ? F("MQTT: Connected") : F("MQTT: Not connected"));
+#endif
 }
 
-String generateMqttNotificationTopic(String suffix) {
-  return "HA4IoT/Device/" + _sysSettings.name + "/Notification/" + suffix;
-}
+String generateMqttNotificationTopic(String suffix) { return "HA4IoT/Device/" + _sysSettings.name + "/Notification/" + suffix; }
 
-String generateMqttCommandTopic(String suffix) {
-  return "HA4IoT/Device/" + _sysSettings.name + "/Command/" + suffix;
-}
+String generateMqttCommandTopic(String suffix) { return "HA4IoT/Device/" + _sysSettings.name + "/Command/" + suffix; }
 
 void publishMqttMessage(const char *topic, const char *payload) {
   if (!_isConnected) {
     return;
   }
 
-  _mqttClient.publish(topic, payload);
+#ifdef DEBUG
+  Serial.printf("MQTT: TX T=%s P=%s\n", topic, payload);
+#endif
 
-  Serial.printf("TX MQTT message: T=%s P=%s\n", topic, payload);
+  _mqttClient.publish(topic, payload);
 }
+
+void publishMqttMessage(String topic, String payload) { publishMqttMessage(topic.c_str(), payload.c_str()); }
+
+void publishMqttMessage(String topic, JsonObject *json) {
+  char buffer[MAX_JSON_SIZE];
+  json->printTo(buffer, sizeof(buffer));
+
+  publishMqttMessage(topic.c_str(), buffer);
+}
+
+void publishMqttNotification(String topicSuffix, String payload) { publishMqttMessage(generateMqttNotificationTopic(topicSuffix), payload); }

@@ -62,7 +62,11 @@
             </div>
         </form>
     </div>
+
     <div class="panel-footer clearfix">
-        <button class="btn btn-default pull-right" ng-click="owmsCtrl.save()">Save</button>
+        <div class="btn-group pull-right">
+            <button class="btn btn-default" ng-click="owmsCtrl.openLocation()">Show in Google Maps</button>
+            <button class="btn btn-default" ng-click="owmsCtrl.save()">Save</button>
+        </div>
     </div>
 </div>

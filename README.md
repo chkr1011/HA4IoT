@@ -16,7 +16,11 @@ The core application of this project is running under Windows 10 IoT Core which 
   <img src="https://github.com/chkr1011/HA4IoT/blob/master/Media/Images/Echo.jpg?raw=true" width="256">
 </p>
 
-This project contains a _Custom Skill_ for Amazon Alexa (Echo and Echo Dot) which allows controlling actuators via speech commands and ask for sensor status like open windows etc. A demonstration is available here: https://www.youtube.com/watch?v=9089vAgu2pQ.
+This project contains a _Custom Skill_ for Amazon Alexa (Echo and Echo Dot) which allows controlling actuators via speech commands and ask for sensor status like open windows etc. 
+
+### Demos
+* Turn lamp on and off: https://www.youtube.com/watch?v=9089vAgu2pQ
+* Turn device on and off: https://youtu.be/RaIP7T-nLUs
 
 ## CCTools support
 <p align="center">
@@ -45,6 +49,12 @@ Controlling old 433 MHz devices is supported via using a I2C or WiFi -> 433 MHz 
 </p>
 
 This project has build in  support for several _Sonoff_ devices from Itead Studio (www.itead.cc). But it is necessary to replace the firmware with a different one. More information can be found here: https://github.com/arendst/Sonoff-Tasmota
+
+## LUA scripting support
+Write your own scripts using the scripting language LUA to write powerful automations or interacting with your hardware.
+<p align="center">
+  <img src="https://github.com/chkr1011/HA4IoT/blob/master/Media/Images/Script_1.png?raw=true" height="256">
+</p>
 
 ## Extensible
 It is possible to add _Adapters_ for different hardware. I2C bus and MQTT broker are already available in the project.

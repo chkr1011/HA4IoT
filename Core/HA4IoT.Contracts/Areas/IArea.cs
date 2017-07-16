@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using HA4IoT.Contracts.Automations;
+﻿using HA4IoT.Contracts.Automations;
 using HA4IoT.Contracts.Components;
+using System.Collections.Generic;
 
 namespace HA4IoT.Contracts.Areas
 {

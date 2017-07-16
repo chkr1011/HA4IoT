@@ -6,15 +6,12 @@ namespace HA4IoT.Contracts.Core.Discovery
     {
         public DiscoveryResponse(string controllerCaption, string controllerDescription)
         {
-            if (controllerCaption == null) throw new ArgumentNullException(nameof(controllerCaption));
-            if (controllerDescription == null) throw new ArgumentNullException(nameof(controllerDescription));
-
-            ControllerCaption = controllerCaption;
-            ControllerDescription = controllerDescription;
+            ControllerCaption = controllerCaption ?? throw new ArgumentNullException(nameof(controllerCaption));
+            ControllerDescription = controllerDescription ?? throw new ArgumentNullException(nameof(controllerDescription));
         }
 
-        public string ControllerCaption { get; private set; }
+        public string ControllerCaption { get; }
 
-        public string ControllerDescription { get; private set; }
+        public string ControllerDescription { get; }
     }
 }

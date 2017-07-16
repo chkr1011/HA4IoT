@@ -1,6 +1,6 @@
 ﻿using System;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Contracts.Services.System;
 
 namespace HA4IoT.Tests.Mockups.Services
 {

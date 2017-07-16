@@ -9,36 +9,40 @@ using System.Threading.Tasks;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Api.Cloud;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Contracts.Services.Settings;
+using HA4IoT.Contracts.Settings;
 using Newtonsoft.Json;
 
 namespace HA4IoT.Api.Cloud.CloudConnector
 {
     public class CloudConnectorService : ServiceBase, IApiAdapter
     {
-        private const string BaseUri = "https://ha4iot-cloudapi.azurewebsites.net";
-
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
         private readonly StringContent _emptyContent = new StringContent(string.Empty);
-        private readonly Uri _receiveRequestsUri;
-        private readonly Uri _sendResponseUri;
+        private readonly string _receiveRequestsUri;
+        private readonly string _sendResponseUri;
 
         private readonly CloudConnectorServiceSettings _settings;
         private readonly IApiDispatcherService _apiDispatcherService;
         private readonly ILogger _log;
 
-        public CloudConnectorService(IApiDispatcherService apiDispatcherService, ISettingsService settingsService, ILogService logService)
+        private bool _isConnected;
+
+        public CloudConnectorService(IApiDispatcherService apiDispatcherService, ISettingsService settingsService, ISystemInformationService systemInformationService, ILogService logService)
         {
+            if (systemInformationService == null) throw new ArgumentNullException(nameof(systemInformationService));
             _log = logService?.CreatePublisher(nameof(CloudConnectorService)) ?? throw new ArgumentNullException(nameof(logService));
             _apiDispatcherService = apiDispatcherService ?? throw new ArgumentNullException(nameof(apiDispatcherService));
 
-            _receiveRequestsUri = new Uri($"{BaseUri}/api/ControllerProxy/ReceiveRequests");
-            _sendResponseUri = new Uri($"{BaseUri}/api/ControllerProxy/SendResponse");
-
             _settings = settingsService?.GetSettings<CloudConnectorServiceSettings>() ?? throw new ArgumentNullException(nameof(settingsService));
+
+            _receiveRequestsUri = $"{_settings.ServerAddress}/api/ControllerProxy/ReceiveRequests";
+            _sendResponseUri = $"{_settings.ServerAddress}/api/ControllerProxy/SendResponse";
+
+            systemInformationService.Set("CloudConnector/IsConnected", () => _isConnected);
         }
 
         public event EventHandler<ApiRequestReceivedEventArgs> RequestReceived;
@@ -76,6 +80,8 @@ namespace HA4IoT.Api.Cloud.CloudConnector
                     try
                     {
                         var response = await ReceivePendingMessagesAsync(httpClient, _cancellationTokenSource.Token);
+                        _isConnected = response.Succeeded;
+
                         if (response.Succeeded && !string.IsNullOrEmpty(response.Response))
                         {
                             Task.Run(() => ProcessPendingCloudMessages(response.Response)).Forget();
@@ -84,6 +90,8 @@ namespace HA4IoT.Api.Cloud.CloudConnector
                     catch (Exception exception)
                     {
                         _log.Error(exception, "Error while receiving pending Cloud messages.");
+                        _isConnected = false;
+
                         await Task.Delay(TimeSpan.FromSeconds(5));
                     }
                 }
@@ -159,12 +167,12 @@ namespace HA4IoT.Api.Cloud.CloudConnector
             }
         }
 
-        private async Task SendResponse(CloudConnectorApiContext apiContext)
+        private async Task SendResponse(CloudConnectorApiContext apiCall)
         {
             try
             {
                 using (var httpClient = new HttpClient())
-                using (var content = CreateContent(apiContext))
+                using (var content = CreateContent(apiCall))
                 {
                     httpClient.DefaultRequestHeaders.Authorization = CreateAuthorizationHeader();
 
@@ -187,25 +195,25 @@ namespace HA4IoT.Api.Cloud.CloudConnector
 
         private CloudConnectorApiContext ProcessCloudMessage(CloudRequestMessage cloudMessage)
         {
-            var apiContext = new CloudConnectorApiContext(cloudMessage);
-            var eventArgs = new ApiRequestReceivedEventArgs(apiContext);
+            var apiCall = new CloudConnectorApiContext(cloudMessage);
+            var eventArgs = new ApiRequestReceivedEventArgs(apiCall);
 
             RequestReceived?.Invoke(this, eventArgs);
 
             if (!eventArgs.IsHandled)
             {
-                apiContext.ResultCode = ApiResultCode.ActionNotSupported;
+                apiCall.ResultCode = ApiResultCode.ActionNotSupported;
             }
 
-            return apiContext;
+            return apiCall;
         }
 
-        private static StringContent CreateContent(CloudConnectorApiContext apiContext)
+        private static StringContent CreateContent(CloudConnectorApiContext apiCall)
         {
             var cloudMessage = new CloudResponseMessage();
-            cloudMessage.Header.CorrelationId = apiContext.RequestMessage.Header.CorrelationId;
-            cloudMessage.Response.ResultCode = apiContext.ResultCode;
-            cloudMessage.Response.Result = apiContext.Result;
+            cloudMessage.Header.CorrelationId = apiCall.RequestMessage.Header.CorrelationId;
+            cloudMessage.Response.ResultCode = apiCall.ResultCode;
+            cloudMessage.Response.Result = apiCall.Result;
 
             var stringContent = new StringContent(JsonConvert.SerializeObject(cloudMessage));
             stringContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");

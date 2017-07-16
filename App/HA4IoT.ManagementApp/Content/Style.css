@@ -48,31 +48,13 @@ body {
   padding: 15px;
 }
 
-.log {
-    background: black;
-    padding: 10px;
-    overflow-y: scroll;
-    overflow-x: scroll;
-    height: 900px;
+.system-info-header {
+    font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+    font-size: 14px;
+    font-weight: bold;
 }
 
-.log-message {
-    font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
-    font-size: 10pt;
-    color: white;
-    border: 0; background-color: transparent;
-    display: inline;
+.system-info-key, .system-info-value {
+    font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+    font-size: 13px;
 }
-
-.log-error-message {
-    color: red;
-}
-
-.log-info-message {
-    color: lightgreen;
-}
-
-.log-warning-message {
-    color: yellow;
-}
-

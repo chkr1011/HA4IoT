@@ -1,0 +1,19 @@
+{
+  "HealthServiceConfiguration": {
+    "StatusLed": {
+      "Gpio": 22,
+      "IsInverted": true
+    }
+  },
+  "HttpServerService": {
+    "Port": 80
+  },
+  "ScriptingService": {
+    "StartupScripts": [
+      {
+        "Name": "Startup.lua",
+        "EntryFunction": null
+      }
+    ]
+  }
+}

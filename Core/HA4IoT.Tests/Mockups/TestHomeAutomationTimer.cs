@@ -1,24 +1,16 @@
 ﻿using System;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Services.System;
+using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Tests.Mockups
 {
-    public class TestTimerService : ITimerService
+    public class TestTimerService : ServiceBase, ITimerService
     {
         public event EventHandler<TimerTickEventArgs> Tick;
 
-        public void Run()
-        {
-        }
-
         public void ExecuteTick(TimeSpan elapsedTime)
         {
-            Tick?.Invoke(this, new TimerTickEventArgs(elapsedTime));
-        }
-
-        public void Startup()
-        {
+            Tick?.Invoke(this, new TimerTickEventArgs { ElapsedTime = elapsedTime });
         }
     }
 }

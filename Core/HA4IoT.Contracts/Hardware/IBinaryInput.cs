@@ -7,7 +7,5 @@ namespace HA4IoT.Contracts.Hardware
         event EventHandler<BinaryStateChangedEventArgs> StateChanged;
 
         BinaryState Read();
-
-        IBinaryInput WithInvertedState(bool value = true);
     }
 }

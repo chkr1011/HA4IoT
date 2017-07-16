@@ -1,17 +1,16 @@
 ﻿using System;
-using HA4IoT.Commands;
 using HA4IoT.Components;
+using HA4IoT.Components.Commands;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Adapters;
-using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Components.Adapters;
+using HA4IoT.Contracts.Components.Commands;
 using HA4IoT.Contracts.Components.Features;
 using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Services.Settings;
-using HA4IoT.Contracts.Services.System;
-using HA4IoT.Services.System;
+using HA4IoT.Contracts.Settings;
+using HA4IoT.Core;
 
 namespace HA4IoT.Actuators.RollerShutters
 {
@@ -40,7 +39,7 @@ namespace HA4IoT.Actuators.RollerShutters
             _autoOffTimeout = new Timeout(timerService);
             _autoOffTimeout.Elapsed += (s, e) => Stop();
 
-            timerService.Tick += (s, e) => TrackPosition(e);
+            timerService.Tick += TrackPosition;
 
             settingsService.CreateSettingsMonitor<RollerShutterSettings>(this, s => Settings = s.NewSettings);
 
@@ -50,7 +49,7 @@ namespace HA4IoT.Actuators.RollerShutters
             _commandExecutor.Register<ResetCommand>(c => MoveUp(true));
         }
 
-        public RollerShutterSettings Settings { get; set; }
+        public RollerShutterSettings Settings { get; private set; }
 
         public override IComponentFeatureStateCollection GetState()
         {
@@ -124,7 +123,7 @@ namespace HA4IoT.Actuators.RollerShutters
             OnStateChanged(oldState);
         }
         
-        private void TrackPosition(TimerTickEventArgs timerTickEventArgs)
+        private void TrackPosition(object sender, TimerTickEventArgs timerTickEventArgs)
         {
             if (_powerState == PowerStateValue.Off)
             {

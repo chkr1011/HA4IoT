@@ -16,7 +16,7 @@ namespace HA4IoT.Api
         private static readonly HashAlgorithmProvider HashAlgorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Md5);
 
         private readonly List<IApiAdapter> _adapters = new List<IApiAdapter>();
-        private readonly Dictionary<string, Action<IApiContext>> _actions = new Dictionary<string, Action<IApiContext>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Action<IApiCall>> _actions = new Dictionary<string, Action<IApiCall>>(StringComparer.OrdinalIgnoreCase);
         private readonly ILogger _log;
 
         public ApiDispatcherService(ILogService logService)
@@ -47,7 +47,7 @@ namespace HA4IoT.Api
             }
         }
 
-        public void Route(string action, Action<IApiContext> handler)
+        public void Route(string action, Action<IApiCall> handler)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
             if (handler == null) throw new ArgumentNullException(nameof(handler));
@@ -102,14 +102,14 @@ namespace HA4IoT.Api
                 }
 
                 var action = @namespace + "/" + method.Name;
-                void Handler(IApiContext apiContext) => method.Invoke(controller, new object[] {apiContext});
+                void Handler(IApiCall apiCall) => method.Invoke(controller, new object[] {apiCall});
                 Route(action, Handler);
 
                 _log.Verbose($"Exposed API method to action '{action}'.");
             }
         }
 
-        private void HandleGetActionsRequest(IApiContext apiContext)
+        private void HandleGetActionsRequest(IApiCall apiCall)
         {
             var actions = new JArray();
 
@@ -121,74 +121,74 @@ namespace HA4IoT.Api
                 }
             }
 
-            apiContext.Result.Add("Actions", actions);
+            apiCall.Result.Add("Actions", actions);
         }
 
-        private void HandleGetStatusRequest(IApiContext apiContext)
+        private void HandleGetStatusRequest(IApiCall apiCall)
         {
-            var eventArgs = new ApiRequestReceivedEventArgs(apiContext);
+            var eventArgs = new ApiRequestReceivedEventArgs(apiCall);
             StatusRequested?.Invoke(this, eventArgs);
             StatusRequestCompleted?.Invoke(this, eventArgs);
         }
 
-        private void HandleGetConfigurationRequest(IApiContext apiContext)
+        private void HandleGetConfigurationRequest(IApiCall apiCall)
         {
-            var eventArgs = new ApiRequestReceivedEventArgs(apiContext);
+            var eventArgs = new ApiRequestReceivedEventArgs(apiCall);
             ConfigurationRequested?.Invoke(this, eventArgs);
             ConfigurationRequestCompleted?.Invoke(this, eventArgs);
         }
 
-        private void HandlePingRequest(IApiContext apiContext)
+        private void HandlePingRequest(IApiCall apiCall)
         {
-            apiContext.ResultCode = ApiResultCode.Success;
-            apiContext.Result = apiContext.Parameter;
+            apiCall.ResultCode = ApiResultCode.Success;
+            apiCall.Result = apiCall.Parameter;
         }
 
-        private void HandleExecuteRequest(IApiContext apiContext)
+        private void HandleExecuteRequest(IApiCall apiCall)
         {
-            if (apiContext.Parameter == null || string.IsNullOrEmpty(apiContext.Action))
+            if (apiCall.Parameter == null || string.IsNullOrEmpty(apiCall.Action))
             {
-                apiContext.ResultCode = ApiResultCode.InvalidParameter;
+                apiCall.ResultCode = ApiResultCode.InvalidParameter;
                 return;
             }
             
-            var apiRequest = apiContext.Parameter.ToObject<ApiRequest>();
+            var apiRequest = apiCall.Parameter.ToObject<ApiRequest>();
             if (apiRequest == null)
             {
-                apiContext.ResultCode = ApiResultCode.InvalidParameter;
+                apiCall.ResultCode = ApiResultCode.InvalidParameter;
                 return;
             }
 
             if (apiRequest.Action.Equals("Execute", StringComparison.OrdinalIgnoreCase))
             {
-                apiContext.ResultCode = ApiResultCode.ActionNotSupported;
+                apiCall.ResultCode = ApiResultCode.ActionNotSupported;
                 return;
             }
 
-            var innerApiContext = new ApiContext(apiRequest.Action, apiRequest.Parameter ?? new JObject(), apiRequest.ResultHash);
+            var innerApiContext = new ApiCall(apiRequest.Action, apiRequest.Parameter ?? new JObject(), apiRequest.ResultHash);
 
             var eventArgs = new ApiRequestReceivedEventArgs(innerApiContext);
             RouteRequest(this, eventArgs);
 
-            apiContext.ResultCode = innerApiContext.ResultCode;
-            apiContext.Result = innerApiContext.Result;
-            apiContext.ResultHash = innerApiContext.ResultHash;
+            apiCall.ResultCode = innerApiContext.ResultCode;
+            apiCall.Result = innerApiContext.Result;
+            apiCall.ResultHash = innerApiContext.ResultHash;
 
-            if (apiContext.ResultHash != null)
+            if (apiCall.ResultHash != null)
             {
-                var newHash = GenerateHash(apiContext.Result.ToString());
-                if (apiContext.ResultHash.Equals(newHash))
+                var newHash = GenerateHash(apiCall.Result.ToString());
+                if (apiCall.ResultHash.Equals(newHash))
                 {
-                    apiContext.Result = new JObject();
+                    apiCall.Result = new JObject();
                 }
 
-                apiContext.ResultHash = newHash;
+                apiCall.ResultHash = newHash;
             }
         }
 
         private void RouteRequest(object sender, ApiRequestReceivedEventArgs e)
         {
-            Action<IApiContext> handler;
+            Action<IApiCall> handler;
             lock (_actions)
             {
                 if (!_actions.TryGetValue(e.ApiContext.Action, out handler))

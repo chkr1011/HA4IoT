@@ -4,10 +4,8 @@ obj/
 [Dd]ebug*/
 [Rr]elease*/
 
-/packages/
 .vs/config/applicationhost.config
 
-project.lock.json
 __vm/
 HA4IoT.opensdf
 HA4IoT.sdf
@@ -17,3 +15,24 @@ HA4IoT.sdf
 
 *.user
 *.pubxml
+
+##########################
+
+# From: https://docs.microsoft.com/en-us/nuget/consume-packages/packages-and-source-control
+# Ignore NuGet Packages
+*.nupkg
+
+App/LocalDeployInfo.dat
+
+# Ignore the packages folder
+**/packages/*
+
+# except build/, which is used as an MSBuild target.
+!**/packages/build/
+
+# Uncomment if necessary; generally it will be regenerated when needed
+#!**/packages/repositories.config
+
+# Ignore other intermediate files that NuGet might create
+project.lock.json
+*.nuget.props

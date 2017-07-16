@@ -8,7 +8,7 @@ namespace HA4IoT.Net.Http
     {
         public HttpStatusCode StatusCode { get; set; } = HttpStatusCode.Ok;
         public Dictionary<string, string> Headers { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        public byte[] Body { get; set; }
+        public byte[] Body { get; set; } // TODO: Use stream.
         public string MimeType { get; set; }
     }
 }

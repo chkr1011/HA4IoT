@@ -4,8 +4,7 @@ namespace HA4IoT.Contracts.Core
 {
     public interface IController
     {
-        event EventHandler StartupCompleted;
-        event EventHandler StartupFailed;
-        event EventHandler Shutdown;
+        event EventHandler<StartupCompletedEventArgs> StartupCompleted;
+        event EventHandler<StartupFailedEventArgs> StartupFailed;
     }
 }

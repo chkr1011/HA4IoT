@@ -5,6 +5,10 @@ namespace HA4IoT.Automations
 {
     public class RollerShutterAutomationSettings : AutomationSettings
     {
+        public bool AutoOpenIsEnabled { get; set; } = true;
+
+        public bool AutoCloseIsEnabled { get; set; } = true;
+
         public bool SkipBeforeTimestampIsEnabled { get; set; }
 
         public TimeSpan SkipBeforeTimestamp { get; set; } = TimeSpan.Parse("07:15");

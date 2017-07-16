@@ -1,5 +1,5 @@
 ﻿using System;
-using HA4IoT.Contracts.Hardware.Services;
+using HA4IoT.Contracts.Hardware.Mqtt;
 using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Contracts.Hardware.DeviceMessaging

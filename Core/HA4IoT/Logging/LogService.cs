@@ -2,141 +2,100 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using Windows.System.Threading;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Contracts.Services.System;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.Logging
 {
     [ApiServiceClass(typeof(ILogService))]
-    public class LogService : ServiceBase, ILogService
+    public sealed class LogService : ServiceBase, ILogService
     {
-        private const int LogHistorySize = 1000;
-        private const int LogErrorHistorySize = 250;
-        private const int LogWarningHistorySize = 250;
-        
+        private readonly object _syncRoot = new object();
         private readonly Guid _sessionId = Guid.NewGuid();
-        private readonly Queue<LogEntry> _logEntries = new Queue<LogEntry>();
-        private readonly Queue<LogEntry> _errorLogEntries = new Queue<LogEntry>();
-        private readonly Queue<LogEntry> _warningLogEntries = new Queue<LogEntry>();
+        
+        private readonly List<LogEntry> _pendingLogEntries = new List<LogEntry>();
+        private readonly RollingCollection<LogEntry> _logEntries = new RollingCollection<LogEntry>(1000);
+        private readonly RollingCollection<LogEntry> _errorLogEntries = new RollingCollection<LogEntry>(250);
+        private readonly RollingCollection<LogEntry> _warningLogEntries = new RollingCollection<LogEntry>(250);
 
-        private readonly IDateTimeService _dateTimeService;
+        private readonly IEnumerable<ILogAdapter> _adapters;
 
         private long _id;
 
-        public LogService(IDateTimeService dateTimeService)
+        public LogService(IEnumerable<ILogAdapter> adapters)
         {
-            _dateTimeService = dateTimeService ?? throw new ArgumentNullException(nameof(dateTimeService));
+            _adapters = adapters ?? throw new ArgumentNullException(nameof(adapters));
 
             Log.Default = CreatePublisher(null);
+            ThreadPoolTimer.CreatePeriodicTimer(ProcessPendingLogEntries, TimeSpan.FromMilliseconds(100));
         }
 
-        public event EventHandler<LogEntryPublishedEventArgs> LogEntryPublished;
+        public int ErrorsCount => _errorLogEntries.Count;
+        public int WarningsCount => _warningLogEntries.Count;
 
         public ILogger CreatePublisher(string source)
         {
             return new LogServicePublisher(source, this);
         }
 
-        public void Verbose(string message)
+        public void Publish(LogEntrySeverity severity, string source, string message, Exception exception)
         {
-            Verbose(null, message);
-        }
+            var id = Interlocked.Increment(ref _id);
+            var logEntry = new LogEntry(id, DateTime.Now, System.Environment.CurrentManagedThreadId, severity, source ?? "System", message, exception?.ToString());
 
-        public void Verbose(string source, string message)
-        {
-            Add(LogEntrySeverity.Verbose, source, message, null);
-        }
-
-        public void Info(string message)
-        {
-            Info(null, message);
-        }
-
-        public void Info(string source, string message)
-        {
-            Add(LogEntrySeverity.Info, source, message, null);
-        }
-
-        public void Warning(string message)
-        {
-            Warning((string)null, message);
-        }
-
-        public void Warning(string source, string message)
-        {
-            Warning(source, null, message);
-        }
-
-        public void Warning(Exception exception, string message)
-        {
-            Warning(null, exception, message);
-        }
-
-        public void Warning(string source, Exception exception, string message)
-        {
-            Add(LogEntrySeverity.Warning, source, message, exception);
-        }
-
-        public void Error(string message)
-        {
-            Error((string)null, message);
-        }
-
-        public void Error(string source, string message)
-        {
-            Error(source, null, message);    
-        }
-
-        public void Error(Exception exception, string message)
-        {
-            Error(null, exception, message);
-        }
-
-        public void Error(string source, Exception exception, string message)
-        {
-            Add(LogEntrySeverity.Error, source, message, exception);
-        }
-
-        [ApiMethod]
-        public void GetWarningLogEntries(IApiContext apiContext)
-        {
-            lock (_warningLogEntries)
+            lock (_pendingLogEntries)
             {
-                var response = new GetLogEntriesResponse
-                {
-                    SessionId = _sessionId,
-                    LogEntries = _warningLogEntries.ToList()
-                };
-
-                apiContext.Result = JObject.FromObject(response);
+                _pendingLogEntries.Add(logEntry);
             }
         }
 
         [ApiMethod]
-        public void GetErrorLogEntries(IApiContext apiContext)
+        public void ResetWarningLogEntries(IApiCall apiCall)
         {
-            lock (_errorLogEntries)
+            lock (_syncRoot)
             {
-                var response = new GetLogEntriesResponse
-                {
-                    SessionId = _sessionId,
-                    LogEntries = _errorLogEntries.ToList()
-                };
-
-                apiContext.Result = JObject.FromObject(response);
+                _warningLogEntries.Clear();
             }
         }
 
         [ApiMethod]
-        public void GetLogEntries(IApiContext apiContext)
+        public void GetWarningLogEntries(IApiCall apiCall)
         {
-            var request = apiContext.Parameter.ToObject<GetLogEntriesRequest>();
+            lock (_syncRoot)
+            {
+                CreateGetLogEntriesResponse(_warningLogEntries, apiCall);
+            }
+        }
+
+        [ApiMethod]
+        public void ResetErrorLogEntries(IApiCall apiCall)
+        {
+            lock (_syncRoot)
+            {
+                _errorLogEntries.Clear();
+            }
+        }
+
+        [ApiMethod]
+        public void GetErrorLogEntries(IApiCall apiCall)
+        {
+            lock (_syncRoot)
+            {
+                CreateGetLogEntriesResponse(_errorLogEntries, apiCall);
+            }
+        }
+
+        [ApiMethod]
+        public void GetLogEntries(IApiCall apiCall)
+        {
+            var request = apiCall.Parameter.ToObject<GetLogEntriesRequest>();
             if (request == null)
             {
-                apiContext.ResultCode = ApiResultCode.InvalidParameter;
+                apiCall.ResultCode = ApiResultCode.InvalidParameter;
                 return;
             }
 
@@ -146,15 +105,15 @@ namespace HA4IoT.Logging
             }
 
             List<LogEntry> logEntries;
-            lock (_logEntries)
+            lock (_syncRoot)
             {
-                if (request.SessionId != _sessionId)
+                if (!request.SessionId.HasValue || request.SessionId.Value != _sessionId)
                 {
                     logEntries = _logEntries.Take(request.MaxCount).ToList();
                 }
                 else
                 {
-                    logEntries = _logEntries.Where(e => e.Id > request.Offset).Take(request.MaxCount).ToList();
+                    logEntries = _logEntries.SkipWhile(e => e.Id <= request.Offset).Take(request.MaxCount).ToList();
                 }
             }
 
@@ -164,53 +123,67 @@ namespace HA4IoT.Logging
                 LogEntries = logEntries
             };
 
-            apiContext.Result = JObject.FromObject(response);
+            apiCall.Result = JObject.FromObject(response);
         }
 
-        private void Add(LogEntrySeverity severity, string source, string message, Exception exception)
+        private void PublishPendingLogEntry(LogEntry logEntry)
         {
-            LogEntry logEntry;
-            lock (_logEntries)
+            lock (_syncRoot)
             {
-                _id += 1L;
-                logEntry = new LogEntry(_id, _dateTimeService.Now, Environment.CurrentManagedThreadId, severity, source, message, exception?.ToString());
+                _logEntries.Add(logEntry);
 
-                EnqueueLogEntry(logEntry, _logEntries, LogHistorySize);
-            }
-
-            if (severity == LogEntrySeverity.Warning)
-            {
-                lock (_warningLogEntries)
+                if (logEntry.Severity == LogEntrySeverity.Warning)
                 {
-                    EnqueueLogEntry(logEntry, _warningLogEntries, LogWarningHistorySize);
+                    _warningLogEntries.Add(logEntry);
                 }
-            }
-            else if (severity == LogEntrySeverity.Error)
-            {
-                lock (_errorLogEntries)
+                else if (logEntry.Severity == LogEntrySeverity.Error)
                 {
-                    EnqueueLogEntry(logEntry, _errorLogEntries, LogErrorHistorySize);
+                    _errorLogEntries.Add(logEntry);
                 }
             }
 
-            LogEntryPublished?.Invoke(this, new LogEntryPublishedEventArgs(logEntry));
-            Log.ForwardPublishedLogEntry(logEntry);
-
-            if (!Debugger.IsAttached)
+            foreach (var adapter in _adapters)
             {
-                return;
+                try
+                {
+                    adapter.ProcessLogEntry(logEntry);
+                }
+                catch
+                {
+                    // Do nothing here. Otherwise the app will crash when trying to log a broken log component.
+                }
             }
-            
-            Debug.WriteLine($"[{logEntry.Severity}] [{logEntry.Source}] [{logEntry.ThreadId}]: {message}");
+
+            if (Debugger.IsAttached)
+            {
+                Debug.WriteLine($"[{logEntry.Severity}] [{logEntry.Source}] [{logEntry.ThreadId}]: {logEntry.Message}");
+            }
         }
 
-        private void EnqueueLogEntry(LogEntry logEntry, Queue<LogEntry> target, int maxLogEntriesCount)
+        private void CreateGetLogEntriesResponse(IEnumerable<LogEntry> source, IApiCall apiCall)
         {
-            target.Enqueue(logEntry);
-
-            while (target.Count > 0 && target.Count > maxLogEntriesCount)
+            var response = new GetLogEntriesResponse
             {
-                _logEntries.Dequeue();
+                SessionId = _sessionId,
+                LogEntries = source.ToList()
+            };
+
+            apiCall.Result = JObject.FromObject(response);
+        }
+
+        private void ProcessPendingLogEntries(ThreadPoolTimer timer)
+        {
+            List<LogEntry> buffer;
+
+            lock (_pendingLogEntries)
+            {
+                buffer = new List<LogEntry>(_pendingLogEntries);
+                _pendingLogEntries.Clear();
+            }
+
+            foreach (var pendingLogEntry in buffer)
+            {
+                PublishPendingLogEntry(pendingLogEntry);
             }
         }
     }

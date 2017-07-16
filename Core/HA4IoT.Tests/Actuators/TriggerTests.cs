@@ -1,8 +1,11 @@
 ﻿using HA4IoT.Actuators.Lamps;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Components.States;
-using HA4IoT.Contracts.Services.Settings;
-using HA4IoT.Contracts.Services.System;
+using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Messaging;
+using HA4IoT.Contracts.Settings;
+using HA4IoT.Contracts.Triggers;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.TemperatureSensors;
 using HA4IoT.Tests.Mockups;
@@ -116,13 +119,13 @@ namespace HA4IoT.Tests.Actuators
         [TestMethod]
         public void Trigger_AttachAction()
         {
-            var testController = new TestController();
+            var c = new TestController();
             
             var buttonAdapter = new TestButtonAdapter();
-            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>());
+            var button = new Button("Test", buttonAdapter, c.GetInstance<ITimerService>(), c.GetInstance<ISettingsService>(), c.GetInstance<IMessageBrokerService>(), c.GetInstance<ILogService>());
             var lamp = new Lamp("Test", new TestLampAdapter());
 
-            button.PressedShortTrigger.Attach(() => lamp.TryTogglePowerState());
+            button.CreatePressedShortTrigger(c.GetInstance<IMessageBrokerService>()).Attach(() => lamp.TryTogglePowerState());
 
             lamp.GetState().Has(PowerState.Off);
             buttonAdapter.Touch();

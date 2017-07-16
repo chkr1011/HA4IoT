@@ -49,6 +49,7 @@ function createAppController($http, $scope, modalService, apiService, localizati
 
     c.areas = [];
 
+    c.notifications = [];
     c.weatherStation = {}
 
     c.sensors = [];
@@ -156,7 +157,6 @@ function createAppController($http, $scope, modalService, apiService, localizati
 
             c.apiService.newStatusReceivedCallback = c.applyNewStatus;
             c.apiService.pollStatus();
-            c.isInitialized = true;
         },
             function () {
                 modalService.show("Configuration not available", "Unable to load the configuration. Please try again later.");
@@ -184,13 +184,18 @@ function createAppController($http, $scope, modalService, apiService, localizati
             c.updateComponentState(id, component);
         });
 
-        c.weatherStation.temperature = status.OutdoorTemperature;
-        c.weatherStation.humidity = status.OutdoorHumidity;
+        c.notifications = status.Notifications;
+        
+        c.weatherStation.temperature = status.Temperature;
+        c.weatherStation.humidity = status.Humidity;
         c.weatherStation.sunrise = status.Sunrise;
         c.weatherStation.sunset = status.Sunset;
-        c.weatherStation.weather = status.Weather;
+        c.weatherStation.condition = status.Condition;
+        c.weatherStation.conditionImage = "Content/Images/WeatherConditions/" + status.Condition + ".png";
 
         updateOnStateCounters(c.areas);
+
+        c.isInitialized = true;
     };
 
     c.updateComponentState = function (componentId, updatedComponent) {

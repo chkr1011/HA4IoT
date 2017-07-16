@@ -2,6 +2,6 @@
 {
     public interface IService
     {
-        void Startup();
+        void Startup(); // TODO: Rename to Initialize and support multiple calls.
     }
 }

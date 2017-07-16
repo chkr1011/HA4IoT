@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("HA4IoT")]
-[assembly: AssemblyCopyright("Copyright © Christian Kratky 2017")]
+[assembly: AssemblyCopyright("Copyright © Christian Kratky 2015-2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyVersion("1.0.0.0")]

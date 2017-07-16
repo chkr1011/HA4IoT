@@ -4,18 +4,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
-using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Components.Commands;
 using HA4IoT.Contracts.Components.States;
+using HA4IoT.Contracts.Environment;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.PersonalAgent;
 using HA4IoT.Contracts.PersonalAgent.AmazonEcho;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Contracts.Services.OutdoorHumidity;
-using HA4IoT.Contracts.Services.OutdoorTemperature;
-using HA4IoT.Contracts.Services.Settings;
-using HA4IoT.Contracts.Services.Weather;
+using HA4IoT.Contracts.Settings;
 using Newtonsoft.Json.Linq;
 
 namespace HA4IoT.PersonalAgent
@@ -26,9 +24,7 @@ namespace HA4IoT.PersonalAgent
         private readonly ISettingsService _settingsService;
         private readonly IComponentRegistryService _componentsRegistry;
         private readonly IAreaRegistryService _areaService;
-        private readonly IWeatherService _weatherService;
-        private readonly IOutdoorTemperatureService _outdoorTemperatureService;
-        private readonly IOutdoorHumidityService _outdoorHumidityService;
+        private readonly IOutdoorService _outdoorService;
         private readonly ILogger _log;
 
         private MessageContext _latestMessageContext;
@@ -37,24 +33,20 @@ namespace HA4IoT.PersonalAgent
             ISettingsService settingsService,
             IComponentRegistryService componentRegistry,
             IAreaRegistryService areaService,
-            IWeatherService weatherService,
-            IOutdoorTemperatureService outdoorTemperatureService,
-            IOutdoorHumidityService outdoorHumidityService,
+            IOutdoorService outdoorService,
             ILogService logService)
         {
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
             _componentsRegistry = componentRegistry ?? throw new ArgumentNullException(nameof(componentRegistry));
             _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
-            _weatherService = weatherService ?? throw new ArgumentNullException(nameof(weatherService));
-            _outdoorTemperatureService = outdoorTemperatureService ?? throw new ArgumentNullException(nameof(outdoorTemperatureService));
-            _outdoorHumidityService = outdoorHumidityService ?? throw new ArgumentNullException(nameof(outdoorHumidityService));
+            _outdoorService = outdoorService ?? throw new ArgumentNullException(nameof(outdoorService));
             _log = logService?.CreatePublisher(nameof(PersonalAgentService)) ?? throw new ArgumentNullException(nameof(logService));
         }
 
         [ApiMethod]
-        public void ProcessSkillServiceRequest(IApiContext apiContext)
+        public void ProcessSkillServiceRequest(IApiCall apiCall)
         {
-            var request = apiContext.Parameter.ToObject<SkillServiceRequest>();
+            var request = apiCall.Parameter.ToObject<SkillServiceRequest>();
 
             var messageContextFactory = new MessageContextFactory(_areaService, _componentsRegistry, _settingsService);
             var messageContext = messageContextFactory.Create(request);
@@ -64,20 +56,20 @@ namespace HA4IoT.PersonalAgent
             var response = new SkillServiceResponse();
             response.Response.OutputSpeech.Text = messageContext.Reply;
 
-            apiContext.Result = JObject.FromObject(response);
+            apiCall.Result = JObject.FromObject(response);
         }
 
         [ApiMethod]
-        public void Ask(IApiContext apiContext)
+        public void Ask(IApiCall apiCall)
         {
-            var text = (string)apiContext.Parameter["Message"];
+            var text = (string)apiCall.Parameter["Message"];
             if (string.IsNullOrEmpty(text))
             {
-                apiContext.ResultCode = ApiResultCode.InvalidParameter;
+                apiCall.ResultCode = ApiResultCode.InvalidParameter;
                 return;
             }
 
-            apiContext.Result["Answer"] = ProcessTextMessage(text);
+            apiCall.Result["Answer"] = ProcessTextMessage(text);
         }
 
         public string ProcessTextMessage(string text)
@@ -92,14 +84,14 @@ namespace HA4IoT.PersonalAgent
         }
 
         [ApiMethod]
-        public void GetLatestMessageContext(IApiContext apiContext)
+        public void GetLatestMessageContext(IApiCall apiCall)
         {
             if (_latestMessageContext == null)
             {
                 return;
             }
 
-            apiContext.Result = JObject.FromObject(_latestMessageContext);
+            apiCall.Result = JObject.FromObject(_latestMessageContext);
         }
 
         private void ProcessMessage(MessageContext messageContext)
@@ -229,9 +221,9 @@ namespace HA4IoT.PersonalAgent
         {
             var response = new StringBuilder();
             response.AppendLine($"{Emoji.BarChart} Das Wetter ist aktuell:");
-            response.AppendLine($"Temperatur: {_outdoorTemperatureService.OutdoorTemperature}°C");
-            response.AppendLine($"Luftfeuchtigkeit: {_outdoorHumidityService.OutdoorHumidity}%");
-            response.AppendLine($"Wetter: {_weatherService.Weather}");
+            response.AppendLine($"Temperatur: {_outdoorService.Temperature}°C");
+            response.AppendLine($"Luftfeuchtigkeit: {_outdoorService.Humidity}%");
+            response.AppendLine($"Wetter: {_outdoorService.Condition}");
 
             return response.ToString();
         }
@@ -249,7 +241,7 @@ namespace HA4IoT.PersonalAgent
             else
             {
                 response = $"{Emoji.Unlock} Ich habe nachgesehen. Die folgenden Fenster sind noch (ganz oder auf Kipp) geöffnet:\r\n";
-                response += string.Join(Environment.NewLine, openWindows.Select(w => "- " + w.Id));
+                response += string.Join(global::System.Environment.NewLine, openWindows.Select(w => "- " + w.Id));
             }
 
             return response;

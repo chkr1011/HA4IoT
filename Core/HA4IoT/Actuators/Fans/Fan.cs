@@ -1,14 +1,14 @@
 ﻿using System;
-using HA4IoT.Commands;
 using HA4IoT.Components;
+using HA4IoT.Components.Commands;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Adapters;
-using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Components.Adapters;
+using HA4IoT.Contracts.Components.Commands;
 using HA4IoT.Contracts.Components.Features;
 using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Hardware;
-using HA4IoT.Contracts.Services.Settings;
+using HA4IoT.Contracts.Settings;
 
 namespace HA4IoT.Actuators.Fans
 {

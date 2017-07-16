@@ -1,6 +1,6 @@
 ﻿using System;
-using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Components.Commands;
 using HA4IoT.Contracts.Logging;
 
 namespace HA4IoT.Components

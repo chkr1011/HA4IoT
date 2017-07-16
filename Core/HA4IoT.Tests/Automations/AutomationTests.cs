@@ -5,8 +5,10 @@ using HA4IoT.Components;
 using HA4IoT.Conditions;
 using HA4IoT.Conditions.Specialized;
 using HA4IoT.Contracts.Components.States;
-using HA4IoT.Contracts.Services.Settings;
-using HA4IoT.Contracts.Services.System;
+using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Messaging;
+using HA4IoT.Contracts.Settings;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Tests.Mockups;
 using HA4IoT.Tests.Mockups.Adapters;
@@ -20,14 +22,14 @@ namespace HA4IoT.Tests.Automations
         [TestMethod]
         public void Automation_Toggle()
         {
-            var testController = new TestController();
+            var c = new TestController();
 
             var buttonAdapter = new TestButtonAdapter();
-            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>());
+            var button = new Button("Test", buttonAdapter, c.GetInstance<ITimerService>(), c.GetInstance<ISettingsService>(), c.GetInstance<IMessageBrokerService>(), c.GetInstance<ILogService>());
             var testOutput = new Lamp("Test", new TestLampAdapter());
             
             new Automation("Test")
-                .WithTrigger(button.PressedShortTrigger)
+                .WithTrigger(button.CreatePressedShortTrigger(c.GetInstance<IMessageBrokerService>()))
                 .WithActionIfConditionsFulfilled(() => testOutput.TryTogglePowerState());
 
             Assert.IsTrue(testOutput.GetState().Has(PowerState.Off));
@@ -42,23 +44,23 @@ namespace HA4IoT.Tests.Automations
         [TestMethod]
         public void Automation_WithCondition()
         {
-            var testController = new TestController();
+            var c = new TestController();
 
             var buttonAdapter = new TestButtonAdapter();
-            var button = new Button("Test", buttonAdapter, testController.GetInstance<ITimerService>(), testController.GetInstance<ISettingsService>());
+            var button = new Button("Test", buttonAdapter, c.GetInstance<ITimerService>(), c.GetInstance<ISettingsService>(), c.GetInstance<IMessageBrokerService>(), c.GetInstance<ILogService>());
             var testOutput = new Lamp("Test", new TestLampAdapter());
 
             new Automation("Test")
-                .WithTrigger(button.PressedShortTrigger)
-                .WithCondition(ConditionRelation.And, new TimeRangeCondition(testController.GetInstance<IDateTimeService>()).WithStart(TimeSpan.FromHours(1)).WithEnd(TimeSpan.FromHours(2)))
+                .WithTrigger(button.CreatePressedShortTrigger(c.GetInstance<IMessageBrokerService>()))
+                .WithCondition(ConditionRelation.And, new TimeRangeCondition(c.GetInstance<IDateTimeService>()).WithStart(TimeSpan.FromHours(1)).WithEnd(TimeSpan.FromHours(2)))
                 .WithActionIfConditionsFulfilled(() => testOutput.TryTogglePowerState());
 
             Assert.IsTrue(testOutput.GetState().Has(PowerState.Off));
-            testController.SetTime(TimeSpan.FromHours(0));
+            c.SetTime(TimeSpan.FromHours(0));
             buttonAdapter.Touch();
             Assert.IsTrue(testOutput.GetState().Has(PowerState.Off));
 
-            testController.SetTime(TimeSpan.FromHours(1.5));
+            c.SetTime(TimeSpan.FromHours(1.5));
             buttonAdapter.Touch();
             Assert.IsTrue(testOutput.GetState().Has(PowerState.On));
         }

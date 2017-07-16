@@ -4,15 +4,15 @@ namespace HA4IoT.Contracts.Api
 {
     public class ApiRequestReceivedEventArgs : EventArgs
     {
-        public ApiRequestReceivedEventArgs(IApiContext apiContext)
+        public ApiRequestReceivedEventArgs(IApiCall apiCall)
         {
-            if (apiContext == null) throw new ArgumentNullException(nameof(apiContext));
+            if (apiCall == null) throw new ArgumentNullException(nameof(apiCall));
 
-            ApiContext = apiContext;
+            ApiContext = apiCall;
         }
 
         public bool IsHandled { get; set; }
 
-        public IApiContext ApiContext { get; }
+        public IApiCall ApiContext { get; }
     }
 }

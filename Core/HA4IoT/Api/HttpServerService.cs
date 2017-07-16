@@ -2,8 +2,10 @@
 using System.IO;
 using System.Text;
 using Windows.Web.Http;
+using HA4IoT.Api.Configuration;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Configuration;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Services;
@@ -16,7 +18,6 @@ namespace HA4IoT.Api
 {
     public class HttpServerService : ServiceBase, IApiAdapter
     {
-        private readonly IApiDispatcherService _apiDispatcherService;
         private readonly HttpServer _httpServer;
         private readonly ILogger _log;
 
@@ -24,22 +25,24 @@ namespace HA4IoT.Api
         private const string AppBaseUri = "/app/";
         private const string ManagementAppBaseUri = "/managementApp/";
 
-        public HttpServerService(IApiDispatcherService apiDispatcherService, HttpServer httpServer, ILogService logService)
+        public HttpServerService(IConfigurationService configurationService, IApiDispatcherService apiDispatcherService, ILogService logService)
         {
-            _apiDispatcherService = apiDispatcherService ?? throw new ArgumentNullException(nameof(apiDispatcherService));
-            _httpServer = httpServer ?? throw new ArgumentNullException(nameof(httpServer));
+            if (configurationService == null) throw new ArgumentNullException(nameof(configurationService));
+            if (apiDispatcherService == null) throw new ArgumentNullException(nameof(apiDispatcherService));
             _log = logService.CreatePublisher(nameof(HttpServerService)) ?? throw new ArgumentNullException(nameof(logService));
-        }
 
-        public event EventHandler<ApiRequestReceivedEventArgs> RequestReceived;
+            _httpServer = new HttpServer(logService);
 
-        public override void Startup()
-        {
             _httpServer.HttpRequestReceived += OnHttpRequestReceived;
             _httpServer.WebSocketConnected += AttachWebSocket;
 
-            _apiDispatcherService.RegisterAdapter(this);
+            var configuration = configurationService.GetConfiguration<HttpServerServiceConfiguration>("HttpServerService");
+            _httpServer.BindAsync(configuration.Port).GetAwaiter().GetResult();
+
+            apiDispatcherService.RegisterAdapter(this);
         }
+
+        public event EventHandler<ApiRequestReceivedEventArgs> RequestReceived;
 
         public void NotifyStateChanged(IComponent component)
         {
@@ -66,14 +69,14 @@ namespace HA4IoT.Api
 
         private void OnApiRequestReceived(HttpContext context)
         {
-            IApiContext apiContext = CreateApiContext(context);
-            if (apiContext == null)
+            IApiCall apiCall = CreateApiContext(context);
+            if (apiCall == null)
             {
                 context.Response.StatusCode = HttpStatusCode.BadRequest;
                 return;
             }
 
-            var eventArgs = new ApiRequestReceivedEventArgs(apiContext);
+            var eventArgs = new ApiRequestReceivedEventArgs(apiCall);
             RequestReceived?.Invoke(this, eventArgs);
 
             if (!eventArgs.IsHandled)
@@ -90,9 +93,9 @@ namespace HA4IoT.Api
 
             var apiResponse = new ApiResponse
             {
-                ResultCode = apiContext.ResultCode,
-                Result = apiContext.Result,
-                ResultHash = apiContext.ResultHash
+                ResultCode = apiCall.ResultCode,
+                Result = apiCall.Result,
+                ResultHash = apiCall.ResultHash
             };
 
             var json = JsonConvert.SerializeObject(apiResponse);
@@ -126,7 +129,7 @@ namespace HA4IoT.Api
             relativeUrl = relativeUrl.TrimStart('/');
             relativeUrl = relativeUrl.Substring(relativeUrl.IndexOf('/') + 1);
 
-            if (relativeUrl.EndsWith("/"))
+            if (relativeUrl.EndsWith("/") || relativeUrl == string.Empty)
             {
                 relativeUrl += "Index.html";
             }
@@ -152,7 +155,7 @@ namespace HA4IoT.Api
             var requestMessage = JObject.Parse(((WebSocketTextMessage)e.Message).Text);
             var apiRequest = requestMessage.ToObject<ApiRequest>();
 
-            var context = new ApiContext(apiRequest.Action, apiRequest.Parameter, apiRequest.ResultHash);
+            var context = new ApiCall(apiRequest.Action, apiRequest.Parameter, apiRequest.ResultHash);
 
             var eventArgs = new ApiRequestReceivedEventArgs(context);
             RequestReceived?.Invoke(this, eventArgs);
@@ -175,7 +178,7 @@ namespace HA4IoT.Api
             e.WebSocketClientSession.SendAsync(jsonResponse.ToString()).Wait();
         }
 
-        private ApiContext CreateApiContext(HttpContext context)
+        private ApiCall CreateApiContext(HttpContext context)
         {
             try
             {
@@ -194,7 +197,7 @@ namespace HA4IoT.Api
                 var action = context.Request.Uri.Substring("/api/".Length);
                 var parameter = string.IsNullOrEmpty(bodyText) ? new JObject() : JObject.Parse(bodyText);
 
-                return new ApiContext(action, parameter, null);
+                return new ApiCall(action, parameter, null);
             }
             catch (Exception)
             {

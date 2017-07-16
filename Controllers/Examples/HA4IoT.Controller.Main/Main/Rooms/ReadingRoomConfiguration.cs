@@ -3,18 +3,18 @@ using HA4IoT.Actuators;
 using HA4IoT.Actuators.Connectors;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.RollerShutters;
-using HA4IoT.Adapters;
+using HA4IoT.Areas;
 using HA4IoT.Automations;
 using HA4IoT.Components;
+using HA4IoT.Components.Adapters.PortBased;
 using HA4IoT.Contracts.Areas;
-using HA4IoT.Contracts.Hardware.I2C;
-using HA4IoT.Contracts.Services.System;
-using HA4IoT.Hardware.CCTools;
-using HA4IoT.Hardware.CCTools.Devices;
-using HA4IoT.Hardware.I2C.I2CHardwareBridge;
+using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Messaging;
+using HA4IoT.Hardware.Drivers.CCTools;
+using HA4IoT.Hardware.Drivers.CCTools.Devices;
+using HA4IoT.Hardware.Drivers.I2CHardwareBridge;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
-using HA4IoT.Services.Areas;
 
 namespace HA4IoT.Controller.Main.Main.Rooms
 {
@@ -26,6 +26,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         private readonly AutomationFactory _automationFactory;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
+        private readonly IMessageBrokerService _messageBroker;
 
         private enum ReadingRoom
         {
@@ -54,8 +55,10 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             CCToolsDeviceService ccToolsBoardService,
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
-            SensorFactory sensorFactory)
+            SensorFactory sensorFactory,
+            IMessageBrokerService messageBroker)
         {
+            _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
             _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
             _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
             _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
@@ -66,7 +69,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
         public void Apply()
         {
-            var hsrel5 = _ccToolsBoardService.RegisterHSREL5(InstalledDevice.ReadingRoomHSREL5.ToString(), new I2CSlaveAddress(62));
+            var hsrel5 = (HSREL5)_ccToolsBoardService.RegisterDevice(CCToolsDeviceType.HSRel5, InstalledDevice.ReadingRoomHSREL5.ToString(), 62);
             var input2 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input2.ToString());
             var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
 
@@ -85,8 +88,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             _actuatorFactory.RegisterLamp(area, ReadingRoom.LightCeilingMiddle, hsrel5[HSREL5Pin.GPIO0]);
 
             _actuatorFactory.RegisterRollerShutter(area, ReadingRoom.RollerShutter, hsrel5[HSREL5Pin.Relay4], hsrel5[HSREL5Pin.Relay3]);
-            _sensorFactory.RegisterRollerShutterButtons(area, ReadingRoom.RollerShutterButtonUp, input2.GetInput(12),
-                ReadingRoom.RollerShutterButtonDown, input2.GetInput(11));
+            _sensorFactory.RegisterButton(area, ReadingRoom.RollerShutterButtonUp, input2.GetInput(12));
+            _sensorFactory.RegisterButton(area, ReadingRoom.RollerShutterButtonDown, input2.GetInput(11));
 
             _actuatorFactory.RegisterSocket(area, ReadingRoom.SocketWindow, hsrel5[HSREL5Pin.Relay0]);
             _actuatorFactory.RegisterSocket(area, ReadingRoom.SocketWallLeft, hsrel5[HSREL5Pin.Relay1]);
@@ -94,13 +97,13 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             _sensorFactory.RegisterButton(area, ReadingRoom.Button, input2.GetInput(13));
 
-            area.GetButton(ReadingRoom.Button).PressedShortTrigger.Attach(() => area.GetLamp(ReadingRoom.LightCeilingMiddle).TryTogglePowerState());
+            area.GetButton(ReadingRoom.Button).CreatePressedShortTrigger(_messageBroker).Attach(() => area.GetLamp(ReadingRoom.LightCeilingMiddle).TryTogglePowerState());
 
             _automationFactory.RegisterRollerShutterAutomation(area, ReadingRoom.RollerShutterAutomation)
                 .WithRollerShutters(area.GetRollerShutter(ReadingRoom.RollerShutter));
 
             area.GetRollerShutter(ReadingRoom.RollerShutter)
-                .ConnectWith(area.GetButton(ReadingRoom.RollerShutterButtonUp), area.GetButton(ReadingRoom.RollerShutterButtonDown));
+                .ConnectWith(area.GetButton(ReadingRoom.RollerShutterButtonUp), area.GetButton(ReadingRoom.RollerShutterButtonDown), _messageBroker);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
+using HA4IoT.Contracts.Environment;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Contracts.Services.Daylight;
 
 namespace HA4IoT.Tests.Mockups.Services
 {

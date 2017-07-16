@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HA4IoT.Commands;
 using HA4IoT.Components;
+using HA4IoT.Components.Commands;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Components.Commands;
 using HA4IoT.Contracts.Components.Features;
 using HA4IoT.Contracts.Components.States;
 using HA4IoT.Contracts.Hardware;

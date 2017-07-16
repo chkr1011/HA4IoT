@@ -3,58 +3,58 @@ using System.Threading.Tasks;
 using HA4IoT.Actuators;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.StateMachines;
+using HA4IoT.Areas;
 using HA4IoT.Automations;
 using HA4IoT.Components;
 using HA4IoT.Contracts.Areas;
-using HA4IoT.Contracts.Commands;
+using HA4IoT.Contracts.Components.Commands;
 using HA4IoT.Contracts.Core;
-using HA4IoT.Contracts.Hardware.I2C;
-using HA4IoT.Contracts.Hardware.Services;
-using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Hardware.RaspberryPi;
+using HA4IoT.Contracts.Messaging;
 using HA4IoT.Hardware;
-using HA4IoT.Hardware.CCTools;
-using HA4IoT.Hardware.CCTools.Devices;
+using HA4IoT.Hardware.Drivers.CCTools.Devices;
 using HA4IoT.Sensors;
-using HA4IoT.Services.Areas;
+using HA4IoT.Sensors.Buttons;
 
 namespace HA4IoT.Controller.Main.Cellar
 {
     internal sealed class Configuration : IConfiguration
     {
-        private readonly CCToolsDeviceService _ccToolsBoardService;
-        private readonly IGpioService _pi2GpioService;
+        private readonly IDeviceRegistryService _deviceRegistryService;
+        private readonly IGpioService _gpioService;
         private readonly IAreaRegistryService _areaService;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
         private readonly AutomationFactory _automationFactory;
-        private readonly ILogService _logService;
+        private readonly IMessageBrokerService _messageBroker;
 
         public Configuration(
-            CCToolsDeviceService ccToolsBoardService,
-            IGpioService pi2GpioService,
+            IDeviceRegistryService deviceRegistryService,
+            IGpioService gpioService,
             IAreaRegistryService areaService,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory,
             AutomationFactory automationFactory,
-            ILogService logService)
+            IMessageBrokerService messageBroker)
         {
-            _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
-            _pi2GpioService = pi2GpioService ?? throw new ArgumentNullException(nameof(pi2GpioService));
-            _areaService = areaService;
+            _deviceRegistryService = deviceRegistryService ?? throw new ArgumentNullException(nameof(deviceRegistryService));
+            _gpioService = gpioService ?? throw new ArgumentNullException(nameof(gpioService));
+            _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
+            _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
             _actuatorFactory = actuatorFactory ?? throw new ArgumentNullException(nameof(actuatorFactory));
             _sensorFactory = sensorFactory ?? throw new ArgumentNullException(nameof(sensorFactory));
             _automationFactory = automationFactory ?? throw new ArgumentNullException(nameof(automationFactory));
-            _logService = logService;
         }
 
         public Task ApplyAsync()
         {
-            var hsrt16 = _ccToolsBoardService.RegisterHSRT16("HSRT16", new I2CSlaveAddress(32));
+            var hsrt16 = _deviceRegistryService.GetDevice<HSRT16>("HSRT16");
 
             var garden = _areaService.RegisterArea("Garden");
 
-            var parkingLotLamp = new LogicalBinaryOutput(hsrt16[HSRT16Pin.Relay6], hsrt16[HSRT16Pin.Relay7], hsrt16[HSRT16Pin.Relay8]);
-            _actuatorFactory.RegisterLamp(garden, Garden.LampParkingLot, parkingLotLamp);
+            var parkingLotOutput = new LogicalBinaryOutput(hsrt16[HSRT16Pin.Relay6], hsrt16[HSRT16Pin.Relay7], hsrt16[HSRT16Pin.Relay8]);
+            _actuatorFactory.RegisterLamp(garden, Garden.LampParkingLot, parkingLotOutput);
             // Relay 9 is free.
             _actuatorFactory.RegisterSocket(garden, Garden.SocketPavillion, hsrt16[HSRT16Pin.Relay10]);
             _actuatorFactory.RegisterLamp(garden, Garden.LampRearArea, hsrt16[HSRT16Pin.Relay11]);
@@ -64,19 +64,15 @@ namespace HA4IoT.Controller.Main.Cellar
             _actuatorFactory.RegisterLamp(garden, Garden.LampTerrace, hsrt16[HSRT16Pin.Relay15]);
             var stateMachine = _actuatorFactory.RegisterStateMachine(garden, Garden.StateMachine, InitializeStateMachine);
             
-            var button = _sensorFactory.RegisterButton(garden, Garden.Button, _pi2GpioService.GetInput(4).WithInvertedState());
+            var button = _sensorFactory.RegisterButton(garden, Garden.Button, _gpioService.GetInput(4, GpioPullMode.High, GpioInputMonitoringMode.Interrupt).WithInvertedState());
 
-            button.PressedShortTrigger.Attach(() => stateMachine.TrySetNextState());
-            button.PressedLongTrigger.Attach(() => stateMachine.TryTurnOff());
+            button.CreatePressedShortTrigger(_messageBroker).Attach(() => stateMachine.TrySetNextState());
+            button.CreatePressedLongTrigger(_messageBroker).Attach(() => stateMachine.TryTurnOff());
 
             _automationFactory.RegisterConditionalOnAutomation(garden, Garden.LampParkingLotAutomation)
                 .WithComponent(garden.GetLamp(Garden.LampParkingLot))
                 .WithOnAtNightRange()
                 .WithOffBetweenRange(TimeSpan.Parse("22:30:00"), TimeSpan.Parse("05:00:00"));
-
-            var ioBoardsInterruptMonitor = new InterruptMonitor(_pi2GpioService.GetInput(4), _logService);
-            ioBoardsInterruptMonitor.AddCallback(_ccToolsBoardService.PollInputBoardStates);
-            ioBoardsInterruptMonitor.Start();
 
             return Task.FromResult(0);
         }

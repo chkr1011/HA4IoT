@@ -1,6 +1,11 @@
 <div class="container">
     <nav class="navbar navbar-default navbar-fixed-top">
-        <div class="container">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">
+                    <img src="Content/Images/Logo_256.png" width="24">
+                </a>
+            </div>
             <ul class="nav navbar-nav">
                 <li ng-class="{active: mpCtrl.ActiveTab==='home'}"><a href="#" ng-click="mpCtrl.switchTab('home')">Home</a></li>
                 <li ng-class="{active: mpCtrl.ActiveTab==='areas'}"><a href="#" ng-click="mpCtrl.switchTab('areas')">Areas</a></li>
@@ -8,13 +13,15 @@
                 <li ng-class="{active: mpCtrl.ActiveTab==='automations'}"><a href="#" ng-click="mpCtrl.switchTab('automations')">Automations</a></li>
                 <li ng-class="{active: mpCtrl.ActiveTab==='settings'}"><a href="#" ng-click="mpCtrl.switchTab('settings')">Configuration</a></li>
                 <li ng-class="{active: mpCtrl.ActiveTab==='backup'}"><a href="#" ng-click="mpCtrl.switchTab('backup')">Backup</a></li>
+                <li ng-class="{active: mpCtrl.ActiveTab==='script-editor'}"><a href="#" ng-click="mpCtrl.switchTab('script-editor')">Script Editor</a></li>
+                <li ng-class="{active: mpCtrl.ActiveTab==='system-information'}"><a href="#" ng-click="mpCtrl.switchTab('system-information')">Information</a></li>
                 <li ng-class="{active: mpCtrl.ActiveTab==='log'}"><a href="#" ng-click="mpCtrl.switchTab('log')">Log</a></li>
             </ul>
         </div>
     </nav>
 </div>
 
-<div class="container">
+<div class="container-fluid">
     <div id="mainView">
         <home></home>
     </div>

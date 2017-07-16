@@ -1,15 +1,12 @@
 ﻿using System;
 using HA4IoT.Contracts.Hardware.DeviceMessaging;
-using HA4IoT.Contracts.Hardware.Services;
+using HA4IoT.Contracts.Hardware.Mqtt;
+using HA4IoT.Contracts.Services;
 
 namespace HA4IoT.Tests.Mockups.Services
 {
-    public class TestDeviceMessageBrokerService : IDeviceMessageBrokerService
+    public class TestDeviceMessageBrokerService : ServiceBase, IDeviceMessageBrokerService
     {
-        public void Startup()
-        {
-        }
-
         public event EventHandler<DeviceMessageReceivedEventArgs> MessageReceived;
 
         public void Publish(string topic, byte[] payload, MqttQosLevel qosLevel)

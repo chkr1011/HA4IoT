@@ -1,5 +1,4 @@
 ﻿using HA4IoT.Contracts.Hardware;
-using HA4IoT.Tests.Mockups;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace HA4IoT.Tests.Hardware
@@ -8,71 +7,55 @@ namespace HA4IoT.Tests.Hardware
     public class TestPortTests
     {
         [TestMethod]
-        public void LOW_DummyInputPort_ShouldReturn_LOW()
+        public void TestPort_Read_ShouldReturn_LOW()
         {
-            var dummyPort = new TestInputPort();
-            dummyPort.SetInternalState(BinaryState.Low);
-            Assert.AreEqual(BinaryState.Low, dummyPort.Read());
+            var p = new TestPort(BinaryState.Low);
+            Assert.AreEqual(BinaryState.Low, p.Read());
         }
 
         [TestMethod]
-        public void HIGH_DummyInputPort_ShouldReturn_HIGH()
+        public void TestPort_Read_ShouldReturn_High()
         {
-            var dummyPort = new TestInputPort();
-            dummyPort.SetInternalState(BinaryState.High);
-            Assert.AreEqual(BinaryState.High, dummyPort.Read());
+            var p = new TestPort(BinaryState.High);
+            Assert.AreEqual(BinaryState.High, p.Read());
         }
 
         [TestMethod]
-        public void LOW_INVERTED_DummyInputPort_StateShouldReturn_HIGH()
+        public void TestPort_Read_Inverted_ShouldReturn_High()
         {
-            var dummyPort = new TestInputPort();
-            dummyPort = (TestInputPort)dummyPort.WithInvertedState();
-            dummyPort.SetInternalState(BinaryState.Low);
-            Assert.AreEqual(BinaryState.High, dummyPort.Read());
+            var p = new InvertedBinaryInput(new TestPort(BinaryState.Low));
+            Assert.AreEqual(BinaryState.High, p.Read());
         }
 
         [TestMethod]
-        public void HIGH_INVERTED_DummyInputPort_ShouldReturn_LOW()
+        public void TestPort_Read_Inverted_ShouldReturn_Low()
         {
-            var dummyPort = new TestInputPort();
-            dummyPort = (TestInputPort)dummyPort.WithInvertedState();
-            dummyPort.SetInternalState(BinaryState.High);
-            Assert.AreEqual(BinaryState.Low, dummyPort.Read());
-        }
-        
-        [TestMethod]
-        public void DummyOutputPort_WithWrittenLOW_ShouldBeInternal_LOW()
-        {
-            var dummyPort = new TestOutputPort();
-            dummyPort.Write(BinaryState.Low);
-            Assert.AreEqual(BinaryState.Low, dummyPort.GetInternalState());
+            var p = new InvertedBinaryInput(new TestPort(BinaryState.High));
+            Assert.AreEqual(BinaryState.Low, p.Read());
         }
 
         [TestMethod]
-        public void DummyOutputPort_WithWrittenHigh_ShouldBeInternal_HIGH()
+        public void TestPort_WriteRead_Inverted_ShouldReturn_High()
         {
-            var dummyPort = new TestOutputPort();
-            dummyPort.Write(BinaryState.High);
-            Assert.AreEqual(BinaryState.High, dummyPort.GetInternalState());
+            var p = new InvertedBinarOutput(new TestPort(BinaryState.Low));
+            p.Write(BinaryState.High);
+            Assert.AreEqual(BinaryState.High, p.Read());
         }
 
         [TestMethod]
-        public void INVERTED_DummyOutputPort_WithWrittenLOW_ShouldBeInternal_HIGH()
+        public void TestPort_WriteRead_Inverted_ShouldReturn_Low()
         {
-            var dummyPort = new TestOutputPort();
-            dummyPort = (TestOutputPort)dummyPort.WithInvertedState();
-            dummyPort.Write(BinaryState.Low);
-            Assert.AreEqual(BinaryState.High, dummyPort.GetInternalState());
+            var p = new InvertedBinarOutput(new TestPort(BinaryState.High));
+            p.Write(BinaryState.Low);
+            Assert.AreEqual(BinaryState.Low, p.Read());
         }
 
         [TestMethod]
-        public void INVERTED_DummyOutputPort_WithWrittenHIGH_ShouldBeInternal_LOW()
+        public void TestPort_Read_DoubleInverted_ShouldReturn_Low()
         {
-            var dummyPort = new TestOutputPort();
-            dummyPort = (TestOutputPort)dummyPort.WithInvertedState();
-            dummyPort.Write(BinaryState.High);
-            Assert.AreEqual(BinaryState.Low, dummyPort.GetInternalState());
+            var p = new InvertedBinarOutput(new InvertedBinarOutput(new TestPort(BinaryState.Low)));
+            p.Write(BinaryState.Low);
+            Assert.AreEqual(BinaryState.Low, p.Read());
         }
     }
 }

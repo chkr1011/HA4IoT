@@ -6,10 +6,11 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
+using HA4IoT.Contracts.ExternalServices.Twitter;
 using HA4IoT.Contracts.Logging;
+using HA4IoT.Contracts.Scripting;
 using HA4IoT.Contracts.Services;
-using HA4IoT.Contracts.Services.ExternalServices.Twitter;
-using HA4IoT.Contracts.Services.Settings;
+using HA4IoT.Contracts.Settings;
 
 namespace HA4IoT.ExternalServices.Twitter
 {
@@ -20,47 +21,63 @@ namespace HA4IoT.ExternalServices.Twitter
         private string _nonce;
         private string _timestamp;
 
-        public TwitterClientService(ISettingsService settingsService, ILogService logService)
+        public TwitterClientService(ISettingsService settingsService, ILogService logService, IScriptingService scriptingService)
         {
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
             if (logService == null) throw new ArgumentNullException(nameof(logService));
+            if (scriptingService == null) throw new ArgumentNullException(nameof(scriptingService));
 
             settingsService.CreateSettingsMonitor<TwitterClientServiceSettings>(s => Settings = s.NewSettings);
 
             _log = logService.CreatePublisher(nameof(TwitterClientService));
+
+            scriptingService.RegisterScriptProxy(s => new TwitterClientScriptProxy(this));
         }
 
         public TwitterClientServiceSettings Settings { get; private set; }
 
-        public async Task Tweet(string message)
+        public async Task<bool> TryTweet(string message)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
             
             if (!Settings.IsEnabled)
             {
                 _log.Verbose("Twitter client service is disabled.");
-                return;
+                return false;
             }
-            
-            _nonce = GetNonce();
-            _timestamp = GetTimeStamp();
 
-            var signature = GetSignatureForRequest(message);
-            var oAuthToken = GetAuthorizationToken(signature);
-                
-            using (var httpClient = new HttpClient())
+            try
             {
-                var url = "https://api.twitter.com/1.1/statuses/update.json?status=" + Uri.EscapeDataString(message);
+                _log.Verbose("Trying to tweet '" + message + "'.");
+                
+                _nonce = GetNonce();
+                _timestamp = GetTimeStamp();
 
-                var request = new HttpRequestMessage(HttpMethod.Post, url);
-                request.Headers.Add("Authorization", oAuthToken);
-         
-                var response = await httpClient.SendAsync(request);
+                var signature = GetSignatureForRequest(message);
+                var oAuthToken = GetAuthorizationToken(signature);
 
-                if (response.StatusCode != HttpStatusCode.OK)
+                using (var httpClient = new HttpClient())
                 {
-                    throw new HttpRequestException(response.StatusCode.ToString());
+                    var url = "https://api.twitter.com/1.1/statuses/update.json?status=" + Uri.EscapeDataString(message);
+
+                    var request = new HttpRequestMessage(HttpMethod.Post, url);
+                    request.Headers.Add("Authorization", oAuthToken);
+
+                    var response = await httpClient.SendAsync(request);
+
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        throw new HttpRequestException(response.StatusCode.ToString());
+                    }
+
+                    _log.Info("Tweet successfully sent.");
+                    return true;
                 }
+            }
+            catch (Exception exception)
+            {
+                _log.Error(exception, "Error while trying to send tweet.");
+                return false;
             }
         }
 

@@ -2,7 +2,7 @@
 
 namespace HA4IoT.Contracts.Hardware.I2C
 {
-    public class I2CSlaveAddress
+    public struct I2CSlaveAddress
     {
         public I2CSlaveAddress(int value)
         {
@@ -22,21 +22,11 @@ namespace HA4IoT.Contracts.Hardware.I2C
 
         public override bool Equals(object other)
         {
-            return Equals(other as I2CSlaveAddress);
+            return (other as I2CSlaveAddress?)?.Value == Value;
         }
 
         public bool Equals(I2CSlaveAddress other)
         {
-            if (other == null)
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(other, this))
-            {
-                return true;
-            }
-
             return Value.Equals(other.Value);
         }
 

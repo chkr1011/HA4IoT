@@ -21,6 +21,27 @@ namespace HA4IoT.Components
             return TryGetStateValue<TemperatureState, float?>(component, s => s.Value, out value);
         }
 
+        public static bool TryGetMotionDetectionState(this IComponent component, out MotionDetectionStateValue value)
+        {
+            if (component == null) throw new ArgumentNullException(nameof(component));
+
+            return TryGetStateValue<MotionDetectionState, MotionDetectionStateValue>(component, s => s.Value, out value);
+        }
+
+        public static bool TryGetButtonState(this IComponent component, out ButtonStateValue value)
+        {
+            if (component == null) throw new ArgumentNullException(nameof(component));
+
+            return TryGetStateValue<ButtonState, ButtonStateValue>(component, s => s.Value, out value);
+        }
+
+        public static bool TryGetState(this IComponent component, out string value)
+        {
+            if (component == null) throw new ArgumentNullException(nameof(component));
+
+            return TryGetStateValue<StateMachineFeatureState, string>(component, s => s.Value, out value);
+        }
+        
         public static bool TryGetStateValue<TState, TValue>(this IComponent component, Func<TState, TValue> valueResolver, out TValue value) where TState : IComponentFeatureState
         {
             if (component == null) throw new ArgumentNullException(nameof(component));

@@ -15,5 +15,7 @@ namespace HA4IoT.Contracts.Logging
         void Error(string message);
 
         void Error(Exception exception, string message);
+
+        void Publish(LogEntrySeverity severity, string message, Exception exception);
     }
 }

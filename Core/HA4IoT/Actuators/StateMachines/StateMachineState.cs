@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using HA4IoT.Contracts.Actuators;
-using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Components.Commands;
 using HA4IoT.Contracts.Hardware;
 
 namespace HA4IoT.Actuators.StateMachines

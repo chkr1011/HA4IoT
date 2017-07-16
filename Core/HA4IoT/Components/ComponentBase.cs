@@ -1,6 +1,6 @@
 ﻿using System;
-using HA4IoT.Contracts.Commands;
 using HA4IoT.Contracts.Components;
+using HA4IoT.Contracts.Components.Commands;
 
 namespace HA4IoT.Components
 {
@@ -26,7 +26,7 @@ namespace HA4IoT.Components
 
         protected void OnStateChanged(IComponentFeatureStateCollection oldState)
         {
-            OnStateChanged(oldState, GetState());
+            StateChanged?.Invoke(this, new ComponentFeatureStateChangedEventArgs(oldState, GetState()));;
         }
 
         protected void OnStateChanged(IComponentFeatureStateCollection oldState, IComponentFeatureStateCollection newState)

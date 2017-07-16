@@ -1,0 +1,41 @@
+{
+  "AreaRegistryService": {
+    "Areas": {
+      "Office": {
+        "Components": {
+          "ButtonUpperLeft": {
+            "Type": "Button",
+            "Adapter": {
+              "Type": "CCTools.BinaryInput",
+              "Parameters": {
+                "DeviceId": "Input5",
+                "Port": 0,
+                "Invert": false
+              }
+            }
+          },
+          "RemoteSocketDesk": {
+            "Type": "Button",
+            "Adapter": {
+              "Type": "RemoteSocket",
+              "Parameters": {
+                "Id": "OFFICE_0"
+              }
+            }
+          },
+          "SocketFrontLeft": {
+            "Type": "Socket",
+            "Adapter": {
+              "Type": "CCTools.Output",
+              "Parameters": {
+                "DeviceId": "OfficeHSREL8",
+                "Port": 0,
+                "IsInverted": false
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

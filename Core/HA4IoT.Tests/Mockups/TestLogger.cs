@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using HA4IoT.Contracts.Logging;
-using HA4IoT.Logging;
 
 namespace HA4IoT.Tests.Mockups
 {
     public class TestLogger : ILogger
     {
-        public void Publish(LogEntrySeverity type, string message)
-        {
-            Debug.WriteLine(type + ": " + message);
-        }
-
         public void Info(string message)
         {
             Publish(LogEntrySeverity.Info, message);
@@ -40,6 +34,11 @@ namespace HA4IoT.Tests.Mockups
         public void Verbose(string message)
         {
             Publish(LogEntrySeverity.Verbose, message);
+        }
+
+        public void Publish(LogEntrySeverity severity, string message, Exception exception = null)
+        {
+            Debug.WriteLine(severity + ": " + message);
         }
     }
 }

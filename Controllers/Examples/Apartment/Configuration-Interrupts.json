@@ -1,0 +1,14 @@
+{
+  "InterruptMonitorService": {
+    "Interrupts": {
+      "Default": {
+        "Gpio": 4,
+        "MonitoringMode": "Interrupt",
+        "PullMode": "None",
+        "IsInverted": true,
+        "DebounceTimeout": 1000,
+        "PollInterval": 15
+      }
+    }
+  }
+}

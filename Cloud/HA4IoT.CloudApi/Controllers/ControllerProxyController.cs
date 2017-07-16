@@ -14,13 +14,13 @@ namespace HA4IoT.CloudApi.Controllers
     public class ControllerProxyController : ApiController
     {
         private readonly TimeSpan _timeout = TimeSpan.FromSeconds(5);
-        private readonly ControllerMessageDispatcher _messageDispatcher;
+        private readonly ControllermessageBroker _messageBroker;
         private readonly SecurityService _securityService;
 
-        public ControllerProxyController(SecurityService securityService, ControllerMessageDispatcher messageDispatcher)
+        public ControllerProxyController(SecurityService securityService, ControllermessageBroker messageBroker)
         {
             _securityService = securityService ?? throw new ArgumentNullException(nameof(securityService));
-            _messageDispatcher = messageDispatcher ?? throw new ArgumentNullException(nameof(messageDispatcher));
+            _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
         }
 
         public Task<ApiResponse> Execute([FromBody] ApiRequest request)
@@ -31,7 +31,7 @@ namespace HA4IoT.CloudApi.Controllers
             ValidateControllerSecurity(out controllerId);
 
             Trace.TraceInformation($"Received request for controller '{controllerId}'.");
-            return _messageDispatcher.SendRequestAsync(controllerId, request, _timeout);
+            return _messageBroker.SendRequestAsync(controllerId, request, _timeout);
         }
 
         public List<CloudRequestMessage> ReceiveRequests()
@@ -40,7 +40,7 @@ namespace HA4IoT.CloudApi.Controllers
             ValidateControllerSecurity(out controllerId);
 
             Trace.TraceInformation($"Controller '{controllerId}' is requesting pending requests.");
-            return _messageDispatcher.GetPendingMessagesAsync(controllerId);
+            return _messageBroker.GetPendingMessagesAsync(controllerId);
         }
 
         public void SendResponse([FromBody] CloudResponseMessage response)
@@ -51,7 +51,7 @@ namespace HA4IoT.CloudApi.Controllers
             ValidateControllerSecurity(out controllerId);
 
             Trace.TraceInformation($"Received response from controller '{controllerId}'.");
-            _messageDispatcher.EnqueueResponse(controllerId, response);
+            _messageBroker.EnqueueResponse(controllerId, response);
         }
 
         private void ValidateControllerSecurity(out Guid controllerId)
