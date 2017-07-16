@@ -50,6 +50,12 @@ Controlling old 433 MHz devices is supported via using a I2C or WiFi -> 433 MHz 
 
 This project has build in  support for several _Sonoff_ devices from Itead Studio (www.itead.cc). But it is necessary to replace the firmware with a different one. More information can be found here: https://github.com/arendst/Sonoff-Tasmota
 
+## LUA scripting support
+Write your own scripts using the scripting language LUA to write powerful automations or interacting with your hardware.
+<p align="center">
+  <img src="https://github.com/chkr1011/HA4IoT/blob/master/Media/Images/Script_1.png?raw=true" height="256">
+</p>
+
 ## Extensible
 It is possible to add _Adapters_ for different hardware. I2C bus and MQTT broker are already available in the project.
 
