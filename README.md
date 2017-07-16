@@ -53,7 +53,7 @@ This project has build in  support for several _Sonoff_ devices from Itead Studi
 ## LUA scripting support
 Write your own scripts using the scripting language LUA to write powerful automations or interacting with your hardware.
 <p align="center">
-  <img src="https://github.com/chkr1011/HA4IoT/blob/master/Media/Screens/Script_1.png?raw=true" height="256">
+  <img src="https://github.com/chkr1011/HA4IoT/blob/master/Media/Screens/Script_1.png?raw=true" height="796">
 </p>
 
 ## Extensible
