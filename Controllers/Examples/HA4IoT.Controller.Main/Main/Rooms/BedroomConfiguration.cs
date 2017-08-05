@@ -15,6 +15,7 @@ using HA4IoT.Contracts.Messaging;
 using HA4IoT.Hardware.Drivers.CCTools;
 using HA4IoT.Hardware.Drivers.CCTools.Devices;
 using HA4IoT.Hardware.Drivers.I2CHardwareBridge;
+using HA4IoT.Hardware.Drivers.Outpost;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.MotionDetectors;
@@ -23,6 +24,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 {
     internal class BedroomConfiguration
     {
+        private readonly OutpostDeviceService _outpostDeviceService;
         private readonly IDeviceRegistryService _deviceService;
         private readonly IAreaRegistryService _areaService;
         private readonly CCToolsDeviceService _ccToolsBoardService;
@@ -44,6 +46,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             LampBedLeft,
             LampBedRight,
+            RgbLight,
 
             SocketWindowLeft,
             SocketWindowRight,
@@ -86,8 +89,10 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory,
             AutomationFactory automationFactory,
+            OutpostDeviceService outpostDeviceService,
             IMessageBrokerService messageBroker)
         {
+            _outpostDeviceService = outpostDeviceService ?? throw new ArgumentNullException(nameof(outpostDeviceService));
             _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
             _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
             _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
@@ -139,6 +144,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             _actuatorFactory.RegisterLamp(area, Bedroom.LightCeilingWall, hsrel5.GetOutput(7).WithInvertedState());
             _actuatorFactory.RegisterLamp(area, Bedroom.LampBedLeft, hsrel5.GetOutput(4));
             _actuatorFactory.RegisterLamp(area, Bedroom.LampBedRight, hsrel8.GetOutput(8).WithInvertedState());
+            _actuatorFactory.RegisterLamp(area, Bedroom.RgbLight, _outpostDeviceService.CreateRgbStripAdapter("RGBSBR1"));
 
             _actuatorFactory.RegisterSocket(area, Bedroom.SocketWindowLeft, hsrel5[HSREL5Pin.Relay0]);
             _actuatorFactory.RegisterSocket(area, Bedroom.SocketWindowRight, hsrel5[HSREL5Pin.Relay1]);

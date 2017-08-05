@@ -11,7 +11,6 @@ using HA4IoT.Contracts.Messaging;
 using HA4IoT.Hardware.Drivers.CCTools;
 using HA4IoT.Hardware.Drivers.CCTools.Devices;
 using HA4IoT.Hardware.Drivers.Outpost;
-using HA4IoT.Hardware.RemoteSockets;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 
