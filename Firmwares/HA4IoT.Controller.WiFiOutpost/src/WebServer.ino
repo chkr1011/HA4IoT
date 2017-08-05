@@ -1,3 +1,6 @@
+#define HTTP_CODE_SUCCESS 200
+#define HTTP_CODE_BADREQUEST 400
+
 String getHttpParamString(String headerName, String defaultValue) {
   if (!_webServer.hasArg(headerName)) {
     return defaultValue;
@@ -22,16 +25,16 @@ uint16_t getHttpParamUInt(String headerName, uint16_t defaultValue) {
   return _webServer.arg(headerName).toInt();
 }
 
-void sendHttpOK() { _webServer.send(200, F(""), F("")); }
+void sendHttpOK() { _webServer.send(HTTP_CODE_SUCCESS, F(""), F("")); }
 
 void sendHttpOK(JsonObject *json) {
-  char buffer[256];
+  char buffer[MAX_JSON_SIZE];
   json->printTo(buffer, sizeof(buffer));
 
-  _webServer.send(200, F("application/json"), buffer);
+  _webServer.send(HTTP_CODE_SUCCESS, F("application/json"), buffer);
 }
 
-void sendHttpBadRequest() { _webServer.send(400, F(""), F("")); }
+void sendHttpBadRequest() { _webServer.send(HTTP_CODE_BADREQUEST, F(""), F("")); }
 
 void handleHttpGetInfo() {
   DynamicJsonBuffer jsonBuffer;
@@ -40,12 +43,13 @@ void handleHttpGetInfo() {
   JsonObject &sys = jsonBuffer.createObject();
   sys[F("version")] = getFirmwareVersion();
   sys[F("name")] = _sysSettings.name;
-  sys[F("ip")] = getWiFiIpAddress();
   json[F("system")] = sys;
 
   JsonObject &wiFiConfig = jsonBuffer.createObject();
   wiFiConfig[F("isConfigured")] = _wiFiSettings.isConfigured;
   wiFiConfig[F("ssid")] = _wiFiSettings.ssid;
+  wiFiConfig[F("mode")] = getWiFiMode();
+  wiFiConfig[F("ip")] = getWiFiIpAddress();
   json[F("wifi")] = wiFiConfig;
 
   JsonObject &mqttConfig = jsonBuffer.createObject();

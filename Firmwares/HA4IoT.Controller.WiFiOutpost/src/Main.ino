@@ -13,10 +13,10 @@
 #include "WiFi.h"
 
 #define SLEEP_DURATION 10
-#define MAX_JSON_SIZE 256
+#define MAX_JSON_SIZE 512
 
 // Comment out to disable features.
-//#define DEBUG
+#define DEBUG
 //#define FEATURE_RGB
 //#define FEATURE_LPD
 //#define FEATURE_ONEWIRE_SENSORS
@@ -42,12 +42,12 @@
 #include <DHT.h>
 #endif
 
-uint16_t _previousMillis = millis();
+uint16_t _millis = millis();
 
 void setup() {
 #ifdef DEBUG
   Serial.begin(115200);
-  Serial.println("\n[HA4IoT-SmartDevice] (www.ha4iot.de)");
+  Serial.println("\n[Wirehome-SmartDevice] (www.wirehome.com)");
 #endif
 
   setupConfig();
@@ -73,14 +73,16 @@ void setup() {
   finishBoot();
 }
 
+uint16_t pendingMillis() { return millis() - _millis; }
+
 void loop() {
   uint16_t now = millis();
-  uint16_t elapsedMillis = now - _previousMillis;
-  _previousMillis = now;
+  uint16_t elapsedMillis = now - _millis;
+  _millis = now;
 
   // Loop core components.
   loopSystem(elapsedMillis);
-  loopWiFi();
+  loopWiFi(elapsedMillis);
   loopMqtt(elapsedMillis);
   loopWebServer();
 

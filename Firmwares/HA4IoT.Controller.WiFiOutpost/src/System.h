@@ -1,5 +1,8 @@
 #include <Arduino.h>
 
+#define NO_SYSTEM_BUTTON -1
+#define NO_SYSTEM_LED -1
+
 void setupSystem();
 void loopSystem(uint16_t elapsedMillis);
 

@@ -1,16 +1,7 @@
 #define MQTT_RECONNECT_INTERVAL 15000; // Retry every 15 seconds.
 
-struct mqttConnectedCallback {
-  void (*callback)();
-};
-
-struct mqttOnMessageCallback {
-  String topic;
-  void (*callback)(String);
-};
-
-WiFiClient _espClient;
-PubSubClient _mqttClient(_espClient);
+WiFiClient _wiFiClient;
+PubSubClient _mqttClient(_wiFiClient);
 
 bool _isConnected;
 int16_t _mqttReconnectTimeout = 0;
@@ -33,11 +24,18 @@ void onMqttConnected(void (*callback)()) {
 }
 
 void callback(char *topic, byte *payload, uint16_t length) {
-  payload[length] = '\0';
-  String message = String((char *)payload);
+  unsigned char text[length + 1];
+  text[length] = '\0';
+
+  for (uint16_t i = 0; i < length; i++) {
+    text[i] = (unsigned char)*payload;
+    payload++;
+  }
+
+  String message = String((char *)text);
 
 #ifdef DEBUG
-  Serial.printf("MQTT: RX T=%s, P=%s\n", topic, (char *)payload);
+  Serial.printf("MQTT: RX T=%s, P=%s\n", topic, text);
 #endif
 
   for (uint8_t i = 0; i < _onMessageCallbacksIndex; i++) {
@@ -62,18 +60,22 @@ void loopMqtt(uint16_t elapsedMillis) {
     return;
   }
 
+  _mqttClient.loop();
+
   if (!wiFiIsConnected()) {
     _isConnected = false;
     setInfo();
     return;
   }
 
-  if (_mqttClient.connected() && _mqttClient.loop()) {
+  if (_mqttClient.state() == MQTT_CONNECTED) {
     _mqttReconnectTimeout = MQTT_RECONNECT_INTERVAL;
+    _isConnected = true;
     clearInfo();
     return;
   }
 
+  _isConnected = false;
   setInfo();
 
   _mqttReconnectTimeout -= elapsedMillis;
@@ -84,9 +86,11 @@ void loopMqtt(uint16_t elapsedMillis) {
   _mqttReconnectTimeout = MQTT_RECONNECT_INTERVAL;
 
 #ifdef DEBUG
-  Serial.printf("MQTT: Connecting '%s'...\n", _mqttSettings.server.c_str());
+  Serial.printf("MQTT: Connection state: %i\n", _mqttClient.state());
+  Serial.printf("MQTT: Connecting to '%s'...\n", _mqttSettings.server.c_str());
 #endif
 
+  _mqttClient.disconnect();
   _mqttClient.setServer(_mqttSettings.server.c_str(), 1883);
   _isConnected = _mqttClient.connect(_sysSettings.name.c_str(), _mqttSettings.user.c_str(), _mqttSettings.password.c_str());
 

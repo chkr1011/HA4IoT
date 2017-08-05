@@ -1,5 +1,14 @@
 #include <Arduino.h>
 
+struct mqttConnectedCallback {
+  void (*callback)();
+};
+
+struct mqttOnMessageCallback {
+  String topic;
+  void (*callback)(String);
+};
+
 void setupMqtt();
 void loopMqtt(uint16_t elapsedMillis);
 

@@ -12,7 +12,7 @@ int16_t _resetConfigTimeout = RESET_SETTINGS_TMEOUT;
 
 String _updateResult = "";
 
-String getFirmwareVersion() { return "1.1.17"; }
+String getFirmwareVersion() { return "1.2.6"; }
 
 void setupSystem() {
 #ifdef DEBUG
@@ -29,17 +29,21 @@ void setupSystem() {
   onMqttMessage(generateMqttCommandTopic("Update"), handleMqttUpdateMessage);
   onMqttMessage(generateMqttCommandTopic("Reboot"), handleMqttRebootMessage);
 
-  if (SYSTEM_LED != -1) {
+  if (SYSTEM_LED != NO_SYSTEM_LED) {
     pinMode(SYSTEM_LED, OUTPUT);
     setInfo();
   }
 
-  if (SYSTEM_BUTTON != -1) {
+  if (SYSTEM_BUTTON != NO_SYSTEM_BUTTON) {
     pinMode(SYSTEM_BUTTON, INPUT);
   }
 }
 
 void blink(uint8_t count) {
+  if (SYSTEM_LED == NO_SYSTEM_LED) {
+    return;
+  }
+
   // TODO: Save current state and restore later.
   for (uint8_t i = 0; i < count; i++) {
     if (i > 0) {
@@ -112,7 +116,7 @@ void finishBoot() {
 }
 
 void loopSystem(uint16_t elapsedMillis) {
-  if (SYSTEM_BUTTON == -1) {
+  if (SYSTEM_BUTTON == NO_SYSTEM_BUTTON) {
     return;
   }
 
@@ -157,8 +161,9 @@ void handleHttpPostUpdate() {
   sendHttpOK();
   startSystemUpdate(url);
 }
+
 void handleHttpGetStatus() {
-  StaticJsonBuffer<1024> jsonBuffer;
+  DynamicJsonBuffer jsonBuffer;
   JsonObject &json = jsonBuffer.createObject();
   json[F("updateResult")] = _updateResult;
   json[F("vcc")] = ESP.getVcc();

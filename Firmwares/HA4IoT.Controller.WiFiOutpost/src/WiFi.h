@@ -3,3 +3,4 @@ void loopWiFi();
 
 bool wiFiIsConnected();
 String getWiFiIpAddress();
+String getWiFiMode();
