@@ -6,16 +6,17 @@ using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Areas;
 using HA4IoT.Automations;
 using HA4IoT.Components;
+using HA4IoT.Components.Adapters.MqttBased;
 using HA4IoT.Components.Adapters.PortBased;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components.Adapters;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Hardware.DeviceMessaging;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Messaging;
 using HA4IoT.Hardware.Drivers.CCTools;
 using HA4IoT.Hardware.Drivers.CCTools.Devices;
-using HA4IoT.Hardware.Drivers.I2CHardwareBridge;
-using HA4IoT.Hardware.Drivers.Outpost;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.MotionDetectors;
@@ -24,7 +25,6 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 {
     internal class BedroomConfiguration
     {
-        private readonly OutpostDeviceService _outpostDeviceService;
         private readonly IDeviceRegistryService _deviceService;
         private readonly IAreaRegistryService _areaService;
         private readonly CCToolsDeviceService _ccToolsBoardService;
@@ -32,6 +32,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         private readonly SensorFactory _sensorFactory;
         private readonly AutomationFactory _automationFactory;
         private readonly IMessageBrokerService _messageBroker;
+        private readonly IDeviceMessageBrokerService _deviceMessageBrokerService;
+        private readonly ILogService _logService;
 
         private enum Bedroom
         {
@@ -89,10 +91,10 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory,
             AutomationFactory automationFactory,
-            OutpostDeviceService outpostDeviceService,
-            IMessageBrokerService messageBroker)
+            IMessageBrokerService messageBroker,
+            IDeviceMessageBrokerService deviceMessageBroker,
+            ILogService logService)
         {
-            _outpostDeviceService = outpostDeviceService ?? throw new ArgumentNullException(nameof(outpostDeviceService));
             _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
             _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
             _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
@@ -100,6 +102,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             _sensorFactory = sensorFactory ?? throw new ArgumentNullException(nameof(sensorFactory));
             _automationFactory = automationFactory ?? throw new ArgumentNullException(nameof(automationFactory));
             _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
+            _deviceMessageBrokerService = deviceMessageBroker ?? throw new ArgumentNullException(nameof(deviceMessageBroker));
+            _logService = logService;
         }
 
         public void Apply()
@@ -107,10 +111,6 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             var hsrel5 = (HSREL5)_ccToolsBoardService.RegisterDevice(CCToolsDeviceType.HSRel5, InstalledDevice.BedroomHSREL5.ToString(), 38);
             var hsrel8 = (HSREL8)_ccToolsBoardService.RegisterDevice(CCToolsDeviceType.HSRel8, InstalledDevice.BedroomHSREL8.ToString(), 21);
             var input5 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input5.ToString());
-            var input4 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input4.ToString());
-            var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
-
-            const int SensorPin = 6;
 
             var area = _areaService.RegisterArea(Room.Bedroom);
 
@@ -118,18 +118,13 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             _sensorFactory.RegisterWindow(area, Bedroom.WindowRight, new PortBasedWindowAdapter(input5.GetInput(3)));
 
             _sensorFactory.RegisterTemperatureSensor(area, Bedroom.TemperatureSensor,
-                i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
+                new MqttBasedNumericSensorAdapter("sensors-bridge/temperature/8", _deviceMessageBrokerService, _logService));
 
             _sensorFactory.RegisterHumiditySensor(area, Bedroom.HumiditySensor,
-                i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
+                new MqttBasedNumericSensorAdapter("sensors-bridge/humidity/8", _deviceMessageBrokerService, _logService));
 
             _sensorFactory.RegisterMotionDetector(area, Bedroom.MotionDetector, input5.GetInput(12));
-
-            _sensorFactory.RegisterButton(area, Bedroom.ButtonBedLeftOuter, input4.GetInput(0));
-            _sensorFactory.RegisterButton(area, Bedroom.ButtonBedRightInner, input4.GetInput(1));
-            _sensorFactory.RegisterButton(area, Bedroom.ButtonBedLeftInner, input4.GetInput(2));
-            _sensorFactory.RegisterButton(area, Bedroom.ButtonBedRightOuter, input4.GetInput(3));
-            
+           
             _sensorFactory.RegisterButton(area, Bedroom.RollerShutterButtonsLowerUp, input5.GetInput(4));
             _sensorFactory.RegisterButton(area, Bedroom.RollerShutterButtonsLowerDown, input5.GetInput(5));
             _sensorFactory.RegisterButton(area, Bedroom.RollerShutterButtonsUpperUp, input5.GetInput(6));
@@ -142,16 +137,31 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             _actuatorFactory.RegisterLamp(area, Bedroom.LightCeiling, hsrel5.GetOutput(5).WithInvertedState());
             _actuatorFactory.RegisterLamp(area, Bedroom.LightCeilingWindow, hsrel5.GetOutput(6).WithInvertedState());
             _actuatorFactory.RegisterLamp(area, Bedroom.LightCeilingWall, hsrel5.GetOutput(7).WithInvertedState());
-            _actuatorFactory.RegisterLamp(area, Bedroom.LampBedLeft, hsrel5.GetOutput(4));
-            _actuatorFactory.RegisterLamp(area, Bedroom.LampBedRight, hsrel8.GetOutput(8).WithInvertedState());
-            _actuatorFactory.RegisterLamp(area, Bedroom.RgbLight, _outpostDeviceService.CreateRgbStripAdapter("RGBSBR1"));
 
             _actuatorFactory.RegisterSocket(area, Bedroom.SocketWindowLeft, hsrel5[HSREL5Pin.Relay0]);
             _actuatorFactory.RegisterSocket(area, Bedroom.SocketWindowRight, hsrel5[HSREL5Pin.Relay1]);
             _actuatorFactory.RegisterSocket(area, Bedroom.SocketWall, hsrel5[HSREL5Pin.Relay2]);
             _actuatorFactory.RegisterSocket(area, Bedroom.SocketWallEdge, hsrel5[HSREL5Pin.Relay3]);
-            _actuatorFactory.RegisterSocket(area, Bedroom.SocketBedLeft, hsrel8.GetOutput(7));
-            _actuatorFactory.RegisterSocket(area, Bedroom.SocketBedRight, hsrel8.GetOutput(9));
+
+            // Bed components
+            //_sensorFactory.RegisterButton(area, Bedroom.ButtonBedLeftOuter, input4.GetInput(0));
+            //_sensorFactory.RegisterButton(area, Bedroom.ButtonBedRightInner, input4.GetInput(1));
+            //_sensorFactory.RegisterButton(area, Bedroom.ButtonBedLeftInner, input4.GetInput(2));
+            //_sensorFactory.RegisterButton(area, Bedroom.ButtonBedRightOuter, input4.GetInput(3));
+            //_actuatorFactory.RegisterLamp(area, Bedroom.LampBedLeft, hsrel5.GetOutput(4));
+            //_actuatorFactory.RegisterLamp(area, Bedroom.LampBedRight, hsrel8.GetOutput(8).WithInvertedState());
+            //_actuatorFactory.RegisterLamp(area, Bedroom.RgbLight, _outpostDeviceService.CreateRgbStripAdapter("RGBSBR1"));
+            //_actuatorFactory.RegisterSocket(area, Bedroom.SocketBedLeft, hsrel8.GetOutput(7));
+            //_actuatorFactory.RegisterSocket(area, Bedroom.SocketBedRight, hsrel8.GetOutput(9));
+            _actuatorFactory.RegisterLamp(area, Bedroom.LampBedLeft, new DeviceBinaryOutput("bed/$patch/lamp-left", _deviceMessageBrokerService));
+            _actuatorFactory.RegisterLamp(area, Bedroom.LampBedRight, new DeviceBinaryOutput("bed/$patch/lamp-right", _deviceMessageBrokerService));
+            _actuatorFactory.RegisterSocket(area, Bedroom.SocketBedLeft, new DeviceBinaryOutput("bed/$patch/socket-left", _deviceMessageBrokerService));
+            _actuatorFactory.RegisterSocket(area, Bedroom.SocketBedRight, new DeviceBinaryOutput("bed/$patch/socket-right", _deviceMessageBrokerService));
+            _actuatorFactory.RegisterLamp(area, Bedroom.RgbLight, new RgbDeviceAdapter("bed/$patch/rgb", _deviceMessageBrokerService));
+            _sensorFactory.RegisterButton(area, Bedroom.ButtonBedLeftInner, new DeviceBinaryInput("bed/button-left-right", _deviceMessageBrokerService));
+            _sensorFactory.RegisterButton(area, Bedroom.ButtonBedLeftOuter, new DeviceBinaryInput("bed/button-left-left", _deviceMessageBrokerService));
+            _sensorFactory.RegisterButton(area, Bedroom.ButtonBedRightInner, new DeviceBinaryInput("bed/button-right-left", _deviceMessageBrokerService));
+            _sensorFactory.RegisterButton(area, Bedroom.ButtonBedRightOuter, new DeviceBinaryInput("bed/button-right-right", _deviceMessageBrokerService));
 
             _actuatorFactory.RegisterRollerShutter(area, Bedroom.RollerShutterLeft, hsrel8[HSREL8Pin.Relay6], hsrel8[HSREL8Pin.Relay5]);
             _actuatorFactory.RegisterRollerShutter(area, Bedroom.RollerShutterRight, hsrel8[HSREL8Pin.Relay3], hsrel8[HSREL8Pin.Relay4]);

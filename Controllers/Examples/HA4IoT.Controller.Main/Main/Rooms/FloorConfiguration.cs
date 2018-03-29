@@ -5,14 +5,16 @@ using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Areas;
 using HA4IoT.Automations;
 using HA4IoT.Components;
+using HA4IoT.Components.Adapters.MqttBased;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Hardware.DeviceMessaging;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Messaging;
 using HA4IoT.Hardware;
 using HA4IoT.Hardware.Drivers.CCTools;
 using HA4IoT.Hardware.Drivers.CCTools.Devices;
-using HA4IoT.Hardware.Drivers.I2CHardwareBridge;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.MotionDetectors;
@@ -28,6 +30,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
         private readonly IMessageBrokerService _messageBroker;
+        private readonly IDeviceMessageBrokerService _deviceMessageBrokerService;
+        private readonly ILogService _logService;
 
         private enum Floor
         {
@@ -76,9 +80,13 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory,
-            IMessageBrokerService messageBroker)
+            IMessageBrokerService messageBroker,
+            IDeviceMessageBrokerService deviceMessageBrokerService,
+            ILogService logService)
         {
             _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
+            _deviceMessageBrokerService = deviceMessageBrokerService;
+            _logService = logService;
             _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
             _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
             _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
@@ -96,17 +104,14 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             var input1 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input1.ToString());
             var input2 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input2.ToString());
             var input4 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input4.ToString());
-            var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
-
-            const int SensorPin = 3;
 
             var area = _areaService.RegisterArea(Room.Floor);
 
             _sensorFactory.RegisterTemperatureSensor(area, Floor.LowerFloorTemperatureSensor,
-                i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
+                new MqttBasedNumericSensorAdapter("sensors-bridge/temperature/2", _deviceMessageBrokerService, _logService));
 
             _sensorFactory.RegisterHumiditySensor(area, Floor.LowerFloorHumiditySensor,
-                i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
+                new MqttBasedNumericSensorAdapter("sensors-bridge/humidity/2", _deviceMessageBrokerService, _logService));
 
             _sensorFactory.RegisterMotionDetector(area, Floor.StairwayMotionDetector, input2.GetInput(1));
             _sensorFactory.RegisterMotionDetector(area, Floor.StairsLowerMotionDetector, input4.GetInput(7));

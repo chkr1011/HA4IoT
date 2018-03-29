@@ -23,7 +23,7 @@ namespace HA4IoT.Devices
 
         public void Publish(string topic, string message)
         {
-            _deviceMessageBrokerService.Publish(topic, message, MqttQosLevel.AtMostOnce);
+            _deviceMessageBrokerService.Publish(topic, message, MqttQosLevel.AtMostOnce, false);
         }
 
         public void Subscribe(string topic, string callbackFunctionName)

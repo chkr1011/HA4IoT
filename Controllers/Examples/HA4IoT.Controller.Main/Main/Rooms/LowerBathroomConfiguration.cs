@@ -4,15 +4,17 @@ using HA4IoT.Actuators.Lamps;
 using HA4IoT.Areas;
 using HA4IoT.Automations;
 using HA4IoT.Components;
+using HA4IoT.Components.Adapters.MqttBased;
 using HA4IoT.Components.Adapters.PortBased;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Hardware.DeviceMessaging;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Scheduling;
 using HA4IoT.Contracts.Settings;
 using HA4IoT.Hardware.Drivers.CCTools.Devices;
-using HA4IoT.Hardware.Drivers.I2CHardwareBridge;
 using HA4IoT.Scheduling;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
@@ -30,6 +32,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
         private readonly IMessageBrokerService _messageBroker;
+        private readonly IDeviceMessageBrokerService _deviceMessageBrokerService;
+        private readonly ILogService _logService;
 
         private IScheduledAction _bathmodeResetDelayedAction;
 
@@ -60,9 +64,13 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory,
-            IMessageBrokerService messageBroker)
+            IMessageBrokerService messageBroker,
+            IDeviceMessageBrokerService deviceMessageBrokerService,
+            ILogService logService)
         {
             _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
+            _deviceMessageBrokerService = deviceMessageBrokerService;
+            _logService = logService;
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
             _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
             _schedulerService = schedulerService ?? throw new ArgumentNullException(nameof(schedulerService));
@@ -76,19 +84,16 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         {
             var hspe16_FloorAndLowerBathroom = _deviceService.GetDevice<HSPE16OutputOnly>(InstalledDevice.LowerFloorAndLowerBathroomHSPE16.ToString());
             var input3 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input3.ToString());
-            var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
-
-            const int SensorPin = 5;
 
             var area = _areaService.RegisterArea(Room.LowerBathroom);
 
             _sensorFactory.RegisterWindow(area, LowerBathroom.Window, new PortBasedWindowAdapter(input3.GetInput(13), input3.GetInput(14)));
 
             _sensorFactory.RegisterTemperatureSensor(area, LowerBathroom.TemperatureSensor,
-                i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
+                new MqttBasedNumericSensorAdapter("sensors-bridge/temperature/4", _deviceMessageBrokerService, _logService));
 
             _sensorFactory.RegisterHumiditySensor(area, LowerBathroom.HumiditySensor,
-                i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
+                new MqttBasedNumericSensorAdapter("sensors-bridge/humidity/4", _deviceMessageBrokerService, _logService));
 
             _sensorFactory.RegisterMotionDetector(area, LowerBathroom.MotionDetector, input3.GetInput(15));
 

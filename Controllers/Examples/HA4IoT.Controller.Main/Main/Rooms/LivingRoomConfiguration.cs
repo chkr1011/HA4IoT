@@ -2,13 +2,15 @@
 using HA4IoT.Actuators;
 using HA4IoT.Areas;
 using HA4IoT.Components;
+using HA4IoT.Components.Adapters.MqttBased;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Hardware.DeviceMessaging;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Messaging;
 using HA4IoT.Hardware.Drivers.CCTools;
 using HA4IoT.Hardware.Drivers.CCTools.Devices;
-using HA4IoT.Hardware.Drivers.I2CHardwareBridge;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 
@@ -21,7 +23,9 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         private readonly CCToolsDeviceService _ccToolsBoardService;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
-        private readonly IMessageBrokerService _messageBroker;
+        private readonly IMessageBrokerService _messageBrokerService;
+        private readonly IDeviceMessageBrokerService _deviceMessageBrokerService;
+        private readonly ILogService _logService;
 
         private enum LivingRoom
         {
@@ -66,9 +70,13 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             CCToolsDeviceService ccToolsBoardService,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory,
-            IMessageBrokerService messageBroker)
+            IMessageBrokerService messageBrokerService,
+            IDeviceMessageBrokerService deviceMessageBrokerService,
+            ILogService logService)
         {
-            _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
+            _messageBrokerService = messageBrokerService ?? throw new ArgumentNullException(nameof(messageBrokerService));
+            _deviceMessageBrokerService = deviceMessageBrokerService;
+            _logService = logService;
             _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
             _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
             _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
@@ -79,14 +87,11 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         public void Apply()
         {
             var hsrel8 = (HSREL8)_ccToolsBoardService.RegisterDevice(CCToolsDeviceType.HSRel8, InstalledDevice.LivingRoomHSREL8.ToString(), 18);
-            var hsrel5 = (HSREL5)_ccToolsBoardService.RegisterDevice(CCToolsDeviceType.HSRel5, InstalledDevice.LivingRoomHSREL5.ToString(), 57);
+            ////var hsrel5 = (HSREL5)_ccToolsBoardService.RegisterDevice(CCToolsDeviceType.HSRel5, InstalledDevice.LivingRoomHSREL5.ToString(), 57);
 
             var input0 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input0.ToString());
             var input1 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input1.ToString());
-            var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
-
-            const int SensorPin = 12;
-
+            
             var area = _areaService.RegisterArea(Room.LivingRoom);
 
             _sensorFactory.RegisterWindow(area, LivingRoom.WindowLeftL, input0.GetInput(10), input0.GetInput(11));
@@ -95,10 +100,10 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             _sensorFactory.RegisterWindow(area, LivingRoom.WindowRightR, input1.GetInput(13), input1.GetInput(12));
 
             _sensorFactory.RegisterTemperatureSensor(area, LivingRoom.TemperatureSensor,
-                i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
+                new MqttBasedNumericSensorAdapter("sensors-bridge/temperature/0", _deviceMessageBrokerService, _logService));
 
             _sensorFactory.RegisterHumiditySensor(area, LivingRoom.HumiditySensor,
-                i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
+                new MqttBasedNumericSensorAdapter("sensors-bridge/humidity/0", _deviceMessageBrokerService, _logService));
 
             _actuatorFactory.RegisterLamp(area, LivingRoom.LampCouch, hsrel8.GetOutput(8).WithInvertedState());
             _actuatorFactory.RegisterLamp(area, LivingRoom.LampDiningTable, hsrel8.GetOutput(9).WithInvertedState());
@@ -116,16 +121,16 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             _sensorFactory.RegisterButton(area, LivingRoom.ButtonLower, input0.GetInput(13));
             _sensorFactory.RegisterButton(area, LivingRoom.ButtonPassage, input1.GetInput(10));
 
-            area.GetButton(LivingRoom.ButtonUpper).CreatePressedShortTrigger(_messageBroker).Attach(
+            area.GetButton(LivingRoom.ButtonUpper).CreatePressedShortTrigger(_messageBrokerService).Attach(
                 () => area.GetComponent(LivingRoom.LampDiningTable).TryTogglePowerState());
 
-            area.GetButton(LivingRoom.ButtonMiddle).CreatePressedShortTrigger(_messageBroker).Attach(() =>
+            area.GetButton(LivingRoom.ButtonMiddle).CreatePressedShortTrigger(_messageBrokerService).Attach(() =>
                 area.GetComponent(LivingRoom.LampCouch).TryTogglePowerState());
             
-            area.GetButton(LivingRoom.ButtonLower).CreatePressedShortTrigger(_messageBroker).Attach(() => 
+            area.GetButton(LivingRoom.ButtonLower).CreatePressedShortTrigger(_messageBrokerService).Attach(() => 
                 area.GetComponent(LivingRoom.SocketWallRightEdgeRight).TryTogglePowerState());
 
-            area.GetButton(LivingRoom.ButtonPassage).CreatePressedShortTrigger(_messageBroker).Attach(
+            area.GetButton(LivingRoom.ButtonPassage).CreatePressedShortTrigger(_messageBrokerService).Attach(
                 () => area.GetComponent(LivingRoom.LampDiningTable).TryTogglePowerState());
         }
     }

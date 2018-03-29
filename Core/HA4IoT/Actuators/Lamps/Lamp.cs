@@ -140,8 +140,7 @@ namespace HA4IoT.Actuators.Lamps
                 return null;
             }
 
-            double r, g, b;
-            ColorConverter.ConvertHsvToRgb(colorState.Hue, colorState.Saturation, colorState.Value, out r, out g, out b);
+            ColorConverter.ConvertHsvToRgb(colorState.Hue, colorState.Saturation, colorState.Value, out var r, out var g, out var b);
 
             var maxValue = Math.Pow(2, _adapter.ColorResolutionBits);
             r = maxValue * r;

@@ -6,15 +6,16 @@ using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Areas;
 using HA4IoT.Automations;
 using HA4IoT.Components;
+using HA4IoT.Components.Adapters.MqttBased;
 using HA4IoT.Components.Adapters.PortBased;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Hardware.DeviceMessaging;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Messaging;
 using HA4IoT.Hardware.Drivers.CCTools;
 using HA4IoT.Hardware.Drivers.CCTools.Devices;
-using HA4IoT.Hardware.Drivers.I2CHardwareBridge;
-using HA4IoT.Hardware.Drivers.Outpost;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.MotionDetectors;
@@ -27,11 +28,12 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         private readonly IAreaRegistryService _areaService;
         private readonly IDeviceRegistryService _deviceService;
         private readonly CCToolsDeviceService _ccToolsBoardService;
-        private readonly OutpostDeviceService _outpostDeviceService;
         private readonly AutomationFactory _automationFactory;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
         private readonly IMessageBrokerService _messageBroker;
+        private readonly IDeviceMessageBrokerService _deviceMessageBrokerService;
+        private readonly ILogService _logService;
 
         public enum Kitchen
         {
@@ -61,7 +63,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             SocketKitchenette,
 
             SocketCeiling1, // Über Hängeschrank
-            SocketCeiling2, // Bei Dunsabzug
+            SocketCeiling2, // Bei Dunstabzug
 
             Window
         }
@@ -71,18 +73,20 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             IAreaRegistryService areaService,
             IDeviceRegistryService deviceService,
             CCToolsDeviceService ccToolsDeviceService,
-            OutpostDeviceService outpostDeviceService,
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory,
-            IMessageBrokerService messageBroker)
+            IMessageBrokerService messageBroker,
+            IDeviceMessageBrokerService deviceMessageBrokerService,
+            ILogService logService)
         {
             _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
+            _deviceMessageBrokerService = deviceMessageBrokerService;
+            _logService = logService;
             _systemEventsService = systemEventsService ?? throw new ArgumentNullException(nameof(systemEventsService));
             _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
             _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
             _ccToolsBoardService = ccToolsDeviceService ?? throw new ArgumentNullException(nameof(ccToolsDeviceService));
-            _outpostDeviceService = outpostDeviceService ?? throw new ArgumentNullException(nameof(outpostDeviceService));
             _automationFactory = automationFactory ?? throw new ArgumentNullException(nameof(automationFactory));
             _actuatorFactory = actuatorFactory ?? throw new ArgumentNullException(nameof(actuatorFactory));
             _sensorFactory = sensorFactory ?? throw new ArgumentNullException(nameof(sensorFactory));
@@ -96,19 +100,16 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             var input0 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input0.ToString());
             var input1 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input1.ToString());
             var input2 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input2.ToString());
-            var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
-
-            const int SensorPin = 11;
 
             var area = _areaService.RegisterArea(Room.Kitchen);
 
             _sensorFactory.RegisterWindow(area, Kitchen.Window, new PortBasedWindowAdapter(input0.GetInput(6), input0.GetInput(7)));
 
             _sensorFactory.RegisterTemperatureSensor(area, Kitchen.TemperatureSensor,
-                i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
+                new MqttBasedNumericSensorAdapter("sensors-bridge/temperature/1", _deviceMessageBrokerService, _logService));
 
             _sensorFactory.RegisterHumiditySensor(area, Kitchen.HumiditySensor,
-                i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
+                new MqttBasedNumericSensorAdapter("sensors-bridge/humidity/1", _deviceMessageBrokerService, _logService));
 
             _sensorFactory.RegisterMotionDetector(area, Kitchen.MotionDetector, input1.GetInput(8));
 
@@ -118,7 +119,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingDoor, hspe8[HSPE8Pin.GPIO0].WithInvertedState());
             _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingPassageInner, hspe8[HSPE8Pin.GPIO1].WithInvertedState());
             _actuatorFactory.RegisterLamp(area, Kitchen.LightCeilingPassageOuter, hspe8[HSPE8Pin.GPIO2].WithInvertedState());
-            _actuatorFactory.RegisterLamp(area, Kitchen.LightKitchenette, _outpostDeviceService.CreateRgbStripAdapter("RGBSK1"));
+            _actuatorFactory.RegisterLamp(area, Kitchen.LightKitchenette, new RgbDeviceAdapter("kitchen-rgb/$patch/rgb", _deviceMessageBrokerService));
 
             _actuatorFactory.RegisterSocket(area, Kitchen.SocketKitchenette, hsrel5[HSREL5Pin.Relay1]); // 0?
             _actuatorFactory.RegisterSocket(area, Kitchen.SocketWall, hsrel5[HSREL5Pin.Relay2]);

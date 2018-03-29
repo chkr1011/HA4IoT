@@ -105,7 +105,7 @@ namespace HA4IoT.Devices
 
                 if (device == null)
                 {
-                    //_log.Warning($"Failed to register device '{deviceConfiguration.Key}'. The specified driver '{deviceConfiguration.Value.Driver.Id}' is not supported.");
+                    _log.Warning($"Failed to register device '{deviceConfiguration.Key}'. The specified driver '{deviceConfiguration.Value.Driver.Type}' is not supported.");
                     return;
                 }
                 

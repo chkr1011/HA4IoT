@@ -1,2 +1,0 @@
-void setupOneWireSensors();
-void loopOneWireSensors();

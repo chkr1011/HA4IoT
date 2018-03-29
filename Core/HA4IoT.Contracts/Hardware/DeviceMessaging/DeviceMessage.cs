@@ -10,6 +10,8 @@ namespace HA4IoT.Contracts.Hardware.DeviceMessaging
 
         public byte[] Payload { get; set; }
 
+        public bool Retain { get; set; }
+
         [JsonConverter(typeof(StringEnumConverter))]
         public MqttQosLevel QosLevel { get; set; }
     }

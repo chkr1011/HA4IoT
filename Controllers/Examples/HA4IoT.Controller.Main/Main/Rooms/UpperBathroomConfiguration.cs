@@ -4,16 +4,18 @@ using HA4IoT.Actuators.Fans;
 using HA4IoT.Actuators.Lamps;
 using HA4IoT.Areas;
 using HA4IoT.Automations;
+using HA4IoT.Components.Adapters.MqttBased;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Components.Adapters;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Hardware.DeviceMessaging;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Messaging;
 using HA4IoT.Contracts.Scheduling;
 using HA4IoT.Contracts.Settings;
 using HA4IoT.Hardware.Drivers.CCTools;
 using HA4IoT.Hardware.Drivers.CCTools.Devices;
-using HA4IoT.Hardware.Drivers.I2CHardwareBridge;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.MotionDetectors;
 
@@ -22,6 +24,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
     internal class UpperBathroomConfiguration
     {
         private readonly IMessageBrokerService _messageBroker;
+        private readonly IDeviceMessageBrokerService _deviceMessageBrokerService;
+        private readonly ILogService _logService;
         private readonly CCToolsDeviceService _ccToolsBoardService;
         private readonly IDeviceRegistryService _deviceService;
         private readonly ISchedulerService _schedulerService;
@@ -58,9 +62,13 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory,
-            IMessageBrokerService messageBroker)
+            IMessageBrokerService messageBroker,
+            IDeviceMessageBrokerService deviceMessageBrokerService,
+            ILogService logService)
         {
             _messageBroker = messageBroker;
+            _deviceMessageBrokerService = deviceMessageBrokerService;
+            _logService = logService;
             _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
             _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
             _schedulerService = schedulerService ?? throw new ArgumentNullException(nameof(schedulerService));
@@ -76,17 +84,14 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         {
             var hsrel5 = (HSREL5)_ccToolsBoardService.RegisterDevice(CCToolsDeviceType.HSRel5, InstalledDevice.UpperBathroomHSREL5.ToString(), 61);
             var input5 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input5.ToString());
-            var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
-
-            const int SensorPin = 4;
 
             var area = _areaService.RegisterArea(Room.UpperBathroom);
 
             _sensorFactory.RegisterTemperatureSensor(area, UpperBathroom.TemperatureSensor,
-                i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
+                new MqttBasedNumericSensorAdapter("sensors-bridge/temperature/7", _deviceMessageBrokerService, _logService));
 
             _sensorFactory.RegisterHumiditySensor(area, UpperBathroom.HumiditySensor,
-                i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
+                new MqttBasedNumericSensorAdapter("sensors-bridge/humidity/7", _deviceMessageBrokerService, _logService));
 
             _sensorFactory.RegisterMotionDetector(area, UpperBathroom.MotionDetector, input5.GetInput(15));
 

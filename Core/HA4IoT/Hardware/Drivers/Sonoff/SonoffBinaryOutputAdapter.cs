@@ -20,8 +20,8 @@ namespace HA4IoT.Hardware.Drivers.Sonoff
 
         public Task SetState(AdapterPowerState powerState, params IHardwareParameter[] parameters)
         {
-            _deviceMessageBrokerService.Publish(_topic, powerState == AdapterPowerState.On ? "ON" : "OFF", MqttQosLevel.ExactlyOnce);
-            return Task.FromResult(0);
+            _deviceMessageBrokerService.Publish(_topic, powerState == AdapterPowerState.On ? "ON" : "OFF", MqttQosLevel.AtMostOnce, true);
+            return Task.CompletedTask;
         }
     }
 }

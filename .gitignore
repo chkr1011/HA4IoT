@@ -36,3 +36,4 @@ App/LocalDeployInfo.dat
 # Ignore other intermediate files that NuGet might create
 project.lock.json
 *.nuget.props
+.vs/

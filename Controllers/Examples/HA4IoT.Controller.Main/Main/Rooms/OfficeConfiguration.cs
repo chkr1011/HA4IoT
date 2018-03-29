@@ -3,14 +3,15 @@ using HA4IoT.Actuators;
 using HA4IoT.Actuators.StateMachines;
 using HA4IoT.Areas;
 using HA4IoT.Components;
+using HA4IoT.Components.Adapters.MqttBased;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Core;
 using HA4IoT.Contracts.Hardware;
+using HA4IoT.Contracts.Hardware.DeviceMessaging;
 using HA4IoT.Contracts.Hardware.RemoteSockets;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Messaging;
-using HA4IoT.Hardware.Drivers.CCTools;
 using HA4IoT.Hardware.Drivers.CCTools.Devices;
-using HA4IoT.Hardware.Drivers.Outpost;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 
@@ -18,13 +19,14 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 {
     internal class OfficeConfiguration
     {
-        private readonly OutpostDeviceService _outpostDeviceService;
         private readonly IDeviceRegistryService _deviceService;
         private readonly IAreaRegistryService _areaService;
         private readonly IRemoteSocketService _remoteSocketService;
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
         private readonly IMessageBrokerService _messageBroker;
+        private readonly IDeviceMessageBrokerService _deviceMessageBroker;
+        private readonly ILogService _logService;
 
         private enum Office
         {
@@ -46,6 +48,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             ButtonUpperRight,
             ButtonLowerLeft,
             ButtonLowerRight,
+            ButtonEdgeLeft,
+            ButtonEdgeRight,
 
             RgbLight,
             CombinedCeilingLights,
@@ -60,18 +64,18 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         public OfficeConfiguration(
             IDeviceRegistryService deviceService,
             IAreaRegistryService areaService,
-            OutpostDeviceService outpostDeviceService,
-            CCToolsDeviceService ccToolsBoardService,
             IRemoteSocketService remoteSocketService,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory,
-            IMessageBrokerService messageBroker)
+            IMessageBrokerService messageBroker,
+            IDeviceMessageBrokerService deviceMessageBroker,
+            ILogService logService)
         {
             _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
-            _outpostDeviceService = outpostDeviceService ?? throw new ArgumentNullException(nameof(outpostDeviceService));
+            _deviceMessageBroker = deviceMessageBroker ?? throw new ArgumentNullException(nameof(deviceMessageBroker));
+            _logService = logService ?? throw new ArgumentNullException(nameof(logService));
             _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
             _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
-            //_ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
             _remoteSocketService = remoteSocketService ?? throw new ArgumentNullException(nameof(remoteSocketService));
             _actuatorFactory = actuatorFactory ?? throw new ArgumentNullException(nameof(actuatorFactory));
             _sensorFactory = sensorFactory ?? throw new ArgumentNullException(nameof(sensorFactory));
@@ -92,7 +96,7 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             var area = _areaService.RegisterArea(Room.Office);
 
             //var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
-            //const int SensorPin = 2;
+            //const int SensorPin = 6; // ID from MQTT
             //_sensorFactory.RegisterTemperatureSensor(area, Office.TemperatureSensor, i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
             //_sensorFactory.RegisterHumiditySensor(area, Office.HumiditySensor, i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
 
@@ -103,10 +107,10 @@ namespace HA4IoT.Controller.Main.Main.Rooms
 
             _sensorFactory.RegisterMotionDetector(area, Office.MotionDetector, input4.GetInput(13));
 
-            _sensorFactory.RegisterTemperatureSensor(area, Office.TemperatureSensor, _outpostDeviceService.CreateDhtTemperatureSensorAdapter("OFFICETHSENSOR"));
-            _sensorFactory.RegisterHumiditySensor(area, Office.HumiditySensor, _outpostDeviceService.CreateDhtHumiditySensorAdapter("OFFICETHSENSOR"));
+            _sensorFactory.RegisterTemperatureSensor(area, Office.TemperatureSensor, new MqttBasedNumericSensorAdapter("sensors-office/temperature", _deviceMessageBroker, _logService));
+            _sensorFactory.RegisterHumiditySensor(area, Office.HumiditySensor, new MqttBasedNumericSensorAdapter("sensors-office/humidity", _deviceMessageBroker, _logService));
 
-            _actuatorFactory.RegisterLamp(area, Office.RgbLight, _outpostDeviceService.CreateRgbStripAdapter("RGBSO1"));
+            _actuatorFactory.RegisterLamp(area, Office.RgbLight, new RgbDeviceAdapter("kitchen-rgb/$patch/rgb", _deviceMessageBroker));
 
             _actuatorFactory.RegisterSocket(area, Office.SocketFrontLeft, hsrel8.GetOutput(0));
             _actuatorFactory.RegisterSocket(area, Office.SocketFrontRight, hsrel8.GetOutput(6));
@@ -121,7 +125,10 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             _sensorFactory.RegisterButton(area, Office.ButtonUpperRight, input4.GetInput(15));
             _sensorFactory.RegisterButton(area, Office.ButtonLowerLeft, input5.GetInput(1));
             _sensorFactory.RegisterButton(area, Office.ButtonLowerRight, input4.GetInput(14));
-            
+
+            _sensorFactory.RegisterButton(area, Office.ButtonEdgeLeft, new DeviceBinaryInput("office/edge/button-left", _deviceMessageBroker));
+            _sensorFactory.RegisterButton(area, Office.ButtonEdgeRight, new DeviceBinaryInput("office/edge/button-right", _deviceMessageBroker));
+
             var stateMachine = _actuatorFactory.RegisterStateMachine(area, Office.CombinedCeilingLights, (s, a) => SetupLight(s, hsrel8, hspe8));
             stateMachine.AlternativeStateId = StateMachineStateExtensions.OffStateId;
             stateMachine.ResetStateId = StateMachineStateExtensions.OffStateId;
@@ -145,6 +152,14 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             area.GetButton(Office.ButtonLowerRight)
                 .CreatePressedShortTrigger(_messageBroker)
                 .Attach(() => area.GetComponent(Office.CombinedCeilingLights).TrySetState("CouchOnly"));
+
+            area.GetButton(Office.ButtonEdgeRight)
+                .CreatePressedShortTrigger(_messageBroker)
+                .Attach(() => area.GetComponent(Office.CombinedCeilingLights).TrySetState(StateMachineStateExtensions.OnStateId));
+
+            area.GetButton(Office.ButtonEdgeLeft)
+                .CreatePressedShortTrigger(_messageBroker)
+                .Attach(() => area.GetComponent(Office.SocketRearRight).TryTogglePowerState());
         }
 
         private static void SetupLight(StateMachine light, HSREL8 hsrel8, HSPE8OutputOnly hspe8)
