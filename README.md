@@ -1,3 +1,5 @@
+**Attention! This project is no longer maintained and obsolete. The successor of this project is called 'Wirehome.Core' (https://github.com/chkr1011/Wirehome.Core).**
+
 <p align="center">
 <img src="https://github.com/chkr1011/HA4IoT/blob/master/Media/Images/Logo_256.png?raw=true" width="128">
 </p>
