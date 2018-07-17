@@ -8,54 +8,50 @@ using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Scripting;
 using HA4IoT.Contracts.Services;
 using MQTTnet;
-using MQTTnet.Core;
-using MQTTnet.Core.Client;
-using MQTTnet.Core.Diagnostics;
-using MQTTnet.Core.Packets;
-using MQTTnet.Core.Protocol;
-using MQTTnet.Core.Server;
+using MQTTnet.Diagnostics;
+using MQTTnet.Protocol;
+using MQTTnet.Server;
 using Newtonsoft.Json.Linq;
-using MqttApplicationMessageReceivedEventArgs = MQTTnet.Core.Client.MqttApplicationMessageReceivedEventArgs;
 
 namespace HA4IoT.Devices
 {
     [ApiServiceClass(typeof(IDeviceMessageBrokerService))]
     public class DeviceMessageBrokerService : ServiceBase, IDeviceMessageBrokerService
     {
-        private readonly MqttServer _server;
-        private readonly MqttClient _client;
+        private readonly IMqttServer _server;
         private readonly ILogger _log;
-        private readonly MqttCommunicationAdapter _clientCommunicationAdapter;
 
         public DeviceMessageBrokerService(ILogService logService, IScriptingService scriptingService)
         {
             if (scriptingService == null) throw new ArgumentNullException(nameof(scriptingService));
             _log = logService?.CreatePublisher(nameof(DeviceMessageBrokerService)) ?? throw new ArgumentNullException(nameof(logService));
 
-            MqttTrace.TraceMessagePublished += (s, e) =>
+            MqttNetGlobalLogger.LogMessagePublished += (s, e) =>
             {
-                if (e.Level == MqttTraceLevel.Warning)
+                if (e.TraceMessage.Level == MqttNetLogLevel.Warning)
                 {
-                    _log.Warning(e.Exception, e.Message);
+                    _log.Warning(e.TraceMessage.Exception, e.TraceMessage.ToString());
                 }
-                else if (e.Level == MqttTraceLevel.Error)
+                else if (e.TraceMessage.Level == MqttNetLogLevel.Error)
                 {
-                    _log.Error(e.Exception, e.Message);
+                    _log.Error(e.TraceMessage.Exception, e.TraceMessage.ToString());
+                }
+                else if (e.TraceMessage.Level == MqttNetLogLevel.Info)
+                {
+                    _log.Info(e.TraceMessage.ToString());
+                }
+                else if (e.TraceMessage.Level == MqttNetLogLevel.Verbose)
+                {
+                    _log.Verbose(e.TraceMessage.ToString());
                 }
             };
 
-            var channelA = new MqttCommunicationAdapter();
-            _clientCommunicationAdapter = new MqttCommunicationAdapter();
-            channelA.Partner = _clientCommunicationAdapter;
-            _clientCommunicationAdapter.Partner = channelA;
-
-            var mqttClientOptions = new MqttClientOptions { ClientId = "HA4IoT.Loopback", KeepAlivePeriod = TimeSpan.FromHours(1) };
-            _client = new MqttClient(mqttClientOptions, channelA);
-            _client.ApplicationMessageReceived += ProcessIncomingMessage;
-
-            var mqttServerOptions = new MqttServerOptions();
-            _server = new MqttServerFactory().CreateMqttServer(mqttServerOptions);
-            _server.ClientConnected += (s, e) => _log.Info($"MQTT client '{e.Identifier}' connected.");
+            _server = new MqttFactory().CreateMqttServer();
+            _server.ApplicationMessageReceived += ProcessIncomingMessage;
+            _server.ClientConnected += (s, e) => _log.Info($"MQTT client '{e.Client.ClientId}' connected.");
+            _server.ClientDisconnected += (s, e) => _log.Info($"MQTT client '{e.Client.ClientId}' connected.");
+            _server.ClientSubscribedTopic += (s, e) => _log.Info($"MQTT client '{e.ClientId}' subscribed topic '{e.TopicFilter}'.");
+            _server.ClientUnsubscribedTopic += (s, e) => _log.Info($"MQTT client '{e.ClientId}' unsubscribed topic '{e.TopicFilter}'.");
 
             scriptingService.RegisterScriptProxy(s => new DeviceMessageBrokerScriptProxy(this, s));
         }
@@ -64,19 +60,19 @@ namespace HA4IoT.Devices
 
         public void Initialize()
         {
-            _server.Start();
-            _server.InjectClient("HA4IoT.Loopback", _clientCommunicationAdapter);
+            var options = new MqttServerOptionsBuilder()
+                .WithApplicationMessageInterceptor(MessageInterceptor.Intercept)
+                .WithStorage(new Storage())
+                .Build();
 
-            _client.ConnectAsync().Wait();
-            _client.SubscribeAsync(new TopicFilter("#", MqttQualityOfServiceLevel.AtMostOnce)).Wait();
-
-            _log.Info("MQTT client (loopback) connected.");
+            _server.StartAsync(options).GetAwaiter().GetResult();
+            _log.Info("MQTT server started.");
         }
 
         [ApiMethod]
         public void GetConnectedClients(IApiCall apiCall)
         {
-            var connectedClients = _server.GetConnectedClients();
+            var connectedClients = _server.GetConnectedClientsAsync().GetAwaiter().GetResult();
             apiCall.Result["ConnectedClients"] = JToken.FromObject(connectedClients);
         }
 
@@ -84,22 +80,7 @@ namespace HA4IoT.Devices
         public void Publish(IApiCall apiCall)
         {
             var deviceMessage = apiCall.Parameter.ToObject<DeviceMessage>();
-            Publish(deviceMessage.Topic, deviceMessage.Payload, deviceMessage.QosLevel);
-        }
-
-        public void Publish(string topic, byte[] payload, MqttQosLevel qosLevel)
-        {
-            try
-            {
-                var message = new MqttApplicationMessage(topic, payload, (MqttQualityOfServiceLevel)qosLevel, false);
-                _client.PublishAsync(message).Wait();
-
-                _log.Verbose($"Published message '{topic}' [{Encoding.UTF8.GetString(payload)}].");
-            }
-            catch (Exception exception)
-            {
-                _log.Error(exception, $"Failed to publish message '{topic}' [{Encoding.UTF8.GetString(payload)}].");
-            }
+            Publish(deviceMessage.Topic, deviceMessage.Payload, deviceMessage.QosLevel, deviceMessage.Retain);
         }
 
         public void Subscribe(string topicPattern, Action<DeviceMessage> callback)
@@ -114,6 +95,27 @@ namespace HA4IoT.Devices
                     callback(e.Message);
                 }
             };
+        }
+
+        public void Publish(string topic, byte[] payload, MqttQosLevel qosLevel, bool retain)
+        {
+            try
+            {
+                var message = new MqttApplicationMessageBuilder()
+                    .WithTopic(topic)
+                    .WithPayload(payload)
+                    .WithQualityOfServiceLevel((MqttQualityOfServiceLevel)qosLevel)
+                    .WithRetainFlag(retain)
+                    .Build();
+
+                _server.PublishAsync(message).GetAwaiter().GetResult();
+
+                _log.Verbose($"Published message '{topic}' [{Encoding.UTF8.GetString(payload)}].");
+            }
+            catch (Exception exception)
+            {
+                _log.Error(exception, $"Failed to publish message '{topic}' [{Encoding.UTF8.GetString(payload)}].");
+            }
         }
 
         private void ProcessIncomingMessage(object sender, MqttApplicationMessageReceivedEventArgs e)

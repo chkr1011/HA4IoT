@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Storage;
 using HA4IoT.Components;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Components;
 using HA4IoT.Contracts.Core;
@@ -14,7 +13,6 @@ using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Notifications;
 using HA4IoT.Contracts.Scripting;
 using HA4IoT.Contracts.Settings;
-using HA4IoT.Hardware.RemoteSockets;
 using HA4IoT.Settings;
 using Newtonsoft.Json.Linq;
 

@@ -4,7 +4,6 @@ using HA4IoT.Actuators.Lamps;
 using HA4IoT.Actuators.Sockets;
 using HA4IoT.Components;
 using HA4IoT.Components.Adapters;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Actuators;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Core;
@@ -15,11 +14,9 @@ using HA4IoT.Contracts.Scheduling;
 using HA4IoT.Contracts.Scripting;
 using HA4IoT.Contracts.Sensors;
 using HA4IoT.Contracts.Settings;
-using HA4IoT.Hardware.Drivers.Outpost;
 using HA4IoT.Hardware.Drivers.Sonoff;
 using HA4IoT.Sensors.Buttons;
 using HA4IoT.Sensors.MotionDetectors;
-using HA4IoT.Scripting;
 
 namespace HA4IoT.Simulator
 {
@@ -42,7 +39,6 @@ namespace HA4IoT.Simulator
             var deviceMessageBroker = _containerService.GetInstance<IDeviceMessageBrokerService>();
             var schedulerService = _containerService.GetInstance<ISchedulerService>();
             var sonoffDeviceService = _containerService.GetInstance<SonoffDeviceService>();
-            var outpostDeviceService = _containerService.GetInstance<OutpostDeviceService>();
             var scriptingService = _containerService.GetInstance<IScriptingService>();
             var messageBroker = _containerService.GetInstance<IMessageBrokerService>();
             var logService = _containerService.GetInstance<ILogService>();
@@ -54,8 +50,6 @@ namespace HA4IoT.Simulator
             area.RegisterComponent(new Lamp("Lamp3", await _mainPage.CreateUIBinaryOutputAdapter("Lamp 3")));
             area.RegisterComponent(new Lamp("Lamp4", await _mainPage.CreateUIBinaryOutputAdapter("Lamp 4")));
             area.RegisterComponent(new Lamp("Lamp5", await _mainPage.CreateUIBinaryOutputAdapter("Lamp 5")));
-
-            area.RegisterComponent(new Lamp("RGBS1", outpostDeviceService.CreateRgbStripAdapter("RGBS1")));
 
             area.RegisterComponent(new Socket("Socket1", await _mainPage.CreateUIBinaryOutputAdapter("Socket 1")));
             area.RegisterComponent(new Socket("Socket2", await _mainPage.CreateUIBinaryOutputAdapter("Socket 2")));

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Text;
 using HA4IoT.Contracts.Components.Adapters;
 using HA4IoT.Contracts.Hardware.DeviceMessaging;
@@ -29,10 +30,9 @@ namespace HA4IoT.Components.Adapters.MqttBased
 
         private void ForwardValue(DeviceMessage deviceMessage)
         {
-            var payload = Encoding.UTF8.GetString(deviceMessage.Payload);
+            var payload = Encoding.UTF8.GetString(deviceMessage.Payload ?? new byte[0]);
 
-            float value;
-            if (!float.TryParse(payload, out value))
+            if (!float.TryParse(payload, NumberStyles.Any, CultureInfo.InvariantCulture, out var value))
             {
                 _log.Warning($"Unable to parse MQTT payload '{payload}' of topic '{_topic}' to numeric value.");
                 return;

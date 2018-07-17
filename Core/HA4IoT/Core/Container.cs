@@ -11,7 +11,6 @@ using HA4IoT.Automations;
 using HA4IoT.Backup;
 using HA4IoT.Components;
 using HA4IoT.Configuration;
-using HA4IoT.Contracts;
 using HA4IoT.Contracts.Api;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Automations;
@@ -41,7 +40,6 @@ using HA4IoT.ExternalServices.OpenWeatherMap;
 using HA4IoT.ExternalServices.TelegramBot;
 using HA4IoT.ExternalServices.Twitter;
 using HA4IoT.Hardware.Drivers.CCTools;
-using HA4IoT.Hardware.Drivers.Outpost;
 using HA4IoT.Hardware.Drivers.RaspberryPi;
 using HA4IoT.Hardware.Drivers.Sonoff;
 using HA4IoT.Hardware.I2C;
@@ -187,7 +185,6 @@ namespace HA4IoT.Core
 
             _container.RegisterSingleton<CCToolsDeviceService>();
             _container.RegisterSingleton<SonoffDeviceService>();
-            _container.RegisterSingleton<OutpostDeviceService>();
 
             _container.RegisterSingleton<IDeviceRegistryService, DeviceRegistryService>();
             _container.RegisterSingleton<IAreaRegistryService, AreaRegistryService>();

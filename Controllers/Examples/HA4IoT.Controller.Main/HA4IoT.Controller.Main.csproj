@@ -12,7 +12,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.15063.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.15063.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
@@ -107,6 +107,8 @@
     <Compile Include="Main\InstalledDevice.cs" />
     <Compile Include="Main\Rooms\BedroomConfiguration.cs" />
     <Compile Include="Main\CatLitterBoxSender.cs" />
+    <Compile Include="Main\Rooms\DeviceBinaryInput.cs" />
+    <Compile Include="Main\Rooms\DeviceBinaryOutput.cs" />
     <Compile Include="Main\Rooms\FloorConfiguration.cs" />
     <Compile Include="Main\Rooms\KitchenConfiguration.cs" />
     <Compile Include="Main\Rooms\LivingRoomConfiguration.cs" />

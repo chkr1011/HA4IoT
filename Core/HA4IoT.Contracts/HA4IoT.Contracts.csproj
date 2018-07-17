@@ -169,8 +169,6 @@
     <Compile Include="Conditions\ICondition.cs" />
     <Compile Include="Configuration\IConfigurationService.cs" />
     <Compile Include="Devices\DeviceNotRegisteredException.cs" />
-    <Compile Include="Hardware\I2C\I2CHardwareBridge\Configuration\I2CHardwareBridgeConfiguration.cs" />
-    <Compile Include="Hardware\Outpost\Configuration\LpdBridgeConfiguration.cs" />
     <Compile Include="Hardware\RemoteSockets\Codes\Lpd433MhzCode.cs" />
     <Compile Include="Hardware\RemoteSockets\Codes\Lpd433MhzCodePair.cs" />
     <Compile Include="Hardware\RemoteSockets\Configuration\IntertechnoConfiguration.cs" />
@@ -231,7 +229,6 @@
     <Compile Include="Hardware\DeviceMessaging\DeviceMessage.cs" />
     <Compile Include="Hardware\DeviceMessaging\DeviceMessageReceivedEventArgs.cs" />
     <Compile Include="Hardware\Mqtt\MqttMessageReceivedEventArgs.cs" />
-    <Compile Include="Hardware\Outpost\OutpostTopicBuilder.cs" />
     <Compile Include="Hardware\RaspberryPi\IGpioService.cs" />
     <Compile Include="Components\Commands\ICommand.cs" />
     <Compile Include="Hardware\DeviceMessaging\IDeviceMessageBrokerService.cs" />

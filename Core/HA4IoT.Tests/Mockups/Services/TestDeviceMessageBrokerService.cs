@@ -9,7 +9,7 @@ namespace HA4IoT.Tests.Mockups.Services
     {
         public event EventHandler<DeviceMessageReceivedEventArgs> MessageReceived;
 
-        public void Publish(string topic, byte[] payload, MqttQosLevel qosLevel)
+        public void Publish(string topic, byte[] payload, MqttQosLevel qosLevel, bool retain)
         {
             var deviceMessage = new DeviceMessage
             {

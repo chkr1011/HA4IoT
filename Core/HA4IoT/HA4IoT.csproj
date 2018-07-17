@@ -134,6 +134,7 @@
     <Compile Include="Components\Adapters\MqttBased\MqttBasedBinaryOutputAdapter.cs" />
     <Compile Include="Components\Adapters\MqttBased\MqttBasedButtonAdapter.cs" />
     <Compile Include="Components\Adapters\MqttBased\MqttBasedNumericSensorAdapter.cs" />
+    <Compile Include="Components\Adapters\MqttBased\RgbDeviceAdapter.cs" />
     <Compile Include="Components\Adapters\PortBased\PortBasedButtonAdapter.cs" />
     <Compile Include="Components\Adapters\PortBased\PortBasedBinaryOutputAdapter.cs" />
     <Compile Include="Components\Adapters\PortBased\PortBasedMotionDetectorAdapter.cs" />
@@ -152,24 +153,20 @@
     <Compile Include="Components\LogicalComponent.cs" />
     <Compile Include="Conditions\Specialized\TemperatureIsLowerThanCondition.cs" />
     <Compile Include="Configuration\ConfigurationService.cs" />
+    <Compile Include="Devices\MessageInterceptor.cs" />
+    <Compile Include="Devices\Storage.cs" />
     <Compile Include="Hardware\Drivers\CCTools\Configuration\CCToolsDeviceDriverConfiguration.cs" />
     <Compile Include="Hardware\Drivers\CCTools\Configuration\CCToolsDeviceFactory.cs" />
     <Compile Include="Hardware\I2C\I2CTransferResult.cs" />
-    <Compile Include="Hardware\Drivers\Outpost\OutpostDeviceFactory.cs" />
     <Compile Include="Logging\RollingCollection.cs" />
     <Compile Include="Logging\RollingCollectionEnumerator.cs" />
     <Compile Include="Messaging\MessageBrokerService.cs" />
     <Compile Include="Core\DateTimeScriptProxy.cs" />
     <Compile Include="Hardware\Drivers\CCTools\CCToolsDeviceType.cs" />
-    <Compile Include="Hardware\Drivers\I2CHardwareBridge\Dht22State.cs" />
-    <Compile Include="Hardware\Drivers\Outpost\OutpostLpdBridgeAdapter.cs" />
-    <Compile Include="Hardware\Drivers\Outpost\OutpostRgbAdapter.cs" />
-    <Compile Include="Hardware\Drivers\Outpost\OutpostDeviceService.cs" />
     <Compile Include="Hardware\Drivers\RaspberryPi\GpioOutputPort.cs" />
     <Compile Include="Devices\DeviceMessageBrokerService.cs" />
     <Compile Include="Hardware\Interrupts\InterruptMonitor.cs" />
     <Compile Include="Hardware\Interrupts\InterruptMonitorService.cs" />
-    <Compile Include="Devices\MqttCommunicationAdapter.cs" />
     <Compile Include="Hardware\Drivers\Sonoff\SonoffBinaryOutputAdapter.cs" />
     <Compile Include="Hardware\Drivers\Sonoff\SonoffDeviceService.cs" />
     <Compile Include="Logging\LogService.cs" />
@@ -293,18 +290,6 @@
     <Compile Include="Hardware\Drivers\CCTools\Devices\HSREL8Pin.cs" />
     <Compile Include="Hardware\Drivers\CCTools\Devices\HSRT16.cs" />
     <Compile Include="Hardware\Drivers\CCTools\Devices\HSRT16Pin.cs" />
-    <Compile Include="Hardware\Drivers\I2CHardwareBridge\DHT22Accessor.cs" />
-    <Compile Include="Hardware\Drivers\I2CHardwareBridge\DHT22SensorKind.cs" />
-    <Compile Include="Hardware\Drivers\I2CHardwareBridge\DHT22Sensor.cs" />
-    <Compile Include="Hardware\Drivers\I2CHardwareBridge\I2CHardwareBridge.cs" />
-    <Compile Include="Hardware\Drivers\I2CHardwareBridge\I2CHardwareBridgeCommand.cs" />
-    <Compile Include="Hardware\Drivers\I2CHardwareBridge\ReadDHT22SensorCommand.cs" />
-    <Compile Include="Hardware\Drivers\I2CHardwareBridge\ReadDHT22SensorCommandResponse.cs" />
-    <Compile Include="Hardware\Drivers\I2CHardwareBridge\SendInfraredSignalCommand.cs" />
-    <Compile Include="Hardware\Drivers\I2CHardwareBridge\SendLDP433MHzSignalCommand.cs" />
-    <Compile Include="Hardware\Drivers\Knx\KnxClient.cs" />
-    <Compile Include="Hardware\Drivers\Knx\KnxController.cs" />
-    <Compile Include="Hardware\Drivers\Knx\KnxDigitalJoinEnpoint.cs" />
     <Compile Include="Hardware\LogicalBinaryOutput.cs" />
     <Compile Include="Hardware\Drivers\RaspberryPi\GpioInputPort.cs" />
     <Compile Include="Hardware\Drivers\RaspberryPi\GpioService.cs" />
@@ -319,7 +304,6 @@
     <Compile Include="Hardware\Drivers\I2CPortExpanderDrivers\PCF8574Driver.cs" />
     <Compile Include="Hardware\Drivers\RemoteSockets\DipswitchCodeProvider.cs" />
     <Compile Include="Hardware\Drivers\RemoteSockets\IntertechnoCodeProvider.cs" />
-    <Compile Include="Hardware\Drivers\I2CHardwareBridge\I2CHardwareBridgeLdp433MhzBridgeAdapter.cs" />
     <Compile Include="Hardware\RemoteSockets\RemoteSocketCommand.cs" />
     <Compile Include="Hardware\RemoteSockets\RemoteSocketOutputPort.cs" />
     <Compile Include="Hardware\RemoteSockets\RemoteSocketService.cs" />
@@ -392,7 +376,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Hardware\AbstractionLayer\" />
-    <Folder Include="Hardware\Drivers\I2CHardwareBridge\Configuration\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

@@ -25,7 +25,7 @@ namespace HA4IoT.Components.Adapters.MqttBased
 
         public Task SetState(AdapterPowerState powerState, params IHardwareParameter[] parameters)
         {
-            _deviceMessageBrokerService.Publish(_topic, Encoding.UTF8.GetBytes(powerState.ToString()), MqttQosLevel.AtMostOnce);
+            _deviceMessageBrokerService.Publish(_topic, Encoding.UTF8.GetBytes(powerState.ToString()), MqttQosLevel.AtMostOnce, true);
             return Task.FromResult(0);
         }
     }

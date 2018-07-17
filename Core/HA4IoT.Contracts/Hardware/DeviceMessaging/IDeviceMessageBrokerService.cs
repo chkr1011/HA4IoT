@@ -8,7 +8,7 @@ namespace HA4IoT.Contracts.Hardware.DeviceMessaging
     {
         event EventHandler<DeviceMessageReceivedEventArgs> MessageReceived;
 
-        void Publish(string topic, byte[] payload, MqttQosLevel qosLevel);
+        void Publish(string topic, byte[] payload, MqttQosLevel qosLevel, bool retain);
 
         void Subscribe(string topicPattern, Action<DeviceMessage> callback);
     }

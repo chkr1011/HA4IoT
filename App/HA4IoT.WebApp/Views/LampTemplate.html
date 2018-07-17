@@ -26,17 +26,22 @@
     <br />
 
     <h4>Hue</h4>
+    <br />
     <input type="range" step="1" min="0" max="360" ng-model="component.colorSelector.hue" />
+    <br />
     <img src="Images/HueRange.png" class="slider-legend" />
-
+    <br />
     <h4>Saturation</h4>
+    <br />
     <input type="range" step="0.01" min="0" max="1" ng-model="component.colorSelector.saturation" />
+    <br />
     <div class="slider-legend" style="background: linear-gradient(to right, #837D7C, #FF0000)"></div>
-
+    <br />
     <h4>Value</h4>
+    <br />
     <input type="range" step="0.01" min="0" max="1" ng-model="component.colorSelector.value" />
+    <br />
     <div class="slider-legend" style="background: linear-gradient(to right, black, white)"></div>
-
     <br />
     <a href="#" class="btn btn-primary pull-right" ng-click="ctrl.componentService.setColor(component, component.colorSelector.hue, component.colorSelector.saturation, component.colorSelector.value)">{{ctrl.localizationService.get('UI.Accept')}}</a>
 </div>

@@ -6,13 +6,15 @@ using HA4IoT.Actuators.RollerShutters;
 using HA4IoT.Areas;
 using HA4IoT.Automations;
 using HA4IoT.Components;
+using HA4IoT.Components.Adapters.MqttBased;
 using HA4IoT.Components.Adapters.PortBased;
 using HA4IoT.Contracts.Areas;
 using HA4IoT.Contracts.Core;
+using HA4IoT.Contracts.Hardware.DeviceMessaging;
+using HA4IoT.Contracts.Logging;
 using HA4IoT.Contracts.Messaging;
 using HA4IoT.Hardware.Drivers.CCTools;
 using HA4IoT.Hardware.Drivers.CCTools.Devices;
-using HA4IoT.Hardware.Drivers.I2CHardwareBridge;
 using HA4IoT.Sensors;
 using HA4IoT.Sensors.Buttons;
 
@@ -27,6 +29,8 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         private readonly ActuatorFactory _actuatorFactory;
         private readonly SensorFactory _sensorFactory;
         private readonly IMessageBrokerService _messageBroker;
+        private readonly IDeviceMessageBrokerService _deviceMessageBrokerService;
+        private readonly ILogService _logService;
 
         private enum ReadingRoom
         {
@@ -56,9 +60,13 @@ namespace HA4IoT.Controller.Main.Main.Rooms
             AutomationFactory automationFactory,
             ActuatorFactory actuatorFactory,
             SensorFactory sensorFactory,
-            IMessageBrokerService messageBroker)
+            IMessageBrokerService messageBroker,
+            IDeviceMessageBrokerService deviceMessageBrokerService,
+            ILogService logService)
         {
             _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
+            _deviceMessageBrokerService = deviceMessageBrokerService;
+            _logService = logService;
             _areaService = areaService ?? throw new ArgumentNullException(nameof(areaService));
             _deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
             _ccToolsBoardService = ccToolsBoardService ?? throw new ArgumentNullException(nameof(ccToolsBoardService));
@@ -71,19 +79,16 @@ namespace HA4IoT.Controller.Main.Main.Rooms
         {
             var hsrel5 = (HSREL5)_ccToolsBoardService.RegisterDevice(CCToolsDeviceType.HSRel5, InstalledDevice.ReadingRoomHSREL5.ToString(), 62);
             var input2 = _deviceService.GetDevice<HSPE16InputOnly>(InstalledDevice.Input2.ToString());
-            var i2CHardwareBridge = _deviceService.GetDevice<I2CHardwareBridge>();
-
-            const int SensorPin = 9;
 
             var area = _areaService.RegisterArea(Room.ReadingRoom);
 
             _sensorFactory.RegisterWindow(area, ReadingRoom.Window, new PortBasedWindowAdapter(input2.GetInput(8))); // Tilt = input2.GetInput(9) -- currently broken!
 
             _sensorFactory.RegisterTemperatureSensor(area, ReadingRoom.TemperatureSensor,
-                i2CHardwareBridge.DHT22Accessor.GetTemperatureSensor(SensorPin));
+                new MqttBasedNumericSensorAdapter("sensors-bridge/temperature/5", _deviceMessageBrokerService, _logService));
 
             _sensorFactory.RegisterHumiditySensor(area, ReadingRoom.HumiditySensor,
-                i2CHardwareBridge.DHT22Accessor.GetHumiditySensor(SensorPin));
+                new MqttBasedNumericSensorAdapter("sensors-bridge/humidity/5", _deviceMessageBrokerService, _logService));
 
             _actuatorFactory.RegisterLamp(area, ReadingRoom.LightCeilingMiddle, hsrel5[HSREL5Pin.GPIO0]);
 

@@ -1,13 +1,14 @@
 ﻿{
   "dependencies": {
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.3.3",
+    "IronPython.Interpreter": "2.7.4",
+    "Microsoft.NETCore.UniversalWindowsPlatform": "6.0.8",
     "MoonSharp": "1.8.0",
-    "MQTTnet": "2.1.4",
-    "Newtonsoft.Json": "10.0.3",
-    "SimpleInjector": "4.0.8"
+    "MQTTnet": "2.7.1",
+    "Newtonsoft.Json": "11.0.1",
+    "SimpleInjector": "4.0.12"
   },
   "frameworks": {
-    "uap10.0": {}
+    "uap10.0.10240": {}
   },
   "runtimes": {
     "win10-arm": {},

@@ -63,14 +63,6 @@
         }
       },
       // Bridge devices ----------------------------------------
-      "I2CHardwareBridge": {
-        "Driver": {
-          "Type": "I2CHardwareBridge",
-          "Parameters": {
-            "Address": 50
-          }
-        }
-      },
       "LPD-Adapter1": {
         "Driver": {
           "Type": "Outpost.LpdBridge",

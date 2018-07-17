@@ -1,2 +1,0 @@
-void setupLpd();
-void loopLpd();
