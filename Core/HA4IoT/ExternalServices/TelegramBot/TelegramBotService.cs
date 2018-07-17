@@ -113,6 +113,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
                 catch (Exception exception)
                 {
                     _log.Error(exception, "Error while processing pending messages.");
+                    await Task.Delay(5000);
                 }
             }
         }
@@ -131,6 +132,7 @@ namespace HA4IoT.ExternalServices.TelegramBot
                 catch (Exception exception)
                 {
                     _log.Warning(exception, "Error while waiting for next updates.");
+                    await Task.Delay(5000);
                 }
             }
         }
