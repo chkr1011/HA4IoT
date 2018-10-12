@@ -58,8 +58,20 @@ namespace HA4IoT.Devices
 
         public event EventHandler<DeviceMessageReceivedEventArgs> MessageReceived;
 
+        private bool _isInitialized;
+
         public void Initialize()
         {
+            lock (_server)
+            {
+                if (_isInitialized)
+                {
+                    return;
+                }
+
+                _isInitialized = true;
+            }
+
             var options = new MqttServerOptionsBuilder()
                 .WithApplicationMessageInterceptor(MessageInterceptor.Intercept)
                 .WithStorage(new Storage())
